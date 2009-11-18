@@ -209,7 +209,7 @@ public:
 			std::cout << Buffer[Index];
 			++Index;
 		}
-		std::cout << std::endl;
+		std::cout << '"' << std::endl;
 	}
 };
 
