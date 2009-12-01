@@ -11,6 +11,137 @@
 #include <sstream>
 #include <vector>
 
+inline void AppendSeparated(std::string & String, const std::string & Append, const std::string & Separator)
+{
+	if(String.empty() == false)
+	{
+		String += Separator;
+	}
+	String += Append;
+}
+
+class TagHeader
+{
+public:
+	// constructor
+	TagHeader(std::istream & Stream)
+	{
+		Stream.read(_Buffer, 10);
+	}
+	
+	// getters
+	bool GetCompression(void) const
+	{
+		if(GetMajorVersion() == 2)
+		{
+			return (_Buffer[5] & 0x40) == 0x40;
+		}
+		else
+		{
+			throw "The compression flag is only supported in tag version 2.2.0.";
+		}
+	}
+	
+	bool GetExperimentalIndicator(void) const
+	{
+		if(GetMajorVersion() > 2)
+		{
+			return (_Buffer[5] & 0x20) == 0x20;
+		}
+		else
+		{
+			throw "The experimental indicator flag is only supported in tag versions above 2.2.";
+		}
+	}
+	
+	bool GetExtendedHeader(void) const
+	{
+		if(GetMajorVersion() > 2)
+		{
+			return (_Buffer[5] & 0x40) == 0x40;
+		}
+		else
+		{
+			throw "The extended header flag is only supported in tag versions above 2.2.";
+		}
+	}
+	
+	std::string GetFlagsAsString(void) const
+	{
+		std::string Result;
+		
+		if(GetUnsynchronization() == true)
+		{
+			AppendSeparated(Result, "Unsynchronization", ", ");
+		}
+		if(GetMajorVersion() == 2)
+		{
+			if(GetCompression() == true)
+			{
+				AppendSeparated(Result, "Compression", ", ");
+			}
+		}
+		else if(GetMajorVersion() > 2)
+		{
+			if(GetExtendedHeader() == true)
+			{
+				AppendSeparated(Result, "Extended Header", ", ");
+			}
+			if(GetExperimentalIndicator() == true)
+			{
+				AppendSeparated(Result, "Experimental Indicator", ", ");
+			}
+			if(GetMajorVersion() > 3)
+			{
+				if(GetFooterPresent() == true)
+				{
+					AppendSeparated(Result, "Footer present", ", ");
+				}
+			}
+		}
+		if(Result.empty() == true)
+		{
+			Result = "None";
+		}
+		
+		return Result;
+	}
+	
+	bool GetFooterPresent(void) const
+	{
+		if(GetMajorVersion() > 3)
+		{
+			return (_Buffer[5] & 0x10) == 0x10;
+		}
+		else
+		{
+			throw "The footer present flag is only supported in tag versions above 2.3.";
+		}
+	}
+	
+	std::string GetID3Identifier(void) const
+	{
+		return std::string(_Buffer, 3);
+	}
+	
+	unsigned int GetMajorVersion(void) const
+	{
+		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[3]));
+	}
+	
+	unsigned int GetRevisionNumber(void) const
+	{
+		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[4]));
+	}
+	
+	bool GetUnsynchronization(void) const
+	{
+		return (_Buffer[5] & 0x80) == 0x80;
+	}
+private:
+	char _Buffer[10];
+};
+
 typedef unsigned char u1byte;
 typedef unsigned short int u2byte;
 typedef unsigned long int index_t;
@@ -217,20 +348,11 @@ void vReadFile(const std::string & Path);
 void vReadDirectory(const std::string & Path);
 void vReadItem(const std::string & Path);
 
-inline void AppendCommaSeparated(const std::string &sAppend, std::string &sString)
-{
-	if(sString.empty() == false)
-	{
-		sString += ", ";
-	}
-	sString += sAppend;
-}
-
 inline void AppendIfFlagsIsSet(flag_t Flags, flag_t Flag, const std::string &sAppend, std::string &sString)
 {
 	if((Flags & Flag) == Flag)
 	{
-		AppendCommaSeparated(sAppend, sString);
+		AppendSeparated(sString, sAppend, ", ");
 	}
 }
 
@@ -285,6 +407,10 @@ bool bIsIDCharacter(char cCharacter)
 
 void ReadID3v2Tag(std::ifstream & Stream)
 {
+	Stream.seekg(0, std::ios::beg);
+	
+	TagHeader * NewTagHeader(new TagHeader(Stream));
+	
 	int BufferLength = 1000;
 	char * Buffer = new char[BufferLength];
 	
@@ -295,9 +421,9 @@ void ReadID3v2Tag(std::ifstream & Stream)
 		int Size((static_cast< u1byte >(Buffer[6]) << 21) + (static_cast< u1byte >(Buffer[7]) << 14) + (static_cast< u1byte >(Buffer[8]) << 7) + static_cast< u1byte >(Buffer[9]));
 		
 		std::cout << "ID3v2 TAG:" << std::endl;
-		std::cout << "\tFile Identifier: ID3" << std::endl;
-		std::cout << "\tVersion: 2." << static_cast< count_t >(static_cast< u1byte >(Buffer[3])) << "." << static_cast< count_t >(static_cast< u1byte >(Buffer[4])) << std::endl;
-		std::cout << "\tFlags: " << sGetFlags(Buffer[5], g_ID3v2TagFlags) << std::endl;
+		std::cout << "\tFile Identifier: " << NewTagHeader->GetID3Identifier() << std::endl;
+		std::cout << "\tVersion: 2." << NewTagHeader->GetMajorVersion() << "." << NewTagHeader->GetRevisionNumber() << std::endl;
+		std::cout << "\tFlags: " << NewTagHeader->GetFlagsAsString() << std::endl;
 		std::cout << "\tSize: " << Size << std::endl;
 		std::cout << "\tFrames:" << std::endl;
 
@@ -343,7 +469,14 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				std::cout << " [";
 			}
 			Stream.read(Buffer, 4);
-			u4FrameSize = ((static_cast< u1byte >(Buffer[0]) << 21) + (static_cast< u1byte >(Buffer[1]) << 14) + (static_cast< u1byte >(Buffer[2]) << 7) + static_cast< u1byte >(Buffer[3]));
+			if(NewTagHeader->GetMajorVersion() > 3)
+			{
+				u4FrameSize = ((static_cast< u1byte >(Buffer[0]) << 21) + (static_cast< u1byte >(Buffer[1]) << 14) + (static_cast< u1byte >(Buffer[2]) << 7) + static_cast< u1byte >(Buffer[3]));
+			}
+			else
+			{
+				u4FrameSize = ((static_cast< u1byte >(Buffer[0]) << 24) + (static_cast< u1byte >(Buffer[1]) << 16) + (static_cast< u1byte >(Buffer[2]) << 8) + static_cast< u1byte >(Buffer[3]));
+			}
 			std::cout << u4FrameSize;
 			if(g_bShortFrames == false)
 			{
@@ -402,6 +535,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 		}
 		std::cout << std::endl;
 	}
+	delete NewTagHeader;
 }
 
 void vReadFile(const std::string & Path)
