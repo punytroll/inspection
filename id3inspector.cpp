@@ -176,7 +176,7 @@ public:
 };
 
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
-std::string g_sEncodings[] = { "ISO-8859-1", "UTF-16 encoded Unicode with BOM", "UTF-16 encoded Unicode without BOM", "UTF-8 encoded Unicode" };
+std::string g_sEncodings[] = { "ISO-8859-1", "UTF-16 encoded Unicode with Byte Order Mark", "UTF-16BE encoded Unicode in Big Endian", "UTF-8 encoded Unicode" };
 std::string g_sShortEncodings[] = { "ISO-8859-1", "UTF-16 w/ BOM", "UTF-16 w/o BOM", "UTF-8" };
 std::map< std::string, std::string > g_FrameNames;
 std::map< index_t, std::string > g_ID3v2TagFrameFlags;
@@ -214,11 +214,49 @@ public:
 		std::cout << "\"  [" << g_sShortEncodings[static_cast< unsigned long int >(static_cast< unsigned char >(pcBuffer[0]))] << "]";
 	}
 	
-	virtual void PrintLong(const char * pcBuffer, unsigned long int Length)
+	virtual void PrintLong(const char * Buffer, unsigned long int Length)
 	{
-		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned long int >(static_cast< unsigned char >(pcBuffer[0]))] << std::endl;
+		unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+		
+		std::cout << "\t\t\tText Encoding: " << g_sEncodings[Encoding] << std::endl;
+		if(Encoding == 1)
+		{
+			std::cout << "\t\t\tByte Order Mark: ";
+			if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff))
+			{
+				std::cout << "Big Endian";
+			}
+			else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
+			{
+				std::cout << "Little Endian";
+			}
+			else
+			{
+				std::cout << "Bogus Byte Order Mark.";
+			}
+			std::cout << std::endl;
+		}
 		std::cout << "\t\t\tString: \"";
-		std::cout.write(pcBuffer + 1, Length - 1);
+		if((Encoding == 0) || (Encoding == 3))
+		{
+			std::cout.write(Buffer + 1, Length - 1);
+		}
+		else if(((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff)) || (Encoding == 2))
+		{
+			// Big Endian either by BOM or by definition
+			for(int Index = 4; Index < Length; Index += 2)
+			{
+				std::cout << Buffer[Index];
+			}
+		}
+		else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
+		{
+			// Little Endian by BOM
+			for(int Index = 3; Index < Length; Index += 2)
+			{
+				std::cout << Buffer[Index];
+			}
+		}
 		std::cout << '"' << std::endl;
 	}
 private:
