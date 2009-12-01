@@ -171,20 +171,14 @@ public:
 	{
 	}
 	
-	virtual void PrintLong(const char * pcBuffer, unsigned long int Lenth) = 0;
-	virtual void PrintShort(const char * pcBuffer, unsigned long int Lenth) = 0;
+	virtual void Print(const char * Buffer, unsigned long int Lenth) = 0;
 };
 
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
 std::string g_sEncodings[] = { "ISO-8859-1", "UTF-16 encoded Unicode with Byte Order Mark", "UTF-16BE encoded Unicode in Big Endian", "UTF-8 encoded Unicode" };
-std::string g_sShortEncodings[] = { "ISO-8859-1", "UTF-16 w/ BOM", "UTF-16 w/o BOM", "UTF-8" };
 std::map< std::string, std::string > g_FrameNames;
 std::map< index_t, std::string > g_ID3v2TagFrameFlags;
 std::map< std::string, FrameHandler * > g_FrameHandlers;
-std::map< std::string, std::map< std::string, count_t > > g_Summarize;
-std::map< std::string, bool > g_bSummarize;
-bool g_bShortTags = false;
-bool g_bShortFrames = false;
 
 std::string GetHex(char Character)
 {
@@ -198,23 +192,11 @@ std::string GetHex(char Character)
 class TextFrameHandler : public FrameHandler
 {
 public:
-	TextFrameHandler(const std::string & TextFrameIdentifier) :
-		m_TextFrameIdentifier(TextFrameIdentifier)
-	{
-	}
-	
 	virtual ~TextFrameHandler(void)
 	{
 	}
 	
-	virtual void PrintShort(const char * pcBuffer, unsigned long int Length)
-	{
-		std::cout << "\t\t\"";
-		std::cout.write(pcBuffer + 1, Length - 1);
-		std::cout << "\"  [" << g_sShortEncodings[static_cast< unsigned long int >(static_cast< unsigned char >(pcBuffer[0]))] << "]";
-	}
-	
-	virtual void PrintLong(const char * Buffer, unsigned long int Length)
+	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
 		unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 		
@@ -259,27 +241,16 @@ public:
 		}
 		std::cout << '"' << std::endl;
 	}
-private:
-	std::string m_TextFrameIdentifier;
 };
 
 class HexFrameHandler : public FrameHandler
 {
 public:
-	HexFrameHandler(void)
-	{
-	}
-	
 	virtual ~HexFrameHandler(void)
 	{
 	}
 	
-	virtual void PrintShort(const char * Buffer, unsigned long int Length)
-	{
-		std::cout << "\t\t<binary data>";
-	}
-	
-	virtual void PrintLong(const char * Buffer, unsigned long int Length)
+	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
 		std::cout << "\t\t\t";
 		for(unsigned long int Index = 0; Index < Length; ++Index)
@@ -294,20 +265,11 @@ public:
 class COMMFrameHandler : public FrameHandler
 {
 public:
-	COMMFrameHandler(void)
-	{
-	}
-	
 	virtual ~COMMFrameHandler(void)
 	{
 	}
 	
-	virtual void PrintShort(const char * Buffer, unsigned long int Length)
-	{
-		std::cout << "\t\tMultiple data.";
-	}
-	
-	virtual void PrintLong(const char * Buffer, unsigned long int Length)
+	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
 		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
 		std::cout << "\t\t\tLanguage: \"";
@@ -325,20 +287,11 @@ public:
 class MCDIFrameHandler : public FrameHandler
 {
 public:
-	MCDIFrameHandler(void)
-	{
-	}
-	
 	virtual ~MCDIFrameHandler(void)
 	{
 	}
 	
-	virtual void PrintShort(const char * Buffer, unsigned long int Length)
-	{
-		std::cout << "\t\t<binary data>";
-	}
-	
-	virtual void PrintLong(const char * Buffer, unsigned long int Length)
+	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
 		std::cout << "\t\t\t";
 		
@@ -362,19 +315,11 @@ public:
 class WXXXFrameHandler : public FrameHandler
 {
 public:
-	WXXXFrameHandler(void)
-	{
-	}
-	
 	virtual ~WXXXFrameHandler(void)
 	{
 	}
 	
-	virtual void PrintShort(const char * Buffer, unsigned long int Length)
-	{
-	}
-	
-	virtual void PrintLong(const char * Buffer, unsigned long int Length)
+	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
 		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned long int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
 		std::cout << "\t\t\tDescription: \"";
@@ -393,6 +338,17 @@ public:
 			std::cout << Buffer[Index];
 			++Index;
 		}
+		std::cout << '"' << std::endl;
+	}
+};
+
+class URLFrameHandler : public FrameHandler
+{
+public:
+	virtual void Print(const char * Buffer, unsigned long int Length)
+	{
+		std::cout << "\t\t\tURL: \"";
+		std::cout.write(Buffer, Length);
 		std::cout << '"' << std::endl;
 	}
 };
@@ -504,23 +460,10 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				}
 			}
 			std::cout << "\t";
-			if(g_bShortFrames == false)
-			{
-				std::cout << "\tID:\t ";
-			}
+			std::cout << "\tID:\t ";
 			std::cout << "\"" << pcID[0] << pcID[1] << pcID[2] << pcID[3] << "\"";
-			if(g_bShortFrames == false)
-			{
-				std::cout << "\n\t\tName:\t " << g_FrameNames[std::string(pcID, pcID + 4)];
-			}
-			if(g_bShortFrames == false)
-			{
-				std::cout << "\n\t\tSize:\t ";
-			}
-			else
-			{
-				std::cout << " [";
-			}
+			std::cout << "\n\t\tName:\t " << g_FrameNames[std::string(pcID, pcID + 4)];
+			std::cout << "\n\t\tSize:\t ";
 			Stream.read(Buffer, 4);
 			if(NewTagHeader->GetMajorVersion() > 3)
 			{
@@ -531,24 +474,10 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				u4FrameSize = ((static_cast< u1byte >(Buffer[0]) << 24) + (static_cast< u1byte >(Buffer[1]) << 16) + (static_cast< u1byte >(Buffer[2]) << 8) + static_cast< u1byte >(Buffer[3]));
 			}
 			std::cout << u4FrameSize;
-			if(g_bShortFrames == false)
-			{
-				std::cout << "\n\t\tFlags:\t ";
-			}
-			else
-			{
-				std::cout << "] (";
-			}
+			std::cout << "\n\t\tFlags:\t ";
 			Stream.read(Buffer, 2);
 			std::cout << sGetFlags(*(reinterpret_cast< u2byte * >(Buffer)), g_ID3v2TagFrameFlags);
-			if(g_bShortFrames == false)
-			{
-				std::cout << std::endl << "\t\tContent:" << std::endl;
-			}
-			else
-			{
-				std::cout << ")" << std::endl;
-			}
+			std::cout << std::endl << "\t\tContent:" << std::endl;
 			if(u4FrameSize <= BufferLength)
 			{
 				Stream.read(Buffer, u4FrameSize);
@@ -561,14 +490,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				}
 				else
 				{
-					if(g_bShortFrames == true)
-					{
-						FrameHandler->second->PrintShort(Buffer, u4FrameSize);
-					}
-					else
-					{
-						FrameHandler->second->PrintLong(Buffer, u4FrameSize);
-					}
+					FrameHandler->second->Print(Buffer, u4FrameSize);
 				}
 			}
 			else
@@ -680,67 +602,6 @@ void vReadItem(const std::string & Path)
 	}
 }
 
-void vHandleCommentaryFrames(const char *pcFrame, count_t u4Length)
-{
-	if(g_bShortFrames == true)
-	{
-		std::cout << "\t\t\"" << (pcFrame + 4) << "\"[" << pcFrame[1] << pcFrame[2] << pcFrame[3] << "] = \"" << (pcFrame + 5 + strlen(pcFrame + 4)) << "\"  [" << g_sShortEncodings[static_cast< count_t >(pcFrame[0])] << "]";
-	}
-	else
-	{
-		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< count_t >(pcFrame[0])] << std::endl;
-		std::cout << "\t\t\tLanguage: \"" << pcFrame[1] << pcFrame[2] << pcFrame[3] << '"' << std::endl;
-		std::cout << "\t\t\tDescription: \"" << (pcFrame + 4) << '"' << std::endl;
-		std::cout << "\t\t\tCommentary: \"" << (pcFrame + 5 + strlen(pcFrame + 4)) << '"' << std::endl;
-	}
-}
-
-void vHandleUserURLFrames(const char *pcFrame, count_t u4Length)
-{
-	if(g_bShortFrames == true)
-	{
-		std::cout << "\t\t\"" << (pcFrame + 1) << "\" = \"" << (pcFrame + 2 + strlen(pcFrame + 1)) << "\"  [" << g_sShortEncodings[static_cast< count_t >(pcFrame[0])] << "]";
-	}
-	else
-	{
-		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< count_t >(pcFrame[0])] << std::endl;
-		std::cout << "\t\t\tDescription: \"" << (pcFrame + 1) << '"' << std::endl;
-		std::cout << "\t\t\tURL: \"" << (pcFrame + 2 + strlen(pcFrame + 1)) << '"' << std::endl;
-	}
-}
-
-void vHandleURLFrames(const char *pcFrame, count_t u4Length)
-{
-	if(g_bShortFrames == true)
-	{
-		std::cout << "\t\t\"" << pcFrame << "\"";
-	}
-	else
-	{
-		std::cout << "\t\t\tURL: \"" << pcFrame << '"' << std::endl;
-	}
-}
-
-void vHandlePlayCounterFrames(const char *pcFrame, count_t u4Length)
-{
-	count_t count_tPosition = 0;
-	unsigned long long u8PlayCounter = 0;
-
-	while((count_tPosition <= 7) && (count_tPosition <= u4Length))
-	{
-		u8PlayCounter = (u8PlayCounter << 8) + static_cast< u1byte >(pcFrame[count_tPosition]);
-		++count_tPosition;
-	}
-	if(g_bShortFrames == true)
-	{
-		std::cout << "\t\tPlayed " << u8PlayCounter << " times.";
-	}
-	else
-	{
-		std::cout << "\t\t\tPlayed # times: \"" << u8PlayCounter << '"' << std::endl;
-	}
-}
-
 int main(int argc, char **argv)
 {
 	std::deque< std::string > Paths;
@@ -749,29 +610,11 @@ int main(int argc, char **argv)
 
 	while(++u4Argument < u4Arguments)
 	{
-		if(std::string(argv[u4Argument]) == "-sf")
-		{
-			g_bShortFrames = true;
-
-			continue;
-		}
-		if(std::string(argv[u4Argument]) == "-st")
-		{
-			g_bShortTags = true;
-
-			continue;
-		}
-		if(std::string(argv[u4Argument]) == "-u")
-		{
-			g_bSummarize[argv[++u4Argument]] = true;
-
-			continue;
-		}
 		Paths.push_back(argv[u4Argument]);
 	}
 	if(Paths.size() == 0)
 	{
-		std::cerr << "Usage: " << argv[0] << " [-sf] [-st] [-u TAG] <paths> ... \n\t-sf\tshort frame descriptions\n\t-st\tshort tag descriptions\n\t-u TAG\tsummarize the tag TAG" << std::endl;
+		std::cerr << "Usage: " << argv[0] << " <paths> ..." << std::endl;
 
 		return 1;
 	}
@@ -808,6 +651,7 @@ int main(int argc, char **argv)
 	g_FrameNames["TSSE"] = "Software/Hardware and settings used for encoding";
 	g_FrameNames["TXXX"] = "User defined text information frame";
 	g_FrameNames["TYER"] = "Year";
+	g_FrameNames["WCOM"] = "Commercial information";
 	g_FrameNames["WXXX"] = "User defined URL link frame";
 	
 	// ID3v2.4.0
@@ -816,58 +660,37 @@ int main(int argc, char **argv)
 	g_FrameHandlers["COMM"] = new COMMFrameHandler();
 	g_FrameHandlers["MCDI"] = new MCDIFrameHandler();
 	g_FrameHandlers["PRIV"] = new HexFrameHandler();
-	g_FrameHandlers["TALB"] = new TextFrameHandler("TALB");
-	g_FrameHandlers["TBPM"] = new TextFrameHandler("TBPM");
-	g_FrameHandlers["TCOM"] = new TextFrameHandler("TCOM");
-	g_FrameHandlers["TCON"] = new TextFrameHandler("TCON");
-	g_FrameHandlers["TCOP"] = new TextFrameHandler("TCOP");
-	g_FrameHandlers["TDAT"] = new TextFrameHandler("TDAT");
-	g_FrameHandlers["TDRC"] = new TextFrameHandler("TDRC");
-	g_FrameHandlers["TENC"] = new TextFrameHandler("TENC");
-	g_FrameHandlers["TEXT"] = new TextFrameHandler("TEXT");
-	g_FrameHandlers["TFLT"] = new TextFrameHandler("TFLT");
-	g_FrameHandlers["TIT1"] = new TextFrameHandler("TIT1");
-	g_FrameHandlers["TIT2"] = new TextFrameHandler("TIT2");
-	g_FrameHandlers["TIT3"] = new TextFrameHandler("TIT3");
-	g_FrameHandlers["TLAN"] = new TextFrameHandler("TLAN");
-	g_FrameHandlers["TLEN"] = new TextFrameHandler("TLEN");
-	//~ g_FrameHandlers["TMED"] = bind3of3(ptr_fun(&vHandleTextFrames), "TMED");
-	//~ g_FrameHandlers["TOPE"] = bind3of3(ptr_fun(&vHandleTextFrames), "TOPE");
-	g_FrameHandlers["TPE1"] = new TextFrameHandler("TPE1");
-	g_FrameHandlers["TPE2"] = new TextFrameHandler("TPE2");
-	g_FrameHandlers["TPE3"] = new TextFrameHandler("TPE3");
-	g_FrameHandlers["TPE4"] = new TextFrameHandler("TPE4");
-	g_FrameHandlers["TPOS"] = new TextFrameHandler("TPOS");
-	g_FrameHandlers["TPUB"] = new TextFrameHandler("TPUB");
-	g_FrameHandlers["TRCK"] = new TextFrameHandler("TRCK");
-	g_FrameHandlers["TSSE"] = new TextFrameHandler("TSSE");
-	g_FrameHandlers["TXXX"] = new TextFrameHandler("TXXX");
-	g_FrameHandlers["TYER"] = new TextFrameHandler("TYER");
-	//~ g_FrameHandlers["COMM"] = std::ptr_fun(&vHandleCommentaryFrames);
-	//~ g_FrameHandlers["PCNT"] = std::ptr_fun(&vHandlePlayCounterFrames);
-	//~ g_FrameHandlers["WCOM"] = std::ptr_fun(&vHandleURLFrames);
-	//~ g_FrameHandlers["WOAF"] = std::ptr_fun(&vHandleUserURLFrames);
+	g_FrameHandlers["TALB"] = new TextFrameHandler();
+	g_FrameHandlers["TBPM"] = new TextFrameHandler();
+	g_FrameHandlers["TCOM"] = new TextFrameHandler();
+	g_FrameHandlers["TCON"] = new TextFrameHandler();
+	g_FrameHandlers["TCOP"] = new TextFrameHandler();
+	g_FrameHandlers["TDAT"] = new TextFrameHandler();
+	g_FrameHandlers["TDRC"] = new TextFrameHandler();
+	g_FrameHandlers["TENC"] = new TextFrameHandler();
+	g_FrameHandlers["TEXT"] = new TextFrameHandler();
+	g_FrameHandlers["TFLT"] = new TextFrameHandler();
+	g_FrameHandlers["TIT1"] = new TextFrameHandler();
+	g_FrameHandlers["TIT2"] = new TextFrameHandler();
+	g_FrameHandlers["TIT3"] = new TextFrameHandler();
+	g_FrameHandlers["TLAN"] = new TextFrameHandler();
+	g_FrameHandlers["TLEN"] = new TextFrameHandler();
+	g_FrameHandlers["TPE1"] = new TextFrameHandler();
+	g_FrameHandlers["TPE2"] = new TextFrameHandler();
+	g_FrameHandlers["TPE3"] = new TextFrameHandler();
+	g_FrameHandlers["TPE4"] = new TextFrameHandler();
+	g_FrameHandlers["TPOS"] = new TextFrameHandler();
+	g_FrameHandlers["TPUB"] = new TextFrameHandler();
+	g_FrameHandlers["TRCK"] = new TextFrameHandler();
+	g_FrameHandlers["TSSE"] = new TextFrameHandler();
+	g_FrameHandlers["TXXX"] = new TextFrameHandler();
+	g_FrameHandlers["TYER"] = new TextFrameHandler();
+	g_FrameHandlers["WCOM"] = new URLFrameHandler();
 	g_FrameHandlers["WXXX"] = new WXXXFrameHandler();
 	while(Paths.begin() != Paths.end())
 	{
 		vReadItem(Paths.front());
 		Paths.pop_front();
-	}
-
-	std::map< std::string, std::map< std::string, count_t > >::iterator iFrameIterator = g_Summarize.begin();
-
-	while(iFrameIterator != g_Summarize.end())
-	{
-		std::cout << "Summary for \"" << iFrameIterator->first << "\":\n";
-		std::map< std::string, count_t >::iterator iIterator = iFrameIterator->second.begin();
-
-		while(iIterator != iFrameIterator->second.end())
-		{
-			std::cout << '"' << iIterator->first << "\" - found " << iIterator->second << " times.\n";
-			++iIterator;
-		}
-		++iFrameIterator;
-		std::cout << std::endl;
 	}
 
 	return 0;
