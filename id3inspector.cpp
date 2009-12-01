@@ -32,37 +32,37 @@ public:
 	// getters
 	bool GetCompression(void) const
 	{
-		if(GetMajorVersion() == 2)
+		if(HasCompressionFlag() == true)
 		{
 			return (_Buffer[5] & 0x40) == 0x40;
 		}
 		else
 		{
-			throw "The compression flag is only supported in tag version 2.2.0.";
+			throw "The compression flag is not supported by this tag version.";
 		}
 	}
 	
 	bool GetExperimentalIndicator(void) const
 	{
-		if(GetMajorVersion() > 2)
+		if(HasExperimentalIndicatorFlag() == true)
 		{
 			return (_Buffer[5] & 0x20) == 0x20;
 		}
 		else
 		{
-			throw "The experimental indicator flag is only supported in tag versions above 2.2.";
+			throw "The experimental indicator flag is not supported by this tag version.";
 		}
 	}
 	
 	bool GetExtendedHeader(void) const
 	{
-		if(GetMajorVersion() > 2)
+		if(HasExtendedHeaderFlag() == true)
 		{
 			return (_Buffer[5] & 0x40) == 0x40;
 		}
 		else
 		{
-			throw "The extended header flag is only supported in tag versions above 2.2.";
+			throw "The extended header flag is not supported by this tag version.";
 		}
 	}
 	
@@ -70,34 +70,25 @@ public:
 	{
 		std::string Result;
 		
-		if(GetUnsynchronization() == true)
+		if((HasUnsynchronizationFlag() == true) && (GetUnsynchronization() == true))
 		{
 			AppendSeparated(Result, "Unsynchronization", ", ");
 		}
-		if(GetMajorVersion() == 2)
+		if((HasCompressionFlag() == true) && (GetCompression() == true))
 		{
-			if(GetCompression() == true)
-			{
-				AppendSeparated(Result, "Compression", ", ");
-			}
+			AppendSeparated(Result, "Compression", ", ");
 		}
-		else if(GetMajorVersion() > 2)
+		if((HasExtendedHeaderFlag() == true) && (GetExtendedHeader() == true))
 		{
-			if(GetExtendedHeader() == true)
-			{
-				AppendSeparated(Result, "Extended Header", ", ");
-			}
-			if(GetExperimentalIndicator() == true)
-			{
-				AppendSeparated(Result, "Experimental Indicator", ", ");
-			}
-			if(GetMajorVersion() > 3)
-			{
-				if(GetFooterPresent() == true)
-				{
-					AppendSeparated(Result, "Footer present", ", ");
-				}
-			}
+			AppendSeparated(Result, "Extended Header", ", ");
+		}
+		if((HasExperimentalIndicatorFlag() == true) && (GetExperimentalIndicator() == true))
+		{
+			AppendSeparated(Result, "Experimental Indicator", ", ");
+		}
+		if((HasFooterPresentFlag() == true) && (GetFooterPresent() == true))
+		{
+			AppendSeparated(Result, "Footer present", ", ");
 		}
 		if(Result.empty() == true)
 		{
@@ -109,13 +100,13 @@ public:
 	
 	bool GetFooterPresent(void) const
 	{
-		if(GetMajorVersion() > 3)
+		if(HasFooterPresentFlag() == true)
 		{
 			return (_Buffer[5] & 0x10) == 0x10;
 		}
 		else
 		{
-			throw "The footer present flag is only supported in tag versions above 2.3.";
+			throw "The footer present flag is not supported by this tag version.";
 		}
 	}
 	
@@ -137,6 +128,31 @@ public:
 	bool GetUnsynchronization(void) const
 	{
 		return (_Buffer[5] & 0x80) == 0x80;
+	}
+	
+	bool HasExperimentalIndicatorFlag(void) const
+	{
+		return GetMajorVersion() > 2;
+	}
+	
+	bool HasExtendedHeaderFlag(void) const
+	{
+		return GetMajorVersion() > 2;
+	}
+	
+	bool HasFooterPresentFlag(void) const
+	{
+		return GetMajorVersion() > 3;
+	}
+	
+	bool HasCompressionFlag(void) const
+	{
+		return GetMajorVersion() == 2;
+	}
+	
+	bool HasUnsynchronizationFlag(void) const
+	{
+		return true;
 	}
 private:
 	char _Buffer[10];
