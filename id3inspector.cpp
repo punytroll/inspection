@@ -190,7 +190,7 @@ std::string GetHex(char Character)
 {
 	std::stringstream Stream;
 	
-	Stream << std::hex << std::setfill('0') << std::setw(2) << std::right << static_cast< unsigned int >(Character);
+	Stream << std::hex << std::setfill('0') << std::setw(2) << std::right << static_cast< unsigned int >(static_cast< unsigned char >(Character));
 	
 	return Stream.str();
 }
@@ -271,7 +271,7 @@ public:
 	
 	virtual void PrintLong(const char * Buffer, unsigned long int Length)
 	{
-		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned long int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
+		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
 		std::cout << "\t\t\tLanguage: \"";
 		std::cout.write(Buffer + 1, 3);
 		std::cout << '"' << std::endl;
