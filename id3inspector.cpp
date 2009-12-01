@@ -179,7 +179,6 @@ std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco"
 std::string g_sEncodings[] = { "ISO-8859-1", "UTF-16 encoded Unicode with BOM", "UTF-16 encoded Unicode without BOM", "UTF-8 encoded Unicode" };
 std::string g_sShortEncodings[] = { "ISO-8859-1", "UTF-16 w/ BOM", "UTF-16 w/o BOM", "UTF-8" };
 std::map< std::string, std::string > g_FrameNames;
-std::map< index_t, std::string > g_ID3v2TagFlags;
 std::map< index_t, std::string > g_ID3v2TagFrameFlags;
 std::map< std::string, FrameHandler * > g_FrameHandlers;
 std::map< std::string, std::map< std::string, count_t > > g_Summarize;
@@ -738,10 +737,6 @@ int main(int argc, char **argv)
 
 		return 1;
 	}
-	g_ID3v2TagFlags[0x10] = "Footer Present";
-	g_ID3v2TagFlags[0x20] = "Experimental Indicator";
-	g_ID3v2TagFlags[0x40] = "Extended Header";
-	g_ID3v2TagFlags[0x80] = "Unsynchronisation";
 	g_ID3v2TagFrameFlags[0x0040] = "Discard Frame on Tag Alteration";
 	g_ID3v2TagFrameFlags[0x0020] = "Discard Frame on File Alteration";
 	g_ID3v2TagFrameFlags[0x0010] = "Read Only";
