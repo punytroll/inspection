@@ -20,6 +20,15 @@ inline void AppendSeparated(std::string & String, const std::string & Append, co
 	String += Append;
 }
 
+std::string GetHexadecimalStringFromCharacter(char Character)
+{
+	std::stringstream Stream;
+	
+	Stream << std::hex << std::setfill('0') << std::setw(2) << std::right << static_cast< unsigned int >(static_cast< unsigned char >(Character));
+	
+	return Stream.str();
+}
+
 class TagHeader
 {
 public:
@@ -180,15 +189,6 @@ std::map< std::string, std::string > g_FrameNames;
 std::map< index_t, std::string > g_ID3v2TagFrameFlags;
 std::map< std::string, FrameHandler * > g_FrameHandlers;
 
-std::string GetHex(char Character)
-{
-	std::stringstream Stream;
-	
-	Stream << std::hex << std::setfill('0') << std::setw(2) << std::right << static_cast< unsigned int >(static_cast< unsigned char >(Character));
-	
-	return Stream.str();
-}
-
 class TextFrameHandler : public FrameHandler
 {
 public:
@@ -214,7 +214,7 @@ public:
 			}
 			else
 			{
-				std::cout << "Bogus Byte Order Mark.";
+				std::cout << "Bogus Byte Order Mark: " << GetHexadecimalStringFromCharacter(Buffer[1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[2]);
 			}
 			std::cout << std::endl;
 		}
@@ -255,7 +255,7 @@ public:
 		std::cout << "\t\t\t";
 		for(unsigned long int Index = 0; Index < Length; ++Index)
 		{
-			std::cout << GetHex(Buffer[Index]) << ' ';
+			std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
 			
 		}
 		std::cout << std::endl;
@@ -299,13 +299,13 @@ public:
 		
 		if(Index + 4 <= Length)
 		{
-			std::cout << GetHex(Buffer[Index + 0]) << ' ' << GetHex(Buffer[Index + 1]) << ' ' << GetHex(Buffer[Index + 2]) << ' '<< GetHex(Buffer[Index + 3]) << std::endl;
+			std::cout << GetHexadecimalStringFromCharacter(Buffer[Index + 0]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 2]) << ' '<< GetHexadecimalStringFromCharacter(Buffer[Index + 3]) << std::endl;
 		}
 		std::cout << "\t\t\t";
 		Index += 4;
 		while(Index < Length)
 		{
-			std::cout << GetHex(Buffer[Index]) << ' ';
+			std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
 			++Index;
 		}
 		std::cout << std::endl;
