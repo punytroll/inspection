@@ -292,7 +292,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 	Stream.read(Buffer, 10);
 	if((Buffer[0] == 'I') && (Buffer[1] == 'D') && (Buffer[2] == '3'))
 	{
-		int Size((static_cast< u1byte >(Buffer[6]) << 24) + (static_cast< u1byte >(Buffer[7]) << 16) + (static_cast< u1byte >(Buffer[8]) << 8) + static_cast< u1byte >(Buffer[9]));
+		int Size((static_cast< u1byte >(Buffer[6]) << 21) + (static_cast< u1byte >(Buffer[7]) << 14) + (static_cast< u1byte >(Buffer[8]) << 7) + static_cast< u1byte >(Buffer[9]));
 		
 		std::cout << "ID3v2 TAG:" << std::endl;
 		std::cout << "\tFile Identifier: ID3" << std::endl;
@@ -343,7 +343,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				std::cout << " [";
 			}
 			Stream.read(Buffer, 4);
-			u4FrameSize = ((static_cast< u1byte >(Buffer[0]) << 24) + (static_cast< u1byte >(Buffer[1]) << 16) + (static_cast< u1byte >(Buffer[2]) << 8) + static_cast< u1byte >(Buffer[3]));
+			u4FrameSize = ((static_cast< u1byte >(Buffer[0]) << 21) + (static_cast< u1byte >(Buffer[1]) << 14) + (static_cast< u1byte >(Buffer[2]) << 7) + static_cast< u1byte >(Buffer[3]));
 			std::cout << u4FrameSize;
 			if(g_bShortFrames == false)
 			{
