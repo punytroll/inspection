@@ -554,13 +554,6 @@ void Handle22And23TextFrameWithoutNewlines(const char * Buffer, unsigned int Len
 		}
 	}
 	std::cout << '"' << std::endl;
-	std::cout << "\t\t\t\tBytes: ";
-	for(unsigned long int Index = 1; Index < Length; ++Index)
-	{
-		std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
-		
-	}
-	std::cout << std::endl;
 }
 
 void Handle24TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
@@ -628,13 +621,6 @@ void Handle24TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
 		}
 	}
 	std::cout << '"' << std::endl;
-	std::cout << "\t\t\t\tBytes: ";
-	for(unsigned long int Index = 1; Index < Length; ++Index)
-	{
-		std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
-		
-	}
-	std::cout << std::endl;
 }
 
 void vReadFile(const std::string & Path);
@@ -698,7 +684,6 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				{
 					std::cout << "\t\t\tFlags: " << NewFrameHeader->GetFlagsAsString() << std::endl;
 				}
-				std::cout << "\t\t\tContent:" << std::endl;
 				while(NewFrameHeader->GetSize() > BufferLength)
 				{
 					delete[] Buffer;
@@ -706,6 +691,14 @@ void ReadID3v2Tag(std::ifstream & Stream)
 					Buffer = new char[BufferLength];
 				}
 				Stream.read(Buffer, NewFrameHeader->GetSize());
+				std::cout << "\t\t\tBytes: ";
+				for(unsigned long int Index = 1; Index < NewFrameHeader->GetSize(); ++Index)
+				{
+					std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
+					
+				}
+				std::cout << std::endl;
+				std::cout << "\t\t\tContent:" << std::endl;
 				NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
 				if(NewFrameHeader->GetSize() != 0)
 				{
@@ -721,6 +714,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 			{
 				break;
 			}
+			delete NewFrameHeader;
 		}
 		std::cout << std::endl;
 	}
