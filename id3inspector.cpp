@@ -243,6 +243,13 @@ public:
 			_GroupingIdentity = (Buffer[9] & 0x20) == 0x20;
 			_SupportsUnsynchronisation = false;
 			_SupportsDataLengthIndicator = false;
+			
+			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
+			
+			if(HanderIterator != _Handlers23.end())
+			{
+				_Handler = HanderIterator->second;
+			}
 		}
 		else if(TagHeader->GetMajorVersion() == 4)
 		{
@@ -269,6 +276,13 @@ public:
 			_Unsynchronisation = (Buffer[9] & 0x02) == 0x02;
 			_SupportsDataLengthIndicator = true;
 			_DataLengthIndicator = (Buffer[9] & 0x01) == 0x01;
+			
+			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
+			
+			if(HanderIterator != _Handlers24.end())
+			{
+				_Handler = HanderIterator->second;
+			}
 		}
 	}
 	
@@ -492,19 +506,7 @@ private:
 	bool _Unsynchronisation;
 };
 
-class FrameHandler
-{
-public:
-	virtual ~FrameHandler(void)
-	{
-	}
-	
-	virtual void Print(const char * Buffer, unsigned long int Lenth) = 0;
-};
-
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
-std::string g_sEncodings[] = { "ISO-8859-1", "UTF-16 encoded Unicode with Byte Order Mark", "UTF-16BE encoded Unicode in Big Endian", "UTF-8 encoded Unicode" };
-std::map< std::string, FrameHandler * > g_FrameHandlers;
 std::map< std::string, std::string > FrameHeader::_Names22;
 std::map< std::string, std::string > FrameHeader::_Names23;
 std::map< std::string, std::string > FrameHeader::_Names24;
@@ -512,171 +514,7 @@ std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Han
 std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers23;
 std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers24;
 
-class TextFrameHandler : public FrameHandler
-{
-public:
-	virtual ~TextFrameHandler(void)
-	{
-	}
-	
-	virtual void Print(const char * Buffer, unsigned long int Length)
-	{
-		unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
-		
-		std::cout << "\t\t\t\tText Encoding: " << g_sEncodings[Encoding] << std::endl;
-		if(Encoding == 1)
-		{
-			std::cout << "\t\t\t\tByte Order Mark: ";
-			if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff))
-			{
-				std::cout << "Big Endian";
-			}
-			else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
-			{
-				std::cout << "Little Endian";
-			}
-			else
-			{
-				std::cout << "Bogus Byte Order Mark: " << GetHexadecimalStringFromCharacter(Buffer[1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[2]);
-			}
-			std::cout << std::endl;
-		}
-		std::cout << "\t\t\t\tString: \"";
-		if((Encoding == 0) || (Encoding == 3))
-		{
-			std::cout.write(Buffer + 1, Length - 1);
-		}
-		else if(((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff)) || (Encoding == 2))
-		{
-			// Big Endian either by BOM or by definition
-			for(int Index = 4; Index < Length; Index += 2)
-			{
-				std::cout << Buffer[Index];
-			}
-		}
-		else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
-		{
-			// Little Endian by BOM
-			for(int Index = 3; Index < Length; Index += 2)
-			{
-				std::cout << Buffer[Index];
-			}
-		}
-		std::cout << '"' << std::endl;
-	}
-};
-
-class HexFrameHandler : public FrameHandler
-{
-public:
-	virtual ~HexFrameHandler(void)
-	{
-	}
-	
-	virtual void Print(const char * Buffer, unsigned long int Length)
-	{
-		std::cout << "\t\t\t\t";
-		for(unsigned long int Index = 0; Index < Length; ++Index)
-		{
-			std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
-			
-		}
-		std::cout << std::endl;
-	}
-};
-
-class COMMFrameHandler : public FrameHandler
-{
-public:
-	virtual ~COMMFrameHandler(void)
-	{
-	}
-	
-	virtual void Print(const char * Buffer, unsigned long int Length)
-	{
-		std::cout << "\t\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
-		std::cout << "\t\t\t\tLanguage: \"";
-		std::cout.write(Buffer + 1, 3);
-		std::cout << '"' << std::endl;
-		std::cout << "\t\t\t\tShort content description: \"";
-		std::cout.write(Buffer + 4, strlen(Buffer + 4));
-		std::cout << '"' << std::endl;
-		std::cout << "\t\t\t\tString: \"";
-		std::cout.write(Buffer + 4 + strlen(Buffer + 4) + 1, Length - 4 - strlen(Buffer + 4) - 1);
-		std::cout << '"' << std::endl;
-	}
-};
-
-class MCDIFrameHandler : public FrameHandler
-{
-public:
-	virtual ~MCDIFrameHandler(void)
-	{
-	}
-	
-	virtual void Print(const char * Buffer, unsigned long int Length)
-	{
-		std::cout << "\t\t\t\t";
-		
-		unsigned long int Index(0);
-		
-		if(Index + 4 <= Length)
-		{
-			std::cout << GetHexadecimalStringFromCharacter(Buffer[Index + 0]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 2]) << ' '<< GetHexadecimalStringFromCharacter(Buffer[Index + 3]) << std::endl;
-		}
-		std::cout << "\t\t\t\t";
-		Index += 4;
-		while(Index < Length)
-		{
-			std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
-			++Index;
-		}
-		std::cout << std::endl;
-	}
-};
-
-class WXXXFrameHandler : public FrameHandler
-{
-public:
-	virtual ~WXXXFrameHandler(void)
-	{
-	}
-	
-	virtual void Print(const char * Buffer, unsigned long int Length)
-	{
-		std::cout << "\t\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned long int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
-		std::cout << "\t\t\t\tDescription: \"";
-		
-		int Index = 1;
-		
-		while((Index < Length) && (Buffer[Index] != '\0'))
-		{
-			std::cout << Buffer[Index];
-			++Index;
-		}
-		std::cout << '"' << std::endl;
-		std::cout << "\t\t\t\tURL: \"";
-		while(Index < Length)
-		{
-			std::cout << Buffer[Index];
-			++Index;
-		}
-		std::cout << '"' << std::endl;
-	}
-};
-
-class URLFrameHandler : public FrameHandler
-{
-public:
-	virtual void Print(const char * Buffer, unsigned long int Length)
-	{
-		std::cout << "\t\t\tURL: \"";
-		std::cout.write(Buffer, Length);
-		std::cout << '"' << std::endl;
-	}
-};
-
-void Handle22TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
+void Handle22And23TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
 {
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 	
@@ -702,6 +540,80 @@ void Handle22TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
 	else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff))
 	{
 		// Big Endian by BOM
+		for(int Index = 4; Index < Length; Index += 2)
+		{
+			std::cout << Buffer[Index];
+		}
+	}
+	else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
+	{
+		// Little Endian by BOM
+		for(int Index = 3; Index < Length; Index += 2)
+		{
+			std::cout << Buffer[Index];
+		}
+	}
+	std::cout << '"' << std::endl;
+	std::cout << "\t\t\t\tBytes: ";
+	for(unsigned long int Index = 1; Index < Length; ++Index)
+	{
+		std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
+		
+	}
+	std::cout << std::endl;
+}
+
+void Handle24TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
+{
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+	
+	std::cout << "\t\t\t\tText Encoding: ";
+	if(Encoding == 0)
+	{
+		std::cout << "ISO-8859-1";
+	}
+	else if(Encoding == 1)
+	{
+		std::cout << "UTF-16 encoded Unicode with Byte Order Mark";
+	}
+	else if(Encoding == 2)
+	{
+		std::cout << "UTF-16BE encoded Unicode in Big Endian";
+	}
+	else if(Encoding == 3)
+	{
+		std::cout << "UTF-8 encoded Unicode";
+	}
+	else
+	{
+		std::cout << "<invalid encoding>";
+	}
+	std::cout << " (" << Encoding << ")" << std::endl;
+	if(Encoding == 1)
+	{
+		std::cout << "\t\t\t\tByte Order Mark: ";
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff))
+		{
+			std::cout << "Big Endian";
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
+		{
+			std::cout << "Little Endian";
+		}
+		else
+		{
+			std::cout << "Bogus Byte Order Mark: " << GetHexadecimalStringFromCharacter(Buffer[1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[2]);
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "\t\t\t\tString: \"";
+	if((Encoding == 0) || (Encoding == 3))
+	{
+		std::cout.write(Buffer + 1, Length - 1);
+	}
+	else if(((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff)) || (Encoding == 2))
+	{
+		// Big Endian either by BOM or by definition
 		for(int Index = 4; Index < Length; Index += 2)
 		{
 			std::cout << Buffer[Index];
@@ -795,13 +707,6 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				}
 				Stream.read(Buffer, NewFrameHeader->GetSize());
 				NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
-				
-				std::map< std::string, FrameHandler * >::iterator FrameHandler = g_FrameHandlers.find(NewFrameHeader->GetIdentifier());
-				
-				if(FrameHandler != g_FrameHandlers.end())
-				{
-					FrameHandler->second->Print(Buffer, NewFrameHeader->GetSize());
-				}
 				if(NewFrameHeader->GetSize() != 0)
 				{
 					Size -= NewFrameHeader->GetSize() + 10;
@@ -927,80 +832,50 @@ int main(int argc, char **argv)
 	}
 	
 	// ID3v2.2.0
-	FrameHeader::Add22("TAL", "Album/Movie/Show title", Handle22TextFrameWithoutNewlines);
-	FrameHeader::Add22("TEN", "Encoded by", Handle22TextFrameWithoutNewlines);
-	FrameHeader::Add22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22TextFrameWithoutNewlines);
-	FrameHeader::Add22("TRK", "Track number/Position in set", Handle22TextFrameWithoutNewlines);
-	FrameHeader::Add22("TT2", "Title/Songname/Content description", Handle22TextFrameWithoutNewlines);
+	FrameHeader::Add22("TAL", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Add22("TEN", "Encoded by", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Add22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Add22("TRK", "Track number/Position in set", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Add22("TT2", "Title/Songname/Content description", Handle22And23TextFrameWithoutNewlines);
 	
 	// ID3v2.3.0
 	FrameHeader::AddName23("APIC", "Attached picture", 0);
 	FrameHeader::AddName23("COMM", "Comments", 0);
 	FrameHeader::AddName23("MCDI", "Music CD identifier", 0);
 	FrameHeader::AddName23("PRIV", "Private frame", 0);
-	FrameHeader::AddName23("TALB", "Album/Movie/Show title", 0);
-	FrameHeader::AddName23("TBPM", "BPM (beats per minute)", 0);
-	FrameHeader::AddName23("TCOM", "Composer", 0);
-	FrameHeader::AddName23("TCON", "Content type", 0);
-	FrameHeader::AddName23("TCOP", "Copyright message", 0);
-	FrameHeader::AddName23("TENC", "Encoded by", 0);
-	FrameHeader::AddName23("TIT1", "Content group description", 0);
-	FrameHeader::AddName23("TIT2", "Title/songname/content description", 0);
-	FrameHeader::AddName23("TIT3", "Subtitle/Description refinement", 0);
-	FrameHeader::AddName23("TLAN", "Language(s)", 0);
-	FrameHeader::AddName23("TLEN", "Length", 0);
-	FrameHeader::AddName23("TPE1", "Lead Performer(s) / Solo Artist(s)", 0);
-	FrameHeader::AddName23("TPE2", "Band / Orchestra / Accompaniment", 0);
-	FrameHeader::AddName23("TPE3", "Conductor / Performer Refinement", 0);
-	FrameHeader::AddName23("TPE4", "Interpreted, Remixed, or otherwise modified by", 0);
-	FrameHeader::AddName23("TPOS", "Part of a set", 0);
-	FrameHeader::AddName23("TPUB", "Publisher", 0);
-	FrameHeader::AddName23("TRCK", "Track number/Position in set", 0);
-	FrameHeader::AddName23("TSSE", "Software/Hardware and settings used for encoding", 0);
-	FrameHeader::AddName23("TXXX", "User defined text information frame", 0);
-	FrameHeader::AddName23("TYER", "Year", 0);
+	FrameHeader::AddName23("TALB", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TBPM", "BPM (beats per minute)", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TCOM", "Composer", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TCON", "Content type", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TCOP", "Copyright message", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TENC", "Encoded by", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TIT1", "Content group description", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TIT2", "Title/songname/content description", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TIT3", "Subtitle/Description refinement", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TLAN", "Language(s)", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TLEN", "Length", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TPE2", "Band / Orchestra / Accompaniment", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TPE3", "Conductor / Performer Refinement", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TPE4", "Interpreted, Remixed, or otherwise modified by", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TPOS", "Part of a set", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TPUB", "Publisher", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TRCK", "Track number/Position in set", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TXXX", "User defined text information frame", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TYER", "Year", Handle22And23TextFrameWithoutNewlines);
 	FrameHeader::AddName23("WCOM", "Commercial information", 0);
 	FrameHeader::AddName23("WXXX", "User defined URL link frame", 0);
 	
 	// ID3v2.4.0
-	FrameHeader::AddName24("TALB", "Album/Movie/Show title", 0);
-	FrameHeader::AddName24("TDRC", "Recording time", 0);
-	FrameHeader::AddName24("TIT2", "Title/songname/content description", 0);
-	FrameHeader::AddName24("TPE1", "Lead performer(s)/Soloist(s)", 0);
-	FrameHeader::AddName24("TPOS", "Part of a set", 0);
-	FrameHeader::AddName24("TRCK", "Track number/Position in set", 0);
+	FrameHeader::AddName24("TALB", "Album/Movie/Show title", Handle24TextFrameWithoutNewlines);
+	FrameHeader::AddName24("TDRC", "Recording time", Handle24TextFrameWithoutNewlines);
+	FrameHeader::AddName24("TIT2", "Title/songname/content description", Handle24TextFrameWithoutNewlines);
+	FrameHeader::AddName24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrameWithoutNewlines);
+	FrameHeader::AddName24("TPOS", "Part of a set", Handle24TextFrameWithoutNewlines);
+	FrameHeader::AddName24("TRCK", "Track number/Position in set", Handle24TextFrameWithoutNewlines);
 	
-	g_FrameHandlers["APIC"] = new HexFrameHandler();
-	g_FrameHandlers["COMM"] = new COMMFrameHandler();
-	g_FrameHandlers["MCDI"] = new MCDIFrameHandler();
-	g_FrameHandlers["PRIV"] = new HexFrameHandler();
-	g_FrameHandlers["TALB"] = new TextFrameHandler();
-	g_FrameHandlers["TBPM"] = new TextFrameHandler();
-	g_FrameHandlers["TCOM"] = new TextFrameHandler();
-	g_FrameHandlers["TCON"] = new TextFrameHandler();
-	g_FrameHandlers["TCOP"] = new TextFrameHandler();
-	g_FrameHandlers["TDAT"] = new TextFrameHandler();
-	g_FrameHandlers["TDRC"] = new TextFrameHandler();
-	g_FrameHandlers["TENC"] = new TextFrameHandler();
-	g_FrameHandlers["TEXT"] = new TextFrameHandler();
-	g_FrameHandlers["TFLT"] = new TextFrameHandler();
-	g_FrameHandlers["TIT1"] = new TextFrameHandler();
-	g_FrameHandlers["TIT2"] = new TextFrameHandler();
-	g_FrameHandlers["TIT3"] = new TextFrameHandler();
-	g_FrameHandlers["TLAN"] = new TextFrameHandler();
-	g_FrameHandlers["TLEN"] = new TextFrameHandler();
-	g_FrameHandlers["TPE1"] = new TextFrameHandler();
-	g_FrameHandlers["TPE2"] = new TextFrameHandler();
-	g_FrameHandlers["TPE3"] = new TextFrameHandler();
-	g_FrameHandlers["TPE4"] = new TextFrameHandler();
-	g_FrameHandlers["TPOS"] = new TextFrameHandler();
-	g_FrameHandlers["TPUB"] = new TextFrameHandler();
-	g_FrameHandlers["TRCK"] = new TextFrameHandler();
-	g_FrameHandlers["TSSE"] = new TextFrameHandler();
-	g_FrameHandlers["TXXX"] = new TextFrameHandler();
-	g_FrameHandlers["TYER"] = new TextFrameHandler();
-	g_FrameHandlers["WCOM"] = new URLFrameHandler();
-	g_FrameHandlers["WXXX"] = new WXXXFrameHandler();
+	// processing
 	while(Paths.begin() != Paths.end())
 	{
 		vReadItem(Paths.front());
