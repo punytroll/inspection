@@ -41,7 +41,7 @@ public:
 	// getters
 	bool GetCompression(void) const
 	{
-		if(HasCompressionFlag() == true)
+		if(SupportsCompressionFlag() == true)
 		{
 			return (_Buffer[5] & 0x40) == 0x40;
 		}
@@ -53,7 +53,7 @@ public:
 	
 	bool GetExperimentalIndicator(void) const
 	{
-		if(HasExperimentalIndicatorFlag() == true)
+		if(SupportsExperimentalIndicatorFlag() == true)
 		{
 			return (_Buffer[5] & 0x20) == 0x20;
 		}
@@ -65,7 +65,7 @@ public:
 	
 	bool GetExtendedHeader(void) const
 	{
-		if(HasExtendedHeaderFlag() == true)
+		if(SupportsExtendedHeaderFlag() == true)
 		{
 			return (_Buffer[5] & 0x40) == 0x40;
 		}
@@ -79,23 +79,23 @@ public:
 	{
 		std::string Result;
 		
-		if((HasUnsynchronizationFlag() == true) && (GetUnsynchronization() == true))
+		if((SupportsUnsynchronizationFlag() == true) && (GetUnsynchronization() == true))
 		{
 			AppendSeparated(Result, "Unsynchronization", ", ");
 		}
-		if((HasCompressionFlag() == true) && (GetCompression() == true))
+		if((SupportsCompressionFlag() == true) && (GetCompression() == true))
 		{
 			AppendSeparated(Result, "Compression", ", ");
 		}
-		if((HasExtendedHeaderFlag() == true) && (GetExtendedHeader() == true))
+		if((SupportsExtendedHeaderFlag() == true) && (GetExtendedHeader() == true))
 		{
 			AppendSeparated(Result, "Extended Header", ", ");
 		}
-		if((HasExperimentalIndicatorFlag() == true) && (GetExperimentalIndicator() == true))
+		if((SupportsExperimentalIndicatorFlag() == true) && (GetExperimentalIndicator() == true))
 		{
 			AppendSeparated(Result, "Experimental Indicator", ", ");
 		}
-		if((HasFooterPresentFlag() == true) && (GetFooterPresent() == true))
+		if((SupportsFooterPresentFlag() == true) && (GetFooterPresent() == true))
 		{
 			AppendSeparated(Result, "Footer present", ", ");
 		}
@@ -109,7 +109,7 @@ public:
 	
 	bool GetFooterPresent(void) const
 	{
-		if(HasFooterPresentFlag() == true)
+		if(SupportsFooterPresentFlag() == true)
 		{
 			return (_Buffer[5] & 0x10) == 0x10;
 		}
@@ -139,27 +139,27 @@ public:
 		return (_Buffer[5] & 0x80) == 0x80;
 	}
 	
-	bool HasExperimentalIndicatorFlag(void) const
+	bool SupportsExperimentalIndicatorFlag(void) const
 	{
 		return GetMajorVersion() > 2;
 	}
 	
-	bool HasExtendedHeaderFlag(void) const
+	bool SupportsExtendedHeaderFlag(void) const
 	{
 		return GetMajorVersion() > 2;
 	}
 	
-	bool HasFooterPresentFlag(void) const
+	bool SupportsFooterPresentFlag(void) const
 	{
 		return GetMajorVersion() > 3;
 	}
 	
-	bool HasCompressionFlag(void) const
+	bool SupportsCompressionFlag(void) const
 	{
 		return GetMajorVersion() == 2;
 	}
 	
-	bool HasUnsynchronizationFlag(void) const
+	bool SupportsUnsynchronizationFlag(void) const
 	{
 		return true;
 	}
