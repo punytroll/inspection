@@ -216,6 +216,8 @@ public:
 			_Encryption = (Buffer[9] & 0x40) == 0x40;
 			_SupportsGroupingIdentity = true;
 			_GroupingIdentity = (Buffer[9] & 0x20) == 0x20;
+			_SupportsUnsynchronisation = false;
+			_SupportsDataLengthIndicator = false;
 		}
 		else if(TagHeader->GetMajorVersion() == 4)
 		{
@@ -844,6 +846,7 @@ int main(int argc, char **argv)
 	FrameHeader::AddName23("TCOM", "Composer");
 	FrameHeader::AddName23("TCON", "Content type");
 	FrameHeader::AddName23("TCOP", "Copyright message");
+	FrameHeader::AddName23("TENC", "Encoded by");
 	FrameHeader::AddName23("TIT1", "Content group description");
 	FrameHeader::AddName23("TIT2", "Title/songname/content description");
 	FrameHeader::AddName23("TIT3", "Subtitle/Description refinement");
