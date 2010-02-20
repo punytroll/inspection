@@ -134,6 +134,11 @@ public:
 		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[4]));
 	}
 	
+	unsigned int GetSize(void) const
+	{
+		return (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[6])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[7])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[8])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[9]));
+	}
+	
 	bool GetUnsynchronization(void) const
 	{
 		return (_Buffer[5] & 0x80) == 0x80;
@@ -427,17 +432,16 @@ void ReadID3v2Tag(std::ifstream & Stream)
 	Stream.read(Buffer, 10);
 	if((Buffer[0] == 'I') && (Buffer[1] == 'D') && (Buffer[2] == '3'))
 	{
-		int Size((static_cast< u1byte >(Buffer[6]) << 21) + (static_cast< u1byte >(Buffer[7]) << 14) + (static_cast< u1byte >(Buffer[8]) << 7) + static_cast< u1byte >(Buffer[9]));
-		
 		std::cout << "ID3v2 TAG:" << std::endl;
 		std::cout << "\tFile Identifier: " << NewTagHeader->GetID3Identifier() << std::endl;
 		std::cout << "\tVersion: 2." << NewTagHeader->GetMajorVersion() << "." << NewTagHeader->GetRevisionNumber() << std::endl;
 		std::cout << "\tFlags: " << NewTagHeader->GetFlagsAsString() << std::endl;
-		std::cout << "\tSize: " << Size << std::endl;
+		std::cout << "\tSize: " << NewTagHeader->GetSize() << std::endl;
 		std::cout << "\tFrames:" << std::endl;
 
 		count_t u4FrameSize = 0;
 		char pcID[5];
+		int Size = NewTagHeader->GetSize();
 
 		pcID[4] = '\0';
 		while(Size >= 1)
