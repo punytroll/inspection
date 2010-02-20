@@ -29,6 +29,13 @@ std::string GetHexadecimalStringFromCharacter(char Character)
 	return Stream.str();
 }
 
+bool IsValidIdentifierCharacter(char Character)
+{
+	return ((Character >= 'A') && (Character <= 'Z')) || ((Character >= '0') && (Character <= '9'));
+}
+
+class FrameHeader;
+
 class TagHeader
 {
 public:
@@ -172,11 +179,272 @@ private:
 	char _Buffer[10];
 };
 
-typedef unsigned char u1byte;
-typedef unsigned short int u2byte;
-typedef unsigned long int index_t;
-typedef unsigned long int count_t;
-typedef unsigned long int flag_t;
+class FrameHeader
+{
+public:
+	// constructor
+	FrameHeader(TagHeader * TagHeader, std::istream & Stream)
+	{
+		if(TagHeader->GetMajorVersion() == 2)
+		{
+			char Buffer[6];
+			
+			Stream.read(Buffer, 6);
+			_Identifier = std::string(Buffer, 3);
+			_Name = _Names22[_Identifier];
+			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5]));
+			_SupportsFlags = false;
+		}
+		else if(TagHeader->GetMajorVersion() == 3)
+		{
+			char Buffer[10];
+			
+			Stream.read(Buffer, 10);
+			_Identifier = std::string(Buffer, 4);
+			_Name = _Names23[_Identifier];
+			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
+			_SupportsFlags = true;
+			_SupportsTagAlterPreservation = true;
+			_TagAlterPreservation = (Buffer[8] & 0x80) == 0x80;
+			_SupportsFileAlterPreservation = true;
+			_FileAlterPreservation = (Buffer[8] & 0x40) == 0x40;
+			_SupportsReadOnly = true;
+			_ReadOnly = (Buffer[8] & 0x20) == 0x20;
+			_SupportsCompression = true;
+			_Compression = (Buffer[9] & 0x80) == 0x80;
+			_SupportsEncryption = true;
+			_Encryption = (Buffer[9] & 0x40) == 0x40;
+			_SupportsGroupingIdentity = true;
+			_GroupingIdentity = (Buffer[9] & 0x20) == 0x20;
+		}
+		else if(TagHeader->GetMajorVersion() == 4)
+		{
+			char Buffer[10];
+			
+			Stream.read(Buffer, 10);
+			_Identifier = std::string(Buffer, 4);
+			_Name = _Names24[_Identifier];
+			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
+			_SupportsFlags = true;
+			_SupportsTagAlterPreservation = true;
+			_TagAlterPreservation = (Buffer[8] & 0x40) == 0x40;
+			_SupportsFileAlterPreservation = true;
+			_FileAlterPreservation = (Buffer[8] & 0x20) == 0x20;
+			_SupportsReadOnly = true;
+			_ReadOnly = (Buffer[8] & 0x10) == 0x10;
+			_SupportsGroupingIdentity = true;
+			_GroupingIdentity = (Buffer[9] & 0x40) == 0x40;
+			_SupportsCompression = true;
+			_Compression = (Buffer[9] & 0x08) == 0x08;
+			_SupportsEncryption = true;
+			_Encryption = (Buffer[9] & 0x04) == 0x04;
+			_SupportsUnsynchronisation = true;
+			_Unsynchronisation = (Buffer[9] & 0x02) == 0x02;
+			_SupportsDataLengthIndicator = true;
+			_DataLengthIndicator = (Buffer[9] & 0x01) == 0x01;
+		}
+	}
+	
+	// getters
+	bool GetCompression(void) const
+	{
+		return _Compression;
+	}
+	
+	bool GetDataLengthIndicator(void) const
+	{
+		return _DataLengthIndicator;
+	}
+	
+	bool GetEncryption(void) const
+	{
+		return _Encryption;
+	}
+	
+	bool GetFileAlterPreservation(void) const
+	{
+		return _FileAlterPreservation;
+	}
+	
+	std::string GetFlagsAsString(void) const
+	{
+		std::string Result;
+		
+		if((SupportsTagAlterPreservation() == true) && (GetTagAlterPreservation() == true))
+		{
+			AppendSeparated(Result, "Tag alter preservation", ", ");
+		}
+		if((SupportsFileAlterPreservation() == true) && (GetFileAlterPreservation() == true))
+		{
+			AppendSeparated(Result, "File alter preservation", ", ");
+		}
+		if((SupportsReadOnly() == true) && (GetReadOnly() == true))
+		{
+			AppendSeparated(Result, "Read only", ", ");
+		}
+		if((SupportsCompression() == true) && (GetCompression() == true))
+		{
+			AppendSeparated(Result, "Compression", ", ");
+		}
+		if((SupportsEncryption() == true) && (GetEncryption() == true))
+		{
+			AppendSeparated(Result, "Encryption", ", ");
+		}
+		if((SupportsGroupingIdentity() == true) && (GetGroupingIdentity() == true))
+		{
+			AppendSeparated(Result, "Grouping identity", ", ");
+		}
+		if((SupportsUnsynchronisation() == true) && (GetUnsynchronisation() == true))
+		{
+			AppendSeparated(Result, "Unsynchronisation", ", ");
+		}
+		if((SupportsDataLengthIndicator() == true) && (GetDataLengthIndicator() == true))
+		{
+			AppendSeparated(Result, "Data length indicator", ", ");
+		}
+		if(Result.empty() == true)
+		{
+			Result = "None";
+		}
+		
+		return Result;
+	}
+	
+	bool GetGroupingIdentity(void) const
+	{
+		return _GroupingIdentity;
+	}
+	
+	std::string GetIdentifier(void) const
+	{
+		return _Identifier;
+	}
+	
+	std::string GetName(void) const
+	{
+		return _Name;
+	}
+	
+	bool GetReadOnly(void) const
+	{
+		return _ReadOnly;
+	}
+	
+	unsigned int GetSize(void) const
+	{
+		return _Size;
+	}
+	
+	bool GetTagAlterPreservation(void) const
+	{
+		return _TagAlterPreservation;
+	}
+	
+	bool GetUnsynchronisation(void) const
+	{
+		return _Unsynchronisation;
+	}
+	
+	bool IsValid(void) const
+	{
+		for(std::string::size_type Index = 0; Index < _Identifier.length(); ++Index)
+		{
+			if(IsValidIdentifierCharacter(_Identifier[Index]) == false)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	bool SupportsCompression(void) const
+	{
+		return _SupportsCompression;
+	}
+	
+	bool SupportsDataLengthIndicator(void) const
+	{
+		return _SupportsDataLengthIndicator;
+	}
+	
+	bool SupportsEncryption(void) const
+	{
+		return _SupportsEncryption;
+	}
+	
+	bool SupportsFileAlterPreservation(void) const
+	{
+		return _SupportsFileAlterPreservation;
+	}
+	
+	bool SupportsFlags(void) const
+	{
+		return _SupportsFlags;
+	}
+	
+	bool SupportsGroupingIdentity(void) const
+	{
+		return _SupportsGroupingIdentity;
+	}
+	
+	bool SupportsReadOnly(void) const
+	{
+		return _SupportsReadOnly;
+	}
+	
+	bool SupportsTagAlterPreservation(void) const
+	{
+		return _SupportsTagAlterPreservation;
+	}
+	
+	bool SupportsUnsynchronisation(void) const
+	{
+		return _SupportsUnsynchronisation;
+	}
+	
+	// static setup
+	static void AddName22(const std::string & Identifier, const std::string & Name)
+	{
+		_Names22.insert(std::make_pair(Identifier, Name));
+	}
+	
+	static void AddName23(const std::string & Identifier, const std::string & Name)
+	{
+		_Names23.insert(std::make_pair(Identifier, Name));
+	}
+	
+	static void AddName24(const std::string & Identifier, const std::string & Name)
+	{
+		_Names24.insert(std::make_pair(Identifier, Name));
+	}
+private:
+	// static setup
+	static std::map< std::string, std::string > _Names22;
+	static std::map< std::string, std::string > _Names23;
+	static std::map< std::string, std::string > _Names24;
+	// member variables
+	bool _Compression;
+	bool _DataLengthIndicator;
+	bool _Encryption;
+	bool _FileAlterPreservation;
+	bool _GroupingIdentity;
+	std::string _Identifier;
+	std::string _Name;
+	bool _ReadOnly;
+	unsigned int _Size;
+	bool _SupportsCompression;
+	bool _SupportsDataLengthIndicator;
+	bool _SupportsEncryption;
+	bool _SupportsFileAlterPreservation;
+	bool _SupportsFlags;
+	bool _SupportsGroupingIdentity;
+	bool _SupportsReadOnly;
+	bool _SupportsTagAlterPreservation;
+	bool _SupportsUnsynchronisation;
+	bool _TagAlterPreservation;
+	bool _Unsynchronisation;
+};
 
 class FrameHandler
 {
@@ -190,9 +458,10 @@ public:
 
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
 std::string g_sEncodings[] = { "ISO-8859-1", "UTF-16 encoded Unicode with Byte Order Mark", "UTF-16BE encoded Unicode in Big Endian", "UTF-8 encoded Unicode" };
-std::map< std::string, std::string > g_FrameNames;
-std::map< index_t, std::string > g_ID3v2TagFrameFlags;
 std::map< std::string, FrameHandler * > g_FrameHandlers;
+std::map< std::string, std::string > FrameHeader::_Names22;
+std::map< std::string, std::string > FrameHeader::_Names23;
+std::map< std::string, std::string > FrameHeader::_Names24;
 
 class TextFrameHandler : public FrameHandler
 {
@@ -205,10 +474,10 @@ public:
 	{
 		unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 		
-		std::cout << "\t\t\tText Encoding: " << g_sEncodings[Encoding] << std::endl;
+		std::cout << "\t\t\t\tText Encoding: " << g_sEncodings[Encoding] << std::endl;
 		if(Encoding == 1)
 		{
-			std::cout << "\t\t\tByte Order Mark: ";
+			std::cout << "\t\t\t\tByte Order Mark: ";
 			if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff))
 			{
 				std::cout << "Big Endian";
@@ -223,7 +492,7 @@ public:
 			}
 			std::cout << std::endl;
 		}
-		std::cout << "\t\t\tString: \"";
+		std::cout << "\t\t\t\tString: \"";
 		if((Encoding == 0) || (Encoding == 3))
 		{
 			std::cout.write(Buffer + 1, Length - 1);
@@ -257,7 +526,7 @@ public:
 	
 	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
-		std::cout << "\t\t\t";
+		std::cout << "\t\t\t\t";
 		for(unsigned long int Index = 0; Index < Length; ++Index)
 		{
 			std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
@@ -276,14 +545,14 @@ public:
 	
 	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
-		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
-		std::cout << "\t\t\tLanguage: \"";
+		std::cout << "\t\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
+		std::cout << "\t\t\t\tLanguage: \"";
 		std::cout.write(Buffer + 1, 3);
 		std::cout << '"' << std::endl;
-		std::cout << "\t\t\tShort content description: \"";
+		std::cout << "\t\t\t\tShort content description: \"";
 		std::cout.write(Buffer + 4, strlen(Buffer + 4));
 		std::cout << '"' << std::endl;
-		std::cout << "\t\t\tString: \"";
+		std::cout << "\t\t\t\tString: \"";
 		std::cout.write(Buffer + 4 + strlen(Buffer + 4) + 1, Length - 4 - strlen(Buffer + 4) - 1);
 		std::cout << '"' << std::endl;
 	}
@@ -298,7 +567,7 @@ public:
 	
 	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
-		std::cout << "\t\t\t";
+		std::cout << "\t\t\t\t";
 		
 		unsigned long int Index(0);
 		
@@ -306,7 +575,7 @@ public:
 		{
 			std::cout << GetHexadecimalStringFromCharacter(Buffer[Index + 0]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 2]) << ' '<< GetHexadecimalStringFromCharacter(Buffer[Index + 3]) << std::endl;
 		}
-		std::cout << "\t\t\t";
+		std::cout << "\t\t\t\t";
 		Index += 4;
 		while(Index < Length)
 		{
@@ -326,8 +595,8 @@ public:
 	
 	virtual void Print(const char * Buffer, unsigned long int Length)
 	{
-		std::cout << "\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned long int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
-		std::cout << "\t\t\tDescription: \"";
+		std::cout << "\t\t\t\tText Encoding: " << g_sEncodings[static_cast< unsigned long int >(static_cast< unsigned char >(Buffer[0]))] << std::endl;
+		std::cout << "\t\t\t\tDescription: \"";
 		
 		int Index = 1;
 		
@@ -337,7 +606,7 @@ public:
 			++Index;
 		}
 		std::cout << '"' << std::endl;
-		std::cout << "\t\t\tURL: \"";
+		std::cout << "\t\t\t\tURL: \"";
 		while(Index < Length)
 		{
 			std::cout << Buffer[Index];
@@ -361,14 +630,6 @@ public:
 void vReadFile(const std::string & Path);
 void vReadDirectory(const std::string & Path);
 void vReadItem(const std::string & Path);
-
-inline void AppendIfFlagsIsSet(flag_t Flags, flag_t Flag, const std::string &sAppend, std::string &sString)
-{
-	if((Flags & Flag) == Flag)
-	{
-		AppendSeparated(sString, sAppend, ", ");
-	}
-}
 
 inline bool FileExists(const std::string & Path)
 {
@@ -395,42 +656,15 @@ inline bool IsRegularFile(const std::string & Path)
 	return S_ISREG(Stat.st_mode);
 }
 
-std::string sGetFlags(flag_t Flags, const std::map< index_t, std::string > &Map)
-{
-	std::map< index_t, std::string >::const_iterator iIterator = Map.begin();
-	std::map< index_t, std::string >::const_iterator iEnd = Map.end();
-	std::string sFlags = "";
-
-	while(iIterator != iEnd)
-	{
-		AppendIfFlagsIsSet(Flags, iIterator->first, iIterator->second, sFlags);
-		++iIterator;
-	}
-	if(sFlags.empty() == true)
-	{
-		sFlags += "None";
-	}
-
-	return sFlags;
-}
-
-bool bIsIDCharacter(char cCharacter)
-{
-	return ((cCharacter >= 'A') && (cCharacter <= 'Z')) || ((cCharacter >= '0') && (cCharacter <= '9'));
-}
-
 void ReadID3v2Tag(std::ifstream & Stream)
 {
 	Stream.seekg(0, std::ios::beg);
 	
 	TagHeader * NewTagHeader(new TagHeader(Stream));
+	int BufferLength(1000);
+	char * Buffer(new char[BufferLength]);
 	
-	int BufferLength = 1000;
-	char * Buffer = new char[BufferLength];
-	
-	Stream.seekg(0, std::ios::beg);
-	Stream.read(Buffer, 10);
-	if((Buffer[0] == 'I') && (Buffer[1] == 'D') && (Buffer[2] == '3'))
+	if(NewTagHeader->GetID3Identifier() == "ID3")
 	{
 		std::cout << "ID3v2 TAG:" << std::endl;
 		std::cout << "\tFile Identifier: " << NewTagHeader->GetID3Identifier() << std::endl;
@@ -439,77 +673,53 @@ void ReadID3v2Tag(std::ifstream & Stream)
 		std::cout << "\tSize: " << NewTagHeader->GetSize() << std::endl;
 		std::cout << "\tFrames:" << std::endl;
 
-		count_t u4FrameSize = 0;
-		char pcID[5];
 		int Size = NewTagHeader->GetSize();
 
-		pcID[4] = '\0';
-		while(Size >= 1)
+		while(Size > 0)
 		{
-			Stream.read(pcID, 4);
-			if((bIsIDCharacter(pcID[0]) == false) || (bIsIDCharacter(pcID[1]) == false) || (bIsIDCharacter(pcID[2]) == false) || (bIsIDCharacter(pcID[3]) == false))
+			FrameHeader * NewFrameHeader(new FrameHeader(NewTagHeader, Stream));
+			
+			if(NewFrameHeader->IsValid() == true)
 			{
-				// this is an invalid identifier
-				if((pcID[0] == '\0') && (pcID[1] == '\0') && (pcID[2] == '\0') && (pcID[3] == '\0'))
+				std::cout << "\t\tIdentifier: \"" << NewFrameHeader->GetIdentifier() << "\"" << std::endl;
+				std::cout << "\t\t\tName: " << NewFrameHeader->GetName() << std::endl;
+				std::cout << "\t\t\tSize: " << NewFrameHeader->GetSize() << std::endl;
+				if(NewFrameHeader->SupportsFlags() == true)
 				{
-					// we reached the padding section
-					break;
+					std::cout << "\t\t\tFlags: " << NewFrameHeader->GetFlagsAsString() << std::endl;
 				}
-				else
+				std::cout << "\t\t\tContent:" << std::endl;
+				while(NewFrameHeader->GetSize() > BufferLength)
 				{
-					// this definitely is invalid
-					std::cerr << "Invalid identifier: \"" << pcID[0] << pcID[1] << pcID[2] << pcID[3] << "\"" << std::endl;
-					
-					break;
+					delete[] Buffer;
+					BufferLength <<= 1;
+					Buffer = new char[BufferLength];
 				}
-			}
-			std::cout << "\t";
-			std::cout << "\tID:\t ";
-			std::cout << "\"" << pcID[0] << pcID[1] << pcID[2] << pcID[3] << "\"";
-			std::cout << "\n\t\tName:\t " << g_FrameNames[std::string(pcID, pcID + 4)];
-			std::cout << "\n\t\tSize:\t ";
-			Stream.read(Buffer, 4);
-			if(NewTagHeader->GetMajorVersion() > 3)
-			{
-				u4FrameSize = ((static_cast< u1byte >(Buffer[0]) << 21) + (static_cast< u1byte >(Buffer[1]) << 14) + (static_cast< u1byte >(Buffer[2]) << 7) + static_cast< u1byte >(Buffer[3]));
-			}
-			else
-			{
-				u4FrameSize = ((static_cast< u1byte >(Buffer[0]) << 24) + (static_cast< u1byte >(Buffer[1]) << 16) + (static_cast< u1byte >(Buffer[2]) << 8) + static_cast< u1byte >(Buffer[3]));
-			}
-			std::cout << u4FrameSize;
-			std::cout << "\n\t\tFlags:\t ";
-			Stream.read(Buffer, 2);
-			std::cout << sGetFlags(*(reinterpret_cast< u2byte * >(Buffer)), g_ID3v2TagFrameFlags);
-			std::cout << std::endl << "\t\tContent:" << std::endl;
-			if(u4FrameSize <= BufferLength)
-			{
-				Stream.read(Buffer, u4FrameSize);
+				Stream.read(Buffer, NewFrameHeader->GetSize());
 				
-				std::map< std::string, FrameHandler * >::iterator FrameHandler = g_FrameHandlers.find(pcID);
+				std::map< std::string, FrameHandler * >::iterator FrameHandler = g_FrameHandlers.find(NewFrameHeader->GetIdentifier());
 				
 				if(FrameHandler == g_FrameHandlers.end())
 				{
-					std::cerr << "*** WARNING: No handler defined for frame type \"" << pcID << "\"!" << std::endl;
+					std::cerr << "*** WARNING: No handler defined for frame type \"" << NewFrameHeader->GetIdentifier() << "\"!" << std::endl;
 				}
 				else
 				{
-					FrameHandler->second->Print(Buffer, u4FrameSize);
+					FrameHandler->second->Print(Buffer, NewFrameHeader->GetSize());
+				}
+				if(NewFrameHeader->GetSize() != 0)
+				{
+					Size -= NewFrameHeader->GetSize() + 10;
+					std::cout<< std::endl;
+				}
+				else
+				{
+					Size = 0;
 				}
 			}
 			else
 			{
-				std::cout << "\t\t\t --- Sorry, too long! --- \"" << std::endl;
-				Stream.seekg(u4FrameSize, std::ios::cur);
-			}
-			if(u4FrameSize != 0)
-			{
-				Size -= u4FrameSize + 10;
-				std::cout<< std::endl;
-			}
-			else
-			{
-				Size = 0;
+				break;
 			}
 		}
 		std::cout << std::endl;
@@ -519,10 +729,8 @@ void ReadID3v2Tag(std::ifstream & Stream)
 
 void vReadFile(const std::string & Path)
 {
-	std::vector< char > Buffer;
-	count_t u4BufferLength = 1000;
-	char *pcBuffer = new char[u4BufferLength];
-	count_t u4Track = 0;
+	char * Buffer(new char[1000]);
+	int u4Track = 0;
 	bool bID3v11 = false;
 
 	std::ifstream ReadFile;
@@ -533,31 +741,31 @@ void vReadFile(const std::string & Path)
 		std::cerr << Path << ": Can not be opened." << std::endl;
 	}
 	ReadFile.seekg(-128, std::ios::end);
-	ReadFile.read(pcBuffer, 3);
-	pcBuffer[3] = '\0';
-	if(strcmp(pcBuffer, "TAG") == 0)
+	ReadFile.read(Buffer, 3);
+	Buffer[3] = '\0';
+	if(strcmp(Buffer, "TAG") == 0)
 	{
 		std::cout << "ID3v1 TAG:" << std::endl;
-		pcBuffer[30] = '\0';
-		ReadFile.read(pcBuffer, 30);
-		std::cout << "\tTitle:\t \"" << pcBuffer << "\"  [length: " << strlen(pcBuffer) << "]" << std::endl;
-		ReadFile.read(pcBuffer, 30);
-		std::cout << "\tArtist:\t \"" << pcBuffer << "\"  [length: " << strlen(pcBuffer) << "]" << std::endl;
-		ReadFile.read(pcBuffer, 30);
-		std::cout << "\tAlbum:\t \"" << pcBuffer << "\"  [length: " << strlen(pcBuffer) << "]" << std::endl;
-		ReadFile.read(pcBuffer, 4);
-		pcBuffer[4] = '\0';
-		std::cout << "\tYear:\t \"" << pcBuffer << "\"  [length: " << strlen(pcBuffer) << "]" << std::endl;
-		ReadFile.read(pcBuffer, 30);
-		std::cout << "\tComment: \"" << pcBuffer << "\"  [length: " << strlen(pcBuffer) << "]" << std::endl;
+		Buffer[30] = '\0';
+		ReadFile.read(Buffer, 30);
+		std::cout << "\tTitle:\t \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		ReadFile.read(Buffer, 30);
+		std::cout << "\tArtist:\t \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		ReadFile.read(Buffer, 30);
+		std::cout << "\tAlbum:\t \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		ReadFile.read(Buffer, 4);
+		Buffer[4] = '\0';
+		std::cout << "\tYear:\t \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		ReadFile.read(Buffer, 30);
+		std::cout << "\tComment: \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		bID3v11 = false;
-		if(pcBuffer[28] == '\0')
+		if(Buffer[28] == '\0')
 		{
 			bID3v11 = true;
-			u4Track = static_cast< count_t >(pcBuffer[29]);
+			u4Track = static_cast< int >(Buffer[29]);
 		}
-		ReadFile.read(pcBuffer, 1);
-		std::cout << "\tGenre:\t \"" << g_sGenres[static_cast< u1byte >(*pcBuffer)] << "\"  [number: " << static_cast< count_t >(static_cast< u1byte >(*pcBuffer)) << "]" << std::endl;
+		ReadFile.read(Buffer, 1);
+		std::cout << "\tGenre:\t \"" << g_sGenres[static_cast< unsigned char >(*Buffer)] << "\"  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*Buffer)) << "]" << std::endl;
 		if(bID3v11 == true)
 		{
 			std::cout << "ID3v1.1 TAG:" << std::endl;
@@ -609,12 +817,12 @@ void vReadItem(const std::string & Path)
 int main(int argc, char **argv)
 {
 	std::deque< std::string > Paths;
-	count_t u4Arguments = argc;
-	count_t u4Argument = 0;
+	unsigned int Arguments(argc);
+	unsigned int Argument(0);
 
-	while(++u4Argument < u4Arguments)
+	while(++Argument < Arguments)
 	{
-		Paths.push_back(argv[u4Argument]);
+		Paths.push_back(argv[Argument]);
 	}
 	if(Paths.size() == 0)
 	{
@@ -622,45 +830,47 @@ int main(int argc, char **argv)
 
 		return 1;
 	}
-	g_ID3v2TagFrameFlags[0x0040] = "Discard Frame on Tag Alteration";
-	g_ID3v2TagFrameFlags[0x0020] = "Discard Frame on File Alteration";
-	g_ID3v2TagFrameFlags[0x0010] = "Read Only";
-	g_ID3v2TagFrameFlags[0x4000] = "Grouped Frame";
-	g_ID3v2TagFrameFlags[0x8000] = "Compression";
-	g_ID3v2TagFrameFlags[0x0400] = "Encryption";
-	g_ID3v2TagFrameFlags[0x0200] = "Unsynchronisation";
-	g_ID3v2TagFrameFlags[0x0100] = "Data Length Indicator";
+	
+	// ID3v2.2.0
+	FrameHeader::AddName22("TAL", "Album/Movie/Show title");
 	
 	// ID3v2.3.0
-	g_FrameNames["COMM"] = "Comments";
-	g_FrameNames["MCDI"] = "Music CD identifier";
-	g_FrameNames["PRIV"] = "Private frame";
-	g_FrameNames["TALB"] = "Album/Movie/Show title";
-	g_FrameNames["TBPM"] = "BPM (beats per minute)";
-	g_FrameNames["TCOM"] = "Composer";
-	g_FrameNames["TCON"] = "Content type";
-	g_FrameNames["TCOP"] = "Copyright message";
-	g_FrameNames["TIT1"] = "Content group description";
-	g_FrameNames["TIT2"] = "Title/songname/content description";
-	g_FrameNames["TIT3"] = "Subtitle/Description refinement";
-	g_FrameNames["TLAN"] = "Language(s)";
-	g_FrameNames["TLEN"] = "Length";
-	g_FrameNames["TPE1"] = "Lead Performer(s) / Solo Artist(s)";
-	g_FrameNames["TPE2"] = "Band / Orchestra / Accompaniment";
-	g_FrameNames["TPE3"] = "Conductor / Performer Refinement";
-	g_FrameNames["TPE4"] = "Interpreted, Remixed, or otherwise modified by";
-	g_FrameNames["TPOS"] = "Part of a set";
-	g_FrameNames["TPUB"] = "Publisher";
-	g_FrameNames["TRCK"] = "Track number/Position in set";
-	g_FrameNames["TSSE"] = "Software/Hardware and settings used for encoding";
-	g_FrameNames["TXXX"] = "User defined text information frame";
-	g_FrameNames["TYER"] = "Year";
-	g_FrameNames["WCOM"] = "Commercial information";
-	g_FrameNames["WXXX"] = "User defined URL link frame";
+	FrameHeader::AddName23("APIC", "Attached picture");
+	FrameHeader::AddName23("COMM", "Comments");
+	FrameHeader::AddName23("MCDI", "Music CD identifier");
+	FrameHeader::AddName23("PRIV", "Private frame");
+	FrameHeader::AddName23("TALB", "Album/Movie/Show title");
+	FrameHeader::AddName23("TBPM", "BPM (beats per minute)");
+	FrameHeader::AddName23("TCOM", "Composer");
+	FrameHeader::AddName23("TCON", "Content type");
+	FrameHeader::AddName23("TCOP", "Copyright message");
+	FrameHeader::AddName23("TIT1", "Content group description");
+	FrameHeader::AddName23("TIT2", "Title/songname/content description");
+	FrameHeader::AddName23("TIT3", "Subtitle/Description refinement");
+	FrameHeader::AddName23("TLAN", "Language(s)");
+	FrameHeader::AddName23("TLEN", "Length");
+	FrameHeader::AddName23("TPE1", "Lead Performer(s) / Solo Artist(s)");
+	FrameHeader::AddName23("TPE2", "Band / Orchestra / Accompaniment");
+	FrameHeader::AddName23("TPE3", "Conductor / Performer Refinement");
+	FrameHeader::AddName23("TPE4", "Interpreted, Remixed, or otherwise modified by");
+	FrameHeader::AddName23("TPOS", "Part of a set");
+	FrameHeader::AddName23("TPUB", "Publisher");
+	FrameHeader::AddName23("TRCK", "Track number/Position in set");
+	FrameHeader::AddName23("TSSE", "Software/Hardware and settings used for encoding");
+	FrameHeader::AddName23("TXXX", "User defined text information frame");
+	FrameHeader::AddName23("TYER", "Year");
+	FrameHeader::AddName23("WCOM", "Commercial information");
+	FrameHeader::AddName23("WXXX", "User defined URL link frame");
 	
 	// ID3v2.4.0
-	g_FrameNames["TDRC"] = "Recording time";
+	FrameHeader::AddName24("TALB", "Album/Movie/Show title");
+	FrameHeader::AddName24("TDRC", "Recording time");
+	FrameHeader::AddName24("TIT2", "Title/songname/content description");
+	FrameHeader::AddName24("TPE1", "Lead performer(s)/Soloist(s)");
+	FrameHeader::AddName24("TPOS", "Part of a set");
+	FrameHeader::AddName24("TRCK", "Track number/Position in set");
 	
+	g_FrameHandlers["APIC"] = new HexFrameHandler();
 	g_FrameHandlers["COMM"] = new COMMFrameHandler();
 	g_FrameHandlers["MCDI"] = new MCDIFrameHandler();
 	g_FrameHandlers["PRIV"] = new HexFrameHandler();
