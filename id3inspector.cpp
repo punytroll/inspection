@@ -183,7 +183,25 @@ class FrameHeader
 {
 public:
 	// constructor
-	FrameHeader(TagHeader * TagHeader, std::istream & Stream)
+	FrameHeader(TagHeader * TagHeader, std::istream & Stream) :
+		_Compression(false),
+		_DataLengthIndicator(false),
+		_Encryption(false),
+		_FileAlterPreservation(false),
+		_GroupingIdentity(false),
+		_Handler(0),
+		_ReadOnly(false),
+		_SupportsCompression(false),
+		_SupportsDataLengthIndicator(false),
+		_SupportsEncryption(false),
+		_SupportsFileAlterPreservation(0),
+		_SupportsFlags(0),
+		_SupportsGroupingIdentity(0),
+		_SupportsReadOnly(0),
+		_SupportsTagAlterPreservation(0),
+		_SupportsUnsynchronisation(0),
+		_TagAlterPreservation(0),
+		_Unsynchronisation(0)
 	{
 		if(TagHeader->GetMajorVersion() == 2)
 		{
@@ -194,6 +212,13 @@ public:
 			_Name = _Names22[_Identifier];
 			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5]));
 			_SupportsFlags = false;
+			
+			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
+			
+			if(HanderIterator != _Handlers22.end())
+			{
+				_Handler = HanderIterator->second;
+			}
 		}
 		else if(TagHeader->GetMajorVersion() == 3)
 		{
@@ -347,6 +372,18 @@ public:
 		return _Unsynchronisation;
 	}
 	
+	void HandleData(const char * const Buffer, unsigned int Length)
+	{
+		if(_Handler != 0)
+		{
+			_Handler(Buffer, Length);
+		}
+		else
+		{
+			std::cout << "*** WARNING ***  No handler defined for the frame type \"" << _Identifier << "\" in this tag version." << std::endl;
+		}
+	}
+	
 	bool IsValid(void) const
 	{
 		for(std::string::size_type Index = 0; Index < _Identifier.length(); ++Index)
@@ -406,22 +443,28 @@ public:
 	}
 	
 	// static setup
-	static void AddName22(const std::string & Identifier, const std::string & Name)
+	static void Add22(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
 	{
+		_Handlers22.insert(std::make_pair(Identifier, Handler));
 		_Names22.insert(std::make_pair(Identifier, Name));
 	}
 	
-	static void AddName23(const std::string & Identifier, const std::string & Name)
+	static void AddName23(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
 	{
+		_Handlers23.insert(std::make_pair(Identifier, Handler));
 		_Names23.insert(std::make_pair(Identifier, Name));
 	}
 	
-	static void AddName24(const std::string & Identifier, const std::string & Name)
+	static void AddName24(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
 	{
+		_Handlers24.insert(std::make_pair(Identifier, Handler));
 		_Names24.insert(std::make_pair(Identifier, Name));
 	}
 private:
 	// static setup
+	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers22;
+	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers23;
+	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers24;
 	static std::map< std::string, std::string > _Names22;
 	static std::map< std::string, std::string > _Names23;
 	static std::map< std::string, std::string > _Names24;
@@ -431,6 +474,7 @@ private:
 	bool _Encryption;
 	bool _FileAlterPreservation;
 	bool _GroupingIdentity;
+	void (* _Handler)(const char * const Buffer, unsigned int Length);
 	std::string _Identifier;
 	std::string _Name;
 	bool _ReadOnly;
@@ -464,6 +508,9 @@ std::map< std::string, FrameHandler * > g_FrameHandlers;
 std::map< std::string, std::string > FrameHeader::_Names22;
 std::map< std::string, std::string > FrameHeader::_Names23;
 std::map< std::string, std::string > FrameHeader::_Names24;
+std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers22;
+std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers23;
+std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers24;
 
 class TextFrameHandler : public FrameHandler
 {
@@ -629,6 +676,55 @@ public:
 	}
 };
 
+void Handle22TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
+{
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+	
+	std::cout << "\t\t\t\tText Encoding: ";
+	if(Encoding == 0)
+	{
+		std::cout << "ISO-8859-1";
+	}
+	else if(Encoding == 1)
+	{
+		std::cout << "Unicode UCS-2";
+	}
+	else
+	{
+		std::cout << "<invalid encoding>";
+	}
+	std::cout << " (" << Encoding << ")" << std::endl;
+	std::cout << "\t\t\t\tString: \"";
+	if(Encoding == 0)
+	{
+		std::cout.write(Buffer + 1, Length - 1);
+	}
+	else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff))
+	{
+		// Big Endian by BOM
+		for(int Index = 4; Index < Length; Index += 2)
+		{
+			std::cout << Buffer[Index];
+		}
+	}
+	else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
+	{
+		// Little Endian by BOM
+		for(int Index = 3; Index < Length; Index += 2)
+		{
+			std::cout << Buffer[Index];
+		}
+	}
+	std::cout << '"' << std::endl;
+	std::cout << "\t\t\t\tBytes: ";
+	for(unsigned long int Index = 1; Index < Length; ++Index)
+	{
+		std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
+		
+	}
+	std::cout << std::endl;
+}
+
 void vReadFile(const std::string & Path);
 void vReadDirectory(const std::string & Path);
 void vReadItem(const std::string & Path);
@@ -698,14 +794,11 @@ void ReadID3v2Tag(std::ifstream & Stream)
 					Buffer = new char[BufferLength];
 				}
 				Stream.read(Buffer, NewFrameHeader->GetSize());
+				NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
 				
 				std::map< std::string, FrameHandler * >::iterator FrameHandler = g_FrameHandlers.find(NewFrameHeader->GetIdentifier());
 				
-				if(FrameHandler == g_FrameHandlers.end())
-				{
-					std::cerr << "*** WARNING: No handler defined for frame type \"" << NewFrameHeader->GetIdentifier() << "\"!" << std::endl;
-				}
-				else
+				if(FrameHandler != g_FrameHandlers.end())
 				{
 					FrameHandler->second->Print(Buffer, NewFrameHeader->GetSize());
 				}
@@ -834,44 +927,48 @@ int main(int argc, char **argv)
 	}
 	
 	// ID3v2.2.0
-	FrameHeader::AddName22("TAL", "Album/Movie/Show title");
+	FrameHeader::Add22("TAL", "Album/Movie/Show title", Handle22TextFrameWithoutNewlines);
+	FrameHeader::Add22("TEN", "Encoded by", Handle22TextFrameWithoutNewlines);
+	FrameHeader::Add22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22TextFrameWithoutNewlines);
+	FrameHeader::Add22("TRK", "Track number/Position in set", Handle22TextFrameWithoutNewlines);
+	FrameHeader::Add22("TT2", "Title/Songname/Content description", Handle22TextFrameWithoutNewlines);
 	
 	// ID3v2.3.0
-	FrameHeader::AddName23("APIC", "Attached picture");
-	FrameHeader::AddName23("COMM", "Comments");
-	FrameHeader::AddName23("MCDI", "Music CD identifier");
-	FrameHeader::AddName23("PRIV", "Private frame");
-	FrameHeader::AddName23("TALB", "Album/Movie/Show title");
-	FrameHeader::AddName23("TBPM", "BPM (beats per minute)");
-	FrameHeader::AddName23("TCOM", "Composer");
-	FrameHeader::AddName23("TCON", "Content type");
-	FrameHeader::AddName23("TCOP", "Copyright message");
-	FrameHeader::AddName23("TENC", "Encoded by");
-	FrameHeader::AddName23("TIT1", "Content group description");
-	FrameHeader::AddName23("TIT2", "Title/songname/content description");
-	FrameHeader::AddName23("TIT3", "Subtitle/Description refinement");
-	FrameHeader::AddName23("TLAN", "Language(s)");
-	FrameHeader::AddName23("TLEN", "Length");
-	FrameHeader::AddName23("TPE1", "Lead Performer(s) / Solo Artist(s)");
-	FrameHeader::AddName23("TPE2", "Band / Orchestra / Accompaniment");
-	FrameHeader::AddName23("TPE3", "Conductor / Performer Refinement");
-	FrameHeader::AddName23("TPE4", "Interpreted, Remixed, or otherwise modified by");
-	FrameHeader::AddName23("TPOS", "Part of a set");
-	FrameHeader::AddName23("TPUB", "Publisher");
-	FrameHeader::AddName23("TRCK", "Track number/Position in set");
-	FrameHeader::AddName23("TSSE", "Software/Hardware and settings used for encoding");
-	FrameHeader::AddName23("TXXX", "User defined text information frame");
-	FrameHeader::AddName23("TYER", "Year");
-	FrameHeader::AddName23("WCOM", "Commercial information");
-	FrameHeader::AddName23("WXXX", "User defined URL link frame");
+	FrameHeader::AddName23("APIC", "Attached picture", 0);
+	FrameHeader::AddName23("COMM", "Comments", 0);
+	FrameHeader::AddName23("MCDI", "Music CD identifier", 0);
+	FrameHeader::AddName23("PRIV", "Private frame", 0);
+	FrameHeader::AddName23("TALB", "Album/Movie/Show title", 0);
+	FrameHeader::AddName23("TBPM", "BPM (beats per minute)", 0);
+	FrameHeader::AddName23("TCOM", "Composer", 0);
+	FrameHeader::AddName23("TCON", "Content type", 0);
+	FrameHeader::AddName23("TCOP", "Copyright message", 0);
+	FrameHeader::AddName23("TENC", "Encoded by", 0);
+	FrameHeader::AddName23("TIT1", "Content group description", 0);
+	FrameHeader::AddName23("TIT2", "Title/songname/content description", 0);
+	FrameHeader::AddName23("TIT3", "Subtitle/Description refinement", 0);
+	FrameHeader::AddName23("TLAN", "Language(s)", 0);
+	FrameHeader::AddName23("TLEN", "Length", 0);
+	FrameHeader::AddName23("TPE1", "Lead Performer(s) / Solo Artist(s)", 0);
+	FrameHeader::AddName23("TPE2", "Band / Orchestra / Accompaniment", 0);
+	FrameHeader::AddName23("TPE3", "Conductor / Performer Refinement", 0);
+	FrameHeader::AddName23("TPE4", "Interpreted, Remixed, or otherwise modified by", 0);
+	FrameHeader::AddName23("TPOS", "Part of a set", 0);
+	FrameHeader::AddName23("TPUB", "Publisher", 0);
+	FrameHeader::AddName23("TRCK", "Track number/Position in set", 0);
+	FrameHeader::AddName23("TSSE", "Software/Hardware and settings used for encoding", 0);
+	FrameHeader::AddName23("TXXX", "User defined text information frame", 0);
+	FrameHeader::AddName23("TYER", "Year", 0);
+	FrameHeader::AddName23("WCOM", "Commercial information", 0);
+	FrameHeader::AddName23("WXXX", "User defined URL link frame", 0);
 	
 	// ID3v2.4.0
-	FrameHeader::AddName24("TALB", "Album/Movie/Show title");
-	FrameHeader::AddName24("TDRC", "Recording time");
-	FrameHeader::AddName24("TIT2", "Title/songname/content description");
-	FrameHeader::AddName24("TPE1", "Lead performer(s)/Soloist(s)");
-	FrameHeader::AddName24("TPOS", "Part of a set");
-	FrameHeader::AddName24("TRCK", "Track number/Position in set");
+	FrameHeader::AddName24("TALB", "Album/Movie/Show title", 0);
+	FrameHeader::AddName24("TDRC", "Recording time", 0);
+	FrameHeader::AddName24("TIT2", "Title/songname/content description", 0);
+	FrameHeader::AddName24("TPE1", "Lead performer(s)/Soloist(s)", 0);
+	FrameHeader::AddName24("TPOS", "Part of a set", 0);
+	FrameHeader::AddName24("TRCK", "Track number/Position in set", 0);
 	
 	g_FrameHandlers["APIC"] = new HexFrameHandler();
 	g_FrameHandlers["COMM"] = new COMMFrameHandler();
