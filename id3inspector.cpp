@@ -863,6 +863,7 @@ int main(int argc, char **argv)
 	
 	// ID3v2.4.0
 	FrameHeader::AddName24("TALB", "Album/Movie/Show title", Handle24TextFrameWithoutNewlines);
+	FrameHeader::AddName23("TCON", "Content type", Handle24TextFrameWithoutNewlines);
 	FrameHeader::AddName24("TDRC", "Recording time", Handle24TextFrameWithoutNewlines);
 	FrameHeader::AddName24("TIT2", "Title/songname/content description", Handle24TextFrameWithoutNewlines);
 	FrameHeader::AddName24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrameWithoutNewlines);
