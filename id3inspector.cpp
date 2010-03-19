@@ -692,7 +692,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				}
 				Stream.read(Buffer, NewFrameHeader->GetSize());
 				std::cout << "\t\t\tBytes: ";
-				for(unsigned long int Index = 1; Index < NewFrameHeader->GetSize(); ++Index)
+				for(unsigned long int Index = 0; Index < NewFrameHeader->GetSize(); ++Index)
 				{
 					std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
 					
