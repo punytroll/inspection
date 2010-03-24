@@ -188,6 +188,7 @@ public:
 		_DataLengthIndicator(false),
 		_Encryption(false),
 		_FileAlterPreservation(false),
+		_Forbidden(false),
 		_GroupingIdentity(false),
 		_Handler(0),
 		_ReadOnly(false),
@@ -243,6 +244,14 @@ public:
 			_GroupingIdentity = (Buffer[9] & 0x20) == 0x20;
 			_SupportsUnsynchronisation = false;
 			_SupportsDataLengthIndicator = false;
+			
+			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden23.find(_Identifier));
+			
+			if(ForbiddenIterator != _Forbidden23.end())
+			{
+				_Forbidden = true;
+				_ForbiddenReason = ForbiddenIterator->second;
+			}
 			
 			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
 			
@@ -371,6 +380,16 @@ public:
 		return _ReadOnly;
 	}
 	
+	bool GetForbidden(void)
+	{
+		return _Forbidden;
+	}
+	
+	std::string GetForbiddenReason(void) const
+	{
+		return _ForbiddenReason;
+	}
+	
 	unsigned int GetSize(void) const
 	{
 		return _Size;
@@ -469,6 +488,11 @@ public:
 		_Names23.insert(std::make_pair(Identifier, Name));
 	}
 	
+	static void Forbid23(const std::string & Identifier, const std::string & Reason)
+	{
+		_Forbidden23.insert(std::make_pair(Identifier, Reason));
+	}
+	
 	static void AddName24(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
 	{
 		_Handlers24.insert(std::make_pair(Identifier, Handler));
@@ -476,6 +500,7 @@ public:
 	}
 private:
 	// static setup
+	static std::map< std::string, std::string > _Forbidden23;
 	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers22;
 	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers23;
 	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers24;
@@ -487,6 +512,8 @@ private:
 	bool _DataLengthIndicator;
 	bool _Encryption;
 	bool _FileAlterPreservation;
+	bool _Forbidden;
+	std::string _ForbiddenReason;
 	bool _GroupingIdentity;
 	void (* _Handler)(const char * const Buffer, unsigned int Length);
 	std::string _Identifier;
@@ -507,6 +534,7 @@ private:
 };
 
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
+std::map< std::string, std::string > FrameHeader::_Forbidden23;
 std::map< std::string, std::string > FrameHeader::_Names22;
 std::map< std::string, std::string > FrameHeader::_Names23;
 std::map< std::string, std::string > FrameHeader::_Names24;
@@ -678,6 +706,10 @@ void ReadID3v2Tag(std::ifstream & Stream)
 			if(NewFrameHeader->IsValid() == true)
 			{
 				std::cout << "\t\tIdentifier: \"" << NewFrameHeader->GetIdentifier() << "\"" << std::endl;
+				if(NewFrameHeader->GetForbidden() == true)
+				{
+					std::cout << "\t\t\t*** ERROR *** This frame is forbidden! " << NewFrameHeader->GetForbiddenReason() << std::endl;
+				}
 				std::cout << "\t\t\tName: " << NewFrameHeader->GetName() << std::endl;
 				std::cout << "\t\t\tSize: " << NewFrameHeader->GetSize() << std::endl;
 				if(NewFrameHeader->SupportsFlags() == true)
@@ -860,6 +892,8 @@ int main(int argc, char **argv)
 	FrameHeader::AddName23("TYER", "Year", Handle22And23TextFrameWithoutNewlines);
 	FrameHeader::AddName23("WCOM", "Commercial information", 0);
 	FrameHeader::AddName23("WXXX", "User defined URL link frame", 0);
+	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
+	FrameHeader::AddName23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrameWithoutNewlines);
 	
 	// ID3v2.4.0
 	FrameHeader::AddName24("TALB", "Album/Movie/Show title", Handle24TextFrameWithoutNewlines);
