@@ -214,6 +214,14 @@ public:
 			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5]));
 			_SupportsFlags = false;
 			
+			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden22.find(_Identifier));
+			
+			if(ForbiddenIterator != _Forbidden22.end())
+			{
+				_Forbidden = true;
+				_ForbiddenReason = ForbiddenIterator->second;
+			}
+			
 			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
 			
 			if(HanderIterator != _Handlers22.end())
@@ -285,6 +293,14 @@ public:
 			_Unsynchronisation = (Buffer[9] & 0x02) == 0x02;
 			_SupportsDataLengthIndicator = true;
 			_DataLengthIndicator = (Buffer[9] & 0x01) == 0x01;
+			
+			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden24.find(_Identifier));
+			
+			if(ForbiddenIterator != _Forbidden24.end())
+			{
+				_Forbidden = true;
+				_ForbiddenReason = ForbiddenIterator->second;
+			}
 			
 			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
 			
@@ -476,16 +492,15 @@ public:
 	}
 	
 	// static setup
-	static void Add22(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
+	static void Forbid22(const std::string & Identifier, const std::string & Reason)
+	{
+		_Forbidden22.insert(std::make_pair(Identifier, Reason));
+	}
+	
+	static void Handle22(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
 	{
 		_Handlers22.insert(std::make_pair(Identifier, Handler));
 		_Names22.insert(std::make_pair(Identifier, Name));
-	}
-	
-	static void AddName23(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
-	{
-		_Handlers23.insert(std::make_pair(Identifier, Handler));
-		_Names23.insert(std::make_pair(Identifier, Name));
 	}
 	
 	static void Forbid23(const std::string & Identifier, const std::string & Reason)
@@ -493,14 +508,27 @@ public:
 		_Forbidden23.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void AddName24(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
+	static void Handle23(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
+	{
+		_Handlers23.insert(std::make_pair(Identifier, Handler));
+		_Names23.insert(std::make_pair(Identifier, Name));
+	}
+	
+	static void Forbid24(const std::string & Identifier, const std::string & Reason)
+	{
+		_Forbidden24.insert(std::make_pair(Identifier, Reason));
+	}
+	
+	static void Handle24(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
 	{
 		_Handlers24.insert(std::make_pair(Identifier, Handler));
 		_Names24.insert(std::make_pair(Identifier, Name));
 	}
 private:
 	// static setup
+	static std::map< std::string, std::string > _Forbidden22;
 	static std::map< std::string, std::string > _Forbidden23;
+	static std::map< std::string, std::string > _Forbidden24;
 	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers22;
 	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers23;
 	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers24;
@@ -534,7 +562,9 @@ private:
 };
 
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
+std::map< std::string, std::string > FrameHeader::_Forbidden22;
 std::map< std::string, std::string > FrameHeader::_Forbidden23;
+std::map< std::string, std::string > FrameHeader::_Forbidden24;
 std::map< std::string, std::string > FrameHeader::_Names22;
 std::map< std::string, std::string > FrameHeader::_Names23;
 std::map< std::string, std::string > FrameHeader::_Names24;
@@ -858,51 +888,55 @@ int main(int argc, char **argv)
 	}
 	
 	// ID3v2.2.0
-	FrameHeader::Add22("TAL", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Add22("TEN", "Encoded by", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Add22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Add22("TRK", "Track number/Position in set", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Add22("TT2", "Title/Songname/Content description", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle22("TAL", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle22("TEN", "Encoded by", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle22("TRK", "Track number/Position in set", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle22("TT2", "Title/Songname/Content description", Handle22And23TextFrameWithoutNewlines);
 	
 	// ID3v2.3.0
-	FrameHeader::AddName23("APIC", "Attached picture", 0);
-	FrameHeader::AddName23("COMM", "Comments", 0);
-	FrameHeader::AddName23("MCDI", "Music CD identifier", 0);
-	FrameHeader::AddName23("PRIV", "Private frame", 0);
-	FrameHeader::AddName23("TALB", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TBPM", "BPM (beats per minute)", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TCOM", "Composer", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TCON", "Content type", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TCOP", "Copyright message", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TENC", "Encoded by", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TIT1", "Content group description", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TIT2", "Title/songname/content description", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TIT3", "Subtitle/Description refinement", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TLAN", "Language(s)", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TLEN", "Length", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TPE2", "Band / Orchestra / Accompaniment", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TPE3", "Conductor / Performer Refinement", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TPE4", "Interpreted, Remixed, or otherwise modified by", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TPOS", "Part of a set", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TPUB", "Publisher", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TRCK", "Track number/Position in set", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TXXX", "User defined text information frame", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TYER", "Year", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::AddName23("WCOM", "Commercial information", 0);
-	FrameHeader::AddName23("WXXX", "User defined URL link frame", 0);
+	FrameHeader::Handle23("APIC", "Attached picture", 0);
+	FrameHeader::Handle23("COMM", "Comments", 0);
+	FrameHeader::Handle23("MCDI", "Music CD identifier", 0);
+	FrameHeader::Handle23("PRIV", "Private frame", 0);
+	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TCOM", "Composer", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TCON", "Content type", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TCOP", "Copyright message", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TENC", "Encoded by", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TIT1", "Content group description", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TLAN", "Language(s)", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TLEN", "Length", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TPE2", "Band / Orchestra / Accompaniment", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TPE3", "Conductor / Performer Refinement", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TPE4", "Interpreted, Remixed, or otherwise modified by", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TPOS", "Part of a set", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TPUB", "Publisher", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TYER", "Year", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("WCOM", "Commercial information", 0);
+	FrameHeader::Handle23("WXXX", "User defined URL link frame", 0);
+	// forbidden tags
 	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::AddName23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrameWithoutNewlines);
 	
 	// ID3v2.4.0
-	FrameHeader::AddName24("TALB", "Album/Movie/Show title", Handle24TextFrameWithoutNewlines);
-	FrameHeader::AddName23("TCON", "Content type", Handle24TextFrameWithoutNewlines);
-	FrameHeader::AddName24("TDRC", "Recording time", Handle24TextFrameWithoutNewlines);
-	FrameHeader::AddName24("TIT2", "Title/songname/content description", Handle24TextFrameWithoutNewlines);
-	FrameHeader::AddName24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrameWithoutNewlines);
-	FrameHeader::AddName24("TPOS", "Part of a set", Handle24TextFrameWithoutNewlines);
-	FrameHeader::AddName24("TRCK", "Track number/Position in set", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle24("TCON", "Content type", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle24("TDRC", "Recording time", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle24("TPOS", "Part of a set", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24TextFrameWithoutNewlines);
+	// forbidden tags
+	FrameHeader::Forbid24("TYER", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3.");
+	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle22And23TextFrameWithoutNewlines);
 	
 	// processing
 	while(Paths.begin() != Paths.end())
