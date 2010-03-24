@@ -562,6 +562,7 @@ private:
 };
 
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
+std::map< std::string, std::string > g_Languages;
 std::map< std::string, std::string > FrameHeader::_Forbidden22;
 std::map< std::string, std::string > FrameHeader::_Forbidden23;
 std::map< std::string, std::string > FrameHeader::_Forbidden24;
@@ -571,6 +572,125 @@ std::map< std::string, std::string > FrameHeader::_Names24;
 std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers22;
 std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers23;
 std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers24;
+
+void Handle23CommentFrame(const char * Buffer, unsigned int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: ";
+	if(Encoding == 0)
+	{
+		std::cout << "ISO-8859-1";
+	}
+	else if(Encoding == 1)
+	{
+		std::cout << "Unicode UCS-2";
+	}
+	else
+	{
+		std::cout << "<invalid encoding>";
+	}
+	std::cout << " (" << Encoding << ")" << std::endl;
+	std::cout << "\t\t\t\tLanguage: ";
+	
+	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
+	Index += 3;
+	std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+	
+	if(LanguageIterator != g_Languages.end())
+	{
+		std::cout << LanguageIterator->second;
+	}
+	else
+	{
+		std::cout << "<unknown>";
+	}
+	std::cout << " (" << LanguageCode << ")" << std::endl;
+	std::cout << "\t\t\t\tDescription: ";
+	if(Encoding == 0)
+	{
+		while(Buffer[Index] != '\0')
+		{
+			std::cout << Buffer[Index];
+			++Index;
+		}
+		++Index;
+	}
+	else if(Encoding == 1)
+	{
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by BOM
+			while((Buffer[Index] != '\0') && (Buffer[Index + 1] != '\0'))
+			{
+				std::cout << Buffer[Index + 1];
+				Index += 2;
+			}
+		}
+		else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index += 1])) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by BOM
+			while((Buffer[Index] != '\0') && (Buffer[Index + 1] != '\0'))
+			{
+				std::cout << Buffer[Index];
+				Index += 2;
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl << "\t\t\t\tContent: ";
+	if(Encoding == 0)
+	{
+		while((Index < Length) && (Buffer[Index] != '\0'))
+		{
+			std::cout << Buffer[Index];
+			++Index;
+		}
+	}
+	else if(Encoding == 1)
+	{
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by BOM
+			while((Buffer[Index] != '\0') && (Buffer[Index + 1] != '\0'))
+			{
+				std::cout << Buffer[Index + 1];
+				Index += 2;
+			}
+		}
+		else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index += 1])) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by BOM
+			while((Buffer[Index] != '\0') && (Buffer[Index + 1] != '\0'))
+			{
+				std::cout << Buffer[Index];
+				Index += 2;
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
+}
 
 void Handle22And23TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
 {
@@ -610,6 +730,10 @@ void Handle22And23TextFrameWithoutNewlines(const char * Buffer, unsigned int Len
 		{
 			std::cout << Buffer[Index];
 		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
 	}
 	std::cout << '"' << std::endl;
 }
@@ -887,6 +1011,9 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	
+	// Languages according to ISO-639-2
+	g_Languages.insert(std::make_pair("eng", "English"));
+	
 	// ID3v2.2.0
 	FrameHeader::Handle22("TAL", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
 	FrameHeader::Handle22("TEN", "Encoded by", Handle22And23TextFrameWithoutNewlines);
@@ -896,7 +1023,7 @@ int main(int argc, char **argv)
 	
 	// ID3v2.3.0
 	FrameHeader::Handle23("APIC", "Attached picture", 0);
-	FrameHeader::Handle23("COMM", "Comments", 0);
+	FrameHeader::Handle23("COMM", "Comments", Handle23CommentFrame);
 	FrameHeader::Handle23("MCDI", "Music CD identifier", 0);
 	FrameHeader::Handle23("PRIV", "Private frame", 0);
 	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
