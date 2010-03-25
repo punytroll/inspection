@@ -222,7 +222,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
+			std::map< std::string, void (*)(const char * const, int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
 			
 			if(HanderIterator != _Handlers22.end())
 			{
@@ -261,7 +261,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
+			std::map< std::string, void (*)(const char * const, int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
 			
 			if(HanderIterator != _Handlers23.end())
 			{
@@ -302,7 +302,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, void (*)(const char * const, unsigned int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
+			std::map< std::string, void (*)(const char * const, int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
 			
 			if(HanderIterator != _Handlers24.end())
 			{
@@ -497,7 +497,7 @@ public:
 		_Forbidden22.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle22(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
+	static void Handle22(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, int))
 	{
 		_Handlers22.insert(std::make_pair(Identifier, Handler));
 		_Names22.insert(std::make_pair(Identifier, Name));
@@ -508,7 +508,7 @@ public:
 		_Forbidden23.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle23(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
+	static void Handle23(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, int))
 	{
 		_Handlers23.insert(std::make_pair(Identifier, Handler));
 		_Names23.insert(std::make_pair(Identifier, Name));
@@ -519,7 +519,7 @@ public:
 		_Forbidden24.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle24(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, unsigned int))
+	static void Handle24(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, int))
 	{
 		_Handlers24.insert(std::make_pair(Identifier, Handler));
 		_Names24.insert(std::make_pair(Identifier, Name));
@@ -529,9 +529,9 @@ private:
 	static std::map< std::string, std::string > _Forbidden22;
 	static std::map< std::string, std::string > _Forbidden23;
 	static std::map< std::string, std::string > _Forbidden24;
-	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers22;
-	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers23;
-	static std::map< std::string, void (*) (const char *, unsigned int) > _Handlers24;
+	static std::map< std::string, void (*) (const char *, int) > _Handlers22;
+	static std::map< std::string, void (*) (const char *, int) > _Handlers23;
+	static std::map< std::string, void (*) (const char *, int) > _Handlers24;
 	static std::map< std::string, std::string > _Names22;
 	static std::map< std::string, std::string > _Names23;
 	static std::map< std::string, std::string > _Names24;
@@ -543,7 +543,7 @@ private:
 	bool _Forbidden;
 	std::string _ForbiddenReason;
 	bool _GroupingIdentity;
-	void (* _Handler)(const char * const Buffer, unsigned int Length);
+	void (* _Handler)(const char * const Buffer, int Length);
 	std::string _Identifier;
 	std::string _Name;
 	bool _ReadOnly;
@@ -569,11 +569,23 @@ std::map< std::string, std::string > FrameHeader::_Forbidden24;
 std::map< std::string, std::string > FrameHeader::_Names22;
 std::map< std::string, std::string > FrameHeader::_Names23;
 std::map< std::string, std::string > FrameHeader::_Names24;
-std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers22;
-std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers23;
-std::map< std::string, void (*) (const char *, unsigned int) > FrameHeader::_Handlers24;
+std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers22;
+std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers23;
+std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers24;
 
-void Handle23CommentFrame(const char * Buffer, unsigned int Length)
+int PrintISO_8859_1StringTerminatedByLengthOrEnd(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(Index < Length & Buffer[Index] != '\0')
+	{
+		std::cout << Buffer[Index++];
+	}
+	
+	return Index + 1;
+}
+
+void Handle23CommentFrame(const char * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
@@ -692,7 +704,45 @@ void Handle23CommentFrame(const char * Buffer, unsigned int Length)
 	std::cout << std::endl;
 }
 
-void Handle22And23TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
+void Handle23URLFrame(const char * Buffer, int Length)
+{
+	std::cout << "\t\t\t\tURL: \"";
+	PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, Length);
+	std::cout << '"' << std::endl;
+}
+
+void Handle23UserURLFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: ";
+	if(Encoding == 0)
+	{
+		std::cout << "ISO-8859-1";
+	}
+	else if(Encoding == 1)
+	{
+		std::cout << "Unicode UCS-2";
+	}
+	else
+	{
+		std::cout << "<invalid encoding>";
+	}
+	std::cout << " (" << Encoding << ")" << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		Index += PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
+	}
+	std::cout << '"' << std::endl;
+	std::cout << "\t\t\t\tURL: \"";
+	PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
+	std::cout << '"' << std::endl;
+}
+
+void Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
 {
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 	
@@ -738,7 +788,7 @@ void Handle22And23TextFrameWithoutNewlines(const char * Buffer, unsigned int Len
 	std::cout << '"' << std::endl;
 }
 
-void Handle24TextFrameWithoutNewlines(const char * Buffer, unsigned int Length)
+void Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
 {
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 	
@@ -1048,7 +1098,8 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle22And23TextFrameWithoutNewlines);
 	FrameHeader::Handle23("TYER", "Year", Handle22And23TextFrameWithoutNewlines);
 	FrameHeader::Handle23("WCOM", "Commercial information", 0);
-	FrameHeader::Handle23("WXXX", "User defined URL link frame", 0);
+	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23URLFrame);
+	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23UserURLFrame);
 	// forbidden tags
 	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
 	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrameWithoutNewlines);
