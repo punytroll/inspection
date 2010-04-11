@@ -773,8 +773,10 @@ void Handle23UserURLFrame(const char * Buffer, int Length)
 
 void Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
 {
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
+	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: ";
 	if(Encoding == 0)
 	{
@@ -789,30 +791,41 @@ void Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
 		std::cout << "<invalid encoding>";
 	}
 	std::cout << " (" << Encoding << ")" << std::endl;
-	std::cout << "\t\t\t\tString: \"";
 	if(Encoding == 0)
 	{
-		std::cout.write(Buffer + 1, Length - 1);
+		std::cout << "\t\t\t\tString: \"";
+		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
 	}
-	else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff))
+	else if(Encoding == 1)
 	{
-		// Big Endian by BOM
-		for(int Index = 4; Index < Length; Index += 2)
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
 		{
-			std::cout << Buffer[Index];
+			// Big Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			std::cout << "\t\t\t\tString: \"";
+			for(int Index = 4; Index < Length; Index += 2)
+			{
+				std::cout << Buffer[Index];
+			}
 		}
-	}
-	else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
-	{
-		// Little Endian by BOM
-		for(int Index = 3; Index < Length; Index += 2)
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
 		{
-			std::cout << Buffer[Index];
+			// Little Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			std::cout << "\t\t\t\tString: \"";
+			for(int Index = 3; Index < Length; Index += 2)
+			{
+				std::cout << Buffer[Index];
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
 		}
 	}
 	else
 	{
-		std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
 	std::cout << '"' << std::endl;
 }
