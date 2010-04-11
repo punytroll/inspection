@@ -573,11 +573,30 @@ std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers22;
 std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers23;
 std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers24;
 
+int PrintISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(Buffer[Index] != '\0')
+	{
+		if(Index < Length)
+		{
+			std::cout << Buffer[Index++];
+		}
+		else
+		{
+			std::cout << "*** ERROR *** ISO-8859-1 string should be null-terminated but exceeded its possible length." << std::endl;
+		}
+	}
+	
+	return Index + 1;
+}
+
 int PrintISO_8859_1StringTerminatedByLengthOrEnd(const char * Buffer, int Length)
 {
 	int Index(0);
 	
-	while(Index < Length & Buffer[Index] != '\0')
+	while((Index < Length) & (Buffer[Index] != '\0'))
 	{
 		std::cout << Buffer[Index++];
 	}
@@ -706,15 +725,21 @@ void Handle23CommentFrame(const char * Buffer, int Length)
 
 void Handle23URLFrame(const char * Buffer, int Length)
 {
+	int Index(0);
+	
 	std::cout << "\t\t\t\tURL: \"";
-	PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, Length);
+	Index += PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
 	std::cout << '"' << std::endl;
+	if(Index < Length)
+	{
+		std::cout << "*** WARNING *** Frame length exceeds content length." << std::endl;
+	}
 }
 
 void Handle23UserURLFrame(const char * Buffer, int Length)
 {
 	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: ";
@@ -734,12 +759,16 @@ void Handle23UserURLFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
+		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
 	}
 	std::cout << '"' << std::endl;
 	std::cout << "\t\t\t\tURL: \"";
-	PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
+	Index += PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
 	std::cout << '"' << std::endl;
+	if(Index < Length)
+	{
+		std::cout << "*** WARNING *** Frame length exceeds content length." << std::endl;
+	}
 }
 
 void Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
