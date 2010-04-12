@@ -222,7 +222,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, void (*)(const char * const, int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
+			std::map< std::string, int (*)(const char * const, int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
 			
 			if(HanderIterator != _Handlers22.end())
 			{
@@ -261,7 +261,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, void (*)(const char * const, int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
+			std::map< std::string, int (*)(const char * const, int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
 			
 			if(HanderIterator != _Handlers23.end())
 			{
@@ -302,7 +302,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, void (*)(const char * const, int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
+			std::map< std::string, int (*)(const char * const, int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
 			
 			if(HanderIterator != _Handlers24.end())
 			{
@@ -421,15 +421,17 @@ public:
 		return _Unsynchronisation;
 	}
 	
-	void HandleData(const char * const Buffer, unsigned int Length)
+	int HandleData(const char * const Buffer, unsigned int Length)
 	{
 		if(_Handler != 0)
 		{
-			_Handler(Buffer, Length);
+			return _Handler(Buffer, Length);
 		}
 		else
 		{
 			std::cout << "*** WARNING ***  No handler defined for the frame type \"" << _Identifier << "\" in this tag version." << std::endl;
+			
+			return Length;
 		}
 	}
 	
@@ -497,7 +499,7 @@ public:
 		_Forbidden22.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle22(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, int))
+	static void Handle22(const std::string & Identifier, const std::string & Name, int (* Handler) (const char *, int))
 	{
 		_Handlers22.insert(std::make_pair(Identifier, Handler));
 		_Names22.insert(std::make_pair(Identifier, Name));
@@ -508,7 +510,7 @@ public:
 		_Forbidden23.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle23(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, int))
+	static void Handle23(const std::string & Identifier, const std::string & Name, int (* Handler) (const char *, int))
 	{
 		_Handlers23.insert(std::make_pair(Identifier, Handler));
 		_Names23.insert(std::make_pair(Identifier, Name));
@@ -519,7 +521,7 @@ public:
 		_Forbidden24.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle24(const std::string & Identifier, const std::string & Name, void (* Handler) (const char *, int))
+	static void Handle24(const std::string & Identifier, const std::string & Name, int (* Handler) (const char *, int))
 	{
 		_Handlers24.insert(std::make_pair(Identifier, Handler));
 		_Names24.insert(std::make_pair(Identifier, Name));
@@ -529,9 +531,9 @@ private:
 	static std::map< std::string, std::string > _Forbidden22;
 	static std::map< std::string, std::string > _Forbidden23;
 	static std::map< std::string, std::string > _Forbidden24;
-	static std::map< std::string, void (*) (const char *, int) > _Handlers22;
-	static std::map< std::string, void (*) (const char *, int) > _Handlers23;
-	static std::map< std::string, void (*) (const char *, int) > _Handlers24;
+	static std::map< std::string, int (*) (const char *, int) > _Handlers22;
+	static std::map< std::string, int (*) (const char *, int) > _Handlers23;
+	static std::map< std::string, int (*) (const char *, int) > _Handlers24;
 	static std::map< std::string, std::string > _Names22;
 	static std::map< std::string, std::string > _Names23;
 	static std::map< std::string, std::string > _Names24;
@@ -543,7 +545,7 @@ private:
 	bool _Forbidden;
 	std::string _ForbiddenReason;
 	bool _GroupingIdentity;
-	void (* _Handler)(const char * const Buffer, int Length);
+	int (* _Handler)(const char * const Buffer, int Length);
 	std::string _Identifier;
 	std::string _Name;
 	bool _ReadOnly;
@@ -569,9 +571,9 @@ std::map< std::string, std::string > FrameHeader::_Forbidden24;
 std::map< std::string, std::string > FrameHeader::_Names22;
 std::map< std::string, std::string > FrameHeader::_Names23;
 std::map< std::string, std::string > FrameHeader::_Names24;
-std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers22;
-std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers23;
-std::map< std::string, void (*) (const char *, int) > FrameHeader::_Handlers24;
+std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers22;
+std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers23;
+std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers24;
 
 int PrintISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
 {
@@ -596,7 +598,7 @@ int PrintISO_8859_1StringTerminatedByLengthOrEnd(const char * Buffer, int Length
 {
 	int Index(0);
 	
-	while((Index < Length) & (Buffer[Index] != '\0'))
+	while((Index < Length) && (Buffer[Index] != '\0'))
 	{
 		std::cout << Buffer[Index++];
 	}
@@ -604,7 +606,69 @@ int PrintISO_8859_1StringTerminatedByLengthOrEnd(const char * Buffer, int Length
 	return Index + 1;
 }
 
-void Handle23CommentFrame(const char * Buffer, int Length)
+int PrintUCS_2_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 >= Length)
+		{
+			return Index;
+		}
+		else
+		{
+			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			{
+				return Index + 2;
+			}
+			else
+			{
+				std::cout << Buffer[Index + 1];
+				Index += 2;
+			}
+		}		
+	}
+}
+
+int PrintUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 >= Length)
+		{
+			return Index;
+		}
+		else
+		{
+			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			{
+				return Index + 2;
+			}
+			else
+			{
+				std::cout << Buffer[Index];
+				Index += 2;
+			}
+		}		
+	}
+}
+
+int PrintHEXStringTerminatedByLength(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(Index < Length)
+	{
+		std::cout << GetHexadecimalStringFromCharacter(Buffer[Index++]) << ' ';
+	}
+	
+	return Index;
+}
+
+int Handle23CommentFrame(const char * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
@@ -721,22 +785,22 @@ void Handle23CommentFrame(const char * Buffer, int Length)
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
 	std::cout << std::endl;
+	
+	return Index;
 }
 
-void Handle23URLFrame(const char * Buffer, int Length)
+int Handle23URLFrame(const char * Buffer, int Length)
 {
 	int Index(0);
 	
 	std::cout << "\t\t\t\tURL: \"";
 	Index += PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
 	std::cout << '"' << std::endl;
-	if(Index < Length)
-	{
-		std::cout << "*** WARNING *** Frame length exceeds content length." << std::endl;
-	}
+	
+	return Index;
 }
 
-void Handle23UserURLFrame(const char * Buffer, int Length)
+int Handle23UserURLFrame(const char * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
@@ -765,13 +829,11 @@ void Handle23UserURLFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tURL: \"";
 	Index += PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
 	std::cout << '"' << std::endl;
-	if(Index < Length)
-	{
-		std::cout << "*** WARNING *** Frame length exceeds content length." << std::endl;
-	}
+	
+	return Index;
 }
 
-void Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
+int Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
@@ -800,23 +862,19 @@ void Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
 	{
 		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
 		{
+			Index += 2;
 			// Big Endian by BOM
 			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
 			std::cout << "\t\t\t\tString: \"";
-			for(int Index = 4; Index < Length; Index += 2)
-			{
-				std::cout << Buffer[Index];
-			}
+			Index += PrintUCS_2_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
 		{
+			Index += 2;
 			// Little Endian by BOM
 			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
 			std::cout << "\t\t\t\tString: \"";
-			for(int Index = 3; Index < Length; Index += 2)
-			{
-				std::cout << Buffer[Index];
-			}
+			Index += PrintUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 		else
 		{
@@ -828,12 +886,16 @@ void Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
 	std::cout << '"' << std::endl;
+	
+	return Index;
 }
 
-void Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
+int Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
 {
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
+	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: ";
 	if(Encoding == 0)
 	{
@@ -869,14 +931,15 @@ void Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
 		}
 		else
 		{
-			std::cout << "Bogus Byte Order Mark: " << GetHexadecimalStringFromCharacter(Buffer[1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[2]);
+			std::cout << "Bogus Byte Order Mark";
 		}
-		std::cout << std::endl;
+		std::cout << " (" << GetHexadecimalStringFromCharacter(Buffer[1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[2]) + ')' << std::endl;
+		Index += 2;
 	}
 	std::cout << "\t\t\t\tString: \"";
 	if((Encoding == 0) || (Encoding == 3))
 	{
-		std::cout.write(Buffer + 1, Length - 1);
+		std::cout.write(Buffer + Index, Length - Index);
 	}
 	else if(((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff)) || (Encoding == 2))
 	{
@@ -895,6 +958,22 @@ void Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
 		}
 	}
 	std::cout << '"' << std::endl;
+	
+	return Index;
+}
+
+int HandlePRIVFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	std::cout << "\t\t\t\tOwner Identifier: ";
+	Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+	std::cout << std::endl;
+	std::cout << "\t\t\t\tBinary Content: ";
+	Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
+	std::cout << std::endl;
+	
+	return Index;
 }
 
 void vReadFile(const std::string & Path);
@@ -977,15 +1056,14 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				}
 				std::cout << std::endl;
 				std::cout << "\t\t\tContent:" << std::endl;
-				NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
-				if(NewFrameHeader->GetSize() != 0)
+				
+				int HandledFrameSize(0);
+				
+				HandledFrameSize = NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
+				std::cout << std::endl;
+				if(HandledFrameSize < NewFrameHeader->GetSize())
 				{
-					Size -= NewFrameHeader->GetSize() + 10;
-					std::cout<< std::endl;
-				}
-				else
-				{
-					Size = 0;
+					std::cout << "*** WARNING *** Frame size exceeds frame data." << std::endl;
 				}
 			}
 			else
@@ -1117,7 +1195,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("APIC", "Attached picture", 0);
 	FrameHeader::Handle23("COMM", "Comments", Handle23CommentFrame);
 	FrameHeader::Handle23("MCDI", "Music CD identifier", 0);
-	FrameHeader::Handle23("PRIV", "Private frame", 0);
+	FrameHeader::Handle23("PRIV", "Private frame", HandlePRIVFrame);
 	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
 	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle22And23TextFrameWithoutNewlines);
 	FrameHeader::Handle23("TCOM", "Composer", Handle22And23TextFrameWithoutNewlines);
