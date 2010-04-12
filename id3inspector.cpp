@@ -34,6 +34,50 @@ bool IsValidIdentifierCharacter(char Character)
 	return ((Character >= 'A') && (Character <= 'Z')) || ((Character >= '0') && (Character <= '9'));
 }
 
+std::string GetUTF_8CharFromUnicodeCodepoint(unsigned int Codepoint)
+{
+	std::string Result;
+	
+	if(Codepoint < 0x00000080)
+	{
+		Result += static_cast< char >(Codepoint & 0x0000007f);
+	}
+	else if(Codepoint < 0x00000800)
+	{
+		Result += static_cast< char >(0x00000c0 + ((Codepoint & 0x00000700) >> 6) + ((Codepoint & 0x000000c0) >> 6));
+		Result += static_cast< char >(0x0000080 + (Codepoint & 0x0000003f));
+	}
+	else if(Codepoint < 0x00010000)
+	{
+		Result += static_cast< char >(0x00000e0 + ((Codepoint & 0x0000f000) >> 12));
+		Result += static_cast< char >(0x0000080 + ((Codepoint & 0x00000f00) >> 6) + ((Codepoint & 0x000000c0) >> 6));
+		Result += static_cast< char >(0x0000080 + (Codepoint & 0x0000003f));
+	}
+	else if(Codepoint < 0x00110000)
+	{
+		Result += static_cast< char >(0x00000f0 + ((Codepoint & 0x001c0000) >> 18));
+		Result += static_cast< char >(0x0000080 + ((Codepoint & 0x00030000) >> 12) + ((Codepoint & 0x0000f000) >> 12));
+		Result += static_cast< char >(0x0000080 + ((Codepoint & 0x00000f00) >> 6) + ((Codepoint & 0x000000c0) >> 6));
+		Result += static_cast< char >(0x0000080 + (Codepoint & 0x0000003f));
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Codepoint 0x" << std::hex << std::setfill('0') << std::setw(8) << std::right << Codepoint << " could not be encoded as UTF-8." << std::endl;
+	}
+	
+	return Result;
+}
+
+std::string GetUTF_8CharFromUCS_2_BE_Char(const char Buffer[2])
+{
+	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])));
+}
+
+std::string GetUTF_8CharFromUCS_2_LE_Char(const char Buffer[2])
+{
+	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+}
+
 class FrameHeader;
 
 class TagHeader
@@ -624,7 +668,7 @@ int PrintUCS_2_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 			}
 			else
 			{
-				std::cout << Buffer[Index + 1];
+				std::cout << GetUTF_8CharFromUCS_2_BE_Char(Buffer + Index);
 				Index += 2;
 			}
 		}		
@@ -649,7 +693,7 @@ int PrintUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 			}
 			else
 			{
-				std::cout << Buffer[Index];
+				std::cout << GetUTF_8CharFromUCS_2_LE_Char(Buffer + Index);
 				Index += 2;
 			}
 		}		
