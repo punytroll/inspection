@@ -631,7 +631,7 @@ int PrintISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
 		}
 		else
 		{
-			std::cout << "*** ERROR *** ISO-8859-1 string should be null-terminated but exceeded its possible length." << std::endl;
+			std::cout << "*** ERROR *** ISO-8859-1 string should be null-terminated but exceeds its possible length." << std::endl;
 		}
 	}
 	
@@ -639,6 +639,18 @@ int PrintISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
 }
 
 int PrintISO_8859_1StringTerminatedByLengthOrEnd(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while((Index < Length) && (Buffer[Index] != '\0'))
+	{
+		std::cout << Buffer[Index++];
+	}
+	
+	return Index + 1;
+}
+
+int PrintUTF_8StringTerminatedByEndOrLength(const char * Buffer, int Length)
 {
 	int Index(0);
 	
@@ -981,9 +993,9 @@ int Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
 		Index += 2;
 	}
 	std::cout << "\t\t\t\tString: \"";
-	if((Encoding == 0) || (Encoding == 3))
+	if(Encoding == 0)
 	{
-		std::cout.write(Buffer + Index, Length - Index);
+		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
 	}
 	else if(((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff)) || (Encoding == 2))
 	{
@@ -1000,6 +1012,10 @@ int Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
 		{
 			std::cout << Buffer[Index];
 		}
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	std::cout << '"' << std::endl;
 	
