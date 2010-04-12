@@ -1104,11 +1104,11 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				int HandledFrameSize(0);
 				
 				HandledFrameSize = NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
-				std::cout << std::endl;
 				if(HandledFrameSize < NewFrameHeader->GetSize())
 				{
 					std::cout << "*** WARNING *** Frame size exceeds frame data." << std::endl;
 				}
+				std::cout << std::endl;
 			}
 			else
 			{
