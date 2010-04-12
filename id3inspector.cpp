@@ -68,12 +68,17 @@ std::string GetUTF_8CharFromUnicodeCodepoint(unsigned int Codepoint)
 	return Result;
 }
 
-std::string GetUTF_8CharFromUCS_2_BE_Char(const char Buffer[2])
+std::string GetUTF_8CharFromISO_8859_1Char(const char Buffer[1])
+{
+	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+}
+
+std::string GetUTF_8CharFromUCS_2_BEChar(const char Buffer[2])
 {
 	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])));
 }
 
-std::string GetUTF_8CharFromUCS_2_LE_Char(const char Buffer[2])
+std::string GetUTF_8CharFromUCS_2_LEChar(const char Buffer[2])
 {
 	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 }
@@ -627,11 +632,14 @@ int PrintISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
 	{
 		if(Index < Length)
 		{
-			std::cout << Buffer[Index++];
+			std::cout << GetUTF_8CharFromISO_8859_1Char(Buffer + Index);
+			Index += 1;
 		}
 		else
 		{
 			std::cout << "*** ERROR *** ISO-8859-1 string should be null-terminated but exceeds its possible length." << std::endl;
+			
+			break;
 		}
 	}
 	
@@ -644,7 +652,8 @@ int PrintISO_8859_1StringTerminatedByLengthOrEnd(const char * Buffer, int Length
 	
 	while((Index < Length) && (Buffer[Index] != '\0'))
 	{
-		std::cout << Buffer[Index++];
+		std::cout << GetUTF_8CharFromISO_8859_1Char(Buffer + Index);
+		Index += 1;
 	}
 	
 	return Index + 1;
@@ -680,7 +689,7 @@ int PrintUCS_2_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 			}
 			else
 			{
-				std::cout << GetUTF_8CharFromUCS_2_BE_Char(Buffer + Index);
+				std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
 				Index += 2;
 			}
 		}		
@@ -705,7 +714,7 @@ int PrintUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 			}
 			else
 			{
-				std::cout << GetUTF_8CharFromUCS_2_LE_Char(Buffer + Index);
+				std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
 				Index += 2;
 			}
 		}		
@@ -1158,16 +1167,26 @@ void vReadFile(const std::string & Path)
 		std::cout << "ID3v1 TAG:" << std::endl;
 		Buffer[30] = '\0';
 		ReadFile.read(Buffer, 30);
-		std::cout << "\tTitle:\t \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		std::cout << "\tTitle:\t \"";
+		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 30);
+		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
-		std::cout << "\tArtist:\t \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		std::cout << "\tArtist:\t \"";
+		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 30);
+		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
-		std::cout << "\tAlbum:\t \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		std::cout << "\tAlbum:\t \"";
+		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 30);
+		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 4);
 		Buffer[4] = '\0';
-		std::cout << "\tYear:\t \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		std::cout << "\tYear:\t \"";
+		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 4);
+		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
-		std::cout << "\tComment: \"" << Buffer << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		std::cout << "\tComment: \"";
+		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 30);
+		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		bID3v11 = false;
 		if(Buffer[28] == '\0')
 		{
