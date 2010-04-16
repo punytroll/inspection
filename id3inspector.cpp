@@ -614,6 +614,9 @@ private:
 
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
 std::map< std::string, std::string > g_Languages;
+std::map< unsigned int, std::string > g_PictureTypes;
+std::map< unsigned int, std::string > g_Encodings2_3;
+std::map< unsigned int, std::string > g_Encodings2_4;
 std::map< std::string, std::string > FrameHeader::_Forbidden22;
 std::map< std::string, std::string > FrameHeader::_Forbidden23;
 std::map< std::string, std::string > FrameHeader::_Forbidden24;
@@ -624,51 +627,190 @@ std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers22;
 std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers23;
 std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers24;
 
+std::string GetEncodingString(unsigned int Encoding, const std::map< unsigned int, std::string > & Encodings)
+{
+	std::stringstream Result;
+	std::map< unsigned int, std::string >::const_iterator EncodingIterator(Encodings.find(Encoding));
+	
+	if(EncodingIterator != Encodings.end())
+	{
+		Result << EncodingIterator->second;
+	}
+	else
+	{
+		Result << "<invalid encoding>";
+	}
+	Result << " (" << Encoding << ")";
+	
+	return Result.str();
+}
+
+std::string GetEncodingString2_3(unsigned int Encoding)
+{
+	return GetEncodingString(Encoding, g_Encodings2_3);
+}
+
+std::string GetEncodingString2_4(unsigned int Encoding)
+{
+	return GetEncodingString(Encoding, g_Encodings2_4);
+}
+
+std::string GetPictureTypeString(unsigned int PictureType)
+{
+	std::stringstream Result;
+	std::map< unsigned int, std::string >::iterator PictureTypeIterator(g_PictureTypes.find(PictureType));
+	
+	if(PictureTypeIterator != g_PictureTypes.end())
+	{
+		Result << PictureTypeIterator->second;
+	}
+	else
+	{
+		Result << "<invalid picture type>";
+	}
+	Result << " (" << PictureType << ")";
+	
+	return Result.str();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// ISO-8859-1                                                                                    //
+///////////////////////////////////////////////////////////////////////////////////////////////////
 int PrintISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
 {
 	int Index(0);
 	
-	while(Buffer[Index] != '\0')
+	while(true)
 	{
 		if(Index < Length)
 		{
-			std::cout << GetUTF_8CharFromISO_8859_1Char(Buffer + Index);
-			Index += 1;
+			if(Buffer[Index] != '\0')
+			{
+				std::cout << GetUTF_8CharFromISO_8859_1Char(Buffer + Index);
+				Index += 1;
+			}
+			else
+			{
+				return Index + 1;
+			}
 		}
 		else
 		{
 			std::cout << "*** ERROR *** ISO-8859-1 string should be null-terminated but exceeds its possible length." << std::endl;
 			
-			break;
+			return Index;
 		}
 	}
-	
-	return Index + 1;
 }
 
-int PrintISO_8859_1StringTerminatedByLengthOrEnd(const char * Buffer, int Length)
+int PrintISO_8859_1StringTerminatedByEndOrLength(const char * Buffer, int Length)
 {
 	int Index(0);
 	
-	while((Index < Length) && (Buffer[Index] != '\0'))
+	while(true)
 	{
-		std::cout << GetUTF_8CharFromISO_8859_1Char(Buffer + Index);
-		Index += 1;
+		if(Index < Length)
+		{
+			if(Buffer[Index] != '\0')
+			{
+				std::cout << GetUTF_8CharFromISO_8859_1Char(Buffer + Index);
+				Index += 1;
+			}
+			else
+			{
+				return Index + 1;
+			}
+		}
+		else
+		{
+			return Index;
+		}
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UTF-8                                                                                         //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int PrintUTF_8StringTerminatedByEnd(const char * Buffer, int Length)
+{
+	int Index(0);
 	
-	return Index + 1;
+	while(true)
+	{
+		if(Index < Length)
+		{
+			if(Buffer[Index] != '\0')
+			{
+				std::cout << Buffer[Index];
+				Index += 1;
+			}
+			else
+			{
+				return Index + 1;
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** UTF-8 string should be null-terminated but exceeds its possible length." << std::endl;
+			
+			return Index;
+		}
+	}
 }
 
 int PrintUTF_8StringTerminatedByEndOrLength(const char * Buffer, int Length)
 {
 	int Index(0);
 	
-	while((Index < Length) && (Buffer[Index] != '\0'))
+	while(true)
 	{
-		std::cout << Buffer[Index++];
+		if(Index < Length)
+		{
+			if(Buffer[Index] != '\0')
+			{
+				std::cout << Buffer[Index];
+				Index += 1;
+			}
+			else
+			{
+				return Index + 1;
+			}
+		}
+		else
+		{
+			return Index;
+		}
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UCS-2BE                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int PrintUCS_2_BEStringTerminatedByEnd(const char * Buffer, int Length)
+{
+	int Index(0);
 	
-	return Index + 1;
+	while(true)
+	{
+		if(Index + 1 >= Length)
+		{
+			std::cout << "*** ERROR *** UCS-2BE string should be null-terminated but exceeds its possible length." << std::endl;
+			
+			return Index;
+		}
+		else
+		{
+			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			{
+				return Index + 2;
+			}
+			else
+			{
+				std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
+				Index += 2;
+			}
+		}
+	}
 }
 
 int PrintUCS_2_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
@@ -692,10 +834,13 @@ int PrintUCS_2_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 				std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
 				Index += 2;
 			}
-		}		
+		}
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UCS-2LE                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////
 int PrintUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 {
 	int Index(0);
@@ -717,9 +862,310 @@ int PrintUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 				std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
 				Index += 2;
 			}
-		}		
+		}
 	}
 }
+
+int PrintUCS_2_LEStringTerminatedByEnd(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 >= Length)
+		{
+			std::cout << "*** ERROR *** UCS-2LE string should be null-terminated but exceeds its possible length." << std::endl;
+			
+			return Index;
+		}
+		else
+		{
+			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			{
+				return Index + 2;
+			}
+			else
+			{
+				std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
+				Index += 2;
+			}
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UCS-2                                                                                         //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int PrintUCS_2StringTerminatedByEnd(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	if(Length >= 2)
+	{
+		if((static_cast< unsigned char >(Buffer[Index]) == 0xfe) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by Byte Order Marker
+			Index += PrintUCS_2_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+		}
+		else if((static_cast< unsigned char >(Buffer[Index]) == 0xff) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by Byte Order Marker
+			Index += PrintUCS_2_LEStringTerminatedByEnd(Buffer + Index, Length - Index);
+		}
+		else
+		{
+			std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** The UCS-2 string is expected to contain a Byte Order Marker but is not long enough to hold that information." << std::endl;
+		Index = Length;
+	}
+	
+	return Index;
+}
+
+int PrintUCS_2StringTerminatedByEndOrLength(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	if(Length >= 2)
+	{
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xfe)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xff)))
+		{
+			Index += 2;
+			// Big Endian by Byte Order Marker
+			Index += PrintUCS_2_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xff)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe)))
+		{
+			Index += 2;
+			// Little Endian by Byte Order Marker
+			Index += PrintUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else
+		{
+			std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** The UCS-2 string is expected to contain a Byte Order Marker but is not long enough to hold that information." << std::endl;
+		Index = Length;
+	}
+	
+	return Index;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UTF-16BE                                                                                      //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int PrintUTF_16_BEStringTerminatedByEnd(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 >= Length)
+		{
+			std::cout << "*** ERROR *** UTF-16BE string should be null-terminated but exceeds its possible length." << std::endl;
+			
+			return Index;
+		}
+		else
+		{
+			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			{
+				return Index + 2;
+			}
+			else
+			{
+				if((Buffer[Index] > 0xd8) && (Buffer[Index] < 0xe0))
+				{
+					std::cout << "*** ERROR *** UTF-16BE contains unhandled characters outside the Basic Multilingual Plane." << std::endl;
+				}
+				else
+				{
+					std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
+				}
+				Index += 2;
+			}
+		}
+	}
+}
+
+int PrintUTF_16_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 >= Length)
+		{
+			return Index;
+		}
+		else
+		{
+			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			{
+				return Index + 2;
+			}
+			else
+			{
+				if((Buffer[Index] > 0xd8) && (Buffer[Index] < 0xe0))
+				{
+					std::cout << "*** ERROR *** UTF-16BE contains unhandled characters outside the Basic Multilingual Plane." << std::endl;
+				}
+				else
+				{
+					std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
+				}
+				Index += 2;
+			}
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UTF-16LE                                                                                      //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int PrintUTF_16_LEStringTerminatedByEnd(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 >= Length)
+		{
+			std::cout << "*** ERROR *** UTF-16LE string should be null-terminated but exceeds its possible length." << std::endl;
+			
+			return Index;
+		}
+		else
+		{
+			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			{
+				return Index + 2;
+			}
+			else
+			{
+				if((Buffer[Index + 1] > 0xd8) && (Buffer[Index + 1] < 0xe0))
+				{
+					std::cout << "*** ERROR *** UTF-16BE contains unhandled characters outside the Basic Multilingual Plane." << std::endl;
+				}
+				else
+				{
+					std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
+				}
+				Index += 2;
+			}
+		}
+	}
+}
+
+int PrintUTF_16_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 >= Length)
+		{
+			return Index;
+		}
+		else
+		{
+			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			{
+				return Index + 2;
+			}
+			else
+			{
+				if((Buffer[Index + 1] > 0xd8) && (Buffer[Index + 1] < 0xe0))
+				{
+					std::cout << "*** ERROR *** UTF-16BE contains unhandled characters outside the Basic Multilingual Plane." << std::endl;
+				}
+				else
+				{
+					std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
+				}
+				Index += 2;
+			}
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UTF-16                                                                                        //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int PrintUTF_16StringTerminatedByEnd(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	if(Length >= 2)
+	{
+		if((static_cast< unsigned char >(Buffer[Index]) == 0xfe) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by Byte Order Marker
+			Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+		}
+		else if((static_cast< unsigned char >(Buffer[Index]) == 0xff) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by Byte Order Marker
+			Index += PrintUTF_16_LEStringTerminatedByEnd(Buffer + Index, Length - Index);
+		}
+		else
+		{
+			std::cout << "*** ERROR *** UTF-16 string is expected to start with a Byte Order Mark but is not." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** The UTF-16 string is expected to contain a Byte Order Marker but is not long enough to hold that information." << std::endl;
+		Index = Length;
+	}
+	
+	return Index;
+}
+
+int PrintUTF_16StringTerminatedByEndOrLength(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	if(Length >= 2)
+	{
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xfe)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xff)))
+		{
+			Index += 2;
+			// Big Endian by Byte Order Marker
+			Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xff)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe)))
+		{
+			Index += 2;
+			// Little Endian by Byte Order Marker
+			Index += PrintUTF_16_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else
+		{
+			std::cout << "*** ERROR *** UTF-16 string is expected to start with a Byte Order Mark but is not." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** The UTF-16 string is expected to contain a Byte Order Marker but is not long enough to hold that information." << std::endl;
+		Index = Length;
+	}
+	
+	return Index;
+}
+
 
 int PrintHEXStringTerminatedByLength(const char * Buffer, int Length)
 {
@@ -729,6 +1175,100 @@ int PrintHEXStringTerminatedByLength(const char * Buffer, int Length)
 	{
 		std::cout << GetHexadecimalStringFromCharacter(Buffer[Index++]) << ' ';
 	}
+	
+	return Index;
+}
+
+int Handle23UserTextFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	std::cout << "\t\t\t\tDescription: ";
+	if(Encoding == 0)
+	{
+		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
+	std::cout << "\t\t\t\tString: ";
+	if(Encoding == 0)
+	{
+		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
+	
+	return Index;
+}
+
+int Handle24UserTextFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	std::cout << "\t\t\t\tDescription: ";
+	if(Encoding == 0)
+	{
+		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEnd(Buffer+ Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
+	std::cout << "\t\t\t\tString: ";
+	if(Encoding == 0)
+	{
+		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
 	
 	return Index;
 }
@@ -854,12 +1394,44 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	return Index;
 }
 
+int Handle23AttachedPicture(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	std::cout << "\t\t\t\tMIME type: ";
+	Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+	std::cout << std::endl;
+	
+	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl;
+	
+	return Length;
+}
+
 int Handle23URLFrame(const char * Buffer, int Length)
 {
 	int Index(0);
 	
 	std::cout << "\t\t\t\tURL: \"";
-	Index += PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
+	Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	std::cout << '"' << std::endl;
 	
 	return Index;
@@ -892,13 +1464,13 @@ int Handle23UserURLFrame(const char * Buffer, int Length)
 	}
 	std::cout << '"' << std::endl;
 	std::cout << "\t\t\t\tURL: \"";
-	Index += PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer + Index, Length - Index);
+	Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	std::cout << '"' << std::endl;
 	
 	return Index;
 }
 
-int Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
+int Handle22And23TextFrame(const char * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
@@ -921,7 +1493,7 @@ int Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
 	if(Encoding == 0)
 	{
 		std::cout << "\t\t\t\tString: \"";
-		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else if(Encoding == 1)
 	{
@@ -955,7 +1527,7 @@ int Handle22And23TextFrameWithoutNewlines(const char * Buffer, int Length)
 	return Index;
 }
 
-int Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
+int Handle24TextFrame(const char * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
@@ -1004,7 +1576,7 @@ int Handle24TextFrameWithoutNewlines(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tString: \"";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else if(((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff)) || (Encoding == 2))
 	{
@@ -1129,7 +1701,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				int HandledFrameSize(0);
 				
 				HandledFrameSize = NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
-				if(HandledFrameSize < NewFrameHeader->GetSize())
+				if(HandledFrameSize != NewFrameHeader->GetSize())
 				{
 					std::cout << "*** WARNING *** Frame size exceeds frame data." << std::endl;
 				}
@@ -1168,24 +1740,24 @@ void vReadFile(const std::string & Path)
 		Buffer[30] = '\0';
 		ReadFile.read(Buffer, 30);
 		std::cout << "\tTitle:\t \"";
-		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 30);
+		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
 		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
 		std::cout << "\tArtist:\t \"";
-		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 30);
+		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
 		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
 		std::cout << "\tAlbum:\t \"";
-		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 30);
+		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
 		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 4);
 		Buffer[4] = '\0';
 		std::cout << "\tYear:\t \"";
-		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 4);
+		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 4);
 		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
 		std::cout << "\tComment: \"";
-		PrintISO_8859_1StringTerminatedByLengthOrEnd(Buffer, 30);
+		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
 		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		bID3v11 = false;
 		if(Buffer[28] == '\0')
@@ -1260,60 +1832,95 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	
-	// Languages according to ISO-639-2
+	// encodings for version 2.3
+	g_Encodings2_3.insert(std::make_pair(0x00, "ISO-8859-1"));
+	g_Encodings2_3.insert(std::make_pair(0x01, "UCS-2 encoded Unicode"));
+	
+	// encodings for version 2.4
+	g_Encodings2_4.insert(std::make_pair(0x00, "ISO-8859-1"));
+	g_Encodings2_4.insert(std::make_pair(0x01, "UTF-16 encoded Unicode with Byte Order Mark"));
+	g_Encodings2_4.insert(std::make_pair(0x02, "UTF-16BE encoded Unicode in Big Endian"));
+	g_Encodings2_4.insert(std::make_pair(0x03, "UTF-8 encoded Unicode"));
+	
+	// languages according to ISO-639-2
 	g_Languages.insert(std::make_pair("eng", "English"));
 	
+	// picture types
+	g_PictureTypes.insert(std::make_pair(0x00, "Other"));
+	g_PictureTypes.insert(std::make_pair(0x01, "32x32 pixels 'file icon' (PNG only)"));
+	g_PictureTypes.insert(std::make_pair(0x02, "Other file icon"));
+	g_PictureTypes.insert(std::make_pair(0x03, "Cover (front)"));
+	g_PictureTypes.insert(std::make_pair(0x04, "Cover (back)"));
+	g_PictureTypes.insert(std::make_pair(0x05, "Leaflet page"));
+	g_PictureTypes.insert(std::make_pair(0x06, "Media (e.g. lable side of CD)"));
+	g_PictureTypes.insert(std::make_pair(0x07, "Lead artist/lead performer/soloist"));
+	g_PictureTypes.insert(std::make_pair(0x08, "Artist/performer"));
+	g_PictureTypes.insert(std::make_pair(0x09, "Conductor"));
+	g_PictureTypes.insert(std::make_pair(0x0a, "Band/Orchestra"));
+	g_PictureTypes.insert(std::make_pair(0x0b, "Composer"));
+	g_PictureTypes.insert(std::make_pair(0x0c, "Lyricist/text writer"));
+	g_PictureTypes.insert(std::make_pair(0x0d, "Recording Location"));
+	g_PictureTypes.insert(std::make_pair(0x0e, "During recording"));
+	g_PictureTypes.insert(std::make_pair(0x0f, "During performance"));
+	g_PictureTypes.insert(std::make_pair(0x10, "Movie/video screen capture"));
+	g_PictureTypes.insert(std::make_pair(0x11, "A bright coloured fish"));
+	g_PictureTypes.insert(std::make_pair(0x12, "Illustration"));
+	g_PictureTypes.insert(std::make_pair(0x13, "Band/artist logotype"));
+	g_PictureTypes.insert(std::make_pair(0x14, "Publisher/Studio logotype"));
+	
 	// ID3v2.2.0
-	FrameHeader::Handle22("TAL", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle22("TEN", "Encoded by", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle22("TRK", "Track number/Position in set", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle22("TT2", "Title/Songname/Content description", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle22("TAL", "Album/Movie/Show title", Handle22And23TextFrame);
+	FrameHeader::Handle22("TEN", "Encoded by", Handle22And23TextFrame);
+	FrameHeader::Handle22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22And23TextFrame);
+	FrameHeader::Handle22("TRK", "Track number/Position in set", Handle22And23TextFrame);
+	FrameHeader::Handle22("TT2", "Title/Songname/Content description", Handle22And23TextFrame);
 	
 	// ID3v2.3.0
-	FrameHeader::Handle23("APIC", "Attached picture", 0);
+	FrameHeader::Handle23("APIC", "Attached picture", Handle23AttachedPicture);
 	FrameHeader::Handle23("COMM", "Comments", Handle23CommentFrame);
 	FrameHeader::Handle23("MCDI", "Music CD identifier", 0);
 	FrameHeader::Handle23("PRIV", "Private frame", HandlePRIVFrame);
-	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TCOM", "Composer", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TCON", "Content type", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TCOP", "Copyright message", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TENC", "Encoded by", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TIT1", "Content group description", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TLAN", "Language(s)", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TLEN", "Length", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TPE2", "Band / Orchestra / Accompaniment", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TPE3", "Conductor / Performer Refinement", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TPE4", "Interpreted, Remixed, or otherwise modified by", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TPOS", "Part of a set", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TPUB", "Publisher", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle22And23TextFrameWithoutNewlines);
-	FrameHeader::Handle23("TYER", "Year", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle22And23TextFrame);
+	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle22And23TextFrame);
+	FrameHeader::Handle23("TCOM", "Composer", Handle22And23TextFrame);
+	FrameHeader::Handle23("TCON", "Content type", Handle22And23TextFrame);
+	FrameHeader::Handle23("TCOP", "Copyright message", Handle22And23TextFrame);
+	FrameHeader::Handle23("TENC", "Encoded by", Handle22And23TextFrame);
+	FrameHeader::Handle23("TIT1", "Content group description", Handle22And23TextFrame);
+	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle22And23TextFrame);
+	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle22And23TextFrame);
+	FrameHeader::Handle23("TLAN", "Language(s)", Handle22And23TextFrame);
+	FrameHeader::Handle23("TLEN", "Length", Handle22And23TextFrame);
+	FrameHeader::Handle23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle22And23TextFrame);
+	FrameHeader::Handle23("TPE2", "Band / Orchestra / Accompaniment", Handle22And23TextFrame);
+	FrameHeader::Handle23("TPE3", "Conductor / Performer Refinement", Handle22And23TextFrame);
+	FrameHeader::Handle23("TPE4", "Interpreted, Remixed, or otherwise modified by", Handle22And23TextFrame);
+	FrameHeader::Handle23("TPOS", "Part of a set", Handle22And23TextFrame);
+	FrameHeader::Handle23("TPUB", "Publisher", Handle22And23TextFrame);
+	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle22And23TextFrame);
+	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrame);
+	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23UserTextFrame);
+	FrameHeader::Handle23("TYER", "Year", Handle22And23TextFrame);
 	FrameHeader::Handle23("WCOM", "Commercial information", 0);
 	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23URLFrame);
 	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23UserURLFrame);
 	// forbidden tags
 	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrame);
 	
 	// ID3v2.4.0
-	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24TextFrameWithoutNewlines);
-	FrameHeader::Handle24("TCON", "Content type", Handle24TextFrameWithoutNewlines);
-	FrameHeader::Handle24("TDRC", "Recording time", Handle24TextFrameWithoutNewlines);
-	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24TextFrameWithoutNewlines);
-	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrameWithoutNewlines);
-	FrameHeader::Handle24("TPOS", "Part of a set", Handle24TextFrameWithoutNewlines);
-	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24TextFrameWithoutNewlines);
+	FrameHeader::Handle24("APIC", "Attached picture", 0);
+	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24TextFrame);
+	FrameHeader::Handle24("TCON", "Content type", Handle24TextFrame);
+	FrameHeader::Handle24("TDRC", "Recording time", Handle24TextFrame);
+	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24TextFrame);
+	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrame);
+	FrameHeader::Handle24("TPOS", "Part of a set", Handle24TextFrame);
+	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24TextFrame);
+	FrameHeader::Handle24("TXXX", "User defined text information frame", Handle24UserTextFrame);
 	// forbidden tags
 	FrameHeader::Forbid24("TYER", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3.");
-	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle22And23TextFrameWithoutNewlines);
+	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle22And23TextFrame);
 	
 	// processing
 	while(Paths.begin() != Paths.end())
