@@ -673,34 +673,72 @@ std::string GetPictureTypeString(unsigned int PictureType)
 	return Result.str();
 }
 
+std::pair< int, std::string > GetGUIDString(const char * Buffer, int Length)
+{
+	std::pair< int, std::string > Result;
+	
+	if(Length >= 16)
+	{
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += '-';
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += '-';
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += '-';
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += '-';
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+	}
+	else
+	{
+			std::cout << "*** ERROR *** A GUID must be 16 bytes long but this one only has space for " << Length << " bytes." << std::endl;
+	}
+	
+	return Result;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // ISO-8859-1                                                                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int PrintISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
+std::pair< int, std::string > GetISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
 {
-	int Index(0);
+	std::pair< int, std::string > Result;
 	
 	while(true)
 	{
-		if(Index < Length)
+		if(Result.first < Length)
 		{
-			if(Buffer[Index] != '\0')
+			const char * Character(Buffer + Result.first++);
+			
+			if(*Character != '\0')
 			{
-				std::cout << GetUTF_8CharFromISO_8859_1Char(Buffer + Index);
-				Index += 1;
+				Result.second += GetUTF_8CharFromISO_8859_1Char(Character);
 			}
 			else
 			{
-				return Index + 1;
+				break;
 			}
 		}
 		else
 		{
 			std::cout << "*** ERROR *** ISO-8859-1 string should be null-terminated but exceeds its possible length." << std::endl;
 			
-			return Index;
+			break;
 		}
 	}
+	
+	return Result;
 }
 
 int PrintISO_8859_1StringTerminatedByEndOrLength(const char * Buffer, int Length)
@@ -1189,7 +1227,10 @@ int Handle23UserTextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: ";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1228,7 +1269,10 @@ int Handle24UserTextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: ";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1401,9 +1445,11 @@ int Handle23AttachedPicture(const char * Buffer, int Length)
 	
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	std::cout << "\t\t\t\tMIME type: ";
-	Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
-	std::cout << std::endl;
+	
+	std::pair< int, std::string > ReadMIMEType(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+	
+	Index += ReadMIMEType.first;
+	std::cout << "\t\t\t\tMIME type: " << ReadMIMEType.second << std::endl;
 	
 	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
@@ -1411,7 +1457,10 @@ int Handle23AttachedPicture(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1460,7 +1509,10 @@ int Handle23UserURLFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
 	}
 	std::cout << '"' << std::endl;
 	std::cout << "\t\t\t\tURL: \"";
@@ -1606,12 +1658,43 @@ int Handle24TextFrame(const char * Buffer, int Length)
 int HandlePRIVFrame(const char * Buffer, int Length)
 {
 	int Index(0);
+	std::pair< int, std::string > ReadOwnerIdentifier(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 	
-	std::cout << "\t\t\t\tOwner Identifier: ";
-	Index += PrintISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index);
-	std::cout << std::endl;
-	std::cout << "\t\t\t\tBinary Content: ";
-	Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
+	Index += ReadOwnerIdentifier.first;
+	std::cout << "\t\t\t\tOwner Identifier: " << ReadOwnerIdentifier.second << std::endl;
+	if(ReadOwnerIdentifier.second == "WM/MediaClassPrimaryID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tPrimary Media Class: " << ReadGUID.second << " (";
+		if(ReadGUID.second == "d1607dbc-e323-4be2-86a1-48a42a28441e")
+		{
+			std::cout << "audio, music";
+		}
+		else if(ReadGUID.second == "db9830bd-3ab3-4fab-8a37-1a995f7ff74b")
+		{
+			std::cout << "video";
+		}
+		else if(ReadGUID.second == "01cd0f29-da4e-4157-897b-6275d50c4f11")
+		{
+			std::cout << "audio, not music";
+		}
+		else if(ReadGUID.second == "fcf24a76-9a57-4036-990d-e35dd8b244e1")
+		{
+			std::cout << "neither audio nor video";
+		}
+		else
+		{
+			std::cout << "unknown value";
+		}
+		std::cout << ')' << std::endl;
+	}
+	else
+	{
+		std::cout << "\t\t\t\tBinary Content: ";
+		Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
+	}
 	std::cout << std::endl;
 	
 	return Index;
