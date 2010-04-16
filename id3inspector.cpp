@@ -617,6 +617,7 @@ std::map< std::string, std::string > g_Languages;
 std::map< unsigned int, std::string > g_PictureTypes;
 std::map< unsigned int, std::string > g_Encodings2_3;
 std::map< unsigned int, std::string > g_Encodings2_4;
+std::map< std::string, std::string > g_GUIDDescriptions;
 std::map< std::string, std::string > FrameHeader::_Forbidden22;
 std::map< std::string, std::string > FrameHeader::_Forbidden23;
 std::map< std::string, std::string > FrameHeader::_Forbidden24;
@@ -1667,28 +1668,18 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tPrimary Media Class: " << ReadGUID.second << " (";
-		if(ReadGUID.second == "d1607dbc-e323-4be2-86a1-48a42a28441e")
+		std::cout << "\t\t\t\tPrimary Media Class: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
-			std::cout << "audio, music";
-		}
-		else if(ReadGUID.second == "db9830bd-3ab3-4fab-8a37-1a995f7ff74b")
-		{
-			std::cout << "video";
-		}
-		else if(ReadGUID.second == "01cd0f29-da4e-4157-897b-6275d50c4f11")
-		{
-			std::cout << "audio, not music";
-		}
-		else if(ReadGUID.second == "fcf24a76-9a57-4036-990d-e35dd8b244e1")
-		{
-			std::cout << "neither audio nor video";
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
 		}
 		else
 		{
-			std::cout << "unknown value";
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
-		std::cout << ')' << std::endl;
 	}
 	else
 	{
@@ -1914,6 +1905,12 @@ int main(int argc, char **argv)
 
 		return 1;
 	}
+	
+	// GUID descriptions
+	g_GUIDDescriptions.insert(std::make_pair("d1607dbc-e323-4be2-86a1-48a42a28441e", "audio, music"));
+	g_GUIDDescriptions.insert(std::make_pair("db9830bd-3ab3-4fab-8a37-1a995f7ff74b", "video"));
+	g_GUIDDescriptions.insert(std::make_pair("01cd0f29-da4e-4157-897b-6275d50c4f11", "audio, no music"));
+	g_GUIDDescriptions.insert(std::make_pair("fcf24a76-9a57-4036-990d-e35dd8b244e1", "neither audio nor video"));
 	
 	// encodings for version 2.3
 	g_Encodings2_3.insert(std::make_pair(0x00, "ISO-8859-1"));
