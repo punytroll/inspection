@@ -1430,20 +1430,7 @@ int Handle23UserURLFrame(const char * Buffer, int Length)
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
 	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: ";
-	if(Encoding == 0)
-	{
-		std::cout << "ISO-8859-1";
-	}
-	else if(Encoding == 1)
-	{
-		std::cout << "Unicode UCS-2";
-	}
-	else
-	{
-		std::cout << "<invalid encoding>";
-	}
-	std::cout << " (" << Encoding << ")" << std::endl;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
@@ -1451,6 +1438,14 @@ int Handle23UserURLFrame(const char * Buffer, int Length)
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
 	std::cout << '"' << std::endl;
 	std::cout << "\t\t\t\tURL: \"";
