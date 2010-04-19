@@ -1324,24 +1324,13 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
 	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: ";
-	if(Encoding == 0)
-	{
-		std::cout << "ISO-8859-1";
-	}
-	else if(Encoding == 1)
-	{
-		std::cout << "Unicode UCS-2";
-	}
-	else
-	{
-		std::cout << "<invalid encoding>";
-	}
-	std::cout << " (" << Encoding << ")" << std::endl;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
 	std::cout << "\t\t\t\tLanguage: ";
 	
 	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
+	
 	Index += 3;
+	
 	std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
 	
 	if(LanguageIterator != g_Languages.end())
@@ -1352,83 +1341,31 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	{
 		std::cout << "<unknown>";
 	}
-	std::cout << " (" << LanguageCode << ")" << std::endl;
+	std::cout << " (\"" << LanguageCode << "\")" << std::endl;
 	std::cout << "\t\t\t\tDescription: ";
 	if(Encoding == 0)
 	{
-		while(Buffer[Index] != '\0')
-		{
-			std::cout << Buffer[Index];
-			++Index;
-		}
-		++Index;
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
 	}
 	else if(Encoding == 1)
 	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
-		{
-			Index += 2;
-			// Big Endian by BOM
-			while((Buffer[Index] != '\0') && (Buffer[Index + 1] != '\0'))
-			{
-				std::cout << Buffer[Index + 1];
-				Index += 2;
-			}
-		}
-		else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index += 1])) == 0xfe))
-		{
-			Index += 2;
-			// Little Endian by BOM
-			while((Buffer[Index] != '\0') && (Buffer[Index + 1] != '\0'))
-			{
-				std::cout << Buffer[Index];
-				Index += 2;
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
-		}
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
 	}
 	else
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << std::endl << "\t\t\t\tContent: ";
+	std::cout << std::endl << "\t\t\t\tComment: ";
 	if(Encoding == 0)
 	{
-		while((Index < Length) && (Buffer[Index] != '\0'))
-		{
-			std::cout << Buffer[Index];
-			++Index;
-		}
+		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else if(Encoding == 1)
 	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
-		{
-			Index += 2;
-			// Big Endian by BOM
-			while((Buffer[Index] != '\0') && (Buffer[Index + 1] != '\0'))
-			{
-				std::cout << Buffer[Index + 1];
-				Index += 2;
-			}
-		}
-		else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index += 1])) == 0xfe))
-		{
-			Index += 2;
-			// Little Endian by BOM
-			while((Buffer[Index] != '\0') && (Buffer[Index + 1] != '\0'))
-			{
-				std::cout << Buffer[Index];
-				Index += 2;
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
-		}
+		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else
 	{
