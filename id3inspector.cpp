@@ -1997,10 +1997,14 @@ int main(int argc, char **argv)
 	}
 	
 	// GUID descriptions
-	g_GUIDDescriptions.insert(std::make_pair("d1607dbc-e323-4be2-86a1-48a42a28441e", "audio, music"));
-	g_GUIDDescriptions.insert(std::make_pair("db9830bd-3ab3-4fab-8a37-1a995f7ff74b", "video"));
-	g_GUIDDescriptions.insert(std::make_pair("01cd0f29-da4e-4157-897b-6275d50c4f11", "audio, no music"));
-	g_GUIDDescriptions.insert(std::make_pair("fcf24a76-9a57-4036-990d-e35dd8b244e1", "neither audio nor video"));
+	/// WM/MediaClassPrimaryID: audio, no music (bytes swapped to big endian)
+	g_GUIDDescriptions.insert(std::make_pair("290fcd01-4eda-5741-897b-6275d50c4f11", "audio, no music"));
+	/// WM/MediaClassPrimaryID: audio, music (bytes swapped to big endian)
+	g_GUIDDescriptions.insert(std::make_pair("bc7d60d1-23e3-e24b-86a1-48a42a28441e", "audio, music"));
+	/// WM/MediaClassPrimaryID: video (bytes swapped to big endian)
+	g_GUIDDescriptions.insert(std::make_pair("bd3098db-b33a-ab4f-8a37-1a995f7ff74b", "video"));
+	/// WM/MediaClassPrimaryID: neither audio nor video (bytes swapped to big endian)
+	g_GUIDDescriptions.insert(std::make_pair("764af2fc-579a-3640-990d-e35dd8b244e1", "neither audio nor video"));
 	
 	// encodings for version 2.2
 	g_Encodings2_2.insert(std::make_pair(0x00, "ISO-8859-1"));
