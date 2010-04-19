@@ -627,6 +627,7 @@ std::map< std::string, std::string > FrameHeader::_Names24;
 std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers22;
 std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers23;
 std::map< std::string, int (*) (const char *, int) > FrameHeader::_Handlers24;
+bool g_PrintBytes(false);
 
 std::string GetEncodingString(unsigned int Encoding, const std::map< unsigned int, std::string > & Encodings)
 {
@@ -1695,13 +1696,16 @@ void ReadID3v2Tag(std::ifstream & Stream)
 					Buffer = new char[BufferLength];
 				}
 				Stream.read(Buffer, NewFrameHeader->GetSize());
-				std::cout << "\t\t\tBytes: ";
-				for(unsigned long int Index = 0; Index < NewFrameHeader->GetSize(); ++Index)
+				if(g_PrintBytes == true)
 				{
-					std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
-					
+					std::cout << "\t\t\tBytes: ";
+					for(unsigned long int Index = 0; Index < NewFrameHeader->GetSize(); ++Index)
+					{
+						std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
+						
+					}
+					std::cout << std::endl;
 				}
-				std::cout << std::endl;
 				std::cout << "\t\t\tContent:" << std::endl;
 				
 				int HandledFrameSize(0);
@@ -1829,7 +1833,14 @@ int main(int argc, char **argv)
 
 	while(++Argument < Arguments)
 	{
-		Paths.push_back(argv[Argument]);
+		if(std::string(argv[Argument]) == "--print-bytes")
+		{
+			g_PrintBytes = true;
+		}
+		else
+		{
+			Paths.push_back(argv[Argument]);
+		}
 	}
 	if(Paths.size() == 0)
 	{
@@ -1927,6 +1938,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle24("TDRC", "Recording time", Handle24TextFrame);
 	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24TextFrame);
 	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrame);
+	FrameHeader::Handle24("TPE2", "Band/orchestra/accompaniment", Handle24TextFrame);
 	FrameHeader::Handle24("TPOS", "Part of a set", Handle24TextFrame);
 	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24TextFrame);
 	FrameHeader::Handle24("TXXX", "User defined text information frame", Handle24UserTextFrame);
