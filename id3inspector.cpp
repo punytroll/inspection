@@ -1519,36 +1519,15 @@ int Handle24TextFrame(const char * Buffer, int Length)
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
 	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: ";
-	if(Encoding == 0)
-	{
-		std::cout << "ISO-8859-1";
-	}
-	else if(Encoding == 1)
-	{
-		std::cout << "UTF-16 encoded Unicode with Byte Order Mark";
-	}
-	else if(Encoding == 2)
-	{
-		std::cout << "UTF-16BE encoded Unicode in Big Endian";
-	}
-	else if(Encoding == 3)
-	{
-		std::cout << "UTF-8 encoded Unicode";
-	}
-	else
-	{
-		std::cout << "<invalid encoding>";
-	}
-	std::cout << " (" << Encoding << ")" << std::endl;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
 	if(Encoding == 1)
 	{
 		std::cout << "\t\t\t\tByte Order Mark: ";
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff))
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
 		{
 			std::cout << "Big Endian";
 		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
 		{
 			std::cout << "Little Endian";
 		}
@@ -1556,29 +1535,20 @@ int Handle24TextFrame(const char * Buffer, int Length)
 		{
 			std::cout << "Bogus Byte Order Mark";
 		}
-		std::cout << " (" << GetHexadecimalStringFromCharacter(Buffer[1]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[2]) + ')' << std::endl;
-		Index += 2;
+		std::cout << " (" << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 1]) + ')' << std::endl;
 	}
 	std::cout << "\t\t\t\tString: \"";
 	if(Encoding == 0)
 	{
 		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
-	else if(((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xff)) || (Encoding == 2))
+	else if(Encoding == 1)
 	{
-		// Big Endian either by BOM or by definition
-		for(int Index = 4; Index < Length; Index += 2)
-		{
-			std::cout << Buffer[Index];
-		}
+		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
-	else if((Encoding == 1) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[2])) == 0xfe))
+	else if(Encoding == 2)
 	{
-		// Little Endian by BOM
-		for(int Index = 3; Index < Length; Index += 2)
-		{
-			std::cout << Buffer[Index];
-		}
+		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else if(Encoding == 3)
 	{
