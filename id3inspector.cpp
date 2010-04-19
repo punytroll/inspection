@@ -2078,6 +2078,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle22And23TextFrame);
 	FrameHeader::Handle23("TLAN", "Language(s)", Handle22And23TextFrame);
 	FrameHeader::Handle23("TLEN", "Length", Handle22And23TextFrame);
+	FrameHeader::Handle23("TOPE", "Original artist(s)/performer(s)", Handle22And23TextFrame);
 	FrameHeader::Handle23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle22And23TextFrame);
 	FrameHeader::Handle23("TPE2", "Band / Orchestra / Accompaniment", Handle22And23TextFrame);
 	FrameHeader::Handle23("TPE3", "Conductor / Performer Refinement", Handle22And23TextFrame);
