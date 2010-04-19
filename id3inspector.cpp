@@ -1243,7 +1243,7 @@ int Handle23UserTextFrame(const char * Buffer, int Length)
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
 	std::cout << std::endl;
-	std::cout << "\t\t\t\tString: ";
+	std::cout << "\t\t\t\tString: \"";
 	if(Encoding == 0)
 	{
 		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
@@ -1256,7 +1256,7 @@ int Handle23UserTextFrame(const char * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << '"' << std::endl;
 	
 	return Index;
 }
@@ -1462,7 +1462,7 @@ int Handle23AttachedPicture(const char * Buffer, int Length)
 	std::pair< int, std::string > ReadMIMEType(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 	
 	Index += ReadMIMEType.first;
-	std::cout << "\t\t\t\tMIME type: " << ReadMIMEType.second << std::endl;
+	std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
 	
 	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
