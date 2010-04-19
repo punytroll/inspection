@@ -2013,6 +2013,8 @@ int main(int argc, char **argv)
 	// forbidden tags
 	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
 	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrame);
+	FrameHeader::Forbid23("TDTG", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
+	FrameHeader::Handle23("TDTG", "Tagging time (from tag version 2.4)", Handle24TextFrame);
 	
 	// ID3v2.4.0
 	FrameHeader::Handle24("APIC", "Attached picture", 0);
@@ -2021,6 +2023,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle24("TCON", "Content type", Handle24TextFrame);
 	FrameHeader::Handle24("TCOP", "Copyright message", Handle24TextFrame);
 	FrameHeader::Handle24("TDRC", "Recording time", Handle24TextFrame);
+	FrameHeader::Handle24("TDTG", "Tagging time", Handle24TextFrame);
 	FrameHeader::Handle24("TENC", "Encoded by", Handle24TextFrame);
 	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24TextFrame);
 	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrame);
