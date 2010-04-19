@@ -1377,6 +1377,80 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	return Index;
 }
 
+int Handle24COMMFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	std::cout << "\t\t\t\tLanguage: ";
+	
+	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
+	
+	Index += 3;
+	
+	std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+	
+	if(LanguageIterator != g_Languages.end())
+	{
+		std::cout << LanguageIterator->second;
+	}
+	else
+	{
+		std::cout << "<unknown>";
+	}
+	std::cout << " (\"" << LanguageCode << "\")" << std::endl;
+	std::cout << "\t\t\t\tDescription: ";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl << "\t\t\t\tComment: ";
+	if(Encoding == 0)
+	{
+		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
+	
+	return Index;
+}
+
 int Handle23AttachedPicture(const char * Buffer, int Length)
 {
 	int Index(0);
@@ -1554,6 +1628,45 @@ int Handle24TextFrame(const char * Buffer, int Length)
 	{
 		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
+	std::cout << '"' << std::endl;
+	
+	return Index;
+}
+
+int Handle24WXXXFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEnd(Buffer+ Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl;
+	std::cout << "\t\t\t\tURL: \"";
+	Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	std::cout << '"' << std::endl;
 	
 	return Index;
@@ -1903,15 +2016,19 @@ int main(int argc, char **argv)
 	
 	// ID3v2.4.0
 	FrameHeader::Handle24("APIC", "Attached picture", 0);
+	FrameHeader::Handle24("COMM", "Comments", Handle24COMMFrame);
 	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24TextFrame);
 	FrameHeader::Handle24("TCON", "Content type", Handle24TextFrame);
+	FrameHeader::Handle24("TCOP", "Copyright message", Handle24TextFrame);
 	FrameHeader::Handle24("TDRC", "Recording time", Handle24TextFrame);
+	FrameHeader::Handle24("TENC", "Encoded by", Handle24TextFrame);
 	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24TextFrame);
 	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrame);
 	FrameHeader::Handle24("TPE2", "Band/orchestra/accompaniment", Handle24TextFrame);
 	FrameHeader::Handle24("TPOS", "Part of a set", Handle24TextFrame);
 	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24TextFrame);
 	FrameHeader::Handle24("TXXX", "User defined text information frame", Handle24UserTextFrame);
+	FrameHeader::Handle24("WXXX", "User defined URL link frame", Handle24WXXXFrame);
 	// forbidden tags
 	FrameHeader::Forbid24("TYER", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3.");
 	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle22And23TextFrame);
