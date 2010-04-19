@@ -615,6 +615,7 @@ private:
 std::string g_sGenres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk", "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies", "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno", "Industrial", "Alternative", "Ska", "Death Metal", "Pranks", "Soundtrack", "Eurotechno", "Ambient", "Trip-Hop", "Vocal", "Jazz+Funk", "Fusion", "Trance", "Classical", "Instrumental", "Acid", "House", "Game", "Sound Clip", "Gospel", "Noise", "Alternative Rock", "Bass", "Soul", "Punk", "Space", "Meditative", "Instrumental Pop", "Instrumental Rock", "Ethnic", "Gothic", "Darkwave", "Techno-Industrial", "Electronic", "Jungle", "Pop-Folk", "Eurodance", "Dream", "Southern Rock", "Comedy", "Cult", "Gangsta", "Top 40", "Christian Rap", "Pop/Funk", "Native American", "Cabaret", "New Wave", "Psychadelic", "Rave", "Show Tunes", "Trailer", "Lo-Fi", "Tribal", "Acid Punk", "Acid Jazz", "Polka", "Retro", "Musical",  "Rock & Roll", "Hard Rock", "Folk", "Folk/Rock", "National Folk", "Swing", "Fast-Fusion", "Bebop", "Latin", "Revival", "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock", "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock", "Big Band", "Chorus", "Easy Listening", "Acoustic", "Humour", "Speech", "Chanson", "Opera", "Chamber Music", "Sonata", "Symphony", "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club", "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhytmic Soul", "Freestyle", "Duet", "Punk Rock", "Drum Solo", "Acapella", "Euro-House", "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore", "Terror", "Indie", "BritPop", "Negerpunk", "Polsk Punk", "Beat", "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover", "Contemporary Christian", "Christian Rock", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown","Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown" };
 std::map< std::string, std::string > g_Languages;
 std::map< unsigned int, std::string > g_PictureTypes;
+std::map< unsigned int, std::string > g_Encodings2_2;
 std::map< unsigned int, std::string > g_Encodings2_3;
 std::map< unsigned int, std::string > g_Encodings2_4;
 std::map< std::string, std::string > g_GUIDDescriptions;
@@ -645,6 +646,11 @@ std::string GetEncodingString(unsigned int Encoding, const std::map< unsigned in
 	Result << " (" << Encoding << ")";
 	
 	return Result.str();
+}
+
+std::string GetEncodingString2_2(unsigned int Encoding)
+{
+	return GetEncodingString(Encoding, g_Encodings2_2);
 }
 
 std::string GetEncodingString2_3(unsigned int Encoding)
@@ -1377,6 +1383,64 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	return Index;
 }
 
+int Handle22COMFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_2(Encoding) << std::endl;
+	std::cout << "\t\t\t\tLanguage: ";
+	
+	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
+	
+	Index += 3;
+	
+	std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+	
+	if(LanguageIterator != g_Languages.end())
+	{
+		std::cout << LanguageIterator->second;
+	}
+	else
+	{
+		std::cout << "<unknown>";
+	}
+	std::cout << " (\"" << LanguageCode << "\")" << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
+	if(Encoding == 0)
+	{
+		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl;
+	
+	return Index;
+}
+
 int Handle24COMMFrame(const char * Buffer, int Length)
 {
 	int Index(0);
@@ -1938,6 +2002,10 @@ int main(int argc, char **argv)
 	g_GUIDDescriptions.insert(std::make_pair("01cd0f29-da4e-4157-897b-6275d50c4f11", "audio, no music"));
 	g_GUIDDescriptions.insert(std::make_pair("fcf24a76-9a57-4036-990d-e35dd8b244e1", "neither audio nor video"));
 	
+	// encodings for version 2.2
+	g_Encodings2_2.insert(std::make_pair(0x00, "ISO-8859-1"));
+	g_Encodings2_2.insert(std::make_pair(0x01, "UCS-2 encoded Unicode"));
+	
 	// encodings for version 2.3
 	g_Encodings2_3.insert(std::make_pair(0x00, "ISO-8859-1"));
 	g_Encodings2_3.insert(std::make_pair(0x01, "UCS-2 encoded Unicode"));
@@ -1975,11 +2043,20 @@ int main(int argc, char **argv)
 	g_PictureTypes.insert(std::make_pair(0x14, "Publisher/Studio logotype"));
 	
 	// ID3v2.2.0
+	FrameHeader::Handle22("COM", "Comment", Handle22COMFrame);
 	FrameHeader::Handle22("TAL", "Album/Movie/Show title", Handle22And23TextFrame);
+	FrameHeader::Handle22("TCM", "Composer", Handle22And23TextFrame);
+	FrameHeader::Handle22("TCO", "Content type", Handle22And23TextFrame);
 	FrameHeader::Handle22("TEN", "Encoded by", Handle22And23TextFrame);
 	FrameHeader::Handle22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22And23TextFrame);
+	FrameHeader::Handle22("TPA", "Part of a set", Handle22And23TextFrame);
 	FrameHeader::Handle22("TRK", "Track number/Position in set", Handle22And23TextFrame);
+	FrameHeader::Handle22("TT1", "Content group description", Handle22And23TextFrame);
 	FrameHeader::Handle22("TT2", "Title/Songname/Content description", Handle22And23TextFrame);
+	FrameHeader::Handle22("TYE", "Year", Handle22And23TextFrame);
+	// forbidden tags
+	FrameHeader::Forbid22("TCP", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless.");
+	FrameHeader::Handle22("TCP", "Compilation (from the internet)", Handle22And23TextFrame);
 	
 	// ID3v2.3.0
 	FrameHeader::Handle23("APIC", "Attached picture", Handle23AttachedPicture);
