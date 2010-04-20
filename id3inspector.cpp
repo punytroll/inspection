@@ -1775,7 +1775,7 @@ int Handle23TCMPFrame(const char * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << "\t\t\t\tPart of a compilation: \"";
+	std::cout << "\t\t\t\tPart of a compilation: ";
 	if(ReadString.second == "1")
 	{
 		std::cout << "yes";
@@ -1788,7 +1788,7 @@ int Handle23TCMPFrame(const char * Buffer, int Length)
 	{
 		std::cout << "<unknown value>";
 	}
-	std::cout << ReadString.second << '"' << std::endl;
+	std::cout << " (\"" << ReadString.second << "\")" << std::endl;
 	Index += ReadString.first;
 	
 	return Index;
