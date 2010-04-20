@@ -887,29 +887,42 @@ int PrintUCS_2_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UCS-2LE                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int PrintUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
+std::pair< int, std::string > GetUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 {
-	int Index(0);
+	std::pair< int, std::string > Result;
 	
 	while(true)
 	{
-		if(Index + 1 >= Length)
+		if(Result.first + 1 >= Length)
 		{
-			return Index;
+			break;
 		}
 		else
 		{
-			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			const char * Character(Buffer + Result.first);
+			
+			Result.first += 2;
+			if((Character[0] != '\0') || (Character[1] != '\0'))
 			{
-				return Index + 2;
+				Result.second += GetUTF_8CharFromUCS_2_LEChar(Character);
 			}
 			else
 			{
-				std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
-				Index += 2;
+				break;
 			}
 		}
 	}
+	
+	return Result;
+}
+
+int PrintUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
+{
+	std::pair< int, std::string > GetString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer, Length));
+	
+	std::cout << GetString.second;
+	
+	return GetString.first;
 }
 
 int PrintUCS_2_LEStringTerminatedByEnd(const char * Buffer, int Length)
@@ -1760,6 +1773,92 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 		{
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
+	}
+	else if(ReadOwnerIdentifier.second == "WM/MediaClassSecondaryID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tSecondary Media Class: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		{
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+		}
+		else
+		{
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+		}
+	}
+	else if(ReadOwnerIdentifier.second == "WM/WMContentID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tContent ID: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		{
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+		}
+		else
+		{
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+		}
+	}
+	else if(ReadOwnerIdentifier.second == "WM/WMCollectionID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tCollection ID: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		{
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+		}
+		else
+		{
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+		}
+	}
+	else if(ReadOwnerIdentifier.second == "WM/WMCollectionGroupID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tCollection Group ID: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		{
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+		}
+		else
+		{
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+		}
+	}
+	else if(ReadOwnerIdentifier.second == "WM/Provider")
+	{
+		std::pair< int, std::string > ReadString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << "\t\t\t\tContent Provider: \"" << ReadString.second << '"' << std::endl;
+	}
+	else if(ReadOwnerIdentifier.second == "WM/UniqueFileIdentifier")
+	{
+		std::pair< int, std::string > ReadString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << "\t\t\t\tUnique File Identifier: \"" << ReadString.second << '"' << std::endl;
 	}
 	else
 	{
