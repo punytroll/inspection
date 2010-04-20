@@ -729,7 +729,7 @@ std::pair< int, std::string > GetISO_8859_1StringTerminatedByEnd(const char * Bu
 		{
 			const char * Character(Buffer + Result.first++);
 			
-			if(*Character != '\0')
+			if(Character[0] != '\0')
 			{
 				Result.second += GetUTF_8CharFromISO_8859_1Char(Character);
 			}
@@ -749,29 +749,32 @@ std::pair< int, std::string > GetISO_8859_1StringTerminatedByEnd(const char * Bu
 	return Result;
 }
 
-int PrintISO_8859_1StringTerminatedByEndOrLength(const char * Buffer, int Length)
+std::pair< int, std::string > GetISO_8859_1StringTerminatedByEndOrLength(const char * Buffer, int Length)
 {
-	int Index(0);
+	std::pair< int, std::string > Result;
 	
 	while(true)
 	{
-		if(Index < Length)
+		if(Result.first < Length)
 		{
-			if(Buffer[Index] != '\0')
+			const char * Character(Buffer + Result.first++);
+			
+			if(Character[0] != '\0')
 			{
-				std::cout << GetUTF_8CharFromISO_8859_1Char(Buffer + Index);
-				Index += 1;
+				Result.second += GetUTF_8CharFromISO_8859_1Char(Character);
 			}
 			else
 			{
-				return Index + 1;
+				break;
 			}
 		}
 		else
 		{
-			return Index;
+			break;
 		}
 	}
+	
+	return Result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1265,7 +1268,10 @@ int Handle23UserTextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tString: \"";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << ReadString.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1315,7 +1321,10 @@ int Handle24UserTextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tString: ";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << ReadString.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1381,7 +1390,10 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	std::cout << std::endl << "\t\t\t\tComment: ";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadComment(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadComment.first;
+		std::cout << ReadComment.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1439,7 +1451,10 @@ int Handle22COMFrame(const char * Buffer, int Length)
 	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadComment(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadComment.first;
+		std::cout << ReadComment.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1505,7 +1520,10 @@ int Handle24COMMFrame(const char * Buffer, int Length)
 	std::cout << std::endl << "\t\t\t\tComment: ";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadComment(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadComment.first;
+		std::cout << ReadComment.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1568,10 +1586,10 @@ int Handle23AttachedPicture(const char * Buffer, int Length)
 int Handle23URLFrame(const char * Buffer, int Length)
 {
 	int Index(0);
+	std::pair< int, std::string > ReadURL(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 	
-	std::cout << "\t\t\t\tURL: \"";
-	Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	std::cout << '"' << std::endl;
+	Index += ReadURL.first;
+	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
 	
 	return Index;
 }
@@ -1600,9 +1618,11 @@ int Handle23UserURLFrame(const char * Buffer, int Length)
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
 	std::cout << '"' << std::endl;
-	std::cout << "\t\t\t\tURL: \"";
-	Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	std::cout << '"' << std::endl;
+	
+	std::pair< int, std::string > ReadURL(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	
+	Index += ReadURL.first;
+	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
 	
 	return Index;
 }
@@ -1629,8 +1649,10 @@ int Handle22And23TextFrame(const char * Buffer, int Length)
 	std::cout << " (" << Encoding << ")" << std::endl;
 	if(Encoding == 0)
 	{
-		std::cout << "\t\t\t\tString: \"";
-		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
 	}
 	else if(Encoding == 1)
 	{
@@ -1691,7 +1713,10 @@ int Handle24TextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tString: \"";
 	if(Encoding == 0)
 	{
-		Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
 	}
 	else if(Encoding == 1)
 	{
@@ -1706,6 +1731,65 @@ int Handle24TextFrame(const char * Buffer, int Length)
 		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	std::cout << '"' << std::endl;
+	
+	return Index;
+}
+
+int Handle23TCMPFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	if(Encoding == 1)
+	{
+		std::cout << "\t\t\t\tByte Order Mark: ";
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			std::cout << "Big Endian";
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		{
+			std::cout << "Little Endian";
+		}
+		else
+		{
+			std::cout << "Bogus Byte Order Mark";
+		}
+		std::cout << " (" << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 1]) + ')' << std::endl;
+	}
+	
+	std::pair< int, std::string > ReadString;
+	
+	if(Encoding == 0)
+	{
+		ReadString = GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		/// @TODO Add this function.
+		//~ ReadString = GetUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << "\t\t\t\tPart of a compilation: \"";
+	if(ReadString.second == "1")
+	{
+		std::cout << "yes";
+	}
+	else if(ReadString.second == "0")
+	{
+		std::cout << "no";
+	}
+	else
+	{
+		std::cout << "<unknown value>";
+	}
+	std::cout << ReadString.second << '"' << std::endl;
+	Index += ReadString.first;
 	
 	return Index;
 }
@@ -1742,9 +1826,22 @@ int Handle24WXXXFrame(const char * Buffer, int Length)
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
 	std::cout << '"' << std::endl;
-	std::cout << "\t\t\t\tURL: \"";
-	Index += PrintISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	std::cout << '"' << std::endl;
+	
+	std::pair< int, std::string > ReadURL(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	
+	Index += ReadURL.first;
+	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
+	
+	return Index;
+}
+
+int Handle23MCDIFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	std::pair< int, std::string > ReadString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	
+	Index += ReadString.first;
+	std::cout << "\t\t\t\tCD Table Of Content: \"" << ReadString.second << '"' << std::endl;
 	
 	return Index;
 }
@@ -1993,28 +2090,29 @@ void vReadFile(const std::string & Path)
 	if(strcmp(Buffer, "TAG") == 0)
 	{
 		std::cout << "ID3v1 TAG:" << std::endl;
+		
+		std::pair< int, std::string > Read;
+		
+		ReadFile.read(Buffer, 30);
 		Buffer[30] = '\0';
+		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
+		std::cout << "\tTitle:\t \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
-		std::cout << "\tTitle:\t \"";
-		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
-		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		Buffer[30] = '\0';
+		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
+		std::cout << "\tArtist:\t \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
-		std::cout << "\tArtist:\t \"";
-		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
-		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
-		ReadFile.read(Buffer, 30);
-		std::cout << "\tAlbum:\t \"";
-		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
-		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		Buffer[30] = '\0';
+		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
+		std::cout << "\tAlbum:\t \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 4);
 		Buffer[4] = '\0';
-		std::cout << "\tYear:\t \"";
-		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 4);
-		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 4);
+		std::cout << "\tYear:\t \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
-		std::cout << "\tComment: \"";
-		PrintISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
-		std::cout << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
+		Buffer[30] = '\0';
+		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
+		std::cout << "\tComment: \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		bID3v11 = false;
 		if(Buffer[28] == '\0')
 		{
@@ -2164,7 +2262,7 @@ int main(int argc, char **argv)
 	// ID3v2.3.0
 	FrameHeader::Handle23("APIC", "Attached picture", Handle23AttachedPicture);
 	FrameHeader::Handle23("COMM", "Comments", Handle23CommentFrame);
-	FrameHeader::Handle23("MCDI", "Music CD identifier", 0);
+	FrameHeader::Handle23("MCDI", "Music CD identifier", Handle23MCDIFrame);
 	FrameHeader::Handle23("PRIV", "Private frame", HandlePRIVFrame);
 	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle22And23TextFrame);
 	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle22And23TextFrame);
@@ -2196,6 +2294,8 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrame);
 	FrameHeader::Forbid23("TDTG", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
 	FrameHeader::Handle23("TDTG", "Tagging time (from tag version 2.4)", Handle24TextFrame);
+	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
+	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
 	
 	// ID3v2.4.0
 	FrameHeader::Handle24("APIC", "Attached picture", 0);
