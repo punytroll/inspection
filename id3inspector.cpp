@@ -1,4 +1,5 @@
 #include <dirent.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -20,11 +21,11 @@ inline void AppendSeparated(std::string & String, const std::string & Append, co
 	String += Append;
 }
 
-std::string GetHexadecimalStringFromCharacter(char Character)
+std::string GetHexadecimalStringFromUInt8(uint8_t Value)
 {
 	std::stringstream Stream;
 	
-	Stream << std::hex << std::setfill('0') << std::setw(2) << std::right << static_cast< unsigned int >(static_cast< unsigned char >(Character));
+	Stream << std::hex << std::setfill('0') << std::setw(2) << std::right << static_cast< unsigned int >(Value);
 	
 	return Stream.str();
 }
@@ -687,26 +688,26 @@ std::pair< int, std::string > GetGUIDString(const char * Buffer, int Length)
 	
 	if(Length >= 16)
 	{
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
 		Result.second += '-';
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
 		Result.second += '-';
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
 		Result.second += '-';
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
 		Result.second += '-';
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromCharacter(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
+		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
 	}
 	else
 	{
@@ -1219,7 +1220,7 @@ int PrintHEXStringTerminatedByLength(const char * Buffer, int Length)
 	
 	while(Index < Length)
 	{
-		std::cout << GetHexadecimalStringFromCharacter(Buffer[Index++]) << ' ';
+		std::cout << GetHexadecimalStringFromUInt8(Buffer[Index++]) << ' ';
 	}
 	
 	return Index;
@@ -1673,7 +1674,7 @@ int Handle24TextFrame(const char * Buffer, int Length)
 		{
 			std::cout << "Bogus Byte Order Mark";
 		}
-		std::cout << " (" << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 1]) + ')' << std::endl;
+		std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
 	}
 	std::cout << "\t\t\t\tString: \"";
 	if(Encoding == 0)
@@ -1848,7 +1849,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 					std::cout << "\t\t\tBytes: ";
 					for(unsigned long int Index = 0; Index < NewFrameHeader->GetSize(); ++Index)
 					{
-						std::cout << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ';
+						std::cout << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ';
 						
 					}
 					std::cout << std::endl;
