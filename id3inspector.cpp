@@ -1758,7 +1758,7 @@ int Handle23TCMPFrame(const char * Buffer, int Length)
 		{
 			std::cout << "Bogus Byte Order Mark";
 		}
-		std::cout << " (" << GetHexadecimalStringFromCharacter(Buffer[Index]) << ' ' << GetHexadecimalStringFromCharacter(Buffer[Index + 1]) + ')' << std::endl;
+		std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
 	}
 	
 	std::pair< int, std::string > ReadString;
