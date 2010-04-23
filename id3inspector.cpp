@@ -1653,7 +1653,7 @@ int Handle22And23TextFrame(const char * Buffer, int Length)
 		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
-		std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
+		std::cout << "\t\t\t\tString: \"" << ReadString.second;
 	}
 	else if(Encoding == 1)
 	{
