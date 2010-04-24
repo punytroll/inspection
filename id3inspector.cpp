@@ -1372,7 +1372,7 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 		std::cout << "<unknown>";
 	}
 	std::cout << " (\"" << LanguageCode << "\")" << std::endl;
-	std::cout << "\t\t\t\tDescription: ";
+	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
@@ -1388,7 +1388,7 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << std::endl << "\t\t\t\tComment: ";
+	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadComment(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
@@ -1404,7 +1404,7 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << '"' << std::endl;
 	
 	return Index;
 }
