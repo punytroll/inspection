@@ -920,15 +920,6 @@ std::pair< int, std::string > GetUCS_2_LEStringTerminatedByEndOrLength(const cha
 	return Result;
 }
 
-int PrintUCS_2_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
-{
-	std::pair< int, std::string > GetString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer, Length));
-	
-	std::cout << GetString.second;
-	
-	return GetString.first;
-}
-
 int PrintUCS_2_LEStringTerminatedByEnd(const char * Buffer, int Length)
 {
 	int Index(0);
@@ -1008,7 +999,10 @@ int PrintUCS_2StringTerminatedByEndOrLength(const char * Buffer, int Length)
 		{
 			Index += 2;
 			// Little Endian by Byte Order Marker
-			Index += PrintUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			std::pair< int, std::string > ReadString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << ReadString.second;
 		}
 		else
 		{
@@ -1670,8 +1664,11 @@ int Handle22And23TextFrame(const char * Buffer, int Length)
 			Index += 2;
 			// Little Endian by BOM
 			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
-			std::cout << "\t\t\t\tString: \"";
-			Index += PrintUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			
+			std::pair< int, std::string > ReadString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index + ReadString.first;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second;
 		}
 		else
 		{
