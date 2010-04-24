@@ -863,29 +863,33 @@ int PrintUCS_2_BEStringTerminatedByEnd(const char * Buffer, int Length)
 	}
 }
 
-int PrintUCS_2_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
+std::pair< int, std::string > GetUCS_2_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 {
-	int Index(0);
+	std::pair< int, std::string > Result;
 	
 	while(true)
 	{
-		if(Index + 1 >= Length)
+		if(Result.first + 1 >= Length)
 		{
-			return Index;
+			break;
 		}
 		else
 		{
-			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
+			const char * Character(Buffer + Result.first);
+			
+			Result.first += 2;
+			if((Character[0] != '\0') || (Character[1] != '\0'))
 			{
-				return Index + 2;
+				Result.second += GetUTF_8CharFromUCS_2_BEChar(Character);
 			}
 			else
 			{
-				std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
-				Index += 2;
+				break;
 			}
 		}
 	}
+	
+	return Result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -992,12 +996,17 @@ int PrintUCS_2StringTerminatedByEndOrLength(const char * Buffer, int Length)
 		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xfe)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xff)))
 		{
 			Index += 2;
+			
 			// Big Endian by Byte Order Marker
-			Index += PrintUCS_2_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			std::pair< int, std::string > ReadString(GetUCS_2_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << ReadString.second;
 		}
 		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xff)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe)))
 		{
 			Index += 2;
+			
 			// Little Endian by Byte Order Marker
 			std::pair< int, std::string > ReadString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
@@ -1656,8 +1665,11 @@ int Handle22And23TextFrame(const char * Buffer, int Length)
 			Index += 2;
 			// Big Endian by BOM
 			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
-			std::cout << "\t\t\t\tString: \"";
-			Index += PrintUCS_2_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			
+			std::pair< int, std::string > ReadString(GetUCS_2_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index + ReadString.first;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second;
 		}
 		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
 		{
