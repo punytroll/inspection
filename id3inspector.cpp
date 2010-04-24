@@ -1637,20 +1637,7 @@ int Handle22And23TextFrame(const char * Buffer, int Length)
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
 	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: ";
-	if(Encoding == 0)
-	{
-		std::cout << "ISO-8859-1";
-	}
-	else if(Encoding == 1)
-	{
-		std::cout << "Unicode UCS-2";
-	}
-	else
-	{
-		std::cout << "<invalid encoding>";
-	}
-	std::cout << " (" << Encoding << ")" << std::endl;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
@@ -1668,7 +1655,7 @@ int Handle22And23TextFrame(const char * Buffer, int Length)
 			
 			std::pair< int, std::string > ReadString(GetUCS_2_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
-			Index + ReadString.first;
+			Index += ReadString.first;
 			std::cout << "\t\t\t\tString: \"" << ReadString.second;
 		}
 		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
@@ -1679,7 +1666,7 @@ int Handle22And23TextFrame(const char * Buffer, int Length)
 			
 			std::pair< int, std::string > ReadString(GetUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
-			Index + ReadString.first;
+			Index += ReadString.first;
 			std::cout << "\t\t\t\tString: \"" << ReadString.second;
 		}
 		else
