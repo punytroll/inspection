@@ -1587,6 +1587,47 @@ int Handle23AttachedPicture(const char * Buffer, int Length)
 	return Length;
 }
 
+int Handle24APICFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	
+	std::pair< int, std::string > ReadMIMEType(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+	
+	Index += ReadMIMEType.first;
+	std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
+	
+	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	std::cout << '"' << std::endl;
+	
+	return Length;
+}
+
 int Handle23URLFrame(const char * Buffer, int Length)
 {
 	int Index(0);
@@ -2296,7 +2337,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
 	
 	// ID3v2.4.0
-	FrameHeader::Handle24("APIC", "Attached picture", 0);
+	FrameHeader::Handle24("APIC", "Attached picture", Handle24APICFrame);
 	FrameHeader::Handle24("COMM", "Comments", Handle24COMMFrame);
 	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24TextFrame);
 	FrameHeader::Handle24("TCOM", "Composer", Handle24TextFrame);
