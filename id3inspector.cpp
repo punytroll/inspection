@@ -1713,7 +1713,7 @@ int Handle24TextFrame(const char * Buffer, int Length)
 		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
-		std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
+		std::cout << ReadString.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -2299,6 +2299,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle24("APIC", "Attached picture", 0);
 	FrameHeader::Handle24("COMM", "Comments", Handle24COMMFrame);
 	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24TextFrame);
+	FrameHeader::Handle24("TCOM", "Composer", Handle24TextFrame);
 	FrameHeader::Handle24("TCON", "Content type", Handle24TextFrame);
 	FrameHeader::Handle24("TCOP", "Copyright message", Handle24TextFrame);
 	FrameHeader::Handle24("TDRC", "Recording time", Handle24TextFrame);
