@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <dirent.h>
 #include <stdint.h>
 #include <string.h>
@@ -116,6 +117,19 @@ std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIString(const s
 			
 			break;
 		}
+	}
+	
+	return Result;
+}
+
+std::pair< bool, uint16_t > GetUInt16LE(const char * Buffer, int Length)
+{
+	std::pair< bool, uint16_t > Result(false, 0);
+	
+	if(Length >= 2)
+	{
+		Result.first = true;
+		Result.second = Buffer[1] * 256 + Buffer[0];
 	}
 	
 	return Result;
@@ -2120,12 +2134,74 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 		Index += ReadString.first;
 		std::cout << "\t\t\t\tUnique File Identifier: \"" << ReadString.second << '"' << std::endl;
 	}
+	else if(ReadOwnerIdentifier.second == "PeakValue")
+	{
+		if(Length - Index == 4)
+		{
+			std::pair< bool, uint16_t > ReadUInt16(GetUInt16LE(Buffer + Index, Length - Index));
+			
+			assert(ReadUInt16.first == true);
+			std::cout << "\t\t\t\tPeak Value: " << ReadUInt16.second << std::endl;
+			Index += 2;
+			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
+			{
+				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
+				std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
+				std::cout << "\t\t\t\tBinary Content of the rest: ";
+				Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
+				std::cout << std::endl;
+			}
+			else
+			{
+				Index += 2;
+			}
+		}
+		else
+		{
+			std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
+			std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
+			std::cout << "\t\t\t\tBinary Content: ";
+			Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
+			std::cout << std::endl;
+		}
+	}
+	else if(ReadOwnerIdentifier.second == "AverageLevel")
+	{
+		if(Length - Index == 4)
+		{
+			std::pair< bool, uint16_t > ReadUInt16(GetUInt16LE(Buffer + Index, Length - Index));
+			
+			assert(ReadUInt16.first == true);
+			std::cout << "\t\t\t\tAverage Level: " << ReadUInt16.second << std::endl;
+			Index += 2;
+			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
+			{
+				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
+				std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
+				std::cout << "\t\t\t\tBinary Content of the rest: ";
+				Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
+				std::cout << std::endl;
+			}
+			else
+			{
+				Index += 2;
+			}
+		}
+		else
+		{
+			std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
+			std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
+			std::cout << "\t\t\t\tBinary Content: ";
+			Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
+			std::cout << std::endl;
+		}
+	}
 	else
 	{
 		std::cout << "\t\t\t\tBinary Content: ";
 		Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
+		std::cout << std::endl;
 	}
-	std::cout << std::endl;
 	
 	return Index;
 }
