@@ -1445,23 +1445,28 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	std::cout << "\t\t\t\tLanguage: ";
 	
 	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
 	
 	Index += 3;
-	
-	std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
-	
-	if(LanguageIterator != g_Languages.end())
+	if(LanguageCode.empty() == false)
 	{
-		std::cout << LanguageIterator->second;
+		std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+		
+		if(LanguageIterator != g_Languages.end())
+		{
+			std::cout << "\t\t\t\tLanguage: " << LanguageIterator->second << " (\"" << LanguageCode << "\")" << std::endl;
+		}
+		else
+		{
+			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << LanguageCode << "\")" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << LanguageCode << "' is not defined by ISO 639-2." << std::endl;
+		}
 	}
 	else
 	{
-		std::cout << "<unknown>";
+		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
 	}
-	std::cout << " (\"" << LanguageCode << "\")" << std::endl;
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
@@ -1506,23 +1511,28 @@ int Handle22COMFrame(const char * Buffer, int Length)
 	
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_2(Encoding) << std::endl;
-	std::cout << "\t\t\t\tLanguage: ";
 	
 	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
 	
 	Index += 3;
-	
-	std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
-	
-	if(LanguageIterator != g_Languages.end())
+	if(LanguageCode.empty() == false)
 	{
-		std::cout << LanguageIterator->second;
+		std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+		
+		if(LanguageIterator != g_Languages.end())
+		{
+			std::cout << "\t\t\t\tLanguage: " << LanguageIterator->second << " (\"" << LanguageCode << "\")" << std::endl;
+		}
+		else
+		{
+			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << LanguageCode << "\")" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << LanguageCode << "' is not defined by ISO 639-2." << std::endl;
+		}
 	}
 	else
 	{
-		std::cout << "<unknown>";
+		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
 	}
-	std::cout << " (\"" << LanguageCode << "\")" << std::endl;
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
@@ -1567,24 +1577,29 @@ int Handle24COMMFrame(const char * Buffer, int Length)
 	
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
-	std::cout << "\t\t\t\tLanguage: ";
 	
 	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
 	
 	Index += 3;
-	
-	std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
-	
-	if(LanguageIterator != g_Languages.end())
+	if(LanguageCode.empty() == false)
 	{
-		std::cout << LanguageIterator->second;
+		std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+		
+		if(LanguageIterator != g_Languages.end())
+		{
+			std::cout << "\t\t\t\tLanguage: " << LanguageIterator->second << " (\"" << LanguageCode << "\")" << std::endl;
+		}
+		else
+		{
+			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << LanguageCode << "\")" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << LanguageCode << "' is not defined by ISO 639-2." << std::endl;
+		}
 	}
 	else
 	{
-		std::cout << "<unknown>";
+		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
 	}
-	std::cout << " (\"" << LanguageCode << "\")" << std::endl;
-	std::cout << "\t\t\t\tDescription: ";
+	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
@@ -1608,7 +1623,7 @@ int Handle24COMMFrame(const char * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << std::endl << "\t\t\t\tComment: ";
+	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadComment(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
@@ -1632,7 +1647,7 @@ int Handle24COMMFrame(const char * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << '"' <<  std::endl;
 	
 	return Index;
 }
@@ -2549,6 +2564,7 @@ int main(int argc, char **argv)
 	g_Encodings2_4.insert(std::make_pair(0x03, "UTF-8 encoded Unicode"));
 	
 	// languages according to ISO-639-2
+	g_Languages.insert(std::make_pair("dut", "Dutch; Flemish"));
 	g_Languages.insert(std::make_pair("eng", "English"));
 	
 	// picture types
@@ -2600,6 +2616,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TCOM", "Composer", Handle22And23TextFrame);
 	FrameHeader::Handle23("TCON", "Content type", Handle23TCONFrame);
 	FrameHeader::Handle23("TCOP", "Copyright message", Handle22And23TextFrame);
+	FrameHeader::Handle23("TDAT", "Date", Handle22And23TextFrame);
 	FrameHeader::Handle23("TENC", "Encoded by", Handle22And23TextFrame);
 	FrameHeader::Handle23("TIT1", "Content group description", Handle22And23TextFrame);
 	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle22And23TextFrame);
@@ -2632,6 +2649,7 @@ int main(int argc, char **argv)
 	// ID3v2.4.0
 	FrameHeader::Handle24("APIC", "Attached picture", Handle24APICFrame);
 	FrameHeader::Handle24("COMM", "Comments", Handle24COMMFrame);
+	FrameHeader::Handle24("PRIV", "Private frame", HandlePRIVFrame);
 	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24TextFrame);
 	FrameHeader::Handle24("TCOM", "Composer", Handle24TextFrame);
 	FrameHeader::Handle24("TCON", "Content type", Handle24TextFrame);
@@ -2644,6 +2662,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle24("TPE2", "Band/orchestra/accompaniment", Handle24TextFrame);
 	FrameHeader::Handle24("TPOS", "Part of a set", Handle24TextFrame);
 	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24TextFrame);
+	FrameHeader::Handle24("TSSE", "Software/Hardware and settings used for encoding", Handle24TextFrame);
 	FrameHeader::Handle24("TXXX", "User defined text information frame", Handle24UserTextFrame);
 	FrameHeader::Handle24("WXXX", "User defined URL link frame", Handle24WXXXFrame);
 	// forbidden tags
