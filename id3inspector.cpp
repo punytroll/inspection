@@ -31,6 +31,22 @@ std::string GetHexadecimalStringFromUInt8(uint8_t Value)
 	return Stream.str();
 }
 
+std::vector< std::string > SplitStringByCharacterPreserveEmpty(const std::string & WMUniqueFileIdentifier, char Separator)
+{
+	std::vector< std::string > Result;
+	std::string::size_type Begin(0);
+	std::string::size_type End(0);
+	
+	while(Begin != std::string::npos)
+	{
+		End = WMUniqueFileIdentifier.find(Separator, Begin);
+		Result.push_back(WMUniqueFileIdentifier.substr(Begin, End - Begin));
+		Begin = End + ((End == std::string::npos) ? (0) : (1));
+	}
+	
+	return Result;
+}
+
 bool IsValidIdentifierCharacter(char Character)
 {
 	return ((Character >= 'A') && (Character <= 'Z')) || ((Character >= '0') && (Character <= '9'));
@@ -749,6 +765,34 @@ std::string GetContentTypeInterpretation2_3(const std::string & ContentType)
 	}
 	
 	return "";
+}
+
+std::pair< bool, std::string > GetWMUniqueFileIdentifierAsAMGIdentifier(const std::string & WMUniqueFileIdentifier)
+{
+	std::pair< bool, std::string > Result(false, "");
+	std::vector< std::string > Tokens(SplitStringByCharacterPreserveEmpty(WMUniqueFileIdentifier, ';'));
+	
+	if(Tokens.size() == 3)
+	{
+		if((Tokens[0].substr(0, 8) == "AMGa_id=") && (Tokens[1].substr(0, 8) == "AMGp_id=") && (Tokens[2].substr(0, 8) == ("AMGt_id=")))
+		{
+			Result.second += "\t\t\t\t\tAlbum Identifier: \"" + Tokens[0].substr(8) + "\"\n";
+			Result.second += "\t\t\t\t\tArtist Identifier: \"" + Tokens[1].substr(8) + "\"\n";
+			Result.second += "\t\t\t\t\tTitle Identifier: \"" + Tokens[2].substr(8) + "\"";
+			Result.first = true;
+		}
+	}
+	
+	return Result;
+}
+
+std::pair< bool, std::string > GetWMUniqueFileIdentifierInterpretation(const std::string & WMUniqueFileIdentifier)
+{
+	std::pair< bool, std::string > Result(false, "");
+	
+	Result = GetWMUniqueFileIdentifierAsAMGIdentifier(WMUniqueFileIdentifier);
+	
+	return Result;
 }
 
 std::string GetPictureTypeString(unsigned int PictureType)
@@ -2148,6 +2192,14 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 		
 		Index += ReadString.first;
 		std::cout << "\t\t\t\tUnique File Identifier: \"" << ReadString.second << '"' << std::endl;
+		
+		std::pair< bool, std::string > Interpretation(GetWMUniqueFileIdentifierInterpretation(ReadString.second));
+		
+		if(Interpretation.first == true)
+		{
+			std::cout << "\t\t\t\tInterpretation as AllMusicGuide fields (http://www.allmusic.com/):" << std::endl;
+			std::cout << Interpretation.second << std::endl;
+		}
 	}
 	else if(ReadOwnerIdentifier.second == "PeakValue")
 	{
