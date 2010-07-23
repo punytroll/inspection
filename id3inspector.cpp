@@ -1894,27 +1894,31 @@ int Handle24TextFrame(const char * Buffer, int Length)
 		}
 		std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
 	}
-	std::cout << "\t\t\t\tString: \"";
-	if(Encoding == 0)
+	std::cout << "\t\t\t\tString(s):\n";
+	while(Index < Length)
 	{
-		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadString.first;
-		std::cout << ReadString.second;
+		std::cout << "\t\t\t\t\t\"";
+		if(Encoding == 0)
+		{
+			std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << ReadString.second;
+		}
+		else if(Encoding == 1)
+		{
+			Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if(Encoding == 2)
+		{
+			Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if(Encoding == 3)
+		{
+			Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		std::cout << '"' << std::endl;
 	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 2)
-	{
-		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 3)
-	{
-		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	std::cout << '"' << std::endl;
 	
 	return Index;
 }
@@ -2710,6 +2714,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle24("TDTG", "Tagging time", Handle24TextFrame);
 	FrameHeader::Handle24("TENC", "Encoded by", Handle24TextFrame);
 	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24TextFrame);
+	FrameHeader::Handle24("TLAN", "Language(s)", Handle24TextFrame);
 	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrame);
 	FrameHeader::Handle24("TPE2", "Band/orchestra/accompaniment", Handle24TextFrame);
 	FrameHeader::Handle24("TPOS", "Part of a set", Handle24TextFrame);
