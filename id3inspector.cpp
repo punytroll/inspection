@@ -2504,7 +2504,7 @@ int main(int argc, char **argv)
 	}
 	if(Paths.size() == 0)
 	{
-		std::cerr << "Usage: " << argv[0] << " <paths> ..." << std::endl;
+		std::cerr << "Usage: " << argv[0] << " [--print-bytes] <paths> ..." << std::endl;
 
 		return 1;
 	}
