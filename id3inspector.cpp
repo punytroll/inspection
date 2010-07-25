@@ -86,7 +86,7 @@ std::string GetUTF_8CharFromUnicodeCodepoint(unsigned int Codepoint)
 	return Result;
 }
 
-std::string GetUTF_8CharFromISO_8859_1Char(const char Buffer[1])
+std::string GetUTF_8CharFromISO_IEC_8859_1Char(const char Buffer[1])
 {
 	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 }
@@ -813,6 +813,23 @@ std::string GetPictureTypeString(unsigned int PictureType)
 	return Result.str();
 }
 
+std::pair< int, std::string > GetHexadecimalStringTerminatedByLength(const char * Buffer, int Length)
+{
+	std::pair< int, std::string > Result;
+	
+	while(Result.first < Length)
+	{
+		if(Result.first > 0)
+		{
+			Result.second += ' ';
+		}
+		Result.second += GetHexadecimalStringFromUInt8(*(Buffer + Result.first));
+		Result.first += 1;
+	}
+	
+	return Result;
+}
+
 std::pair< int, std::string > GetGUIDString(const char * Buffer, int Length)
 {
 	std::pair< int, std::string > Result;
@@ -849,9 +866,33 @@ std::pair< int, std::string > GetGUIDString(const char * Buffer, int Length)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// ISO-8859-1                                                                                    //
+// Queries                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::pair< int, std::string > GetISO_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
+bool IsISO_IEC_8859_1Character(const char * Buffer)
+{
+	return ((Buffer[0] >= 0x20) && (Buffer[0] <= 0x7e)) || ((Buffer[0] >= 0xa0) && (Buffer[0] <= 0xff));
+}
+
+bool IsISO_IEC_8859_1StringWithoutTermination(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(Index < Length)
+	{
+		if(IsISO_IEC_8859_1Character(Buffer + Index) == false)
+		{
+			return false;
+		}
+		Index += 1;
+	}
+	
+	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// ISO/IEC 8859-1                                                                                    //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+std::pair< int, std::string > GetISO_IEC_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
 {
 	std::pair< int, std::string > Result;
 	
@@ -863,7 +904,7 @@ std::pair< int, std::string > GetISO_8859_1StringTerminatedByEnd(const char * Bu
 			
 			if(Character[0] != '\0')
 			{
-				Result.second += GetUTF_8CharFromISO_8859_1Char(Character);
+				Result.second += GetUTF_8CharFromISO_IEC_8859_1Char(Character);
 			}
 			else
 			{
@@ -872,7 +913,7 @@ std::pair< int, std::string > GetISO_8859_1StringTerminatedByEnd(const char * Bu
 		}
 		else
 		{
-			std::cout << "*** ERROR *** ISO-8859-1 string should be null-terminated but exceeds its possible length." << std::endl;
+			std::cout << "*** ERROR *** ISO/IEC 8859-1 string should be null-terminated but exceeds its possible length." << std::endl;
 			
 			break;
 		}
@@ -881,7 +922,7 @@ std::pair< int, std::string > GetISO_8859_1StringTerminatedByEnd(const char * Bu
 	return Result;
 }
 
-std::pair< int, std::string > GetISO_8859_1StringTerminatedByEndOrLength(const char * Buffer, int Length)
+std::pair< int, std::string > GetISO_IEC_8859_1StringTerminatedByEndOrLength(const char * Buffer, int Length)
 {
 	std::pair< int, std::string > Result;
 	
@@ -893,7 +934,7 @@ std::pair< int, std::string > GetISO_8859_1StringTerminatedByEndOrLength(const c
 			
 			if(Character[0] != '\0')
 			{
-				Result.second += GetUTF_8CharFromISO_8859_1Char(Character);
+				Result.second += GetUTF_8CharFromISO_IEC_8859_1Char(Character);
 			}
 			else
 			{
@@ -1386,7 +1427,7 @@ int Handle23UserTextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: ";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -1403,7 +1444,7 @@ int Handle23UserTextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tString: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadString(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
 		std::cout << ReadString.second;
@@ -1431,7 +1472,7 @@ int Handle24UserTextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: ";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -1456,7 +1497,7 @@ int Handle24UserTextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tString: ";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadString(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
 		std::cout << ReadString.second;
@@ -1514,7 +1555,7 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -1530,7 +1571,7 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadComment(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadComment(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadComment.first;
 		std::cout << ReadComment.second;
@@ -1580,7 +1621,7 @@ int Handle22COMFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -1596,7 +1637,7 @@ int Handle22COMFrame(const char * Buffer, int Length)
 	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadComment(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadComment(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadComment.first;
 		std::cout << ReadComment.second;
@@ -1646,7 +1687,7 @@ int Handle24COMMFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -1670,7 +1711,7 @@ int Handle24COMMFrame(const char * Buffer, int Length)
 	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadComment(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadComment(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadComment.first;
 		std::cout << ReadComment.second;
@@ -1704,7 +1745,7 @@ int Handle23AttachedPicture(const char * Buffer, int Length)
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
 	
-	std::pair< int, std::string > ReadMIMEType(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+	std::pair< int, std::string > ReadMIMEType(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 	
 	Index += ReadMIMEType.first;
 	std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
@@ -1715,7 +1756,7 @@ int Handle23AttachedPicture(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -1741,7 +1782,7 @@ int Handle24APICFrame(const char * Buffer, int Length)
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
 	
-	std::pair< int, std::string > ReadMIMEType(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+	std::pair< int, std::string > ReadMIMEType(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 	
 	Index += ReadMIMEType.first;
 	std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
@@ -1752,7 +1793,7 @@ int Handle24APICFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -1777,7 +1818,7 @@ int Handle24APICFrame(const char * Buffer, int Length)
 int Handle23URLFrame(const char * Buffer, int Length)
 {
 	int Index(0);
-	std::pair< int, std::string > ReadURL(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	std::pair< int, std::string > ReadURL(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 	
 	Index += ReadURL.first;
 	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
@@ -1795,7 +1836,7 @@ int Handle23UserURLFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -1810,7 +1851,7 @@ int Handle23UserURLFrame(const char * Buffer, int Length)
 	}
 	std::cout << '"' << std::endl;
 	
-	std::pair< int, std::string > ReadURL(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	std::pair< int, std::string > ReadURL(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 	
 	Index += ReadURL.first;
 	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
@@ -1827,7 +1868,7 @@ int Handle22And23TextFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadString(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
 		std::cout << "\t\t\t\tString: \"" << ReadString.second;
@@ -1900,7 +1941,7 @@ int Handle24TextFrame(const char * Buffer, int Length)
 		std::cout << "\t\t\t\t\t\"";
 		if(Encoding == 0)
 		{
-			std::pair< int, std::string > ReadString(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			std::pair< int, std::string > ReadString(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += ReadString.first;
 			std::cout << ReadString.second;
@@ -1952,7 +1993,7 @@ int Handle23TCMPFrame(const char * Buffer, int Length)
 	
 	if(Encoding == 0)
 	{
-		ReadString = GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		ReadString = GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else if(Encoding == 1)
 	{
@@ -1992,7 +2033,7 @@ int Handle24WXXXFrame(const char * Buffer, int Length)
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
 		std::cout << ReadDescription.second;
@@ -2015,7 +2056,7 @@ int Handle24WXXXFrame(const char * Buffer, int Length)
 	}
 	std::cout << '"' << std::endl;
 	
-	std::pair< int, std::string > ReadURL(GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	std::pair< int, std::string > ReadURL(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 	
 	Index += ReadURL.first;
 	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
@@ -2046,7 +2087,7 @@ int Handle23TCONFrame(const char * Buffer, int Length)
 	
 	if(Encoding == 0)
 	{
-		ReadString = GetISO_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		ReadString = GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else if(Encoding == 1)
 	{
@@ -2086,10 +2127,41 @@ int Handle23TCONFrame(const char * Buffer, int Length)
 	return Index;
 }
 
+int Handle23UFIDFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	std::pair< int, std::string > ReadOwnerIdentifier(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+	
+	Index += ReadOwnerIdentifier.first;
+	std::cout << "\t\t\t\tOwner Identifier: \"" << ReadOwnerIdentifier.second << '"' << std::endl;
+	if(ReadOwnerIdentifier.second.length() == 0)
+	{
+		std::cout << "*** ERROR *** Owner Identifier must be a valid URL, not empty." << std::endl;
+	}
+	if(Length - Index > 64)
+	{
+		std::cout << "*** ERROR *** Identifier field must not be longer than 64 bytes. Proceeding with interpretation." << std::endl;
+	}
+	
+	std::pair< int, std::string > ReadIdentifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+	
+	std::cout << "\t\t\t\tIdentifier (binary): " << ReadIdentifier.second << std::endl;
+	
+	if(IsISO_IEC_8859_1StringWithoutTermination(Buffer + Index, Length - Index) == true)
+	{
+		std::pair< int, std::string > ReadIdentifierAsString(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		std::cout << "\t\t\t\tIdentifier (string): \"" << ReadIdentifierAsString.second << "\" (interpreted as ISO/IEC 8859-1)" << std::endl;
+	}
+	Index += ReadIdentifier.first;
+	
+	return Index;
+}
+
 int HandlePRIVFrame(const char * Buffer, int Length)
 {
 	int Index(0);
-	std::pair< int, std::string > ReadOwnerIdentifier(GetISO_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+	std::pair< int, std::string > ReadOwnerIdentifier(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
 	
 	Index += ReadOwnerIdentifier.first;
 	std::cout << "\t\t\t\tOwner Identifier: " << ReadOwnerIdentifier.second << std::endl;
@@ -2405,23 +2477,23 @@ void vReadFile(const std::string & Path)
 		
 		ReadFile.read(Buffer, 30);
 		Buffer[30] = '\0';
-		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
+		Read = GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer, 30);
 		std::cout << "\tTitle:\t \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
 		Buffer[30] = '\0';
-		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
+		Read = GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer, 30);
 		std::cout << "\tArtist:\t \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
 		Buffer[30] = '\0';
-		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
+		Read = GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer, 30);
 		std::cout << "\tAlbum:\t \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 4);
 		Buffer[4] = '\0';
-		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 4);
+		Read = GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer, 4);
 		std::cout << "\tYear:\t \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		ReadFile.read(Buffer, 30);
 		Buffer[30] = '\0';
-		Read = GetISO_8859_1StringTerminatedByEndOrLength(Buffer, 30);
+		Read = GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer, 30);
 		std::cout << "\tComment: \"" << Read.second << "\"  [length: " << strlen(Buffer) << "]" << std::endl;
 		bID3v11 = false;
 		if(Buffer[28] == '\0')
@@ -2691,6 +2763,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrame);
 	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23UserTextFrame);
 	FrameHeader::Handle23("TYER", "Year", Handle22And23TextFrame);
+	FrameHeader::Handle23("UFID", "Unique file identifier", Handle23UFIDFrame);
 	FrameHeader::Handle23("WCOM", "Commercial information", 0);
 	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23URLFrame);
 	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23UserURLFrame);
