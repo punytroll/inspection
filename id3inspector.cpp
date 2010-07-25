@@ -2553,6 +2553,78 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 			std::cout << Interpretation.second << std::endl;
 		}
 	}
+	else if(ReadOwnerIdentifier.second == "ZuneAlbumArtistMediaID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tZune Album Artist Media ID: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		{
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+		}
+		else
+		{
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+		}
+	}
+	else if(ReadOwnerIdentifier.second == "ZuneAlbumMediaID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tZune Album Media ID: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		{
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+		}
+		else
+		{
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+		}
+	}
+	else if(ReadOwnerIdentifier.second == "ZuneCollectionID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tZune Collection ID: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		{
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+		}
+		else
+		{
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+		}
+	}
+	else if(ReadOwnerIdentifier.second == "ZuneMediaID")
+	{
+		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		
+		Index += ReadGUID.first;
+		std::cout << "\t\t\t\tZune Media ID: ";
+		
+		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		
+		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		{
+			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+		}
+		else
+		{
+			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+		}
+	}
 	else if(ReadOwnerIdentifier.second == "CompID")
 	{
 		std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
@@ -2563,6 +2635,19 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 			std::pair< int, std::string > ReadString(GetUCS_2_LEStringWithoutByteOrderMarkWithTerminationAtStart(Buffer + Index, Length - Index));
 			
 			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (interpreted as UCS-2LE without BOM with termination)" << std::endl;
+		}
+		Index += ReadHexadecimal.first;
+	}
+	else if(ReadOwnerIdentifier.second == "MachineCode")
+	{
+		std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		
+		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
+		if(IsISO_IEC_8859_1StringWithoutTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > ReadString(GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (interpreted as ISO/IEC 8859-1 without termination)" << std::endl;
 		}
 		Index += ReadHexadecimal.first;
 	}
@@ -3043,13 +3128,16 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TCOP", "Copyright message", Handle22And23TextFrame);
 	FrameHeader::Handle23("TDAT", "Date", Handle22And23TextFrame);
 	FrameHeader::Handle23("TENC", "Encoded by", Handle22And23TextFrame);
+	FrameHeader::Handle23("TIME", "Time", Handle22And23TextFrame);
 	FrameHeader::Handle23("TIT1", "Content group description", Handle22And23TextFrame);
 	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle22And23TextFrame);
 	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle22And23TextFrame);
 	FrameHeader::Handle23("TLAN", "Language(s)", Handle22And23TextFrame);
 	FrameHeader::Handle23("TLEN", "Length", Handle22And23TextFrame);
 	FrameHeader::Handle23("TMED", "Media type", Handle22And23TextFrame);
+	FrameHeader::Handle23("TOFN", "Original filename", Handle22And23TextFrame);
 	FrameHeader::Handle23("TOPE", "Original artist(s)/performer(s)", Handle22And23TextFrame);
+	FrameHeader::Handle23("TOWN", "File owner/licensee", Handle22And23TextFrame);
 	FrameHeader::Handle23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle22And23TextFrame);
 	FrameHeader::Handle23("TPE2", "Band / Orchestra / Accompaniment", Handle22And23TextFrame);
 	FrameHeader::Handle23("TPE3", "Conductor / Performer Refinement", Handle22And23TextFrame);
@@ -3057,6 +3145,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TPOS", "Part of a set", Handle22And23TextFrame);
 	FrameHeader::Handle23("TPUB", "Publisher", Handle22And23TextFrame);
 	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle22And23TextFrame);
+	FrameHeader::Handle23("TRDA", "Recording dates", Handle22And23TextFrame);
 	FrameHeader::Handle23("TSRC", "ISRC (international standard recording code)", Handle23TSRCFrame);
 	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrame);
 	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23UserTextFrame);
