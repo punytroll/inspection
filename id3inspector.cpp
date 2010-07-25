@@ -86,18 +86,24 @@ std::string GetUTF_8CharFromUnicodeCodepoint(unsigned int Codepoint)
 	return Result;
 }
 
-std::string GetUTF_8CharFromISO_IEC_8859_1Char(const char Buffer[1])
+std::string GetUTF_8CharFromISO_IEC_8859_1Character(const char * Buffer, int Length)
 {
+	assert(Length >= 1);
+	
 	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 }
 
-std::string GetUTF_8CharFromUCS_2_BEChar(const char Buffer[2])
+std::string GetUTF_8CharFromUCS_2_BECharacter(const char * Buffer, int Length)
 {
+	assert(Length >= 2);
+	
 	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])));
 }
 
-std::string GetUTF_8CharFromUCS_2_LEChar(const char Buffer[2])
+std::string GetUTF_8CharFromUCS_2_LECharacter(const char * Buffer, int Length)
 {
+	assert(Length >= 2);
+	
 	return GetUTF_8CharFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
 }
 
@@ -868,9 +874,27 @@ std::pair< int, std::string > GetGUIDString(const char * Buffer, int Length)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Queries                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-bool IsISO_IEC_8859_1Character(const char * Buffer)
+bool IsISO_IEC_8859_1Character(const char * Buffer, int Length);
+bool IsISO_IEC_8859_1StringWithoutTermination(const char * Buffer, int Length);
+bool IsISO_IEC_8859_1Termination(const char * Buffer, int Length);
+bool IsUCS_2_BECharacter(const char * Buffer, int Length);
+bool IsUCS_2_BEStringWithoutByteOrderMarkWithTermination(const char * Buffer, int Length);
+bool IsUCS_2_BETermination(const char * Buffer, int Length);
+bool IsUCS_2_LECharacter(const char * Buffer, int Length);
+bool IsUCS_2_LEStringWithoutByteOrderMarkWithTermination(const char * Buffer, int Length);
+bool IsUCS_2_LETermination(const char * Buffer, int Length);
+bool StartsWithISO_IEC_8859_1StringWithTermination(const char * Buffer, int Length);
+
+bool IsISO_IEC_8859_1Character(const char * Buffer, int Length)
 {
-	return ((Buffer[0] >= 0x20) && (Buffer[0] <= 0x7e)) || ((Buffer[0] >= 0xa0) && (Buffer[0] <= 0xff));
+	if(Length >= 1)
+	{
+		return ((Buffer[0] >= 0x20) && (Buffer[0] <= 0x7e)) || ((Buffer[0] >= 0xa0) && (Buffer[0] <= 0xff));
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool IsISO_IEC_8859_1StringWithoutTermination(const char * Buffer, int Length)
@@ -879,7 +903,7 @@ bool IsISO_IEC_8859_1StringWithoutTermination(const char * Buffer, int Length)
 	
 	while(Index < Length)
 	{
-		if(IsISO_IEC_8859_1Character(Buffer + Index) == false)
+		if(IsISO_IEC_8859_1Character(Buffer + Index, Length - Index) == false)
 		{
 			return false;
 		}
@@ -889,8 +913,150 @@ bool IsISO_IEC_8859_1StringWithoutTermination(const char * Buffer, int Length)
 	return true;
 }
 
+bool IsISO_IEC_8859_1Termination(const char * Buffer, int Length)
+{
+	if(Length >= 1)
+	{
+		return Buffer[0] == 0x00;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IsUCS_2_BECharacter(const char * Buffer, int Length)
+{
+	if(Length >= 2)
+	{
+		return (Buffer[0] < 0xd8) || (Buffer[0] > 0xdf);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IsUCS_2_BEStringWithoutByteOrderMarkWithTermination(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	if((Length < 2) || (Length % 2 != 0))
+	{
+		return false;
+	}
+	else
+	{
+		while(Index < Length - 2)
+		{
+			if(IsUCS_2_BECharacter(Buffer + Index, Length - Index) == false)
+			{
+				return false;
+			}
+			Index += 2;
+		}
+		if(IsUCS_2_BETermination(Buffer + Index, Length - Index) == false)
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+bool IsUCS_2_BETermination(const char * Buffer, int Length)
+{
+	if(Length >= 2)
+	{
+		return Buffer[0] == 0x00 && Buffer[1] == 0x00;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IsUCS_2_LECharacter(const char * Buffer, int Length)
+{
+	if(Length >= 2)
+	{
+		return (Buffer[1] < 0xd8) || (Buffer[1] > 0xdf);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IsUCS_2_LEStringWithoutByteOrderMarkWithTermination(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	if((Length < 2) || (Length % 2 != 0))
+	{
+		return false;
+	}
+	else
+	{
+		while(Index < Length - 2)
+		{
+			if(IsUCS_2_LECharacter(Buffer + Index, Length - Index) == false)
+			{
+				return false;
+			}
+			Index += 2;
+		}
+		if(IsUCS_2_LETermination(Buffer + Index, Length - Index) == false)
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+bool IsUCS_2_LETermination(const char * Buffer, int Length)
+{
+	if(Length >= 2)
+	{
+		return Buffer[1] == 0x00 && Buffer[0] == 0x00;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool StartsWithISO_IEC_8859_1StringWithTermination(const char * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 <= Length)
+		{
+			if(IsISO_IEC_8859_1Termination(Buffer + Index, Length - Index) == true)
+			{
+				return true;
+			}
+			else if(IsISO_IEC_8859_1Character(Buffer + Index, Length - Index) == true)
+			{
+				Index += 1;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// ISO/IEC 8859-1                                                                                    //
+// ISO/IEC 8859-1                                                                                //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::pair< int, std::string > GetISO_IEC_8859_1StringTerminatedByEnd(const char * Buffer, int Length)
 {
@@ -898,24 +1064,21 @@ std::pair< int, std::string > GetISO_IEC_8859_1StringTerminatedByEnd(const char 
 	
 	while(true)
 	{
-		if(Result.first < Length)
+		assert(Result.first + 1 <= Length);
+		if(IsISO_IEC_8859_1Termination(Buffer + Result.first, Length - Result.first) == true)
 		{
-			const char * Character(Buffer + Result.first++);
+			Result.first += 1;
 			
-			if(Character[0] != '\0')
-			{
-				Result.second += GetUTF_8CharFromISO_IEC_8859_1Char(Character);
-			}
-			else
-			{
-				break;
-			}
+			break;
+		}
+		else if(IsISO_IEC_8859_1Character(Buffer + Result.first, Length - Result.first) == true)
+		{
+			Result.second += GetUTF_8CharFromISO_IEC_8859_1Character(Buffer + Result.first, Length - Result.first);
+			Result.first += 1;
 		}
 		else
 		{
-			std::cout << "*** ERROR *** ISO/IEC 8859-1 string should be null-terminated but exceeds its possible length." << std::endl;
-			
-			break;
+			assert(false);
 		}
 	}
 	
@@ -928,17 +1091,22 @@ std::pair< int, std::string > GetISO_IEC_8859_1StringTerminatedByEndOrLength(con
 	
 	while(true)
 	{
-		if(Result.first < Length)
+		if(Result.first + 1 <= Length)
 		{
-			const char * Character(Buffer + Result.first++);
-			
-			if(Character[0] != '\0')
+			if(IsISO_IEC_8859_1Termination(Buffer + Result.first, Length - Result.first) == true)
 			{
-				Result.second += GetUTF_8CharFromISO_IEC_8859_1Char(Character);
+				Result.first += 1;
+				
+				break;
+			}
+			else if(IsISO_IEC_8859_1Character(Buffer + Result.first, Length - Result.first) == true)
+			{
+				Result.second += GetUTF_8CharFromISO_IEC_8859_1Character(Buffer + Result.first, Length - Result.first);
+				Result.first += 1;
 			}
 			else
 			{
-				break;
+				assert(false);
 			}
 		}
 		else
@@ -1028,7 +1196,7 @@ int PrintUCS_2_BEStringTerminatedByEnd(const char * Buffer, int Length)
 			}
 			else
 			{
-				std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
+				std::cout << GetUTF_8CharFromUCS_2_BECharacter(Buffer + Index, Length - Index);
 				Index += 2;
 			}
 		}
@@ -1041,23 +1209,27 @@ std::pair< int, std::string > GetUCS_2_BEStringTerminatedByEndOrLength(const cha
 	
 	while(true)
 	{
-		if(Result.first + 1 >= Length)
+		if(Result.first + 2 <= Length)
 		{
-			break;
-		}
-		else
-		{
-			const char * Character(Buffer + Result.first);
-			
-			Result.first += 2;
-			if((Character[0] != '\0') || (Character[1] != '\0'))
+			if(IsUCS_2_BETermination(Buffer + Result.first, Length - Result.first) == true)
 			{
-				Result.second += GetUTF_8CharFromUCS_2_BEChar(Character);
+				Result.first += 1;
+				
+				break;
+			}
+			else if(IsUCS_2_BECharacter(Buffer + Result.first, Length - Result.first) == true)
+			{
+				Result.second += GetUTF_8CharFromUCS_2_BECharacter(Buffer + Result.first, Length - Result.first);
+				Result.first += 2;
 			}
 			else
 			{
-				break;
+				assert(false);
 			}
+		}
+		else
+		{
+			break;
 		}
 	}
 	
@@ -1073,23 +1245,27 @@ std::pair< int, std::string > GetUCS_2_LEStringTerminatedByEndOrLength(const cha
 	
 	while(true)
 	{
-		if(Result.first + 1 >= Length)
+		if(Result.first + 2 <= Length)
 		{
-			break;
-		}
-		else
-		{
-			const char * Character(Buffer + Result.first);
-			
-			Result.first += 2;
-			if((Character[0] != '\0') || (Character[1] != '\0'))
+			if(IsUCS_2_LETermination(Buffer + Result.first, Length - Result.first) == true)
 			{
-				Result.second += GetUTF_8CharFromUCS_2_LEChar(Character);
+				Result.first += 2;
+				
+				break;
+			}
+			else if(IsUCS_2_LECharacter(Buffer + Result.first, Length - Result.first) == true)
+			{
+				Result.second += GetUTF_8CharFromUCS_2_LECharacter(Buffer + Result.first, Length - Result.first);
+				Result.first += 2;
 			}
 			else
 			{
-				break;
+				assert(false);
 			}
+		}
+		else
+		{
+			break;
 		}
 	}
 	
@@ -1116,11 +1292,44 @@ int PrintUCS_2_LEStringTerminatedByEnd(const char * Buffer, int Length)
 			}
 			else
 			{
-				std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
+				std::cout << GetUTF_8CharFromUCS_2_LECharacter(Buffer + Index, Length - Index);
 				Index += 2;
 			}
 		}
 	}
+}
+
+std::pair< int, std::string > GetUCS_2_LEStringWithoutByteOrderMarkWithTerminationAtStart(const char * Buffer, int Length)
+{
+	std::pair< int, std::string > Result;
+	
+	while(true)
+	{
+		if(Result.first + 2 > Length)
+		{
+			assert(false);
+		}
+		else
+		{
+			if(IsUCS_2_LETermination(Buffer + Result.first, Length - Result.first) == true)
+			{
+				Result.first += 2;
+				
+				break;
+			}
+			else if(IsUCS_2_LECharacter(Buffer + Result.first, Length - Result.first) == true)
+			{
+				Result.second += GetUTF_8CharFromUCS_2_LECharacter(Buffer + Result.first, Length - Result.first);
+				Result.first += 2;
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+	}
+	
+	return Result;
 }
 
 
@@ -1228,7 +1437,7 @@ int PrintUTF_16_BEStringTerminatedByEnd(const char * Buffer, int Length)
 				}
 				else
 				{
-					std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
+					std::cout << GetUTF_8CharFromUCS_2_BECharacter(Buffer + Index, Length - Index);
 				}
 				Index += 2;
 			}
@@ -1260,7 +1469,7 @@ int PrintUTF_16_BEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 				}
 				else
 				{
-					std::cout << GetUTF_8CharFromUCS_2_BEChar(Buffer + Index);
+					std::cout << GetUTF_8CharFromUCS_2_BECharacter(Buffer + Index, Length - Index);
 				}
 				Index += 2;
 			}
@@ -1297,7 +1506,7 @@ int PrintUTF_16_LEStringTerminatedByEnd(const char * Buffer, int Length)
 				}
 				else
 				{
-					std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
+					std::cout << GetUTF_8CharFromUCS_2_LECharacter(Buffer + Index, Length - Index);
 				}
 				Index += 2;
 			}
@@ -1329,7 +1538,7 @@ int PrintUTF_16_LEStringTerminatedByEndOrLength(const char * Buffer, int Length)
 				}
 				else
 				{
-					std::cout << GetUTF_8CharFromUCS_2_LEChar(Buffer + Index);
+					std::cout << GetUTF_8CharFromUCS_2_LECharacter(Buffer + Index, Length - Index);
 				}
 				Index += 2;
 			}
@@ -1739,14 +1948,25 @@ int Handle23AttachedPicture(const char * Buffer, int Length)
 	
 	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
+	Index += 1;
 	std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
 	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
-		
-		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
+		if(StartsWithISO_IEC_8859_1StringWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > ReadDescription(GetISO_IEC_8859_1StringTerminatedByEnd(Buffer + Index, Length - Index));
+			
+			Index += ReadDescription.first;
+			std::cout << ReadDescription.second;
+		}
+		else
+		{
+			std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+			
+			std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
+			std::cout << "              Binary content: " << ReadHexadecimal.second << std::endl;
+		}
 	}
 	else if(Encoding == 1)
 	{
@@ -2263,6 +2483,19 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 			std::cout << "\t\t\t\tInterpretation as AllMusicGuide fields (http://www.allmusic.com/):" << std::endl;
 			std::cout << Interpretation.second << std::endl;
 		}
+	}
+	else if(ReadOwnerIdentifier.second == "CompID")
+	{
+		std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		
+		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
+		if(IsUCS_2_LEStringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > ReadString(GetUCS_2_LEStringWithoutByteOrderMarkWithTerminationAtStart(Buffer + Index, Length - Index));
+			
+			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (interpreted as UCS-2LE without BOM with termination)" << std::endl;
+		}
+		Index += ReadHexadecimal.first;
 	}
 	else if(ReadOwnerIdentifier.second == "PeakValue")
 	{
