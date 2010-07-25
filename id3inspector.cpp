@@ -687,7 +687,8 @@ private:
 };
 
 std::map< unsigned int, std::string > g_Genres1_0;
-std::map< std::string, std::string > g_Languages;
+std::map< std::string, std::string > g_ISO_639_2_Codes;
+std::map< std::string, std::string > g_ISO_3166_1_Alpha_2_Codes;
 std::map< unsigned int, std::string > g_PictureTypes;
 std::map< unsigned int, std::string > g_Encodings2_2;
 std::map< unsigned int, std::string > g_Encodings2_3;
@@ -1727,21 +1728,21 @@ int Handle23CommentFrame(const char * Buffer, int Length)
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
 	
-	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
+	std::string ISO_639_2_Code(Buffer + Index, Buffer + Index + 3);
 	
 	Index += 3;
-	if(LanguageCode.empty() == false)
+	if(ISO_639_2_Code.empty() == false)
 	{
-		std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+		std::map< std::string, std::string >::iterator ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
 		
-		if(LanguageIterator != g_Languages.end())
+		if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 		{
-			std::cout << "\t\t\t\tLanguage: " << LanguageIterator->second << " (\"" << LanguageCode << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage: " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
 		}
 		else
 		{
-			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << LanguageCode << "\")" << std::endl;
-			std::cout << "*** ERROR *** The language code '" << LanguageCode << "' is not defined by ISO 639-2." << std::endl;
+			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
 		}
 	}
 	else
@@ -1793,21 +1794,21 @@ int Handle22COMFrame(const char * Buffer, int Length)
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_2(Encoding) << std::endl;
 	
-	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
+	std::string ISO_639_2Code(Buffer + Index, Buffer + Index + 3);
 	
 	Index += 3;
-	if(LanguageCode.empty() == false)
+	if(ISO_639_2Code.empty() == false)
 	{
-		std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+		std::map< std::string, std::string >::iterator ISO_639_2Iterator(g_ISO_639_2_Codes.find(ISO_639_2Code));
 		
-		if(LanguageIterator != g_Languages.end())
+		if(ISO_639_2Iterator != g_ISO_639_2_Codes.end())
 		{
-			std::cout << "\t\t\t\tLanguage: " << LanguageIterator->second << " (\"" << LanguageCode << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage: " << ISO_639_2Iterator->second << " (\"" << ISO_639_2Code << "\")" << std::endl;
 		}
 		else
 		{
-			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << LanguageCode << "\")" << std::endl;
-			std::cout << "*** ERROR *** The language code '" << LanguageCode << "' is not defined by ISO 639-2." << std::endl;
+			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2Code << "\")" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << ISO_639_2Code << "' is not defined by ISO 639-2." << std::endl;
 		}
 	}
 	else
@@ -1859,21 +1860,21 @@ int Handle24COMMFrame(const char * Buffer, int Length)
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
 	
-	std::string LanguageCode(Buffer + Index, Buffer + Index + 3);
+	std::string ISO_639_2_Code(Buffer + Index, Buffer + Index + 3);
 	
 	Index += 3;
-	if(LanguageCode.empty() == false)
+	if(ISO_639_2_Code.empty() == false)
 	{
-		std::map< std::string, std::string >::iterator LanguageIterator(g_Languages.find(LanguageCode));
+		std::map< std::string, std::string >::iterator ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
 		
-		if(LanguageIterator != g_Languages.end())
+		if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 		{
-			std::cout << "\t\t\t\tLanguage: " << LanguageIterator->second << " (\"" << LanguageCode << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage: " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
 		}
 		else
 		{
-			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << LanguageCode << "\")" << std::endl;
-			std::cout << "*** ERROR *** The language code '" << LanguageCode << "' is not defined by ISO 639-2." << std::endl;
+			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
 		}
 	}
 	else
@@ -2329,6 +2330,74 @@ int Handle23TCONFrame(const char * Buffer, int Length)
 	if(Interpretation.empty() == false)
 	{
 		std::cout << "\t\t\t\tInterpretation: " << Interpretation << std::endl;
+	}
+	
+	return Index;
+}
+
+int Handle23TSRCFrame(const char * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	
+	std::pair< int, std::string > ReadString;
+	
+	if(Encoding == 0)
+	{
+		ReadString = GetISO_IEC_8859_1StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			ReadString = GetUCS_2_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			ReadString = GetUCS_2_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	Index += ReadString.first;
+	std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
+	
+	if(ReadString.second.length() == 12)
+	{
+		std::string ISO_3166_1_Alpha_2_Code(ReadString.second.substr(0, 2));
+		std::map< std::string, std::string >::iterator ISO_3166_1_Alpha_2_Iterator(g_ISO_3166_1_Alpha_2_Codes.find(ISO_3166_1_Alpha_2_Code));
+		
+		if(ISO_3166_1_Alpha_2_Iterator != g_ISO_3166_1_Alpha_2_Codes.end())
+		{
+			std::cout << "\t\t\t\t\tCountry: " << ISO_3166_1_Alpha_2_Iterator->second << " (\"" << ISO_3166_1_Alpha_2_Code << "\")" << std::endl;
+		}
+		else
+		{
+			std::cout << "\t\t\t\t\tCountry: <unknown> (\"" << ISO_3166_1_Alpha_2_Code << "\")" << std::endl;
+			std::cout << "*** ERROR *** The country code '" << ISO_3166_1_Alpha_2_Code << "' is not defined by ISO 3166-1 alpha-2." << std::endl;
+		}
+		std::cout << "\t\t\t\t\tRegistrant code: \"" << ReadString.second.substr(2, 3) << '"' << std::endl;
+		std::cout << "\t\t\t\t\tYear of registration: \"" << ReadString.second.substr(5, 2) << '"' << std::endl;
+		std::cout << "\t\t\t\t\tRegistration number: \"" << ReadString.second.substr(7, 5) << '"' << std::endl;
+	}
+	else
+	{
+		std::cout << "*** ERROR *** The international standard recording code defined by ISO 3901 requires the code to be 12 characters long, not " << ReadString.second.length() << "." << std::endl;
 	}
 	
 	return Index;
@@ -2903,22 +2972,25 @@ int main(int argc, char **argv)
 	g_Genres1_0.insert(std::make_pair(79, "Hard Rock"));
 	
 	// encodings for version 2.2
-	g_Encodings2_2.insert(std::make_pair(0x00, "ISO-8859-1"));
+	g_Encodings2_2.insert(std::make_pair(0x00, "ISO/IEC 8859-1"));
 	g_Encodings2_2.insert(std::make_pair(0x01, "UCS-2 encoded Unicode"));
 	
 	// encodings for version 2.3
-	g_Encodings2_3.insert(std::make_pair(0x00, "ISO-8859-1"));
+	g_Encodings2_3.insert(std::make_pair(0x00, "ISO/IEC 8859-1"));
 	g_Encodings2_3.insert(std::make_pair(0x01, "UCS-2 encoded Unicode"));
 	
 	// encodings for version 2.4
-	g_Encodings2_4.insert(std::make_pair(0x00, "ISO-8859-1"));
+	g_Encodings2_4.insert(std::make_pair(0x00, "ISO/IEC 8859-1"));
 	g_Encodings2_4.insert(std::make_pair(0x01, "UTF-16 encoded Unicode with Byte Order Mark"));
 	g_Encodings2_4.insert(std::make_pair(0x02, "UTF-16BE encoded Unicode in Big Endian"));
 	g_Encodings2_4.insert(std::make_pair(0x03, "UTF-8 encoded Unicode"));
 	
-	// languages according to ISO-639-2
-	g_Languages.insert(std::make_pair("dut", "Dutch; Flemish"));
-	g_Languages.insert(std::make_pair("eng", "English"));
+	// language codes according to ISO 639-2
+	g_ISO_639_2_Codes.insert(std::make_pair("dut", "Dutch; Flemish"));
+	g_ISO_639_2_Codes.insert(std::make_pair("eng", "English"));
+	
+	// country codes according to ISO 3166-1 alpha-2
+	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("ZA", "South Africa"));
 	
 	// picture types
 	g_PictureTypes.insert(std::make_pair(0x00, "Other"));
@@ -2985,6 +3057,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TPOS", "Part of a set", Handle22And23TextFrame);
 	FrameHeader::Handle23("TPUB", "Publisher", Handle22And23TextFrame);
 	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle22And23TextFrame);
+	FrameHeader::Handle23("TSRC", "ISRC (international standard recording code)", Handle23TSRCFrame);
 	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrame);
 	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23UserTextFrame);
 	FrameHeader::Handle23("TYER", "Year", Handle22And23TextFrame);
