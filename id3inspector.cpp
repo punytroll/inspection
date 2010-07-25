@@ -1404,19 +1404,6 @@ int PrintUTF_16StringTerminatedByEndOrLength(const char * Buffer, int Length)
 	return Index;
 }
 
-
-int PrintHEXStringTerminatedByLength(const char * Buffer, int Length)
-{
-	int Index(0);
-	
-	while(Index < Length)
-	{
-		std::cout << GetHexadecimalStringFromUInt8(Buffer[Index++]) << ' ';
-	}
-	
-	return Index;
-}
-
 int Handle23UserTextFrame(const char * Buffer, int Length)
 {
 	int Index(0);
@@ -2288,11 +2275,12 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 			Index += 2;
 			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
 			{
+				std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+				
+				Index += ReadHexadecimal.first;
 				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
 				std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
-				std::cout << "\t\t\t\tBinary Content of the rest: ";
-				Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
-				std::cout << std::endl;
+				std::cout << "\t\t\t\tBinary Content of the rest: " << ReadHexadecimal.second << std::endl;
 			}
 			else
 			{
@@ -2301,11 +2289,12 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 		}
 		else
 		{
+			std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+			
+			Index += ReadHexadecimal.first;
 			std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
 			std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
-			std::cout << "\t\t\t\tBinary Content: ";
-			Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
-			std::cout << std::endl;
+			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
 		}
 	}
 	else if(ReadOwnerIdentifier.second == "AverageLevel")
@@ -2319,11 +2308,12 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 			Index += 2;
 			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
 			{
+				std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+				
+				Index += ReadHexadecimal.first;
 				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
 				std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
-				std::cout << "\t\t\t\tBinary Content of the rest: ";
-				Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
-				std::cout << std::endl;
+				std::cout << "\t\t\t\tBinary Content of the rest: " << ReadHexadecimal.second << std::endl;
 			}
 			else
 			{
@@ -2332,18 +2322,20 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 		}
 		else
 		{
+			std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+			
+			Index += ReadHexadecimal.first;
 			std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
 			std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
-			std::cout << "\t\t\t\tBinary Content: ";
-			Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
-			std::cout << std::endl;
+			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
 		}
 	}
 	else
 	{
-		std::cout << "\t\t\t\tBinary Content: ";
-		Index += PrintHEXStringTerminatedByLength(Buffer + Index, Length - Index);
-		std::cout << std::endl;
+		std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		
+		Index += ReadHexadecimal.first;
+		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
 	}
 	
 	return Index;
