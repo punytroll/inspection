@@ -2704,9 +2704,9 @@ int HandlePRIVFrame(const char * Buffer, int Length)
 	return Index;
 }
 
-void vReadFile(const std::string & Path);
-void vReadDirectory(const std::string & Path);
-void vReadItem(const std::string & Path);
+void ReadFile(const std::string & Path);
+void ReadDirectory(const std::string & Path);
+void ReadItem(const std::string & Path);
 
 inline bool FileExists(const std::string & Path)
 {
@@ -2808,7 +2808,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 	delete NewTagHeader;
 }
 
-void vReadFile(const std::string & Path)
+void ReadFile(const std::string & Path)
 {
 	char * Buffer(new char[1000]);
 	int u4Track = 0;
@@ -2877,7 +2877,7 @@ void vReadFile(const std::string & Path)
 	ReadID3v2Tag(ReadFile);
 }
 
-void vReadDirectory(const std::string & Path)
+void ReadDirectory(const std::string & Path)
 {
 	DIR * Directory(opendir(Path.c_str()));
 	struct dirent * DirectoryEntry(0);
@@ -2886,22 +2886,22 @@ void vReadDirectory(const std::string & Path)
 	{
 		if((std::string(DirectoryEntry->d_name) != ".") && (std::string(DirectoryEntry->d_name) != ".."))
 		{
-			vReadItem(Path + '/' + DirectoryEntry->d_name);
+			ReadItem(Path + '/' + DirectoryEntry->d_name);
 		}
 	}
 }
 
-void vReadItem(const std::string & Path)
+void ReadItem(const std::string & Path)
 {
 	if(FileExists(Path) == true)
 	{
 		if(IsDirectory(Path) == true)
 		{
-			vReadDirectory(Path);
+			ReadDirectory(Path);
 		}
 		else if(IsRegularFile(Path) == true)
 		{
-			vReadFile(Path);
+			ReadFile(Path);
 		}
 		else
 		{
@@ -3165,7 +3165,7 @@ int main(int argc, char **argv)
 	// processing
 	while(Paths.begin() != Paths.end())
 	{
-		vReadItem(Paths.front());
+		ReadItem(Paths.front());
 		Paths.pop_front();
 	}
 
