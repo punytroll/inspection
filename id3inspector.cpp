@@ -345,7 +345,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, int (*)(const uint8_t * const, int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
+			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
 			
 			if(HanderIterator != _Handlers22.end())
 			{
@@ -384,7 +384,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, int (*)(const uint8_t * const, int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
+			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
 			
 			if(HanderIterator != _Handlers23.end())
 			{
@@ -425,7 +425,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, int (*)(const uint8_t * const, int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
+			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
 			
 			if(HanderIterator != _Handlers24.end())
 			{
@@ -668,7 +668,7 @@ private:
 	bool _Forbidden;
 	std::string _ForbiddenReason;
 	bool _GroupingIdentity;
-	int (* _Handler)(const uint8_t * const Buffer, int Length);
+	int (* _Handler)(const uint8_t * Buffer, int Length);
 	std::string _Identifier;
 	std::string _Name;
 	bool _ReadOnly;
