@@ -877,6 +877,8 @@ std::pair< int, std::string > GetGUIDString(const uint8_t * Buffer, int Length)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool Is_ISO_IEC_8859_1_StringWithoutTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length);
+bool StartsWith_ISO_IEC_8859_1_String(const uint8_t * Buffer, int Length);
+bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_Termination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
@@ -884,7 +886,6 @@ bool StartsWith_UCS_2_BE_Termination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length);
-bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length);
 
 bool Is_ISO_IEC_8859_1_StringWithoutTermination(const uint8_t * Buffer, int Length)
 {
@@ -911,6 +912,62 @@ bool StartsWith_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length)
 	else
 	{
 		return false;
+	}
+}
+
+bool StartsWith_ISO_IEC_8859_1_String(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 <= Length)
+		{
+			if(StartsWith_ISO_IEC_8859_1_Termination(Buffer + Index, Length - Index) == true)
+			{
+				return true;
+			}
+			else if(StartsWith_ISO_IEC_8859_1_Character(Buffer + Index, Length - Index) == true)
+			{
+				Index += 1;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
+}
+
+bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(true)
+	{
+		if(Index + 1 <= Length)
+		{
+			if(StartsWith_ISO_IEC_8859_1_Termination(Buffer + Index, Length - Index) == true)
+			{
+				return true;
+			}
+			else if(StartsWith_ISO_IEC_8859_1_Character(Buffer + Index, Length - Index) == true)
+			{
+				Index += 1;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
 
@@ -1025,34 +1082,6 @@ bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length)
 	else
 	{
 		return false;
-	}
-}
-
-bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	
-	while(true)
-	{
-		if(Index + 1 <= Length)
-		{
-			if(StartsWith_ISO_IEC_8859_1_Termination(Buffer + Index, Length - Index) == true)
-			{
-				return true;
-			}
-			else if(StartsWith_ISO_IEC_8859_1_Character(Buffer + Index, Length - Index) == true)
-			{
-				Index += 1;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			return false;
-		}
 	}
 }
 
@@ -1741,23 +1770,36 @@ int Handle23CommentFrame(const uint8_t * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
+	std::cout << '"' << std::endl;
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadComment.first;
-		std::cout << ReadComment.second;
+		if(StartsWith_ISO_IEC_8859_1_String(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadComment.first;
+			std::cout << "\t\t\t\tComment: \"" << ReadComment.second << '"' << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The 'Comment' field contains data that can not be interpreted as an ISO/IEC 8859-1 string." << std::endl;
+			
+			std::pair< int, std::string > ReadComment(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+			
+			Index += ReadComment.first;
+			std::cout << "*** Binary content: " << ReadComment.second << std::endl;
+		}
 	}
 	else if(Encoding == 1)
 	{
+		std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	std::cout << '"' << std::endl;
 	}
 	else
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << '"' << std::endl;
 	
 	return Index;
 }
@@ -2832,24 +2874,69 @@ void ReadFile(const std::string & Path)
 		
 		ReadFile.read(reinterpret_cast< char * >(Buffer), 30);
 		Buffer[30] = '\0';
-		Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 30);
-		std::cout << "\tTitle:\t \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		if(StartsWith_ISO_IEC_8859_1_String(Buffer, 30) == true)
+		{
+			Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 30);
+			std::cout << "\tTitle:\t \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The 'Title' field contains data that can not be interpreted as an ISO/IEC 8859-1 string." << std::endl;
+			Read = GetHexadecimalStringTerminatedByLength(Buffer, 30);
+			std::cout << "*** Binary content: " << Read.second << std::endl;
+		}
 		ReadFile.read(reinterpret_cast< char * >(Buffer), 30);
 		Buffer[30] = '\0';
-		Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 30);
-		std::cout << "\tArtist:\t \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		if(StartsWith_ISO_IEC_8859_1_String(Buffer, 30) == true)
+		{
+			Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 30);
+			std::cout << "\tArtist:\t \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The 'Artist' field contains data that can not be interpreted as an ISO/IEC 8859-1 string." << std::endl;
+			Read = GetHexadecimalStringTerminatedByLength(Buffer, 30);
+			std::cout << "*** Binary content: " << Read.second << std::endl;
+		}
 		ReadFile.read(reinterpret_cast< char * >(Buffer), 30);
 		Buffer[30] = '\0';
-		Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 30);
-		std::cout << "\tAlbum:\t \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		if(StartsWith_ISO_IEC_8859_1_String(Buffer, 30) == true)
+		{
+			Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 30);
+			std::cout << "\tAlbum:\t \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The 'Album' field contains data that can not be interpreted as an ISO/IEC 8859-1 string." << std::endl;
+			Read = GetHexadecimalStringTerminatedByLength(Buffer, 30);
+			std::cout << "*** Binary content: " << Read.second << std::endl;
+		}
 		ReadFile.read(reinterpret_cast< char * >(Buffer), 4);
 		Buffer[4] = '\0';
-		Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 4);
-		std::cout << "\tYear:\t \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		if(StartsWith_ISO_IEC_8859_1_String(Buffer, 4) == true)
+		{
+			Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 4);
+			std::cout << "\tYear:\t \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The 'Year' field contains data that can not be interpreted as an ISO/IEC 8859-1 string." << std::endl;
+			Read = GetHexadecimalStringTerminatedByLength(Buffer, 4);
+			std::cout << "*** Binary content: " << Read.second << std::endl;
+		}
 		ReadFile.read(reinterpret_cast< char * >(Buffer), 30);
 		Buffer[30] = '\0';
-		Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 30);
-		std::cout << "\tComment: \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		if(StartsWith_ISO_IEC_8859_1_String(Buffer, 30) == true)
+		{
+			Read = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer, 30);
+			std::cout << "\tComment: \"" << Read.second << "\"  [length: " << strlen(reinterpret_cast< char * >(Buffer)) << "]" << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The 'Comment' field contains data that can not be interpreted as an ISO/IEC 8859-1 string." << std::endl;
+			Read = GetHexadecimalStringTerminatedByLength(Buffer, 30);
+			std::cout << "*** Binary content: " << Read.second << std::endl;
+		}
 		bID3v11 = false;
 		if(Buffer[28] == '\0')
 		{
