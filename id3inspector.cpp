@@ -1792,9 +1792,9 @@ int Handle23CommentFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(Encoding == 1)
 	{
-		std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
+		std::cout << "\t\t\t\tComment: \"";
 		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	std::cout << '"' << std::endl;
+		std::cout << '"' << std::endl;
 	}
 	else
 	{
@@ -2426,16 +2426,16 @@ int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 	int Index(0);
 	std::pair< int, std::string > ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 	
-	Index += ReadOwnerIdentifier.first;
-	std::cout << "\t\t\t\tOwner Identifier: \"" << ReadOwnerIdentifier.second << '"' << std::endl;
 	if(ReadOwnerIdentifier.second.length() == 0)
 	{
-		std::cout << "*** ERROR *** Owner Identifier must be a valid URL, not empty." << std::endl;
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Owner Identifier' field must be non-empty." << std::endl;
 	}
 	if(Length - Index > 64)
 	{
-		std::cout << "*** ERROR *** Identifier field must not be longer than 64 bytes. Proceeding with interpretation." << std::endl;
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Identifier' field must not exceed 64 bytes." << std::endl;
 	}
+	Index += ReadOwnerIdentifier.first;
+	std::cout << "\t\t\t\tOwner Identifier: \"" << ReadOwnerIdentifier.second << '"' << std::endl;
 	
 	std::pair< int, std::string > ReadIdentifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 	
