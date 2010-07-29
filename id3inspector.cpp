@@ -2803,7 +2803,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				std::cout << "\t\tIdentifier: \"" << NewFrameHeader->GetIdentifier() << "\"" << std::endl;
 				if(NewFrameHeader->GetForbidden() == true)
 				{
-					std::cout << "\t\t\t*** ERROR *** This frame is forbidden! " << NewFrameHeader->GetForbiddenReason() << std::endl;
+					std::cout << "*** ERROR *** This frame is forbidden! " << NewFrameHeader->GetForbiddenReason() << std::endl;
 				}
 				std::cout << "\t\t\tName: " << NewFrameHeader->GetName() << std::endl;
 				std::cout << "\t\t\tSize: " << NewFrameHeader->GetSize() << std::endl;
@@ -3198,6 +3198,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TLAN", "Language(s)", Handle22And23TextFrame);
 	FrameHeader::Handle23("TLEN", "Length", Handle22And23TextFrame);
 	FrameHeader::Handle23("TMED", "Media type", Handle22And23TextFrame);
+	FrameHeader::Handle23("TOAL", "Original album/movie/show title", Handle22And23TextFrame);
 	FrameHeader::Handle23("TOFN", "Original filename", Handle22And23TextFrame);
 	FrameHeader::Handle23("TOPE", "Original artist(s)/performer(s)", Handle22And23TextFrame);
 	FrameHeader::Handle23("TOWN", "File owner/licensee", Handle22And23TextFrame);
@@ -3218,12 +3219,14 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23URLFrame);
 	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23UserURLFrame);
 	// forbidden tags
+	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
+	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
 	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
 	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrame);
 	FrameHeader::Forbid23("TDTG", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
 	FrameHeader::Handle23("TDTG", "Tagging time (from tag version 2.4)", Handle24TextFrame);
-	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
-	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
+	FrameHeader::Forbid23("TSST", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
+	FrameHeader::Handle23("TSST", "Set subtitle (from tag version 2.4)", Handle24TextFrame);
 	
 	// ID3v2.4.0
 	FrameHeader::Handle24("APIC", "Attached picture", Handle24APICFrame);
