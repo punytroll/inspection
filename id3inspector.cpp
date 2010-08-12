@@ -907,7 +907,7 @@ bool StartsWith_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length)
 {
 	if(Length >= 1)
 	{
-		return ((Buffer[0] >= 0x20) && (Buffer[0] <= 0x7e)) || ((Buffer[0] >= 0xa0) && (Buffer[0] <= 0xff));
+		return ((Buffer[0] >= 0x20) && (Buffer[0] <= 0x7e)) || (Buffer[0] >= 0xa0);
 	}
 	else
 	{
