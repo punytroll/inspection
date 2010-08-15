@@ -2780,7 +2780,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 	Stream.seekg(0, std::ios::beg);
 	
 	TagHeader * NewTagHeader(new TagHeader(Stream));
-	int BufferLength(1000);
+	unsigned int BufferLength(1000);
 	uint8_t * Buffer(new uint8_t[BufferLength]);
 	
 	if(NewTagHeader->GetID3Identifier() == "ID3")
@@ -2830,7 +2830,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				}
 				std::cout << "\t\t\tContent:" << std::endl;
 				
-				int HandledFrameSize(0);
+				unsigned int HandledFrameSize(0);
 				
 				HandledFrameSize = NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
 				if(HandledFrameSize != NewFrameHeader->GetSize())
