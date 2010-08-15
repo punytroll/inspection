@@ -1,3 +1,5 @@
+CXXFLAGS = -Wall -Werror
+
 default: all
 
 clean:
