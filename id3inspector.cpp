@@ -1148,6 +1148,33 @@ std::pair< int, std::string > Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(c
 	return Result;
 }
 
+std::pair< int, std::string > Get_ISO_IEC_8859_1_StringTerminatedByLength(const uint8_t * Buffer, int Length)
+{
+	std::pair< int, std::string > Result;
+	
+	while(true)
+	{
+		if(Result.first + 1 <= Length)
+		{
+			if(StartsWith_ISO_IEC_8859_1_Character(Buffer + Result.first, Length - Result.first) == true)
+			{
+				Result.second += Get_UTF_8_CharacterFrom_ISO_IEC_8859_1_Character(Buffer + Result.first, Length - Result.first);
+				Result.first += 1;
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	
+	return Result;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UTF-8                                                                                         //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2301,6 +2328,73 @@ int Handle23MCDIFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	
+	if((Length >= 4) && (Buffer[0] == 0x00) && (Buffer[1] == 0x00) && (Buffer[2] == 0x00) && (Buffer[3] == 0x00))
+	{
+		std::pair< int, std::string > Zeroes(GetHexadecimalStringTerminatedByLength(Buffer, 4));
+		
+		std::cout << "\t\t\t\tFour bytes of zeroes: " << Zeroes.second << std::endl;
+		Index += Zeroes.first;
+		
+		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > Caption(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			std::string::size_type ColonPosition(Caption.second.find(':'));
+			
+			if(ColonPosition != std::string::npos)
+			{
+				std::cout << "\t\t\t\tOne zero-terminated ISO/IEC 8859-1 string:" << std::endl;
+				std::cout << "\t\t\t\t\tIdentifier: \"" << Caption.second.substr(0, ColonPosition) << '"' << std::endl;
+				std::cout << "\t\t\t\t\tSeparator: ':'" << std::endl;
+				std::cout << "\t\t\t\t\tField Name: \"" << Caption.second.substr(ColonPosition + 1) << '"' << std::endl;
+				std::cout << "\t\t\t\t\tTerminator: 00" << std::endl;
+				Index += Caption.first;
+				if(Index < Length)
+				{
+					if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+					{
+						std::pair< int, std::string > Value(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
+						
+						std::cout << "\t\t\t\tOne boundary-terminated ISO/IEC 8859-1 string ending at the frame boundary:" << std::endl;
+						std::cout << "\t\t\t\t\tValue: \"" << Value.second << '"' << std::endl;;
+						Index += Value.first;
+						if(Index < Length)
+						{
+							std::cout << "*** ERROR *** After the value, no more data is expected." << std::endl;
+							Index = Length;
+						}
+					}
+					else
+					{
+						std::cout << "*** ERROR *** Any data after the caption is expected to be a non-terminated ISO/IEC 8859-1 string for the value." << std::endl;
+						Index = Length;
+					}
+				}
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The first field is expected to contain a ':' character." << std::endl;
+				Index = Length;
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Expected to see a terminated ISO/IEC 8859-1 string for the caption." << std::endl;
+			Index = Length;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Expected to see 4 zero-filled bytes at the start of the frame content." << std::endl;
+		Index = Length;
+	}
+	
+	return Index;
+}
+
 int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -3219,6 +3313,8 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23URLFrame);
 	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23UserURLFrame);
 	// forbidden tags
+	FrameHeader::Forbid23("MJCF", "This frame is not defined in tag version 2.3. It is a non-standard frame added by the MediaJukebox.");
+	FrameHeader::Handle23("MJCF", "Mediajukebox", Handle23MJCFFrame);
 	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
 	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
 	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
