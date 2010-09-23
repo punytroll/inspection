@@ -1646,14 +1646,41 @@ int PrintUTF_16StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23UserTextFrame(const uint8_t * Buffer, int Length)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// specific to tag version 2.2                                                                   //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+int Handle22COMFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
 	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	std::cout << "\t\t\t\tDescription: ";
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_2(Encoding) << std::endl;
+	
+	std::string ISO_639_2Code(Buffer + Index, Buffer + Index + 3);
+	
+	Index += 3;
+	if(ISO_639_2Code.empty() == false)
+	{
+		std::map< std::string, std::string >::iterator ISO_639_2Iterator(g_ISO_639_2_Codes.find(ISO_639_2Code));
+		
+		if(ISO_639_2Iterator != g_ISO_639_2_Codes.end())
+		{
+			std::cout << "\t\t\t\tLanguage: " << ISO_639_2Iterator->second << " (\"" << ISO_639_2Code << "\")" << std::endl;
+		}
+		else
+		{
+			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2Code << "\")" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << ISO_639_2Code << "' is not defined by ISO 639-2." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
+	}
+	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
@@ -1669,14 +1696,13 @@ int Handle23UserTextFrame(const uint8_t * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << std::endl;
-	std::cout << "\t\t\t\tString: \"";
+	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		std::pair< int, std::string > ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
-		Index += ReadString.first;
-		std::cout << ReadString.second;
+		Index += ReadComment.first;
+		std::cout << ReadComment.second;
 	}
 	else if(Encoding == 1)
 	{
@@ -1691,68 +1717,112 @@ int Handle23UserTextFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle24UserTextFrame(const uint8_t * Buffer, int Length)
+int Handle22T__Frames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
 	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
-	std::cout << "\t\t\t\tDescription: ";
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-		
-		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 2)
-	{
-		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 3)
-	{
-		Index += PrintUTF_8StringTerminatedByEnd(Buffer+ Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << std::endl;
-	std::cout << "\t\t\t\tString: ";
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_2(Encoding) << std::endl;
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
-		std::cout << ReadString.second;
+		std::cout << "\t\t\t\tString: \"" << ReadString.second;
 	}
 	else if(Encoding == 1)
 	{
-		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 2)
-	{
-		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			
+			std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second;
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			
+			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+		}
 	}
 	else
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << '"' << std::endl;
 	
 	return Index;
 }
 
-int Handle23CommentFrame(const uint8_t * Buffer, int Length)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// specific to tag version 2.3                                                                   //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+int Handle23APICFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	
+	std::pair< int, std::string > ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+	
+	Index += ReadMIMEType.first;
+	std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
+	
+	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			
+			Index += ReadDescription.first;
+			std::cout << ReadDescription.second;
+		}
+		else
+		{
+			std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+			
+			std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
+			std::cout << "              Binary content: " << ReadHexadecimal.second << std::endl;
+		}
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl;
+	
+	return Length;
+}
+
+int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
 	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
@@ -1827,492 +1897,6 @@ int Handle23CommentFrame(const uint8_t * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	
-	return Index;
-}
-
-int Handle22COMFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_2(Encoding) << std::endl;
-	
-	std::string ISO_639_2Code(Buffer + Index, Buffer + Index + 3);
-	
-	Index += 3;
-	if(ISO_639_2Code.empty() == false)
-	{
-		std::map< std::string, std::string >::iterator ISO_639_2Iterator(g_ISO_639_2_Codes.find(ISO_639_2Code));
-		
-		if(ISO_639_2Iterator != g_ISO_639_2_Codes.end())
-		{
-			std::cout << "\t\t\t\tLanguage: " << ISO_639_2Iterator->second << " (\"" << ISO_639_2Code << "\")" << std::endl;
-		}
-		else
-		{
-			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2Code << "\")" << std::endl;
-			std::cout << "*** ERROR *** The language code '" << ISO_639_2Code << "' is not defined by ISO 639-2." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
-	}
-	std::cout << "\t\t\t\tDescription: \"";
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-		
-		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadComment.first;
-		std::cout << ReadComment.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << '"' << std::endl;
-	
-	return Index;
-}
-
-int Handle24COMMFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
-	
-	std::string ISO_639_2_Code(Buffer + Index, Buffer + Index + 3);
-	
-	Index += 3;
-	if(ISO_639_2_Code.empty() == false)
-	{
-		std::map< std::string, std::string >::iterator ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
-		
-		if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
-		{
-			std::cout << "\t\t\t\tLanguage: " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
-		}
-		else
-		{
-			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
-			std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
-	}
-	std::cout << "\t\t\t\tDescription: \"";
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-		
-		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 2)
-	{
-		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 3)
-	{
-		Index += PrintUTF_8StringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadComment.first;
-		std::cout << ReadComment.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 2)
-	{
-		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 3)
-	{
-		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << '"' <<  std::endl;
-	
-	return Index;
-}
-
-int Handle23AttachedPicture(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	
-	std::pair< int, std::string > ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-	
-	Index += ReadMIMEType.first;
-	std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
-	
-	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
-	std::cout << "\t\t\t\tDescription: \"";
-	if(Encoding == 0)
-	{
-		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
-		{
-			std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-			
-			Index += ReadDescription.first;
-			std::cout << ReadDescription.second;
-		}
-		else
-		{
-			std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-			
-			std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
-			std::cout << "              Binary content: " << ReadHexadecimal.second << std::endl;
-		}
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << '"' << std::endl;
-	
-	return Length;
-}
-
-int Handle24APICFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
-	
-	std::pair< int, std::string > ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-	
-	Index += ReadMIMEType.first;
-	std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
-	
-	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
-	std::cout << "\t\t\t\tDescription: \"";
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 2)
-	{
-		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 3)
-	{
-		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	std::cout << '"' << std::endl;
-	
-	return Length;
-}
-
-int Handle23URLFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-	
-	Index += ReadURL.first;
-	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
-	
-	return Index;
-}
-
-int Handle23UserURLFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	std::cout << "\t\t\t\tDescription: \"";
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-		
-		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << '"' << std::endl;
-	
-	std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-	
-	Index += ReadURL.first;
-	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
-	
-	return Index;
-}
-
-int Handle22And23TextFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadString.first;
-		std::cout << "\t\t\t\tString: \"" << ReadString.second;
-	}
-	else if(Encoding == 1)
-	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
-		{
-			Index += 2;
-			// Big Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
-			
-			std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-			
-			Index += ReadString.first;
-			std::cout << "\t\t\t\tString: \"" << ReadString.second;
-		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
-		{
-			Index += 2;
-			// Little Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
-			
-			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-			
-			Index += ReadString.first;
-			std::cout << "\t\t\t\tString: \"" << ReadString.second;
-		}
-		else
-		{
-			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << '"' << std::endl;
-	
-	return Index;
-}
-
-int Handle24TextFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
-	if(Encoding == 1)
-	{
-		std::cout << "\t\t\t\tByte Order Mark: ";
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
-		{
-			std::cout << "Big Endian";
-		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
-		{
-			std::cout << "Little Endian";
-		}
-		else
-		{
-			std::cout << "Bogus Byte Order Mark";
-		}
-		std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
-	}
-	std::cout << "\t\t\t\tString(s):\n";
-	while(Index < Length)
-	{
-		std::cout << "\t\t\t\t\t\"";
-		if(Encoding == 0)
-		{
-			std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-			
-			Index += ReadString.first;
-			std::cout << ReadString.second;
-		}
-		else if(Encoding == 1)
-		{
-			Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-		}
-		else if(Encoding == 2)
-		{
-			Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-		}
-		else if(Encoding == 3)
-		{
-			Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-		}
-		std::cout << '"' << std::endl;
-	}
-	
-	return Index;
-}
-
-int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	if(Encoding == 1)
-	{
-		std::cout << "\t\t\t\tByte Order Mark: ";
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
-		{
-			std::cout << "Big Endian";
-		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
-		{
-			std::cout << "Little Endian";
-		}
-		else
-		{
-			std::cout << "Bogus Byte Order Mark";
-		}
-		std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
-	}
-	
-	std::pair< int, std::string > ReadString;
-	
-	if(Encoding == 0)
-	{
-		ReadString = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 1)
-	{
-		/// @TODO Add this function.
-		//~ ReadString = GetUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << "\t\t\t\tPart of a compilation: ";
-	if(ReadString.second == "1")
-	{
-		std::cout << "yes";
-	}
-	else if(ReadString.second == "0")
-	{
-		std::cout << "no";
-	}
-	else
-	{
-		std::cout << "<unknown value>";
-	}
-	std::cout << " (\"" << ReadString.second << "\")" << std::endl;
-	Index += ReadString.first;
-	
-	return Index;
-}
-
-int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
-	std::cout << "\t\t\t\tDescription: \"";
-	if(Encoding == 0)
-	{
-		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-		
-		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 2)
-	{
-		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 3)
-	{
-		Index += PrintUTF_8StringTerminatedByEnd(Buffer+ Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << '"' << std::endl;
-	
-	std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-	
-	Index += ReadURL.first;
-	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
 	
 	return Index;
 }
@@ -2395,158 +1979,7 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23TCONFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	
-	std::pair< int, std::string > ReadString;
-	
-	if(Encoding == 0)
-	{
-		ReadString = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 1)
-	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
-		{
-			Index += 2;
-			// Big Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
-			ReadString = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
-		{
-			Index += 2;
-			// Little Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
-			ReadString = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-		}
-		else
-		{
-			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	Index += ReadString.first;
-	std::cout << "\t\t\t\tContent type: \"" << ReadString.second << '"' << std::endl;
-	
-	std::string Interpretation(GetContentTypeInterpretation2_3(ReadString.second));
-	
-	if(Interpretation.empty() == false)
-	{
-		std::cout << "\t\t\t\tInterpretation: " << Interpretation << std::endl;
-	}
-	
-	return Index;
-}
-
-int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	
-	std::pair< int, std::string > ReadString;
-	
-	if(Encoding == 0)
-	{
-		ReadString = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-	}
-	else if(Encoding == 1)
-	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
-		{
-			Index += 2;
-			// Big Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
-			ReadString = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
-		{
-			Index += 2;
-			// Little Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
-			ReadString = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-		}
-		else
-		{
-			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	Index += ReadString.first;
-	std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
-	
-	if(ReadString.second.length() == 12)
-	{
-		std::string ISO_3166_1_Alpha_2_Code(ReadString.second.substr(0, 2));
-		std::map< std::string, std::string >::iterator ISO_3166_1_Alpha_2_Iterator(g_ISO_3166_1_Alpha_2_Codes.find(ISO_3166_1_Alpha_2_Code));
-		
-		if(ISO_3166_1_Alpha_2_Iterator != g_ISO_3166_1_Alpha_2_Codes.end())
-		{
-			std::cout << "\t\t\t\t\tCountry: " << ISO_3166_1_Alpha_2_Iterator->second << " (\"" << ISO_3166_1_Alpha_2_Code << "\")" << std::endl;
-		}
-		else
-		{
-			std::cout << "\t\t\t\t\tCountry: <unknown> (\"" << ISO_3166_1_Alpha_2_Code << "\")" << std::endl;
-			std::cout << "*** ERROR *** The country code '" << ISO_3166_1_Alpha_2_Code << "' is not defined by ISO 3166-1 alpha-2." << std::endl;
-		}
-		std::cout << "\t\t\t\t\tRegistrant code: \"" << ReadString.second.substr(2, 3) << '"' << std::endl;
-		std::cout << "\t\t\t\t\tYear of registration: \"" << ReadString.second.substr(5, 2) << '"' << std::endl;
-		std::cout << "\t\t\t\t\tRegistration number: \"" << ReadString.second.substr(7, 5) << '"' << std::endl;
-	}
-	else
-	{
-		std::cout << "*** ERROR *** The international standard recording code defined by ISO 3901 requires the code to be 12 characters long, not " << ReadString.second.length() << "." << std::endl;
-	}
-	
-	return Index;
-}
-
-int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	std::pair< int, std::string > ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-	
-	if(ReadOwnerIdentifier.second.length() == 0)
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Owner Identifier' field must be non-empty." << std::endl;
-	}
-	if(Length - Index > 64)
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Identifier' field must not exceed 64 bytes." << std::endl;
-	}
-	Index += ReadOwnerIdentifier.first;
-	std::cout << "\t\t\t\tOwner Identifier: \"" << ReadOwnerIdentifier.second << '"' << std::endl;
-	
-	std::pair< int, std::string > ReadIdentifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-	
-	std::cout << "\t\t\t\tIdentifier (binary): " << ReadIdentifier.second << std::endl;
-	
-	if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
-	{
-		std::pair< int, std::string > ReadIdentifierAsString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		std::cout << "\t\t\t\tIdentifier (string): \"" << ReadIdentifierAsString.second << "\" (interpreted as ISO/IEC 8859-1)" << std::endl;
-	}
-	Index += ReadIdentifier.first;
-	
-	return Index;
-}
-
-int HandlePRIVFrame(const uint8_t * Buffer, int Length)
+int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
 	std::pair< int, std::string > ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
@@ -2839,6 +2272,645 @@ int HandlePRIVFrame(const uint8_t * Buffer, int Length)
 	
 	return Index;
 }
+
+int Handle23T___Frames(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << "\t\t\t\tString: \"" << ReadString.second;
+	}
+	else if(Encoding == 1)
+	{
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			
+			std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second;
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			
+			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl;
+	
+	return Index;
+}
+
+int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	if(Encoding == 1)
+	{
+		std::cout << "\t\t\t\tByte Order Mark: ";
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			std::cout << "Big Endian";
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		{
+			std::cout << "Little Endian";
+		}
+		else
+		{
+			std::cout << "Bogus Byte Order Mark";
+		}
+		std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
+	}
+	
+	std::pair< int, std::string > ReadString;
+	
+	if(Encoding == 0)
+	{
+		ReadString = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		/// @TODO Add this function.
+		//~ ReadString = GetUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << "\t\t\t\tPart of a compilation: ";
+	if(ReadString.second == "1")
+	{
+		std::cout << "yes";
+	}
+	else if(ReadString.second == "0")
+	{
+		std::cout << "no";
+	}
+	else
+	{
+		std::cout << "<unknown value>";
+	}
+	std::cout << " (\"" << ReadString.second << "\")" << std::endl;
+	Index += ReadString.first;
+	
+	return Index;
+}
+
+int Handle23TCONFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	
+	std::pair< int, std::string > ReadString;
+	
+	if(Encoding == 0)
+	{
+		ReadString = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			ReadString = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			ReadString = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	Index += ReadString.first;
+	std::cout << "\t\t\t\tContent type: \"" << ReadString.second << '"' << std::endl;
+	
+	std::string Interpretation(GetContentTypeInterpretation2_3(ReadString.second));
+	
+	if(Interpretation.empty() == false)
+	{
+		std::cout << "\t\t\t\tInterpretation: " << Interpretation << std::endl;
+	}
+	
+	return Index;
+}
+
+int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	
+	std::pair< int, std::string > ReadString;
+	
+	if(Encoding == 0)
+	{
+		ReadString = Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			Index += 2;
+			// Big Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			ReadString = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		{
+			Index += 2;
+			// Little Endian by BOM
+			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			ReadString = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	Index += ReadString.first;
+	std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
+	
+	if(ReadString.second.length() == 12)
+	{
+		std::string ISO_3166_1_Alpha_2_Code(ReadString.second.substr(0, 2));
+		std::map< std::string, std::string >::iterator ISO_3166_1_Alpha_2_Iterator(g_ISO_3166_1_Alpha_2_Codes.find(ISO_3166_1_Alpha_2_Code));
+		
+		if(ISO_3166_1_Alpha_2_Iterator != g_ISO_3166_1_Alpha_2_Codes.end())
+		{
+			std::cout << "\t\t\t\t\tCountry: " << ISO_3166_1_Alpha_2_Iterator->second << " (\"" << ISO_3166_1_Alpha_2_Code << "\")" << std::endl;
+		}
+		else
+		{
+			std::cout << "\t\t\t\t\tCountry: <unknown> (\"" << ISO_3166_1_Alpha_2_Code << "\")" << std::endl;
+			std::cout << "*** ERROR *** The country code '" << ISO_3166_1_Alpha_2_Code << "' is not defined by ISO 3166-1 alpha-2." << std::endl;
+		}
+		std::cout << "\t\t\t\t\tRegistrant code: \"" << ReadString.second.substr(2, 3) << '"' << std::endl;
+		std::cout << "\t\t\t\t\tYear of registration: \"" << ReadString.second.substr(5, 2) << '"' << std::endl;
+		std::cout << "\t\t\t\t\tRegistration number: \"" << ReadString.second.substr(7, 5) << '"' << std::endl;
+	}
+	else
+	{
+		std::cout << "*** ERROR *** The international standard recording code defined by ISO 3901 requires the code to be 12 characters long, not " << ReadString.second.length() << "." << std::endl;
+	}
+	
+	return Index;
+}
+
+int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	std::cout << "\t\t\t\tDescription: ";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
+	std::cout << "\t\t\t\tString: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << ReadString.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl;
+	
+	return Index;
+}
+
+int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	std::pair< int, std::string > ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+	
+	if(ReadOwnerIdentifier.second.length() == 0)
+	{
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Owner Identifier' field must be non-empty." << std::endl;
+	}
+	if(Length - Index > 64)
+	{
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Identifier' field must not exceed 64 bytes." << std::endl;
+	}
+	Index += ReadOwnerIdentifier.first;
+	std::cout << "\t\t\t\tOwner Identifier: \"" << ReadOwnerIdentifier.second << '"' << std::endl;
+	
+	std::pair< int, std::string > ReadIdentifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+	
+	std::cout << "\t\t\t\tIdentifier (binary): " << ReadIdentifier.second << std::endl;
+	
+	if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+	{
+		std::pair< int, std::string > ReadIdentifierAsString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		std::cout << "\t\t\t\tIdentifier (string): \"" << ReadIdentifierAsString.second << "\" (interpreted as ISO/IEC 8859-1)" << std::endl;
+	}
+	Index += ReadIdentifier.first;
+	
+	return Index;
+}
+
+int Handle23W___Frames(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	
+	Index += ReadURL.first;
+	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
+	
+	return Index;
+}
+
+int Handle23WXXXFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl;
+	
+	std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	
+	Index += ReadURL.first;
+	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
+	
+	return Index;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// specific to tag version 2.4                                                                   //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+int Handle24APICFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	
+	std::pair< int, std::string > ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+	
+	Index += ReadMIMEType.first;
+	std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
+	
+	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	std::cout << '"' << std::endl;
+	
+	return Length;
+}
+
+int Handle24COMMFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	
+	std::string ISO_639_2_Code(Buffer + Index, Buffer + Index + 3);
+	
+	Index += 3;
+	if(ISO_639_2_Code.empty() == false)
+	{
+		std::map< std::string, std::string >::iterator ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
+		
+		if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
+		{
+			std::cout << "\t\t\t\tLanguage: " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
+		}
+		else
+		{
+			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
+	}
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadComment.first;
+		std::cout << ReadComment.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' <<  std::endl;
+	
+	return Index;
+}
+
+int Handle24T___Frames(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	if(Encoding == 1)
+	{
+		std::cout << "\t\t\t\tByte Order Mark: ";
+		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		{
+			std::cout << "Big Endian";
+		}
+		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		{
+			std::cout << "Little Endian";
+		}
+		else
+		{
+			std::cout << "Bogus Byte Order Mark";
+		}
+		std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
+	}
+	std::cout << "\t\t\t\tString(s):\n";
+	while(Index < Length)
+	{
+		std::cout << "\t\t\t\t\t\"";
+		if(Encoding == 0)
+		{
+			std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << ReadString.second;
+		}
+		else if(Encoding == 1)
+		{
+			Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if(Encoding == 2)
+		{
+			Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		else if(Encoding == 3)
+		{
+			Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		}
+		std::cout << '"' << std::endl;
+	}
+	
+	return Index;
+}
+
+int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	std::cout << "\t\t\t\tDescription: ";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEnd(Buffer+ Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
+	std::cout << "\t\t\t\tString: ";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << ReadString.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_8StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << std::endl;
+	
+	return Index;
+}
+
+int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_4(Encoding) << std::endl;
+	std::cout << "\t\t\t\tDescription: \"";
+	if(Encoding == 0)
+	{
+		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += ReadDescription.first;
+		std::cout << ReadDescription.second;
+	}
+	else if(Encoding == 1)
+	{
+		Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 2)
+	{
+		Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+	}
+	else if(Encoding == 3)
+	{
+		Index += PrintUTF_8StringTerminatedByEnd(Buffer+ Index, Length - Index);
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	std::cout << '"' << std::endl;
+	
+	std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	
+	Index += ReadURL.first;
+	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
+	
+	return Index;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// application                                                                                   //
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 void ReadFile(const std::string & Path);
 void ReadDirectory(const std::string & Path);
@@ -3259,94 +3331,94 @@ int main(int argc, char **argv)
 	
 	// ID3v2.2.0
 	FrameHeader::Handle22("COM", "Comment", Handle22COMFrame);
-	FrameHeader::Handle22("TAL", "Album/Movie/Show title", Handle22And23TextFrame);
-	FrameHeader::Handle22("TCM", "Composer", Handle22And23TextFrame);
-	FrameHeader::Handle22("TCO", "Content type", Handle22And23TextFrame);
-	FrameHeader::Handle22("TEN", "Encoded by", Handle22And23TextFrame);
-	FrameHeader::Handle22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22And23TextFrame);
-	FrameHeader::Handle22("TPA", "Part of a set", Handle22And23TextFrame);
-	FrameHeader::Handle22("TRK", "Track number/Position in set", Handle22And23TextFrame);
-	FrameHeader::Handle22("TT1", "Content group description", Handle22And23TextFrame);
-	FrameHeader::Handle22("TT2", "Title/Songname/Content description", Handle22And23TextFrame);
-	FrameHeader::Handle22("TYE", "Year", Handle22And23TextFrame);
+	FrameHeader::Handle22("TAL", "Album/Movie/Show title", Handle22T__Frames);
+	FrameHeader::Handle22("TCM", "Composer", Handle22T__Frames);
+	FrameHeader::Handle22("TCO", "Content type", Handle22T__Frames);
+	FrameHeader::Handle22("TEN", "Encoded by", Handle22T__Frames);
+	FrameHeader::Handle22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22T__Frames);
+	FrameHeader::Handle22("TPA", "Part of a set", Handle22T__Frames);
+	FrameHeader::Handle22("TRK", "Track number/Position in set", Handle22T__Frames);
+	FrameHeader::Handle22("TT1", "Content group description", Handle22T__Frames);
+	FrameHeader::Handle22("TT2", "Title/Songname/Content description", Handle22T__Frames);
+	FrameHeader::Handle22("TYE", "Year", Handle22T__Frames);
 	// forbidden tags
 	FrameHeader::Forbid22("TCP", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless.");
-	FrameHeader::Handle22("TCP", "Compilation (from the internet)", Handle22And23TextFrame);
+	FrameHeader::Handle22("TCP", "Compilation (from the internet)", Handle22T__Frames);
 	
 	// ID3v2.3.0
-	FrameHeader::Handle23("APIC", "Attached picture", Handle23AttachedPicture);
-	FrameHeader::Handle23("COMM", "Comments", Handle23CommentFrame);
+	FrameHeader::Handle23("APIC", "Attached picture", Handle23APICFrame);
+	FrameHeader::Handle23("COMM", "Comments", Handle23COMMFrame);
 	FrameHeader::Handle23("MCDI", "Music CD identifier", Handle23MCDIFrame);
-	FrameHeader::Handle23("PRIV", "Private frame", HandlePRIVFrame);
-	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle22And23TextFrame);
-	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle22And23TextFrame);
-	FrameHeader::Handle23("TCOM", "Composer", Handle22And23TextFrame);
+	FrameHeader::Handle23("PRIV", "Private frame", Handle23PRIVFrame);
+	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle23T___Frames);
+	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle23T___Frames);
+	FrameHeader::Handle23("TCOM", "Composer", Handle23T___Frames);
 	FrameHeader::Handle23("TCON", "Content type", Handle23TCONFrame);
-	FrameHeader::Handle23("TCOP", "Copyright message", Handle22And23TextFrame);
-	FrameHeader::Handle23("TDAT", "Date", Handle22And23TextFrame);
-	FrameHeader::Handle23("TENC", "Encoded by", Handle22And23TextFrame);
-	FrameHeader::Handle23("TIME", "Time", Handle22And23TextFrame);
-	FrameHeader::Handle23("TIT1", "Content group description", Handle22And23TextFrame);
-	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle22And23TextFrame);
-	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle22And23TextFrame);
-	FrameHeader::Handle23("TLAN", "Language(s)", Handle22And23TextFrame);
-	FrameHeader::Handle23("TLEN", "Length", Handle22And23TextFrame);
-	FrameHeader::Handle23("TMED", "Media type", Handle22And23TextFrame);
-	FrameHeader::Handle23("TOAL", "Original album/movie/show title", Handle22And23TextFrame);
-	FrameHeader::Handle23("TOFN", "Original filename", Handle22And23TextFrame);
-	FrameHeader::Handle23("TOPE", "Original artist(s)/performer(s)", Handle22And23TextFrame);
-	FrameHeader::Handle23("TOWN", "File owner/licensee", Handle22And23TextFrame);
-	FrameHeader::Handle23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle22And23TextFrame);
-	FrameHeader::Handle23("TPE2", "Band / Orchestra / Accompaniment", Handle22And23TextFrame);
-	FrameHeader::Handle23("TPE3", "Conductor / Performer Refinement", Handle22And23TextFrame);
-	FrameHeader::Handle23("TPE4", "Interpreted, Remixed, or otherwise modified by", Handle22And23TextFrame);
-	FrameHeader::Handle23("TPOS", "Part of a set", Handle22And23TextFrame);
-	FrameHeader::Handle23("TPUB", "Publisher", Handle22And23TextFrame);
-	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle22And23TextFrame);
-	FrameHeader::Handle23("TRDA", "Recording dates", Handle22And23TextFrame);
+	FrameHeader::Handle23("TCOP", "Copyright message", Handle23T___Frames);
+	FrameHeader::Handle23("TDAT", "Date", Handle23T___Frames);
+	FrameHeader::Handle23("TENC", "Encoded by", Handle23T___Frames);
+	FrameHeader::Handle23("TIME", "Time", Handle23T___Frames);
+	FrameHeader::Handle23("TIT1", "Content group description", Handle23T___Frames);
+	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle23T___Frames);
+	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle23T___Frames);
+	FrameHeader::Handle23("TLAN", "Language(s)", Handle23T___Frames);
+	FrameHeader::Handle23("TLEN", "Length", Handle23T___Frames);
+	FrameHeader::Handle23("TMED", "Media type", Handle23T___Frames);
+	FrameHeader::Handle23("TOAL", "Original album/movie/show title", Handle23T___Frames);
+	FrameHeader::Handle23("TOFN", "Original filename", Handle23T___Frames);
+	FrameHeader::Handle23("TOPE", "Original artist(s)/performer(s)", Handle23T___Frames);
+	FrameHeader::Handle23("TOWN", "File owner/licensee", Handle23T___Frames);
+	FrameHeader::Handle23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle23T___Frames);
+	FrameHeader::Handle23("TPE2", "Band / Orchestra / Accompaniment", Handle23T___Frames);
+	FrameHeader::Handle23("TPE3", "Conductor / Performer Refinement", Handle23T___Frames);
+	FrameHeader::Handle23("TPE4", "Interpreted, Remixed, or otherwise modified by", Handle23T___Frames);
+	FrameHeader::Handle23("TPOS", "Part of a set", Handle23T___Frames);
+	FrameHeader::Handle23("TPUB", "Publisher", Handle23T___Frames);
+	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle23T___Frames);
+	FrameHeader::Handle23("TRDA", "Recording dates", Handle23T___Frames);
 	FrameHeader::Handle23("TSRC", "ISRC (international standard recording code)", Handle23TSRCFrame);
-	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle22And23TextFrame);
-	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23UserTextFrame);
-	FrameHeader::Handle23("TYER", "Year", Handle22And23TextFrame);
+	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle23T___Frames);
+	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23TXXXFrame);
+	FrameHeader::Handle23("TYER", "Year", Handle23T___Frames);
 	FrameHeader::Handle23("UFID", "Unique file identifier", Handle23UFIDFrame);
-	FrameHeader::Handle23("WCOM", "Commercial information", 0);
-	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23URLFrame);
-	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23UserURLFrame);
+	FrameHeader::Handle23("WCOM", "Commercial information", Handle23W___Frames);
+	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23W___Frames);
+	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23WXXXFrame);
 	// forbidden tags
 	FrameHeader::Forbid23("MJCF", "This frame is not defined in tag version 2.3. It is a non-standard frame added by the MediaJukebox.");
 	FrameHeader::Handle23("MJCF", "Mediajukebox", Handle23MJCFFrame);
 	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
 	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
 	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24TextFrame);
+	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24T___Frames);
 	FrameHeader::Forbid23("TDTG", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TDTG", "Tagging time (from tag version 2.4)", Handle24TextFrame);
+	FrameHeader::Handle23("TDTG", "Tagging time (from tag version 2.4)", Handle24T___Frames);
 	FrameHeader::Forbid23("TSST", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TSST", "Set subtitle (from tag version 2.4)", Handle24TextFrame);
+	FrameHeader::Handle23("TSST", "Set subtitle (from tag version 2.4)", Handle24T___Frames);
 	
 	// ID3v2.4.0
 	FrameHeader::Handle24("APIC", "Attached picture", Handle24APICFrame);
 	FrameHeader::Handle24("COMM", "Comments", Handle24COMMFrame);
-	FrameHeader::Handle24("PRIV", "Private frame", HandlePRIVFrame);
-	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24TextFrame);
-	FrameHeader::Handle24("TCOM", "Composer", Handle24TextFrame);
-	FrameHeader::Handle24("TCON", "Content type", Handle24TextFrame);
-	FrameHeader::Handle24("TCOP", "Copyright message", Handle24TextFrame);
-	FrameHeader::Handle24("TDRC", "Recording time", Handle24TextFrame);
-	FrameHeader::Handle24("TDTG", "Tagging time", Handle24TextFrame);
-	FrameHeader::Handle24("TENC", "Encoded by", Handle24TextFrame);
-	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24TextFrame);
-	FrameHeader::Handle24("TLAN", "Language(s)", Handle24TextFrame);
-	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24TextFrame);
-	FrameHeader::Handle24("TPE2", "Band/orchestra/accompaniment", Handle24TextFrame);
-	FrameHeader::Handle24("TPOS", "Part of a set", Handle24TextFrame);
-	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24TextFrame);
-	FrameHeader::Handle24("TSSE", "Software/Hardware and settings used for encoding", Handle24TextFrame);
-	FrameHeader::Handle24("TXXX", "User defined text information frame", Handle24UserTextFrame);
+	FrameHeader::Handle24("PRIV", "Private frame", 0);
+	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24T___Frames);
+	FrameHeader::Handle24("TCOM", "Composer", Handle24T___Frames);
+	FrameHeader::Handle24("TCON", "Content type", Handle24T___Frames);
+	FrameHeader::Handle24("TCOP", "Copyright message", Handle24T___Frames);
+	FrameHeader::Handle24("TDRC", "Recording time", Handle24T___Frames);
+	FrameHeader::Handle24("TDTG", "Tagging time", Handle24T___Frames);
+	FrameHeader::Handle24("TENC", "Encoded by", Handle24T___Frames);
+	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24T___Frames);
+	FrameHeader::Handle24("TLAN", "Language(s)", Handle24T___Frames);
+	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24T___Frames);
+	FrameHeader::Handle24("TPE2", "Band/orchestra/accompaniment", Handle24T___Frames);
+	FrameHeader::Handle24("TPOS", "Part of a set", Handle24T___Frames);
+	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24T___Frames);
+	FrameHeader::Handle24("TSSE", "Software/Hardware and settings used for encoding", Handle24T___Frames);
+	FrameHeader::Handle24("TXXX", "User defined text information frame", Handle24TXXXFrame);
 	FrameHeader::Handle24("WXXX", "User defined URL link frame", Handle24WXXXFrame);
 	// forbidden tags
 	FrameHeader::Forbid24("TYER", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3.");
-	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle22And23TextFrame);
+	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle23T___Frames);
 	
 	// processing
 	while(Paths.begin() != Paths.end())
