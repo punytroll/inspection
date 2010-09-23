@@ -144,6 +144,19 @@ std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIString(const s
 	return Result;
 }
 
+std::pair< bool, uint8_t > GetUInt8(const uint8_t * Buffer, int Length)
+{
+	std::pair< bool, uint8_t > Result(false, 0);
+	
+	if(Length >= 1)
+	{
+		Result.first = true;
+		Result.second = Buffer[0];
+	}
+	
+	return Result;
+}
+
 std::pair< bool, uint16_t > GetUInt16LE(const uint8_t * Buffer, int Length)
 {
 	std::pair< bool, uint16_t > Result(false, 0);
@@ -151,7 +164,20 @@ std::pair< bool, uint16_t > GetUInt16LE(const uint8_t * Buffer, int Length)
 	if(Length >= 2)
 	{
 		Result.first = true;
-		Result.second = Buffer[1] * 256 + Buffer[0];
+		Result.second = (static_cast< uint32_t >(Buffer[1]) << 8) + Buffer[0];
+	}
+	
+	return Result;
+}
+
+std::pair< bool, uint32_t > GetUInt32BE(const uint8_t * Buffer, int Length)
+{
+	std::pair< bool, uint32_t > Result(false, 0);
+	
+	if(Length >= 4)
+	{
+		Result.first = true;
+		Result.second = (static_cast< uint32_t >(Buffer[0]) << 24) + (static_cast< uint32_t >(Buffer[1]) << 16) + (static_cast< uint32_t >(Buffer[2]) << 8) + Buffer[3];
 	}
 	
 	return Result;
@@ -1979,6 +2005,67 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle23POPMFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	
+	if(Length >= 6)
+	{
+		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > EMailToUser(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			
+			std::cout << "\t\t\t\tEMail to user: \"" << EMailToUser.second << "\" (null-terminated ISO/IEC 8859-1 string)"  << std::endl;
+			Index += EMailToUser.first;
+			if(Length - Index >= 1)
+			{
+				std::pair< int, uint8_t > Rating(GetUInt8(Buffer + Index, Length - Index));
+				
+				std::cout << "\t\t\t\tRating: " << static_cast< uint32_t >(Rating.second) << std::endl;
+				Index += 1;
+				if(Length - Index >= 4)
+				{
+					if(Length - Index == 4)
+					{
+						std::pair< int, uint32_t > Counter(GetUInt32BE(Buffer + Index, Length - Index));
+						
+						std::cout << "\t\t\t\tCounter: " << Counter.second << std::endl;
+						Index += 4;
+					}
+					else
+					{
+						/** @todo Implement an output function for arbitrary sized unsigned numbers. **/
+						std::cout << "*** ERROR *** The program does not yet support printing the value of numbers with more than four bytes." << std::endl;
+						Index = Length;
+					}
+				}
+				else
+				{
+					std::cout << "*** ERROR *** Expected to find at least four more bytes containing the counter." << std::endl;
+					Index = Length;
+				}
+			}
+			else
+			{
+				std::cout << "*** ERROR *** Expected to find at least one more byte containing the rating." << std::endl;
+				Index = Length;
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Expected to find a null-terminated ISO/IEC 8859-1 string in the first field." << std::endl;
+			Index = Length;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Expected a data length of at least 6 bytes." << std::endl;
+		Index = Length;
+	}
+	
+	return Index;
+}
+
 int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -3349,6 +3436,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("APIC", "Attached picture", Handle23APICFrame);
 	FrameHeader::Handle23("COMM", "Comments", Handle23COMMFrame);
 	FrameHeader::Handle23("MCDI", "Music CD identifier", Handle23MCDIFrame);
+	FrameHeader::Handle23("POPM", "Popularimeter", Handle23POPMFrame);
 	FrameHeader::Handle23("PRIV", "Private frame", Handle23PRIVFrame);
 	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle23T___Frames);
 	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle23T___Frames);
