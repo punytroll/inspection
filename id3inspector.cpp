@@ -2645,17 +2645,16 @@ int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Owner Identifier' field must be non-empty." << std::endl;
 	}
+	std::cout << "\t\t\t\tOwner Identifier: \"" << ReadOwnerIdentifier.second << '"' << std::endl;
+	Index += ReadOwnerIdentifier.first;
 	if(Length - Index > 64)
 	{
 		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Identifier' field must not exceed 64 bytes." << std::endl;
 	}
-	Index += ReadOwnerIdentifier.first;
-	std::cout << "\t\t\t\tOwner Identifier: \"" << ReadOwnerIdentifier.second << '"' << std::endl;
 	
 	std::pair< int, std::string > ReadIdentifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 	
 	std::cout << "\t\t\t\tIdentifier (binary): " << ReadIdentifier.second << std::endl;
-	
 	if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 	{
 		std::pair< int, std::string > ReadIdentifierAsString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
