@@ -2598,40 +2598,31 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 	
 	Index += 1;
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	std::cout << "\t\t\t\tDescription: ";
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
-	}
-	else if(Encoding == 1)
-	{
-		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
-	}
-	std::cout << std::endl;
-	std::cout << "\t\t\t\tString: \"";
-	if(Encoding == 0)
-	{
+		std::cout << "\t\t\t\tDescription: \"" << ReadDescription.second << '"' << std::endl;
+		
 		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
-		std::cout << ReadString.second;
+		std::cout << "\t\t\t\tString: \"" << ReadString.second << "'" << std::endl;
 	}
 	else if(Encoding == 1)
 	{
+		std::cout << "\t\t\t\tDescription: \"";
+		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+		std::cout << '"' << std::endl;
+		std::cout << "\t\t\t\\String: \"";
 		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+		std::cout << '"' << std::endl;
 	}
 	else
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << '"' << std::endl;
 	
 	return Index;
 }
