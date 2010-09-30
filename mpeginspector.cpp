@@ -815,7 +815,7 @@ void ReadFile(const std::string & Path)
 			}
 			else
 			{
-				unsigned int Index(0);
+				int Index(0);
 				
 				while(Index < FileSize)
 				{
