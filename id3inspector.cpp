@@ -1427,13 +1427,13 @@ int PrintUCS_2StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
-			// Big Endian by Byte Order Marker
+			// Big Endian by Byte Order Mark
 			Index += PrintUCS_2_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
 		}
 		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
-			// Little Endian by Byte Order Marker
+			// Little Endian by Byte Order Mark
 			std::pair< int, std::string > String(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += String.first;
@@ -1446,7 +1446,7 @@ int PrintUCS_2StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 	}
 	else
 	{
-		std::cout << "*** The UCS-2 string is expected to contain a Byte Order Marker but is not long enough to hold that information." << std::endl;
+		std::cout << "*** The UCS-2 string is expected to contain a Byte Order Mark but is not long enough to hold that information." << std::endl;
 		Index = Length;
 	}
 	
@@ -1463,7 +1463,7 @@ int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			
-			// Big Endian by Byte Order Marker
+			// Big Endian by Byte Order Mark
 			std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += ReadString.first;
@@ -1473,7 +1473,7 @@ int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			
-			// Little Endian by Byte Order Marker
+			// Little Endian by Byte Order Mark
 			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += ReadString.first;
@@ -1486,7 +1486,7 @@ int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 	}
 	else
 	{
-		std::cout << "*** The UCS-2 string is expected to contain a Byte Order Marker but is not long enough to hold that information." << std::endl;
+		std::cout << "*** The UCS-2 string is expected to contain a Byte Order Mark but is not long enough to hold that information." << std::endl;
 		Index = Length;
 	}
 	
@@ -1643,13 +1643,13 @@ int PrintUTF_16StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 		if((static_cast< unsigned char >(Buffer[Index]) == 0xfe) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xff))
 		{
 			Index += 2;
-			// Big Endian by Byte Order Marker
+			// Big Endian by Byte Order Mark
 			Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
 		}
 		else if((static_cast< unsigned char >(Buffer[Index]) == 0xff) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe))
 		{
 			Index += 2;
-			// Little Endian by Byte Order Marker
+			// Little Endian by Byte Order Mark
 			Index += PrintUTF_16_LEStringTerminatedByEnd(Buffer + Index, Length - Index);
 		}
 		else
@@ -1659,7 +1659,7 @@ int PrintUTF_16StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 	}
 	else
 	{
-		std::cout << "*** The UTF-16 string is expected to contain a Byte Order Marker but is not long enough to hold that information." << std::endl;
+		std::cout << "*** The UTF-16 string is expected to contain a Byte Order Mark but is not long enough to hold that information." << std::endl;
 		Index = Length;
 	}
 	
@@ -1675,13 +1675,13 @@ int PrintUTF_16StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xfe)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xff)))
 		{
 			Index += 2;
-			// Big Endian by Byte Order Marker
+			// Big Endian by Byte Order Mark
 			Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xff)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe)))
 		{
 			Index += 2;
-			// Little Endian by Byte Order Marker
+			// Little Endian by Byte Order Marke
 			Index += PrintUTF_16_LEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 		else
@@ -1691,7 +1691,7 @@ int PrintUTF_16StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 	}
 	else
 	{
-		std::cout << "*** The UTF-16 string is expected to contain a Byte Order Marker but is not long enough to hold that information." << std::endl;
+		std::cout << "*** The UTF-16 string is expected to contain a Byte Order Mark but is not long enough to hold that information." << std::endl;
 		Index = Length;
 	}
 	
@@ -1789,7 +1789,7 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			// Big Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
 			
 			std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
@@ -1800,7 +1800,7 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			// Little Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
 			
 			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
@@ -2420,7 +2420,7 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			// Big Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
 			
 			std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
@@ -2431,7 +2431,7 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			// Little Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
 			
 			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
@@ -2530,14 +2530,14 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			// Big Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
 			ReadString = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Little Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
 			ReadString = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 		else
@@ -2582,14 +2582,14 @@ int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			// Big Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
+			std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
 			ReadString = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Little Endian by BOM
-			std::cout << "\t\t\t\tByte Order Marker: Little Endian" << std::endl;
+			std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
 			ReadString = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 		else
