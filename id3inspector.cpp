@@ -906,9 +906,11 @@ bool StartsWith_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_String(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_Termination(const uint8_t * Buffer, int Length);
+bool StartsWith_UCS_2_BE_ByteOrderMark(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_Termination(const uint8_t * Buffer, int Length);
+bool StartsWith_UCS_2_LE_ByteOrderMark(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length);
@@ -1009,6 +1011,18 @@ bool StartsWith_ISO_IEC_8859_1_Termination(const uint8_t * Buffer, int Length)
 	}
 }
 
+bool StartsWith_UCS_2_BE_ByteOrderMark(const uint8_t * Buffer, int Length)
+{
+	if(Length >= 2)
+	{
+		return (Buffer[0] == 0xfe) && (Buffer[1] == 0xff);
+	}
+	else
+	{
+		return false;
+	}
+}
+
 bool StartsWith_UCS_2_BE_Character(const uint8_t * Buffer, int Length)
 {
 	if(Length >= 2)
@@ -1053,6 +1067,18 @@ bool StartsWith_UCS_2_BE_Termination(const uint8_t * Buffer, int Length)
 	if(Length >= 2)
 	{
 		return Buffer[0] == 0x00 && Buffer[1] == 0x00;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool StartsWith_UCS_2_LE_ByteOrderMark(const uint8_t * Buffer, int Length)
+{
+	if(Length >= 2)
+	{
+		return (Buffer[0] == 0xff) && (Buffer[1] == 0xfe);
 	}
 	else
 	{
@@ -1296,7 +1322,7 @@ std::pair< int, std::string > Get_UCS_2_BE_StringTerminatedByEndOrLength(const u
 		{
 			if(StartsWith_UCS_2_BE_Termination(Buffer + Result.first, Length - Result.first) == true)
 			{
-				Result.first += 1;
+				Result.first += 2;
 				
 				break;
 			}
@@ -1398,13 +1424,13 @@ int PrintUCS_2StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 	
 	if(Length >= 2)
 	{
-		if((static_cast< unsigned char >(Buffer[Index]) == 0xfe) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xff))
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Big Endian by Byte Order Marker
 			Index += PrintUCS_2_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
 		}
-		else if((static_cast< unsigned char >(Buffer[Index]) == 0xff) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe))
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Little Endian by Byte Order Marker
@@ -1433,7 +1459,7 @@ int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 	
 	if(Length >= 2)
 	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xfe)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xff)))
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			
@@ -1443,7 +1469,7 @@ int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 			Index += ReadString.first;
 			std::cout << ReadString.second;
 		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index]) == 0xff)) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe)))
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			
@@ -1759,7 +1785,7 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 	}
 	else if(Encoding == 1)
 	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Big Endian by BOM
@@ -1770,7 +1796,7 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 			Index += ReadString.first;
 			std::cout << "\t\t\t\tString: \"" << ReadString.second;
 		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Little Endian by BOM
@@ -2369,14 +2395,28 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadString.first;
-		std::cout << "\t\t\t\tString: \"" << ReadString.second;
+		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (zero-terminated)" << std::endl;
+		}
+		else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (boundary-terminated)" << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
+		}
 	}
 	else if(Encoding == 1)
 	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Big Endian by BOM
@@ -2385,9 +2425,9 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 			std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += ReadString.first;
-			std::cout << "\t\t\t\tString: \"" << ReadString.second;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
 		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Little Endian by BOM
@@ -2396,7 +2436,7 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += ReadString.first;
-			std::cout << "\t\t\t\tString: \"" << ReadString.second;
+			std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
 		}
 		else
 		{
@@ -2407,7 +2447,6 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << '"' << std::endl;
 	
 	return Index;
 }
@@ -2422,11 +2461,11 @@ int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
 	if(Encoding == 1)
 	{
 		std::cout << "\t\t\t\tByte Order Mark: ";
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			std::cout << "Big Endian";
 		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			std::cout << "Little Endian";
 		}
@@ -2487,14 +2526,14 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(Encoding == 1)
 	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Big Endian by BOM
 			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
 			ReadString = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Little Endian by BOM
@@ -2539,14 +2578,14 @@ int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(Encoding == 1)
 	{
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Big Endian by BOM
 			std::cout << "\t\t\t\tByte Order Marker: Big Endian" << std::endl;
 			ReadString = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			Index += 2;
 			// Little Endian by BOM
@@ -2615,7 +2654,7 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
 		std::cout << '"' << std::endl;
-		std::cout << "\t\t\t\\String: \"";
+		std::cout << "\t\t\t\tString: \"";
 		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		std::cout << '"' << std::endl;
 	}
@@ -2839,11 +2878,11 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 	if(Encoding == 1)
 	{
 		std::cout << "\t\t\t\tByte Order Mark: ";
-		if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xfe) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xff))
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			std::cout << "Big Endian";
 		}
-		else if((static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])) == 0xff) && (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index + 1])) == 0xfe))
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
 			std::cout << "Little Endian";
 		}
