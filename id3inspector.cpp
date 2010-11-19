@@ -1923,10 +1923,10 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 	}
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
-		Index += ReadDescription.first;
-		std::cout << "\t\t\t\tDescription: \"" << ReadDescription.second << "'" << std::endl;
+		Index += Description.first;
+		std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-termianted)" << std::endl;
 	}
 	else if(Encoding == 1)
 	{
@@ -1964,7 +1964,8 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 		{
 			if((StartsWith_UCS_2_BE_Termination(Buffer + Index, Length - Index) == true) || (StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true))
 			{
-				std::cout << "*** ERROR *** The 'Description' string only consists of a terminator (00 00) which is invalid because UCS-2 strings are required to start with a Byte Order Mark." << std::endl;
+				std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 are required to start with a Byte Order Mark. The 'Description' string only consists of a terminator (00 00)." << std::endl;
+				std::cout << "\t\t\t\tDescription: \"\" (zero-terminated, missing endian specification)" << std::endl;
 				Index += 2;
 			}
 			else
@@ -2497,7 +2498,15 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 		}
 		else
 		{
-			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+			if(Index == Length)
+			{
+				std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 must start with a Byte Order Mark, without explicitly excluding empty strings. The string for this text frame is empty without a Byte Order Mark and terminates at the frame boundary." << std::endl;
+				std::cout << "\t\t\t\tString: \"\" (boundary-terminated, missing endian specification)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+			}
 		}
 	}
 	else
