@@ -1921,23 +1921,62 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 	{
 		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
 	}
-	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
 		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadDescription.first;
-		std::cout << ReadDescription.second;
+		std::cout << "\t\t\t\tDescription: \"" << ReadDescription.second << "'" << std::endl;
 	}
 	else if(Encoding == 1)
 	{
-		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+		{
+			Index += 2;
+			if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+			{
+				std::pair< int, std::string > Description(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				
+				Index += Description.first;
+				std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-terminated, big endian)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The 'Description' string could be identified as big endian but does not seem to be a valid zero-terminated UCS-2 string." << std::endl;
+			}
+		}
+		else if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			Index += 2;
+			if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+			{
+				std::pair< int, std::string > Description(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				
+				Index += Description.first;
+				std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-terminated, little endian)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The 'Description' string could be identified as little endian but does not seem to be a valid zero-terminated UCS-2 string." << std::endl;
+			}
+		}
+		else
+		{
+			if((StartsWith_UCS_2_BE_Termination(Buffer + Index, Length - Index) == true) || (StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true))
+			{
+				std::cout << "*** ERROR *** The 'Description' string only consists of a terminator (00 00) which is invalid because UCS-2 strings are required to start with a Byte Order Mark." << std::endl;
+				Index += 2;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The 'Description' string is invalid because it does not start with a Byte Order Mark." << std::endl;
+			}
+		}
 	}
 	else
 	{
 		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
 	}
-	std::cout << '"' << std::endl;
 	if(Encoding == 0)
 	{
 		if(StartsWith_ISO_IEC_8859_1_String(Buffer + Index, Length - Index) == true)
