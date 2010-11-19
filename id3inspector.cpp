@@ -1298,31 +1298,33 @@ std::pair< int, std::string > Get_UTF_8_StringTerminatedByEndOrLength(const uint
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UCS-2BE                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int PrintUCS_2_BEStringTerminatedByEnd(const uint8_t * Buffer, int Length)
+std::pair< int, std::string > Get_UCS_2_BE_StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 {
-	int Index(0);
+	std::pair< int, std::string > Result;
 	
 	while(true)
 	{
-		if(Index + 1 >= Length)
+		if(Result.first + 2 <= Length)
 		{
-			std::cout << "*** ERROR *** UCS-2BE string should be null-terminated but exceeds its possible length." << std::endl;
-			
-			return Index;
+			if(StartsWith_UCS_2_BE_Termination(Buffer + Result.first, Length - Result.first) == true)
+			{
+				Result.first += 2;
+				
+				break;
+			}
+			else if(StartsWith_UCS_2_BE_Character(Buffer + Result.first, Length - Result.first) == true)
+			{
+				Result.second += Get_UTF_8_CharacterFrom_UCS_2_BE_Character(Buffer + Result.first, Length - Result.first);
+				Result.first += 2;
+			}
 		}
 		else
 		{
-			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
-			{
-				return Index + 2;
-			}
-			else
-			{
-				std::cout << Get_UTF_8_CharacterFrom_UCS_2_BE_Character(Buffer + Index, Length - Index);
-				Index += 2;
-			}
+			assert(false);
 		}
 	}
+	
+	return Result;
 }
 
 std::pair< int, std::string > Get_UCS_2_BE_StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
@@ -1441,7 +1443,10 @@ int PrintUCS_2StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 		{
 			Index += 2;
 			// Big Endian by Byte Order Mark
-			Index += PrintUCS_2_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+			std::pair< int, std::string > String(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			
+			Index += String.first;
+			std::cout << String.second;
 		}
 		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 		{
