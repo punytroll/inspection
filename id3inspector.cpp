@@ -52,6 +52,29 @@ bool IsValidIdentifierCharacter(char Character)
 	return ((Character >= 'A') && (Character <= 'Z')) || ((Character >= '0') && (Character <= '9'));
 }
 
+/**
+ * @note @a Buffer is expected to start with a valid UTF-8 character. Test beforehand with StartsWith_UTF_8_Character(...). No boundary checking is performed. Only the first byte is used to calculate the length.
+ **/
+uint8_t Get_UTF_8_CharacterLength(const uint8_t * Buffer, int Length)
+{
+	if((Buffer[0] & 0xf8) == 0xf0)
+	{
+		return 4;
+	}
+	else if((Buffer[0] & 0xf0) == 0xe0)
+	{
+		return 3;
+	}
+	else if((Buffer[0] & 0xe0) == 0xc0)
+	{
+		return 2;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
 std::string Get_UTF_8_CharacterFromUnicodeCodepoint(unsigned int Codepoint)
 {
 	std::string Result;
@@ -902,6 +925,7 @@ std::pair< int, std::string > GetGUIDString(const uint8_t * Buffer, int Length)
 // Queries                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool Is_ISO_IEC_8859_1_StringWithoutTermination(const uint8_t * Buffer, int Length);
+bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_String(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length);
@@ -914,6 +938,7 @@ bool StartsWith_UCS_2_LE_ByteOrderMark(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length);
+bool StartsWith_UTF_8_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UTF_8_Termination(const uint8_t * Buffer, int Length);
 
 bool Is_ISO_IEC_8859_1_StringWithoutTermination(const uint8_t * Buffer, int Length)
@@ -927,6 +952,22 @@ bool Is_ISO_IEC_8859_1_StringWithoutTermination(const uint8_t * Buffer, int Leng
 			return false;
 		}
 		Index += 1;
+	}
+	
+	return true;
+}
+
+bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	
+	while(Index < Length)
+	{
+		if(StartsWith_UTF_8_Character(Buffer + Index, Length - Index) == false)
+		{
+			return false;
+		}
+		Index += Get_UTF_8_CharacterLength(Buffer + Index, Length - Index);
 	}
 	
 	return true;
@@ -1138,6 +1179,31 @@ bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length)
 	}
 }
 
+bool StartsWith_UTF_8_Character(const uint8_t * Buffer, int Length)
+{
+	if(Length >= 1)
+	{
+		if((Buffer[0] & 0xf8) == 0xf0)
+		{
+			return (Length >= 4) && ((Buffer[1] & 0xc0) == 0x80) && ((Buffer[2] & 0xc0) == 0x80) && ((Buffer[3] & 0xc0) == 0x80);
+		}
+		else if((Buffer[0] & 0xf0) == 0xe0)
+		{
+			return (Length >= 3) && ((Buffer[1] & 0xc0) == 0x80) && ((Buffer[2] & 0xc0) == 0x80);
+		}
+		else if((Buffer[0] & 0xe0) == 0xc0)
+		{
+			return (Length >= 2) && ((Buffer[1] & 0xc0) == 0x80);
+		}
+		else if((Buffer[0] & 0x80) == 0x00)
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 bool StartsWith_UTF_8_Termination(const uint8_t * Buffer, int Length)
 {
 	if(Length >= 1)
@@ -1243,7 +1309,39 @@ std::pair< int, std::string > Get_ISO_IEC_8859_1_StringTerminatedByLength(const 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UTF-8                                                                                         //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::pair< int, std::string> Get_UTF_8_StringTerminatedByEnd(const uint8_t * Buffer, int Length)
+
+/**
+ * @note @a Buffer is expected to start with a valid UTF-8 character. Test beforehand with StartsWith_UTF_8_Character(...). No boundary checking is performed.
+ **/
+std::pair< int, std::string > Get_UTF_8_Character(const uint8_t * Buffer, int Length)
+{
+	std::pair< int, std::string > Result;
+	
+	if((Buffer[0] & 0xf8) == 0xf0)
+	{
+		Result.first = 4;
+		Result.second = std::string(Buffer, Buffer + 4);
+	}
+	else if((Buffer[0] & 0xf0) == 0xe0)
+	{
+		Result.first = 3;
+		Result.second = std::string(Buffer, Buffer + 3);
+	}
+	else if((Buffer[0] & 0xe0) == 0xc0)
+	{
+		Result.first = 2;
+		Result.second = std::string(Buffer, Buffer + 2);
+	}
+	else if((Buffer[0] & 0x80) == 0x00)
+	{
+		Result.first = 1;
+		Result.second = std::string(Buffer, Buffer + 1);
+	}
+	
+	return Result;
+}
+
+std::pair< int, std::string > Get_UTF_8_StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 {
 	std::pair< int, std::string > Result;
 	
@@ -1290,6 +1388,21 @@ std::pair< int, std::string > Get_UTF_8_StringTerminatedByEndOrLength(const uint
 		{
 			break;
 		}
+	}
+	
+	return Result;
+}
+
+std::pair< int, std::string > Get_UTF_8_StringTerminatedByLength(const uint8_t * Buffer, int Length)
+{
+	std::pair< int, std::string > Result;
+	
+	while(Result.first < Length)
+	{
+		std::pair< int, std::string > Character(Get_UTF_8_Character(Buffer + Result.first, Length - Result.first));
+		
+		Result.first += Character.first;
+		Result.second += Character.second;
 	}
 	
 	return Result;
@@ -2970,30 +3083,56 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 	std::cout << "\t\t\t\tString(s):\n";
 	while(Index < Length)
 	{
-		std::cout << "\t\t\t\t\t\"";
 		if(Encoding == 0)
 		{
-			std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-			
-			Index += String.first;
-			std::cout << String.second;
+			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			{
+				std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				
+				Index += String.first;
+				std::cout << "\t\t\t\t\t\"" << String.second << "\" (zero-terminated)" << std::endl;
+			}
+			else
+			{
+				std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				
+				Index += String.first;
+				std::cout << "\t\t\t\t\t\"" << String.second << "\" (boundary-terminated)" << std::endl;
+			}
 		}
 		else if(Encoding == 1)
 		{
+			std::cout << "\t\t\t\t\t\"";
 			Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
 		}
 		else if(Encoding == 2)
 		{
+			std::cout << "\t\t\t\t\t\"";
 			Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
 		}
 		else if(Encoding == 3)
 		{
-			std::pair< int, std::string > String(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-			
-			Index += String.first;
-			std::cout << String.second;
+			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			{
+				std::pair< int, std::string > String(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				
+				Index += String.first;
+				std::cout << "\t\t\t\t\t\"" << String.second << "\" (zero-terminated)" << std::endl;
+			}
+			else if(Is_UTF_8_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+			{
+				std::pair< int, std::string > String(Get_UTF_8_StringTerminatedByLength(Buffer + Index, Length - Index));
+				
+				Index += String.first;
+				std::cout << "\t\t\t\t\t\"" << String.second << "\" (boundary-terminated)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The content does not contain a valid UTF-8 string." << std::endl;
+			}
 		}
-		std::cout << '"' << std::endl;
 	}
 	
 	return Index;
