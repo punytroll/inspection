@@ -13,6 +13,12 @@
 #include <sstream>
 #include <vector>
 
+enum ID3_2_3_Encoding
+{
+	ISO_IEC_8859_1_1998,
+	UCS_2
+};
+
 inline void AppendSeparated(std::string & String, const std::string & Append, const std::string & Separator)
 {
 	if(String.empty() == false)
@@ -922,10 +928,11 @@ std::pair< int, std::string > GetGUIDString(const uint8_t * Buffer, int Length)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Queries                                                                                       //
+// Validators                                                                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool Is_ISO_IEC_8859_1_StringWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length);
+bool StartsWith_ID3_2_3_Encoding(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_String(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length);
@@ -971,6 +978,18 @@ bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length)
 	}
 	
 	return true;
+}
+
+bool StartsWith_ID3_2_3_Encoding(const uint8_t * Buffer, int Length)
+{
+	if(Length >= 1)
+	{
+		return ((Buffer[0] == 0) || (Buffer[0] == 1));
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool StartsWith_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length)
@@ -1215,6 +1234,32 @@ bool StartsWith_UTF_8_Termination(const uint8_t * Buffer, int Length)
 		return false;
 	}
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Getters                                                                                       //
+//   - These functions perfom no validating on the input.                                        //
+//   - They expect the input to be valid.                                                        //
+//   - On faulty input assertions, exceptions or segmentation faults may occur.                  //
+//   - Wrong output may be produced for faulty input.                                            //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+std::pair< int, ID3_2_3_Encoding > Get_ID3_2_3_Encoding(const uint8_t * Buffer, int Length)
+{
+	std::pair< int, ID3_2_3_Encoding > Result;
+	
+	Result.first = 1;
+	if(Buffer[0] == 0)
+	{
+		Result.second = ISO_IEC_8859_1_1998;
+	}
+	else
+	{
+		Result.second = UCS_2;
+	}
+	
+	return Result;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // ISO/IEC 8859-1                                                                                //
@@ -2127,11 +2172,12 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::pair< bool, uint8_t > Encoding(GetUInt8(Buffer + Index, Length- Index));
 	
-	if(Encoding.first == true)
+	if(StartsWith_ID3_2_3_Encoding(Buffer + Index, Length - Index) == true)
 	{
-		Index += 1;
+		std::pair< int, ID3_2_3_Encoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length- Index));
+		
+		Index += Encoding.first;
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding.second) << std::endl;
 		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 		{
@@ -2139,7 +2185,7 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 			
 			Index += MIMEType.first;
 			std::cout << "\t\t\t\tMIME type: \"" << MIMEType.second << "\"" << std::endl;
-			if(Encoding.second == 0)
+			if(Encoding.second == ISO_IEC_8859_1_1998)
 			{
 				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 				{
@@ -2165,6 +2211,10 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 					std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"Filename\" field." << std::endl;
 				}
 			}
+			else if(Encoding.second == UCS_2)
+			{
+				assert(false);
+			}
 			else
 			{
 				assert(false);
@@ -2177,7 +2227,7 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 	}
 	else
 	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST start with one byte for the text encoding." << std::endl;
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.3 encoding identifier." << std::endl;
 	}
 	
 	return Index;
@@ -3686,15 +3736,15 @@ int main(int argc, char **argv)
 	g_Genres1_0.insert(std::make_pair(79, "Hard Rock"));
 	
 	// encodings for version 2.2
-	g_Encodings2_2.insert(std::make_pair(0x00, "ISO/IEC 8859-1"));
+	g_Encodings2_2.insert(std::make_pair(0x00, "ISO/IEC 8859-1:1998"));
 	g_Encodings2_2.insert(std::make_pair(0x01, "UCS-2 encoded Unicode"));
 	
 	// encodings for version 2.3
-	g_Encodings2_3.insert(std::make_pair(0x00, "ISO/IEC 8859-1"));
+	g_Encodings2_3.insert(std::make_pair(0x00, "ISO/IEC 8859-1:1998"));
 	g_Encodings2_3.insert(std::make_pair(0x01, "UCS-2 encoded Unicode"));
 	
 	// encodings for version 2.4
-	g_Encodings2_4.insert(std::make_pair(0x00, "ISO/IEC 8859-1"));
+	g_Encodings2_4.insert(std::make_pair(0x00, "ISO/IEC 8859-1:1998"));
 	g_Encodings2_4.insert(std::make_pair(0x01, "UTF-16 encoded Unicode with Byte Order Mark"));
 	g_Encodings2_4.insert(std::make_pair(0x02, "UTF-16BE encoded Unicode in Big Endian"));
 	g_Encodings2_4.insert(std::make_pair(0x03, "UTF-8 encoded Unicode"));
