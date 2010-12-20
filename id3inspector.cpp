@@ -2124,6 +2124,65 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	std::pair< bool, uint8_t > Encoding(GetUInt8(Buffer + Index, Length- Index));
+	
+	if(Encoding.first == true)
+	{
+		Index += 1;
+		std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding.second) << std::endl;
+		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > MIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			
+			Index += MIMEType.first;
+			std::cout << "\t\t\t\tMIME type: \"" << MIMEType.second << "\"" << std::endl;
+			if(Encoding.second == 0)
+			{
+				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+				{
+					std::pair< int, std::string > FileName(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					
+					Index += FileName.first;
+					std::cout << "\t\t\t\tFilename: \"" << FileName.second << "\"" << std::endl;
+					if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						std::pair< int, std::string > ContentDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += ContentDescription.first;
+						std::cout << "\t\t\t\tContent description: \"" << ContentDescription.second << "\"" << std::endl;
+						Index = Length;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"Content description\" field." << std::endl;
+					}
+				}
+				else
+				{
+					std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"Filename\" field." << std::endl;
+				}
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"MIME type\" field with a zero-terminated ISO/IEC 8859-1:1998 string." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST start with one byte for the text encoding." << std::endl;
+	}
+	
+	return Index;
+}
+
 int Handle23MCDIFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -3690,6 +3749,7 @@ int main(int argc, char **argv)
 	// ID3v2.3.0
 	FrameHeader::Handle23("APIC", "Attached picture", Handle23APICFrame);
 	FrameHeader::Handle23("COMM", "Comments", Handle23COMMFrame);
+	FrameHeader::Handle23("GEOB", "General encapsulated object", Handle23GEOB_Frame);
 	FrameHeader::Handle23("MCDI", "Music CD identifier", Handle23MCDIFrame);
 	FrameHeader::Handle23("POPM", "Popularimeter", Handle23POPMFrame);
 	FrameHeader::Handle23("PRIV", "Private frame", Handle23PRIVFrame);
