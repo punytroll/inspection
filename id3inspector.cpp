@@ -601,7 +601,7 @@ public:
 		}
 		else
 		{
-			std::cout << "*** WARNING ***  No handler defined for the frame type \"" << _Identifier << "\" in this tag version." << std::endl;
+			std::cout << "*** ERROR ***  No handler defined for the frame type \"" << _Identifier << "\" in this tag version." << std::endl;
 			
 			return Length;
 		}
@@ -2238,8 +2238,7 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 				}
 				else
 				{
-					std::cout << "*** ERROR *** Expected to find at least four more bytes containing the counter." << std::endl;
-					Index = Length;
+					std::cout << "\t\t\t\tCounter: - (The personal play counter is omitted.)" << std::endl;
 				}
 			}
 			else
@@ -3343,7 +3342,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				HandledFrameSize = NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
 				if(HandledFrameSize != NewFrameHeader->GetSize())
 				{
-					std::cout << "*** WARNING *** Frame size exceeds frame data." << std::endl;
+					std::cout << "*** ERROR *** Frame size exceeds frame data." << std::endl;
 				}
 				std::cout << std::endl;
 			}
@@ -3641,9 +3640,10 @@ int main(int argc, char **argv)
 	g_Encodings2_4.insert(std::make_pair(0x02, "UTF-16BE encoded Unicode in Big Endian"));
 	g_Encodings2_4.insert(std::make_pair(0x03, "UTF-8 encoded Unicode"));
 	
-	// language codes according to ISO 639-2
+	// language codes according to ISO 639-2 (alpha-3 code)
 	g_ISO_639_2_Codes.insert(std::make_pair("dut", "Dutch; Flemish"));
 	g_ISO_639_2_Codes.insert(std::make_pair("eng", "English"));
+	g_ISO_639_2_Codes.insert(std::make_pair("ita", "Italian"));
 	
 	// country codes according to ISO 3166-1 alpha-2
 	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("ZA", "South Africa"));
