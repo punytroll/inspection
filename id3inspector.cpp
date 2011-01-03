@@ -3871,6 +3871,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TPUB", "Publisher", Handle23T___Frames);
 	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle23T___Frames);
 	FrameHeader::Handle23("TRDA", "Recording dates", Handle23T___Frames);
+	FrameHeader::Handle23("TSIZ", "Size", Handle23T___Frames);
 	FrameHeader::Handle23("TSRC", "ISRC (international standard recording code)", Handle23TSRCFrame);
 	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle23T___Frames);
 	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23TXXXFrame);
