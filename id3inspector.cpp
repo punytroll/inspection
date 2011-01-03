@@ -2920,34 +2920,74 @@ int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
 int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
-	Index += 1;
-	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
-	if(Encoding == 0)
+	if(StartsWith_ID3_2_3_Encoding(Buffer + Index, Length - Index) == true)
 	{
-		std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		std::pair< int, ID3_2_3_Encoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length- Index));
 		
-		Index += ReadDescription.first;
-		std::cout << "\t\t\t\tDescription: \"" << ReadDescription.second << '"' << std::endl;
-		
-		std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadString.first;
-		std::cout << "\t\t\t\tString: \"" << ReadString.second << "'" << std::endl;
-	}
-	else if(Encoding == 1)
-	{
-		std::cout << "\t\t\t\tDescription: \"";
-		Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
-		std::cout << '"' << std::endl;
-		std::cout << "\t\t\t\tString: \"";
-		Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
-		std::cout << '"' << std::endl;
+		Index += Encoding.first;
+		std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding.second) << std::endl;
+		if(Encoding.second == ISO_IEC_8859_1_1998)
+		{
+			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			{
+				std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				
+				Index += Description.first;
+				std::cout << "\t\t\t\tDescription: \"" << Description.second << "\"" << std::endl;
+				if(Index < Length)
+				{
+					if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += String.first;
+						std::cout << "\t\t\t\tString: \"" << String.second << "\"" << std::endl;
+					}
+					else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+					{
+						std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
+						
+						Index += String.first;
+						std::cout << "\t\t\t\tString: \"" << String.second << "\"" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"TXXX\" frame MUST contain a \"Description\" field using the text encoding. However, the content of the field could not be interpreted as an ISO/IEC 8859-1:1998 string." << std::endl;
+						Index = Length;
+					}
+				}
+				else
+				{
+					std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"TXXX\" frame MUST contain a \"Description\" field." << std::endl;
+					Index = Length;
+				}
+			}
+			else
+			{
+				std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"TXXX\" frame MUST contain a \"String\" field." << std::endl;
+				Index = Length;
+			}
+		}
+		else if(Encoding.second == UCS_2)
+		{
+			std::cout << "\t\t\t\tDescription: \"";
+			Index += PrintUCS_2StringTerminatedByEnd(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
+			std::cout << "\t\t\t\tString: \"";
+			Index += PrintUCS_2StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+			Index = Length;
+		}
 	}
 	else
 	{
-		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"TXXX\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.3 encoding identifier." << std::endl;
+		Index = Length;
 	}
 	
 	return Index;
