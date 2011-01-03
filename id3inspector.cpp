@@ -3750,8 +3750,10 @@ int main(int argc, char **argv)
 	g_Encodings2_4.insert(std::make_pair(0x03, "UTF-8 encoded Unicode"));
 	
 	// language codes according to ISO 639-2 (alpha-3 code)
+	g_ISO_639_2_Codes.insert(std::make_pair("deu", "German"));
 	g_ISO_639_2_Codes.insert(std::make_pair("dut", "Dutch; Flemish"));
 	g_ISO_639_2_Codes.insert(std::make_pair("eng", "English"));
+	g_ISO_639_2_Codes.insert(std::make_pair("ger", "German"));
 	g_ISO_639_2_Codes.insert(std::make_pair("ita", "Italian"));
 	
 	// country codes according to ISO 3166-1 alpha-2
