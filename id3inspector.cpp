@@ -3087,21 +3087,33 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 	
 	unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 	
+	Index += 1;
 	std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
-	std::cout << "\t\t\t\tDescription: \"";
 	if(Encoding == 0)
 	{
-		std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += Description.first;
-		std::cout << Description.second;
+		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			
+			Index += Description.first;
+			std::cout << "\t\t\t\tDescription: \"" << Description.second;
+		}
+		else
+		{
+			std::pair< int, std::string > Hexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+			
+			std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
+			std::cout << "              Binary content: " << Hexadecimal.second << std::endl;
+		}
 	}
 	else if(Encoding == 1)
 	{
+		std::cout << "\t\t\t\tDescription: \"";
 		Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else if(Encoding == 2)
 	{
+		std::cout << "\t\t\t\tDescription: \"";
 		Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 	}
 	else if(Encoding == 3)
@@ -3109,7 +3121,7 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 		std::pair< int, std::string > Description(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += Description.first;
-		std::cout << Description.second;
+		std::cout << "\t\t\t\tDescription: \"" << Description.second;
 	}
 	std::cout << '"' << std::endl;
 	
