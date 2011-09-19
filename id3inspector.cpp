@@ -1997,6 +1997,34 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle22UFIFrames(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	
+	if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+	{
+		std::pair< int, std::string > OwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		
+		Index += OwnerIdentifier.first;
+		std::cout << "\t\t\t\tOwner identifier: \"" << OwnerIdentifier.second << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
+		
+		std::pair< int, std::string > Identifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		
+		Index += Identifier.first;
+		std::cout << "\t\t\t\tIdentifier: " << Identifier.second << " (boundary-terminated, binary)" << std::endl;
+	}
+	else
+	{
+		std::pair< int, std::string > Hexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		
+		Index += Hexadecimal.first;
+		std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
+		std::cout << "              Binary content: " << Hexadecimal.second << std::endl;
+	}
+	
+	return Index;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // specific to tag version 2.3                                                                   //
@@ -3841,11 +3869,13 @@ int main(int argc, char **argv)
 	FrameHeader::Handle22("TCO", "Content type", Handle22T__Frames);
 	FrameHeader::Handle22("TEN", "Encoded by", Handle22T__Frames);
 	FrameHeader::Handle22("TP1", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group", Handle22T__Frames);
+	FrameHeader::Handle22("TP2", "Band/Orchestra/Accompaniment", Handle22T__Frames);
 	FrameHeader::Handle22("TPA", "Part of a set", Handle22T__Frames);
 	FrameHeader::Handle22("TRK", "Track number/Position in set", Handle22T__Frames);
 	FrameHeader::Handle22("TT1", "Content group description", Handle22T__Frames);
 	FrameHeader::Handle22("TT2", "Title/Songname/Content description", Handle22T__Frames);
 	FrameHeader::Handle22("TYE", "Year", Handle22T__Frames);
+	FrameHeader::Handle22("UFI", "Unique file identifier", Handle22UFIFrames);
 	// forbidden tags
 	FrameHeader::Forbid22("TCP", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless.");
 	FrameHeader::Handle22("TCP", "Compilation (from the internet)", Handle22T__Frames);
