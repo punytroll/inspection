@@ -1896,11 +1896,11 @@ int Handle22COMFrame(const uint8_t * Buffer, int Length)
 		
 		if(ISO_639_2Iterator != g_ISO_639_2_Codes.end())
 		{
-			std::cout << "\t\t\t\tLanguage: " << ISO_639_2Iterator->second << " (\"" << ISO_639_2Code << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2Iterator->second << " (\"" << ISO_639_2Code << "\")" << std::endl;
 		}
 		else
 		{
-			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2Code << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown> (\"" << ISO_639_2Code << "\")" << std::endl;
 			std::cout << "*** ERROR *** The language code '" << ISO_639_2Code << "' is not defined by ISO 639-2." << std::endl;
 		}
 	}
@@ -2095,11 +2095,11 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 		
 		if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 		{
-			std::cout << "\t\t\t\tLanguage: " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
 		}
 		else
 		{
-			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
 			std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
 		}
 	}
@@ -2766,6 +2766,94 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle23TLANFrames(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_3(Encoding) << std::endl;
+	
+	std::pair< int, std::string > ISO_639_2_Code;
+	
+	if(Encoding == 0)
+	{
+		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		{
+			ISO_639_2_Code = Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index);
+			Index += ISO_639_2_Code.first;
+			std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << "\" (zero-terminated)" << std::endl;
+		}
+		else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+		{
+			ISO_639_2_Code = Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index);
+			Index += ISO_639_2_Code.first;
+			std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << "\" (boundary-terminated)" << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
+		}
+	}
+	else if(Encoding == 1)
+	{
+		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+		{
+			Index += 2;
+			// Big Endian by BOM
+			std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
+			ISO_639_2_Code = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			Index += ISO_639_2_Code.first;
+			std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << '"' << std::endl;
+		}
+		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+		{
+			Index += 2;
+			// Little Endian by BOM
+			std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
+			ISO_639_2_Code = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			Index += ISO_639_2_Code.first;
+			std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << '"' << std::endl;
+		}
+		else
+		{
+			if(Index == Length)
+			{
+				std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 must start with a Byte Order Mark, without explicitly excluding empty strings. The string for this text frame is empty without a Byte Order Mark and terminates at the frame boundary." << std::endl;
+				std::cout << "\t\t\t\tString: \"\" (boundary-terminated, missing endian specification)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+			}
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+	}
+	if(ISO_639_2_Code.first > 0)
+	{
+		std::map< std::string, std::string >::iterator ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code.second));
+		
+		if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
+		{
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << std::endl;
+		}
+		else
+		{
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown>" << std::endl;
+			std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code.second << "' is not defined by ISO 639-2." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
+	}
+	
+	return Index;
+}
+
 int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -3173,11 +3261,11 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		
 		if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 		{
-			std::cout << "\t\t\t\tLanguage: " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
 		}
 		else
 		{
-			std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
 			std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
 		}
 	}
@@ -3898,7 +3986,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TIT1", "Content group description", Handle23T___Frames);
 	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle23T___Frames);
 	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle23T___Frames);
-	FrameHeader::Handle23("TLAN", "Language(s)", Handle23T___Frames);
+	FrameHeader::Handle23("TLAN", "Language(s)", Handle23TLANFrames);
 	FrameHeader::Handle23("TLEN", "Length", Handle23T___Frames);
 	FrameHeader::Handle23("TMED", "Media type", Handle23T___Frames);
 	FrameHeader::Handle23("TOAL", "Original album/movie/show title", Handle23T___Frames);
