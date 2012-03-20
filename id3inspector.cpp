@@ -37,6 +37,39 @@ std::string GetHexadecimalStringFromUInt8(uint8_t Value)
 	return Stream.str();
 }
 
+std::string GetBinaryStringFromBoolean(bool Value)
+{
+	if(Value == true)
+	{
+		return "1";
+	}
+	else
+	{
+		return "0";
+	}
+}
+
+std::string GetBinaryStringFromUInt8(uint8_t Value)
+{
+	std::string Result;
+	
+	Result += GetBinaryStringFromBoolean((Value & 0x80) == 0x80);
+	Result += GetBinaryStringFromBoolean((Value & 0x40) == 0x40);
+	Result += GetBinaryStringFromBoolean((Value & 0x20) == 0x20);
+	Result += GetBinaryStringFromBoolean((Value & 0x10) == 0x10);
+	Result += GetBinaryStringFromBoolean((Value & 0x08) == 0x08);
+	Result += GetBinaryStringFromBoolean((Value & 0x04) == 0x04);
+	Result += GetBinaryStringFromBoolean((Value & 0x02) == 0x02);
+	Result += GetBinaryStringFromBoolean((Value & 0x01) == 0x01);
+	
+	return Result;
+}
+
+std::string GetBinaryStringFromUInt16(uint16_t Value)
+{
+	return GetBinaryStringFromUInt8((Value >> 8) & 0xFF) + " " + GetBinaryStringFromUInt8(Value & 0xFF);
+}
+
 std::vector< std::string > SplitStringByCharacterPreserveEmpty(const std::string & WMUniqueFileIdentifier, char Separator)
 {
 	std::vector< std::string > Result;
@@ -1260,6 +1293,25 @@ std::pair< int, ID3_2_3_Encoding > Get_ID3_2_3_Encoding(const uint8_t * Buffer, 
 	return Result;
 }
 
+std::pair< int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length)
+{
+	std::pair< int, float > Result;
+	
+	Result.first = 4;
+	Result.second = *(reinterpret_cast< const float * >(Buffer));
+	
+	return Result;
+}
+
+std::pair< int, uint16_t > Get_UInt16(const uint8_t * Buffer, int Length)
+{
+	std::pair< int, uint16_t > Result;
+	
+	Result.first = 2;
+	Result.second = *(reinterpret_cast< const uint16_t * >(Buffer));
+	
+	return Result;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // ISO/IEC 8859-1                                                                                //
@@ -2693,6 +2745,35 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle23RGADFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	
+	if(Length == 8)
+	{
+		std::pair< int, float > PeakAmplitude(Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer + Index, Length - Index));
+		
+		Index += PeakAmplitude.first;
+		std::cout << "\t\t\t\tPeak Amplitude: " << PeakAmplitude.second << std::endl;
+		
+		std::pair< int, uint16_t > RadioReplayGainAdjustment(Get_UInt16(Buffer + Index, Length - Index));
+		
+		Index += RadioReplayGainAdjustment.first;
+		std::cout << "\t\t\t\tRadio Replay Gain Adjustment: " << GetBinaryStringFromUInt16(RadioReplayGainAdjustment.second) << std::endl;
+		
+		std::pair< int, uint16_t > AudiophileReplayGainAdjustment(Get_UInt16(Buffer + Index, Length - Index));
+		
+		Index += AudiophileReplayGainAdjustment.first;
+		std::cout << "\t\t\t\tAudiophileReplay Gain Adjustment: " << GetBinaryStringFromUInt16(AudiophileReplayGainAdjustment.second) << std::endl;
+	}
+	else
+	{
+		std::cout << "*** ERROR *** Frame 'RGAD' has to contain exactly eight bytes." << std::endl;
+	}
+	
+	return Index;
+}
+
 int Handle23T___Frames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -4013,6 +4094,8 @@ int main(int argc, char **argv)
 	// forbidden tags
 	FrameHeader::Forbid23("MJCF", "This frame is not defined in tag version 2.3. It is a non-standard frame added by the MediaJukebox.");
 	FrameHeader::Handle23("MJCF", "Mediajukebox", Handle23MJCFFrame);
+	FrameHeader::Forbid23("RGAD", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org.");
+	FrameHeader::Handle23("RGAD", "Replay Gain Adjustment", Handle23RGADFrame);
 	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
 	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
 	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
