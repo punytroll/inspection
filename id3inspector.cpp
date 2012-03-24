@@ -1669,7 +1669,12 @@ int PrintUCS_2StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 		}
 		else
 		{
-			std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not." << std::endl;
+			std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not. Trying to interpret as UCS-2 little endian." << std::endl;
+			
+			std::pair< int, std::string > String(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			
+			Index += String.first;
+			std::cout << String.second;
 		}
 	}
 	else
@@ -1709,7 +1714,12 @@ int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 		}
 		else
 		{
-			std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not." << std::endl;
+			std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not. Trying to interpret as UCS-2 little endian." << std::endl;
+			
+			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << ReadString.second;
 		}
 	}
 	else
@@ -2835,7 +2845,12 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 			}
 			else
 			{
-				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark. Trying to interpret as  UCS-2 little endian." << std::endl;
+				
+				std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				
+				Index += ReadString.first;
+				std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
 			}
 		}
 	}
@@ -3026,7 +3041,8 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 		}
 		else
 		{
-			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+			std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark. Trying to interpret as  UCS-2 little endian." << std::endl;
+			ReadString = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 		}
 	}
 	else
