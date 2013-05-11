@@ -851,7 +851,7 @@ std::pair< bool, std::string > GetSimpleID3_1GenreReferenceInterpretation(const 
 	{
 		std::pair< bool, unsigned int > GenreNumber(GetUnsignedIntegerFromDecimalASCIIString(ContentType.substr(1, ContentType.length() - 2)));
 		
-		if(GenreNumber.first == true)
+		if((GenreNumber.first == true) && (GenreNumber.second >= 0) && (GenreNumber.second <= 79))
 		{
 			std::map< unsigned int, std::string >::iterator Genre1_0Iterator(g_Genres1_0.find(GenreNumber.second));
 			
@@ -866,11 +866,39 @@ std::pair< bool, std::string > GetSimpleID3_1GenreReferenceInterpretation(const 
 	return Result;
 }
 
+std::pair< bool, std::string > GetSimpleWinampExtensionGenreReferenceInterpretation(const std::string & ContentType)
+{
+	std::pair< bool, std::string > Result(false, "");
+	
+	if((ContentType.length() >= 3) && (ContentType[0] == '(') && (ContentType[ContentType.length() - 1] == ')'))
+	{
+		std::pair< bool, unsigned int > GenreNumber(GetUnsignedIntegerFromDecimalASCIIString(ContentType.substr(1, ContentType.length() - 2)));
+		
+		if((GenreNumber.first == true) && (GenreNumber.second >= 80) && (GenreNumber.second <= 125))
+		{
+			std::map< unsigned int, std::string >::iterator Genre1_0Iterator(g_Genres1_0.find(GenreNumber.second));
+			
+			if(Genre1_0Iterator != g_Genres1_0.end())
+			{
+				Result.first = true;
+				Result.second = "reference to numeric genre from Winamp extension \"" + Genre1_0Iterator->second + '"';
+			}
+		}
+	}
+	
+	return Result;
+}
+
 std::string GetContentTypeInterpretation2_3(const std::string & ContentType)
 {
 	std::pair< bool, std::string > Interpretation(false, "");
 	
 	Interpretation = GetSimpleID3_1GenreReferenceInterpretation(ContentType);
+	if(Interpretation.first == true)
+	{
+		return Interpretation.second;
+	}
+	Interpretation = GetSimpleWinampExtensionGenreReferenceInterpretation(ContentType);
 	if(Interpretation.first == true)
 	{
 		return Interpretation.second;
@@ -4191,6 +4219,52 @@ int main(int argc, char **argv)
 	g_Genres1_0.insert(std::make_pair(77, "Musical"));
 	g_Genres1_0.insert(std::make_pair(78, "Rock & Roll"));
 	g_Genres1_0.insert(std::make_pair(79, "Hard Rock"));
+	g_Genres1_0.insert(std::make_pair(80, "Folk"));
+	g_Genres1_0.insert(std::make_pair(81, "Folk-Rock"));
+	g_Genres1_0.insert(std::make_pair(82, "National Folk"));
+	g_Genres1_0.insert(std::make_pair(83, "Swing"));
+	g_Genres1_0.insert(std::make_pair(84, "Fast Fusion"));
+	g_Genres1_0.insert(std::make_pair(85, "Bebob"));
+	g_Genres1_0.insert(std::make_pair(86, "Latin"));
+	g_Genres1_0.insert(std::make_pair(87, "Revival"));
+	g_Genres1_0.insert(std::make_pair(88, "Celtic"));
+	g_Genres1_0.insert(std::make_pair(89, "Bluegrass"));
+	g_Genres1_0.insert(std::make_pair(90, "Avantgarde"));
+	g_Genres1_0.insert(std::make_pair(91, "Gothic Rock"));
+	g_Genres1_0.insert(std::make_pair(92, "Progressive Rock"));
+	g_Genres1_0.insert(std::make_pair(93, "Psychedelic Rock"));
+	g_Genres1_0.insert(std::make_pair(94, "Symphonic Rock"));
+	g_Genres1_0.insert(std::make_pair(95, "Slow Rock"));
+	g_Genres1_0.insert(std::make_pair(96, "Big Band"));
+	g_Genres1_0.insert(std::make_pair(97, "Chorus"));
+	g_Genres1_0.insert(std::make_pair(98, "Easy Listening"));
+	g_Genres1_0.insert(std::make_pair(99, "Acoustic"));
+	g_Genres1_0.insert(std::make_pair(100, "Humour"));
+	g_Genres1_0.insert(std::make_pair(101, "Speech"));
+	g_Genres1_0.insert(std::make_pair(102, "Chanson"));
+	g_Genres1_0.insert(std::make_pair(103, "Opera"));
+	g_Genres1_0.insert(std::make_pair(104, "Chamber Music"));
+	g_Genres1_0.insert(std::make_pair(105, "Sonata"));
+	g_Genres1_0.insert(std::make_pair(106, "Symphony"));
+	g_Genres1_0.insert(std::make_pair(107, "Booty Bass"));
+	g_Genres1_0.insert(std::make_pair(108, "Primus"));
+	g_Genres1_0.insert(std::make_pair(109, "Porn Groove"));
+	g_Genres1_0.insert(std::make_pair(110, "Satire"));
+	g_Genres1_0.insert(std::make_pair(111, "Slow Jam"));
+	g_Genres1_0.insert(std::make_pair(112, "Club"));
+	g_Genres1_0.insert(std::make_pair(113, "Tango"));
+	g_Genres1_0.insert(std::make_pair(114, "Samba"));
+	g_Genres1_0.insert(std::make_pair(115, "Folklore"));
+	g_Genres1_0.insert(std::make_pair(116, "Ballad"));
+	g_Genres1_0.insert(std::make_pair(117, "Power Ballad"));
+	g_Genres1_0.insert(std::make_pair(118, "Rhythmic Soul"));
+	g_Genres1_0.insert(std::make_pair(119, "Freestyle"));
+	g_Genres1_0.insert(std::make_pair(120, "Duet"));
+	g_Genres1_0.insert(std::make_pair(121, "Punk Rock"));
+	g_Genres1_0.insert(std::make_pair(122, "Drum Solo"));
+	g_Genres1_0.insert(std::make_pair(123, "Acapella"));
+	g_Genres1_0.insert(std::make_pair(124, "Euro-House"));
+	g_Genres1_0.insert(std::make_pair(125, "Dance Hall"));
 	
 	// encodings for version 2.2
 	g_Encodings2_2.insert(std::make_pair(0x00, "ISO/IEC 8859-1:1998"));
@@ -4212,6 +4286,7 @@ int main(int argc, char **argv)
 	g_ISO_639_2_Codes.insert(std::make_pair("eng", "English"));
 	g_ISO_639_2_Codes.insert(std::make_pair("ger", "German"));
 	g_ISO_639_2_Codes.insert(std::make_pair("ita", "Italian"));
+	g_ISO_639_2_Codes.insert(std::make_pair("rus", "Russian"));
 	
 	// country codes according to ISO 3166-1 alpha-2
 	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("ZA", "South Africa"));
