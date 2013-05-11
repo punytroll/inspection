@@ -2571,6 +2571,30 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle23PCNTFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	
+	if(Length < 4)
+	{
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.17], a \"PCNT\" frame MUST contain at least four bytes for the counter." << std::endl;
+	}
+	else if(Length == 4)
+	{
+		std::pair< int, uint32_t > Counter(GetUInt32BE(Buffer + Index, Length - Index));
+		
+		std::cout << "\t\t\t\tCounter: " << Counter.second << std::endl;
+		Index += 4;
+	}
+	else
+	{
+		std::cout << "*** ERROR *** The program does not yet support printing the value of numbers with more than four bytes." << std::endl;
+		Index = Length;
+	}
+	
+	return Index;
+}
+
 int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -4238,6 +4262,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("COMM", "Comments", Handle23COMMFrame);
 	FrameHeader::Handle23("GEOB", "General encapsulated object", Handle23GEOB_Frame);
 	FrameHeader::Handle23("MCDI", "Music CD identifier", Handle23MCDIFrame);
+	FrameHeader::Handle23("PCNT", "Play counter", Handle23PCNTFrame);
 	FrameHeader::Handle23("POPM", "Popularimeter", Handle23POPMFrame);
 	FrameHeader::Handle23("PRIV", "Private frame", Handle23PRIVFrame);
 	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle23T___Frames);
