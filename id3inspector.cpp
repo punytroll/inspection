@@ -9,9 +9,33 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
+#include <list>
 #include <map>
 #include <sstream>
 #include <vector>
+
+class CDTableOfContents
+{
+public:
+	class TrackDescriptor
+	{
+	public:
+		uint32_t Reserved1;
+		uint32_t ADR;
+		bool HasFourChannels;
+		bool IsDataTrack;
+		bool IsDigitalCopyPermitted;
+		bool AudioTrackWithEmphasisOrIncrementalDataTrack;
+		uint32_t TrackNumber;
+		uint32_t Reserved2;
+		uint32_t TrackStartAddress;
+	};
+	
+	uint32_t DataLength;
+	uint32_t FirstTrackNumber;
+	uint32_t LastTrackNumber;
+	std::list< TrackDescriptor > TrackDescriptors;
+};
 
 enum ID3_2_3_Encoding
 {
@@ -1307,9 +1331,311 @@ bool StartsWith_UTF_8_Termination(const uint8_t * Buffer, int Length)
 	}
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 2nd generation getters                                                                        //
+//   - These functions validate and extract in one go.                                           //
+//   - They have three return values:                                                            //
+//       - a Boolean value indicating success                                                    //
+//       - an Integer value indicating the length of the processed data                          //
+//       - the actual result value                                                               //
+//   - If the Success return value is false, the length and return values may contain bogus data //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::tuple< bool, int, bool > Get_Boolean_0(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, bool > Get_Boolean_1(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, bool > Get_Boolean_2(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, bool > Get_Boolean_3(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, bool > Get_Boolean_4(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, bool > Get_Boolean_5(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, bool > Get_Boolean_6(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, bool > Get_Boolean_7(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, CDTableOfContents > Get_CDTableOfContents(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, uint8_t > Get_UInt4_0_3(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, uint8_t > Get_UInt4_4_7(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, uint8_t > Get_UInt8(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, uint16_t > Get_UInt16_BE(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, uint16_t > Get_UInt16_LE(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Length);
+
+
+std::tuple< bool, int, bool > Get_Boolean_0(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, bool > Result(false, 0, false);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = ((Buffer[0] >> 7) & 0x01) == 0x01;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, bool > Get_Boolean_1(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, bool > Result(false, 0, false);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = ((Buffer[0] >> 6) & 0x01) == 0x01;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, bool > Get_Boolean_2(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, bool > Result(false, 0, false);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = ((Buffer[0] >> 5) & 0x01) == 0x01;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, bool > Get_Boolean_3(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, bool > Result(false, 0, false);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = ((Buffer[0] >> 4) & 0x01) == 0x01;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, bool > Get_Boolean_4(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, bool > Result(false, 0, false);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = ((Buffer[0] >> 3) & 0x01) == 0x01;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, bool > Get_Boolean_5(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, bool > Result(false, 0, false);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = ((Buffer[0] >> 2) & 0x01) == 0x01;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, bool > Get_Boolean_6(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, bool > Result(false, 0, false);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = ((Buffer[0] >> 1) & 0x01) == 0x01;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, bool > Get_Boolean_7(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, bool > Result(false, 0, false);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = (Buffer[0] & 0x01) == 0x01;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, CDTableOfContents > Get_CDTableOfContents(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, CDTableOfContents > Result(true, 0, CDTableOfContents());
+	
+	int & Index(std::get<1>(Result));
+	CDTableOfContents & TableOfContents(std::get<2>(Result));
+	
+	auto DataLength(Get_UInt16_BE(Buffer + Index, Length - Index));
+	
+	if(std::get<0>(DataLength) == true)
+	{
+		Index += std::get<1>(DataLength);
+		TableOfContents.DataLength = std::get<2>(DataLength);
+		
+		auto FirstTrackNumber(Get_UInt8(Buffer + Index, Length - Index));
+		
+		if(std::get<0>(FirstTrackNumber) == true)
+		{
+			Index += std::get<1>(FirstTrackNumber);
+			TableOfContents.FirstTrackNumber = std::get<2>(FirstTrackNumber);
+		
+			auto LastTrackNumber(Get_UInt8(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(LastTrackNumber) == true)
+			{
+				Index += std::get<1>(LastTrackNumber);
+				TableOfContents.LastTrackNumber = std::get<2>(LastTrackNumber);
+				std::get<0>(Result) = true;
+				while(true)
+				{
+					CDTableOfContents::TrackDescriptor TrackDescriptor;
+					auto Reserved1(Get_UInt8(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(Reserved1) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					Index += std::get<1>(Reserved1);
+					TrackDescriptor.Reserved1 = std::get<2>(Reserved1);
+					
+					auto ADR(Get_UInt4_0_3(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(ADR) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					TrackDescriptor.ADR = std::get<2>(ADR);
+					
+					auto HasFourChannels(Get_Boolean_4(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(HasFourChannels) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					TrackDescriptor.HasFourChannels = std::get<2>(HasFourChannels);
+					
+					auto IsDataTrack(Get_Boolean_5(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(IsDataTrack) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					TrackDescriptor.IsDataTrack = std::get<2>(IsDataTrack);
+					
+					auto IsDigitalCopyPermitted(Get_Boolean_6(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(IsDigitalCopyPermitted) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					TrackDescriptor.IsDigitalCopyPermitted = std::get<2>(IsDigitalCopyPermitted);
+					
+					auto AudioTrackWithEmphasisOrIncrementalDataTrack(Get_Boolean_7(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(AudioTrackWithEmphasisOrIncrementalDataTrack) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					TrackDescriptor.AudioTrackWithEmphasisOrIncrementalDataTrack = std::get<2>(AudioTrackWithEmphasisOrIncrementalDataTrack);
+					Index += std::get<1>(ADR);
+					
+					auto TrackNumber(Get_UInt8(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(TrackNumber) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					Index += std::get<1>(TrackNumber);
+					TrackDescriptor.TrackNumber = std::get<2>(TrackNumber);
+					
+					auto Reserved2(Get_UInt8(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(Reserved2) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					Index += std::get<1>(Reserved2);
+					TrackDescriptor.Reserved2 = std::get<2>(Reserved2);
+					
+					auto TrackStartAddress(Get_UInt32_BE(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(TrackStartAddress) == false)
+					{
+						std::get<0>(Result) = false;
+						
+						break;
+					}
+					Index += std::get<1>(TrackStartAddress);
+					TrackDescriptor.TrackStartAddress = std::get<2>(TrackStartAddress);
+					TableOfContents.TrackDescriptors.push_back(TrackDescriptor);
+					if(std::get<2>(TrackNumber) == 0xAA)
+					{
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, uint8_t > Get_UInt4_0_3(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, uint8_t > Result(false, 0, 0);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = (Buffer[0] >> 4) & 0x0F;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, uint8_t > Get_UInt4_4_7(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, uint8_t > Result(false, 0, 0);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = Buffer[0] & 0x0F;
+	}
+	
+	return Result;
+}
+
 std::tuple< bool, int, uint8_t > Get_UInt8(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int, uint8_t > Result(false, 0, 0);
@@ -2545,10 +2871,77 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 int Handle23MCDIFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	std::tuple< bool, int, CDTableOfContents > TableOfContents(Get_CDTableOfContents(Buffer + Index, Length - Index));
 	
-	Index += ReadString.first;
-	std::cout << "\t\t\t\tCD Table Of Content: \"" << ReadString.second << '"' << std::endl;
+	if(std::get<0>(TableOfContents) == true)
+	{
+		Index += std::get<1>(TableOfContents);
+		std::cout << "\t\t\t\tLength: " << std::get<2>(TableOfContents).DataLength << std::endl;
+		std::cout << "\t\t\t\tFirst track number: " << std::get<2>(TableOfContents).FirstTrackNumber << std::endl;
+		std::cout << "\t\t\t\tLast track number: " << std::get<2>(TableOfContents).LastTrackNumber << std::endl;
+		for(auto & TrackDescriptor : std::get<2>(TableOfContents).TrackDescriptors)
+		{
+			std::cout << std::endl;
+			std::cout << "\t\t\t\tReserved: " << GetBinaryStringFromUInt8(TrackDescriptor.Reserved1) << 'b' << std::endl;
+			std::cout << "\t\t\t\tADR: " << TrackDescriptor.ADR << std::endl;
+			if((TrackDescriptor.HasFourChannels == true) && (TrackDescriptor.IsDataTrack == false))
+			{
+				std::cout << "\t\t\t\tNumber of channels: 4" << std::endl;
+			}
+			else
+			{
+				std::cout << "\t\t\t\tNumber of channels: 2" << std::endl;
+			}
+			if(TrackDescriptor.IsDataTrack == true)
+			{
+				std::cout << "\t\t\t\tTrack type: data" << std::endl;
+			}
+			else
+			{
+				std::cout << "\t\t\t\tTrack type: audio" << std::endl;
+			}
+			if(TrackDescriptor.IsDigitalCopyPermitted == true)
+			{
+				std::cout << "\t\t\t\tCopying permitted: true" << std::endl;
+			}
+			else
+			{
+				std::cout << "\t\t\t\tCopying permitted: false" << std::endl;
+			}
+			if(TrackDescriptor.IsDataTrack == true)
+			{
+				if(TrackDescriptor.AudioTrackWithEmphasisOrIncrementalDataTrack == true)
+				{
+					std::cout << "\t\t\t\tRecorded incrementally: true" << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\tRecorded incrementally: false" << std::endl;
+				}
+			}
+			else
+			{
+				if(TrackDescriptor.AudioTrackWithEmphasisOrIncrementalDataTrack == true)
+				{
+					std::cout << "\t\t\t\tPre-emphasis enabled: true" << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\tPre-emphasis enabled: false" << std::endl;
+				}
+			}
+			std::cout << "\t\t\t\tTrack number: " << TrackDescriptor.TrackNumber << std::endl;
+			std::cout << "\t\t\t\tReserved: " << GetBinaryStringFromUInt8(TrackDescriptor.Reserved2) << 'b' << std::endl;
+			std::cout << "\t\t\t\tTrack start address: " << TrackDescriptor.TrackStartAddress << std::endl;
+		}
+	}
+	else
+	{
+		std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		
+		Index += ReadString.first;
+		std::cout << "\t\t\t\tCD Table Of Content: \"" << ReadString.second << '"' << std::endl;
+	}
 	
 	return Index;
 }
@@ -4493,9 +4886,11 @@ int main(int argc, char **argv)
 	FrameHeader::Handle24("TENC", "Encoded by", Handle24T___Frames);
 	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24T___Frames);
 	FrameHeader::Handle24("TLAN", "Language(s)", Handle24T___Frames);
+	FrameHeader::Handle24("TLEN", "Length", Handle24T___Frames);
 	FrameHeader::Handle24("TPE1", "Lead performer(s)/Soloist(s)", Handle24T___Frames);
 	FrameHeader::Handle24("TPE2", "Band/orchestra/accompaniment", Handle24T___Frames);
 	FrameHeader::Handle24("TPOS", "Part of a set", Handle24T___Frames);
+	FrameHeader::Handle24("TPUB", "Publisher", Handle24T___Frames);
 	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24T___Frames);
 	FrameHeader::Handle24("TSSE", "Software/Hardware and settings used for encoding", Handle24T___Frames);
 	FrameHeader::Handle24("TXXX", "User defined text information frame", Handle24TXXXFrame);
