@@ -223,45 +223,6 @@ std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIString(const s
 	return Result;
 }
 
-std::pair< bool, uint8_t > GetUInt8(const uint8_t * Buffer, int Length)
-{
-	std::pair< bool, uint8_t > Result(false, 0);
-	
-	if(Length >= 1)
-	{
-		Result.first = true;
-		Result.second = Buffer[0];
-	}
-	
-	return Result;
-}
-
-std::pair< bool, uint16_t > GetUInt16LE(const uint8_t * Buffer, int Length)
-{
-	std::pair< bool, uint16_t > Result(false, 0);
-	
-	if(Length >= 2)
-	{
-		Result.first = true;
-		Result.second = (static_cast< uint32_t >(Buffer[1]) << 8) + Buffer[0];
-	}
-	
-	return Result;
-}
-
-std::pair< bool, uint32_t > GetUInt32BE(const uint8_t * Buffer, int Length)
-{
-	std::pair< bool, uint32_t > Result(false, 0);
-	
-	if(Length >= 4)
-	{
-		Result.first = true;
-		Result.second = (static_cast< uint32_t >(Buffer[0]) << 24) + (static_cast< uint32_t >(Buffer[1]) << 16) + (static_cast< uint32_t >(Buffer[2]) << 8) + Buffer[3];
-	}
-	
-	return Result;
-}
-
 class FrameHeader;
 
 class TagHeader
@@ -1344,6 +1305,65 @@ bool StartsWith_UTF_8_Termination(const uint8_t * Buffer, int Length)
 	{
 		return false;
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// 2nd generation getters                                                                        //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+std::tuple< bool, int, uint8_t > Get_UInt8(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, uint8_t > Result(false, 0, 0);
+	
+	if(Length >= 1)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = Buffer[0];
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, uint16_t > Get_UInt16_BE(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, uint16_t > Result(false, 0, 0);
+	
+	if(Length >= 2)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 2;
+		std::get<2>(Result) = (static_cast< uint32_t >(Buffer[0]) << 8) + Buffer[1];
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, uint16_t > Get_UInt16_LE(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, uint16_t > Result(false, 0, 0);
+	
+	if(Length >= 2)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 2;
+		std::get<2>(Result) = (static_cast< uint32_t >(Buffer[1]) << 8) + Buffer[0];
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, uint32_t > Result(false, 0, 0);
+	
+	if(Length >= 4)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 4;
+		std::get<2>(Result) = (static_cast< uint32_t >(Buffer[0]) << 24) + (static_cast< uint32_t >(Buffer[1]) << 16) + (static_cast< uint32_t >(Buffer[2]) << 8) + Buffer[3];
+	}
+	
+	return Result;
 }
 
 
@@ -2610,10 +2630,10 @@ int Handle23PCNTFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(Length == 4)
 	{
-		std::pair< int, uint32_t > Counter(GetUInt32BE(Buffer + Index, Length - Index));
+		std::tuple< bool, int, uint32_t > Counter(Get_UInt32_BE(Buffer + Index, Length - Index));
 		
-		std::cout << "\t\t\t\tCounter: " << Counter.second << std::endl;
-		Index += 4;
+		std::cout << "\t\t\t\tCounter: " << std::get<2>(Counter) << std::endl;
+		Index += std::get<1>(Counter);
 	}
 	else
 	{
@@ -2638,18 +2658,19 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 			Index += EMailToUser.first;
 			if(Length - Index >= 1)
 			{
-				std::pair< int, uint8_t > Rating(GetUInt8(Buffer + Index, Length - Index));
+				std::tuple< bool, int, uint8_t > Rating(Get_UInt8(Buffer + Index, Length - Index));
 				
-				std::cout << "\t\t\t\tRating: " << static_cast< uint32_t >(Rating.second) << std::endl;
-				Index += 1;
+				assert(std::get<0>(Rating) == true);
+				std::cout << "\t\t\t\tRating: " << static_cast< uint32_t >(std::get<2>(Rating)) << std::endl;
+				Index += std::get<1>(Rating);
 				if(Length - Index >= 4)
 				{
 					if(Length - Index == 4)
 					{
-						std::pair< int, uint32_t > Counter(GetUInt32BE(Buffer + Index, Length - Index));
+						std::tuple< bool, int, uint32_t > Counter(Get_UInt32_BE(Buffer + Index, Length - Index));
 						
-						std::cout << "\t\t\t\tCounter: " << Counter.second << std::endl;
-						Index += 4;
+						std::cout << "\t\t\t\tCounter: " << std::get<2>(Counter) << std::endl;
+						Index += std::get<1>(Counter);
 					}
 					else
 					{
@@ -2905,11 +2926,11 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	{
 		if(Length - Index == 4)
 		{
-			std::pair< bool, uint16_t > ReadUInt16(GetUInt16LE(Buffer + Index, Length - Index));
+			std::tuple< bool, int, uint16_t > ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
 			
-			assert(ReadUInt16.first == true);
-			std::cout << "\t\t\t\tPeak Value: " << ReadUInt16.second << std::endl;
-			Index += 2;
+			assert(std::get<0>(ReadUInt16) == true);
+			std::cout << "\t\t\t\tPeak Value: " << std::get<2>(ReadUInt16) << std::endl;
+			Index += std::get<1>(ReadUInt16);
 			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
 			{
 				std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
@@ -2938,11 +2959,11 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	{
 		if(Length - Index == 4)
 		{
-			std::pair< bool, uint16_t > ReadUInt16(GetUInt16LE(Buffer + Index, Length - Index));
+			std::tuple< bool, int, uint16_t > ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
 			
-			assert(ReadUInt16.first == true);
-			std::cout << "\t\t\t\tAverage Level: " << ReadUInt16.second << std::endl;
-			Index += 2;
+			assert(std::get<0>(ReadUInt16) == true);
+			std::cout << "\t\t\t\tAverage Level: " << std::get<2>(ReadUInt16) << std::endl;
+			Index += std::get<1>(ReadUInt16);
 			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
 			{
 				std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
