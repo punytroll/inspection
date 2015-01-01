@@ -1516,7 +1516,6 @@ bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_ISO_IEC_8859_1_String(const uint8_t * Buffer, int Length);
-bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_ByteOrderMark(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
@@ -1624,41 +1623,6 @@ bool StartsWith_ISO_IEC_8859_1_String(const uint8_t * Buffer, int Length)
 		else
 		{
 			return true;
-		}
-	}
-}
-
-bool StartsWith_ISO_IEC_8859_1_StringWithTermination(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	
-	while(true)
-	{
-		if(Index + 1 <= Length)
-		{
-			std::tuple< bool, int > Termination(Get_ISO_IEC_8859_1_Termination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(Termination) == true)
-			{
-				return true;
-			}
-			else
-			{
-				auto Character(Get_ISO_IEC_8859_1_Character(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(Character) == true)
-				{
-					Index += 1;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-		else
-		{
-			return false;
 		}
 	}
 }
@@ -2696,12 +2660,10 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 int Handle22UFIFrames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
+	auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 	
-	if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+	if(std::get<0>(OwnerIdentifier) == true)
 	{
-		auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-		
-		assert(std::get<0>(OwnerIdentifier) == true);
 		Index += std::get<1>(OwnerIdentifier);
 		std::cout << "\t\t\t\tOwner identifier: \"" << std::get<2>(OwnerIdentifier) << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
 		
@@ -2750,11 +2712,10 @@ int Handle23APICFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			auto ReadDescription(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ReadDescription) == true)
 			{
-				auto ReadDescription(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(ReadDescription) == true);
 				Index += std::get<1>(ReadDescription);
 				std::cout << std::get<2>(ReadDescription);
 			}
@@ -2971,27 +2932,26 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 	{
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
-		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		
+		auto MIMEType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+		
+		if(std::get<0>(MIMEType) == true)
 		{
-			auto MIMEType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			assert(std::get<0>(MIMEType) == true);
 			Index += std::get<1>(MIMEType);
 			std::cout << "\t\t\t\tMIME type: \"" << std::get<2>(MIMEType) << "\"" << std::endl;
 			if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 			{
-				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+				auto FileName(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(FileName) == true)
 				{
-					auto FileName(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-					
-					assert(std::get<0>(FileName) == true);
 					Index += std::get<1>(FileName);
 					std::cout << "\t\t\t\tFilename: \"" << std::get<2>(FileName) << "\"" << std::endl;
-					if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+					
+					auto ContentDescription(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(ContentDescription) == true)
 					{
-						auto ContentDescription(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-						
-						assert(std::get<0>(ContentDescription) == true);
 						Index += std::get<1>(ContentDescription);
 						std::cout << "\t\t\t\tContent description: \"" << std::get<2>(ContentDescription) << "\"" << std::endl;
 						Index = Length;
@@ -3117,12 +3077,10 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tFour bytes of zeroes: " << Zeroes.second << std::endl;
 		Index += Zeroes.first;
 		
-		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		auto Caption(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+		
+		if(std::get<0>(Caption) == true)
 		{
-			auto Caption(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			assert(std::get<0>(Caption) == true);
-			
 			std::string::size_type ColonPosition(std::get<2>(Caption).find(':'));
 			
 			if(ColonPosition != std::string::npos)
@@ -3206,11 +3164,10 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 	
 	if(Length >= 6)
 	{
-		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+		auto EMailToUser(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+		
+		if(std::get<0>(EMailToUser) == true)
 		{
-			auto EMailToUser(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			assert(std::get<0>(EMailToUser) == true);
 			Index += std::get<1>(EMailToUser);
 			std::cout << "\t\t\t\tEMail to user: \"" << std::get<2>(EMailToUser) << "\" (null-terminated ISO/IEC 8859-1 string)"  << std::endl;
 			if(Length - Index >= 1)
@@ -3610,11 +3567,10 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			auto ReadString(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ReadString) == true)
 			{
-				auto ReadString(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(ReadString) == true);
 				Index += std::get<1>(ReadString);
 				std::cout << "\t\t\t\tString: \"" << std::get<2>(ReadString) << "\" (zero-terminated)" << std::endl;
 			}
@@ -3695,11 +3651,10 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 		
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			auto ISO_639_2_Code(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ISO_639_2_Code) == true)
 			{
-				auto ISO_639_2_Code(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(ISO_639_2_Code) == true);
 				Index += std::get<1>(ISO_639_2_Code);
 				std::cout << "\t\t\t\tString: \"" << std::get<2>(ISO_639_2_Code) << "\" (zero-terminated)" << std::endl;
 				ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
@@ -3863,11 +3818,10 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 		
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			auto ContentType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ContentType) == true)
 			{
-				auto ContentType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(ContentType) == true);
 				Index += std::get<1>(ContentType);
 				std::cout << "\t\t\t\tContent type: \"" << std::get<2>(ContentType) << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
 				ContentTypeString = std::get<2>(ContentType);
@@ -4058,20 +4012,18 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(Description) == true)
 			{
-				auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(Description) == true);
 				Index += std::get<1>(Description);
 				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\"" << std::endl;
 				if(Index < Length)
 				{
-					if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+					auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(String) == true)
 					{
-						auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-						
-						assert(std::get<0>(String) == true);
 						Index += std::get<1>(String);
 						std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\"" << std::endl;
 					}
@@ -4224,11 +4176,10 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(Description) == true)
 			{
-				auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(Description) == true);
 				Index += std::get<1>(Description);
 				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description);
 			}
@@ -4386,11 +4337,10 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 		{
 			if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 			{
-				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
+				auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(String) == true)
 				{
-					auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-					
-					assert(std::get<0>(String) == true);
 					Index += std::get<1>(String);
 					std::cout << "\t\t\t\t\t\"" << std::get<2>(String) << "\" (zero-terminated)" << std::endl;
 				}
@@ -4416,14 +4366,7 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 			}
 			else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 			{
-				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
-				{
-					auto String(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
-					
-					Index += String.first;
-					std::cout << "\t\t\t\t\t\"" << String.second << "\" (zero-terminated)" << std::endl;
-				}
-				else if(Is_UTF_8_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+				if(Is_UTF_8_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 				{
 					auto String(Get_UTF_8_StringTerminatedByLength(Buffer + Index, Length - Index));
 					
