@@ -1527,6 +1527,20 @@ std::tuple< bool, int, TextEncoding > Get_ID3_2_4_Encoding(const uint8_t * Buffe
 	return Result;
 }
 
+std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, float > Result(false, 0, 0.0f);
+	
+	if(Length >= 4)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 4;
+		std::get<2>(Result) = *(reinterpret_cast< const float * >(Buffer));
+	}
+	
+	return Result;
+}
+
 std::tuple< bool, int, CDTableOfContents > Get_CDTableOfContents(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int, CDTableOfContents > Result(true, 0, CDTableOfContents());
@@ -1757,26 +1771,6 @@ std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Leng
 //   - On faulty input assertions, exceptions or segmentation faults may occur.                  //
 //   - Wrong output may be produced for faulty input.                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::pair< int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, float > Result;
-	
-	Result.first = 4;
-	Result.second = *(reinterpret_cast< const float * >(Buffer));
-	
-	return Result;
-}
-
-std::pair< int, uint16_t > Get_UInt16(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, uint16_t > Result;
-	
-	Result.first = 2;
-	Result.second = *(reinterpret_cast< const uint16_t * >(Buffer));
-	
-	return Result;
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // ISO/IEC 8859-1                                                                                //
@@ -3516,27 +3510,40 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 int Handle23RGADFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
+	std::tuple< bool, int, float > PeakAmplitude(Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer + Index, Length - Index));
 	
-	if(Length == 8)
+	if(std::get<0>(PeakAmplitude) == true)
 	{
-		std::pair< int, float > PeakAmplitude(Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer + Index, Length - Index));
+		Index += std::get<1>(PeakAmplitude);
+		std::cout << "\t\t\t\tPeak amplitude: " << std::get<2>(PeakAmplitude) << std::endl;
 		
-		Index += PeakAmplitude.first;
-		std::cout << "\t\t\t\tPeak Amplitude: " << PeakAmplitude.second << std::endl;
+		std::tuple< bool, int, uint16_t > TrackReplayGainAdjustment(Get_UInt16_BE(Buffer + Index, Length - Index));
 		
-		std::pair< int, uint16_t > RadioReplayGainAdjustment(Get_UInt16(Buffer + Index, Length - Index));
-		
-		Index += RadioReplayGainAdjustment.first;
-		std::cout << "\t\t\t\tRadio Replay Gain Adjustment: " << GetBinaryStringFromUInt16(RadioReplayGainAdjustment.second) << std::endl;
-		
-		std::pair< int, uint16_t > AudiophileReplayGainAdjustment(Get_UInt16(Buffer + Index, Length - Index));
-		
-		Index += AudiophileReplayGainAdjustment.first;
-		std::cout << "\t\t\t\tAudiophileReplay Gain Adjustment: " << GetBinaryStringFromUInt16(AudiophileReplayGainAdjustment.second) << std::endl;
+		if(std::get<0>(TrackReplayGainAdjustment) == true)
+		{
+			Index += std::get<1>(TrackReplayGainAdjustment);
+			std::cout << "\t\t\t\tTrack replay gain adjustment: " << GetBinaryStringFromUInt16(std::get<2>(TrackReplayGainAdjustment)) << std::endl;
+			
+			std::tuple< bool, int, uint16_t > AlbumReplayGainAdjustment(Get_UInt16_BE(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(AlbumReplayGainAdjustment) == true)
+			{
+				Index += std::get<1>(AlbumReplayGainAdjustment);
+				std::cout << "\t\t\t\tAlbum replay gain adjustment: " << GetBinaryStringFromUInt16(std::get<2>(AlbumReplayGainAdjustment)) << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** According to the unofficial Hydrogenaudio specification, \"RGAD\" frames should contain a 16bit \"Album replay gain adjustment\" field." << std::endl;
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** According to the unofficial Hydrogenaudio specification, \"RGAD\" frames should contain a 16bit \"Track replay gain adjustment\" field." << std::endl;
+		}
 	}
 	else
 	{
-		std::cout << "*** ERROR *** Frame 'RGAD' has to contain exactly eight bytes." << std::endl;
+		std::cout << "*** ERROR *** According to the unofficial Hydrogenaudio specification, \"RGAD\" frames should contain a 32bit \"Peak amplitude\" field." << std::endl;
 	}
 	
 	return Index;
