@@ -993,6 +993,7 @@ std::tuple< bool, int, TextEncoding > Get_ID3_2_2_Encoding(const uint8_t * Buffe
 std::tuple< bool, int, TextEncoding > Get_ID3_2_3_Encoding(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, TextEncoding > Get_ID3_2_4_Encoding(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination(const uint8_t * Buffer, int Length);
 std::tuple< bool, int > Get_ISO_IEC_8859_1_Termination(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, uint8_t > Get_UInt4_0_3(const uint8_t * Buffer, int Length);
@@ -1206,6 +1207,39 @@ std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t 
 		std::get<0>(Result) = true;
 		std::get<1>(Result) = 1;
 		std::get<2>(Result) = Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	while(true)
+	{
+		if(std::get<0>(Result) < Length)
+		{
+			auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(Termination) == true)
+			{
+				std::get<0>(Result) = true;
+				std::get<1>(Result) += std::get<1>(Termination);
+				
+				break;
+			}
+			else
+			{
+				auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+				
+				if(std::get<0>(Character) == true)
+				{
+					std::get<1>(Result) += std::get<1>(Character);
+					std::get<2>(Result) += std::get<2>(Character);
+				}
+			}
+		}
 	}
 	
 	return Result;
