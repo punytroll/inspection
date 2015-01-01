@@ -1824,40 +1824,6 @@ bool StartsWith_UTF_8_Character(const uint8_t * Buffer, int Length)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // ISO/IEC 8859-1                                                                                //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::pair< int, std::string > Get_ISO_IEC_8859_1_StringTerminatedByEnd(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, std::string > Result;
-	
-	while(true)
-	{
-		assert(Result.first + 1 <= Length);
-		
-		auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + Result.first, Length - Result.first));
-		
-		if(std::get<0>(Termination) == true)
-		{
-			Result.first += std::get<1>(Termination);
-			
-			break;
-		}
-		else
-		{
-			auto Character(Get_ISO_IEC_8859_1_Character(Buffer + Result.first, Length - Result.first));
-			
-			if(std::get<0>(Character) == true)
-			{
-				Result.first += std::get<1>(Character);
-				Result.second += std::get<2>(Character);
-			}
-			else
-			{
-				assert(false);
-			}
-		}
-	}
-	
-	return Result;
-}
 
 std::pair< int, std::string > Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 {
@@ -2563,10 +2529,11 @@ int Handle22COMFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			auto ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto ReadDescription(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += ReadDescription.first;
-			std::cout << ReadDescription.second;
+			assert(std::get<0>(ReadDescription) == true);
+			Index += std::get<1>(ReadDescription);
+			std::cout << std::get<2>(ReadDescription);
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
@@ -2732,10 +2699,11 @@ int Handle22UFIFrames(const uint8_t * Buffer, int Length)
 	
 	if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 	{
-		auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 		
-		Index += OwnerIdentifier.first;
-		std::cout << "\t\t\t\tOwner identifier: \"" << OwnerIdentifier.second << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
+		assert(std::get<0>(OwnerIdentifier) == true);
+		Index += std::get<1>(OwnerIdentifier);
+		std::cout << "\t\t\t\tOwner identifier: \"" << std::get<2>(OwnerIdentifier) << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
 		
 		auto Identifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
@@ -2769,10 +2737,11 @@ int Handle23APICFrame(const uint8_t * Buffer, int Length)
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 	
-		auto ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		auto ReadMIMEType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 		
-		Index += ReadMIMEType.first;
-		std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
+		assert(std::get<0>(ReadMIMEType) == true);
+		Index += std::get<1>(ReadMIMEType);
+		std::cout << "\t\t\t\tMIME type: \"" << std::get<2>(ReadMIMEType) << '"' << std::endl;
 		
 		unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 		
@@ -2783,10 +2752,11 @@ int Handle23APICFrame(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				auto ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				auto ReadDescription(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 				
-				Index += ReadDescription.first;
-				std::cout << ReadDescription.second;
+				assert(std::get<0>(ReadDescription) == true);
+				Index += std::get<1>(ReadDescription);
+				std::cout << std::get<2>(ReadDescription);
 			}
 			else
 			{
@@ -2843,10 +2813,11 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 		}
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Description.first;
-			std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-termianted)" << std::endl;
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (zero-termianted)" << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
@@ -3002,24 +2973,27 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 		{
-			auto MIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto MIMEType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += MIMEType.first;
-			std::cout << "\t\t\t\tMIME type: \"" << MIMEType.second << "\"" << std::endl;
+			assert(std::get<0>(MIMEType) == true);
+			Index += std::get<1>(MIMEType);
+			std::cout << "\t\t\t\tMIME type: \"" << std::get<2>(MIMEType) << "\"" << std::endl;
 			if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 			{
 				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					auto FileName(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto FileName(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 					
-					Index += FileName.first;
-					std::cout << "\t\t\t\tFilename: \"" << FileName.second << "\"" << std::endl;
+					assert(std::get<0>(FileName) == true);
+					Index += std::get<1>(FileName);
+					std::cout << "\t\t\t\tFilename: \"" << std::get<2>(FileName) << "\"" << std::endl;
 					if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 					{
-						auto ContentDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						auto ContentDescription(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 						
-						Index += ContentDescription.first;
-						std::cout << "\t\t\t\tContent description: \"" << ContentDescription.second << "\"" << std::endl;
+						assert(std::get<0>(ContentDescription) == true);
+						Index += std::get<1>(ContentDescription);
+						std::cout << "\t\t\t\tContent description: \"" << std::get<2>(ContentDescription) << "\"" << std::endl;
 						Index = Length;
 					}
 					else
@@ -3145,17 +3119,20 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 		
 		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 		{
-			auto Caption(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
-			std::string::size_type ColonPosition(Caption.second.find(':'));
+			auto Caption(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+			
+			assert(std::get<0>(Caption) == true);
+			
+			std::string::size_type ColonPosition(std::get<2>(Caption).find(':'));
 			
 			if(ColonPosition != std::string::npos)
 			{
 				std::cout << "\t\t\t\tOne zero-terminated ISO/IEC 8859-1 string:" << std::endl;
-				std::cout << "\t\t\t\t\tIdentifier: \"" << Caption.second.substr(0, ColonPosition) << '"' << std::endl;
+				std::cout << "\t\t\t\t\tIdentifier: \"" << std::get<2>(Caption).substr(0, ColonPosition) << '"' << std::endl;
 				std::cout << "\t\t\t\t\tSeparator: ':'" << std::endl;
-				std::cout << "\t\t\t\t\tField Name: \"" << Caption.second.substr(ColonPosition + 1) << '"' << std::endl;
+				std::cout << "\t\t\t\t\tField Name: \"" << std::get<2>(Caption).substr(ColonPosition + 1) << '"' << std::endl;
 				std::cout << "\t\t\t\t\tTerminator: 00" << std::endl;
-				Index += Caption.first;
+				Index += std::get<1>(Caption);
 				if(Index < Length)
 				{
 					if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
@@ -3231,10 +3208,11 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 	{
 		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 		{
-			auto EMailToUser(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto EMailToUser(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			std::cout << "\t\t\t\tEMail to user: \"" << EMailToUser.second << "\" (null-terminated ISO/IEC 8859-1 string)"  << std::endl;
-			Index += EMailToUser.first;
+			assert(std::get<0>(EMailToUser) == true);
+			Index += std::get<1>(EMailToUser);
+			std::cout << "\t\t\t\tEMail to user: \"" << std::get<2>(EMailToUser) << "\" (null-terminated ISO/IEC 8859-1 string)"  << std::endl;
 			if(Length - Index >= 1)
 			{
 				auto Rating(Get_UInt8(Buffer + Index, Length - Index));
@@ -3287,11 +3265,12 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	auto ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+	auto ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 	
-	Index += ReadOwnerIdentifier.first;
-	std::cout << "\t\t\t\tOwner Identifier: " << ReadOwnerIdentifier.second << std::endl;
-	if(ReadOwnerIdentifier.second == "WM/MediaClassPrimaryID")
+	assert(std::get<0>(ReadOwnerIdentifier) == true);
+	Index += std::get<1>(ReadOwnerIdentifier);
+	std::cout << "\t\t\t\tOwner Identifier: " << std::get<2>(ReadOwnerIdentifier) << std::endl;
+	if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassPrimaryID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3309,7 +3288,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "WM/MediaClassSecondaryID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassSecondaryID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3327,7 +3306,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "WM/WMContentID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMContentID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3345,7 +3324,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "WM/WMCollectionID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3363,7 +3342,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "WM/WMCollectionGroupID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionGroupID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3381,14 +3360,14 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "WM/Provider")
+	else if(std::get<2>(ReadOwnerIdentifier) == "WM/Provider")
 	{
 		auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
 		std::cout << "\t\t\t\tContent Provider: \"" << ReadString.second << '"' << std::endl;
 	}
-	else if(ReadOwnerIdentifier.second == "WM/UniqueFileIdentifier")
+	else if(std::get<2>(ReadOwnerIdentifier) == "WM/UniqueFileIdentifier")
 	{
 		auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
@@ -3403,7 +3382,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << Interpretation.second << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "ZuneAlbumArtistMediaID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumArtistMediaID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3421,7 +3400,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "ZuneAlbumMediaID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumMediaID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3439,7 +3418,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "ZuneCollectionID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "ZuneCollectionID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3457,7 +3436,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "ZuneMediaID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "ZuneMediaID")
 	{
 		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
@@ -3475,7 +3454,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "CompID")
+	else if(std::get<2>(ReadOwnerIdentifier) == "CompID")
 	{
 		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
@@ -3488,7 +3467,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 		}
 		Index += ReadHexadecimal.first;
 	}
-	else if(ReadOwnerIdentifier.second == "MachineCode")
+	else if(std::get<2>(ReadOwnerIdentifier) == "MachineCode")
 	{
 		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
@@ -3501,7 +3480,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 		}
 		Index += ReadHexadecimal.first;
 	}
-	else if(ReadOwnerIdentifier.second == "PeakValue")
+	else if(std::get<2>(ReadOwnerIdentifier) == "PeakValue")
 	{
 		if(Length - Index == 4)
 		{
@@ -3534,7 +3513,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
 		}
 	}
-	else if(ReadOwnerIdentifier.second == "AverageLevel")
+	else if(std::get<2>(ReadOwnerIdentifier) == "AverageLevel")
 	{
 		if(Length - Index == 4)
 		{
@@ -3633,10 +3612,11 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				auto ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				auto ReadString(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 				
-				Index += ReadString.first;
-				std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (zero-terminated)" << std::endl;
+				assert(std::get<0>(ReadString) == true);
+				Index += std::get<1>(ReadString);
+				std::cout << "\t\t\t\tString: \"" << std::get<2>(ReadString) << "\" (zero-terminated)" << std::endl;
 			}
 			else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 			{
@@ -3711,21 +3691,26 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 	
-		std::pair< int, std::string > ISO_639_2_Code;
+		std::string ISO_639_2_Code_String;
 		
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				ISO_639_2_Code = Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index);
-				Index += ISO_639_2_Code.first;
-				std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << "\" (zero-terminated)" << std::endl;
+				auto ISO_639_2_Code(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				assert(std::get<0>(ISO_639_2_Code) == true);
+				Index += std::get<1>(ISO_639_2_Code);
+				std::cout << "\t\t\t\tString: \"" << std::get<2>(ISO_639_2_Code) << "\" (zero-terminated)" << std::endl;
+				ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
 			}
 			else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 			{
-				ISO_639_2_Code = Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index);
+				auto ISO_639_2_Code(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
+				
 				Index += ISO_639_2_Code.first;
 				std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << "\" (boundary-terminated)" << std::endl;
+				ISO_639_2_Code_String = ISO_639_2_Code.second;
 			}
 			else
 			{
@@ -3739,18 +3724,23 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 				Index += 2;
 				// Big Endian by BOM
 				std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
-				ISO_639_2_Code = Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+				
+				auto ISO_639_2_Code(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				
 				Index += ISO_639_2_Code.first;
 				std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << '"' << std::endl;
+				ISO_639_2_Code_String = ISO_639_2_Code.second;
 			}
 			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 			{
 				Index += 2;
 				// Little Endian by BOM
 				std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
-				ISO_639_2_Code = Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+				
+				auto ISO_639_2_Code(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 				Index += ISO_639_2_Code.first;
 				std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << '"' << std::endl;
+				ISO_639_2_Code_String = ISO_639_2_Code.second;
 			}
 			else
 			{
@@ -3765,9 +3755,9 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 				}
 			}
 		}
-		if(ISO_639_2_Code.first > 0)
+		if(ISO_639_2_Code_String.length() > 0)
 		{
-			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code.second));
+			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code_String));
 			
 			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 			{
@@ -3776,7 +3766,7 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 			else
 			{
 				std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown>" << std::endl;
-				std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code.second << "' is not defined by ISO 639-2." << std::endl;
+				std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code_String << "' is not defined by ISO 639-2." << std::endl;
 			}
 		}
 		else
@@ -3869,21 +3859,26 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 			
-		std::pair< int, std::string > ReadContentType;
+		std::string ContentTypeString;
 		
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				ReadContentType = Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index);
-				Index += ReadContentType.first;
-				std::cout << "\t\t\t\tContent type: \"" << ReadContentType.second << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
+				auto ContentType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				assert(std::get<0>(ContentType) == true);
+				Index += std::get<1>(ContentType);
+				std::cout << "\t\t\t\tContent type: \"" << std::get<2>(ContentType) << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
+				ContentTypeString = std::get<2>(ContentType);
 			}
 			else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 			{
-				ReadContentType = Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index);
-				Index += ReadContentType.first;
-				std::cout << "\t\t\t\tContent type: \"" << ReadContentType.second << "\" (boundary-terminated, ISO/IEC 8859-1:1998)" << std::endl;
+				auto ContentType(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
+				
+				Index += ContentType.first;
+				std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (boundary-terminated, ISO/IEC 8859-1:1998)" << std::endl;
+				ContentTypeString = ContentType.second;
 			}
 			else
 			{
@@ -3897,15 +3892,19 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 				Index += 2;
 				if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					ReadContentType = Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index);
-					Index += ReadContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ReadContentType.second << "\" (byte order mark, UCS-2BE, zero-terminated)" << std::endl;
+					auto ContentType(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					
+					Index += ContentType.first;
+					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2BE, zero-terminated)" << std::endl;
+					ContentTypeString = ContentType.second;
 				}
 				else if(Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
 				{
-					ReadContentType = Get_UCS_2_BE_StringTerminatedByLength(Buffer + Index, Length - Index);
-					Index += ReadContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ReadContentType.second << "\" (byte order mark, UCS-2BE, boundary-terminated)" << std::endl;
+					auto ContentType(Get_UCS_2_BE_StringTerminatedByLength(Buffer + Index, Length - Index));
+					
+					Index += ContentType.first;
+					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2BE, boundary-terminated)" << std::endl;
+					ContentTypeString = ContentType.second;
 				}
 				else
 				{
@@ -3917,15 +3916,19 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 				Index += 2;
 				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					ReadContentType = Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index);
-					Index += ReadContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ReadContentType.second << "\" (byte order mark, UCS-2LE, zero-terminated)" << std::endl;
+					auto ContentType(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					
+					Index += ContentType.first;
+					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2LE, zero-terminated)" << std::endl;
+					ContentTypeString = ContentType.second;
 				}
 				else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
 				{
-					ReadContentType = Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index);
-					Index += ReadContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ReadContentType.second << "\" (byte order mark, UCS-2LE, boundary-terminated)" << std::endl;
+					auto ContentType(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
+					
+					Index += ContentType.first;
+					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2LE, boundary-terminated)" << std::endl;
+					ContentTypeString = ContentType.second;
 				}
 				else
 				{
@@ -3937,15 +3940,19 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark. Trying to interpret as  UCS-2LE." << std::endl;
 				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					ReadContentType = Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index);
-					Index += ReadContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ReadContentType.second << "\" (missing byte order mark, UCS-2LE, zero-terminated)" << std::endl;
+					auto ContentType(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					
+					Index += ContentType.first;
+					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (missing byte order mark, UCS-2LE, zero-terminated)" << std::endl;
+					ContentTypeString = ContentType.second;
 				}
 				else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
 				{
-					ReadContentType = Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index);
-					Index += ReadContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ReadContentType.second << "\" (missing byte order mark, UCS-2LE, boundary-terminated)" << std::endl;
+					auto ContentType(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
+					
+					Index += ContentType.first;
+					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (missing byte order mark, UCS-2LE, boundary-terminated)" << std::endl;
+					ContentTypeString = ContentType.second;
 				}
 				else
 				{
@@ -3954,7 +3961,7 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 			}
 		}
 		
-		auto Interpretation(GetContentTypeInterpretation2_3(ReadContentType.second));
+		auto Interpretation(GetContentTypeInterpretation2_3(ContentTypeString));
 		
 		if(Interpretation.empty() == false)
 		{
@@ -4053,18 +4060,20 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 				
-				Index += Description.first;
-				std::cout << "\t\t\t\tDescription: \"" << Description.second << "\"" << std::endl;
+				assert(std::get<0>(Description) == true);
+				Index += std::get<1>(Description);
+				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\"" << std::endl;
 				if(Index < Length)
 				{
 					if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 					{
-						auto String(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 						
-						Index += String.first;
-						std::cout << "\t\t\t\tString: \"" << String.second << "\"" << std::endl;
+						assert(std::get<0>(String) == true);
+						Index += std::get<1>(String);
+						std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\"" << std::endl;
 					}
 					else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 					{
@@ -4112,14 +4121,15 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	auto ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+	auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 	
-	if(ReadOwnerIdentifier.second.length() == 0)
+	assert(std::get<0>(OwnerIdentifier) == true);
+	if(std::get<2>(OwnerIdentifier).length() == 0)
 	{
 		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Owner Identifier' field must be non-empty." << std::endl;
 	}
-	std::cout << "\t\t\t\tOwner Identifier: \"" << ReadOwnerIdentifier.second << '"' << std::endl;
-	Index += ReadOwnerIdentifier.first;
+	std::cout << "\t\t\t\tOwner Identifier: \"" << std::get<2>(OwnerIdentifier) << '"' << std::endl;
+	Index += std::get<1>(OwnerIdentifier);
 	if(Length - Index > 64)
 	{
 		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Identifier' field must not exceed 64 bytes." << std::endl;
@@ -4162,10 +4172,11 @@ int Handle23WXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			auto ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += ReadDescription.first;
-			std::cout << ReadDescription.second;
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << std::get<2>(Description);
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
@@ -4201,10 +4212,11 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		
-		auto ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		auto MIMEType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 		
-		Index += ReadMIMEType.first;
-		std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
+		assert(std::get<0>(MIMEType) == 0);
+		Index += std::get<1>(MIMEType);
+		std::cout << "\t\t\t\tMIME type: \"" << std::get<2>(MIMEType) << '"' << std::endl;
 		
 		unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
 		
@@ -4214,10 +4226,11 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 				
-				Index += Description.first;
-				std::cout << "\t\t\t\tDescription: \"" << Description.second;
+				assert(std::get<0>(Description) == true);
+				Index += std::get<1>(Description);
+				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description);
 			}
 			else
 			{
@@ -4288,10 +4301,11 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Description.first;
-			std::cout << Description.second;
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << std::get<2>(Description);
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
@@ -4374,10 +4388,11 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 			{
 				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					auto String(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 					
-					Index += String.first;
-					std::cout << "\t\t\t\t\t\"" << String.second << "\" (zero-terminated)" << std::endl;
+					assert(std::get<0>(String) == true);
+					Index += std::get<1>(String);
+					std::cout << "\t\t\t\t\t\"" << std::get<2>(String) << "\" (zero-terminated)" << std::endl;
 				}
 				else
 				{
@@ -4442,10 +4457,11 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: ";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Description.first;
-			std::cout << Description.second;
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << std::get<2>(Description);
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
@@ -4508,10 +4524,11 @@ int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Description.first;
-			std::cout << Description.second;
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << std::get<2>(Description);
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
