@@ -2489,6 +2489,80 @@ int Handle22COMFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle22PICFrames(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	unsigned int Encoding(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+	
+	Index += 1;
+	std::cout << "\t\t\t\tText Encoding: " << GetEncodingString2_2(Encoding) << std::endl;
+	if(Length - Index >= 3)
+	{
+		std::pair< int, std::string > ReadImageFormat(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, 3));
+		
+		Index += 3;
+		std::cout << "\t\t\t\tImage format: \"" << ReadImageFormat.second << '"' << std::endl;
+		if(Length - Index >= 1)
+		{
+			unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
+			
+			Index += 1;
+			std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
+			if(Encoding == 0)
+			{
+				std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				
+				Index += ReadString.first;
+				std::cout << "\t\t\t\tDescription: \"" << ReadString.second;
+			}
+			else if(Encoding == 1)
+			{
+				if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+				{
+					Index += 2;
+					// Big Endian by BOM
+					std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
+					
+					std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += ReadString.first;
+					std::cout << "\t\t\t\ttDescription: \"" << ReadString.second;
+				}
+				else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+				{
+					Index += 2;
+					// Little Endian by BOM
+					std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
+					
+					std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += ReadString.first;
+					std::cout << "\t\t\t\ttDescription: \"" << ReadString.second;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+				}
+			}
+			else
+			{
+				std::cout << "*** ERROR *** Unknown encoding." << std::endl;
+			}
+			std::cout << '"' << std::endl;
+		}
+		else
+		{
+			std::cout << "*** ERROR *** The frame data is not long enough for the \"Picture type\" field." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** The frame data is not long enough for the \"Image format\" field." << std::endl;
+	}
+	
+	return Length;
+}
+
 int Handle22T__Frames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -4794,6 +4868,7 @@ int main(int argc, char **argv)
 	
 	// ID3v2.2.0
 	FrameHeader::Handle22("COM", "Comment", Handle22COMFrame);
+	FrameHeader::Handle22("PIC", "Attached Picture", Handle22PICFrames);
 	FrameHeader::Handle22("TAL", "Album/Movie/Show title", Handle22T__Frames);
 	FrameHeader::Handle22("TCM", "Composer", Handle22T__Frames);
 	FrameHeader::Handle22("TCO", "Content type", Handle22T__Frames);
