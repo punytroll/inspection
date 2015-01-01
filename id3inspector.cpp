@@ -2532,7 +2532,7 @@ int PrintUTF_16StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 int Handle22COMFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -2544,7 +2544,7 @@ int Handle22COMFrame(const uint8_t * Buffer, int Length)
 		Index += 3;
 		if(ISO_639_2Code.empty() == false)
 		{
-			std::map< std::string, std::string >::iterator ISO_639_2Iterator(g_ISO_639_2_Codes.find(ISO_639_2Code));
+			auto ISO_639_2Iterator(g_ISO_639_2_Codes.find(ISO_639_2Code));
 			
 			if(ISO_639_2Iterator != g_ISO_639_2_Codes.end())
 			{
@@ -2563,7 +2563,7 @@ int Handle22COMFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += ReadDescription.first;
 			std::cout << ReadDescription.second;
@@ -2575,7 +2575,7 @@ int Handle22COMFrame(const uint8_t * Buffer, int Length)
 		std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += ReadComment.first;
 			std::cout << ReadComment.second;
@@ -2597,7 +2597,7 @@ int Handle22COMFrame(const uint8_t * Buffer, int Length)
 int Handle22PICFrames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -2605,7 +2605,7 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		if(Length - Index >= 3)
 		{
-			std::pair< int, std::string > ReadImageFormat(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, 3));
+			auto ReadImageFormat(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, 3));
 			
 			Index += 3;
 			std::cout << "\t\t\t\tImage format: \"" << ReadImageFormat.second << '"' << std::endl;
@@ -2617,7 +2617,7 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 				std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
 				if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 				{
-					std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					auto ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 					
 					Index += ReadString.first;
 					std::cout << "\t\t\t\tDescription: \"" << ReadString.second;
@@ -2630,7 +2630,7 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 						// Big Endian by BOM
 						std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
 						
-						std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+						auto ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 						
 						Index += ReadString.first;
 						std::cout << "\t\t\t\ttDescription: \"" << ReadString.second;
@@ -2641,7 +2641,7 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 						// Little Endian by BOM
 						std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
 						
-						std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+						auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 						
 						Index += ReadString.first;
 						std::cout << "\t\t\t\ttDescription: \"" << ReadString.second;
@@ -2674,7 +2674,7 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 int Handle22T__Frames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -2682,7 +2682,7 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += ReadString.first;
 			std::cout << "\t\t\t\tString: \"" << ReadString.second;
@@ -2695,7 +2695,7 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 				// Big Endian by BOM
 				std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
 				
-				std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				auto ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 				
 				Index += ReadString.first;
 				std::cout << "\t\t\t\tString: \"" << ReadString.second;
@@ -2706,7 +2706,7 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 				// Little Endian by BOM
 				std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
 				
-				std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 				
 				Index += ReadString.first;
 				std::cout << "\t\t\t\tString: \"" << ReadString.second;
@@ -2732,19 +2732,19 @@ int Handle22UFIFrames(const uint8_t * Buffer, int Length)
 	
 	if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 	{
-		std::pair< int, std::string > OwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += OwnerIdentifier.first;
 		std::cout << "\t\t\t\tOwner identifier: \"" << OwnerIdentifier.second << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
 		
-		std::pair< int, std::string > Identifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		auto Identifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
 		Index += Identifier.first;
 		std::cout << "\t\t\t\tIdentifier: " << Identifier.second << " (boundary-terminated, binary)" << std::endl;
 	}
 	else
 	{
-		std::pair< int, std::string > Hexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		auto Hexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
 		Index += Hexadecimal.first;
 		std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
@@ -2762,14 +2762,14 @@ int Handle22UFIFrames(const uint8_t * Buffer, int Length)
 int Handle23APICFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 	
-		std::pair< int, std::string > ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		auto ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadMIMEType.first;
 		std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
@@ -2783,14 +2783,14 @@ int Handle23APICFrame(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				auto ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 				
 				Index += ReadDescription.first;
 				std::cout << ReadDescription.second;
 			}
 			else
 			{
-				std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+				auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 				
 				std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
 				std::cout << "              Binary content: " << ReadHexadecimal.second << std::endl;
@@ -2813,7 +2813,7 @@ int Handle23APICFrame(const uint8_t * Buffer, int Length)
 int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -2825,7 +2825,7 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 		Index += 3;
 		if(ISO_639_2_Code.empty() == false)
 		{
-			std::map< std::string, std::string >::iterator ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
+			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
 			
 			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 			{
@@ -2843,7 +2843,7 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 		}
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += Description.first;
 			std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-termianted)" << std::endl;
@@ -2855,7 +2855,7 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 				Index += 2;
 				if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > Description(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto Description(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 					
 					Index += Description.first;
 					std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-terminated, big endian)" << std::endl;
@@ -2870,7 +2870,7 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 				Index += 2;
 				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > Description(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto Description(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 					
 					Index += Description.first;
 					std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-terminated, little endian)" << std::endl;
@@ -2898,7 +2898,7 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_String(Buffer + Index, Length - Index) == true)
 			{
-				std::pair< int, std::string > ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				auto ReadComment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 				
 				Index += ReadComment.first;
 				std::cout << "\t\t\t\tComment: \"" << ReadComment.second << '"' << std::endl;
@@ -2907,7 +2907,7 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 			{
 				std::cout << "*** ERROR *** The 'Comment' field contains data that can not be interpreted as an ISO/IEC 8859-1 string." << std::endl;
 				
-				std::pair< int, std::string > ReadComment(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+				auto ReadComment(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 				
 				Index += ReadComment.first;
 				std::cout << "*** Binary content: " << ReadComment.second << std::endl;
@@ -2920,14 +2920,14 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 				Index += 2;
 				if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > Comment(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto Comment(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 					
 					Index += Comment.first;
 					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, big endian)" << std::endl;
 				}
 				else if(Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > Comment(Get_UCS_2_BE_StringTerminatedByLength(Buffer + Index, Length - Index));
+					auto Comment(Get_UCS_2_BE_StringTerminatedByLength(Buffer + Index, Length - Index));
 					
 					Index += Comment.first;
 					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, big endian)" << std::endl;
@@ -2942,14 +2942,14 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 				Index += 2;
 				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > Comment(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto Comment(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 					
 					Index += Comment.first;
 					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, little endian)" << std::endl;
 				}
 				else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > Comment(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
+					auto Comment(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
 					
 					Index += Comment.first;
 					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, little endian)" << std::endl;
@@ -2964,14 +2964,14 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 				std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not. Trying to interpret as UCS-2 little endian." << std::endl;
 				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > Comment(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto Comment(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 					
 					Index += Comment.first;
 					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, little endian, missing byte order mark)" << std::endl;
 				}
 				else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > Comment(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
+					auto Comment(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
 					
 					Index += Comment.first;
 					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, little endian, missing byte order mark)" << std::endl;
@@ -2994,7 +2994,7 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -3002,7 +3002,7 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 		{
-			std::pair< int, std::string > MIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto MIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += MIMEType.first;
 			std::cout << "\t\t\t\tMIME type: \"" << MIMEType.second << "\"" << std::endl;
@@ -3010,13 +3010,13 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 			{
 				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > FileName(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto FileName(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 					
 					Index += FileName.first;
 					std::cout << "\t\t\t\tFilename: \"" << FileName.second << "\"" << std::endl;
 					if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 					{
-						std::pair< int, std::string > ContentDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						auto ContentDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 						
 						Index += ContentDescription.first;
 						std::cout << "\t\t\t\tContent description: \"" << ContentDescription.second << "\"" << std::endl;
@@ -3057,7 +3057,7 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 int Handle23MCDIFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, CDTableOfContents > TableOfContents(Get_CDTableOfContents(Buffer + Index, Length - Index));
+	auto TableOfContents(Get_CDTableOfContents(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(TableOfContents) == true)
 	{
@@ -3138,14 +3138,14 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 	
 	if((Length >= 4) && (Buffer[0] == 0x00) && (Buffer[1] == 0x00) && (Buffer[2] == 0x00) && (Buffer[3] == 0x00))
 	{
-		std::pair< int, std::string > Zeroes(GetHexadecimalStringTerminatedByLength(Buffer, 4));
+		auto Zeroes(GetHexadecimalStringTerminatedByLength(Buffer, 4));
 		
 		std::cout << "\t\t\t\tFour bytes of zeroes: " << Zeroes.second << std::endl;
 		Index += Zeroes.first;
 		
 		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 		{
-			std::pair< int, std::string > Caption(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Caption(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			std::string::size_type ColonPosition(Caption.second.find(':'));
 			
 			if(ColonPosition != std::string::npos)
@@ -3160,7 +3160,7 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 				{
 					if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 					{
-						std::pair< int, std::string > Value(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
+						auto Value(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
 						
 						std::cout << "\t\t\t\tOne boundary-terminated ISO/IEC 8859-1 string ending at the frame boundary:" << std::endl;
 						std::cout << "\t\t\t\t\tValue: \"" << Value.second << '"' << std::endl;;
@@ -3209,7 +3209,7 @@ int Handle23PCNTFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(Length == 4)
 	{
-		std::tuple< bool, int, uint32_t > Counter(Get_UInt32_BE(Buffer + Index, Length - Index));
+		auto Counter(Get_UInt32_BE(Buffer + Index, Length - Index));
 		
 		std::cout << "\t\t\t\tCounter: " << std::get<2>(Counter) << std::endl;
 		Index += std::get<1>(Counter);
@@ -3231,13 +3231,13 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 	{
 		if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 		{
-			std::pair< int, std::string > EMailToUser(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto EMailToUser(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			std::cout << "\t\t\t\tEMail to user: \"" << EMailToUser.second << "\" (null-terminated ISO/IEC 8859-1 string)"  << std::endl;
 			Index += EMailToUser.first;
 			if(Length - Index >= 1)
 			{
-				std::tuple< bool, int, uint8_t > Rating(Get_UInt8(Buffer + Index, Length - Index));
+				auto Rating(Get_UInt8(Buffer + Index, Length - Index));
 				
 				assert(std::get<0>(Rating) == true);
 				std::cout << "\t\t\t\tRating: " << static_cast< uint32_t >(std::get<2>(Rating)) << std::endl;
@@ -3246,7 +3246,7 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 				{
 					if(Length - Index == 4)
 					{
-						std::tuple< bool, int, uint32_t > Counter(Get_UInt32_BE(Buffer + Index, Length - Index));
+						auto Counter(Get_UInt32_BE(Buffer + Index, Length - Index));
 						
 						std::cout << "\t\t\t\tCounter: " << std::get<2>(Counter) << std::endl;
 						Index += std::get<1>(Counter);
@@ -3287,18 +3287,18 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::pair< int, std::string > ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+	auto ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 	
 	Index += ReadOwnerIdentifier.first;
 	std::cout << "\t\t\t\tOwner Identifier: " << ReadOwnerIdentifier.second << std::endl;
 	if(ReadOwnerIdentifier.second == "WM/MediaClassPrimaryID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tPrimary Media Class: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3311,12 +3311,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "WM/MediaClassSecondaryID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tSecondary Media Class: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3329,12 +3329,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "WM/WMContentID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tContent ID: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3347,12 +3347,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "WM/WMCollectionID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tCollection ID: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3365,12 +3365,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "WM/WMCollectionGroupID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tCollection Group ID: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3383,19 +3383,19 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "WM/Provider")
 	{
-		std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
 		std::cout << "\t\t\t\tContent Provider: \"" << ReadString.second << '"' << std::endl;
 	}
 	else if(ReadOwnerIdentifier.second == "WM/UniqueFileIdentifier")
 	{
-		std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadString.first;
 		std::cout << "\t\t\t\tUnique File Identifier: \"" << ReadString.second << '"' << std::endl;
 		
-		std::pair< bool, std::string > Interpretation(GetWMUniqueFileIdentifierInterpretation(ReadString.second));
+		auto Interpretation(GetWMUniqueFileIdentifierInterpretation(ReadString.second));
 		
 		if(Interpretation.first == true)
 		{
@@ -3405,12 +3405,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "ZuneAlbumArtistMediaID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tZune Album Artist Media ID: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3423,12 +3423,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "ZuneAlbumMediaID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tZune Album Media ID: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3441,12 +3441,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "ZuneCollectionID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tZune Collection ID: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3459,12 +3459,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "ZuneMediaID")
 	{
-		std::pair< int, std::string > ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 		
 		Index += ReadGUID.first;
 		std::cout << "\t\t\t\tZune Media ID: ";
 		
-		std::map< std::string, std::string >::iterator GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
 		
 		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 		{
@@ -3477,12 +3477,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "CompID")
 	{
-		std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
 		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
 		if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
 		{
-			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto ReadString(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (interpreted as UCS-2LE without BOM with termination)" << std::endl;
 		}
@@ -3490,12 +3490,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else if(ReadOwnerIdentifier.second == "MachineCode")
 	{
-		std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
 		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
 		if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 		{
-			std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (interpreted as ISO/IEC 8859-1 without termination)" << std::endl;
 		}
@@ -3505,14 +3505,14 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	{
 		if(Length - Index == 4)
 		{
-			std::tuple< bool, int, uint16_t > ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
+			auto ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
 			
 			assert(std::get<0>(ReadUInt16) == true);
 			std::cout << "\t\t\t\tPeak Value: " << std::get<2>(ReadUInt16) << std::endl;
 			Index += std::get<1>(ReadUInt16);
 			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
 			{
-				std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+				auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 				
 				Index += ReadHexadecimal.first;
 				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
@@ -3526,7 +3526,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 		}
 		else
 		{
-			std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+			auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 			
 			Index += ReadHexadecimal.first;
 			std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
@@ -3538,14 +3538,14 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	{
 		if(Length - Index == 4)
 		{
-			std::tuple< bool, int, uint16_t > ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
+			auto ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
 			
 			assert(std::get<0>(ReadUInt16) == true);
 			std::cout << "\t\t\t\tAverage Level: " << std::get<2>(ReadUInt16) << std::endl;
 			Index += std::get<1>(ReadUInt16);
 			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
 			{
-				std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+				auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 				
 				Index += ReadHexadecimal.first;
 				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
@@ -3559,7 +3559,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 		}
 		else
 		{
-			std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+			auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 			
 			Index += ReadHexadecimal.first;
 			std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
@@ -3569,7 +3569,7 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	}
 	else
 	{
-		std::pair< int, std::string > ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
 		Index += ReadHexadecimal.first;
 		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
@@ -3581,21 +3581,21 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 int Handle23RGADFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, float > PeakAmplitude(Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer + Index, Length - Index));
+	auto PeakAmplitude(Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(PeakAmplitude) == true)
 	{
 		Index += std::get<1>(PeakAmplitude);
 		std::cout << "\t\t\t\tPeak amplitude: " << std::get<2>(PeakAmplitude) << std::endl;
 		
-		std::tuple< bool, int, uint16_t > TrackReplayGainAdjustment(Get_UInt16_BE(Buffer + Index, Length - Index));
+		auto TrackReplayGainAdjustment(Get_UInt16_BE(Buffer + Index, Length - Index));
 		
 		if(std::get<0>(TrackReplayGainAdjustment) == true)
 		{
 			Index += std::get<1>(TrackReplayGainAdjustment);
 			std::cout << "\t\t\t\tTrack replay gain adjustment: " << GetBinaryStringFromUInt16(std::get<2>(TrackReplayGainAdjustment)) << std::endl;
 			
-			std::tuple< bool, int, uint16_t > AlbumReplayGainAdjustment(Get_UInt16_BE(Buffer + Index, Length - Index));
+			auto AlbumReplayGainAdjustment(Get_UInt16_BE(Buffer + Index, Length - Index));
 			
 			if(std::get<0>(AlbumReplayGainAdjustment) == true)
 			{
@@ -3623,7 +3623,7 @@ int Handle23RGADFrame(const uint8_t * Buffer, int Length)
 int Handle23T___Frames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -3633,14 +3633,14 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				auto ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 				
 				Index += ReadString.first;
 				std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (zero-terminated)" << std::endl;
 			}
 			else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 			{
-				std::pair< int, std::string > ReadString(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
+				auto ReadString(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
 				
 				Index += ReadString.first;
 				std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (boundary-terminated)" << std::endl;
@@ -3658,7 +3658,7 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 				// Big Endian by BOM
 				std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
 				
-				std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				auto ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 				
 				Index += ReadString.first;
 				std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
@@ -3669,7 +3669,7 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 				// Little Endian by BOM
 				std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
 				
-				std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 				
 				Index += ReadString.first;
 				std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
@@ -3685,7 +3685,7 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 				{
 					std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark. Trying to interpret as  UCS-2 little endian." << std::endl;
 					
-					std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 					
 					Index += ReadString.first;
 					std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
@@ -3704,7 +3704,7 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -3767,7 +3767,7 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 		}
 		if(ISO_639_2_Code.first > 0)
 		{
-			std::map< std::string, std::string >::iterator ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code.second));
+			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code.second));
 			
 			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 			{
@@ -3795,7 +3795,7 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -3862,7 +3862,7 @@ int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
 int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -3954,7 +3954,7 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 			}
 		}
 		
-		std::string Interpretation(GetContentTypeInterpretation2_3(ReadContentType.second));
+		auto Interpretation(GetContentTypeInterpretation2_3(ReadContentType.second));
 		
 		if(Interpretation.empty() == false)
 		{
@@ -3972,7 +3972,7 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -4012,7 +4012,7 @@ int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
 		if(ReadString.second.length() == 12)
 		{
 			std::string ISO_3166_1_Alpha_2_Code(ReadString.second.substr(0, 2));
-			std::map< std::string, std::string >::iterator ISO_3166_1_Alpha_2_Iterator(g_ISO_3166_1_Alpha_2_Codes.find(ISO_3166_1_Alpha_2_Code));
+			auto ISO_3166_1_Alpha_2_Iterator(g_ISO_3166_1_Alpha_2_Codes.find(ISO_3166_1_Alpha_2_Code));
 			
 			if(ISO_3166_1_Alpha_2_Iterator != g_ISO_3166_1_Alpha_2_Codes.end())
 			{
@@ -4043,7 +4043,7 @@ int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
 int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -4053,7 +4053,7 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 				
 				Index += Description.first;
 				std::cout << "\t\t\t\tDescription: \"" << Description.second << "\"" << std::endl;
@@ -4061,14 +4061,14 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 				{
 					if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 					{
-						std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						auto String(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 						
 						Index += String.first;
 						std::cout << "\t\t\t\tString: \"" << String.second << "\"" << std::endl;
 					}
 					else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 					{
-						std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
+						auto String(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
 						
 						Index += String.first;
 						std::cout << "\t\t\t\tString: \"" << String.second << "\"" << std::endl;
@@ -4112,7 +4112,7 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::pair< int, std::string > ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+	auto ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 	
 	if(ReadOwnerIdentifier.second.length() == 0)
 	{
@@ -4125,7 +4125,7 @@ int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Identifier' field must not exceed 64 bytes." << std::endl;
 	}
 	
-	std::pair< int, std::string > ReadIdentifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+	auto ReadIdentifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 	
 	std::cout << "\t\t\t\tIdentifier (binary): " << ReadIdentifier.second << std::endl;
 	if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
@@ -4142,7 +4142,7 @@ int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 int Handle23W___Frames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+	auto ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 	
 	Index += ReadURL.first;
 	std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
@@ -4153,7 +4153,7 @@ int Handle23W___Frames(const uint8_t * Buffer, int Length)
 int Handle23WXXXFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -4162,7 +4162,7 @@ int Handle23WXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto ReadDescription(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += ReadDescription.first;
 			std::cout << ReadDescription.second;
@@ -4173,7 +4173,7 @@ int Handle23WXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		std::cout << '"' << std::endl;
 		
-		std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		auto ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadURL.first;
 		std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
@@ -4194,14 +4194,14 @@ int Handle23WXXXFrame(const uint8_t * Buffer, int Length)
 int Handle24APICFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		
-		std::pair< int, std::string > ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+		auto ReadMIMEType(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 		
 		Index += ReadMIMEType.first;
 		std::cout << "\t\t\t\tMIME type: \"" << ReadMIMEType.second << '"' << std::endl;
@@ -4214,14 +4214,14 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 		{
 			if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 			{
-				std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 				
 				Index += Description.first;
 				std::cout << "\t\t\t\tDescription: \"" << Description.second;
 			}
 			else
 			{
-				std::pair< int, std::string > Hexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+				auto Hexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 				
 				std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
 				std::cout << "              Binary content: " << Hexadecimal.second << std::endl;
@@ -4239,7 +4239,7 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			std::pair< int, std::string > Description(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto Description(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += Description.first;
 			std::cout << "\t\t\t\tDescription: \"" << Description.second;
@@ -4257,7 +4257,7 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -4269,7 +4269,7 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		Index += 3;
 		if(ISO_639_2_Code.empty() == false)
 		{
-			std::map< std::string, std::string >::iterator ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
+			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
 			
 			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 			{
@@ -4288,7 +4288,7 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += Description.first;
 			std::cout << Description.second;
@@ -4303,7 +4303,7 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			std::pair< int, std::string > Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += Description.first;
 			std::cout << Description.second;
@@ -4311,7 +4311,7 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > Comment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto Comment(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += Comment.first;
 			std::cout << Comment.second;
@@ -4326,7 +4326,7 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			std::pair< int, std::string > Comment(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto Comment(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += Comment.first;
 			std::cout << Comment.second;
@@ -4344,7 +4344,7 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 int Handle24T___Frames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -4374,14 +4374,14 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 			{
 				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto String(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 					
 					Index += String.first;
 					std::cout << "\t\t\t\t\t\"" << String.second << "\" (zero-terminated)" << std::endl;
 				}
 				else
 				{
-					std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					auto String(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 					
 					Index += String.first;
 					std::cout << "\t\t\t\t\t\"" << String.second << "\" (boundary-terminated)" << std::endl;
@@ -4403,14 +4403,14 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 			{
 				if(StartsWith_ISO_IEC_8859_1_StringWithTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > String(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
+					auto String(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
 					
 					Index += String.first;
 					std::cout << "\t\t\t\t\t\"" << String.second << "\" (zero-terminated)" << std::endl;
 				}
 				else if(Is_UTF_8_StringWithoutTermination(Buffer + Index, Length - Index) == true)
 				{
-					std::pair< int, std::string > String(Get_UTF_8_StringTerminatedByLength(Buffer + Index, Length - Index));
+					auto String(Get_UTF_8_StringTerminatedByLength(Buffer + Index, Length - Index));
 					
 					Index += String.first;
 					std::cout << "\t\t\t\t\t\"" << String.second << "\" (boundary-terminated)" << std::endl;
@@ -4433,7 +4433,7 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -4442,7 +4442,7 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: ";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += Description.first;
 			std::cout << Description.second;
@@ -4457,7 +4457,7 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			std::pair< int, std::string > Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += Description.first;
 			std::cout << Description.second;
@@ -4466,7 +4466,7 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tString: ";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > String(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto String(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += String.first;
 			std::cout << String.second;
@@ -4481,7 +4481,7 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			std::pair< int, std::string > String(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto String(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += String.first;
 			std::cout << String.second;
@@ -4499,7 +4499,7 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
-	std::tuple< bool, int, TextEncoding > Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
+	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
 	{
@@ -4508,7 +4508,7 @@ int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			std::pair< int, std::string > Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_ISO_IEC_8859_1_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += Description.first;
 			std::cout << Description.second;
@@ -4523,14 +4523,14 @@ int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			std::pair< int, std::string > Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += Description.first;
 			std::cout << Description.second;
 		}
 		std::cout << '"' << std::endl;
 		
-		std::pair< int, std::string > ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+		auto ReadURL(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 		
 		Index += ReadURL.first;
 		std::cout << "\t\t\t\tURL: \"" << ReadURL.second << '"' << std::endl;
