@@ -1242,6 +1242,8 @@ std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByLength(cons
 		else
 		{
 			std::get<0>(Result) = false;
+			
+			break;
 		}
 	}
 	
@@ -1271,6 +1273,10 @@ std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination
 			{
 				std::get<1>(Result) += std::get<1>(Character);
 				std::get<2>(Result) += std::get<2>(Character);
+			}
+			else
+			{
+				break;
 			}
 		}
 	}
