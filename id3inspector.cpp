@@ -2798,7 +2798,7 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 			}
 			else
 			{
-				auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+				auto Comment(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
 				
 				if(std::get<0>(Comment) == true)
 				{
@@ -3717,12 +3717,7 @@ int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
 	{
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
-		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
-		{
-			/// @TODO
-			assert(false);
-		}
-		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
+		if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
 			std::cout << "\t\t\t\tByte Order Mark: ";
 			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
