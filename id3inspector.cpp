@@ -136,29 +136,6 @@ bool IsValidIdentifierCharacter(char Character)
 	return ((Character >= 'A') && (Character <= 'Z')) || ((Character >= '0') && (Character <= '9'));
 }
 
-/**
- * @note @a Buffer is expected to start with a valid UTF-8 character. Test beforehand with StartsWith_UTF_8_Character(...). No boundary checking is performed. Only the first byte is used to calculate the length.
- **/
-uint8_t Get_UTF_8_CharacterLength(const uint8_t * Buffer, int Length)
-{
-	if((Buffer[0] & 0xf8) == 0xf0)
-	{
-		return 4;
-	}
-	else if((Buffer[0] & 0xf0) == 0xe0)
-	{
-		return 3;
-	}
-	else if((Buffer[0] & 0xe0) == 0xc0)
-	{
-		return 2;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
 std::string Get_UTF_8_CharacterFromUnicodeCodepoint(unsigned int Codepoint)
 {
 	std::string Result;
@@ -1004,6 +981,9 @@ std::tuple< bool, int, uint8_t > Get_UInt8(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, uint16_t > Get_UInt16_BE(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, uint16_t > Get_UInt16_LE(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_UTF_8_Character(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_UTF_8_StringEndedByLength(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_UTF_8_StringEndedByTermination(const uint8_t * Buffer, int Length);
 std::tuple< bool, int > Get_UTF_8_Termination(const uint8_t * Buffer, int Length);
 
 
@@ -1533,6 +1513,108 @@ std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Leng
 	return Result;
 }
 
+std::tuple< bool, int, std::string > Get_UTF_8_Character(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	if(Length >= 1)
+	{
+		if((Buffer[0] & 0xf8) == 0xf0)
+		{
+			if((Length >= 4) && ((Buffer[1] & 0xc0) == 0x80) && ((Buffer[2] & 0xc0) == 0x80) && ((Buffer[3] & 0xc0) == 0x80))
+			{
+				std::get<0>(Result) = true;
+				std::get<1>(Result) = 4;
+				std::get<2>(Result) = std::string(Buffer, Buffer + 4);
+			}
+		}
+		else if((Buffer[0] & 0xf0) == 0xe0)
+		{
+			if((Length >= 3) && ((Buffer[1] & 0xc0) == 0x80) && ((Buffer[2] & 0xc0) == 0x80))
+			{
+				std::get<0>(Result) = true;
+				std::get<1>(Result) = 3;
+				std::get<2>(Result) = std::string(Buffer, Buffer + 3);
+			}
+		}
+		else if((Buffer[0] & 0xe0) == 0xc0)
+		{
+			if((Length >= 2) && ((Buffer[1] & 0xc0) == 0x80))
+			{
+				std::get<0>(Result) = true;
+				std::get<1>(Result) = 2;
+				std::get<2>(Result) = std::string(Buffer, Buffer + 2);
+			}
+		}
+		else if((Buffer[0] & 0x80) == 0x00)
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) = 1;
+			std::get<2>(Result) = std::string(Buffer, Buffer + 1);
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_UTF_8_StringEndedByLength(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(true, 0, "");
+	
+	while(std::get<1>(Result) < Length)
+	{
+		auto Character(Get_UTF_8_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Character) == true)
+		{
+			std::get<1>(Result) += std::get<1>(Character);
+			std::get<2>(Result) += std::get<2>(Character);
+		}
+		else
+		{
+			std::get<0>(Result) = false;
+			
+			break;
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_UTF_8_StringEndedByTermination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	while(std::get<1>(Result) < Length)
+	{
+		auto Termination(Get_UTF_8_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Termination) == true)
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) += std::get<1>(Termination);
+			
+			break;
+		}
+		else
+		{
+			auto Character(Get_UTF_8_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(Character) == true)
+			{
+				std::get<1>(Result) += std::get<1>(Character);
+				std::get<2>(Result) += std::get<2>(Character);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	
+	return Result;
+}
+
 std::tuple< bool, int > Get_UTF_8_Termination(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int > Result(false, 0);
@@ -1550,7 +1632,6 @@ std::tuple< bool, int > Get_UTF_8_Termination(const uint8_t * Buffer, int Length
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Validators                                                                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_ByteOrderMark(const uint8_t * Buffer, int Length);
@@ -1561,23 +1642,6 @@ bool StartsWith_UCS_2_LE_ByteOrderMark(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length);
-bool StartsWith_UTF_8_Character(const uint8_t * Buffer, int Length);
-
-bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	
-	while(Index < Length)
-	{
-		if(StartsWith_UTF_8_Character(Buffer + Index, Length - Index) == false)
-		{
-			return false;
-		}
-		Index += Get_UTF_8_CharacterLength(Buffer + Index, Length - Index);
-	}
-	
-	return true;
-}
 
 bool Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length)
 {
@@ -1735,31 +1799,6 @@ bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length)
 	}
 }
 
-bool StartsWith_UTF_8_Character(const uint8_t * Buffer, int Length)
-{
-	if(Length >= 1)
-	{
-		if((Buffer[0] & 0xf8) == 0xf0)
-		{
-			return (Length >= 4) && ((Buffer[1] & 0xc0) == 0x80) && ((Buffer[2] & 0xc0) == 0x80) && ((Buffer[3] & 0xc0) == 0x80);
-		}
-		else if((Buffer[0] & 0xf0) == 0xe0)
-		{
-			return (Length >= 3) && ((Buffer[1] & 0xc0) == 0x80) && ((Buffer[2] & 0xc0) == 0x80);
-		}
-		else if((Buffer[0] & 0xe0) == 0xc0)
-		{
-			return (Length >= 2) && ((Buffer[1] & 0xc0) == 0x80);
-		}
-		else if((Buffer[0] & 0x80) == 0x00)
-		{
-			return true;
-		}
-	}
-	
-	return false;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Getters                                                                                       //
@@ -1769,112 +1808,6 @@ bool StartsWith_UTF_8_Character(const uint8_t * Buffer, int Length)
 //   - Wrong output may be produced for faulty input.                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// UTF-8                                                                                         //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @note @a Buffer is expected to start with a valid UTF-8 character. Test beforehand with StartsWith_UTF_8_Character(...). No boundary checking is performed.
- **/
-std::pair< int, std::string > Get_UTF_8_Character(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, std::string > Result;
-	
-	if((Buffer[0] & 0xf8) == 0xf0)
-	{
-		Result.first = 4;
-		Result.second = std::string(Buffer, Buffer + 4);
-	}
-	else if((Buffer[0] & 0xf0) == 0xe0)
-	{
-		Result.first = 3;
-		Result.second = std::string(Buffer, Buffer + 3);
-	}
-	else if((Buffer[0] & 0xe0) == 0xc0)
-	{
-		Result.first = 2;
-		Result.second = std::string(Buffer, Buffer + 2);
-	}
-	else if((Buffer[0] & 0x80) == 0x00)
-	{
-		Result.first = 1;
-		Result.second = std::string(Buffer, Buffer + 1);
-	}
-	
-	return Result;
-}
-
-std::pair< int, std::string > Get_UTF_8_StringTerminatedByEnd(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, std::string > Result;
-	
-	while(true)
-	{
-		assert(Result.first + 1 <= Length);
-		
-		std::tuple< bool, int > Termination(Get_UTF_8_Termination(Buffer + Result.first, Length - Result.first));
-		
-		if(std::get<0>(Termination) == true)
-		{
-			Result.first += std::get<1>(Termination);
-			
-			break;
-		}
-		else
-		{
-			Result.second += Buffer[Result.first];
-			Result.first += 1;
-		}
-	}
-	
-	return Result;
-}
-
-std::pair< int, std::string > Get_UTF_8_StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, std::string > Result;
-	
-	while(true)
-	{
-		if(Result.first + 1 <= Length)
-		{
-			std::tuple< bool, int > Termination(Get_UTF_8_Termination(Buffer + Result.first, Length - Result.first));
-			
-			if(std::get<0>(Termination) == true)
-			{
-				Result.first += std::get<1>(Termination);
-				
-				break;
-			}
-			else
-			{
-				Result.second += Buffer[Result.first];
-				Result.first += 1;
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
-	
-	return Result;
-}
-
-std::pair< int, std::string > Get_UTF_8_StringTerminatedByLength(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, std::string > Result;
-	
-	while(Result.first < Length)
-	{
-		std::pair< int, std::string > Character(Get_UTF_8_Character(Buffer + Result.first, Length - Result.first));
-		
-		Result.first += Character.first;
-		Result.second += Character.second;
-	}
-	
-	return Result;
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UCS-2BE                                                                                       //
@@ -4239,34 +4172,39 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 			if(std::get<0>(Description) == true)
 			{
 				Index += std::get<1>(Description);
-				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description);
+				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
 			}
 			else
 			{
-				auto Hexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-				
-				std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
-				std::cout << "              Binary content: " << Hexadecimal.second << std::endl;
+				std::cout << "*** ERROR *** The content of the \"Description\" field could not be interpreted as an ISO/IEC 8859-1:1998 string with termination." << std::endl;
 			}
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
 			std::cout << "\t\t\t\tDescription: \"";
 			Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 		{
 			std::cout << "\t\t\t\tDescription: \"";
 			Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			auto Description(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto Description(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Description.first;
-			std::cout << "\t\t\t\tDescription: \"" << Description.second;
+			if(std::get<0>(Description) == true)
+			{
+				Index += std::get<1>(Description);
+				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (UTF-8, ended by termination)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The content of the \"Description\" field could not be interpreted as an UTF-8 string with termination." << std::endl;
+			}
 		}
-		std::cout << '"' << std::endl;
 	}
 	else
 	{
@@ -4307,29 +4245,39 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		{
 			std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
 		}
-		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
 			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
 			assert(std::get<0>(Description) == true);
 			Index += std::get<1>(Description);
-			std::cout << std::get<2>(Description);
+			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
+			std::cout << "\t\t\t\tDescription: \"";
 			Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 		{
+			std::cout << "\t\t\t\tDescription: \"";
 			Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			auto Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Description.first;
-			std::cout << Description.second;
+			if(std::get<0>(Description) == true)
+			{
+				Index += std::get<1>(Description);
+				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The content of the \"Description\" field string could not be interpreted as an UTF-8 string with termination." << std::endl;
+			}
 		}
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
@@ -4357,22 +4305,39 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
-			std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
+			std::cout << "\t\t\t\tComment: \"";
 			Index += PrintUTF_16StringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 			std::cout << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 		{
-			std::cout << '"' << std::endl << "\t\t\t\tComment: \"";
+			std::cout << "\t\t\t\tComment: \"";
 			Index += PrintUTF_16_BEStringTerminatedByEndOrLength(Buffer + Index, Length - Index);
 			std::cout << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			auto Comment(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto Comment(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Comment.first;
-			std::cout << '"' << std::endl << "\t\t\t\tComment: \"" << Comment.second << '"' << std::endl;
+			if(std::get<0>(Comment) == true)
+			{
+				Index += std::get<1>(Comment);
+				std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-8, ended by termination)" << std::endl;
+			}
+			else
+			{
+				auto Comment(Get_UTF_8_StringEndedByLength(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Comment) == true)
+				{
+					Index += std::get<1>(Comment);
+					std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-8, ended by boundary)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The string could not be interpreted as an UTF-8 string with or without zero-termination." << std::endl;
+				}
+			}
 		}
 	}
 	else
@@ -4450,16 +4415,26 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 			}
 			else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 			{
-				if(Is_UTF_8_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+				auto String(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(String) == true)
 				{
-					auto String(Get_UTF_8_StringTerminatedByLength(Buffer + Index, Length - Index));
-					
-					Index += String.first;
-					std::cout << "\t\t\t\t\t\"" << String.second << "\" (UTF-8, boundary-terminated)" << std::endl;
+					Index += std::get<1>(String);
+					std::cout << "\t\t\t\t\t\"" << std::get<2>(String) << "\" (UTF-8, ended by termination)" << std::endl;
 				}
 				else
 				{
-					std::cout << "*** ERROR *** The content does not contain a valid UTF-8 string." << std::endl;
+					auto String(Get_UTF_8_StringEndedByLength(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(String) == true)
+					{
+						Index += std::get<1>(String);
+						std::cout << "\t\t\t\t\t\"" << std::get<2>(String) << "\" (UTF-8, ended by boundary)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The string could not be interpreted as an UTF-8 string with or without zero-termination." << std::endl;
+					}
 				}
 			}
 		}
@@ -4492,17 +4467,7 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 			}
 			else
 			{
-				auto Comment(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(Comment) == true)
-				{
-					Index += std::get<1>(Comment);
-					std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
-				}
+				std::cout << "*** ERROR *** The content of the \"Comment\" field could not be interpreted as an ISO/IEC 8859-1:1998 string with termination." << std::endl;
 			}
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
@@ -4519,10 +4484,17 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			auto Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Comment(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Description.first;
-			std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (UTF-8, ended by termination)" << std::endl;
+			if(std::get<0>(Comment) == true)
+			{
+				Index += std::get<1>(Comment);
+				std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-8, ended by termination)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The content of the \"Comment\" field could not be interpreted as an UTF-8 string with termination." << std::endl;
+			}
 		}
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
@@ -4544,7 +4516,7 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 				}
 				else
 				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
+					std::cout << "*** ERROR *** The content of the \"String\" field could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
 				}
 			}
 		}
@@ -4562,10 +4534,27 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			auto String(Get_UTF_8_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			auto String(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += String.first;
-			std::cout << "\t\t\t\tString: \"" << String.second << "\" (UTF-8)" << std::endl;
+			if(std::get<0>(String) == true)
+			{
+				Index += std::get<1>(String);
+				std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (UTF-8, ended by termination)" << std::endl;
+			}
+			else
+			{
+				auto String(Get_UTF_8_StringEndedByLength(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(String) == true)
+				{
+					Index += std::get<1>(String);
+					std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (UTF-8, ended by boundary)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The content of the \"String\" field could not be interpreted as an UTF-8 string with or without zero-termination." << std::endl;
+				}
+			}
 		}
 	}
 	else
@@ -4585,31 +4574,46 @@ int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
 	{
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
-		std::cout << "\t\t\t\tDescription: \"";
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
 			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			assert(std::get<0>(Description) == true);
-			Index += std::get<1>(Description);
-			std::cout << std::get<2>(Description);
+			if(std::get<0>(Description) == true)
+			{
+				Index += std::get<1>(Description);
+				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The content of the \"Description\" field could not be interpreted as an ISO/IEC 8859-1:1998 string with termination." << std::endl;
+			}
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
+			std::cout << "\t\t\t\tDescription: \"";
 			Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 		{
+			std::cout << "\t\t\t\tDescription: \"";
 			Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
+			std::cout << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
-			auto Description(Get_UTF_8_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto Description(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			Index += Description.first;
-			std::cout << Description.second;
+			if(std::get<0>(Description) == true)
+			{
+				Index += std::get<1>(Description);
+				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (UTF-8, ended by termination)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The content of the \"Description\" field could not be interpreted as an UTF-8 string with termination." << std::endl;
+			}
 		}
-		std::cout << '"' << std::endl;
 		
 		auto URL(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 
