@@ -1476,6 +1476,19 @@ std::tuple< bool, int, UCS2ByteOrderMark > Get_UCS_2_ByteOrderMark(const uint8_t
 	return Result;
 }
 
+std::tuple< bool, int > Get_UCS_2_Termination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int > Result(false, 0);
+	
+	if((Length >= 2) && (Buffer[0] == 0x00) && (Buffer[1] == 0x00))
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 2;
+	}
+	
+	return Result;
+}
+
 std::tuple< bool, int, uint8_t > Get_UInt4_0_3(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int, uint8_t > Result(false, 0, 0);
@@ -1971,10 +1984,8 @@ bool Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Bu
 bool Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
-bool StartsWith_UCS_2_BE_Termination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
-bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length);
 
 bool Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length)
 {
@@ -2027,7 +2038,9 @@ bool StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(const uint8_t
 	
 	while(Index + 2 <= Length)
 	{
-		if(StartsWith_UCS_2_BE_Termination(Buffer + Index, Length - Index) == true)
+		auto Termination(Get_UCS_2_Termination(Buffer + Index, Length - Index));
+		
+		if(std::get<0>(Termination) == true)
 		{
 			Result = true;
 			
@@ -2044,18 +2057,6 @@ bool StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(const uint8_t
 	}
 	
 	return Result;
-}
-
-bool StartsWith_UCS_2_BE_Termination(const uint8_t * Buffer, int Length)
-{
-	if(Length >= 2)
-	{
-		return Buffer[0] == 0x00 && Buffer[1] == 0x00;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 bool StartsWith_UCS_2_LE_Character(const uint8_t * Buffer, int Length)
@@ -2077,7 +2078,9 @@ bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t
 	
 	while(Index + 2 <= Length)
 	{
-		if(StartsWith_UCS_2_LE_Termination(Buffer + Index, Length - Index) == true)
+		auto Termination(Get_UCS_2_Termination(Buffer + Index, Length - Index));
+		
+		if(std::get<0>(Termination) == true)
 		{
 			Result = true;
 			
@@ -2094,18 +2097,6 @@ bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t
 	}
 	
 	return Result;
-}
-
-bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length)
-{
-	if(Length >= 2)
-	{
-		return Buffer[1] == 0x00 && Buffer[0] == 0x00;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 
@@ -2129,7 +2120,9 @@ std::pair< int, std::string > Get_UCS_2_BE_StringTerminatedByEnd(const uint8_t *
 	{
 		if(Result.first + 2 <= Length)
 		{
-			if(StartsWith_UCS_2_BE_Termination(Buffer + Result.first, Length - Result.first) == true)
+			auto Termination(Get_UCS_2_Termination(Buffer + Result.first, Length - Result.first));
+			
+			if(std::get<0>(Termination) == true)
 			{
 				Result.first += 2;
 				
@@ -2158,7 +2151,9 @@ std::pair< int, std::string > Get_UCS_2_BE_StringTerminatedByEndOrLength(const u
 	{
 		if(Result.first + 2 <= Length)
 		{
-			if(StartsWith_UCS_2_BE_Termination(Buffer + Result.first, Length - Result.first) == true)
+			auto Termination(Get_UCS_2_Termination(Buffer + Result.first, Length - Result.first));
+			
+			if(std::get<0>(Termination) == true)
 			{
 				Result.first += 2;
 				
@@ -2223,7 +2218,9 @@ std::pair< int, std::string > Get_UCS_2_LE_StringTerminatedByEndOrLength(const u
 	{
 		if(Result.first + 2 <= Length)
 		{
-			if(StartsWith_UCS_2_LE_Termination(Buffer + Result.first, Length - Result.first) == true)
+			auto Termination(Get_UCS_2_Termination(Buffer + Result.first, Length - Result.first));
+			
+			if(std::get<0>(Termination) == true)
 			{
 				Result.first += 2;
 				
@@ -2260,7 +2257,9 @@ std::pair< int, std::string > Get_UCS_2_LE_StringTerminatedByEnd(const uint8_t *
 		}
 		else
 		{
-			if(StartsWith_UCS_2_LE_Termination(Buffer + Result.first, Length - Result.first) == true)
+			auto Termination(Get_UCS_2_Termination(Buffer + Result.first, Length - Result.first));
+			
+			if(std::get<0>(Termination) == true)
 			{
 				Result.first += 2;
 				
@@ -2796,7 +2795,9 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 			}
 			else
 			{
-				if((StartsWith_UCS_2_BE_Termination(Buffer + Index, Length - Index) == true) || (StartsWith_UCS_2_LE_Termination(Buffer + Index, Length - Index) == true))
+				auto Termination(Get_UCS_2_Termination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Termination) == true)
 				{
 					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 are required to start with a Byte Order Mark. The 'Description' string only consists of a UCS-2 terminator." << std::endl;
 					std::cout << "\t\t\t\tDescription: \"\" (zero-terminated, missing endian specification)" << std::endl;
@@ -2889,7 +2890,9 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 			}
 			else
 			{
-				if((StartsWith_UCS_2_BE_Termination(Buffer + Index, Length - Index) == true) || (StartsWith_UCS_2_LE_Termination(Buffer + Index, Length - Index) == true))
+				auto Termination(Get_UCS_2_Termination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Termination) == true)
 				{
 					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 are required to start with a Byte Order Mark. The 'Description' string only consists of a UCS-2 terminator." << std::endl;
 					std::cout << "\t\t\t\tDescription: \"\" (zero-terminated, missing endian specification)" << std::endl;
