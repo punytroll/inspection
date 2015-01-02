@@ -47,6 +47,13 @@ enum class TextEncoding
 	UTF_8
 };
 
+enum class UCS2ByteOrderMark
+{
+	Undefined,
+	LittleEndian,
+	BigEndian
+};
+
 enum class UTF16ByteOrderMark
 {
 	Undefined,
@@ -1446,6 +1453,29 @@ std::tuple< bool, int, CDTableOfContents > Get_CDTableOfContents(const uint8_t *
 	return Result;
 }
 
+std::tuple< bool, int, UCS2ByteOrderMark > Get_UCS_2_ByteOrderMark(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, UCS2ByteOrderMark > Result(false, 0, UCS2ByteOrderMark::Undefined);
+	
+	if(Length >= 2)
+	{
+		if((Buffer[0] == 0xfe) && (Buffer[1] == 0xff))
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) = 2;
+			std::get<2>(Result) = UCS2ByteOrderMark::BigEndian;
+		}
+		else if((Buffer[0] == 0xff) && (Buffer[1] == 0xfe))
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) = 2;
+			std::get<2>(Result) = UCS2ByteOrderMark::LittleEndian;
+		}
+	}
+	
+	return Result;
+}
+
 std::tuple< bool, int, uint8_t > Get_UInt4_0_3(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int, uint8_t > Result(false, 0, 0);
@@ -1939,11 +1969,9 @@ std::tuple< bool, int > Get_UTF_8_Termination(const uint8_t * Buffer, int Length
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 bool Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
-bool StartsWith_UCS_2_BE_ByteOrderMark(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_BE_Termination(const uint8_t * Buffer, int Length);
-bool StartsWith_UCS_2_LE_ByteOrderMark(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length);
@@ -1978,18 +2006,6 @@ bool Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Bu
 	}
 	
 	return Index == Length;
-}
-
-bool StartsWith_UCS_2_BE_ByteOrderMark(const uint8_t * Buffer, int Length)
-{
-	if(Length >= 2)
-	{
-		return (Buffer[0] == 0xfe) && (Buffer[1] == 0xff);
-	}
-	else
-	{
-		return false;
-	}
 }
 
 bool StartsWith_UCS_2_BE_Character(const uint8_t * Buffer, int Length)
@@ -2035,18 +2051,6 @@ bool StartsWith_UCS_2_BE_Termination(const uint8_t * Buffer, int Length)
 	if(Length >= 2)
 	{
 		return Buffer[0] == 0x00 && Buffer[1] == 0x00;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool StartsWith_UCS_2_LE_ByteOrderMark(const uint8_t * Buffer, int Length)
-{
-	if(Length >= 2)
-	{
-		return (Buffer[0] == 0xff) && (Buffer[1] == 0xfe);
 	}
 	else
 	{
@@ -2313,31 +2317,22 @@ std::pair< int, std::string > Get_UCS_2_LE_StringTerminatedByLength(const uint8_
 int PrintUCS_2StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
+	auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
 	
-	if(Length >= 2)
+	if(std::get<0>(ByteOrderMark) == true)
 	{
-		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+		Index += std::get<1>(ByteOrderMark);
+		if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
 		{
-			Index += 2;
 			// Big Endian by Byte Order Mark
 			std::pair< int, std::string > String(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += String.first;
 			std::cout << String.second;
 		}
-		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+		else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
 		{
-			Index += 2;
 			// Little Endian by Byte Order Mark
-			std::pair< int, std::string > String(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
-			
-			Index += String.first;
-			std::cout << String.second;
-		}
-		else
-		{
-			std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not. Trying to interpret as UCS-2 little endian." << std::endl;
-			
 			std::pair< int, std::string > String(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
 			
 			Index += String.first;
@@ -2346,7 +2341,7 @@ int PrintUCS_2StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 	}
 	else
 	{
-		std::cout << "*** The UCS-2 string is expected to contain a Byte Order Mark but is not long enough to hold that information." << std::endl;
+		std::cout << "*** The UCS-2 string is expected to start with a byte order mark but it is not." << std::endl;
 		Index = Length;
 	}
 	
@@ -2356,20 +2351,20 @@ int PrintUCS_2StringTerminatedByEnd(const uint8_t * Buffer, int Length)
 int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
+	auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
 	
-	if(Length >= 2)
+	if(std::get<0>(ByteOrderMark) == true)
 	{
-		if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+		Index += std::get<1>(ByteOrderMark);
+		if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
 		{
-			Index += 2;
-			
 			// Big Endian by Byte Order Mark
 			std::pair< int, std::string > ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 			
 			Index += ReadString.first;
 			std::cout << ReadString.second;
 		}
-		else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+		else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
 		{
 			Index += 2;
 			
@@ -2379,19 +2374,10 @@ int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 			Index += ReadString.first;
 			std::cout << ReadString.second;
 		}
-		else
-		{
-			std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not. Trying to interpret as UCS-2 little endian." << std::endl;
-			
-			std::pair< int, std::string > ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-			
-			Index += ReadString.first;
-			std::cout << ReadString.second;
-		}
 	}
 	else
 	{
-		std::cout << "*** The UCS-2 string is expected to contain a Byte Order Mark but is not long enough to hold that information." << std::endl;
+		std::cout << "*** The UCS-2 string is expected to start with a byte order mark but it is not." << std::endl;
 		Index = Length;
 	}
 	
@@ -2534,31 +2520,30 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 				}
 				else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 				{
-					if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+					auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(ByteOrderMark) == true)
 					{
-						Index += 2;
-						// Big Endian by BOM
-						std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
-						
-						auto ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-						
-						Index += ReadString.first;
-						std::cout << "\t\t\t\ttDescription: \"" << ReadString.second << '"' << std::endl;
-					}
-					else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-					{
-						Index += 2;
-						// Little Endian by BOM
-						std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
-						
-						auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-						
-						Index += ReadString.first;
-						std::cout << "\t\t\t\ttDescription: \"" << ReadString.second << '"' << std::endl;
+						Index += std::get<1>(ByteOrderMark);
+						if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+						{
+							std::pair< int, std::string > Description(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+							
+							Index += Description.first;
+							std::cout << "\t\t\t\tDescription: \"" << Description.second << '"' << std::endl;
+						}
+						else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+						{
+							std::pair< int, std::string > Description(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+							
+							Index += Description.first;
+							std::cout << "\t\t\t\tDescription: \"" << Description.second << '"' << std::endl;
+						}
 					}
 					else
 					{
-						std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+						std::cout << "*** The UCS-2 string is expected to start with a byte order mark but it is not." << std::endl;
+						Index = Length;
 					}
 				}
 			}
@@ -2615,31 +2600,30 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
 			{
-				Index += 2;
-				// Big Endian by BOM
-				std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
-				
-				auto ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-				
-				Index += ReadString.first;
-				std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				Index += 2;
-				// Little Endian by BOM
-				std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
-				
-				auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-				
-				Index += ReadString.first;
-				std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+				{
+					std::pair< int, std::string > String(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += String.first;
+					std::cout << "\t\t\t\tString: \"" << String.second << '"' << std::endl;
+				}
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+				{
+					std::pair< int, std::string > String(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += String.first;
+					std::cout << "\t\t\t\tString: \"" << String.second << '"' << std::endl;
+				}
 			}
 			else
 			{
-				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+				std::cout << "*** The UCS-2 string is expected to start with a byte order mark but it is not." << std::endl;
+				Index = Length;
 			}
 		}
 	}
@@ -2776,34 +2760,38 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
 			{
-				Index += 2;
-				if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
 				{
-					auto Description(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
-					
-					Index += Description.first;
-					std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-terminated, big endian)" << std::endl;
+					if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto Description(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += Description.first;
+						std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-terminated, big endian)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'Description' string could be identified as big endian but does not seem to be a valid zero-terminated UCS-2 string." << std::endl;
+					}
 				}
-				else
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
 				{
-					std::cout << "*** ERROR *** The 'Description' string could be identified as big endian but does not seem to be a valid zero-terminated UCS-2 string." << std::endl;
-				}
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				Index += 2;
-				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
-				{
-					auto Description(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
-					
-					Index += Description.first;
-					std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-terminated, little endian)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The 'Description' string could be identified as little endian but does not seem to be a valid zero-terminated UCS-2 string." << std::endl;
+					if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto Description(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += Description.first;
+						std::cout << "\t\t\t\tDescription: \"" << Description.second << "\" (zero-terminated, little endian)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'Description' string could be identified as little endian but does not seem to be a valid zero-terminated UCS-2 string." << std::endl;
+					}
 				}
 			}
 			else
@@ -2851,70 +2839,83 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
 			{
-				Index += 2;
-				if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
 				{
-					auto Comment(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
-					
-					Index += Comment.first;
-					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, big endian)" << std::endl;
+					if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto Comment(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += Comment.first;
+						std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, big endian)" << std::endl;
+					}
+					else if(Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto Comment(Get_UCS_2_BE_StringTerminatedByLength(Buffer + Index, Length - Index));
+						
+						Index += Comment.first;
+						std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, big endian)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'Comment' string could be identified as big endian but does not seem to be a valid zero-terminated or boundary-terminated UCS-2 string." << std::endl;
+					}
 				}
-				else if(Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
 				{
-					auto Comment(Get_UCS_2_BE_StringTerminatedByLength(Buffer + Index, Length - Index));
-					
-					Index += Comment.first;
-					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, big endian)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The 'Comment' string could be identified as big endian but does not seem to be a valid zero-terminated or boundary-terminated UCS-2 string." << std::endl;
-				}
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				Index += 2;
-				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
-				{
-					auto Comment(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
-					
-					Index += Comment.first;
-					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, little endian)" << std::endl;
-				}
-				else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
-				{
-					auto Comment(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
-					
-					Index += Comment.first;
-					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, little endian)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The 'Comment' string could be identified as little endian but does not seem to be a valid zero-terminated or boundary-terminated UCS-2 string." << std::endl;
+					if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto Comment(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += Comment.first;
+						std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, little endian)" << std::endl;
+					}
+					else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto Comment(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
+						
+						Index += Comment.first;
+						std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, little endian)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'Comment' string could be identified as little endian but does not seem to be a valid zero-terminated or boundary-terminated UCS-2 string." << std::endl;
+					}
 				}
 			}
 			else
 			{
-				std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not. Trying to interpret as UCS-2 little endian." << std::endl;
-				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+				if((StartsWith_UCS_2_BE_Termination(Buffer + Index, Length - Index) == true) || (StartsWith_UCS_2_LE_Termination(Buffer + Index, Length - Index) == true))
 				{
-					auto Comment(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
-					
-					Index += Comment.first;
-					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, little endian, missing byte order mark)" << std::endl;
-				}
-				else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
-				{
-					auto Comment(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
-					
-					Index += Comment.first;
-					std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, little endian, missing byte order mark)" << std::endl;
+					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 are required to start with a Byte Order Mark. The 'Description' string only consists of a UCS-2 terminator." << std::endl;
+					std::cout << "\t\t\t\tDescription: \"\" (zero-terminated, missing endian specification)" << std::endl;
+					Index += 2;
 				}
 				else
 				{
-					std::cout << "*** ERROR *** The 'Comment' string could not be interpreted a valid, little endian zero-terminated or boundary-terminated UCS-2 string." << std::endl;
+					std::cout << "*** ERROR *** UCS-2 string is expected to start with a Byte Order Mark but is not. Trying to interpret as UCS-2 little endian." << std::endl;
+					if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto Comment(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += Comment.first;
+						std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (zero-terminated, little endian, missing byte order mark)" << std::endl;
+					}
+					else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto Comment(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
+						
+						Index += Comment.first;
+						std::cout << "\t\t\t\tComment: \"" << Comment.second << "\" (boundary-terminated, little endian, missing byte order mark)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'Comment' string could not be interpreted a valid, little endian zero-terminated or boundary-terminated UCS-2 string." << std::endl;
+					}
 				}
 			}
 		}
@@ -3220,274 +3221,285 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	int Index(0);
 	auto ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 	
-	assert(std::get<0>(ReadOwnerIdentifier) == true);
-	Index += std::get<1>(ReadOwnerIdentifier);
-	std::cout << "\t\t\t\tOwner Identifier: " << std::get<2>(ReadOwnerIdentifier) << std::endl;
-	if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassPrimaryID")
+	if(std::get<0>(ReadOwnerIdentifier) == true)
 	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tPrimary Media Class: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+		Index += std::get<1>(ReadOwnerIdentifier);
+		std::cout << "\t\t\t\tOwner Identifier: " << std::get<2>(ReadOwnerIdentifier) << std::endl;
+		if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassPrimaryID")
 		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassSecondaryID")
-	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tSecondary Media Class: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
-		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMContentID")
-	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tContent ID: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
-		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionID")
-	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tCollection ID: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
-		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionGroupID")
-	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tCollection Group ID: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
-		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "WM/Provider")
-	{
-		auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadString.first;
-		std::cout << "\t\t\t\tContent Provider: \"" << ReadString.second << '"' << std::endl;
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "WM/UniqueFileIdentifier")
-	{
-		auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		Index += ReadString.first;
-		std::cout << "\t\t\t\tUnique File Identifier: \"" << ReadString.second << '"' << std::endl;
-		
-		auto Interpretation(GetWMUniqueFileIdentifierInterpretation(ReadString.second));
-		
-		if(Interpretation.first == true)
-		{
-			std::cout << "\t\t\t\tInterpretation as AllMusicGuide fields (http://www.allmusic.com/):" << std::endl;
-			std::cout << Interpretation.second << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumArtistMediaID")
-	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tZune Album Artist Media ID: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
-		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumMediaID")
-	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tZune Album Media ID: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
-		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "ZuneCollectionID")
-	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tZune Collection ID: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
-		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "ZuneMediaID")
-	{
-		auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
-		
-		Index += ReadGUID.first;
-		std::cout << "\t\t\t\tZune Media ID: ";
-		
-		auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-		
-		if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
-		{
-			std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-		}
-		else
-		{
-			std::cout << ReadGUID.second << " (unknown value)" << std::endl;
-		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "CompID")
-	{
-		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-		
-		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
-		if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
-		{
-			auto ReadString(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
 			
-			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (interpreted as UCS-2LE without BOM with termination)" << std::endl;
-		}
-		Index += ReadHexadecimal.first;
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "MachineCode")
-	{
-		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-		
-		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
-		
-		auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(String) == true)
-		{
-			std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-		}
-		Index += ReadHexadecimal.first;
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "PeakValue")
-	{
-		if(Length - Index == 4)
-		{
-			auto ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tPrimary Media Class: ";
 			
-			assert(std::get<0>(ReadUInt16) == true);
-			std::cout << "\t\t\t\tPeak Value: " << std::get<2>(ReadUInt16) << std::endl;
-			Index += std::get<1>(ReadUInt16);
-			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
 			{
-				auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-				
-				Index += ReadHexadecimal.first;
-				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
-				std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
-				std::cout << "\t\t\t\tBinary Content of the rest: " << ReadHexadecimal.second << std::endl;
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
 			}
 			else
 			{
-				Index += 2;
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
 			}
 		}
-		else
+		else if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassSecondaryID")
+		{
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tSecondary Media Class: ";
+			
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			{
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMContentID")
+		{
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tContent ID: ";
+			
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			{
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionID")
+		{
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tCollection ID: ";
+			
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			{
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionGroupID")
+		{
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tCollection Group ID: ";
+			
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			{
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "WM/Provider")
+		{
+			auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << "\t\t\t\tContent Provider: \"" << ReadString.second << '"' << std::endl;
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "WM/UniqueFileIdentifier")
+		{
+			auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+			
+			Index += ReadString.first;
+			std::cout << "\t\t\t\tUnique File Identifier: \"" << ReadString.second << '"' << std::endl;
+			
+			auto Interpretation(GetWMUniqueFileIdentifierInterpretation(ReadString.second));
+			
+			if(Interpretation.first == true)
+			{
+				std::cout << "\t\t\t\tInterpretation as AllMusicGuide fields (http://www.allmusic.com/):" << std::endl;
+				std::cout << Interpretation.second << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumArtistMediaID")
+		{
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tZune Album Artist Media ID: ";
+			
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			{
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumMediaID")
+		{
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tZune Album Media ID: ";
+			
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			{
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneCollectionID")
+		{
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tZune Collection ID: ";
+			
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			{
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneMediaID")
+		{
+			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			
+			Index += ReadGUID.first;
+			std::cout << "\t\t\t\tZune Media ID: ";
+			
+			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
+			
+			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			{
+				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
+			}
+			else
+			{
+				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "CompID")
 		{
 			auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 			
-			Index += ReadHexadecimal.first;
-			std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
-			std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
 			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
+			if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+			{
+				auto ReadString(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+				
+				std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (interpreted as UCS-2LE without BOM with termination)" << std::endl;
+			}
+			Index += ReadHexadecimal.first;
 		}
-	}
-	else if(std::get<2>(ReadOwnerIdentifier) == "AverageLevel")
-	{
-		if(Length - Index == 4)
+		else if(std::get<2>(ReadOwnerIdentifier) == "MachineCode")
 		{
-			auto ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
+			auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 			
-			assert(std::get<0>(ReadUInt16) == true);
-			std::cout << "\t\t\t\tAverage Level: " << std::get<2>(ReadUInt16) << std::endl;
-			Index += std::get<1>(ReadUInt16);
-			if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
+			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
+			
+			auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(String) == true)
+			{
+				std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+			}
+			Index += ReadHexadecimal.first;
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "PeakValue")
+		{
+			if(Length - Index == 4)
+			{
+				auto ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
+				
+				assert(std::get<0>(ReadUInt16) == true);
+				std::cout << "\t\t\t\tPeak Value: " << std::get<2>(ReadUInt16) << std::endl;
+				Index += std::get<1>(ReadUInt16);
+				if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
+				{
+					auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+					
+					Index += ReadHexadecimal.first;
+					std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
+					std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
+					std::cout << "\t\t\t\tBinary Content of the rest: " << ReadHexadecimal.second << std::endl;
+				}
+				else
+				{
+					Index += 2;
+				}
+			}
+			else
 			{
 				auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 				
 				Index += ReadHexadecimal.first;
 				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
-				std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
-				std::cout << "\t\t\t\tBinary Content of the rest: " << ReadHexadecimal.second << std::endl;
+				std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
+				std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
+			}
+		}
+		else if(std::get<2>(ReadOwnerIdentifier) == "AverageLevel")
+		{
+			if(Length - Index == 4)
+			{
+				auto ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
+				
+				assert(std::get<0>(ReadUInt16) == true);
+				std::cout << "\t\t\t\tAverage Level: " << std::get<2>(ReadUInt16) << std::endl;
+				Index += std::get<1>(ReadUInt16);
+				if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
+				{
+					auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+					
+					Index += ReadHexadecimal.first;
+					std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
+					std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
+					std::cout << "\t\t\t\tBinary Content of the rest: " << ReadHexadecimal.second << std::endl;
+				}
+				else
+				{
+					Index += 2;
+				}
 			}
 			else
 			{
-				Index += 2;
+				auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+				
+				Index += ReadHexadecimal.first;
+				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
+				std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
+				std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
 			}
 		}
 		else
@@ -3495,17 +3507,13 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 			auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 			
 			Index += ReadHexadecimal.first;
-			std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
-			std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
 			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
 		}
 	}
 	else
 	{
-		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-		
-		Index += ReadHexadecimal.first;
-		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.28], \"PRIV\" frames MUST contain an \"Owner identifier\" field with a valid URL in ISO/IEC 8859-1:1998 encoding." << std::endl;
+		Index = Length;
 	}
 	
 	return Index;
@@ -3588,27 +3596,29 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
 			{
-				Index += 2;
-				// Big Endian by BOM
-				std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
-				
-				auto ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-				
-				Index += ReadString.first;
-				std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				Index += 2;
-				// Little Endian by BOM
-				std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
-				
-				auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-				
-				Index += ReadString.first;
-				std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+				{
+					std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
+					
+					auto ReadString(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += ReadString.first;
+					std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
+				}
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+				{
+					std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
+					
+					auto ReadString(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += ReadString.first;
+					std::cout << "\t\t\t\tString: \"" << ReadString.second << '"' << std::endl;
+				}
 			}
 			else
 			{
@@ -3678,31 +3688,33 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
 			{
-				Index += 2;
-				// Big Endian by BOM
-				std::cout << "\t\t\t\tString:" << std::endl;
-				std::cout << "\t\t\t\t\tByte order mark: big endian" << std::endl;
-				
-				auto ISO_639_2_Code(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-				
-				Index += ISO_639_2_Code.first;
-				std::cout << "\t\t\t\t\tCharacters: \"" << ISO_639_2_Code.second << "\" (ISO/IEC 10646-1:1993, UCS-2, big endian)" << std::endl;
-				ISO_639_2_Code_String = ISO_639_2_Code.second;
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				Index += 2;
-				// Little Endian by BOM
-				std::cout << "\t\t\t\tString:" << std::endl;
-				std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
-				
-				auto ISO_639_2_Code(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-				
-				Index += ISO_639_2_Code.first;
-				std::cout << "\t\t\t\t\tCharacters: \"" << ISO_639_2_Code.second << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian)" << std::endl;
-				ISO_639_2_Code_String = ISO_639_2_Code.second;
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+				{
+					std::cout << "\t\t\t\tString:" << std::endl;
+					std::cout << "\t\t\t\t\tByte order mark: big endian" << std::endl;
+					
+					auto ISO_639_2_Code(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += ISO_639_2_Code.first;
+					std::cout << "\t\t\t\t\tCharacters: \"" << ISO_639_2_Code.second << "\" (ISO/IEC 10646-1:1993, UCS-2, big endian)" << std::endl;
+					ISO_639_2_Code_String = ISO_639_2_Code.second;
+				}
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+				{
+					std::cout << "\t\t\t\tString:" << std::endl;
+					std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
+					
+					auto ISO_639_2_Code(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += ISO_639_2_Code.first;
+					std::cout << "\t\t\t\t\tCharacters: \"" << ISO_639_2_Code.second << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian)" << std::endl;
+					ISO_639_2_Code_String = ISO_639_2_Code.second;
+				}
 			}
 			else
 			{
@@ -3753,23 +3765,6 @@ int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
 	{
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
-		if(std::get<2>(Encoding) == TextEncoding::UCS_2)
-		{
-			std::cout << "\t\t\t\tByte Order Mark: ";
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				std::cout << "Big Endian";
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				std::cout << "Little Endian";
-			}
-			else
-			{
-				std::cout << "Bogus Byte Order Mark";
-			}
-			std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
-		}
 		
 		std::string ReadString;
 		
@@ -3801,8 +3796,44 @@ int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			/// @TODO Add this function.
-			assert(false);
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
+			{
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+				{
+					std::cout << "\t\t\t\tString:" << std::endl;
+					std::cout << "\t\t\t\t\tByte order mark: big endian" << std::endl;
+					
+					auto String(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += String.first;
+					std::cout << "\t\t\t\t\tCharacters: \"" << String.second << "\" (ISO/IEC 10646-1:1993, UCS-2, big endian)" << std::endl;
+				}
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+				{
+					std::cout << "\t\t\t\tString:" << std::endl;
+					std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
+					
+					auto String(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += String.first;
+					std::cout << "\t\t\t\t\tCharacters: \"" << String.second << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian)" << std::endl;
+				}
+			}
+			else
+			{
+				if(Index == Length)
+				{
+					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 must start with a byte order mark, without explicitly excluding empty strings. The string for this text frame is empty without a byte order mark and terminates at the frame boundary." << std::endl;
+					std::cout << "\t\t\t\tString: \"\" (ISO/IEC 10646-1:1993, UCS-2, ended by boundary)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
+				}
+			}
 		}
 		std::cout << "\t\t\t\tPart of a compilation: ";
 		if(ReadString == "1")
@@ -3867,52 +3898,56 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
 			{
-				Index += 2;
-				if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
 				{
-					auto ContentType(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
-					
-					Index += ContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2BE, zero-terminated)" << std::endl;
-					ContentTypeString = ContentType.second;
+					if(StartsWith_UCS_2_BE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto ContentType(Get_UCS_2_BE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += ContentType.first;
+						std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2BE, zero-terminated)" << std::endl;
+						ContentTypeString = ContentType.second;
+					}
+					else if(Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto ContentType(Get_UCS_2_BE_StringTerminatedByLength(Buffer + Index, Length - Index));
+						
+						Index += ContentType.first;
+						std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2BE, boundary-terminated)" << std::endl;
+						ContentTypeString = ContentType.second;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The \"Content\" field was declarated to be UCS-2BE but could not be interpreted." << std::endl;
+					}
 				}
-				else if(Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
 				{
-					auto ContentType(Get_UCS_2_BE_StringTerminatedByLength(Buffer + Index, Length - Index));
-					
-					Index += ContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2BE, boundary-terminated)" << std::endl;
-					ContentTypeString = ContentType.second;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The \"Content\" field was declarated to be UCS-2BE but could not be interpreted." << std::endl;
-				}
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				Index += 2;
-				if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
-				{
-					auto ContentType(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
-					
-					Index += ContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2LE, zero-terminated)" << std::endl;
-					ContentTypeString = ContentType.second;
-				}
-				else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
-				{
-					auto ContentType(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
-					
-					Index += ContentType.first;
-					std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2LE, boundary-terminated)" << std::endl;
-					ContentTypeString = ContentType.second;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The \"Content\" field was declarated to be UCS-2LE but could not be interpreted." << std::endl;
+					if(StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto ContentType(Get_UCS_2_LE_StringTerminatedByEnd(Buffer + Index, Length - Index));
+						
+						Index += ContentType.first;
+						std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2LE, zero-terminated)" << std::endl;
+						ContentTypeString = ContentType.second;
+					}
+					else if(Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(Buffer + Index, Length - Index) == true)
+					{
+						auto ContentType(Get_UCS_2_LE_StringTerminatedByLength(Buffer + Index, Length - Index));
+						
+						Index += ContentType.first;
+						std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (byte order mark, UCS-2LE, boundary-terminated)" << std::endl;
+						ContentTypeString = ContentType.second;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The \"Content\" field was declarated to be UCS-2LE but could not be interpreted." << std::endl;
+					}
 				}
 			}
 			else
@@ -3996,29 +4031,31 @@ int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
 			{
-				Index += 2;
-				// Big Endian by BOM
-				std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
-				
-				auto String(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-				
-				Index += String.first;
-				std::cout << "\t\t\t\tString: \"" << String.second << '"' << std::endl;
-				ReadString = String.second;
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				Index += 2;
-				// Little Endian by BOM
-				std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
-				
-				auto String(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-				
-				Index += String.first;
-				std::cout << "\t\t\t\tString: \"" << String.second << '"' << std::endl;
-				ReadString = String.second;
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+				{
+					std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
+					
+					auto String(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += String.first;
+					std::cout << "\t\t\t\tString: \"" << String.second << '"' << std::endl;
+					ReadString = String.second;
+				}
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+				{
+					std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
+					
+					auto String(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+					
+					Index += String.first;
+					std::cout << "\t\t\t\tString: \"" << String.second << '"' << std::endl;
+					ReadString = String.second;
+				}
 			}
 			else
 			{
@@ -4504,23 +4541,6 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 	{
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
-		if(std::get<2>(Encoding) == TextEncoding::UTF_16)
-		{
-			std::cout << "\t\t\t\tByte Order Mark: ";
-			if(StartsWith_UCS_2_BE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				std::cout << "Big Endian";
-			}
-			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
-			{
-				std::cout << "Little Endian";
-			}
-			else
-			{
-				std::cout << "Bogus Byte Order Mark";
-			}
-			std::cout << " (" << GetHexadecimalStringFromUInt8(Buffer[Index]) << ' ' << GetHexadecimalStringFromUInt8(Buffer[Index + 1]) + ')' << std::endl;
-		}
 		std::cout << "\t\t\t\tString(s):\n";
 		while(Index < Length)
 		{
