@@ -993,6 +993,8 @@ std::tuple< bool, int, TextEncoding > Get_ID3_2_2_Encoding(const uint8_t * Buffe
 std::tuple< bool, int, TextEncoding > Get_ID3_2_3_Encoding(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, TextEncoding > Get_ID3_2_4_Encoding(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByBoundary(const uint8_t * Buffer, int Length, int Boundary);
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByLength(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination(const uint8_t * Buffer, int Length);
 std::tuple< bool, int > Get_ISO_IEC_8859_1_Termination(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length);
@@ -1212,32 +1214,63 @@ std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t 
 	return Result;
 }
 
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByBoundary(const uint8_t * Buffer, int Length, int Boundary)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	if(Length >= Boundary)
+	{
+		Result = Get_ISO_IEC_8859_1_StringEndedByLength(Buffer, Length);
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByLength(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(true, 0, "");
+	
+	while(std::get<1>(Result) < Length)
+	{
+		auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Character) == true)
+		{
+			std::get<1>(Result) += std::get<1>(Character);
+			std::get<2>(Result) += std::get<2>(Character);
+		}
+		else
+		{
+			std::get<0>(Result) = false;
+		}
+	}
+	
+	return Result;
+}
+
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int, std::string > Result(false, 0, "");
 	
-	while(true)
+	while(std::get<0>(Result) < Length)
 	{
-		if(std::get<0>(Result) < Length)
+		auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Termination) == true)
 		{
-			auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			std::get<0>(Result) = true;
+			std::get<1>(Result) += std::get<1>(Termination);
 			
-			if(std::get<0>(Termination) == true)
+			break;
+		}
+		else
+		{
+			auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(Character) == true)
 			{
-				std::get<0>(Result) = true;
-				std::get<1>(Result) += std::get<1>(Termination);
-				
-				break;
-			}
-			else
-			{
-				auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-				
-				if(std::get<0>(Character) == true)
-				{
-					std::get<1>(Result) += std::get<1>(Character);
-					std::get<2>(Result) += std::get<2>(Character);
-				}
+				std::get<1>(Result) += std::get<1>(Character);
+				std::get<2>(Result) += std::get<2>(Character);
 			}
 		}
 	}
@@ -1511,7 +1544,6 @@ std::tuple< bool, int > Get_UTF_8_Termination(const uint8_t * Buffer, int Length
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Validators                                                                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-bool Is_ISO_IEC_8859_1_StringWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UCS_2_BE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
 bool Is_UCS_2_LE_StringWithoutByteOrderMarkWithoutTermination(const uint8_t * Buffer, int Length);
@@ -1525,24 +1557,6 @@ bool StartsWith_UCS_2_LE_Character(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_StringWithoutByteOrderMarkWithTermination(const uint8_t * Buffer, int Length);
 bool StartsWith_UCS_2_LE_Termination(const uint8_t * Buffer, int Length);
 bool StartsWith_UTF_8_Character(const uint8_t * Buffer, int Length);
-
-bool Is_ISO_IEC_8859_1_StringWithoutTermination(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	
-	while(Index < Length)
-	{
-		auto Character(Get_ISO_IEC_8859_1_Character(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(Character) == false)
-		{
-			return false;
-		}
-		Index += 1;
-	}
-	
-	return true;
-}
 
 bool Is_UTF_8_StringWithoutTermination(const uint8_t * Buffer, int Length)
 {
@@ -1818,35 +1832,6 @@ std::pair< int, std::string > Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(c
 				{
 					assert(false);
 				}
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
-	
-	return Result;
-}
-
-std::pair< int, std::string > Get_ISO_IEC_8859_1_StringTerminatedByLength(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, std::string > Result;
-	
-	while(true)
-	{
-		if(Result.first + 1 <= Length)
-		{
-			auto Character(Get_ISO_IEC_8859_1_Character(Buffer + Result.first, Length - Result.first));
-			
-			if(std::get<0>(Character) == true)
-			{
-				Result.first += std::get<1>(Character);
-				Result.second += std::get<2>(Character);
-			}
-			else
-			{
-				assert(false);
 			}
 		}
 		else
@@ -2534,12 +2519,13 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 	{
 		Index += std::get<1>(Encoding);
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
-		if(Length - Index >= 3)
+		
+		auto ImageFormat(Get_ISO_IEC_8859_1_StringEndedByBoundary(Buffer + Index, Length - Index, 3));
+		
+		if(std::get<0>(ImageFormat) == true)
 		{
-			auto ReadImageFormat(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, 3));
-			
-			Index += 3;
-			std::cout << "\t\t\t\tImage format: \"" << ReadImageFormat.second << '"' << std::endl;
+			Index += std::get<1>(ImageFormat);
+			std::cout << "\t\t\t\tImage format: \"" << std::get<2>(ImageFormat) << '"' << std::endl;
 			if(Length - Index >= 1)
 			{
 				unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
@@ -2591,7 +2577,7 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 		}
 		else
 		{
-			std::cout << "*** ERROR *** The frame data is not long enough for the \"Image format\" field." << std::endl;
+			std::cout << "*** ERROR *** According to ID3 2.2.0 [4.15], a \"PIC\" frame MUST contain a \"Image format\" field with 3 characters in the ISO/IEC 8859-1:1998 encoding." << std::endl;
 		}
 	}
 	else
@@ -3091,26 +3077,18 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 				std::cout << "\t\t\t\t\tField Name: \"" << std::get<2>(Caption).substr(ColonPosition + 1) << '"' << std::endl;
 				std::cout << "\t\t\t\t\tTerminator: 00" << std::endl;
 				Index += std::get<1>(Caption);
-				if(Index < Length)
+				
+				auto Value(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Value) == true)
 				{
-					if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
-					{
-						auto Value(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
-						
-						std::cout << "\t\t\t\tOne boundary-terminated ISO/IEC 8859-1 string ending at the frame boundary:" << std::endl;
-						std::cout << "\t\t\t\t\tValue: \"" << Value.second << '"' << std::endl;;
-						Index += Value.first;
-						if(Index < Length)
-						{
-							std::cout << "*** ERROR *** After the value, no more data is expected." << std::endl;
-							Index = Length;
-						}
-					}
-					else
-					{
-						std::cout << "*** ERROR *** Any data after the caption is expected to be a non-terminated ISO/IEC 8859-1 string for the value." << std::endl;
-						Index = Length;
-					}
+					Index += std::get<1>(Value);
+					std::cout << "\t\t\t\t\tValue: \"" << std::get<2>(Value) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** Any data after the caption is expected to be a non-terminated ISO/IEC 8859-1:1998 string for the value." << std::endl;
+					Index = Length;
 				}
 			}
 			else
@@ -3429,11 +3407,12 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 		auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 		
 		std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
-		if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+		
+		auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+		
+		if(std::get<0>(String) == true)
 		{
-			auto ReadString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-			
-			std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (interpreted as ISO/IEC 8859-1 without termination)" << std::endl;
+			std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
 		}
 		Index += ReadHexadecimal.first;
 	}
@@ -3567,23 +3546,26 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
 		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
 		{
-			auto ReadString(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+			auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 			
-			if(std::get<0>(ReadString) == true)
+			if(std::get<0>(String) == true)
 			{
-				Index += std::get<1>(ReadString);
-				std::cout << "\t\t\t\tString: \"" << std::get<2>(ReadString) << "\" (zero-terminated)" << std::endl;
-			}
-			else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
-			{
-				auto ReadString(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
-				
-				Index += ReadString.first;
-				std::cout << "\t\t\t\tString: \"" << ReadString.second << "\" (boundary-terminated)" << std::endl;
+				Index += std::get<1>(String);
+				std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
 			}
 			else
 			{
-				std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
+				auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(String) == true)
+				{
+					Index += std::get<1>(String);
+					std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
@@ -3656,20 +3638,24 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 			if(std::get<0>(ISO_639_2_Code) == true)
 			{
 				Index += std::get<1>(ISO_639_2_Code);
-				std::cout << "\t\t\t\tString: \"" << std::get<2>(ISO_639_2_Code) << "\" (zero-terminated)" << std::endl;
+				std::cout << "\t\t\t\tString: \"" << std::get<2>(ISO_639_2_Code) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
 				ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
-			}
-			else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
-			{
-				auto ISO_639_2_Code(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
-				
-				Index += ISO_639_2_Code.first;
-				std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << "\" (boundary-terminated)" << std::endl;
-				ISO_639_2_Code_String = ISO_639_2_Code.second;
 			}
 			else
 			{
-				std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
+				auto ISO_639_2_Code(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(ISO_639_2_Code) == true)
+				{
+					
+					Index += std::get<1>(ISO_639_2_Code);
+					std::cout << "\t\t\t\tString: \"" << std::get<2>(ISO_639_2_Code) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+					ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
@@ -3823,20 +3809,23 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 			if(std::get<0>(ContentType) == true)
 			{
 				Index += std::get<1>(ContentType);
-				std::cout << "\t\t\t\tContent type: \"" << std::get<2>(ContentType) << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
+				std::cout << "\t\t\t\tContent type: \"" << std::get<2>(ContentType) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
 				ContentTypeString = std::get<2>(ContentType);
-			}
-			else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
-			{
-				auto ContentType(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
-				
-				Index += ContentType.first;
-				std::cout << "\t\t\t\tContent type: \"" << ContentType.second << "\" (boundary-terminated, ISO/IEC 8859-1:1998)" << std::endl;
-				ContentTypeString = ContentType.second;
 			}
 			else
 			{
-				std::cout << "*** ERROR *** The \"Content\" field was declarated to be ISO/IEC 8859-1:1998 but could not be interpreted." << std::endl;
+				auto ContentType(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(ContentType) == true)
+				{
+					Index += std::get<1>(ContentType);
+					std::cout << "\t\t\t\tContent type: \"" << std::get<2>(ContentType) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+					ContentTypeString = std::get<2>(ContentType);
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The \"Content\" field was declarated to be ISO/IEC 8859-1:1998 but could not be interpreted." << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
@@ -4017,7 +4006,7 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 			if(std::get<0>(Description) == true)
 			{
 				Index += std::get<1>(Description);
-				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\"" << std::endl;
+				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
 				if(Index < Length)
 				{
 					auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
@@ -4025,19 +4014,23 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 					if(std::get<0>(String) == true)
 					{
 						Index += std::get<1>(String);
-						std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\"" << std::endl;
-					}
-					else if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
-					{
-						auto String(Get_ISO_IEC_8859_1_StringTerminatedByLength(Buffer + Index, Length - Index));
-						
-						Index += String.first;
-						std::cout << "\t\t\t\tString: \"" << String.second << "\"" << std::endl;
+						std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
 					}
 					else
 					{
-						std::cout << "*** ERROR *** According to ID3 2.3.0 [4.2.2], a \"TXXX\" frame MUST contain a \"Description\" field using the text encoding. However, the content of the field could not be interpreted as an ISO/IEC 8859-1:1998 string." << std::endl;
-						Index = Length;
+						auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+						
+						if(std::get<0>(String) == true)
+						{
+							
+							Index += std::get<1>(String);
+							std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+						}
+						else
+						{
+							std::cout << "*** ERROR *** According to ID3 2.3.0 [4.2.2], a \"TXXX\" frame MUST contain a \"Description\" field using the text encoding. However, the content of the field could not be interpreted as an ISO/IEC 8859-1:1998 string." << std::endl;
+							Index = Length;
+						}
 					}
 				}
 				else
@@ -4087,16 +4080,17 @@ int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Identifier' field must not exceed 64 bytes." << std::endl;
 	}
 	
-	auto ReadIdentifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
+	auto Identifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
 	
-	std::cout << "\t\t\t\tIdentifier (binary): " << ReadIdentifier.second << std::endl;
-	if(Is_ISO_IEC_8859_1_StringWithoutTermination(Buffer + Index, Length - Index) == true)
+	std::cout << "\t\t\t\tIdentifier (binary): " << Identifier.second << std::endl;
+	
+	auto IdentifierAsString(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+	
+	if(std::get<0>(IdentifierAsString) == true)
 	{
-		std::pair< int, std::string > ReadIdentifierAsString(Get_ISO_IEC_8859_1_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
-		
-		std::cout << "\t\t\t\tIdentifier (string): \"" << ReadIdentifierAsString.second << "\" (interpreted as ISO/IEC 8859-1)" << std::endl;
+		std::cout << "\t\t\t\tIdentifier (string): \"" << std::get<2>(IdentifierAsString) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
 	}
-	Index += ReadIdentifier.first;
+	Index += Identifier.first;
 	
 	return Index;
 }
