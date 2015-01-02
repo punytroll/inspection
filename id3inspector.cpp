@@ -3582,31 +3582,34 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 			{
 				Index += 2;
 				// Big Endian by BOM
-				std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
+				std::cout << "\t\t\t\tString:" << std::endl;
+				std::cout << "\t\t\t\t\tByte order mark: big endian" << std::endl;
 				
 				auto ISO_639_2_Code(Get_UCS_2_BE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
 				
 				Index += ISO_639_2_Code.first;
-				std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << '"' << std::endl;
+				std::cout << "\t\t\t\t\tCharacters: \"" << ISO_639_2_Code.second << "\" (ISO/IEC 10646-1:1993, UCS-2, big endian)" << std::endl;
 				ISO_639_2_Code_String = ISO_639_2_Code.second;
 			}
 			else if(StartsWith_UCS_2_LE_ByteOrderMark(Buffer + Index, Length - Index) == true)
 			{
 				Index += 2;
 				// Little Endian by BOM
-				std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
+				std::cout << "\t\t\t\tString:" << std::endl;
+				std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
 				
 				auto ISO_639_2_Code(Get_UCS_2_LE_StringTerminatedByEndOrLength(Buffer + Index, Length - Index));
+				
 				Index += ISO_639_2_Code.first;
-				std::cout << "\t\t\t\tString: \"" << ISO_639_2_Code.second << '"' << std::endl;
+				std::cout << "\t\t\t\t\tCharacters: \"" << ISO_639_2_Code.second << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian)" << std::endl;
 				ISO_639_2_Code_String = ISO_639_2_Code.second;
 			}
 			else
 			{
 				if(Index == Length)
 				{
-					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 must start with a Byte Order Mark, without explicitly excluding empty strings. The string for this text frame is empty without a Byte Order Mark and terminates at the frame boundary." << std::endl;
-					std::cout << "\t\t\t\tString: \"\" (boundary-terminated, missing endian specification)" << std::endl;
+					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 must start with a byte order mark, without explicitly excluding empty strings. The string for this text frame is empty without a byte order mark and terminates at the frame boundary." << std::endl;
+					std::cout << "\t\t\t\tString: \"\" (ISO/IEC 10646-1:1993, UCS-2, ended by boundary)" << std::endl;
 				}
 				else
 				{
@@ -3620,11 +3623,11 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 			
 			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
 			{
-				std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << std::endl;
+				std::cout << "\t\t\t\tLanguage interpretation (ISO 639-2): " << ISO_639_2_Iterator->second << std::endl;
 			}
 			else
 			{
-				std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown>" << std::endl;
+				std::cout << "\t\t\t\tLanguage interpretation (ISO 639-2): <unknown>" << std::endl;
 				std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code_String << "' is not defined by ISO 639-2." << std::endl;
 			}
 		}
@@ -5135,7 +5138,7 @@ int main(int argc, char **argv)
 	
 	// encodings for version 2.2
 	g_EncodingNames.insert(std::make_pair(TextEncoding::ISO_IEC_8859_1_1998, "ISO/IEC 8859-1:1998"));
-	g_EncodingNames.insert(std::make_pair(TextEncoding::UCS_2, "UCS-2 encoded Unicode"));
+	g_EncodingNames.insert(std::make_pair(TextEncoding::UCS_2, "ISO/IEC 10646-1:1993, UCS-2"));
 	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_16, "UTF-16 encoded Unicode with Byte Order Mark"));
 	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_16_BE, "UTF-16BE encoded Unicode in Big Endian"));
 	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_8, "UTF-8 encoded Unicode"));
