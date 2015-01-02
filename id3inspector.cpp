@@ -47,6 +47,13 @@ enum class TextEncoding
 	UTF_8
 };
 
+enum class UTF16ByteOrderMark
+{
+	Undefined,
+	LittleEndian,
+	BigEndian
+};
+
 inline void AppendSeparated(std::string & String, const std::string & Append, const std::string & Separator)
 {
 	if(String.empty() == false)
@@ -981,6 +988,13 @@ std::tuple< bool, int, uint8_t > Get_UInt8(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, uint16_t > Get_UInt16_BE(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, uint16_t > Get_UInt16_LE(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, UTF16ByteOrderMark > Get_UTF_16_ByteOrderMark(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_UTF_16_StringWithByteOrderMarkEndedByTermination(const uint8_t * Buffer, int Length);
+std::tuple< bool, int > Get_UTF_16_Termination(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_UTF_16BE_Character(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_UTF_16BE_StringWithoutByteOrderMarkEndedByTermination(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_UTF_16LE_Character(const uint8_t * Buffer, int Length);
+std::tuple< bool, int, std::string > Get_UTF_16LE_StringWithoutByteOrderMarkEndedByTermination(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_UTF_8_Character(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_UTF_8_StringEndedByLength(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_UTF_8_StringEndedByTermination(const uint8_t * Buffer, int Length);
@@ -1508,6 +1522,189 @@ std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Leng
 		std::get<0>(Result) = true;
 		std::get<1>(Result) = 4;
 		std::get<2>(Result) = (static_cast< uint32_t >(Buffer[0]) << 24) + (static_cast< uint32_t >(Buffer[1]) << 16) + (static_cast< uint32_t >(Buffer[2]) << 8) + Buffer[3];
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, UTF16ByteOrderMark > Get_UTF_16_ByteOrderMark(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, UTF16ByteOrderMark > Result(false, 0, UTF16ByteOrderMark::Undefined);
+	
+	if(Length >= 2)
+	{
+		if((Buffer[0] == 0xfe) && (Buffer[1] == 0xff))
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) = 2;
+			std::get<2>(Result) = UTF16ByteOrderMark::BigEndian;
+		}
+		else if((Buffer[0] == 0xff) && (Buffer[1] == 0xfe))
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) = 2;
+			std::get<2>(Result) = UTF16ByteOrderMark::LittleEndian;
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_UTF_16_StringWithByteOrderMarkEndedByTermination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	auto ByteOrderMark(Get_UTF_16_ByteOrderMark(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+	
+	if(std::get<0>(ByteOrderMark) == true)
+	{
+		std::get<1>(Result) += std::get<1>(ByteOrderMark);
+		if(std::get<2>(ByteOrderMark) == UTF16ByteOrderMark::BigEndian)
+		{
+			auto String(Get_UTF_16BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(String) == true)
+			{
+				std::get<0>(Result) = true;
+				std::get<1>(Result) += std::get<1>(String);
+				std::get<2>(Result) = std::get<2>(String);
+			}
+		}
+		else if(std::get<2>(ByteOrderMark) == UTF16ByteOrderMark::LittleEndian)
+		{
+			auto String(Get_UTF_16LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(String) == true)
+			{
+				std::get<0>(Result) = true;
+				std::get<1>(Result) += std::get<1>(String);
+				std::get<2>(Result) = std::get<2>(String);
+			}
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int > Get_UTF_16_Termination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int > Result(false, 0);
+	
+	if((Length >= 2) && (Buffer[0] == 0x00) && (Buffer[1] == 0x00))
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 2;
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_UTF_16BE_Character(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	if(Length >= 2)
+	{
+		if((Buffer[0] < 0xd8) || (Buffer[0] > 0xdf))
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) = 2;
+			std::get<2>(Result) = Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])));
+		}
+		else
+		{
+			/// @TODO
+			assert(false);
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_UTF_16BE_StringWithoutByteOrderMarkEndedByTermination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	while(std::get<1>(Result) < Length)
+	{
+		auto Termination(Get_UTF_16_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Termination) == true)
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) += std::get<1>(Termination);
+			
+			break;
+		}
+		else
+		{
+			auto Character(Get_UTF_16BE_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(Character) == true)
+			{
+				std::get<1>(Result) += std::get<1>(Character);
+				std::get<2>(Result) += std::get<2>(Character);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_UTF_16LE_Character(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	if(Length >= 2)
+	{
+		if((Buffer[1] < 0xd8) || (Buffer[1] > 0xdf))
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) = 2;
+			std::get<2>(Result) = Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+		}
+		else
+		{
+			/// @TODO
+			assert(false);
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_UTF_16LE_StringWithoutByteOrderMarkEndedByTermination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	while(std::get<1>(Result) < Length)
+	{
+		auto Termination(Get_UTF_16_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Termination) == true)
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) += std::get<1>(Termination);
+			
+			break;
+		}
+		else
+		{
+			auto Character(Get_UTF_16LE_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(Character) == true)
+			{
+				std::get<1>(Result) += std::get<1>(Character);
+				std::get<2>(Result) += std::get<2>(Character);
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
 	
 	return Result;
@@ -2096,40 +2293,6 @@ int PrintUCS_2StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UTF-16BE                                                                                      //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int PrintUTF_16_BEStringTerminatedByEnd(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	
-	while(true)
-	{
-		if(Index + 1 >= Length)
-		{
-			std::cout << "*** ERROR *** UTF-16BE string should be null-terminated but exceeds its possible length." << std::endl;
-			
-			return Index;
-		}
-		else
-		{
-			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
-			{
-				return Index + 2;
-			}
-			else
-			{
-				if((Buffer[Index] > 0xd8) && (Buffer[Index] < 0xe0))
-				{
-					std::cout << "*** ERROR *** UTF-16BE contains unhandled characters outside the Basic Multilingual Plane." << std::endl;
-				}
-				else
-				{
-					std::cout << Get_UTF_8_CharacterFrom_UCS_2_BE_Character(Buffer + Index, Length - Index);
-				}
-				Index += 2;
-			}
-		}
-	}
-}
-
 int PrintUTF_16_BEStringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -2165,40 +2328,6 @@ int PrintUTF_16_BEStringTerminatedByEndOrLength(const uint8_t * Buffer, int Leng
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UTF-16LE                                                                                      //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int PrintUTF_16_LEStringTerminatedByEnd(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	
-	while(true)
-	{
-		if(Index + 1 >= Length)
-		{
-			std::cout << "*** ERROR *** UTF-16LE string should be null-terminated but exceeds its possible length." << std::endl;
-			
-			return Index;
-		}
-		else
-		{
-			if((Buffer[Index] == '\0') && (Buffer[Index + 1] == '\0'))
-			{
-				return Index + 2;
-			}
-			else
-			{
-				if((Buffer[Index + 1] > 0xd8) && (Buffer[Index + 1] < 0xe0))
-				{
-					std::cout << "*** ERROR *** UTF-16BE contains unhandled characters outside the Basic Multilingual Plane." << std::endl;
-				}
-				else
-				{
-					std::cout << Get_UTF_8_CharacterFrom_UCS_2_LE_Character(Buffer + Index, Length - Index);
-				}
-				Index += 2;
-			}
-		}
-	}
-}
-
 int PrintUTF_16_LEStringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -2234,37 +2363,6 @@ int PrintUTF_16_LEStringTerminatedByEndOrLength(const uint8_t * Buffer, int Leng
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UTF-16                                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-int PrintUTF_16StringTerminatedByEnd(const uint8_t * Buffer, int Length)
-{
-	int Index(0);
-	
-	if(Length >= 2)
-	{
-		if((static_cast< unsigned char >(Buffer[Index]) == 0xfe) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xff))
-		{
-			Index += 2;
-			// Big Endian by Byte Order Mark
-			Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
-		}
-		else if((static_cast< unsigned char >(Buffer[Index]) == 0xff) && (static_cast< unsigned char >(Buffer[Index + 1]) == 0xfe))
-		{
-			Index += 2;
-			// Little Endian by Byte Order Mark
-			Index += PrintUTF_16_LEStringTerminatedByEnd(Buffer + Index, Length - Index);
-		}
-		else
-		{
-			std::cout << "*** ERROR *** UTF-16 string is expected to start with a Byte Order Mark but is not." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** The UTF-16 string is expected to contain a Byte Order Mark but is not long enough to hold that information." << std::endl;
-		Index = Length;
-	}
-	
-	return Index;
-}
 
 int PrintUTF_16StringTerminatedByEndOrLength(const uint8_t * Buffer, int Length)
 {
@@ -4258,15 +4356,19 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
-			std::cout << "\t\t\t\tDescription: \"";
-			Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
-			std::cout << '"' << std::endl;
+			auto Description(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+			
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 		{
-			std::cout << "\t\t\t\tDescription: \"";
-			Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
-			std::cout << '"' << std::endl;
+			auto Description(Get_UTF_16BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+			
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
@@ -4475,15 +4577,19 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
-			std::cout << "\t\t\t\tDescription: \"";
-			Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
-			std::cout << '"' << std::endl;
+			auto Description(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+			
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 		{
-			std::cout << "\t\t\t\tDescription: \"";
-			Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
-			std::cout << '"' << std::endl;
+			auto Description(Get_UTF_16BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+			
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
@@ -4593,15 +4699,19 @@ int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 		{
-			std::cout << "\t\t\t\tDescription: \"";
-			Index += PrintUTF_16StringTerminatedByEnd(Buffer + Index, Length - Index);
-			std::cout << '"' << std::endl;
+			auto Description(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+			
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 		{
-			std::cout << "\t\t\t\tDescription: \"";
-			Index += PrintUTF_16_BEStringTerminatedByEnd(Buffer + Index, Length - Index);
-			std::cout << '"' << std::endl;
+			auto Description(Get_UTF_16BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+			
+			assert(std::get<0>(Description) == true);
+			Index += std::get<1>(Description);
+			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
 		{
