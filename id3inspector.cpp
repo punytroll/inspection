@@ -1224,7 +1224,7 @@ std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByBoundary(co
 	
 	if(Length >= Boundary)
 	{
-		Result = Get_ISO_IEC_8859_1_StringEndedByLength(Buffer, Length);
+		Result = Get_ISO_IEC_8859_1_StringEndedByLength(Buffer, Boundary);
 	}
 	
 	return Result;
