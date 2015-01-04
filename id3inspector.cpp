@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include <algorithm>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -1204,6 +1205,34 @@ std::tuple< bool, int, TextEncoding > Get_ID3_2_4_Encoding(const uint8_t * Buffe
 	return Result;
 }
 
+std::tuple< bool, int, char > Get_ISO_IEC_646_1991_CarriageReturnCharacter(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, char > Result(false, 0, '\x00');
+	
+	if((Length >= 1) && (Buffer[0] == 0x0d))
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = '\x0d';
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, char > Get_ISO_IEC_646_1991_LineFeedCharacter(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, char > Result(false, 0, '\x00');
+	
+	if((Length >= 1) && (Buffer[0] == 0x0a))
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		std::get<2>(Result) = '\x0a';
+	}
+	
+	return Result;
+}
+
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int, std::string > Result(false, 0, "");
@@ -1254,6 +1283,74 @@ std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByLength(cons
 	return Result;
 }
 
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringWithCarriageReturnsEndedByLength(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(true, 0, "");
+	
+	while(std::get<1>(Result) < Length)
+	{
+		auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Character) == true)
+		{
+			std::get<1>(Result) += std::get<1>(Character);
+			std::get<2>(Result) += std::get<2>(Character);
+		}
+		else
+		{
+			auto CarriageReturnCharacter(Get_ISO_IEC_646_1991_CarriageReturnCharacter(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(CarriageReturnCharacter) == true)
+			{
+				std::get<1>(Result) += std::get<1>(CarriageReturnCharacter);
+				std::get<2>(Result) += std::get<2>(CarriageReturnCharacter);
+			}
+			else
+			{
+				std::get<0>(Result) = false;
+				
+				break;
+			}
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringWithLineFeedsEndedByLength(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(true, 0, "");
+	
+	while(std::get<1>(Result) < Length)
+	{
+		auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Character) == true)
+		{
+			std::get<1>(Result) += std::get<1>(Character);
+			std::get<2>(Result) += std::get<2>(Character);
+		}
+		else
+		{
+			auto LineFeedCharacter(Get_ISO_IEC_646_1991_LineFeedCharacter(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(LineFeedCharacter) == true)
+			{
+				std::get<1>(Result) += std::get<1>(LineFeedCharacter);
+				std::get<2>(Result) += std::get<2>(LineFeedCharacter);
+			}
+			else
+			{
+				std::get<0>(Result) = false;
+				
+				break;
+			}
+		}
+	}
+	
+	return Result;
+}
+
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int, std::string > Result(false, 0, "");
@@ -1281,6 +1378,94 @@ std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination
 			else
 			{
 				break;
+			}
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringWithCarriageReturnsEndedByTermination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	while(std::get<0>(Result) < Length)
+	{
+		auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Termination) == true)
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) += std::get<1>(Termination);
+			
+			break;
+		}
+		else
+		{
+			auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(Character) == true)
+			{
+				std::get<1>(Result) += std::get<1>(Character);
+				std::get<2>(Result) += std::get<2>(Character);
+			}
+			else
+			{
+				auto CarriageReturnCharacter(Get_ISO_IEC_646_1991_CarriageReturnCharacter(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+				
+				if(std::get<0>(CarriageReturnCharacter) == true)
+				{
+					std::get<1>(Result) += std::get<1>(CarriageReturnCharacter);
+					std::get<2>(Result) += std::get<2>(CarriageReturnCharacter);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringWithLineFeedsEndedByTermination(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int, std::string > Result(false, 0, "");
+	
+	while(std::get<0>(Result) < Length)
+	{
+		auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+		
+		if(std::get<0>(Termination) == true)
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) += std::get<1>(Termination);
+			
+			break;
+		}
+		else
+		{
+			auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+			
+			if(std::get<0>(Character) == true)
+			{
+				std::get<1>(Result) += std::get<1>(Character);
+				std::get<2>(Result) += std::get<2>(Character);
+			}
+			else
+			{
+				auto LineFeedCharacter(Get_ISO_IEC_646_1991_LineFeedCharacter(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
+				
+				if(std::get<0>(LineFeedCharacter) == true)
+				{
+					std::get<1>(Result) += std::get<1>(LineFeedCharacter);
+					std::get<2>(Result) += std::get<2>(LineFeedCharacter);
+				}
+				else
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -4991,6 +5176,159 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle24USLTFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
+	
+	if(std::get<0>(Encoding) == true)
+	{
+		Index += std::get<1>(Encoding);
+		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
+		
+		auto Language(Get_ISO_IEC_8859_1_StringEndedByBoundary(Buffer + Index, Length - Index, 3));
+		
+		if(std::get<0>(Language) == true)
+		{
+			Index += std::get<1>(Language);
+			
+			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(std::get<2>(Language)));
+			
+			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
+			{
+				std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << " (\"" << std::get<2>(Language) << "\")" << std::endl;
+			}
+			else
+			{
+				std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown>" << std::endl;
+				std::cout << "*** ERROR *** The language code '" << std::get<2>(Language) << "' is not defined by ISO 639-2." << std::endl;
+			}
+			if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
+			{
+				auto ContentDescriptor(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(ContentDescriptor) == true)
+				{
+					Index += std::get<1>(ContentDescriptor);
+					std::cout << "\t\t\t\tContent descriptor: \"" << std::get<2>(ContentDescriptor) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The content of the \"Content descriptor\" field could not be interpreted as an ISO/IEC 8859-1:1998 string with termination." << std::endl;
+				}
+			}
+			else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
+			{
+				/// @TODO
+				assert(false);
+			}
+			else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
+			{
+				/// @TODO
+				assert(false);
+			}
+			else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
+			{
+				/// @TODO
+				assert(false);
+			}
+			if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
+			{
+				auto Lyrics(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Lyrics) == true)
+				{
+					Index += std::get<1>(Lyrics);
+					std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
+				}
+				else
+				{
+					auto Lyrics(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(Lyrics) == true)
+					{
+						Index += std::get<1>(Lyrics);
+						std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+					}
+					else
+					{
+						auto Lyrics(Get_ISO_IEC_8859_1_StringWithLineFeedsEndedByTermination(Buffer + Index, Length - Index));
+						
+						if(std::get<0>(Lyrics) == true)
+						{
+							Index += std::get<1>(Lyrics);
+							std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, with line feeds ended by boundary)" << std::endl;
+						}
+						else
+						{
+							auto Lyrics(Get_ISO_IEC_8859_1_StringWithLineFeedsEndedByLength(Buffer + Index, Length - Index));
+							
+							if(std::get<0>(Lyrics) == true)
+							{
+								Index += std::get<1>(Lyrics);
+								std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, with line feeds, ended by boundary)" << std::endl;
+							}
+							else
+							{
+								auto Lyrics(Get_ISO_IEC_8859_1_StringWithCarriageReturnsEndedByTermination(Buffer + Index, Length - Index));
+								
+								if(std::get<0>(Lyrics) == true)
+								{
+									Index += std::get<1>(Lyrics);
+									std::cout << "*** ERROR *** According to ID3 2.4.0 [4.], full text strings may contain line feeds but the \"Lyrics\" field wrongly contains carriage return characters." << std::endl;
+									std::replace(std::get<2>(Lyrics).begin(), std::get<2>(Lyrics).end(), '\x0d', '\x0a');
+									std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, with carriage returns ended by boundary)" << std::endl;
+								}
+								else
+								{
+									auto Lyrics(Get_ISO_IEC_8859_1_StringWithCarriageReturnsEndedByLength(Buffer + Index, Length - Index));
+									
+									if(std::get<0>(Lyrics) == true)
+									{
+										Index += std::get<1>(Lyrics);
+										std::cout << "*** ERROR *** According to ID3 2.4.0 [4.], full text strings may contain line feeds but the \"Lyrics\" field wrongly contains carriage return characters." << std::endl;
+										std::replace(std::get<2>(Lyrics).begin(), std::get<2>(Lyrics).end(), '\x0d', '\x0a');
+										std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, with carriage returns, ended by boundary)" << std::endl;
+									}
+									else
+									{
+										std::cout << "*** ERROR *** The content of the \"Lyrics\" field could not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination with or without line feeds or with or without carriage returns." << std::endl;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
+			{
+				/// @TODO
+				assert(false);
+			}
+			else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
+			{
+				/// @TODO
+				assert(false);
+			}
+			else if(std::get<2>(Encoding) == TextEncoding::UTF_8)
+			{
+				/// @TODO
+				assert(false);
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** According to ID3 2.4.0 [4.8], a \"USLT\" frame MUST contain a \"Language\" field with a valid ISO-639-2 language code." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** According to ID3 2.4.0 [4.8], a \"USLT\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.4 encoding identifier." << std::endl;
+	}
+	
+	return Index;
+}
+
 int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -5707,6 +6045,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle24("TRCK", "Track number/Position in set", Handle24T___Frames);
 	FrameHeader::Handle24("TSSE", "Software/Hardware and settings used for encoding", Handle24T___Frames);
 	FrameHeader::Handle24("TXXX", "User defined text information frame", Handle24TXXXFrame);
+	FrameHeader::Handle24("USLT", "Unsynchronised lyrics/text transcription", Handle24USLTFrame);
 	FrameHeader::Handle24("WXXX", "User defined URL link frame", Handle24WXXXFrame);
 	// forbidden tags
 	FrameHeader::Forbid24("TYER", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3.");
