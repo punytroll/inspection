@@ -783,6 +783,18 @@ std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers23
 std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers24;
 bool g_PrintBytes(false);
 
+std::pair< bool, std::string > GetInterpretation(const std::string & Content, const std::string & InterpretationKey, const std::string & InterpretationValue)
+{
+	if(Content == InterpretationKey)
+	{
+		return std::make_pair(true, InterpretationValue);
+	}
+	else
+	{
+		return std::make_pair(false, "");
+	}
+}
+
 std::string GetEncodingName(TextEncoding Encoding)
 {
 	std::stringstream Result;
@@ -846,22 +858,60 @@ std::pair< bool, std::string > GetSimpleWinampExtensionGenreReferenceInterpretat
 	return Result;
 }
 
-std::string GetContentTypeInterpretation2_3(const std::string & ContentType)
+std::pair< bool, std::string > GetContentTypeInterpretation2_3(const std::string & ContentType)
 {
 	std::pair< bool, std::string > Interpretation(false, "");
 	
 	Interpretation = GetSimpleID3_1GenreReferenceInterpretation(ContentType);
-	if(Interpretation.first == true)
+	if(Interpretation.first == false)
 	{
-		return Interpretation.second;
-	}
-	Interpretation = GetSimpleWinampExtensionGenreReferenceInterpretation(ContentType);
-	if(Interpretation.first == true)
-	{
-		return Interpretation.second;
+		Interpretation = GetSimpleWinampExtensionGenreReferenceInterpretation(ContentType);
 	}
 	
-	return "";
+	return Interpretation;
+}
+
+std::tuple< bool, bool, std::string > GetFileTypeInterpretation2_3(const std::string FileType)
+{
+	std::pair< bool, std::string > Interpretation(false, "");
+	bool Strict(true);
+	
+	Interpretation = GetInterpretation(FileType, "MPG", "MPEG Audio");
+	if(std::get<0>(Interpretation) == false)
+	{
+		Interpretation = GetInterpretation(FileType, "MPG/1", "MPEG Audio, MPEG 1/2 layer I");
+		if(std::get<0>(Interpretation) == false)
+		{
+			Interpretation = GetInterpretation(FileType, "MPG/2", "MPEG Audio, MPEG 1/2 layer II");
+			if(std::get<0>(Interpretation) == false)
+			{
+				Interpretation = GetInterpretation(FileType, "MPG/3", "MPEG Audio, MPEG 1/2 layer III");
+				if(std::get<0>(Interpretation) == false)
+				{
+					Interpretation = GetInterpretation(FileType, "MPG/2.5", "MPEG Audio, MPEG 2.5");
+					if(std::get<0>(Interpretation) == false)
+					{
+						Interpretation = GetInterpretation(FileType, "AAC", "MPEG Audio, Advanced audio compression");
+						if(std::get<0>(Interpretation) == false)
+						{
+							Interpretation = GetInterpretation(FileType, "VQF", "Transform-domain Weighted Interleave Vector Quantization");
+							if(std::get<0>(Interpretation) == false)
+							{
+								Interpretation = GetInterpretation(FileType, "PCM", "Pulse Code Modulated audio");
+								if(std::get<0>(Interpretation) == false)
+								{
+									Strict = false;
+									Interpretation = GetInterpretation(FileType, "/3", "MPEG Audio, MPEG 1/2 layer III");
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	return std::make_tuple(std::get<0>(Interpretation), Strict, std::get<1>(Interpretation));
 }
 
 std::pair< bool, std::string > GetWMUniqueFileIdentifierAsAMGIdentifier(const std::string & WMUniqueFileIdentifier)
@@ -3892,6 +3942,151 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle23TFLTFrames(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	
+	if(std::get<0>(Encoding) == true)
+	{
+		Index += std::get<1>(Encoding);
+		std::cout << "\t\t\t\tText Encoding: " << GetEncodingName(std::get<2>(Encoding)) << std::endl;
+		
+		std::tuple< bool, int, std::string > FileTypeString;
+		
+		if(std::get<2>(Encoding) == TextEncoding::ISO_IEC_8859_1_1998)
+		{
+			FileTypeString = Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index);
+			if(std::get<0>(FileTypeString) == true)
+			{
+				Index += std::get<1>(FileTypeString);
+				std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
+			}
+			else
+			{
+				FileTypeString = Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index);
+				if(std::get<0>(FileTypeString) == true)
+				{
+					Index += std::get<1>(FileTypeString);
+					std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
+				}
+			}
+		}
+		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
+		{
+			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(ByteOrderMark) == true)
+			{
+				Index += std::get<1>(ByteOrderMark);
+				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+				{
+					std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
+					FileTypeString = Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index);
+					if(std::get<0>(FileTypeString) == true)
+					{
+						Index += std::get<1>(FileTypeString);
+						std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, big endian, ended by termination)" << std::endl;
+					}
+					else
+					{
+						FileTypeString = Get_UCS_2BE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index);
+						if(std::get<0>(FileTypeString) == true)
+						{
+							Index += std::get<1>(FileTypeString);
+							std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, big endian, ended by boundary)" << std::endl;
+						}
+						else
+						{
+							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in big endian with or without termination." << std::endl;
+						}
+					}
+				}
+				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+				{
+					std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
+					FileTypeString = Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index);
+					if(std::get<0>(FileTypeString) == true)
+					{
+						Index += std::get<1>(FileTypeString);
+						std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
+					}
+					else
+					{
+						FileTypeString = Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index);
+						if(std::get<0>(FileTypeString) == true)
+						{
+							Index += std::get<1>(FileTypeString);
+							std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
+						}
+						else
+						{
+							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
+						}
+					}
+				}
+			}
+			else
+			{
+				if(Index == Length)
+				{
+					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 must start with a Byte Order Mark, without explicitly excluding empty strings. The string for this text frame is empty without a Byte Order Mark and terminates at the frame boundary." << std::endl;
+					std::cout << "\t\t\t\tString: \"\" (boundary-terminated, missing endian specification)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark. Trying to interpret as  UCS-2 little endian." << std::endl;
+					FileTypeString = Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index);
+					if(std::get<0>(FileTypeString) == true)
+					{
+						Index += std::get<1>(FileTypeString);
+						std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
+					}
+					else
+					{
+						FileTypeString = Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index);
+						if(std::get<0>(FileTypeString) == true)
+						{
+							Index += std::get<1>(FileTypeString);
+							std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
+						}
+						else
+						{
+							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
+						}
+					}
+				}
+			}
+		}
+		if(std::get<0>(FileTypeString) == true)
+		{
+			auto Interpretation(GetFileTypeInterpretation2_3(std::get<2>(FileTypeString)));
+			
+			if(std::get<0>(Interpretation) == true)
+			{
+				if(std::get<1>(Interpretation) == true)
+				{
+					std::cout << "\t\t\t\t\tInterpretation: \"" << std::get<2>(Interpretation) << "\" (as per ID3 2.4)"<< std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tInterpretation: \"" << std::get<2>(Interpretation) << "\" (not-standard but interpreted as per ID3 2.4)"<< std::endl;
+				}
+			}
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.2.1], \"TFLT\" frames MUST contain a \"Text encoding\" field with a valid tag version 2.3 encoding identifier." << std::endl;
+	}
+	
+	return Index;
+}
+
 int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -4311,9 +4506,9 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 		
 		auto Interpretation(GetContentTypeInterpretation2_3(ContentTypeString));
 		
-		if(Interpretation.empty() == false)
+		if(std::get<0>(Interpretation) == true)
 		{
-			std::cout << "\t\t\t\tInterpretation: " << Interpretation << std::endl;
+			std::cout << "\t\t\t\tInterpretation: " << std::get<1>(Interpretation) << std::endl;
 		}
 	}
 	else
@@ -4741,16 +4936,23 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 		Index += 3;
 		if(ISO_639_2_Code.empty() == false)
 		{
-			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
-			
-			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
+			if(ISO_639_2_Code == "XXX")
 			{
-				std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << " (\"" << ISO_639_2_Code << "\")" << std::endl;
+				std::cout << "\t\t\t\tLanguage: <unknown> (as per ID3 2.4 \"" << ISO_639_2_Code << "\")" << std::endl;
 			}
 			else
 			{
-				std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown> (\"" << ISO_639_2_Code << "\")" << std::endl;
-				std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
+				auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
+				
+				if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
+				{
+					std::cout << "\t\t\t\tLanguage: " << ISO_639_2_Iterator->second << " (as per ISO 639-2 \"" << ISO_639_2_Code << "\")" << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2_Code << "\" is not defined by ISO 639-2)" << std::endl;
+					std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
+				}
 			}
 		}
 		else
@@ -4895,6 +5097,101 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 	else
 	{
 		std::cout << "*** ERROR *** According to ID3 2.4.0 [4.10], a \"COMM\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.4 encoding identifier." << std::endl;
+	}
+	
+	return Index;
+}
+
+int Handle24MCDIFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	auto TableOfContents(Get_CDTableOfContents(Buffer + Index, Length - Index));
+	
+	if(std::get<0>(TableOfContents) == true)
+	{
+		Index += std::get<1>(TableOfContents);
+		std::cout << "\t\t\t\tLength: " << std::get<2>(TableOfContents).DataLength << std::endl;
+		std::cout << "\t\t\t\tFirst track number: " << std::get<2>(TableOfContents).FirstTrackNumber << std::endl;
+		std::cout << "\t\t\t\tLast track number: " << std::get<2>(TableOfContents).LastTrackNumber << std::endl;
+		for(auto & TrackDescriptor : std::get<2>(TableOfContents).TrackDescriptors)
+		{
+			std::cout << std::endl;
+			std::cout << "\t\t\t\tReserved: " << GetBinaryStringFromUInt8(TrackDescriptor.Reserved1) << 'b' << std::endl;
+			std::cout << "\t\t\t\tADR: " << TrackDescriptor.ADR << std::endl;
+			if((TrackDescriptor.HasFourChannels == true) && (TrackDescriptor.IsDataTrack == false))
+			{
+				std::cout << "\t\t\t\tNumber of channels: 4" << std::endl;
+			}
+			else
+			{
+				std::cout << "\t\t\t\tNumber of channels: 2" << std::endl;
+			}
+			if(TrackDescriptor.IsDataTrack == true)
+			{
+				std::cout << "\t\t\t\tTrack type: data" << std::endl;
+			}
+			else
+			{
+				std::cout << "\t\t\t\tTrack type: audio" << std::endl;
+			}
+			if(TrackDescriptor.IsDigitalCopyPermitted == true)
+			{
+				std::cout << "\t\t\t\tCopying permitted: true" << std::endl;
+			}
+			else
+			{
+				std::cout << "\t\t\t\tCopying permitted: false" << std::endl;
+			}
+			if(TrackDescriptor.IsDataTrack == true)
+			{
+				if(TrackDescriptor.AudioTrackWithEmphasisOrIncrementalDataTrack == true)
+				{
+					std::cout << "\t\t\t\tRecorded incrementally: true" << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\tRecorded incrementally: false" << std::endl;
+				}
+			}
+			else
+			{
+				if(TrackDescriptor.AudioTrackWithEmphasisOrIncrementalDataTrack == true)
+				{
+					std::cout << "\t\t\t\tPre-emphasis enabled: true" << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\tPre-emphasis enabled: false" << std::endl;
+				}
+			}
+			std::cout << "\t\t\t\tTrack number: " << TrackDescriptor.TrackNumber << std::endl;
+			std::cout << "\t\t\t\tReserved: " << GetBinaryStringFromUInt8(TrackDescriptor.Reserved2) << 'b' << std::endl;
+			std::cout << "\t\t\t\tTrack start address: " << TrackDescriptor.TrackStartAddress << std::endl;
+		}
+	}
+	else
+	{
+		auto TableOfContentsString(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+		
+		if(std::get<0>(TableOfContentsString) == true)
+		{
+			Index += std::get<1>(TableOfContentsString);
+			std::cout << "\t\t\t\tTable of contents: \"" << std::get<2>(TableOfContentsString) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
+		}
+		else
+		{
+			auto TableOfContentsString(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(TableOfContentsString) == true)
+			{
+				Index += std::get<1>(TableOfContentsString);
+				std::cout << "\t\t\t\tTable of contents: \"" << std::get<2>(TableOfContentsString) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
+			}
+		}
 	}
 	
 	return Index;
@@ -5976,6 +6273,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TCOP", "Copyright message", Handle23T___Frames);
 	FrameHeader::Handle23("TDAT", "Date", Handle23T___Frames);
 	FrameHeader::Handle23("TENC", "Encoded by", Handle23T___Frames);
+	FrameHeader::Handle23("TFLT", "File type", Handle23TFLTFrames);
 	FrameHeader::Handle23("TIME", "Time", Handle23T___Frames);
 	FrameHeader::Handle23("TIT1", "Content group description", Handle23T___Frames);
 	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle23T___Frames);
@@ -6027,12 +6325,14 @@ int main(int argc, char **argv)
 	// ID3v2.4.0
 	FrameHeader::Handle24("APIC", "Attached picture", Handle24APICFrame);
 	FrameHeader::Handle24("COMM", "Comments", Handle24COMMFrame);
+	FrameHeader::Handle24("MCDI", "Music CD identifier", Handle24MCDIFrame);
 	FrameHeader::Handle24("PRIV", "Private frame", 0);
 	FrameHeader::Handle24("TALB", "Album/Movie/Show title", Handle24T___Frames);
 	FrameHeader::Handle24("TCOM", "Composer", Handle24T___Frames);
 	FrameHeader::Handle24("TCON", "Content type", Handle24T___Frames);
 	FrameHeader::Handle24("TCOP", "Copyright message", Handle24T___Frames);
 	FrameHeader::Handle24("TDRC", "Recording time", Handle24T___Frames);
+	FrameHeader::Handle24("TDRL", "Release time", Handle24T___Frames);
 	FrameHeader::Handle24("TDTG", "Tagging time", Handle24T___Frames);
 	FrameHeader::Handle24("TENC", "Encoded by", Handle24T___Frames);
 	FrameHeader::Handle24("TIT2", "Title/songname/content description", Handle24T___Frames);
