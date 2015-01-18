@@ -62,7 +62,20 @@ enum class UTF16ByteOrderMark
 	BigEndian
 };
 
-inline void AppendSeparated(std::string & String, const std::string & Append, const std::string & Separator)
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// global variables and configuration                                                            //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+std::map< unsigned int, std::string > g_NumericGenresID3_1;
+std::map< unsigned int, std::string > g_NumericGenresWinamp;
+std::map< std::string, std::string > g_ISO_639_2_Codes;
+std::map< std::string, std::string > g_ISO_3166_1_Alpha_2_Codes;
+std::map< unsigned int, std::string > g_PictureTypes;
+std::map< TextEncoding, std::string > g_EncodingNames;
+std::map< std::string, std::string > g_GUIDDescriptions;
+bool g_PrintBytes(false);
+
+void AppendSeparated(std::string & String, const std::string & Append, const std::string & Separator)
 {
 	if(String.empty() == false)
 	{
@@ -235,553 +248,6 @@ std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIString(const s
 	
 	return Result;
 }
-
-class FrameHeader;
-
-class TagHeader
-{
-public:
-	// constructor
-	TagHeader(std::istream & Stream)
-	{
-		Stream.read(_Buffer, 10);
-	}
-	
-	// getters
-	bool GetCompression(void) const
-	{
-		if(SupportsCompressionFlag() == true)
-		{
-			return (_Buffer[5] & 0x40) == 0x40;
-		}
-		else
-		{
-			throw "The compression flag is not supported by this tag version.";
-		}
-	}
-	
-	bool GetExperimentalIndicator(void) const
-	{
-		if(SupportsExperimentalIndicatorFlag() == true)
-		{
-			return (_Buffer[5] & 0x20) == 0x20;
-		}
-		else
-		{
-			throw "The experimental indicator flag is not supported by this tag version.";
-		}
-	}
-	
-	bool GetExtendedHeader(void) const
-	{
-		if(SupportsExtendedHeaderFlag() == true)
-		{
-			return (_Buffer[5] & 0x40) == 0x40;
-		}
-		else
-		{
-			throw "The extended header flag is not supported by this tag version.";
-		}
-	}
-	
-	std::string GetFlagsAsString(void) const
-	{
-		std::string Result;
-		
-		if((SupportsUnsynchronizationFlag() == true) && (GetUnsynchronization() == true))
-		{
-			AppendSeparated(Result, "Unsynchronization", ", ");
-		}
-		if((SupportsCompressionFlag() == true) && (GetCompression() == true))
-		{
-			AppendSeparated(Result, "Compression", ", ");
-		}
-		if((SupportsExtendedHeaderFlag() == true) && (GetExtendedHeader() == true))
-		{
-			AppendSeparated(Result, "Extended Header", ", ");
-		}
-		if((SupportsExperimentalIndicatorFlag() == true) && (GetExperimentalIndicator() == true))
-		{
-			AppendSeparated(Result, "Experimental Indicator", ", ");
-		}
-		if((SupportsFooterPresentFlag() == true) && (GetFooterPresent() == true))
-		{
-			AppendSeparated(Result, "Footer present", ", ");
-		}
-		if(Result.empty() == true)
-		{
-			Result = "None";
-		}
-		
-		return Result;
-	}
-	
-	bool GetFooterPresent(void) const
-	{
-		if(SupportsFooterPresentFlag() == true)
-		{
-			return (_Buffer[5] & 0x10) == 0x10;
-		}
-		else
-		{
-			throw "The footer present flag is not supported by this tag version.";
-		}
-	}
-	
-	std::string GetID3Identifier(void) const
-	{
-		return std::string(_Buffer, 3);
-	}
-	
-	unsigned int GetMajorVersion(void) const
-	{
-		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[3]));
-	}
-	
-	unsigned int GetRevisionNumber(void) const
-	{
-		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[4]));
-	}
-	
-	unsigned int GetSize(void) const
-	{
-		return (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[6])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[7])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[8])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[9]));
-	}
-	
-	bool GetUnsynchronization(void) const
-	{
-		return (_Buffer[5] & 0x80) == 0x80;
-	}
-	
-	bool SupportsExperimentalIndicatorFlag(void) const
-	{
-		return GetMajorVersion() > 2;
-	}
-	
-	bool SupportsExtendedHeaderFlag(void) const
-	{
-		return GetMajorVersion() > 2;
-	}
-	
-	bool SupportsFooterPresentFlag(void) const
-	{
-		return GetMajorVersion() > 3;
-	}
-	
-	bool SupportsCompressionFlag(void) const
-	{
-		return GetMajorVersion() == 2;
-	}
-	
-	bool SupportsUnsynchronizationFlag(void) const
-	{
-		return true;
-	}
-private:
-	char _Buffer[10];
-};
-
-class FrameHeader
-{
-public:
-	// constructor
-	FrameHeader(TagHeader * TagHeader, std::istream & Stream) :
-		_Compression(false),
-		_DataLengthIndicator(false),
-		_Encryption(false),
-		_FileAlterPreservation(false),
-		_Forbidden(false),
-		_GroupingIdentity(false),
-		_Handler(0),
-		_ReadOnly(false),
-		_SupportsCompression(false),
-		_SupportsDataLengthIndicator(false),
-		_SupportsEncryption(false),
-		_SupportsFileAlterPreservation(0),
-		_SupportsFlags(0),
-		_SupportsGroupingIdentity(0),
-		_SupportsReadOnly(0),
-		_SupportsTagAlterPreservation(0),
-		_SupportsUnsynchronisation(0),
-		_TagAlterPreservation(0),
-		_Unsynchronisation(0)
-	{
-		if(TagHeader->GetMajorVersion() == 2)
-		{
-			char Buffer[6];
-			
-			Stream.read(Buffer, 6);
-			_Identifier = std::string(Buffer, 3);
-			_Name = _Names22[_Identifier];
-			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5]));
-			_SupportsFlags = false;
-			
-			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden22.find(_Identifier));
-			
-			if(ForbiddenIterator != _Forbidden22.end())
-			{
-				_Forbidden = true;
-				_ForbiddenReason = ForbiddenIterator->second;
-			}
-			
-			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
-			
-			if(HanderIterator != _Handlers22.end())
-			{
-				_Handler = HanderIterator->second;
-			}
-		}
-		else if(TagHeader->GetMajorVersion() == 3)
-		{
-			char Buffer[10];
-			
-			Stream.read(Buffer, 10);
-			_Identifier = std::string(Buffer, 4);
-			_Name = _Names23[_Identifier];
-			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
-			_SupportsFlags = true;
-			_SupportsTagAlterPreservation = true;
-			_TagAlterPreservation = (Buffer[8] & 0x80) == 0x80;
-			_SupportsFileAlterPreservation = true;
-			_FileAlterPreservation = (Buffer[8] & 0x40) == 0x40;
-			_SupportsReadOnly = true;
-			_ReadOnly = (Buffer[8] & 0x20) == 0x20;
-			_SupportsCompression = true;
-			_Compression = (Buffer[9] & 0x80) == 0x80;
-			_SupportsEncryption = true;
-			_Encryption = (Buffer[9] & 0x40) == 0x40;
-			_SupportsGroupingIdentity = true;
-			_GroupingIdentity = (Buffer[9] & 0x20) == 0x20;
-			_SupportsUnsynchronisation = false;
-			_SupportsDataLengthIndicator = false;
-			
-			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden23.find(_Identifier));
-			
-			if(ForbiddenIterator != _Forbidden23.end())
-			{
-				_Forbidden = true;
-				_ForbiddenReason = ForbiddenIterator->second;
-			}
-			
-			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
-			
-			if(HanderIterator != _Handlers23.end())
-			{
-				_Handler = HanderIterator->second;
-			}
-		}
-		else if(TagHeader->GetMajorVersion() == 4)
-		{
-			char Buffer[10];
-			
-			Stream.read(Buffer, 10);
-			_Identifier = std::string(Buffer, 4);
-			_Name = _Names24[_Identifier];
-			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
-			_SupportsFlags = true;
-			_SupportsTagAlterPreservation = true;
-			_TagAlterPreservation = (Buffer[8] & 0x40) == 0x40;
-			_SupportsFileAlterPreservation = true;
-			_FileAlterPreservation = (Buffer[8] & 0x20) == 0x20;
-			_SupportsReadOnly = true;
-			_ReadOnly = (Buffer[8] & 0x10) == 0x10;
-			_SupportsGroupingIdentity = true;
-			_GroupingIdentity = (Buffer[9] & 0x40) == 0x40;
-			_SupportsCompression = true;
-			_Compression = (Buffer[9] & 0x08) == 0x08;
-			_SupportsEncryption = true;
-			_Encryption = (Buffer[9] & 0x04) == 0x04;
-			_SupportsUnsynchronisation = true;
-			_Unsynchronisation = (Buffer[9] & 0x02) == 0x02;
-			_SupportsDataLengthIndicator = true;
-			_DataLengthIndicator = (Buffer[9] & 0x01) == 0x01;
-			
-			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden24.find(_Identifier));
-			
-			if(ForbiddenIterator != _Forbidden24.end())
-			{
-				_Forbidden = true;
-				_ForbiddenReason = ForbiddenIterator->second;
-			}
-			
-			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
-			
-			if(HanderIterator != _Handlers24.end())
-			{
-				_Handler = HanderIterator->second;
-			}
-		}
-	}
-	
-	// getters
-	bool GetCompression(void) const
-	{
-		return _Compression;
-	}
-	
-	bool GetDataLengthIndicator(void) const
-	{
-		return _DataLengthIndicator;
-	}
-	
-	bool GetEncryption(void) const
-	{
-		return _Encryption;
-	}
-	
-	bool GetFileAlterPreservation(void) const
-	{
-		return _FileAlterPreservation;
-	}
-	
-	std::string GetFlagsAsString(void) const
-	{
-		std::string Result;
-		
-		if((SupportsTagAlterPreservation() == true) && (GetTagAlterPreservation() == true))
-		{
-			AppendSeparated(Result, "Tag alter preservation", ", ");
-		}
-		if((SupportsFileAlterPreservation() == true) && (GetFileAlterPreservation() == true))
-		{
-			AppendSeparated(Result, "File alter preservation", ", ");
-		}
-		if((SupportsReadOnly() == true) && (GetReadOnly() == true))
-		{
-			AppendSeparated(Result, "Read only", ", ");
-		}
-		if((SupportsCompression() == true) && (GetCompression() == true))
-		{
-			AppendSeparated(Result, "Compression", ", ");
-		}
-		if((SupportsEncryption() == true) && (GetEncryption() == true))
-		{
-			AppendSeparated(Result, "Encryption", ", ");
-		}
-		if((SupportsGroupingIdentity() == true) && (GetGroupingIdentity() == true))
-		{
-			AppendSeparated(Result, "Grouping identity", ", ");
-		}
-		if((SupportsUnsynchronisation() == true) && (GetUnsynchronisation() == true))
-		{
-			AppendSeparated(Result, "Unsynchronisation", ", ");
-		}
-		if((SupportsDataLengthIndicator() == true) && (GetDataLengthIndicator() == true))
-		{
-			AppendSeparated(Result, "Data length indicator", ", ");
-		}
-		if(Result.empty() == true)
-		{
-			Result = "None";
-		}
-		
-		return Result;
-	}
-	
-	bool GetGroupingIdentity(void) const
-	{
-		return _GroupingIdentity;
-	}
-	
-	std::string GetIdentifier(void) const
-	{
-		return _Identifier;
-	}
-	
-	std::string GetName(void) const
-	{
-		return _Name;
-	}
-	
-	bool GetReadOnly(void) const
-	{
-		return _ReadOnly;
-	}
-	
-	bool GetForbidden(void)
-	{
-		return _Forbidden;
-	}
-	
-	std::string GetForbiddenReason(void) const
-	{
-		return _ForbiddenReason;
-	}
-	
-	unsigned int GetSize(void) const
-	{
-		return _Size;
-	}
-	
-	bool GetTagAlterPreservation(void) const
-	{
-		return _TagAlterPreservation;
-	}
-	
-	bool GetUnsynchronisation(void) const
-	{
-		return _Unsynchronisation;
-	}
-	
-	int HandleData(const uint8_t * Buffer, unsigned int Length)
-	{
-		if(_Handler != 0)
-		{
-			return _Handler(Buffer, Length);
-		}
-		else
-		{
-			std::cout << "*** ERROR ***  No handler defined for the frame type \"" << _Identifier << "\" in this tag version." << std::endl;
-			
-			return Length;
-		}
-	}
-	
-	bool IsValid(void) const
-	{
-		for(std::string::size_type Index = 0; Index < _Identifier.length(); ++Index)
-		{
-			if(IsValidIdentifierCharacter(_Identifier[Index]) == false)
-			{
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	bool SupportsCompression(void) const
-	{
-		return _SupportsCompression;
-	}
-	
-	bool SupportsDataLengthIndicator(void) const
-	{
-		return _SupportsDataLengthIndicator;
-	}
-	
-	bool SupportsEncryption(void) const
-	{
-		return _SupportsEncryption;
-	}
-	
-	bool SupportsFileAlterPreservation(void) const
-	{
-		return _SupportsFileAlterPreservation;
-	}
-	
-	bool SupportsFlags(void) const
-	{
-		return _SupportsFlags;
-	}
-	
-	bool SupportsGroupingIdentity(void) const
-	{
-		return _SupportsGroupingIdentity;
-	}
-	
-	bool SupportsReadOnly(void) const
-	{
-		return _SupportsReadOnly;
-	}
-	
-	bool SupportsTagAlterPreservation(void) const
-	{
-		return _SupportsTagAlterPreservation;
-	}
-	
-	bool SupportsUnsynchronisation(void) const
-	{
-		return _SupportsUnsynchronisation;
-	}
-	
-	// static setup
-	static void Forbid22(const std::string & Identifier, const std::string & Reason)
-	{
-		_Forbidden22.insert(std::make_pair(Identifier, Reason));
-	}
-	
-	static void Handle22(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
-	{
-		_Handlers22.insert(std::make_pair(Identifier, Handler));
-		_Names22.insert(std::make_pair(Identifier, Name));
-	}
-	
-	static void Forbid23(const std::string & Identifier, const std::string & Reason)
-	{
-		_Forbidden23.insert(std::make_pair(Identifier, Reason));
-	}
-	
-	static void Handle23(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
-	{
-		_Handlers23.insert(std::make_pair(Identifier, Handler));
-		_Names23.insert(std::make_pair(Identifier, Name));
-	}
-	
-	static void Forbid24(const std::string & Identifier, const std::string & Reason)
-	{
-		_Forbidden24.insert(std::make_pair(Identifier, Reason));
-	}
-	
-	static void Handle24(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
-	{
-		_Handlers24.insert(std::make_pair(Identifier, Handler));
-		_Names24.insert(std::make_pair(Identifier, Name));
-	}
-private:
-	// static setup
-	static std::map< std::string, std::string > _Forbidden22;
-	static std::map< std::string, std::string > _Forbidden23;
-	static std::map< std::string, std::string > _Forbidden24;
-	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers22;
-	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers23;
-	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers24;
-	static std::map< std::string, std::string > _Names22;
-	static std::map< std::string, std::string > _Names23;
-	static std::map< std::string, std::string > _Names24;
-	// member variables
-	bool _Compression;
-	bool _DataLengthIndicator;
-	bool _Encryption;
-	bool _FileAlterPreservation;
-	bool _Forbidden;
-	std::string _ForbiddenReason;
-	bool _GroupingIdentity;
-	int (* _Handler)(const uint8_t * Buffer, int Length);
-	std::string _Identifier;
-	std::string _Name;
-	bool _ReadOnly;
-	unsigned int _Size;
-	bool _SupportsCompression;
-	bool _SupportsDataLengthIndicator;
-	bool _SupportsEncryption;
-	bool _SupportsFileAlterPreservation;
-	bool _SupportsFlags;
-	bool _SupportsGroupingIdentity;
-	bool _SupportsReadOnly;
-	bool _SupportsTagAlterPreservation;
-	bool _SupportsUnsynchronisation;
-	bool _TagAlterPreservation;
-	bool _Unsynchronisation;
-};
-
-std::map< unsigned int, std::string > g_NumericGenresID3_1;
-std::map< unsigned int, std::string > g_NumericGenresWinamp;
-std::map< std::string, std::string > g_ISO_639_2_Codes;
-std::map< std::string, std::string > g_ISO_3166_1_Alpha_2_Codes;
-std::map< unsigned int, std::string > g_PictureTypes;
-std::map< TextEncoding, std::string > g_EncodingNames;
-std::map< std::string, std::string > g_GUIDDescriptions;
-std::map< std::string, std::string > FrameHeader::_Forbidden22;
-std::map< std::string, std::string > FrameHeader::_Forbidden23;
-std::map< std::string, std::string > FrameHeader::_Forbidden24;
-std::map< std::string, std::string > FrameHeader::_Names22;
-std::map< std::string, std::string > FrameHeader::_Names23;
-std::map< std::string, std::string > FrameHeader::_Names24;
-std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers22;
-std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers23;
-std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers24;
-bool g_PrintBytes(false);
 
 std::pair< bool, std::string > GetInterpretation(const std::string & Content, const std::string & InterpretationKey, const std::string & InterpretationValue)
 {
@@ -1012,6 +478,110 @@ std::pair< int, std::string > GetGUIDString(const uint8_t * Buffer, int Length)
 	return Result;
 }
 
+std::tuple< bool, int, uint8_t > GetHexadecimalValueFromHexadecimalCharacter(const std::string & String, int Offset)
+{
+	std::tuple< bool, int, uint8_t > Result(false, 0, 0);
+	
+	if(String.length() > 0)
+	{
+		std::get<0>(Result) = true;
+		std::get<1>(Result) = 1;
+		if(String[Offset] == '0')
+		{
+			std::get<2>(Result) = 0;
+		}
+		else if(String[Offset] == '1')
+		{
+			std::get<2>(Result) = 1;
+		}
+		else if(String[Offset] == '2')
+		{
+			std::get<2>(Result) = 2;
+		}
+		else if(String[Offset] == '3')
+		{
+			std::get<2>(Result) = 3;
+		}
+		else if(String[Offset] == '4')
+		{
+			std::get<2>(Result) = 4;
+		}
+		else if(String[Offset] == '5')
+		{
+			std::get<2>(Result) = 5;
+		}
+		else if(String[Offset] == '6')
+		{
+			std::get<2>(Result) = 6;
+		}
+		else if(String[Offset] == '7')
+		{
+			std::get<2>(Result) = 7;
+		}
+		else if(String[Offset] == '8')
+		{
+			std::get<2>(Result) = 8;
+		}
+		else if(String[Offset] == '9')
+		{
+			std::get<2>(Result) = 9;
+		}
+		else if((String[Offset] == 'a') || (String[Offset] == 'A'))
+		{
+			std::get<2>(Result) = 10;
+		}
+		else if((String[Offset] == 'b') || (String[Offset] == 'B'))
+		{
+			std::get<2>(Result) = 11;
+		}
+		else if((String[Offset] == 'c') || (String[Offset] == 'C'))
+		{
+			std::get<2>(Result) = 12;
+		}
+		else if((String[Offset] == 'd') || (String[Offset] == 'D'))
+		{
+			std::get<2>(Result) = 13;
+		}
+		else if((String[Offset] == 'e') || (String[Offset] == 'E'))
+		{
+			std::get<2>(Result) = 14;
+		}
+		else if((String[Offset] == 'f') || (String[Offset] == 'F'))
+		{
+			std::get<2>(Result) = 15;
+		}
+		else
+		{
+			std::get<0>(Result) = false;
+		}
+	}
+	
+	return Result;
+}
+
+std::tuple< bool, int, uint32_t > GetUInt32NumberFromUnformattedHexadecimalString(const std::string & String, int Offset)
+{
+	std::tuple< bool, int, uint32_t > Result(false, 0, 0);
+	int StringLength(String.length());
+	
+	while(Offset + std::get<1>(Result) < StringLength)
+	{
+		auto HexadecimalDigit(GetHexadecimalValueFromHexadecimalCharacter(String, Offset + std::get<1>(Result)));
+		
+		if(std::get<0>(HexadecimalDigit) == true)
+		{
+			std::get<0>(Result) = true;
+			std::get<1>(Result) += std::get<1>(HexadecimalDigit);
+			std::get<2>(Result) = (std::get<2>(Result) << 4) + std::get<2>(HexadecimalDigit);
+		}
+		else
+		{
+			break;
+		}
+	}
+	
+	return Result;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 2nd generation getters                                                                        //
@@ -1060,6 +630,7 @@ std::tuple< bool, int, std::string > Get_UTF_8_Character(const uint8_t * Buffer,
 std::tuple< bool, int, std::string > Get_UTF_8_StringEndedByLength(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_UTF_8_StringEndedByTermination(const uint8_t * Buffer, int Length);
 std::tuple< bool, int > Get_UTF_8_Termination(const uint8_t * Buffer, int Length);
+std::tuple< bool, int > Get_Zeroes_EndedByLength(const uint8_t * Buffer, int Length);
 
 
 std::tuple< bool, int, bool > Get_Boolean_0(const uint8_t * Buffer, int Length)
@@ -2355,6 +1926,569 @@ std::tuple< bool, int > Get_UTF_8_Termination(const uint8_t * Buffer, int Length
 	return Result;
 }
 
+std::tuple< bool, int > Get_Zeroes_EndedByLength(const uint8_t * Buffer, int Length)
+{
+	std::tuple< bool, int > Result(true, 0);
+	
+	while(std::get<1>(Result) < Length)
+	{
+		if(Buffer[std::get<1>(Result)] == 0x00)
+		{
+			std::get<1>(Result) += 1;
+		}
+		else
+		{
+			std::get<0>(Result) = false;
+			
+			break;
+		}
+	}
+	
+	return Result;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Tag and Frame header classes                                                                  //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+class FrameHeader;
+
+class TagHeader
+{
+public:
+	// constructor
+	TagHeader(std::istream & Stream)
+	{
+		Stream.read(_Buffer, 10);
+	}
+	
+	// getters
+	bool GetCompression(void) const
+	{
+		if(SupportsCompressionFlag() == true)
+		{
+			return (_Buffer[5] & 0x40) == 0x40;
+		}
+		else
+		{
+			throw "The compression flag is not supported by this tag version.";
+		}
+	}
+	
+	bool GetExperimentalIndicator(void) const
+	{
+		if(SupportsExperimentalIndicatorFlag() == true)
+		{
+			return (_Buffer[5] & 0x20) == 0x20;
+		}
+		else
+		{
+			throw "The experimental indicator flag is not supported by this tag version.";
+		}
+	}
+	
+	bool GetExtendedHeader(void) const
+	{
+		if(SupportsExtendedHeaderFlag() == true)
+		{
+			return (_Buffer[5] & 0x40) == 0x40;
+		}
+		else
+		{
+			throw "The extended header flag is not supported by this tag version.";
+		}
+	}
+	
+	std::string GetFlagsAsString(void) const
+	{
+		std::string Result;
+		
+		if((SupportsUnsynchronizationFlag() == true) && (GetUnsynchronization() == true))
+		{
+			AppendSeparated(Result, "Unsynchronization", ", ");
+		}
+		if((SupportsCompressionFlag() == true) && (GetCompression() == true))
+		{
+			AppendSeparated(Result, "Compression", ", ");
+		}
+		if((SupportsExtendedHeaderFlag() == true) && (GetExtendedHeader() == true))
+		{
+			AppendSeparated(Result, "Extended Header", ", ");
+		}
+		if((SupportsExperimentalIndicatorFlag() == true) && (GetExperimentalIndicator() == true))
+		{
+			AppendSeparated(Result, "Experimental Indicator", ", ");
+		}
+		if((SupportsFooterPresentFlag() == true) && (GetFooterPresent() == true))
+		{
+			AppendSeparated(Result, "Footer present", ", ");
+		}
+		if(Result.empty() == true)
+		{
+			Result = "None";
+		}
+		
+		return Result;
+	}
+	
+	bool GetFooterPresent(void) const
+	{
+		if(SupportsFooterPresentFlag() == true)
+		{
+			return (_Buffer[5] & 0x10) == 0x10;
+		}
+		else
+		{
+			throw "The footer present flag is not supported by this tag version.";
+		}
+	}
+	
+	std::string GetID3Identifier(void) const
+	{
+		return std::string(_Buffer, 3);
+	}
+	
+	unsigned int GetMajorVersion(void) const
+	{
+		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[3]));
+	}
+	
+	unsigned int GetRevisionNumber(void) const
+	{
+		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[4]));
+	}
+	
+	unsigned int GetSize(void) const
+	{
+		return (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[6])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[7])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[8])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[9]));
+	}
+	
+	bool GetUnsynchronization(void) const
+	{
+		return (_Buffer[5] & 0x80) == 0x80;
+	}
+	
+	bool SupportsExperimentalIndicatorFlag(void) const
+	{
+		return GetMajorVersion() > 2;
+	}
+	
+	bool SupportsExtendedHeaderFlag(void) const
+	{
+		return GetMajorVersion() > 2;
+	}
+	
+	bool SupportsFooterPresentFlag(void) const
+	{
+		return GetMajorVersion() > 3;
+	}
+	
+	bool SupportsCompressionFlag(void) const
+	{
+		return GetMajorVersion() == 2;
+	}
+	
+	bool SupportsUnsynchronizationFlag(void) const
+	{
+		return true;
+	}
+private:
+	char _Buffer[10];
+};
+
+class FrameHeader
+{
+public:
+	// constructor
+	FrameHeader(TagHeader * TagHeader, std::istream & Stream) :
+		_Compression(false),
+		_DataLengthIndicator(false),
+		_Encryption(false),
+		_FileAlterPreservation(false),
+		_Forbidden(false),
+		_GroupingIdentity(false),
+		_Handler(0),
+		_ReadOnly(false),
+		_SupportsCompression(false),
+		_SupportsDataLengthIndicator(false),
+		_SupportsEncryption(false),
+		_SupportsFileAlterPreservation(0),
+		_SupportsFlags(0),
+		_SupportsGroupingIdentity(0),
+		_SupportsReadOnly(0),
+		_SupportsTagAlterPreservation(0),
+		_SupportsUnsynchronisation(0),
+		_TagAlterPreservation(0),
+		_Unsynchronisation(0)
+	{
+		if(TagHeader->GetMajorVersion() == 2)
+		{
+			char Buffer[6];
+			
+			Stream.read(Buffer, 6);
+			_Identifier = std::string(Buffer, 3);
+			_Name = _Names22[_Identifier];
+			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5]));
+			_SupportsFlags = false;
+			
+			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden22.find(_Identifier));
+			
+			if(ForbiddenIterator != _Forbidden22.end())
+			{
+				_Forbidden = true;
+				_ForbiddenReason = ForbiddenIterator->second;
+			}
+			
+			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
+			
+			if(HanderIterator != _Handlers22.end())
+			{
+				_Handler = HanderIterator->second;
+			}
+		}
+		else if(TagHeader->GetMajorVersion() == 3)
+		{
+			char Buffer[10];
+			
+			Stream.read(Buffer, 10);
+			_Identifier = std::string(Buffer, 4);
+			_Name = _Names23[_Identifier];
+			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
+			_SupportsFlags = true;
+			_SupportsTagAlterPreservation = true;
+			_TagAlterPreservation = (Buffer[8] & 0x80) == 0x80;
+			_SupportsFileAlterPreservation = true;
+			_FileAlterPreservation = (Buffer[8] & 0x40) == 0x40;
+			_SupportsReadOnly = true;
+			_ReadOnly = (Buffer[8] & 0x20) == 0x20;
+			_SupportsCompression = true;
+			_Compression = (Buffer[9] & 0x80) == 0x80;
+			_SupportsEncryption = true;
+			_Encryption = (Buffer[9] & 0x40) == 0x40;
+			_SupportsGroupingIdentity = true;
+			_GroupingIdentity = (Buffer[9] & 0x20) == 0x20;
+			_SupportsUnsynchronisation = false;
+			_SupportsDataLengthIndicator = false;
+			
+			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden23.find(_Identifier));
+			
+			if(ForbiddenIterator != _Forbidden23.end())
+			{
+				_Forbidden = true;
+				_ForbiddenReason = ForbiddenIterator->second;
+			}
+			
+			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
+			
+			if(HanderIterator != _Handlers23.end())
+			{
+				_Handler = HanderIterator->second;
+			}
+		}
+		else if(TagHeader->GetMajorVersion() == 4)
+		{
+			char Buffer[10];
+			
+			Stream.read(Buffer, 10);
+			_Identifier = std::string(Buffer, 4);
+			_Name = _Names24[_Identifier];
+			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
+			_SupportsFlags = true;
+			_SupportsTagAlterPreservation = true;
+			_TagAlterPreservation = (Buffer[8] & 0x40) == 0x40;
+			_SupportsFileAlterPreservation = true;
+			_FileAlterPreservation = (Buffer[8] & 0x20) == 0x20;
+			_SupportsReadOnly = true;
+			_ReadOnly = (Buffer[8] & 0x10) == 0x10;
+			_SupportsGroupingIdentity = true;
+			_GroupingIdentity = (Buffer[9] & 0x40) == 0x40;
+			_SupportsCompression = true;
+			_Compression = (Buffer[9] & 0x08) == 0x08;
+			_SupportsEncryption = true;
+			_Encryption = (Buffer[9] & 0x04) == 0x04;
+			_SupportsUnsynchronisation = true;
+			_Unsynchronisation = (Buffer[9] & 0x02) == 0x02;
+			_SupportsDataLengthIndicator = true;
+			_DataLengthIndicator = (Buffer[9] & 0x01) == 0x01;
+			
+			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden24.find(_Identifier));
+			
+			if(ForbiddenIterator != _Forbidden24.end())
+			{
+				_Forbidden = true;
+				_ForbiddenReason = ForbiddenIterator->second;
+			}
+			
+			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
+			
+			if(HanderIterator != _Handlers24.end())
+			{
+				_Handler = HanderIterator->second;
+			}
+		}
+	}
+	
+	// getters
+	bool GetCompression(void) const
+	{
+		return _Compression;
+	}
+	
+	bool GetDataLengthIndicator(void) const
+	{
+		return _DataLengthIndicator;
+	}
+	
+	bool GetEncryption(void) const
+	{
+		return _Encryption;
+	}
+	
+	bool GetFileAlterPreservation(void) const
+	{
+		return _FileAlterPreservation;
+	}
+	
+	std::string GetFlagsAsString(void) const
+	{
+		std::string Result;
+		
+		if((SupportsTagAlterPreservation() == true) && (GetTagAlterPreservation() == true))
+		{
+			AppendSeparated(Result, "Tag alter preservation", ", ");
+		}
+		if((SupportsFileAlterPreservation() == true) && (GetFileAlterPreservation() == true))
+		{
+			AppendSeparated(Result, "File alter preservation", ", ");
+		}
+		if((SupportsReadOnly() == true) && (GetReadOnly() == true))
+		{
+			AppendSeparated(Result, "Read only", ", ");
+		}
+		if((SupportsCompression() == true) && (GetCompression() == true))
+		{
+			AppendSeparated(Result, "Compression", ", ");
+		}
+		if((SupportsEncryption() == true) && (GetEncryption() == true))
+		{
+			AppendSeparated(Result, "Encryption", ", ");
+		}
+		if((SupportsGroupingIdentity() == true) && (GetGroupingIdentity() == true))
+		{
+			AppendSeparated(Result, "Grouping identity", ", ");
+		}
+		if((SupportsUnsynchronisation() == true) && (GetUnsynchronisation() == true))
+		{
+			AppendSeparated(Result, "Unsynchronisation", ", ");
+		}
+		if((SupportsDataLengthIndicator() == true) && (GetDataLengthIndicator() == true))
+		{
+			AppendSeparated(Result, "Data length indicator", ", ");
+		}
+		if(Result.empty() == true)
+		{
+			Result = "None";
+		}
+		
+		return Result;
+	}
+	
+	bool GetGroupingIdentity(void) const
+	{
+		return _GroupingIdentity;
+	}
+	
+	std::string GetIdentifier(void) const
+	{
+		return _Identifier;
+	}
+	
+	std::string GetName(void) const
+	{
+		return _Name;
+	}
+	
+	bool GetReadOnly(void) const
+	{
+		return _ReadOnly;
+	}
+	
+	bool GetForbidden(void)
+	{
+		return _Forbidden;
+	}
+	
+	std::string GetForbiddenReason(void) const
+	{
+		return _ForbiddenReason;
+	}
+	
+	unsigned int GetSize(void) const
+	{
+		return _Size;
+	}
+	
+	bool GetTagAlterPreservation(void) const
+	{
+		return _TagAlterPreservation;
+	}
+	
+	bool GetUnsynchronisation(void) const
+	{
+		return _Unsynchronisation;
+	}
+	
+	int HandleData(const uint8_t * Buffer, unsigned int Length)
+	{
+		if(_Handler != 0)
+		{
+			return _Handler(Buffer, Length);
+		}
+		else
+		{
+			std::cout << "*** ERROR ***  No handler defined for the frame type \"" << _Identifier << "\" in this tag version." << std::endl;
+			
+			return Length;
+		}
+	}
+	
+	bool IsValid(void) const
+	{
+		for(std::string::size_type Index = 0; Index < _Identifier.length(); ++Index)
+		{
+			if(IsValidIdentifierCharacter(_Identifier[Index]) == false)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	bool SupportsCompression(void) const
+	{
+		return _SupportsCompression;
+	}
+	
+	bool SupportsDataLengthIndicator(void) const
+	{
+		return _SupportsDataLengthIndicator;
+	}
+	
+	bool SupportsEncryption(void) const
+	{
+		return _SupportsEncryption;
+	}
+	
+	bool SupportsFileAlterPreservation(void) const
+	{
+		return _SupportsFileAlterPreservation;
+	}
+	
+	bool SupportsFlags(void) const
+	{
+		return _SupportsFlags;
+	}
+	
+	bool SupportsGroupingIdentity(void) const
+	{
+		return _SupportsGroupingIdentity;
+	}
+	
+	bool SupportsReadOnly(void) const
+	{
+		return _SupportsReadOnly;
+	}
+	
+	bool SupportsTagAlterPreservation(void) const
+	{
+		return _SupportsTagAlterPreservation;
+	}
+	
+	bool SupportsUnsynchronisation(void) const
+	{
+		return _SupportsUnsynchronisation;
+	}
+	
+	// static setup
+	static void Forbid22(const std::string & Identifier, const std::string & Reason)
+	{
+		_Forbidden22.insert(std::make_pair(Identifier, Reason));
+	}
+	
+	static void Handle22(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
+	{
+		_Handlers22.insert(std::make_pair(Identifier, Handler));
+		_Names22.insert(std::make_pair(Identifier, Name));
+	}
+	
+	static void Forbid23(const std::string & Identifier, const std::string & Reason)
+	{
+		_Forbidden23.insert(std::make_pair(Identifier, Reason));
+	}
+	
+	static void Handle23(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
+	{
+		_Handlers23.insert(std::make_pair(Identifier, Handler));
+		_Names23.insert(std::make_pair(Identifier, Name));
+	}
+	
+	static void Forbid24(const std::string & Identifier, const std::string & Reason)
+	{
+		_Forbidden24.insert(std::make_pair(Identifier, Reason));
+	}
+	
+	static void Handle24(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
+	{
+		_Handlers24.insert(std::make_pair(Identifier, Handler));
+		_Names24.insert(std::make_pair(Identifier, Name));
+	}
+private:
+	// static setup
+	static std::map< std::string, std::string > _Forbidden22;
+	static std::map< std::string, std::string > _Forbidden23;
+	static std::map< std::string, std::string > _Forbidden24;
+	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers22;
+	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers23;
+	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers24;
+	static std::map< std::string, std::string > _Names22;
+	static std::map< std::string, std::string > _Names23;
+	static std::map< std::string, std::string > _Names24;
+	// member variables
+	bool _Compression;
+	bool _DataLengthIndicator;
+	bool _Encryption;
+	bool _FileAlterPreservation;
+	bool _Forbidden;
+	std::string _ForbiddenReason;
+	bool _GroupingIdentity;
+	int (* _Handler)(const uint8_t * Buffer, int Length);
+	std::string _Identifier;
+	std::string _Name;
+	bool _ReadOnly;
+	unsigned int _Size;
+	bool _SupportsCompression;
+	bool _SupportsDataLengthIndicator;
+	bool _SupportsEncryption;
+	bool _SupportsFileAlterPreservation;
+	bool _SupportsFlags;
+	bool _SupportsGroupingIdentity;
+	bool _SupportsReadOnly;
+	bool _SupportsTagAlterPreservation;
+	bool _SupportsUnsynchronisation;
+	bool _TagAlterPreservation;
+	bool _Unsynchronisation;
+};
+
+std::map< std::string, std::string > FrameHeader::_Forbidden22;
+std::map< std::string, std::string > FrameHeader::_Forbidden23;
+std::map< std::string, std::string > FrameHeader::_Forbidden24;
+std::map< std::string, std::string > FrameHeader::_Names22;
+std::map< std::string, std::string > FrameHeader::_Names23;
+std::map< std::string, std::string > FrameHeader::_Names24;
+std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers22;
+std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers23;
+std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers24;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // specific to tag version 2.2                                                                   //
@@ -3251,6 +3385,9 @@ int Handle23MCDIFrame(const uint8_t * Buffer, int Length)
 	}
 	else
 	{
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.5], a \"MCDI\" frame MUST contain a valid CD table of content." << std::endl;
+		std::cout << "*** ERROR *** Trying to interpret the data as a UCS-2 string in little endian as a table of content encoding." << std::endl;
+		
 		auto TableOfContentsString(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
 		
 		if(std::get<0>(TableOfContentsString) == true)
@@ -3270,6 +3407,63 @@ int Handle23MCDIFrame(const uint8_t * Buffer, int Length)
 			else
 			{
 				std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
+			}
+		}
+		if(std::get<0>(TableOfContentsString) == true)
+		{
+			std::cout << "\t\t\t\tInterpretation:" << std::endl;
+			
+			std::uint32_t IndexInString(0);
+			auto NumberOfTracks(GetUInt32NumberFromUnformattedHexadecimalString(std::get<2>(TableOfContentsString), IndexInString));
+			
+			if(std::get<0>(NumberOfTracks) == true)
+			{
+				IndexInString += std::get<1>(NumberOfTracks);
+				std::cout << "\t\t\t\t\tNumber of tracks:" << std::get<2>(NumberOfTracks) << std::endl;
+				for(std::uint32_t TrackIndex = 0; TrackIndex <= std::get<2>(NumberOfTracks); ++TrackIndex)
+				{
+					if(IndexInString < std::get<2>(TableOfContentsString).length())
+					{
+						if(std::get<2>(TableOfContentsString)[IndexInString] != '+')
+						{
+							std::cout << "*** ERROR *** The table of content string contains invalid information." << std::endl;
+							
+							break;
+						}
+						else
+						{
+							IndexInString += 1;
+							
+							auto TrackOffset(GetUInt32NumberFromUnformattedHexadecimalString(std::get<2>(TableOfContentsString), IndexInString));
+							
+							if(std::get<0>(TrackOffset) == true)
+							{
+								IndexInString += std::get<1>(TrackOffset);
+								if(TrackIndex < std::get<2>(NumberOfTracks))
+								{
+									std::cout << "\t\t\t\t\tTrack offset for track " << TrackIndex + 1;
+								}
+								else
+								{
+									std::cout << "\t\t\t\t\tTrack offset for lead out";
+								}
+								std::cout << ": " << std::get<2>(TrackOffset) << std::endl;
+							}
+						}
+					}
+				}
+			}
+			
+			auto Rest(Get_Zeroes_EndedByLength(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(Rest) == true)
+			{
+				Index += std::get<1>(Rest);
+				std::cout << "\t\t\t\tAnother " << std::get<1>(Rest) << " bytes of zeroes until the end of the frame." << std::endl;
+			}
+			else
+			{
+				std::cout << "*** ERROR *** The frame contains unrecognizable data after the table of contents string." << std::endl;
 			}
 		}
 	}
