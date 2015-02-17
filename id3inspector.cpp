@@ -5710,8 +5710,17 @@ int Handle24USLTFrame(const uint8_t * Buffer, int Length)
 			}
 			else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 			{
-				/// @TODO
-				assert(false);
+				auto ContentDescriptor(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(ContentDescriptor) == true)
+				{
+					Index += std::get<1>(ContentDescriptor);
+					std::cout << "\t\t\t\tContent descriptor: \"" << std::get<2>(ContentDescriptor) << "\" (UTF-16, ended by termination)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The content of the \"Content descriptor\" field could not be interpreted as an UTF-16 string with termination." << std::endl;
+				}
 			}
 			else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 			{
@@ -5793,8 +5802,29 @@ int Handle24USLTFrame(const uint8_t * Buffer, int Length)
 			}
 			else if(std::get<2>(Encoding) == TextEncoding::UTF_16)
 			{
-				/// @TODO
-				assert(false);
+				auto Lyrics(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Lyrics) == true)
+				{
+					Index += std::get<1>(Lyrics);
+					std::replace(std::get<2>(Lyrics).begin(), std::get<2>(Lyrics).end(), '\x0d', '\x0a');
+					std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (UTF-16, ended by termination)" << std::endl;
+				}
+				else
+				{
+					auto Lyrics(Get_UTF_16_StringWithByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(Lyrics) == true)
+					{
+						Index += std::get<1>(Lyrics);
+						std::replace(std::get<2>(Lyrics).begin(), std::get<2>(Lyrics).end(), '\x0d', '\x0a');
+						std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (UTF-16, ended by boundary)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The content of the \"String\" field could not be interpreted as an UTF-16 string with or without termination." << std::endl;
+					}
+				}
 			}
 			else if(std::get<2>(Encoding) == TextEncoding::UTF_16_BE)
 			{
