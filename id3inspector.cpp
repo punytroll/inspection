@@ -4910,8 +4910,121 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(Encoding) == TextEncoding::UCS_2)
 		{
-			/// @TODO
-			assert(false);
+			auto DescriptionByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(DescriptionByteOrderMark) == true)
+			{
+				Index += std::get<1>(DescriptionByteOrderMark);
+				if(std::get<2>(DescriptionByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+				{
+					std::cout << "\t\t\t\tDescription:" << std::endl;
+					std::cout << "\t\t\t\t\tByte order mark: big endian" << std::endl;
+					
+					auto Description(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(Description) == true)
+					{
+						Index += std::get<1>(Description);
+						std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(Description) << "\" (ISO/IEC 10646-1:1993, UCS-2, big endian, ended by termination)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'Description' string could not be interpreted as a ISO/IEC 10646-1:1993, UCS-2 string in big endian with termination." << std::endl;
+					}
+				}
+				else if(std::get<2>(DescriptionByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+				{
+					std::cout << "\t\t\t\tDescription:" << std::endl;
+					std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
+					
+					auto Description(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(Description) == true)
+					{
+						Index += std::get<1>(Description);
+						std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(Description) << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian, ended by termination)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'Description' string could not be interpreted as a ISO/IEC 10646-1:1993, UCS-2 string in little endian with termination." << std::endl;
+					}
+				}
+			}
+			else
+			{
+				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark. Trying to interpret as  UCS-2LE." << std::endl;
+				
+				auto Description(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Description) == true)
+				{
+					Index += std::get<1>(Description);
+					std::cout << "\t\t\t\tDescription:" << std::endl;
+					std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(Description) << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian, ended by termination)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The 'Description' string could not be interpreted as a ISO/IEC 10646-1:1993, UCS-2 string in little endian with termination." << std::endl;
+				}
+			}
+			
+			auto StringByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
+			
+			if(std::get<0>(StringByteOrderMark) == true)
+			{
+				Index += std::get<1>(StringByteOrderMark);
+				if(std::get<2>(StringByteOrderMark) == UCS2ByteOrderMark::BigEndian)
+				{
+					std::cout << "\t\t\t\tString:" << std::endl;
+					std::cout << "\t\t\t\t\tByte order mark: big endian" << std::endl;
+					
+					auto String(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(String) == true)
+					{
+						Index += std::get<1>(String);
+						std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(String) << "\" (ISO/IEC 10646-1:1993, UCS-2, big endian, ended by termination)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'String' string could not be interpreted as a ISO/IEC 10646-1:1993, UCS-2 string in big endian with termination." << std::endl;
+					}
+				}
+				else if(std::get<2>(StringByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
+				{
+					std::cout << "\t\t\t\tDescription:" << std::endl;
+					std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
+					
+					auto String(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(String) == true)
+					{
+						Index += std::get<1>(String);
+						std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(String) << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian, ended by termination)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The 'String' string could not be interpreted as a ISO/IEC 10646-1:1993, UCS-2 string in little endian with termination." << std::endl;
+					}
+				}
+			}
+			else
+			{
+				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark. Trying to interpret as  UCS-2LE." << std::endl;
+				
+				auto String(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(String) == true)
+				{
+					Index += std::get<1>(String);
+					std::cout << "\t\t\t\tString:" << std::endl;
+					std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(String) << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian, ended by termination)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The 'String' string could not be interpreted as a ISO/IEC 10646-1:1993, UCS-2 string in little endian with termination." << std::endl;
+				}
+			}
 		}
 	}
 	else
