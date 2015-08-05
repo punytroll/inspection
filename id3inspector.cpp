@@ -6551,6 +6551,7 @@ int main(int argc, char **argv)
 	g_ISO_639_2_Codes.insert(std::make_pair("rus", "Russian"));
 	
 	// country codes according to ISO 3166-1 alpha-2
+	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("GB", "United Kingdom"));
 	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("ZA", "South Africa"));
 	
 	// picture types
