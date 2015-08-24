@@ -6601,6 +6601,8 @@ int main(int argc, char **argv)
 	g_ISO_639_2_Codes.insert(std::make_pair("deu", "German"));
 	g_ISO_639_2_Codes.insert(std::make_pair("dut", "Dutch; Flemish"));
 	g_ISO_639_2_Codes.insert(std::make_pair("eng", "English"));
+	g_ISO_639_2_Codes.insert(std::make_pair("fra", "French"));
+	g_ISO_639_2_Codes.insert(std::make_pair("fre", "French"));
 	g_ISO_639_2_Codes.insert(std::make_pair("ger", "German"));
 	g_ISO_639_2_Codes.insert(std::make_pair("ita", "Italian"));
 	g_ISO_639_2_Codes.insert(std::make_pair("rus", "Russian"));
