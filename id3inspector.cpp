@@ -6166,8 +6166,9 @@ void ReadID3v2Tag(std::ifstream & Stream)
 		std::cout << "\tSize: " << NewTagHeader->GetSize() << std::endl;
 		std::cout << "\tFrames:" << std::endl;
 
-		long int Position{Stream.tellg()};
-		int Size = NewTagHeader->GetSize();
+		auto Position{Stream.tellg()};
+		auto SkippingSize{0};
+		auto Size{NewTagHeader->GetSize()};
 
 		while(Size > Position)
 		{
@@ -6176,6 +6177,11 @@ void ReadID3v2Tag(std::ifstream & Stream)
 			
 			if(NewFrameHeader->IsValid() == true)
 			{
+				if(SkippingSize > 0)
+				{
+					std::cout << "# Skipped " << SkippingSize << " bytes of invalid data." << std::endl;
+					SkippingSize = 0;
+				}
 				std::cout << "\t\tIdentifier: \"" << NewFrameHeader->GetIdentifier() << "\"" << std::endl;
 				if(NewFrameHeader->GetForbidden() == true)
 				{
@@ -6216,9 +6222,14 @@ void ReadID3v2Tag(std::ifstream & Stream)
 			}
 			else
 			{
+				SkippingSize += 1;
 				Position += 1;
 			}
 			delete NewFrameHeader;
+		}
+		if(SkippingSize > 0)
+		{
+			std::cout << "# Skipped " << SkippingSize << " bytes of padding." << std::endl;
 		}
 		std::cout << std::endl;
 	}
