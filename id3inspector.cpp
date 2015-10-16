@@ -2108,6 +2108,7 @@ public:
 		_Forbidden(false),
 		_GroupingIdentity(false),
 		_Handler(0),
+		_HeaderSize(0),
 		_ReadOnly(false),
 		_SupportsCompression(false),
 		_SupportsDataLengthIndicator(false),
@@ -2123,12 +2124,14 @@ public:
 	{
 		if(TagHeader->GetMajorVersion() == 2)
 		{
-			char Buffer[6];
+			_HeaderSize = 6;
 			
-			Stream.read(Buffer, 6);
+			char Buffer[_HeaderSize];
+			
+			Stream.read(Buffer, _HeaderSize);
 			_Identifier = std::string(Buffer, 3);
 			_Name = _Names22[_Identifier];
-			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5]));
+			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5]));
 			_SupportsFlags = false;
 			
 			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden22.find(_Identifier));
@@ -2148,12 +2151,14 @@ public:
 		}
 		else if(TagHeader->GetMajorVersion() == 3)
 		{
-			char Buffer[10];
+			_HeaderSize = 10;
 			
-			Stream.read(Buffer, 10);
+			char Buffer[_HeaderSize];
+			
+			Stream.read(Buffer, _HeaderSize);
 			_Identifier = std::string(Buffer, 4);
 			_Name = _Names23[_Identifier];
-			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
+			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
 			_SupportsFlags = true;
 			_SupportsTagAlterPreservation = true;
 			_TagAlterPreservation = (Buffer[8] & 0x80) == 0x80;
@@ -2187,12 +2192,14 @@ public:
 		}
 		else if(TagHeader->GetMajorVersion() == 4)
 		{
-			char Buffer[10];
+			_HeaderSize = 10;
 			
-			Stream.read(Buffer, 10);
+			char Buffer[_HeaderSize];
+			
+			Stream.read(Buffer, _HeaderSize);
 			_Identifier = std::string(Buffer, 4);
 			_Name = _Names24[_Identifier];
-			_Size = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
+			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
 			_SupportsFlags = true;
 			_SupportsTagAlterPreservation = true;
 			_TagAlterPreservation = (Buffer[8] & 0x40) == 0x40;
@@ -2298,6 +2305,11 @@ public:
 		return _GroupingIdentity;
 	}
 	
+	unsigned int GetHeaderSize(void) const
+	{
+		return _HeaderSize;
+	}
+	
 	std::string GetIdentifier(void) const
 	{
 		return _Identifier;
@@ -2323,9 +2335,9 @@ public:
 		return _ForbiddenReason;
 	}
 	
-	unsigned int GetSize(void) const
+	unsigned int GetDataSize(void) const
 	{
-		return _Size;
+		return _DataSize;
 	}
 	
 	bool GetTagAlterPreservation(void) const
@@ -2457,16 +2469,17 @@ private:
 	// member variables
 	bool _Compression;
 	bool _DataLengthIndicator;
+	unsigned int _DataSize;
 	bool _Encryption;
 	bool _FileAlterPreservation;
 	bool _Forbidden;
 	std::string _ForbiddenReason;
 	bool _GroupingIdentity;
 	int (* _Handler)(const uint8_t * Buffer, int Length);
+	unsigned int _HeaderSize;
 	std::string _Identifier;
 	std::string _Name;
 	bool _ReadOnly;
-	unsigned int _Size;
 	bool _SupportsCompression;
 	bool _SupportsDataLengthIndicator;
 	bool _SupportsEncryption;
@@ -6153,10 +6166,12 @@ void ReadID3v2Tag(std::ifstream & Stream)
 		std::cout << "\tSize: " << NewTagHeader->GetSize() << std::endl;
 		std::cout << "\tFrames:" << std::endl;
 
+		long int Position{Stream.tellg()};
 		int Size = NewTagHeader->GetSize();
 
-		while(Size > 0)
+		while(Size > Position)
 		{
+			Stream.seekg(Position, std::ios::beg);
 			FrameHeader * NewFrameHeader(new FrameHeader(NewTagHeader, Stream));
 			
 			if(NewFrameHeader->IsValid() == true)
@@ -6167,40 +6182,41 @@ void ReadID3v2Tag(std::ifstream & Stream)
 					std::cout << "*** ERROR *** This frame is forbidden! " << NewFrameHeader->GetForbiddenReason() << std::endl;
 				}
 				std::cout << "\t\t\tName: " << NewFrameHeader->GetName() << std::endl;
-				std::cout << "\t\t\tSize: " << NewFrameHeader->GetSize() << std::endl;
+				std::cout << "\t\t\tSize: " << NewFrameHeader->GetDataSize() << std::endl;
 				if(NewFrameHeader->SupportsFlags() == true)
 				{
 					std::cout << "\t\t\tFlags: " << NewFrameHeader->GetFlagsAsString() << std::endl;
 				}
-				while(NewFrameHeader->GetSize() > BufferLength)
+				while(NewFrameHeader->GetDataSize() > BufferLength)
 				{
 					delete[] Buffer;
 					BufferLength <<= 1;
 					Buffer = new uint8_t[BufferLength];
 				}
-				Stream.read(reinterpret_cast< char * >(Buffer), NewFrameHeader->GetSize());
+				Stream.read(reinterpret_cast< char * >(Buffer), NewFrameHeader->GetDataSize());
 				if(g_PrintBytes == true)
 				{
-					std::cout << "\t\t\tBytes: " << GetHexadecimalStringFromUInt8Buffer(Buffer, NewFrameHeader->GetSize()) << std::endl;
+					std::cout << "\t\t\tBytes: " << GetHexadecimalStringFromUInt8Buffer(Buffer, NewFrameHeader->GetDataSize()) << std::endl;
 				}
 				std::cout << "\t\t\tContent:" << std::endl;
 				
 				unsigned int HandledFrameSize(0);
 				
-				HandledFrameSize = NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetSize());
-				if(HandledFrameSize < NewFrameHeader->GetSize())
+				HandledFrameSize = NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetDataSize());
+				if(HandledFrameSize < NewFrameHeader->GetDataSize())
 				{
 					std::cout << "*** ERROR *** Frame size exceeds frame data." << std::endl;
 				}
-				else if(HandledFrameSize > NewFrameHeader->GetSize())
+				else if(HandledFrameSize > NewFrameHeader->GetDataSize())
 				{
 					std::cout << "*** ERROR *** Frame data exceeds frame size." << std::endl;
 				}
 				std::cout << std::endl;
+				Position += NewFrameHeader->GetHeaderSize() + NewFrameHeader->GetDataSize();
 			}
 			else
 			{
-				break;
+				Position += 1;
 			}
 			delete NewFrameHeader;
 		}
