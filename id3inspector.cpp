@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 
 #include <algorithm>
+#include <experimental/any>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -13,7 +14,92 @@
 #include <list>
 #include <map>
 #include <sstream>
+#include <typeindex>
 #include <vector>
+
+class Values
+{
+public:
+	void Add(const std::string & Name, const std::experimental::any & Value)
+	{
+		if(_Values.count(Name) == 0)
+		{
+			_Values[Name] = Value;
+		}
+		else
+		{
+			throw std::exception();
+		}
+	}
+	
+	const std::experimental::any & Get(const std::string & Name)
+	{
+		auto Iterator{_Values.find(Name)};
+		
+		if(Iterator != _Values.end())
+		{
+			return Iterator->second;
+		}
+		else
+		{
+			throw std::exception();
+		}
+	}
+	
+	bool Has(const std::string & Name)
+	{
+		return _Values.count(Name) == 1;
+	}
+	
+	void Remove(const std::string & Name)
+	{
+		_Values.erase(Name);
+	}
+	
+	void Replace(const std::string & Name, const std::experimental::any & Value)
+	{
+		auto Iterator{_Values.find(Name)};
+		
+		if(Iterator != _Values.end())
+		{
+			if(std::type_index(Value.type()) != std::type_index(Iterator->second.type()))
+			{
+				Iterator->second = Value;
+			}
+			else
+			{
+				throw std::exception();
+			}
+		}
+		else
+		{
+			throw std::exception();
+		}
+	}
+	
+	void Update(const std::string & Name, const std::experimental::any & Value)
+	{
+		auto Iterator{_Values.find(Name)};
+		
+		if(Iterator != _Values.end())
+		{
+			if(std::type_index(Value.type()) == std::type_index(Iterator->second.type()))
+			{
+				Iterator->second = Value;
+			}
+			else
+			{
+				throw std::exception();
+			}
+		}
+		else
+		{
+			throw std::exception();
+		}
+	}
+private:
+	std::map< std::string, std::experimental::any > _Values;
+};
 
 class CDTableOfContents
 {
@@ -1945,6 +2031,235 @@ std::tuple< bool, int > Get_Zeroes_EndedByLength(const uint8_t * Buffer, int Len
 	}
 	
 	return Result;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// 3rd generation getters                                                                        //
+//   - These functions validate and extract in one go.                                           //
+//   - They have two or three return values:                                                     //
+//       - a Boolean value indicating success (type bool)                                        //
+//       - an Integer value indicating the length of the processed data (type std::uint64_t)     //
+//       - a Values object with results (type Values)                                            //
+//   - If the Success return value is false, the length and return values may contain bogus data //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+std::tuple< bool, std::uint64_t, Values > Get_0_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length);
+std::tuple< bool, std::uint64_t, Values > Get_1_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length);
+std::tuple< bool, std::uint64_t, Values > Get_5_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length);
+std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_ExtendedTagHeader(const std::uint8_t * Buffer, std::uint64_t Length);
+std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_28Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
+std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As_HexadecimalString(const std::uint8_t * Buffer, std::uint64_t Length);
+
+
+std::tuple< bool, std::uint64_t, Values > Get_0_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::uint64_t Index{0};
+	Values Result;
+	
+	if(Length >= 1)
+	{
+		if(Buffer[0] == 0)
+		{
+			Success = true;
+			Index = 1;
+			Result.Add("Result", static_cast< std::uint32_t >(0));
+		}
+	}
+	
+	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+}
+
+std::tuple< bool, std::uint64_t, Values > Get_1_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::uint64_t Index{0};
+	Values Result;
+	
+	if(Length >= 1)
+	{
+		if(Buffer[0] == 1)
+		{
+			Success = true;
+			Index = 1;
+			Result.Add("Result", static_cast< std::uint32_t >(1));
+		}
+	}
+	
+	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+}
+
+std::tuple< bool, std::uint64_t, Values > Get_5_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::uint64_t Index{0};
+	Values Result;
+	
+	if(Length >= 1)
+	{
+		if(Buffer[0] == 5)
+		{
+			Success = true;
+			Index = 1;
+			Result.Add("Result", static_cast< std::uint32_t >(5));
+		}
+	}
+	
+	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+}
+
+std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_ExtendedTagHeader(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::uint64_t Index{0};
+	Values Result;
+	
+	if(Length >= 6)
+	{
+		auto Size{Get_SynchSafe_28Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+		
+		if(std::get<0>(Size) == true)
+		{
+			Index += std::get<1>(Size);
+			Result.Add("Size", std::get<2>(Size).Get("Result"));
+			
+			auto NumberOfFlagBytes{Get_1_Byte_As_32Bit_Unsigned_Integer(Buffer + Index, Length - Index)};
+			
+			if(std::get<0>(NumberOfFlagBytes) == true)
+			{
+				Index += std::get<1>(NumberOfFlagBytes);
+				Result.Add("NumberOfFlagBytes", std::get<2>(NumberOfFlagBytes).Get("Result"));
+				
+				auto TagIsAnUpdate{Get_Boolean_1(Buffer + Index, Length - Index)};
+				
+				if((std::get<0>(TagIsAnUpdate) == true) && (std::get<1>(TagIsAnUpdate) == 1))
+				{
+					Result.Add("TagIsAnUpdateFlag", std::get<2>(TagIsAnUpdate));
+					
+					auto CRCDataPresent{Get_Boolean_2(Buffer + Index, Length - Index)};
+					
+					if((std::get<0>(CRCDataPresent) == true) && (std::get<1>(CRCDataPresent) == 1))
+					{
+						Result.Add("CRCDataPresentFlag", std::get<2>(CRCDataPresent));
+						
+						auto TagRestrictions{Get_Boolean_3(Buffer + Index, Length - Index)};
+						
+						if((std::get<0>(TagRestrictions) == true) && (std::get<1>(TagRestrictions) == 1))
+						{
+							Result.Add("TagRestrictionsFlag", std::get<2>(TagRestrictions));
+							Index += 1;
+							
+							// Tag is an update
+							if(std::get<2>(TagIsAnUpdate) == true)
+							{
+								Values TagIsAnUpdateData;
+								
+								auto FlagDataLength{Get_0_Byte_As_32Bit_Unsigned_Integer(Buffer + Index, Length - Index)};
+								
+								if(std::get<0>(FlagDataLength) == true)
+								{
+									Index += std::get<1>(FlagDataLength);
+									TagIsAnUpdateData.Add("FlagDataLength", std::get<2>(FlagDataLength).Get("Result"));
+								}
+								Result.Add("TagIsAnUpdateData", TagIsAnUpdateData);
+							}
+							
+							// CRC data present
+							Values CRCDataPresentValues;
+							
+							if(std::get<2>(CRCDataPresent) == true)
+							{
+								Values CRCDataPresentData;
+								
+								auto FlagDataLength{Get_5_Byte_As_32Bit_Unsigned_Integer(Buffer + Index, Length - Index)};
+								
+								if(std::get<0>(FlagDataLength) == true)
+								{
+									Index += std::get<1>(FlagDataLength);
+									CRCDataPresentData.Add("FlagDataLength", std::get<2>(FlagDataLength).Get("Result"));
+									
+									auto TotalFrameCRC{Get_SynchSafe_32Bit_UnsignedInteger_As_HexadecimalString(Buffer + Index, Length - Index)};
+									
+									if(std::get<0>(TotalFrameCRC) == true)
+									{
+										Index += std::get<1>(TotalFrameCRC);
+										CRCDataPresentData.Add("TotalFrameCRC", std::get<2>(TotalFrameCRC).Get("Result"));
+									}
+								}
+								Result.Add("CRCDataPresentData", CRCDataPresentData);
+							}
+							
+							// Tag restrictions
+							Values TagRestrictionsValues;
+							
+							if(std::get<2>(TagRestrictions) == true)
+							{
+								Values TagRestrictionsData;
+								
+								auto FlagDataLength{Get_1_Byte_As_32Bit_Unsigned_Integer(Buffer + Index, Length - Index)};
+								
+								if(std::get<0>(FlagDataLength) == true)
+								{
+									Index += std::get<1>(FlagDataLength);
+									TagRestrictionsData.Add("FlagDataLength", std::get<2>(FlagDataLength).Get("Result"));
+									assert(false);
+								}
+								Result.Add("TagRestrictionsData", TagRestrictionsData);
+							}
+						}
+					}
+				}
+				Success = true;
+			}
+		}
+	}
+	
+	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+}
+
+std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_28Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::uint64_t Index{0};
+	Values Result;
+	
+	if(Length >= 4)
+	{
+		if((Buffer[0] < 128) && (Buffer[1] < 128) && (Buffer[2] < 128) && (Buffer[3] < 128))
+		{
+			Result.Add("Result", (static_cast< std::uint32_t >(Buffer[0]) << 21) | (static_cast< std::uint32_t >(Buffer[1]) << 14) | (static_cast< std::uint32_t >(Buffer[2]) << 7) | (static_cast< std::uint32_t >(Buffer[3])));
+			Index += 4;
+			Success = true;
+		}
+	}
+	
+	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+}
+
+std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As_HexadecimalString(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::uint64_t Index{0};
+	Values Result;
+	
+	if(Length >= 5)
+	{
+		if((Buffer[0] < 16) && (Buffer[1] < 128) && (Buffer[2] < 128) && (Buffer[3] < 128) && (Buffer[4] < 128))
+		{
+			Index += 5;
+			Success = true;
+			
+			std::stringstream StringStream;
+			
+			StringStream << std::hex << std::setfill('0') << std::right;
+			StringStream << std::setw(2) << static_cast< std::uint32_t >(((static_cast< std::uint32_t >(Buffer[0]) << 4) & 0xFF) | (static_cast< std::uint32_t >(Buffer[1]) >> 3));
+			StringStream << std::setw(2) << static_cast< std::uint32_t >(((static_cast< std::uint32_t >(Buffer[1]) << 5) & 0xFF) | (static_cast< std::uint32_t >(Buffer[2]) >> 2));
+			StringStream << std::setw(2) << static_cast< std::uint32_t >(((static_cast< std::uint32_t >(Buffer[2]) << 6) & 0xFF) | (static_cast< std::uint32_t >(Buffer[3]) >> 1));
+			StringStream << std::setw(2) << static_cast< std::uint32_t >(((static_cast< std::uint32_t >(Buffer[3]) << 7) & 0xFF) | (static_cast< std::uint32_t >(Buffer[5]) >> 0));
+			Result.Add("Result", StringStream.str());
+		}
+	}
+	
+	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6164,12 +6479,68 @@ void ReadID3v2Tag(std::ifstream & Stream)
 		std::cout << "\tVersion: 2." << NewTagHeader->GetMajorVersion() << "." << NewTagHeader->GetRevisionNumber() << std::endl;
 		std::cout << "\tFlags: " << NewTagHeader->GetFlagsAsString() << std::endl;
 		std::cout << "\tSize: " << NewTagHeader->GetSize() << std::endl;
-		std::cout << "\tFrames:" << std::endl;
-
+		
 		auto Position{Stream.tellg()};
+		
+		if((NewTagHeader->GetMajorVersion() == 4) && (NewTagHeader->GetExtendedHeader() == true))
+		{
+			Stream.read(reinterpret_cast< char * >(Buffer), BufferLength);
+			
+			auto ExtendedHeader{Get_ID3_2_4_ExtendedTagHeader(Buffer, BufferLength)};
+			
+			if(std::get<0>(ExtendedHeader) == true)
+			{
+				auto ExtendedHeaderValues{std::experimental::any_cast< Values >(std::get<2>(ExtendedHeader))};
+				
+				std::cout << "\tExtended Header:" << std::endl;
+				std::cout << "\t\tSize: " << std::experimental::any_cast< std::uint32_t >(ExtendedHeaderValues.Get("Size")) << std::endl;
+				std::cout << "\t\tNumber Of Flag Bytes: " << std::experimental::any_cast< uint32_t >(ExtendedHeaderValues.Get("NumberOfFlagBytes")) << std::endl;
+				if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("TagIsAnUpdateFlag")) == true)
+				{
+					std::cout << "\t\t\tTag is an update: yes" << std::endl;
+					
+					auto TagIsAnUpdateData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("TagIsAnUpdateData"))};
+					
+					std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(TagIsAnUpdateData.Get("FlagDataLength")) << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\tTag is an update: no" << std::endl;
+				}
+				if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("CRCDataPresentFlag")) == true)
+				{
+					std::cout << "\t\t\tCRC data present: yes" << std::endl;
+					
+					auto CRCDataPresentData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("CRCDataPresentData"))};
+					
+					std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(CRCDataPresentData.Get("FlagDataLength")) << std::endl;
+					std::cout << "\t\t\t\tTotal Frame CRC: " << std::experimental::any_cast< std::string >(CRCDataPresentData.Get("TotalFrameCRC")) << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\tCRC data present: no" << std::endl;
+				}
+				if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("TagRestrictionsFlag")) == true)
+				{
+					std::cout << "\t\t\tTag restrictions: yes" << std::endl;
+					
+					auto TagRestrictionsData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("TagRestrictionsData"))};
+					
+					std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(TagRestrictionsData.Get("FlagDataLength")) << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\tTag restrictions: no" << std::endl;
+				}
+				Position += std::get<1>(ExtendedHeader);
+			}
+			Stream.seekg(Position);
+		}
+
 		auto SkippingSize{0};
 		auto Size{NewTagHeader->GetSize()};
 
+		std::cout << "\tFrames:" << std::endl;
 		while(Size > Position)
 		{
 			Stream.seekg(Position, std::ios::beg);
