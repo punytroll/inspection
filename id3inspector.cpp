@@ -529,41 +529,6 @@ std::pair< int, std::string > GetHexadecimalStringTerminatedByLength(const uint8
 	return Result;
 }
 
-std::pair< int, std::string > GetGUIDString(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, std::string > Result;
-	
-	if(Length >= 16)
-	{
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += '-';
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += '-';
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += '-';
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += '-';
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-		Result.second += GetHexadecimalStringFromUInt8(Buffer[Result.first++]);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** A GUID must be 16 bytes long but this one only has space for " << Length << " bytes." << std::endl;
-	}
-	
-	return Result;
-}
-
 std::tuple< bool, int, uint8_t > GetHexadecimalValueFromHexadecimalCharacter(const std::string & String, int Offset)
 {
 	std::tuple< bool, int, uint8_t > Result(false, 0, 0);
@@ -2045,6 +2010,7 @@ std::tuple< bool, int > Get_Zeroes_EndedByLength(const uint8_t * Buffer, int Len
 std::tuple< bool, std::uint64_t, Values > Get_0_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_1_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_5_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length);
+std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_ExtendedTagHeader(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_28Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As_HexadecimalString(const std::uint8_t * Buffer, std::uint64_t Length);
@@ -2105,6 +2071,52 @@ std::tuple< bool, std::uint64_t, Values > Get_5_Byte_As_32Bit_Unsigned_Integer(c
 	}
 	
 	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+}
+
+std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	Values Result;
+	
+	if(Length >= 16)
+	{
+		Success = true;
+		
+		std::stringstream StringStream;
+		
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << '-';
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << '-';
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << '-';
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << '-';
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
+		Result.Add("Result", StringStream.str());
+		
+		auto DescriptionIterator{g_GUIDDescriptions.find(StringStream.str())};
+		
+		if(DescriptionIterator != g_GUIDDescriptions.end())
+		{
+			Result.Add("GUIDDescription", DescriptionIterator->second);
+		}
+	}
+	
+	
+	return std::tuple< bool, std::uint64_t, Values >(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_ExtendedTagHeader(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -3955,92 +3967,92 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 		std::cout << "\t\t\t\tOwner Identifier: " << std::get<2>(ReadOwnerIdentifier) << std::endl;
 		if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassPrimaryID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tPrimary Media Class: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tPrimary Media Class: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassSecondaryID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tSecondary Media Class: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tSecondary Media Class: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMContentID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tContent ID: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tContent ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tCollection ID: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tCollection ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionGroupID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tCollection Group ID: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tCollection Group ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "WM/Provider")
@@ -4104,74 +4116,74 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumArtistMediaID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tZune Album Artist Media ID: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tZune Album Artist Media ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumMediaID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tZune Album Media ID: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tZune Album Media ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneCollectionID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tZune Collection ID: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tZune Collection ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneMediaID")
 		{
-			auto ReadGUID(GetGUIDString(Buffer + Index, Length - Index));
+			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
 			
-			Index += ReadGUID.first;
-			std::cout << "\t\t\t\tZune Media ID: ";
-			
-			auto GUIDDescriptionIterator(g_GUIDDescriptions.find(ReadGUID.second));
-			
-			if(GUIDDescriptionIterator != g_GUIDDescriptions.end())
+			if(std::get<0>(ReadGUID) == true)
 			{
-				std::cout << GUIDDescriptionIterator->second << " (" << ReadGUID.second << ")" << std::endl;
-			}
-			else
-			{
-				std::cout << ReadGUID.second << " (unknown value)" << std::endl;
+				Index += std::get<1>(ReadGUID);
+				std::cout << "\t\t\t\tZune Media ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
+				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
+				{
+					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
+				}
+				else
+				{
+					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
+				}
 			}
 		}
 		else if(std::get<2>(ReadOwnerIdentifier) == "CompID")
