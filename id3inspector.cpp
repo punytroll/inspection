@@ -284,20 +284,6 @@ std::string Get_UTF_8_CharacterFromUnicodeCodepoint(unsigned int Codepoint)
 	return Result;
 }
 
-std::string Get_UTF_8_CharacterFrom_UCS_2_BE_Character(const uint8_t * Buffer, int Length)
-{
-	assert(Length >= 2);
-	
-	return Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])));
-}
-
-std::string Get_UTF_8_CharacterFrom_UCS_2_LE_Character(const uint8_t * Buffer, int Length)
-{
-	assert(Length >= 2);
-	
-	return Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
-}
-
 std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIDigit(uint8_t ASCIIDigit)
 {
 	std::pair< bool, unsigned int > Result(false, 0);
