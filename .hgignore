@@ -1,2 +1,4 @@
-id3inspector
-id3inspector.o
+syntax: regexp
+
+^id3inspector$
+^id3/id3inspector.o$
