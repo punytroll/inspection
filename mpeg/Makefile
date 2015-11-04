@@ -1,12 +1,12 @@
 default: all
 
 clean:
-	$(RM) mpeginspector
+	$(RM) ../mpeginspector
 	$(RM) mpeginspector.o
 
-all: mpeginspector
+all: ../mpeginspector
 
-mpeginspector: mpeginspector.o
+../mpeginspector: mpeginspector.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 mpeginspector.o: mpeginspector.cpp

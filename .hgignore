@@ -1,4 +1,4 @@
 syntax: regexp
 
 ^mpeginspector$
-^mpeginspector.o$
+^mpeg/mpeginspector.o$
