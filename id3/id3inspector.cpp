@@ -1,11 +1,7 @@
-#include <assert.h>
-#include <dirent.h>
-#include <stdint.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #include <algorithm>
-#include <experimental/any>
+#include <cassert>
 #include <deque>
 #include <iomanip>
 #include <iostream>
@@ -17,89 +13,8 @@
 #include <typeindex>
 #include <vector>
 
-class Values
-{
-public:
-	void Add(const std::string & Name, const std::experimental::any & Value)
-	{
-		if(_Values.count(Name) == 0)
-		{
-			_Values[Name] = Value;
-		}
-		else
-		{
-			throw std::exception();
-		}
-	}
-	
-	const std::experimental::any & Get(const std::string & Name)
-	{
-		auto Iterator{_Values.find(Name)};
-		
-		if(Iterator != _Values.end())
-		{
-			return Iterator->second;
-		}
-		else
-		{
-			throw std::exception();
-		}
-	}
-	
-	bool Has(const std::string & Name)
-	{
-		return _Values.count(Name) == 1;
-	}
-	
-	void Remove(const std::string & Name)
-	{
-		_Values.erase(Name);
-	}
-	
-	void Replace(const std::string & Name, const std::experimental::any & Value)
-	{
-		auto Iterator{_Values.find(Name)};
-		
-		if(Iterator != _Values.end())
-		{
-			if(std::type_index(Value.type()) != std::type_index(Iterator->second.type()))
-			{
-				Iterator->second = Value;
-			}
-			else
-			{
-				throw std::exception();
-			}
-		}
-		else
-		{
-			throw std::exception();
-		}
-	}
-	
-	void Update(const std::string & Name, const std::experimental::any & Value)
-	{
-		auto Iterator{_Values.find(Name)};
-		
-		if(Iterator != _Values.end())
-		{
-			if(std::type_index(Value.type()) == std::type_index(Iterator->second.type()))
-			{
-				Iterator->second = Value;
-			}
-			else
-			{
-				throw std::exception();
-			}
-		}
-		else
-		{
-			throw std::exception();
-		}
-	}
-private:
-	std::map< std::string, std::experimental::any > _Values;
-};
+#include "../common/file_handling.h"
+#include "../common/values.h"
 
 class CDTableOfContents
 {
@@ -1920,7 +1835,7 @@ std::tuple< bool, std::uint64_t, Values > Get_0_Byte_As_32Bit_Unsigned_Integer(c
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_1_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -1939,7 +1854,7 @@ std::tuple< bool, std::uint64_t, Values > Get_1_Byte_As_32Bit_Unsigned_Integer(c
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_5_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -1958,7 +1873,7 @@ std::tuple< bool, std::uint64_t, Values > Get_5_Byte_As_32Bit_Unsigned_Integer(c
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -2003,8 +1918,7 @@ std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * B
 		}
 	}
 	
-	
-	return std::tuple< bool, std::uint64_t, Values >(Success, Index, Result);
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_2_Encoding(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -2042,7 +1956,7 @@ std::tuple< bool, std::uint64_t, Values > Get_ID3_2_2_Encoding(const std::uint8_
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >(Success, Index, Result);
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_3_Encoding(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -2080,7 +1994,7 @@ std::tuple< bool, std::uint64_t, Values > Get_ID3_2_3_Encoding(const std::uint8_
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >(Success, Index, Result);
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_Encoding(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -2130,7 +2044,7 @@ std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_Encoding(const std::uint8_
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >(Success, Index, Result);
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_ExtendedTagHeader(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -2239,7 +2153,7 @@ std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_ExtendedTagHeader(const st
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_28Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -2258,7 +2172,7 @@ std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_28Bit_UnsignedInteger(co
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+	return std::make_tuple(Success, Index, Result);
 }
 
 std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As_HexadecimalString(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -2285,7 +2199,7 @@ std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As
 		}
 	}
 	
-	return std::tuple< bool, std::uint64_t, Values >{Success, Index, Result};
+	return std::make_tuple(Success, Index, Result);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6461,34 +6375,6 @@ int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
 // application                                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void ReadFile(const std::string & Path);
-void ReadDirectory(const std::string & Path);
-void ReadItem(const std::string & Path);
-
-inline bool FileExists(const std::string & Path)
-{
-	struct stat Stat;
-	
-	return stat(Path.c_str(), &Stat) != -1;
-}
-
-inline bool IsDirectory(const std::string & Path)
-{
-	struct stat Stat;
-	
-	stat(Path.c_str(), &Stat);
-	
-	return S_ISDIR(Stat.st_mode);
-}
-
-inline bool IsRegularFile(const std::string & Path)
-{
-	struct stat Stat;
-	
-	stat(Path.c_str(), &Stat);
-	
-	return S_ISREG(Stat.st_mode);
-}
 
 void ReadID3v2Tag(std::ifstream & Stream)
 {
@@ -6810,45 +6696,6 @@ void ReadFile(const std::string & Path)
 		}
 	}
 	ReadID3v2Tag(ReadFile);
-}
-
-void ReadDirectory(const std::string & Path)
-{
-	DIR * Directory(opendir(Path.c_str()));
-	struct dirent * DirectoryEntry(0);
-	
-	while((DirectoryEntry = readdir(Directory)) != 0)
-	{
-		if((std::string(DirectoryEntry->d_name) != ".") && (std::string(DirectoryEntry->d_name) != ".."))
-		{
-			ReadItem(Path + '/' + DirectoryEntry->d_name);
-		}
-	}
-}
-
-void ReadItem(const std::string & Path)
-{
-	if(FileExists(Path) == true)
-	{
-		if(IsDirectory(Path) == true)
-		{
-			ReadDirectory(Path);
-		}
-		else if(IsRegularFile(Path) == true)
-		{
-			ReadFile(Path);
-		}
-		else
-		{
-			std::cerr << '"' << Path << "\" is no file or directory!" << std::endl;
-		}
-	}
-	else
-	{
-		std::cerr << '"' << Path << "\" does not exist!" << std::endl;
-		
-		return;
-	}
 }
 
 int main(int argc, char **argv)
