@@ -10,7 +10,6 @@
 #include <list>
 #include <map>
 #include <sstream>
-#include <typeindex>
 #include <vector>
 
 #include "../common/file_handling.h"
