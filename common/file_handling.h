@@ -8,7 +8,7 @@ void ReadDirectory(const std::string & Path);
 void ReadFile(const std::string & Path);
 void ReadItem(const std::string & Path);
 
-inline int GetFileSize(const std::string & Path)
+inline std::int64_t GetFileSize(const std::string & Path)
 {
 	struct stat Stat;
 	
