@@ -96,19 +96,16 @@ std::shared_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Bu
 		
 		if(ChunkIdentifierResult->GetSuccess() == true)
 		{
-			if(std::experimental::any_cast< std::string >(ChunkIdentifierResult->Get()) == "RIFF")
+			Index += ChunkIdentifierResult->GetLength();
+			Values->Append("ChunkIdentifier", ChunkIdentifierResult->GetValue());
+			
+			auto ChunkSizeResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+			
+			if(ChunkSizeResult->GetSuccess() == true)
 			{
-				Index += ChunkIdentifierResult->GetLength();
-				Values->Append("ChunkIdentifier", ChunkIdentifierResult->GetValue());
-				
-				auto ChunkSizeResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
-				
-				if(ChunkSizeResult->GetSuccess() == true)
-				{
-					Index += ChunkSizeResult->GetLength();
-					Values->Append("ChunkSize", ChunkSizeResult->GetValue());
-					Success = true;
-				}
+				Index += ChunkSizeResult->GetLength();
+				Values->Append("ChunkSize", ChunkSizeResult->GetValue());
+				Success = true;
 			}
 		}
 	}
@@ -123,7 +120,7 @@ std::shared_ptr< Results::Result > Get_RIFF_Form_Header(const std::uint8_t * Buf
 	auto Values{std::make_shared< Results::Values >()};
 	auto ChunkHeaderResult{Get_RIFF_Chunk_Header(Buffer + Index, Length - Index)};
 		
-	if(ChunkHeaderResult->GetSuccess() == true)
+	if((ChunkHeaderResult->GetSuccess() == true) && (std::experimental::any_cast< std::string >(ChunkHeaderResult->Get("ChunkIdentifier")) == "RIFF"))
 	{
 		Index += ChunkHeaderResult->GetLength();
 		Values->Append(ChunkHeaderResult->GetValue("ChunkIdentifier"));
