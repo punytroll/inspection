@@ -1,6 +1,7 @@
 #ifndef COMMON_RESULTS_H
 #define COMMON_RESULTS_H
 
+#include <algorithm>
 #include <cstdint>
 #include <experimental/any>
 #include <list>
@@ -35,10 +36,14 @@ namespace Results
 			_Name = Name;
 		}
 		
-		virtual std::experimental::any & GetValue(void) = 0;
+		virtual std::experimental::any & GetAny(void) = 0;
+		
+		virtual std::experimental::any & GetAny(const std::string & Name) = 0;
+		
+		virtual std::shared_ptr< Results::ValueBase > GetValue(const std::string & Name) = 0;
 		
 		virtual std::list< std::shared_ptr< ValueBase > > & GetValues(void) = 0;
-	private:
+	protected:
 		std::string _Name;
 	};
 
@@ -74,9 +79,24 @@ namespace Results
 			_Value = Value;
 		}
 		
-		virtual std::experimental::any & GetValue(void) override
+		virtual std::experimental::any & GetAny(void) override
 		{
 			return _Value;
+		}
+		
+		virtual std::experimental::any & GetAny(const std::string & Name) override
+		{
+			if(_Name == Name)
+			{
+				return _Value;
+			}
+			
+			throw new std::exception();
+		}
+		
+		virtual std::shared_ptr< Results::ValueBase > GetValue(const std::string & Name) override
+		{
+			throw new std::exception();
 		}
 		
 		virtual std::list< std::shared_ptr< ValueBase > > & GetValues(void)
@@ -119,8 +139,44 @@ namespace Results
 			_Values.push_back(std::make_shared< Results::Value >(Name, Value));
 		}
 		
-		virtual std::experimental::any & GetValue(void) override
+		std::uint32_t GetCount(void) const
 		{
+			return _Values.size();
+		}
+		
+		bool Has(const std::string & Name)
+		{
+			return std::find_if(std::begin(_Values), std::end(_Values), [&Name](const std::shared_ptr< ValueBase > & Value) { return Value->GetName() == Name; }) != std::end(_Values);
+		}
+		
+		virtual std::shared_ptr< Results::ValueBase > GetValue(const std::string & Name) override
+		{
+			for(auto & Value : _Values)
+			{
+				if(Value->GetName() == Name)
+				{
+					return Value;
+				}
+			}
+			
+			throw new std::exception();
+		}
+		
+		virtual std::experimental::any & GetAny(void) override
+		{
+			throw new std::exception();
+		}
+		
+		virtual std::experimental::any & GetAny(const std::string & Name)
+		{
+			for(auto & Value : _Values)
+			{
+				if(Value->GetName() == Name)
+				{
+					return Value->GetAny();
+				}
+			}
+			
 			throw new std::exception();
 		}
 		
@@ -178,18 +234,18 @@ namespace Results
 			throw new std::exception();
 		}
 		
-		std::experimental::any & Get(void)
+		std::experimental::any & GetAny(void)
 		{
-			return _Value->GetValue();
+			return _Value->GetAny();
 		}
 		
-		std::experimental::any & Get(const std::string & Name)
+		std::experimental::any & GetAny(const std::string & Name)
 		{
 			for(auto & Value : _Value->GetValues())
 			{
 				if(Value->GetName() == Name)
 				{
-					return Value->GetValue();
+					return Value->GetAny();
 				}
 			}
 			
