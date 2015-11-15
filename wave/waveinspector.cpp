@@ -14,19 +14,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 4th generation getters                                                                        //
 //   - These functions validate and extract in one go.                                           //
-//   - They have one return value:                                                               //
-//       - a shared_ptr to an instance of type ResultBase,                                       //
-//         which may be either a Result or Results instance                                      //
+//   - They return a unique_ptr to an instance of type Result                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
-std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const std::uint8_t * Buffer, std::uint64_t Length);
-std::shared_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
-std::shared_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, std::uint64_t Length);
-std::shared_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Buffer, std::uint64_t Length);
-std::shared_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length);
-std::shared_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length);
 
-std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{true};
 	auto Index{0ull};
@@ -49,10 +47,10 @@ std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminat
 		}
 	}
 	
-	return std::make_shared< Results::Result >(Success, Index, std::make_shared< Results::Value >("", StringStream.str()));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >("", StringStream.str())));
 }
 
-std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -68,10 +66,10 @@ std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const 
 		}
 	}
 	
-	return std::make_shared< Results::Result >(Success, Index, std::make_shared< Results::Value >(Value));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
 }
 
-std::shared_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -84,10 +82,10 @@ std::shared_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const 
 		Value = static_cast< std::uint32_t >(Buffer[0]) + (static_cast< std::uint32_t >(Buffer[1]) << 8) + (static_cast< std::uint32_t >(Buffer[2]) << 16) + (static_cast< std::uint32_t >(Buffer[3]) << 24);
 	}
 	
-	return std::make_shared< Results::Result >(Success, Index, std::make_shared< Results::Value >(Value));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
 }
 
-std::shared_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -131,10 +129,10 @@ std::shared_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 		}
 	}
 	
-	return std::make_shared< Results::Result >(Success, Index, Values);
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
-std::shared_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -160,10 +158,10 @@ std::shared_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Bu
 		}
 	}
 	
-	return std::make_shared< Results::Result >(Success, Index, Values);
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
-std::shared_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -177,10 +175,10 @@ std::shared_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t *
 		Success = true;
 	}
 	
-	return std::make_shared< Results::Result >(Success, Index, Values);
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
-std::shared_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -219,7 +217,7 @@ std::shared_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t *
 		}
 	}
 	
-	return std::make_shared< Results::Result >(Success, Index, Values);
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
 void ReadFile(const std::string & Path)
