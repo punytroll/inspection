@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 
+#include "../common/any_printing.h"
 #include "../common/file_handling.h"
 #include "../common/results.h"
 
@@ -20,8 +21,10 @@
 std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
 std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const std::uint8_t * Buffer, std::uint64_t Length);
 std::shared_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
+std::shared_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, std::uint64_t Length);
 std::shared_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Buffer, std::uint64_t Length);
-std::shared_ptr< Results::Result > Get_RIFF_Form_Header(const std::uint8_t * Buffer, std::uint64_t Length);
+std::shared_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length);
+std::shared_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length);
 
 std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
 {
@@ -36,7 +39,7 @@ std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminat
 		if(ASCII_AlphaNumericOrSpaceCharacterResult->GetSuccess() == true)
 		{
 			Index += ASCII_AlphaNumericOrSpaceCharacterResult->GetLength();
-			StringStream << std::experimental::any_cast< char >(ASCII_AlphaNumericOrSpaceCharacterResult->Get());
+			StringStream << std::experimental::any_cast< char >(ASCII_AlphaNumericOrSpaceCharacterResult->GetAny());
 		}
 		else
 		{
@@ -57,7 +60,7 @@ std::shared_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const 
 	
 	if(Length >= 1ull)
 	{
-		if(((Buffer[0] > 0x2F) && (Buffer[0] < 0x3A)) || ((Buffer[0] > 0x40) && (Buffer[0] < 0x5B)) || ((Buffer[0] > 0x60) && (Buffer[0] < 0x7B)))
+		if(((Buffer[0] > 0x2F) && (Buffer[0] < 0x3A)) || ((Buffer[0] > 0x40) && (Buffer[0] < 0x5B)) || ((Buffer[0] > 0x60) && (Buffer[0] < 0x7B)) || (Buffer[0] == 0x20))
 		{
 			Success = true;
 			Index += 1ull;
@@ -82,6 +85,53 @@ std::shared_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const 
 	}
 	
 	return std::make_shared< Results::Result >(Success, Index, std::make_shared< Results::Value >(Value));
+}
+
+std::shared_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Values{std::make_shared< Results::Values >()};
+	auto ChunkHeaderResult{Get_RIFF_Chunk_Header(Buffer + Index, Length - Index)};
+		
+	if(ChunkHeaderResult->GetSuccess() == true)
+	{
+		Index += ChunkHeaderResult->GetLength();
+		Values->Append(ChunkHeaderResult->GetValue("ChunkIdentifier"));
+		Values->Append(ChunkHeaderResult->GetValue("ChunkSize"));
+		
+		auto ChunkSize{std::experimental::any_cast< std::uint32_t >(ChunkHeaderResult->GetAny("ChunkSize"))};
+		
+		if(ChunkSize + ChunkHeaderResult->GetLength() <= Length)
+		{
+			Success = true;
+			// trim the length field to only what is permissible by the chunk header
+			Length = ChunkSize + ChunkHeaderResult->GetLength();
+			
+			auto ChunkIdentifier{std::experimental::any_cast< std::string >(ChunkHeaderResult->GetAny("ChunkIdentifier"))};
+			std::shared_ptr< Results::Result > ChunkDataResult;
+			
+			if(ChunkIdentifier == "RIFF")
+			{
+				ChunkDataResult = Get_RIFF_RIFF_Chunk_Data(Buffer + Index, Length - Index);
+			}
+			else if(ChunkIdentifier == "fact")
+			{
+				ChunkDataResult = Get_RIFF_fact_Chunk_Data(Buffer + Index, Length - Index);
+			}
+			if((ChunkDataResult) && (ChunkDataResult->GetSuccess() == true))
+			{
+				Index += ChunkDataResult->GetLength();
+				Values->Append("Data", ChunkDataResult->GetValue());
+			}
+			else
+			{
+				Index += ChunkSize;
+			}
+		}
+	}
+	
+	return std::make_shared< Results::Result >(Success, Index, Values);
 }
 
 std::shared_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -113,29 +163,59 @@ std::shared_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Bu
 	return std::make_shared< Results::Result >(Success, Index, Values);
 }
 
-std::shared_ptr< Results::Result > Get_RIFF_Form_Header(const std::uint8_t * Buffer, std::uint64_t Length)
+std::shared_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
 	auto Values{std::make_shared< Results::Values >()};
-	auto ChunkHeaderResult{Get_RIFF_Chunk_Header(Buffer + Index, Length - Index)};
+	auto SampleLengthResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 		
-	if((ChunkHeaderResult->GetSuccess() == true) && (std::experimental::any_cast< std::string >(ChunkHeaderResult->Get("ChunkIdentifier")) == "RIFF"))
+	if(SampleLengthResult->GetSuccess() == true)
 	{
-		Index += ChunkHeaderResult->GetLength();
-		Values->Append(ChunkHeaderResult->GetValue("ChunkIdentifier"));
-		Values->Append(ChunkHeaderResult->GetValue("ChunkSize"));
+		Index += SampleLengthResult->GetLength();
+		Values->Append("SampleLength", SampleLengthResult->GetValue());
+		Success = true;
+	}
+	
+	return std::make_shared< Results::Result >(Success, Index, Values);
+}
+
+std::shared_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Values{std::make_shared< Results::Values >()};
+	
+	if(Length - Index >= 4ull)
+	{
+		auto FormTypeResult{Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(Buffer + Index, 4ull)};
 		
-		if(Length - Index >= 4ull)
+		if(FormTypeResult->GetSuccess() == true)
 		{
-			auto FormTypeResult{Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(Buffer + Index, 4ull)};
+			Index += FormTypeResult->GetLength();
+			Values->Append("FormType", FormTypeResult->GetValue());
 			
-			if(FormTypeResult->GetSuccess() == true)
+			auto Chunks{std::make_shared< Results::Values >("Chunks")};
+			
+			while(Length - Index > 0)
 			{
-				Index += FormTypeResult->GetLength();
-				Values->Append("FormType", FormTypeResult->GetValue());
-				Success = true;
+				auto ChunkResult{Get_RIFF_Chunk(Buffer + Index, Length - Index)};
+				
+				if(ChunkResult->GetSuccess() == true)
+				{
+					Index += ChunkResult->GetLength();
+					Chunks->Append(ChunkResult->GetValue());
+				}
+				else
+				{
+					break;
+				}
 			}
+			if(Chunks->GetCount() > 0)
+			{
+				Values->Append(Chunks);
+			}
+			Success = true;
 		}
 	}
 	
@@ -168,14 +248,31 @@ void ReadFile(const std::string & Path)
 				
 				while(Index < FileSize)
 				{
-					auto RIFFFormHeaderResult(Get_RIFF_Form_Header(Address + Index, FileSize - Index));
+					auto RIFFChunkResult(Get_RIFF_Chunk(Address + Index, FileSize - Index));
 					
-					if(RIFFFormHeaderResult->GetSuccess() == true)
+					if(RIFFChunkResult->GetSuccess() == true)
 					{
-						Index += RIFFFormHeaderResult->GetLength();
-						std::cout << "Chunk identifier: " << std::experimental::any_cast< std::string >(RIFFFormHeaderResult->Get("ChunkIdentifier")) << std::endl;
-						std::cout << "Chunk size: " << std::experimental::any_cast< std::uint32_t >(RIFFFormHeaderResult->Get("ChunkSize")) << std::endl;
-						std::cout << "Chunk format: " << std::experimental::any_cast< std::string >(RIFFFormHeaderResult->Get("FormType")) << std::endl;
+						Index += RIFFChunkResult->GetLength();
+						std::cout << "Chunk identifier: \"" << RIFFChunkResult->GetAny("ChunkIdentifier") << '"' << std::endl;
+						std::cout << "Chunk size: " << RIFFChunkResult->GetAny("ChunkSize") << std::endl;
+						std::cout << "Chunk data:" << std::endl;
+						std::cout << "    Form type: " << RIFFChunkResult->GetValue("Data")->GetAny("FormType") << std::endl;
+						std::cout << "    Sub chunks:" << std::endl;
+						for(auto & ChunkValue : RIFFChunkResult->GetValue("Data")->GetValue("Chunks")->GetValues())
+						{
+							auto ChunkValues{std::dynamic_pointer_cast< Results::Values >(ChunkValue)};
+							
+							std::cout << "        Chunk identifier: \"" << ChunkValues->GetAny("ChunkIdentifier") << '"' << std::endl;
+							std::cout << "        Chunk size: " << ChunkValues->GetAny("ChunkSize") << std::endl;
+							if(ChunkValues->Has("Data") == true)
+							{
+								std::cout << "        Chunk data:" << std::endl;
+								for(auto & ChunkDataValue : ChunkValues->GetValue("Data")->GetValues())
+								{
+									std::cout << "            " << ChunkDataValue->GetName() << ": " << ChunkDataValue->GetAny() << std::endl;
+								}
+							}
+						}
 					}
 					else
 					{
