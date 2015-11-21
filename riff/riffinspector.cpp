@@ -165,7 +165,7 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 			if((ChunkDataResult) && (ChunkDataResult->GetSuccess() == true))
 			{
 				Index += ChunkDataResult->GetLength();
-				Values->Append("Data", ChunkDataResult->GetValue());
+				Values->Append("ChunkData", ChunkDataResult->GetValue());
 			}
 			else
 			{
@@ -376,6 +376,36 @@ std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * 
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
+void PrintValue(const std::string & Indentation, std::shared_ptr< Results::ValueBase > ValueBase)
+{
+	auto Value{std::dynamic_pointer_cast< Results::Value >(ValueBase)};
+	
+	if(Value != nullptr)
+	{
+		std::cout << Indentation << Value->GetName() << ": " << Value->GetAny() << std::endl;
+	}
+	else
+	{
+		auto Values{std::dynamic_pointer_cast< Results::Values >(ValueBase)};
+		
+		if(Values != nullptr)
+		{
+			if(Values->GetName().empty() == false)
+			{
+				std::cout << Indentation << Values->GetName() << ":" << std::endl;
+			}
+			for(auto & SubValue : Values->GetValues())
+			{
+				PrintValue(Indentation + "    ", SubValue);
+			}
+		}
+		else
+		{
+			throw new std::exception();
+		}
+	}
+}
+
 void ReadFile(const std::string & Path)
 {
 	auto FileDescriptor{open(Path.c_str(), O_RDONLY)};
@@ -407,26 +437,7 @@ void ReadFile(const std::string & Path)
 					if(RIFFChunkResult->GetSuccess() == true)
 					{
 						Index += RIFFChunkResult->GetLength();
-						std::cout << "Chunk identifier: \"" << RIFFChunkResult->GetAny("ChunkIdentifier") << '"' << std::endl;
-						std::cout << "Chunk size: " << RIFFChunkResult->GetAny("ChunkSize") << std::endl;
-						std::cout << "Chunk data:" << std::endl;
-						std::cout << "    Form type: " << RIFFChunkResult->GetValue("Data")->GetAny("FormType") << std::endl;
-						std::cout << "    Sub chunks:" << std::endl;
-						for(auto & ChunkValue : RIFFChunkResult->GetValue("Data")->GetValue("Chunks")->GetValues())
-						{
-							auto ChunkValues{std::dynamic_pointer_cast< Results::Values >(ChunkValue)};
-							
-							std::cout << "        Chunk identifier: \"" << ChunkValues->GetAny("ChunkIdentifier") << '"' << std::endl;
-							std::cout << "        Chunk size: " << ChunkValues->GetAny("ChunkSize") << std::endl;
-							if(ChunkValues->Has("Data") == true)
-							{
-								std::cout << "        Chunk data:" << std::endl;
-								for(auto & ChunkDataValue : ChunkValues->GetValue("Data")->GetValues())
-								{
-									std::cout << "            " << ChunkDataValue->GetName() << ": " << ChunkDataValue->GetAny() << std::endl;
-								}
-							}
-						}
+						PrintValue("", RIFFChunkResult->GetValue());
 					}
 					else
 					{
