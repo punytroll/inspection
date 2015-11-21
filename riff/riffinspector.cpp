@@ -87,6 +87,89 @@ std::unique_ptr< Results::Result > Get_FormatTag(const std::uint8_t * Buffer, st
 		Index += FormatTagResult->GetLength();
 		Values->Append("FormatTag", FormatTagResult->GetValue());
 		Success = true;
+		
+		auto FormatTag{std::experimental::any_cast< std::uint16_t >(FormatTagResult->GetAny())};
+		
+		switch(FormatTag)
+		{
+		case 0x0000:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_UNKNOWN"));
+				Values->Append("Description", std::string("Unknown or invalid format tag"));
+				
+				break;
+			}
+		case 0x0001:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_PCM"));
+				Values->Append("Description", std::string("Pulse Code Modulation"));
+				
+				break;
+			}
+		case 0x0002:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_ADPCM"));
+				Values->Append("Description", std::string("Microsoft Adaptive Differental PCM"));
+				
+				break;
+			}
+		case 0x0003:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_IEEE_FLOAT"));
+				Values->Append("Description", std::string("32-bit floating-point"));
+				
+				break;
+			}
+		case 0x0055:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_MPEGLAYER3"));
+				Values->Append("Description", std::string("ISO/MPEG Layer3"));
+				
+				break;
+			}
+		case 0x0092:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_DOLBY_AC3_SPDIF"));
+				Values->Append("Description", std::string("Dolby Audio Codec 3 over S/PDIF"));
+				
+				break;
+			}
+		case 0x0161:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO2"));
+				Values->Append("Description", std::string("Windows Media Audio"));
+				
+				break;
+			}
+		case 0x0162:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO3"));
+				Values->Append("Description", std::string("Windows Media Audio Pro"));
+				
+				break;
+			}
+		case 0x0164:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_WMASPDIF"));
+				Values->Append("Description", std::string("Windows Media Audio over S/PDIF"));
+				
+				break;
+			}
+		case 0xFFFE:
+			{
+				Values->Append("ConstantName", std::string("WAVE_FORMAT_EXTENSIBLE"));
+				Values->Append("Description", std::string("All new audio formats"));
+				
+				break;
+			}
+		default:
+			{
+				Values->Append("ConstantName", std::string("<no interpretation>"));
+				Values->Append("Description", std::string("<no interpretation>"));
+				
+				break;
+			}
+		}
 	}
 	
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
