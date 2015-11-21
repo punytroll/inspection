@@ -20,6 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_FormatTag(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_LittleEndian_16Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
@@ -72,6 +73,23 @@ std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const 
 	}
 	
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
+}
+
+std::unique_ptr< Results::Result > Get_FormatTag(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Values{std::make_shared< Results::Values >()};
+	auto FormatTagResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+		
+	if(FormatTagResult->GetSuccess() == true)
+	{
+		Index += FormatTagResult->GetLength();
+		Values->Append("FormatTag", FormatTagResult->GetValue());
+		Success = true;
+	}
+	
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
 std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -231,7 +249,7 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 	
 	if(Length >= 16)
 	{
-		auto FormatTagResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+		auto FormatTagResult{Get_FormatTag(Buffer + Index, Length - Index)};
 		
 		if(FormatTagResult->GetSuccess() == true)
 		{
