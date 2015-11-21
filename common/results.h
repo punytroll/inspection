@@ -134,7 +134,7 @@ namespace Results
 			_Values.push_back(Value);
 		}
 		
-		void Append(const std::string & Name, std::experimental::any & Value)
+		void Append(const std::string & Name, const std::experimental::any & Value)
 		{
 			_Values.push_back(std::make_shared< Results::Value >(Name, Value));
 		}
