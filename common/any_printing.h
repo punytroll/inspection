@@ -16,6 +16,10 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 	{
 		return OStream << std::experimental::any_cast< std::uint32_t >(Any);
 	}
+	else if(Any.type() == typeid(std::uint16_t))
+	{
+		return OStream << std::experimental::any_cast< std::uint16_t >(Any);
+	}
 	else
 	{
 		return OStream << '<' << Any.type().name() << '>';
