@@ -2,7 +2,9 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#include <cassert>
 #include <deque>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -18,11 +20,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_LittleEndian_16Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_RIFF_ChunkHeader(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_RIFF_fact_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length);
 
 std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericStringWithSpaceTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
 {
@@ -69,6 +74,42 @@ std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const 
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
 }
 
+std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{true};
+	auto Index{0ull};
+	std::stringstream StringStream;
+	
+	StringStream << std::hex << std::setfill('0');
+	while(Index < Length)
+	{
+		if(Index > 0)
+		{
+			StringStream << ' ';
+		}
+		StringStream << std::setw(2) << std::right << static_cast< std::uint32_t >(Buffer[Index]);
+		Index += 1;
+	}
+	
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >("", StringStream.str())));
+}
+
+std::unique_ptr< Results::Result > Get_LittleEndian_16Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::uint16_t Value{0ul};
+	
+	if(Length >= 2ull)
+	{
+		Success = true;
+		Index = 2ull;
+		Value = static_cast< std::uint16_t >(Buffer[0]) + (static_cast< std::uint16_t >(Buffer[1]) << 8);
+	}
+	
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
+}
+
 std::unique_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
@@ -90,7 +131,7 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 	auto Success{false};
 	auto Index{0ull};
 	auto Values{std::make_shared< Results::Values >()};
-	auto ChunkHeaderResult{Get_RIFF_Chunk_Header(Buffer + Index, Length - Index)};
+	auto ChunkHeaderResult{Get_RIFF_ChunkHeader(Buffer + Index, Length - Index)};
 		
 	if(ChunkHeaderResult->GetSuccess() == true)
 	{
@@ -111,11 +152,15 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 			
 			if(ChunkIdentifier == "RIFF")
 			{
-				ChunkDataResult = Get_RIFF_RIFF_Chunk_Data(Buffer + Index, Length - Index);
+				ChunkDataResult = Get_RIFF_RIFF_ChunkData(Buffer + Index, Length - Index);
 			}
 			else if(ChunkIdentifier == "fact")
 			{
-				ChunkDataResult = Get_RIFF_fact_Chunk_Data(Buffer + Index, Length - Index);
+				ChunkDataResult = Get_RIFF_fact_ChunkData(Buffer + Index, Length - Index);
+			}
+			else if(ChunkIdentifier == "fmt ")
+			{
+				ChunkDataResult = Get_RIFF_fmt_ChunkData(Buffer + Index, Length - Index);
 			}
 			if((ChunkDataResult) && (ChunkDataResult->GetSuccess() == true))
 			{
@@ -132,7 +177,7 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
-std::unique_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_RIFF_ChunkHeader(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -161,7 +206,7 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk_Header(const std::uint8_t * Bu
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
-std::unique_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_RIFF_fact_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -178,7 +223,118 @@ std::unique_ptr< Results::Result > Get_RIFF_fact_Chunk_Data(const std::uint8_t *
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
-std::unique_ptr< Results::Result > Get_RIFF_RIFF_Chunk_Data(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Values{std::make_shared< Results::Values >()};
+	
+	if(Length >= 16)
+	{
+		auto FormatTagResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+		
+		if(FormatTagResult->GetSuccess() == true)
+		{
+			Index += FormatTagResult->GetLength();
+			Values->Append("FormatTag", FormatTagResult->GetValue());
+			
+			auto NumberOfChannelsResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+			
+			if(NumberOfChannelsResult->GetSuccess() == true)
+			{
+				Index += NumberOfChannelsResult->GetLength();
+				Values->Append("NumberOfChannels", NumberOfChannelsResult->GetValue());
+				
+				auto SamplesPerSecondResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+				
+				if(SamplesPerSecondResult->GetSuccess() == true)
+				{
+					Index += SamplesPerSecondResult->GetLength();
+					Values->Append("SamplesPerSecond", SamplesPerSecondResult->GetValue());
+					
+					auto AverageBytesPerSecondResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+					
+					if(AverageBytesPerSecondResult->GetSuccess() == true)
+					{
+						Index += AverageBytesPerSecondResult->GetLength();
+						Values->Append("AverageBytesPerSecond", AverageBytesPerSecondResult->GetValue());
+						
+						auto BlockAlignResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+						
+						if(BlockAlignResult->GetSuccess() == true)
+						{
+							Index += BlockAlignResult->GetLength();
+							Values->Append("BlockAlign", BlockAlignResult->GetValue());
+							
+							auto BitsPerSampleResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+							
+							if(BitsPerSampleResult->GetSuccess() == true)
+							{
+								Index += BitsPerSampleResult->GetLength();
+								Values->Append("BitsPerSample", BitsPerSampleResult->GetValue());
+								
+								if(Length - Index >= 18)
+								{
+									auto ExtensionSizeResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+									
+									if(ExtensionSizeResult->GetSuccess() == true)
+									{
+										Index += ExtensionSizeResult->GetLength();
+										Values->Append("ExtensionSize", ExtensionSizeResult->GetValue());
+										
+										auto ExtensionSize{std::experimental::any_cast< std::uint16_t >(ExtensionSizeResult->GetAny())};
+										
+										if((ExtensionSize == 0) || (ExtensionSize == 22))
+										{
+											Success = Length - Index == ExtensionSize;
+											
+											auto ValidBitsPerSampleResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+											
+											if(ValidBitsPerSampleResult->GetSuccess() == true)
+											{
+												Index += ValidBitsPerSampleResult->GetLength();
+												Values->Append("ValidBitsPerSample", ValidBitsPerSampleResult->GetValue());
+												
+												auto ChannelMaskResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+												
+												if(ChannelMaskResult->GetSuccess() == true)
+												{
+													Index += ChannelMaskResult->GetLength();
+													Values->Append("ChannelMask", ChannelMaskResult->GetValue());
+													assert(Length - Index == 16);
+													
+													auto SubFormatResult{Get_HexadecimalString_TerminatedByLength(Buffer + Index, Length - Index)};
+													
+													if(SubFormatResult->GetSuccess() == true)
+													{
+														Index += SubFormatResult->GetLength();
+														Values->Append("SubFormat", SubFormatResult->GetValue());
+													}
+												}
+											}
+										}
+										else
+										{
+											Success = false;
+										}
+									}
+								}
+								else
+								{
+									Success = true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
+}
+
+std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
