@@ -4,5 +4,5 @@ syntax: regexp
 ^id3/id3inspector.o$
 ^mpeginspector$
 ^mpeg/mpeginspector.o$
-^waveinspector$
-^wave/waveinspector.o$
+^riffinspector$
+^riff/riffinspector.o$
