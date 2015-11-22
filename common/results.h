@@ -49,6 +49,11 @@ namespace Results
 			_Values.push_back(std::make_shared< Results::Value >(Name, Value));
 		}
 		
+		void Append(const std::experimental::any & Any)
+		{
+			_Values.push_back(std::make_shared< Results::Value >(Any));
+		}
+		
 		const std::string & GetName(void) const
 		{
 			return _Name;
