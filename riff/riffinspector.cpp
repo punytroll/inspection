@@ -81,13 +81,13 @@ std::unique_ptr< Results::Result > Get_FormatTag(const std::uint8_t * Buffer, st
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Value >()};
+	auto Value{std::make_shared< Results::Value >()};
 	auto FormatTagResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 		
 	if(FormatTagResult->GetSuccess() == true)
 	{
 		Index += FormatTagResult->GetLength();
-		Values->Append("FormatTag", FormatTagResult->GetValue());
+		Value->SetAny(FormatTagResult->GetAny());
 		Success = true;
 		
 		auto FormatTag{std::experimental::any_cast< std::uint16_t >(FormatTagResult->GetAny())};
@@ -96,85 +96,85 @@ std::unique_ptr< Results::Result > Get_FormatTag(const std::uint8_t * Buffer, st
 		{
 		case 0x0000:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_UNKNOWN"));
-				Values->Append("Description", std::string("Unknown or invalid format tag"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_UNKNOWN"));
+				Value->Append("Description", std::string("Unknown or invalid format tag"));
 				
 				break;
 			}
 		case 0x0001:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_PCM"));
-				Values->Append("Description", std::string("Pulse Code Modulation"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_PCM"));
+				Value->Append("Description", std::string("Pulse Code Modulation"));
 				
 				break;
 			}
 		case 0x0002:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_ADPCM"));
-				Values->Append("Description", std::string("Microsoft Adaptive Differental PCM"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_ADPCM"));
+				Value->Append("Description", std::string("Microsoft Adaptive Differental PCM"));
 				
 				break;
 			}
 		case 0x0003:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_IEEE_FLOAT"));
-				Values->Append("Description", std::string("32-bit floating-point"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_IEEE_FLOAT"));
+				Value->Append("Description", std::string("32-bit floating-point"));
 				
 				break;
 			}
 		case 0x0055:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_MPEGLAYER3"));
-				Values->Append("Description", std::string("ISO/MPEG Layer3"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_MPEGLAYER3"));
+				Value->Append("Description", std::string("ISO/MPEG Layer3"));
 				
 				break;
 			}
 		case 0x0092:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_DOLBY_AC3_SPDIF"));
-				Values->Append("Description", std::string("Dolby Audio Codec 3 over S/PDIF"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_DOLBY_AC3_SPDIF"));
+				Value->Append("Description", std::string("Dolby Audio Codec 3 over S/PDIF"));
 				
 				break;
 			}
 		case 0x0161:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO2"));
-				Values->Append("Description", std::string("Windows Media Audio"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO2"));
+				Value->Append("Description", std::string("Windows Media Audio"));
 				
 				break;
 			}
 		case 0x0162:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO3"));
-				Values->Append("Description", std::string("Windows Media Audio Pro"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO3"));
+				Value->Append("Description", std::string("Windows Media Audio Pro"));
 				
 				break;
 			}
 		case 0x0164:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_WMASPDIF"));
-				Values->Append("Description", std::string("Windows Media Audio over S/PDIF"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_WMASPDIF"));
+				Value->Append("Description", std::string("Windows Media Audio over S/PDIF"));
 				
 				break;
 			}
 		case 0xFFFE:
 			{
-				Values->Append("ConstantName", std::string("WAVE_FORMAT_EXTENSIBLE"));
-				Values->Append("Description", std::string("All new audio formats"));
+				Value->Append("ConstantName", std::string("WAVE_FORMAT_EXTENSIBLE"));
+				Value->Append("Description", std::string("All new audio formats"));
 				
 				break;
 			}
 		default:
 			{
-				Values->Append("ConstantName", std::string("<no interpretation>"));
-				Values->Append("Description", std::string("<no interpretation>"));
+				Value->Append("ConstantName", std::string("<no interpretation>"));
+				Value->Append("Description", std::string("<no interpretation>"));
 				
 				break;
 			}
 		}
 	}
 	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
 }
 
 std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -280,14 +280,14 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Value >()};
+	auto Value{std::make_shared< Results::Value >()};
 	auto ChunkHeaderResult{Get_RIFF_ChunkHeader(Buffer + Index, Length - Index)};
 		
 	if(ChunkHeaderResult->GetSuccess() == true)
 	{
 		Index += ChunkHeaderResult->GetLength();
-		Values->Append(ChunkHeaderResult->GetValue("ChunkIdentifier"));
-		Values->Append(ChunkHeaderResult->GetValue("ChunkSize"));
+		Value->Append(ChunkHeaderResult->GetValue("ChunkIdentifier"));
+		Value->Append(ChunkHeaderResult->GetValue("ChunkSize"));
 		
 		auto ChunkSize{std::experimental::any_cast< std::uint32_t >(ChunkHeaderResult->GetAny("ChunkSize"))};
 		
@@ -315,7 +315,7 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 			if((ChunkDataResult) && (ChunkDataResult->GetSuccess() == true))
 			{
 				Index += ChunkDataResult->GetLength();
-				Values->Append("ChunkData", ChunkDataResult->GetValue());
+				Value->Append("ChunkData", ChunkDataResult->GetValue());
 			}
 			else
 			{
@@ -324,14 +324,14 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 		}
 	}
 	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
 }
 
 std::unique_ptr< Results::Result > Get_RIFF_ChunkHeader(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Value >()};
+	auto Value{std::make_shared< Results::Value >()};
 	
 	if(Length - Index >= 4ull)
 	{
@@ -340,44 +340,44 @@ std::unique_ptr< Results::Result > Get_RIFF_ChunkHeader(const std::uint8_t * Buf
 		if(ChunkIdentifierResult->GetSuccess() == true)
 		{
 			Index += ChunkIdentifierResult->GetLength();
-			Values->Append("ChunkIdentifier", ChunkIdentifierResult->GetValue());
+			Value->Append("ChunkIdentifier", ChunkIdentifierResult->GetValue());
 			
 			auto ChunkSizeResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 			
 			if(ChunkSizeResult->GetSuccess() == true)
 			{
 				Index += ChunkSizeResult->GetLength();
-				Values->Append("ChunkSize", ChunkSizeResult->GetValue());
+				Value->Append("ChunkSize", ChunkSizeResult->GetValue());
 				Success = true;
 			}
 		}
 	}
 	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
 }
 
 std::unique_ptr< Results::Result > Get_RIFF_fact_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Value >()};
+	auto Value{std::make_shared< Results::Value >()};
 	auto SampleLengthResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 		
 	if(SampleLengthResult->GetSuccess() == true)
 	{
 		Index += SampleLengthResult->GetLength();
-		Values->Append("SampleLength", SampleLengthResult->GetValue());
+		Value->Append("SampleLength", SampleLengthResult->GetValue());
 		Success = true;
 	}
 	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
 }
 
 std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Value >()};
+	auto Value{std::make_shared< Results::Value >()};
 	
 	if(Length >= 16)
 	{
@@ -386,42 +386,42 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 		if(FormatTagResult->GetSuccess() == true)
 		{
 			Index += FormatTagResult->GetLength();
-			Values->Append("FormatTag", FormatTagResult->GetValue());
+			Value->Append("FormatTag", FormatTagResult->GetValue());
 			
 			auto NumberOfChannelsResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 			
 			if(NumberOfChannelsResult->GetSuccess() == true)
 			{
 				Index += NumberOfChannelsResult->GetLength();
-				Values->Append("NumberOfChannels", NumberOfChannelsResult->GetValue());
+				Value->Append("NumberOfChannels", NumberOfChannelsResult->GetValue());
 				
 				auto SamplesPerSecondResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 				
 				if(SamplesPerSecondResult->GetSuccess() == true)
 				{
 					Index += SamplesPerSecondResult->GetLength();
-					Values->Append("SamplesPerSecond", SamplesPerSecondResult->GetValue());
+					Value->Append("SamplesPerSecond", SamplesPerSecondResult->GetValue());
 					
 					auto AverageBytesPerSecondResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 					
 					if(AverageBytesPerSecondResult->GetSuccess() == true)
 					{
 						Index += AverageBytesPerSecondResult->GetLength();
-						Values->Append("AverageBytesPerSecond", AverageBytesPerSecondResult->GetValue());
+						Value->Append("AverageBytesPerSecond", AverageBytesPerSecondResult->GetValue());
 						
 						auto BlockAlignResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 						
 						if(BlockAlignResult->GetSuccess() == true)
 						{
 							Index += BlockAlignResult->GetLength();
-							Values->Append("BlockAlign", BlockAlignResult->GetValue());
+							Value->Append("BlockAlign", BlockAlignResult->GetValue());
 							
 							auto BitsPerSampleResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 							
 							if(BitsPerSampleResult->GetSuccess() == true)
 							{
 								Index += BitsPerSampleResult->GetLength();
-								Values->Append("BitsPerSample", BitsPerSampleResult->GetValue());
+								Value->Append("BitsPerSample", BitsPerSampleResult->GetValue());
 								
 								if(Length - Index >= 18)
 								{
@@ -430,7 +430,7 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 									if(ExtensionSizeResult->GetSuccess() == true)
 									{
 										Index += ExtensionSizeResult->GetLength();
-										Values->Append("ExtensionSize", ExtensionSizeResult->GetValue());
+										Value->Append("ExtensionSize", ExtensionSizeResult->GetValue());
 										
 										auto ExtensionSize{std::experimental::any_cast< std::uint16_t >(ExtensionSizeResult->GetAny())};
 										
@@ -443,14 +443,14 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 											if(ValidBitsPerSampleResult->GetSuccess() == true)
 											{
 												Index += ValidBitsPerSampleResult->GetLength();
-												Values->Append("ValidBitsPerSample", ValidBitsPerSampleResult->GetValue());
+												Value->Append("ValidBitsPerSample", ValidBitsPerSampleResult->GetValue());
 												
 												auto ChannelMaskResult{Get_LittleEndian_32Bit_BitSet(Buffer + Index, Length - Index)};
 												
 												if(ChannelMaskResult->GetSuccess() == true)
 												{
 													Index += ChannelMaskResult->GetLength();
-													Values->Append("ChannelMask", ChannelMaskResult->GetValue());
+													Value->Append("ChannelMask", ChannelMaskResult->GetValue());
 													assert(Length - Index == 16);
 													
 													auto SubFormatResult{Get_HexadecimalString_TerminatedByLength(Buffer + Index, Length - Index)};
@@ -458,7 +458,7 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 													if(SubFormatResult->GetSuccess() == true)
 													{
 														Index += SubFormatResult->GetLength();
-														Values->Append("SubFormat", SubFormatResult->GetValue());
+														Value->Append("SubFormat", SubFormatResult->GetValue());
 													}
 												}
 											}
@@ -481,14 +481,14 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 		}
 	}
 	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
 }
 
 std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Value >()};
+	auto Value{std::make_shared< Results::Value >()};
 	
 	if(Length - Index >= 4ull)
 	{
@@ -497,7 +497,7 @@ std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * 
 		if(FormTypeResult->GetSuccess() == true)
 		{
 			Index += FormTypeResult->GetLength();
-			Values->Append("FormType", FormTypeResult->GetValue());
+			Value->Append("FormType", FormTypeResult->GetValue());
 			
 			auto Chunks{std::make_shared< Results::Value >(std::string("Chunks"))};
 			
@@ -517,13 +517,13 @@ std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * 
 			}
 			if(Chunks->GetCount() > 0)
 			{
-				Values->Append(Chunks);
+				Value->Append(Chunks);
 			}
 			Success = true;
 		}
 	}
 	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
 }
 
 void PrintValue(const std::string & Indentation, std::shared_ptr< Results::Value > Value)
