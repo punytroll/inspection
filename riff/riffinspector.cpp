@@ -2,6 +2,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#include <bitset>
 #include <cassert>
 #include <deque>
 #include <iomanip>
@@ -23,6 +24,7 @@ std::unique_ptr< Results::Result > Get_ASCII_AlphaNumericOrSpaceCharacter(const 
 std::unique_ptr< Results::Result > Get_FormatTag(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_LittleEndian_16Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_LittleEndian_32Bit_BitSet(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_LittleEndian_32Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_RIFF_ChunkHeader(const std::uint8_t * Buffer, std::uint64_t Length);
@@ -206,6 +208,53 @@ std::unique_ptr< Results::Result > Get_LittleEndian_16Bit_UnsignedInteger(const 
 		Success = true;
 		Index = 2ull;
 		Value = static_cast< std::uint16_t >(Buffer[0]) + (static_cast< std::uint16_t >(Buffer[1]) << 8);
+	}
+	
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
+}
+
+std::unique_ptr< Results::Result > Get_LittleEndian_32Bit_BitSet(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::bitset<32> Value;
+	
+	if(Length >= 4ull)
+	{
+		Success = true;
+		Index = 4ull;
+		Value[0] = (Buffer[0] & 0x01) == 0x01;
+		Value[1] = (Buffer[0] & 0x02) == 0x02;
+		Value[2] = (Buffer[0] & 0x04) == 0x04;
+		Value[3] = (Buffer[0] & 0x08) == 0x08;
+		Value[4] = (Buffer[0] & 0x10) == 0x10;
+		Value[5] = (Buffer[0] & 0x20) == 0x20;
+		Value[6] = (Buffer[0] & 0x40) == 0x40;
+		Value[7] = (Buffer[0] & 0x80) == 0x80;
+		Value[8] = (Buffer[1] & 0x01) == 0x01;
+		Value[9] = (Buffer[1] & 0x02) == 0x02;
+		Value[10] = (Buffer[1] & 0x04) == 0x04;
+		Value[11] = (Buffer[1] & 0x08) == 0x08;
+		Value[12] = (Buffer[1] & 0x10) == 0x10;
+		Value[13] = (Buffer[1] & 0x20) == 0x20;
+		Value[14] = (Buffer[1] & 0x40) == 0x40;
+		Value[15] = (Buffer[1] & 0x80) == 0x80;
+		Value[16] = (Buffer[2] & 0x01) == 0x01;
+		Value[17] = (Buffer[2] & 0x02) == 0x02;
+		Value[18] = (Buffer[2] & 0x04) == 0x04;
+		Value[19] = (Buffer[2] & 0x08) == 0x08;
+		Value[20] = (Buffer[2] & 0x10) == 0x10;
+		Value[21] = (Buffer[2] & 0x20) == 0x20;
+		Value[22] = (Buffer[2] & 0x40) == 0x40;
+		Value[23] = (Buffer[2] & 0x80) == 0x80;
+		Value[24] = (Buffer[3] & 0x01) == 0x01;
+		Value[25] = (Buffer[3] & 0x02) == 0x02;
+		Value[26] = (Buffer[3] & 0x04) == 0x04;
+		Value[27] = (Buffer[3] & 0x08) == 0x08;
+		Value[28] = (Buffer[3] & 0x10) == 0x10;
+		Value[29] = (Buffer[3] & 0x20) == 0x20;
+		Value[30] = (Buffer[3] & 0x40) == 0x40;
+		Value[31] = (Buffer[3] & 0x80) == 0x80;
 	}
 	
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
@@ -396,7 +445,7 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 												Index += ValidBitsPerSampleResult->GetLength();
 												Values->Append("ValidBitsPerSample", ValidBitsPerSampleResult->GetValue());
 												
-												auto ChannelMaskResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+												auto ChannelMaskResult{Get_LittleEndian_32Bit_BitSet(Buffer + Index, Length - Index)};
 												
 												if(ChannelMaskResult->GetSuccess() == true)
 												{
