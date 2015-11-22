@@ -81,7 +81,7 @@ std::unique_ptr< Results::Result > Get_FormatTag(const std::uint8_t * Buffer, st
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Values >()};
+	auto Values{std::make_shared< Results::Value >()};
 	auto FormatTagResult{Get_LittleEndian_16Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 		
 	if(FormatTagResult->GetSuccess() == true)
@@ -280,7 +280,7 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Values >()};
+	auto Values{std::make_shared< Results::Value >()};
 	auto ChunkHeaderResult{Get_RIFF_ChunkHeader(Buffer + Index, Length - Index)};
 		
 	if(ChunkHeaderResult->GetSuccess() == true)
@@ -331,7 +331,7 @@ std::unique_ptr< Results::Result > Get_RIFF_ChunkHeader(const std::uint8_t * Buf
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Values >()};
+	auto Values{std::make_shared< Results::Value >()};
 	
 	if(Length - Index >= 4ull)
 	{
@@ -360,7 +360,7 @@ std::unique_ptr< Results::Result > Get_RIFF_fact_ChunkData(const std::uint8_t * 
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Values >()};
+	auto Values{std::make_shared< Results::Value >()};
 	auto SampleLengthResult{Get_LittleEndian_32Bit_UnsignedInteger(Buffer + Index, Length - Index)};
 		
 	if(SampleLengthResult->GetSuccess() == true)
@@ -377,7 +377,7 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Values >()};
+	auto Values{std::make_shared< Results::Value >()};
 	
 	if(Length >= 16)
 	{
@@ -488,7 +488,7 @@ std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * 
 {
 	auto Success{false};
 	auto Index{0ull};
-	auto Values{std::make_shared< Results::Values >()};
+	auto Values{std::make_shared< Results::Value >()};
 	
 	if(Length - Index >= 4ull)
 	{
@@ -499,7 +499,7 @@ std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * 
 			Index += FormTypeResult->GetLength();
 			Values->Append("FormType", FormTypeResult->GetValue());
 			
-			auto Chunks{std::make_shared< Results::Values >("Chunks")};
+			auto Chunks{std::make_shared< Results::Value >(std::string("Chunks"))};
 			
 			while(Length - Index > 0)
 			{
@@ -526,32 +526,29 @@ std::unique_ptr< Results::Result > Get_RIFF_RIFF_ChunkData(const std::uint8_t * 
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Values));
 }
 
-void PrintValue(const std::string & Indentation, std::shared_ptr< Results::ValueBase > ValueBase)
+void PrintValue(const std::string & Indentation, std::shared_ptr< Results::Value > Value)
 {
-	auto Value{std::dynamic_pointer_cast< Results::Value >(ValueBase)};
+	auto HeaderLine{false};
 	
-	if(Value != nullptr)
+	if(Value->GetName().empty() == false)
 	{
-		std::cout << Indentation << Value->GetName() << ": " << Value->GetAny() << std::endl;
+		std::cout << Indentation << Value->GetName() << ": ";
+		HeaderLine = true;
 	}
-	else
+	if(Value->GetAny().empty() == false)
 	{
-		auto Values{std::dynamic_pointer_cast< Results::Values >(ValueBase)};
-		
-		if(Values != nullptr)
+		std::cout << Value->GetAny();
+		HeaderLine = true;
+	}
+	if(HeaderLine == true)
+	{
+		std::cout << std::endl;
+	}
+	if(Value->GetCount() > 0)
+	{
+		for(auto & SubValue : Value->GetValues())
 		{
-			if(Values->GetName().empty() == false)
-			{
-				std::cout << Indentation << Values->GetName() << ":" << std::endl;
-			}
-			for(auto & SubValue : Values->GetValues())
-			{
-				PrintValue(Indentation + "    ", SubValue);
-			}
-		}
-		else
-		{
-			throw new std::exception();
+			PrintValue(Indentation + "    ", SubValue);
 		}
 	}
 }
