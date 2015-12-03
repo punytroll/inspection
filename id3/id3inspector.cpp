@@ -5334,6 +5334,169 @@ int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
+int Handle23USLTFrame(const uint8_t * Buffer, int Length)
+{
+	int Index(0);
+	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	
+	if(std::get<0>(Encoding) == true)
+	{
+		Index += std::get<1>(Encoding);
+		std::cout << "\t\t\t\tText Encoding: " << std::experimental::any_cast< std::string >(std::get<2>(Encoding).Get("Name")) << std::endl;
+		
+		auto Language(Get_ISO_IEC_8859_1_StringEndedByBoundary(Buffer + Index, Length - Index, 3));
+		
+		if(std::get<0>(Language) == true)
+		{
+			Index += std::get<1>(Language);
+			
+			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(std::get<2>(Language)));
+			
+			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
+			{
+				std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << " (\"" << std::get<2>(Language) << "\")" << std::endl;
+			}
+			else
+			{
+				std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown>" << std::endl;
+				std::cout << "*** ERROR *** The language code '" << std::get<2>(Language) << "' is not defined by ISO 639-2." << std::endl;
+			}
+			if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
+			{
+				auto ContentDescriptor(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(ContentDescriptor) == true)
+				{
+					Index += std::get<1>(ContentDescriptor);
+					std::cout << "\t\t\t\tContent descriptor: \"" << std::get<2>(ContentDescriptor) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The content of the \"Content descriptor\" field could not be interpreted as an ISO/IEC 8859-1:1998 string with termination." << std::endl;
+				}
+			}
+			else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UTF_16)
+			{
+				auto ContentDescriptor(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(ContentDescriptor) == true)
+				{
+					Index += std::get<1>(ContentDescriptor);
+					std::cout << "\t\t\t\tContent descriptor: \"" << std::get<2>(ContentDescriptor) << "\" (UTF-16, ended by termination)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The content of the \"Content descriptor\" field could not be interpreted as an UTF-16 string with termination." << std::endl;
+				}
+			}
+			if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
+			{
+				auto Lyrics(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Lyrics) == true)
+				{
+					Index += std::get<1>(Lyrics);
+					std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
+				}
+				else
+				{
+					auto Lyrics(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(Lyrics) == true)
+					{
+						Index += std::get<1>(Lyrics);
+						std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
+					}
+					else
+					{
+						auto Lyrics(Get_ISO_IEC_8859_1_StringWithLineFeedsEndedByTermination(Buffer + Index, Length - Index));
+						
+						if(std::get<0>(Lyrics) == true)
+						{
+							Index += std::get<1>(Lyrics);
+							std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, with line feeds ended by boundary)" << std::endl;
+						}
+						else
+						{
+							auto Lyrics(Get_ISO_IEC_8859_1_StringWithLineFeedsEndedByLength(Buffer + Index, Length - Index));
+							
+							if(std::get<0>(Lyrics) == true)
+							{
+								Index += std::get<1>(Lyrics);
+								std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, with line feeds, ended by boundary)" << std::endl;
+							}
+							else
+							{
+								auto Lyrics(Get_ISO_IEC_8859_1_StringWithCarriageReturnsEndedByTermination(Buffer + Index, Length - Index));
+								
+								if(std::get<0>(Lyrics) == true)
+								{
+									Index += std::get<1>(Lyrics);
+									std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], full text strings may contain line feeds but the \"Lyrics\" field wrongly contains carriage return characters." << std::endl;
+									std::replace(std::get<2>(Lyrics).begin(), std::get<2>(Lyrics).end(), '\x0d', '\x0a');
+									std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, with carriage returns ended by boundary)" << std::endl;
+								}
+								else
+								{
+									auto Lyrics(Get_ISO_IEC_8859_1_StringWithCarriageReturnsEndedByLength(Buffer + Index, Length - Index));
+									
+									if(std::get<0>(Lyrics) == true)
+									{
+										Index += std::get<1>(Lyrics);
+										std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], full text strings may contain line feeds but the \"Lyrics\" field wrongly contains carriage return characters." << std::endl;
+										std::replace(std::get<2>(Lyrics).begin(), std::get<2>(Lyrics).end(), '\x0d', '\x0a');
+										std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (ISO/IEC 8859-1:1998, with carriage returns, ended by boundary)" << std::endl;
+									}
+									else
+									{
+										std::cout << "*** ERROR *** The content of the \"Lyrics\" field could not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination with or without line feeds or with or without carriage returns." << std::endl;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UTF_16)
+			{
+				auto Lyrics(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
+				
+				if(std::get<0>(Lyrics) == true)
+				{
+					Index += std::get<1>(Lyrics);
+					std::replace(std::get<2>(Lyrics).begin(), std::get<2>(Lyrics).end(), '\x0d', '\x0a');
+					std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (UTF-16, ended by termination)" << std::endl;
+				}
+				else
+				{
+					auto Lyrics(Get_UTF_16_StringWithByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
+					
+					if(std::get<0>(Lyrics) == true)
+					{
+						Index += std::get<1>(Lyrics);
+						std::replace(std::get<2>(Lyrics).begin(), std::get<2>(Lyrics).end(), '\x0d', '\x0a');
+						std::cout << "\t\t\t\tLyrics/text: \"" << std::get<2>(Lyrics) << "\" (UTF-16, ended by boundary)" << std::endl;
+					}
+					else
+					{
+						std::cout << "*** ERROR *** The content of the \"String\" field could not be interpreted as an UTF-16 string with or without termination." << std::endl;
+					}
+				}
+			}
+		}
+		else
+		{
+			std::cout << "*** ERROR *** According to ID3 2.3.0 [4.9], a \"USLT\" frame MUST contain a \"Language\" field with a valid ISO-639-2 language code." << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.9], a \"USLT\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.3 encoding identifier." << std::endl;
+	}
+	
+	return Index;
+}
+
 int Handle23W___Frames(const uint8_t * Buffer, int Length)
 {
 	int Index(0);
@@ -6963,6 +7126,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle23T___Frames);
 	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23TXXXFrame);
 	FrameHeader::Handle23("TYER", "Year", Handle23T___Frames);
+	FrameHeader::Handle23("USLT", "Unsynchronised lyrics/text transcription", Handle23USLTFrame);
 	FrameHeader::Handle23("UFID", "Unique file identifier", Handle23UFIDFrame);
 	FrameHeader::Handle23("WCOM", "Commercial information", Handle23W___Frames);
 	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23W___Frames);
