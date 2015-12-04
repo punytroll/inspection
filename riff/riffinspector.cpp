@@ -421,6 +421,10 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 			{
 				ChunkDataResult = Get_RIFF_fmt_ChunkData(Buffer + Index, Length - Index);
 			}
+			else
+			{
+				ChunkDataResult = Get_HexadecimalString_TerminatedByLength(Buffer + Index, Length - Index);
+			}
 			if((ChunkDataResult) && (ChunkDataResult->GetSuccess() == true))
 			{
 				Index += ChunkDataResult->GetLength();
