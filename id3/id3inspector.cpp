@@ -5259,7 +5259,7 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 				}
 				else if(std::get<2>(StringByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
 				{
-					std::cout << "\t\t\t\tDescription:" << std::endl;
+					std::cout << "\t\t\t\tString:" << std::endl;
 					std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
 					
 					auto String(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
