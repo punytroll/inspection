@@ -7149,6 +7149,7 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("USLT", "Unsynchronised lyrics/text transcription", Handle23USLTFrame);
 	FrameHeader::Handle23("UFID", "Unique file identifier", Handle23UFIDFrame);
 	FrameHeader::Handle23("WCOM", "Commercial information", Handle23W___Frames);
+	FrameHeader::Handle23("WOAF", "Official audio file webpage", Handle23W___Frames);
 	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23W___Frames);
 	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23WXXXFrame);
 	// forbidden tags
