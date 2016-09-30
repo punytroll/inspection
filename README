@@ -1,0 +1,32 @@
+On the history of value getters:
+================================
+
+1st generation getters:
+-----------------------
+These functions perfom no validating on the input - they simply expect the input to be valid. On faulty input assertions, exceptions or segmentation faults may occur. Also wrong output may be produced for faulty input.
+
+Obviously the major drawback was the missing input validation. This was fixed with side-by-side version of validator functions, which had to be called prior to calling the getters to assert, that reading the value was safe to do. But in most cases this meant iterating over the input twice, resulting in doubled reading time. The second generation of getters was required to validate and extract in one go and report the result of their validation step back to the caller.
+
+2nd generation getters:
+-----------------------
+These functions validate and extract a value in one go. They have two or three return values contained in a return tuple. The first tuple component is a boolean value indicating the success of getting the desired value from the data block. If a value could be extracted successfully, the second value conatins an integer value indicating the length of the processed data. The third value, which may be omitted, is templated with different types and contains the actual result value. If the success return value is false, the length and return values may contain bogus data.
+
+The major drawback is the single return value. In particular this setup made it necessary to separate reading a value from interpreting it. Therefore the third generation was required to allow multiple return values.
+
+3rd generation getters:
+-----------------------
+These functions validate and extract in one go. They have three return values contained in a return tuple. The first tuple component is a boolean value indicating success (type bool). If a value could be extracted successfully, the second value is an integer, indicating the length of the processed data. The third value is an object of the type Values (see below). If the boolean success return value is false, the length and return values may contain bogus data.
+
+The major drawback is the return-by-value semantic. The Values object is returned by value which means a lot of copying around. Also, when getters begin to aggregate values from different fields into one return value and and even cascade Values objects, the copying got out of hand. The fourth generation of getters was required to pass objects by reference.
+
+4th generation getters:
+-----------------------
+These functions validate and extract in one go. They return a unique_ptr to an instance of type Result (see below).
+
+Class "Values":
+---------------
+Is an associative container, mapping from string to an any value. The any value is contained by value.
+
+Class "Result":
+---------------
+Came about as a helper class to incorporate sucess, length and result into one value. Also, this calss was designed to be returned inside a unique_ptr, making it clear that the result of a getter can only be processed are passed around once, not to be contained in the result of another getter. The result value is carried by shared_ptr, which highlights the fact, that this value can be extracted and used in other places.
