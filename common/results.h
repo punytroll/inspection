@@ -123,7 +123,8 @@ namespace Results
 	class Result
 	{
 	public:
-		Result(void)
+		Result(void) :
+			_Success(false)
 		{
 		}
 		
@@ -203,6 +204,22 @@ namespace Results
 		bool _Success;
 		std::shared_ptr< Value > _Value;
 	};
+	
+	inline std::unique_ptr< Result > MakeFailure()
+	{
+		return std::make_unique< Result >();
+	}
+	
+	template< typename ValueType >
+	inline std::unique_ptr< Result > MakeResult(bool Success, std::uint64_t Length, const ValueType & Value)
+	{
+		return std::make_unique< Results::Result >(Success, Length, std::make_shared< Results::Value >(Value));
+	}
+	
+	inline std::unique_ptr< Result > MakeResult(bool Success, std::uint64_t Length, std::shared_ptr< Results::Value > Value)
+	{
+		return std::make_unique< Results::Result >(Success, Length, Value);
+	}
 }
 
 #endif
