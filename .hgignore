@@ -1,10 +1,13 @@
 syntax: regexp
 
 ^id3inspector$
-^id3/id3inspector.o$
+^id3/id3inspector\.o$
 ^mpeginspector$
-^mpeg/mpeginspector.o$
+^mpeg/mpeginspector\.o$
 ^riffinspector$
-^riff/riffinspector.o$
+^riff/riffinspector\.o$
 ^vorbisinspector$
-^vorbis/vorbisinspector.o$
+^vorbis/vorbisinspector\.o$
+^asfinspector$
+^asf/asfinspector\.o$
+^common/getters/.*\.o$
