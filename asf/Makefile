@@ -9,8 +9,8 @@ clean:
 
 all: ../asfinspector
 
-../asfinspector: asfinspector.o ../common/getters/4th.o
+../asfinspector: asfinspector.o ../common/getters/4th.o ../common/hexadecimal_strings.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-asfinspector.o: asfinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/results.h ../common/getters/4th.h
+asfinspector.o: asfinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/getters/4th.h ../common/guid.h ../common/hexadecimal_strings.o ../common/results.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@

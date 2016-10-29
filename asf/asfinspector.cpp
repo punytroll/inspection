@@ -16,21 +16,78 @@
 #include "../common/guid.h"
 #include "../common/results.h"
 
+GUID g_ASFHeaderObjectGUID{"75b22630-668e-11cf-a6d9-00aa0062ce6c"};
+GUID g_ASFDataObjectGUID{"75b22636-668e-11cf-a6d9-00aa0062ce6c"};
+GUID g_ASFSimpleIndexObjectGUID{"33000890-e5b1-11cf-89f4-00a0c90349cb"};
+GUID g_ASFIndexObjectGUID{"D6E229D3-35DA-11D1-9034-00A0C90349BE"};
+GUID g_ASFMediaObjectIndexObjectGUID{"feb103f8-12ad-4c64-840f-2a1d2f7ad48c"};
+GUID g_ASFTimecodeIndexObject{"3cb73fd0-0c4a-4803-953d-edf7b6228f0c"};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 4th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
+
+std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Value{std::make_shared< Results::Value >()};
+	auto GUIDResult{Get_GUID_LittleEndian(Buffer + Index, Length - Index)};
+	
+	if(GUIDResult->GetSuccess() == true)
+	{
+		Success = true;
+		Index += GUIDResult->GetLength();
+		
+		auto GUIDValue{std::experimental::any_cast< GUID >(GUIDResult->GetAny())};
+		
+		Value->Append("Nominal value", GUIDValue);
+		if(GUIDValue == g_ASFHeaderObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Header_Object"));
+		}
+		else if(GUIDValue == g_ASFDataObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Data_Object"));
+		}
+		else if(GUIDValue == g_ASFSimpleIndexObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Simple_Index_Object"));
+		}
+		else if(GUIDValue == g_ASFIndexObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Index_Object"));
+		}
+		else if(GUIDValue == g_ASFMediaObjectIndexObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Media_Object_Index_Object"));
+		}
+		else if(GUIDValue == g_ASFTimecodeIndexObject)
+		{
+			Value->Append("Interpretation", std::string("ASF_Timecode_Index_Object"));
+		}
+		else
+		{
+			Value->Append("Interpretation", std::string("<unknown GUID value>"));
+		}
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
 
 std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
 	auto Value{std::make_shared< Results::Value >()};
-	auto ObjectGUID{Get_GUID_LittleEndian(Buffer + Index, Length - Index)};
+	auto ObjectGUID{Get_ASF_GUID(Buffer + Index, Length - Index)};
 	
 	if(ObjectGUID->GetSuccess() == true)
 	{
+		Value->SetName("ASF Object");
 		Index += ObjectGUID->GetLength();
 		Value->Append("GUID", ObjectGUID->GetValue());
 		
