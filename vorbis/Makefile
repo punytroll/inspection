@@ -9,8 +9,8 @@ clean:
 
 all: ../vorbisinspector
 
-../vorbisinspector: vorbisinspector.o
+../vorbisinspector: vorbisinspector.o ../common/getters/4th.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/results.h
+vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/getters/4th.h ../common/results.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
