@@ -1,6 +1,51 @@
 #include "../guid.h"
 #include "4th.h"
 
+std::unique_ptr< Results::Result > Get_ASCII_AlphaCharacter(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Value{'\0'};
+	
+	if(Length >= 1ull)
+	{
+		if(((Buffer[0] > 0x40) && (Buffer[0] < 0x5B)) || ((Buffer[0] > 0x60) && (Buffer[0] < 0x7B)))
+		{
+			Success = true;
+			Index += 1ull;
+			Value = Buffer[0];
+		}
+	}
+	
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
+}
+
+std::unique_ptr< Results::Result > Get_ASCII_AlphaStringTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{true};
+	auto Index{0ull};
+	std::stringstream StringStream;
+	
+	while(Index < Length)
+	{
+		auto ASCII_AlphaCharacterResult{Get_ASCII_AlphaCharacter(Buffer + Index, Length - Index)};
+		
+		if(ASCII_AlphaCharacterResult->GetSuccess() == true)
+		{
+			Index += ASCII_AlphaCharacterResult->GetLength();
+			StringStream << std::experimental::any_cast< char >(ASCII_AlphaCharacterResult->GetAny());
+		}
+		else
+		{
+			Success = false;
+			
+			break;
+		}
+	}
+	
+	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >("", StringStream.str())));
+}
+
 std::unique_ptr< Results::Result > Get_GUID_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
