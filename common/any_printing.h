@@ -31,6 +31,10 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 	{
 		return OStream << static_cast< std::uint32_t >(std::experimental::any_cast< std::uint8_t >(Any));
 	}
+	else if(Any.type() == typeid(std::bitset<16>))
+	{
+		return OStream << std::experimental::any_cast< std::bitset<16> >(Any);
+	}
 	else if(Any.type() == typeid(std::bitset<32>))
 	{
 		return OStream << std::experimental::any_cast< std::bitset<32> >(Any);
