@@ -7,6 +7,7 @@
 
 std::unique_ptr< Results::Result > Get_ASCII_AlphaCharacter(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASCII_AlphaStringTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_BitSet_16Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_BitSet_32Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_BitSet_8Bit(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_Buffer_UnsignedInteger_8Bit_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
