@@ -16,12 +16,33 @@
 #include "../common/guid.h"
 #include "../common/results.h"
 
-GUID g_ASFHeaderObjectGUID{"75b22630-668e-11cf-a6d9-00aa0062ce6c"};
-GUID g_ASFDataObjectGUID{"75b22636-668e-11cf-a6d9-00aa0062ce6c"};
-GUID g_ASFSimpleIndexObjectGUID{"33000890-e5b1-11cf-89f4-00a0c90349cb"};
-GUID g_ASFIndexObjectGUID{"D6E229D3-35DA-11D1-9034-00A0C90349BE"};
-GUID g_ASFMediaObjectIndexObjectGUID{"feb103f8-12ad-4c64-840f-2a1d2f7ad48c"};
-GUID g_ASFTimecodeIndexObject{"3cb73fd0-0c4a-4803-953d-edf7b6228f0c"};
+/// Top-level ASF Object GUIDs
+/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.1
+GUID g_ASF_HeaderObjectGUID{"75b22630-668e-11cf-a6d9-00aa0062ce6c"};
+GUID g_ASF_DataObjectGUID{"75b22636-668e-11cf-a6d9-00aa0062ce6c"};
+GUID g_ASF_SimpleIndexObjectGUID{"33000890-e5b1-11cf-89f4-00a0c90349cb"};
+GUID g_ASF_IndexObjectGUID{"D6E229D3-35DA-11D1-9034-00A0C90349BE"};
+GUID g_ASF_MediaObjectIndexObjectGUID{"feb103f8-12ad-4c64-840f-2a1d2f7ad48c"};
+GUID g_ASF_TimecodeIndexObject{"3cb73fd0-0c4a-4803-953d-edf7b6228f0c"};
+
+/// Header Object GUIDs
+/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.2
+GUID g_ASF_FilePropertiesObjectGUID{"8cabdca1-a947-11cf-8ee4-00c00c205365"};
+GUID g_ASF_StreamPropertiesObjectGUID{"b7dc0791-a9b7-11cf-8ee6-00c00c205365"};
+GUID g_ASF_HeaderExtensionObjectGUID{"5fbf03b5-a92e-11cf-8ee3-00c00c205365"};
+GUID g_ASF_CodecListObjectGUID{"86d15240-311d-11d0-a3a4-00a0c90348f6"};
+GUID g_ASF_ScriptCommandObjectGUID{"1efb1a30-0b62-11d0-a39b-00a0c90348f6"};
+GUID g_ASF_MarkerObjectGUID{"f487cd01-a951-11cf-8ee6-00c00c205365"};
+GUID g_ASF_BitrateMutualExclusionObjectGUID{"d6e229dc-35da-11d1-9034-00a0c90349be"};
+GUID g_ASF_ErrorCorrectionObjectGUID{"75b22635-668e-11cf-a6d9-00aa0062ce6c"};
+GUID g_ASF_ContentDescriptionObjectGUID{"75b22633-668e-11cf-a6d9-00aa0062ce6c"};
+GUID g_ASF_ExtendedContentDescriptionObjectGUID{"d2d0a440-e307-11d2-97f0-00a0c95ea850"};
+GUID g_ASF_ContentBrandingObjectGUID{"2211b3fa-bd23-11d2-b4b7-00a0c955fc6e"};
+GUID g_ASF_StreamBitratePropertiesObjectGUID{"7bf875ce-468d-11d1-8d82-006097c9a2b2"};
+GUID g_ASF_ContentEncryptionObjectGUID{"2211b3fb-bd23-11d2-b4b7-00a0c955fc6e"};
+GUID g_ASF_ExtendedContentEncryptionObjectGUID{"298ae614-2622-4c17-b935-dae07ee9289c"};
+GUID g_ASF_DigitalSignatureObjectGUID{"2211b3fc-bd23-11d2-b4b7-00a0c955fc6e"};
+GUID g_ASF_PaddingObjectGUID{"1806d474-cadf-4509-a4ba-9aabcb96aae8"};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 4th generation getters                                                                        //
@@ -45,30 +66,97 @@ std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std
 		auto GUIDValue{std::experimental::any_cast< GUID >(GUIDResult->GetAny())};
 		
 		Value->Append("Nominal value", GUIDValue);
-		if(GUIDValue == g_ASFHeaderObjectGUID)
+		// Top-level ASF Object GUIDs
+		if(GUIDValue == g_ASF_HeaderObjectGUID)
 		{
 			Value->Append("Interpretation", std::string("ASF_Header_Object"));
 		}
-		else if(GUIDValue == g_ASFDataObjectGUID)
+		else if(GUIDValue == g_ASF_DataObjectGUID)
 		{
 			Value->Append("Interpretation", std::string("ASF_Data_Object"));
 		}
-		else if(GUIDValue == g_ASFSimpleIndexObjectGUID)
+		else if(GUIDValue == g_ASF_SimpleIndexObjectGUID)
 		{
 			Value->Append("Interpretation", std::string("ASF_Simple_Index_Object"));
 		}
-		else if(GUIDValue == g_ASFIndexObjectGUID)
+		else if(GUIDValue == g_ASF_IndexObjectGUID)
 		{
 			Value->Append("Interpretation", std::string("ASF_Index_Object"));
 		}
-		else if(GUIDValue == g_ASFMediaObjectIndexObjectGUID)
+		else if(GUIDValue == g_ASF_MediaObjectIndexObjectGUID)
 		{
 			Value->Append("Interpretation", std::string("ASF_Media_Object_Index_Object"));
 		}
-		else if(GUIDValue == g_ASFTimecodeIndexObject)
+		else if(GUIDValue == g_ASF_TimecodeIndexObject)
 		{
 			Value->Append("Interpretation", std::string("ASF_Timecode_Index_Object"));
 		}
+		// Header Object GUIDs
+		else if(GUIDValue == g_ASF_FilePropertiesObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_File_Properties_Object"));
+		}
+		else if(GUIDValue == g_ASF_StreamPropertiesObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Stream_Properties_Object"));
+		}
+		else if(GUIDValue == g_ASF_HeaderExtensionObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Header_Extension_Object"));
+		}
+		else if(GUIDValue == g_ASF_CodecListObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Codec_List_Object"));
+		}
+		else if(GUIDValue == g_ASF_ScriptCommandObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Script_Command_Object"));
+		}
+		else if(GUIDValue == g_ASF_MarkerObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Marker_Object"));
+		}
+		else if(GUIDValue == g_ASF_BitrateMutualExclusionObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Bitrate_Mutual_Exclusion_Object"));
+		}
+		else if(GUIDValue == g_ASF_ErrorCorrectionObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Error_Correction_Object"));
+		}
+		else if(GUIDValue == g_ASF_ContentDescriptionObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Content_Description_Object"));
+		}
+		else if(GUIDValue == g_ASF_ExtendedContentDescriptionObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Extended_Content_Description_Object"));
+		}
+		else if(GUIDValue == g_ASF_ContentBrandingObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Content_Branding_Object"));
+		}
+		else if(GUIDValue == g_ASF_StreamBitratePropertiesObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Stream_Bitrate_Properties_Object"));
+		}
+		else if(GUIDValue == g_ASF_ContentEncryptionObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Content_Encryption_Object"));
+		}
+		else if(GUIDValue == g_ASF_ExtendedContentEncryptionObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Extended_Content_Encryption_Object"));
+		}
+		else if(GUIDValue == g_ASF_DigitalSignatureObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Digital_Signature_Object"));
+		}
+		else if(GUIDValue == g_ASF_PaddingObjectGUID)
+		{
+			Value->Append("Interpretation", std::string("ASF_Padding_Object"));
+		}
+		// unknown
 		else
 		{
 			Value->Append("Interpretation", std::string("<unknown GUID value>"));
@@ -162,7 +250,7 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 				auto GUIDValue{std::experimental::any_cast< GUID >(ObjectGUID->GetAny("Nominal value"))};
 				std::unique_ptr< Results::Result > ObjectData;
 				
-				if(GUIDValue == g_ASFHeaderObjectGUID)
+				if(GUIDValue == g_ASF_HeaderObjectGUID)
 				{
 					ObjectData = Get_ASF_HeaderObjectData(Buffer + Index, DataSize);
 				}
