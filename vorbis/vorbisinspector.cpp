@@ -20,31 +20,7 @@
 //   - These functions validate and extract in one go.                                           //
 //   - They return a unique_ptr to an instance of type Result                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Results::Result > Get_8Bit_BitSet(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_VorbisHeaderPacket(const std::uint8_t * Buffer, std::uint64_t Length);
-
-std::unique_ptr< Results::Result > Get_8Bit_BitSet(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::bitset<8> Value;
-	
-	if(Length >= 1ull)
-	{
-		Success = true;
-		Index = 1ull;
-		Value[0] = (Buffer[0] & 0x01) == 0x01;
-		Value[1] = (Buffer[0] & 0x02) == 0x02;
-		Value[2] = (Buffer[0] & 0x04) == 0x04;
-		Value[3] = (Buffer[0] & 0x08) == 0x08;
-		Value[4] = (Buffer[0] & 0x10) == 0x10;
-		Value[5] = (Buffer[0] & 0x20) == 0x20;
-		Value[6] = (Buffer[0] & 0x40) == 0x40;
-		Value[7] = (Buffer[0] & 0x80) == 0x80;
-	}
-	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
-}
 
 //~ std::unique_ptr< Results::Result > Get_VorbisHeaderPacket(const std::uint8_t * Buffer, std::uint64_t Length)
 //~ {
@@ -89,21 +65,21 @@ std::unique_ptr< Results::Result > Get_VorbisPage(const std::uint8_t * Buffer, s
 			Index += CapturePatternResult->GetLength();
 			Value->Append("CapturePattern", CapturePatternResult->GetValue());
 			
-			auto StreamStructureVersionResult{Get_8Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+			auto StreamStructureVersionResult{Get_UnsignedInteger_8Bit(Buffer + Index, Length - Index)};
 			
 			if(StreamStructureVersionResult->GetSuccess() == true)
 			{
 				Index += StreamStructureVersionResult->GetLength();
 				Value->Append("StreamStructureVersion", StreamStructureVersionResult->GetValue());
 				
-				auto HeaderTypeFlagResult{Get_8Bit_BitSet(Buffer + Index, Length - Index)};
+				auto HeaderTypeFlagResult{Get_BitSet_8Bit(Buffer + Index, Length - Index)};
 				
 				if(HeaderTypeFlagResult->GetSuccess() == true)
 				{
 					Index += HeaderTypeFlagResult->GetLength();
 					Value->Append("HeaderTypeFlag", HeaderTypeFlagResult->GetValue());
 					
-					auto GranulePositionResult{Get_64Bit_UnsignedInteger_LittleEndian(Buffer + Index, Length - Index)};
+					auto GranulePositionResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
 					
 					if(GranulePositionResult->GetSuccess() == true)
 					{

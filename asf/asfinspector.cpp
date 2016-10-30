@@ -48,6 +48,7 @@ GUID g_ASF_PaddingObjectGUID{"1806d474-cadf-4509-a4ba-9aabcb96aae8"};
 // 4th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_ASF_FilePropertiesObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_HeaderObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length);
 
@@ -166,26 +167,91 @@ std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std
 	return Results::MakeResult(Success, Index, Value);
 }
 
+std::unique_ptr< Results::Result > Get_ASF_FilePropertiesObjectData(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Value{std::make_shared< Results::Value >()};
+	auto FileID{Get_GUID_LittleEndian(Buffer + Index, Length - Index)};
+	
+	if(FileID->GetSuccess() == true)
+	{
+		Index += FileID->GetLength();
+		Value->Append("File ID", FileID->GetValue());
+		
+		auto FileSize{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
+		
+		if(FileSize->GetSuccess() == true)
+		{
+			Index += FileSize->GetLength();
+			Value->Append("File Size", FileSize->GetValue());
+			
+			auto CreationDate{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
+			
+			if(CreationDate->GetSuccess() == true)
+			{
+				Index += CreationDate->GetLength();
+				Value->Append("Creation Date", CreationDate->GetValue());
+				
+				auto DataPacketsCount{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
+				
+				if(DataPacketsCount->GetSuccess() == true)
+				{
+					Index += DataPacketsCount->GetLength();
+					Value->Append("Data Packets Count", DataPacketsCount->GetValue());
+					
+					auto PlayDuration{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
+					
+					if(PlayDuration->GetSuccess() == true)
+					{
+						Index += PlayDuration->GetLength();
+						Value->Append("Play Duration", PlayDuration->GetValue());
+						
+						auto SendDuration{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
+						
+						if(SendDuration->GetSuccess() == true)
+						{
+							Index += SendDuration->GetLength();
+							Value->Append("Send Duration", SendDuration->GetValue());
+							
+							auto Preroll{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
+							
+							if(Preroll->GetSuccess() == true)
+							{
+								Index += Preroll->GetLength();
+								Value->Append("Preroll", Preroll->GetValue());
+								Success = true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
 std::unique_ptr< Results::Result > Get_ASF_HeaderObjectData(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
 	auto Value{std::make_shared< Results::Value >()};
-	auto NumberOfHeaderObjects{Get_32Bit_UnsignedInteger_LittleEndian(Buffer + Index, Length - Index)};
+	auto NumberOfHeaderObjects{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
 	
 	if(NumberOfHeaderObjects->GetSuccess() == true)
 	{
 		Index += NumberOfHeaderObjects->GetLength();
 		Value->Append("Number of header objects", NumberOfHeaderObjects->GetValue());
 		
-		auto Reserved1{Get_8Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+		auto Reserved1{Get_UnsignedInteger_8Bit(Buffer + Index, Length - Index)};
 		
 		if((Reserved1->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(Reserved1->GetAny()) == 0x01))
 		{
 			Index += Reserved1->GetLength();
 			Value->Append("Reserved1", Reserved1->GetValue());
 			
-			auto Reserved2{Get_8Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+			auto Reserved2{Get_UnsignedInteger_8Bit(Buffer + Index, Length - Index)};
 			
 			if((Reserved2->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(Reserved2->GetAny()) == 0x02))
 			{
@@ -234,7 +300,7 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 		Index += ObjectGUID->GetLength();
 		Value->Append("GUID", ObjectGUID->GetValue());
 		
-		auto ObjectSize{Get_64Bit_UnsignedInteger_LittleEndian(Buffer + Index, Length - Index)};
+		auto ObjectSize{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
 		
 		if(ObjectSize->GetSuccess() == true)
 		{
@@ -254,9 +320,13 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 				{
 					ObjectData = Get_ASF_HeaderObjectData(Buffer + Index, DataSize);
 				}
+				else if(GUIDValue == g_ASF_FilePropertiesObjectGUID)
+				{
+					ObjectData = Get_ASF_FilePropertiesObjectData(Buffer + Index, DataSize);
+				}
 				else
 				{
-					ObjectData = Get_8Bit_UnsignedInteger_BufferTerminatedByLength(Buffer + Index, DataSize);
+					ObjectData = Get_Buffer_UnsignedInteger_8Bit_TerminatedByLength(Buffer + Index, DataSize);
 				}
 				if(ObjectData->GetSuccess() == true)
 				{
