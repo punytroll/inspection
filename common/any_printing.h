@@ -48,6 +48,25 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 		
 		return OStream << StringStream.str();
 	}
+	else if(Any.type() == typeid(std::vector< uint8_t >))
+	{
+		auto Value{std::experimental::any_cast< std::vector< uint8_t > >(Any)};
+		auto Index{0ul};
+		std::stringstream StringStream;
+		
+		StringStream << std::hex << std::setfill('0');
+		while(Index < Value.size())
+		{
+			if(Index > 0)
+			{
+				StringStream << ' ';
+			}
+			StringStream << std::setw(2) << std::right << static_cast< std::uint32_t >(Value[Index]);
+			Index += 1;
+		}
+		
+		return OStream << StringStream.str();
+	}
 	else
 	{
 		return OStream << "<Unknown any type: " << Any.type().name() << '>';
