@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "../guid.h"
 #include "4th.h"
 
@@ -86,4 +88,16 @@ std::unique_ptr< Results::Result > Get_UnsignedInteger_64Bit_LittleEndian(const 
 	}
 	
 	return Results::MakeResult(Success, Index, Value);
-} 
+}
+
+std::unique_ptr< Results::Result > Get_UnsignedInteger_8Bit_BufferTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::vector< std::uint8_t > Value(Buffer, Buffer + Length);
+	
+	Success = true;
+	Index = Length;
+	
+	return Results::MakeResult(Success, Index, Value);
+}
