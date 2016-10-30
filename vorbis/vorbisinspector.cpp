@@ -20,9 +20,7 @@
 //   - These functions validate and extract in one go.                                           //
 //   - They return a unique_ptr to an instance of type Result                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Results::Result > Get_LittleEndian_64Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_8Bit_BitSet(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_8Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_VorbisHeaderPacket(const std::uint8_t * Buffer, std::uint64_t Length);
 
 std::unique_ptr< Results::Result > Get_8Bit_BitSet(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -43,38 +41,6 @@ std::unique_ptr< Results::Result > Get_8Bit_BitSet(const std::uint8_t * Buffer, 
 		Value[5] = (Buffer[0] & 0x20) == 0x20;
 		Value[6] = (Buffer[0] & 0x40) == 0x40;
 		Value[7] = (Buffer[0] & 0x80) == 0x80;
-	}
-	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
-}
-
-std::unique_ptr< Results::Result > Get_8Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::uint8_t Value{0ul};
-	
-	if(Length >= 1ull)
-	{
-		Success = true;
-		Index = 1ull;
-		Value = Buffer[0];
-	}
-	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
-}
-
-std::unique_ptr< Results::Result > Get_LittleEndian_64Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::uint64_t Value{0ul};
-	
-	if(Length >= 8ull)
-	{
-		Success = true;
-		Index = 8ull;
-		Value = static_cast< std::uint64_t >(Buffer[0]) + (static_cast< std::uint64_t >(Buffer[1]) << 8) + (static_cast< std::uint64_t >(Buffer[2]) << 16) + (static_cast< std::uint64_t >(Buffer[3]) << 24) + (static_cast< std::uint64_t >(Buffer[4]) << 32) + (static_cast< std::uint64_t >(Buffer[5]) << 40) + (static_cast< std::uint64_t >(Buffer[6]) << 48) + (static_cast< std::uint64_t >(Buffer[7]) << 56);
 	}
 	
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >(Value)));
@@ -137,7 +103,7 @@ std::unique_ptr< Results::Result > Get_VorbisPage(const std::uint8_t * Buffer, s
 					Index += HeaderTypeFlagResult->GetLength();
 					Value->Append("HeaderTypeFlag", HeaderTypeFlagResult->GetValue());
 					
-					auto GranulePositionResult{Get_LittleEndian_64Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+					auto GranulePositionResult{Get_64Bit_UnsignedInteger_LittleEndian(Buffer + Index, Length - Index)};
 					
 					if(GranulePositionResult->GetSuccess() == true)
 					{
