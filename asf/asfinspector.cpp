@@ -28,7 +28,6 @@ GUID g_ASFTimecodeIndexObject{"3cb73fd0-0c4a-4803-953d-edf7b6228f0c"};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length);
 
 std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length)
 {
@@ -104,7 +103,7 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 			{
 				DataSize -= Index;
 				
-				auto ObjectData{Get_HexadecimalString_TerminatedByLength(Buffer + Index, DataSize)};
+				auto ObjectData{Get_UnsignedInteger_8Bit_BufferTerminatedByLength(Buffer + Index, DataSize)};
 				
 				if(ObjectData->GetSuccess() == true)
 				{
@@ -117,26 +116,6 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 	}
 	
 	return Results::MakeResult(Success, Index, Value);
-}
-
-std::unique_ptr< Results::Result > Get_HexadecimalString_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{true};
-	auto Index{0ull};
-	std::stringstream StringStream;
-	
-	StringStream << std::hex << std::setfill('0');
-	while(Index < Length)
-	{
-		if(Index > 0)
-		{
-			StringStream << ' ';
-		}
-		StringStream << std::setw(2) << std::right << static_cast< std::uint32_t >(Buffer[Index]);
-		Index += 1;
-	}
-	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >("", StringStream.str())));
 }
 
 void PrintValue(const std::string & Indentation, std::shared_ptr< Results::Value > Value)
