@@ -1,3 +1,4 @@
+#include <bitset>
 #include <cstring>
 
 #include "../guid.h"
@@ -48,6 +49,88 @@ std::unique_ptr< Results::Result > Get_ASCII_AlphaStringTerminatedByLength(const
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >("", StringStream.str())));
 }
 
+std::unique_ptr< Results::Result > Get_BitSet_32Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::bitset<32> Value;
+	
+	if(Length >= 4ull)
+	{
+		Success = true;
+		Index = 4ull;
+		Value[0] = (Buffer[0] & 0x01) == 0x01;
+		Value[1] = (Buffer[0] & 0x02) == 0x02;
+		Value[2] = (Buffer[0] & 0x04) == 0x04;
+		Value[3] = (Buffer[0] & 0x08) == 0x08;
+		Value[4] = (Buffer[0] & 0x10) == 0x10;
+		Value[5] = (Buffer[0] & 0x20) == 0x20;
+		Value[6] = (Buffer[0] & 0x40) == 0x40;
+		Value[7] = (Buffer[0] & 0x80) == 0x80;
+		Value[8] = (Buffer[1] & 0x01) == 0x01;
+		Value[9] = (Buffer[1] & 0x02) == 0x02;
+		Value[10] = (Buffer[1] & 0x04) == 0x04;
+		Value[11] = (Buffer[1] & 0x08) == 0x08;
+		Value[12] = (Buffer[1] & 0x10) == 0x10;
+		Value[13] = (Buffer[1] & 0x20) == 0x20;
+		Value[14] = (Buffer[1] & 0x40) == 0x40;
+		Value[15] = (Buffer[1] & 0x80) == 0x80;
+		Value[16] = (Buffer[2] & 0x01) == 0x01;
+		Value[17] = (Buffer[2] & 0x02) == 0x02;
+		Value[18] = (Buffer[2] & 0x04) == 0x04;
+		Value[19] = (Buffer[2] & 0x08) == 0x08;
+		Value[20] = (Buffer[2] & 0x10) == 0x10;
+		Value[21] = (Buffer[2] & 0x20) == 0x20;
+		Value[22] = (Buffer[2] & 0x40) == 0x40;
+		Value[23] = (Buffer[2] & 0x80) == 0x80;
+		Value[24] = (Buffer[3] & 0x01) == 0x01;
+		Value[25] = (Buffer[3] & 0x02) == 0x02;
+		Value[26] = (Buffer[3] & 0x04) == 0x04;
+		Value[27] = (Buffer[3] & 0x08) == 0x08;
+		Value[28] = (Buffer[3] & 0x10) == 0x10;
+		Value[29] = (Buffer[3] & 0x20) == 0x20;
+		Value[30] = (Buffer[3] & 0x40) == 0x40;
+		Value[31] = (Buffer[3] & 0x80) == 0x80;
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
+std::unique_ptr< Results::Result > Get_BitSet_8Bit(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::bitset<8> Value;
+	
+	if(Length >= 1ull)
+	{
+		Success = true;
+		Index = 1ull;
+		Value[0] = (Buffer[0] & 0x01) == 0x01;
+		Value[1] = (Buffer[0] & 0x02) == 0x02;
+		Value[2] = (Buffer[0] & 0x04) == 0x04;
+		Value[3] = (Buffer[0] & 0x08) == 0x08;
+		Value[4] = (Buffer[0] & 0x10) == 0x10;
+		Value[5] = (Buffer[0] & 0x20) == 0x20;
+		Value[6] = (Buffer[0] & 0x40) == 0x40;
+		Value[7] = (Buffer[0] & 0x80) == 0x80;
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
+std::unique_ptr< Results::Result > Get_Buffer_UnsignedInteger_8Bit_TerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::vector< std::uint8_t > Value(Buffer, Buffer + Length);
+	
+	Success = true;
+	Index = Length;
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
 std::unique_ptr< Results::Result > Get_GUID_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
@@ -74,7 +157,23 @@ std::unique_ptr< Results::Result > Get_GUID_LittleEndian(const std::uint8_t * Bu
 	return Results::MakeResult(Success, Index, Value);
 }
 
-std::unique_ptr< Results::Result > Get_32Bit_UnsignedInteger_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_UnsignedInteger_16Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::uint16_t Value{0ul};
+	
+	if(Length >= 2ull)
+	{
+		Success = true;
+		Index = 2ull;
+		Value = static_cast< std::uint16_t >(Buffer[0]) + (static_cast< std::uint16_t >(Buffer[1]) << 8);
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
+std::unique_ptr< Results::Result > Get_UnsignedInteger_32Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -90,7 +189,7 @@ std::unique_ptr< Results::Result > Get_32Bit_UnsignedInteger_LittleEndian(const 
 	return Results::MakeResult(Success, Index, Value);
 }
 
-std::unique_ptr< Results::Result > Get_64Bit_UnsignedInteger_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_UnsignedInteger_64Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -106,7 +205,7 @@ std::unique_ptr< Results::Result > Get_64Bit_UnsignedInteger_LittleEndian(const 
 	return Results::MakeResult(Success, Index, Value);
 }
 
-std::unique_ptr< Results::Result > Get_8Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_UnsignedInteger_8Bit(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
@@ -118,18 +217,6 @@ std::unique_ptr< Results::Result > Get_8Bit_UnsignedInteger(const std::uint8_t *
 		Index = 1ull;
 		Value = Buffer[0];
 	}
-	
-	return Results::MakeResult(Success, Index, Value);
-}
-
-std::unique_ptr< Results::Result > Get_8Bit_UnsignedInteger_BufferTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::vector< std::uint8_t > Value(Buffer, Buffer + Length);
-	
-	Success = true;
-	Index = Length;
 	
 	return Results::MakeResult(Success, Index, Value);
 }
