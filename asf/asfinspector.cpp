@@ -27,6 +27,7 @@ GUID g_ASFTimecodeIndexObject{"3cb73fd0-0c4a-4803-953d-edf7b6228f0c"};
 // 4th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_ASF_HeaderObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length);
 
 std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -77,6 +78,61 @@ std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std
 	return Results::MakeResult(Success, Index, Value);
 }
 
+std::unique_ptr< Results::Result > Get_ASF_HeaderObjectData(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Value{std::make_shared< Results::Value >()};
+	auto NumberOfHeaderObjects{Get_32Bit_UnsignedInteger_LittleEndian(Buffer + Index, Length - Index)};
+	
+	if(NumberOfHeaderObjects->GetSuccess() == true)
+	{
+		Index += NumberOfHeaderObjects->GetLength();
+		Value->Append("Number of header objects", NumberOfHeaderObjects->GetValue());
+		
+		auto Reserved1{Get_8Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+		
+		if((Reserved1->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(Reserved1->GetAny()) == 0x01))
+		{
+			Index += Reserved1->GetLength();
+			Value->Append("Reserved1", Reserved1->GetValue());
+			
+			auto Reserved2{Get_8Bit_UnsignedInteger(Buffer + Index, Length - Index)};
+			
+			if((Reserved2->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(Reserved2->GetAny()) == 0x02))
+			{
+				Index += Reserved2->GetLength();
+				Value->Append("Reserved2", Reserved2->GetValue());
+				
+				auto HeaderObjects(std::make_shared< Results::Value >());
+				
+				HeaderObjects->SetName("Header objects");
+				
+				auto NumberOfHeaderObjectsValue{std::experimental::any_cast< std::uint32_t >(NumberOfHeaderObjects->GetAny())};
+				
+				for(std::uint32_t ObjectIndex = 0; ObjectIndex < NumberOfHeaderObjectsValue; ++ObjectIndex)
+				{
+					auto HeaderObject{Get_ASF_Object(Buffer + Index, Length - Index)};
+					
+					if(HeaderObject->GetSuccess() == true)
+					{
+						Index += HeaderObject->GetLength();
+						HeaderObjects->Append(HeaderObject->GetValue());
+					}
+					else
+					{
+						return Results::MakeFailure();
+					}
+				}
+				Value->Append(HeaderObjects);
+				Success = true;
+			}
+		}
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
 std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
@@ -90,7 +146,7 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 		Index += ObjectGUID->GetLength();
 		Value->Append("GUID", ObjectGUID->GetValue());
 		
-		auto ObjectSize{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
+		auto ObjectSize{Get_64Bit_UnsignedInteger_LittleEndian(Buffer + Index, Length - Index)};
 		
 		if(ObjectSize->GetSuccess() == true)
 		{
@@ -103,8 +159,17 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 			{
 				DataSize -= Index;
 				
-				auto ObjectData{Get_UnsignedInteger_8Bit_BufferTerminatedByLength(Buffer + Index, DataSize)};
+				auto GUIDValue{std::experimental::any_cast< GUID >(ObjectGUID->GetAny("Nominal value"))};
+				std::unique_ptr< Results::Result > ObjectData;
 				
+				if(GUIDValue == g_ASFHeaderObjectGUID)
+				{
+					ObjectData = Get_ASF_HeaderObjectData(Buffer + Index, DataSize);
+				}
+				else
+				{
+					ObjectData = Get_8Bit_UnsignedInteger_BufferTerminatedByLength(Buffer + Index, DataSize);
+				}
 				if(ObjectData->GetSuccess() == true)
 				{
 					Index += ObjectData->GetLength();

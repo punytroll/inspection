@@ -74,23 +74,55 @@ std::unique_ptr< Results::Result > Get_GUID_LittleEndian(const std::uint8_t * Bu
 	return Results::MakeResult(Success, Index, Value);
 }
 
-std::unique_ptr< Results::Result > Get_UnsignedInteger_64Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_32Bit_UnsignedInteger_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
-	std::uint64_t Value{0ul};
+	std::uint32_t Value{0ul};
 	
 	if(Length >= 4ull)
 	{
 		Success = true;
 		Index = 4ull;
+		Value = static_cast< std::uint64_t >(Buffer[0]) + (static_cast< std::uint64_t >(Buffer[1]) << 8) + (static_cast< std::uint64_t >(Buffer[2]) << 16) + (static_cast< std::uint64_t >(Buffer[3]) << 24);
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
+std::unique_ptr< Results::Result > Get_64Bit_UnsignedInteger_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::uint64_t Value{0ul};
+	
+	if(Length >= 8ull)
+	{
+		Success = true;
+		Index = 8ull;
 		Value = static_cast< std::uint64_t >(Buffer[0]) + (static_cast< std::uint64_t >(Buffer[1]) << 8) + (static_cast< std::uint64_t >(Buffer[2]) << 16) + (static_cast< std::uint64_t >(Buffer[3]) << 24) + (static_cast< std::uint64_t >(Buffer[4]) << 32) + (static_cast< std::uint64_t >(Buffer[5]) << 40) + (static_cast< std::uint64_t >(Buffer[6]) << 48) + (static_cast< std::uint64_t >(Buffer[7]) << 56);
 	}
 	
 	return Results::MakeResult(Success, Index, Value);
 }
 
-std::unique_ptr< Results::Result > Get_UnsignedInteger_8Bit_BufferTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Results::Result > Get_8Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	std::uint8_t Value{0x00};
+	
+	if(Length >= 1ull)
+	{
+		Success = true;
+		Index = 1ull;
+		Value = Buffer[0];
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
+std::unique_ptr< Results::Result > Get_8Bit_UnsignedInteger_BufferTerminatedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
 	auto Index{0ull};
