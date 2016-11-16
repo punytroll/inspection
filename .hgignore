@@ -9,6 +9,6 @@ syntax: regexp
 ^vorbisinspector$
 ^vorbis/vorbisinspector\.o$
 ^asfinspector$
-^asf/asfinspector\.o$
+^asf/.*\.o$
 ^common/getters/.*\.o$
 ^common/.*\.o$
