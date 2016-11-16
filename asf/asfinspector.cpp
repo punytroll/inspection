@@ -416,7 +416,7 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 				}
 				else
 				{
-					ObjectData = Get_Buffer_UnsignedInteger_8Bit_TerminatedByLength(Buffer + Index, DataSize);
+					ObjectData = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, DataSize);
 				}
 				if(ObjectData->GetSuccess() == true)
 				{
@@ -485,14 +485,14 @@ std::unique_ptr< Results::Result > Get_ASF_StreamPropertiesObjectData(const std:
 								Index += Reserved->GetLength();
 								Value->Append("Reserved", Reserved->GetValue());
 								
-								auto TypeSpecificData{Get_Buffer_UnsignedInteger_8Bit_TerminatedByLength(Buffer + Index, std::experimental::any_cast< std::uint32_t >(TypeSpecificDataLength->GetAny()))};
+								auto TypeSpecificData{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, std::experimental::any_cast< std::uint32_t >(TypeSpecificDataLength->GetAny()))};
 								
 								if(TypeSpecificData->GetSuccess() == true)
 								{
 									Index += TypeSpecificData->GetLength();
 									Value->Append("Type-Specific Data", TypeSpecificData->GetValue());
 									
-									auto ErrorCorrectionData{Get_Buffer_UnsignedInteger_8Bit_TerminatedByLength(Buffer + Index, std::experimental::any_cast< std::uint32_t >(ErrorCorrectionDataLength->GetAny()))};
+									auto ErrorCorrectionData{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, std::experimental::any_cast< std::uint32_t >(ErrorCorrectionDataLength->GetAny()))};
 									
 									if(ErrorCorrectionData->GetSuccess() == true)
 									{
