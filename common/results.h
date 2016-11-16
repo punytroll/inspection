@@ -213,7 +213,11 @@ namespace Results
 	template< typename ValueType >
 	inline std::unique_ptr< Result > MakeResult(bool Success, std::uint64_t Length, const ValueType & Value)
 	{
-		return std::make_unique< Results::Result >(Success, Length, std::make_shared< Results::Value >(Value));
+		auto SharedValue{std::make_shared< Results::Value >()};
+		
+		SharedValue->SetAny(Value);
+		
+		return std::make_unique< Results::Result >(Success, Length, SharedValue);
 	}
 	
 	inline std::unique_ptr< Result > MakeResult(bool Success, std::uint64_t Length, std::shared_ptr< Results::Value > Value)
