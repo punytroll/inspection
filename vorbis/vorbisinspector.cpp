@@ -58,7 +58,7 @@ std::unique_ptr< Results::Result > Get_VorbisPage(const std::uint8_t * Buffer, s
 	
 	if(Length - Index >= 4ull)
 	{
-		auto CapturePatternResult{Get_ASCII_AlphaStringTerminatedByLength(Buffer + Index, 4ull)};
+		auto CapturePatternResult{Get_ASCII_AlphaString_EndedByLength(Buffer + Index, 4ull)};
 		
 		if((CapturePatternResult->GetSuccess() == true) && (std::experimental::any_cast< std::string >(CapturePatternResult->GetAny()) == "OggS"))
 		{

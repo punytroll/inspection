@@ -321,7 +321,7 @@ std::unique_ptr< Results::Result > Get_RIFF_Chunk(const std::uint8_t * Buffer, s
 			}
 			else
 			{
-				ChunkDataResult = Get_Buffer_UnsignedInteger_8Bit_TerminatedByLength(Buffer + Index, Length - Index);
+				ChunkDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, Length - Index);
 			}
 			if((ChunkDataResult) && (ChunkDataResult->GetSuccess() == true))
 			{
@@ -464,7 +464,7 @@ std::unique_ptr< Results::Result > Get_RIFF_fmt_ChunkData(const std::uint8_t * B
 													Value->Append("ChannelMask", ChannelMaskResult->GetValue());
 													assert(Length - Index == 16);
 													
-													auto SubFormatResult{Get_Buffer_UnsignedInteger_8Bit_TerminatedByLength(Buffer + Index, Length - Index)};
+													auto SubFormatResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, Length - Index)};
 													
 													if(SubFormatResult->GetSuccess() == true)
 													{
