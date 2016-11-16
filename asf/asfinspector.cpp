@@ -59,14 +59,176 @@ GUID g_ASF_BinaryMediaGUID{"3afb65e2-47ef-40f2-ac2c-70a90d71d343"};
 GUID g_ASF_NoErrorCorrection{"20fb5700-5b55-11cf-a8fd-00805f5c442b"};
 GUID g_ASF_AudioSpread{"bfc3cd50-618f-11cf-8bb2-00aa00b4e220"};
 
+/// Codec List Object GUIDs
+/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.8
+GUID g_ASF_Reserved2{"86d15241-311d-11d0-a3a4-00a0c90348f6"};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 4th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Results::Result > Get_ASF_CodecEntry(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_ASF_CodecEntryType(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Results::Result > Get_ASF_CodecListObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_FilePropertiesObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_HeaderObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length);
 std::unique_ptr< Results::Result > Get_ASF_StreamPropertiesObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
+
+std::unique_ptr< Results::Result > Get_ASF_CodecEntry(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{true};
+	auto Index{0ull};
+	auto Value{std::make_shared< Results::Value >()};
+	auto Type{Get_ASF_CodecEntryType(Buffer + Index, Length - Index)};
+	
+	if(Type->GetSuccess() == true)
+	{
+		Index += Type->GetLength();
+		Value->Append("Type", Type->GetValue());
+		
+		auto CodecNameLength{Get_UnsignedInteger_16Bit_LittleEndian(Buffer + Index, Length - Index)};
+		
+		if(CodecNameLength->GetSuccess() == true)
+		{
+			Index += CodecNameLength->GetLength();
+			Value->Append("Codec Name Length", CodecNameLength->GetValue());
+			
+			auto CodecNameLengthValue{std::experimental::any_cast< std::uint16_t >(CodecNameLength->GetAny())};
+			auto CodecName{Get_UTF16LE_String_EndedByTermination(Buffer + Index, Length - Index)};
+			
+			if((CodecName->GetSuccess() == true) && (CodecName->GetLength() == CodecNameLengthValue * 2))
+			{
+				Index += CodecName->GetLength();
+				Value->Append("Codec Name", CodecName->GetValue());
+				
+				auto CodecDescriptionLength{Get_UnsignedInteger_16Bit_LittleEndian(Buffer + Index, Length - Index)};
+				
+				if(CodecDescriptionLength->GetSuccess() == true)
+				{
+					Index += CodecDescriptionLength->GetLength();
+					Value->Append("Codec Description Length", CodecDescriptionLength->GetValue());
+					
+					auto CodecDescriptionLengthValue{std::experimental::any_cast< std::uint16_t >(CodecDescriptionLength->GetAny())};
+					auto CodecDescription{Get_UTF16LE_String_EndedByTermination(Buffer + Index, Length - Index)};
+					
+					if((CodecDescription->GetSuccess() == true) && (CodecDescription->GetLength() == CodecDescriptionLengthValue * 2))
+					{
+						Index += CodecDescription->GetLength();
+						Value->Append("Codec Description", CodecDescription->GetValue());
+						
+						auto CodecInformationLength{Get_UnsignedInteger_16Bit_LittleEndian(Buffer + Index, Length - Index)};
+						
+						if(CodecInformationLength->GetSuccess() == true)
+						{
+							Index += CodecInformationLength->GetLength();
+							Value->Append("Codec Information Length", CodecInformationLength->GetValue());
+							
+							auto CodecInformationLengthValue{std::experimental::any_cast< std::uint16_t >(CodecInformationLength->GetAny())};
+							auto CodecInformation{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, CodecInformationLengthValue)};
+							
+							if(CodecInformation->GetSuccess() == true)
+							{
+								Index += CodecInformation->GetLength();
+								Value->Append("Codec Information", CodecInformation->GetValue());
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
+std::unique_ptr< Results::Result > Get_ASF_CodecEntryType(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Value{std::make_shared< Results::Value >()};
+	auto Type{Get_UnsignedInteger_16Bit_LittleEndian(Buffer + Index, Length - Index)};
+	
+	if(Type->GetSuccess() == true)
+	{
+		Success = true;
+		Index += Type->GetLength();
+		Value->Append("Nominal Value", Type->GetValue());
+		
+		auto TypeValue{std::experimental::any_cast< std::uint16_t >(Type->GetAny())};
+		
+		if(TypeValue == 0x0001)
+		{
+			Value->Append("Interpretation", std::string("Video Codec"));
+		}
+		else if(TypeValue == 0x0002)
+		{
+			Value->Append("Interpretation", std::string("Audio Codec"));
+		}
+		else if(TypeValue == 0xffff)
+		{
+			Value->Append("Interpretation", std::string("Unknown Codec"));
+		}
+		else
+		{
+			Value->Append("Interpretation", std::string("<unknown Type value>"));
+		}
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
+
+std::unique_ptr< Results::Result > Get_ASF_CodecListObjectData(const std::uint8_t * Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Index{0ull};
+	auto Value{std::make_shared< Results::Value >()};
+	auto ReservedGUID{Get_ASF_GUID(Buffer + Index, Length - Index)};
+	
+	if(ReservedGUID->GetSuccess() == true)
+	{
+		auto ReservedGUIDValue{std::experimental::any_cast< GUID >(ReservedGUID->GetAny("Nominal value"))};
+		
+		if(ReservedGUIDValue == g_ASF_Reserved2)
+		{
+			Index += ReservedGUID->GetLength();
+			Value->Append("Reserved", ReservedGUID->GetValue());
+			
+			auto CodecEntriesCount{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
+			
+			if(CodecEntriesCount->GetSuccess() == true)
+			{
+				Index += CodecEntriesCount->GetLength();
+				Value->Append("Codec Entries Count", CodecEntriesCount->GetValue());
+				
+				auto CodecEntries(std::make_shared< Results::Value >());
+				
+				CodecEntries->SetName("Codec Entries");
+				
+				auto CodecEntriesCountValue{std::experimental::any_cast< std::uint32_t >(CodecEntriesCount->GetAny())};
+				
+				for(auto CodecEntryIndex = 0ul; CodecEntryIndex < CodecEntriesCountValue; ++CodecEntryIndex)
+				{
+					auto CodecEntry{Get_ASF_CodecEntry(Buffer + Index, Length - Index)};
+					
+					if(CodecEntry->GetSuccess() == true)
+					{
+						Index += CodecEntry->GetLength();
+						CodecEntries->Append(CodecEntry->GetValue());
+					}
+					else
+					{
+						return Results::MakeFailure();
+					}
+				}
+				Value->Append(CodecEntries);
+				Success = true;
+			}
+		}
+	}
+	
+	return Results::MakeResult(Success, Index, Value);
+}
 
 std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length)
 {
@@ -210,6 +372,11 @@ std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std
 		else if(GUIDValue == g_ASF_AudioSpread)
 		{
 			Value->Append("Interpretation", std::string("ASF_Audio_Spread"));
+		}
+		// Codec List Object GUIDs
+		else if(GUIDValue == g_ASF_Reserved2)
+		{
+			Value->Append("Interpretation", std::string("ASF_Reserved_2"));
 		}
 		// unknown
 		else
@@ -413,6 +580,10 @@ std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, s
 				else if(GUIDValue == g_ASF_StreamPropertiesObjectGUID)
 				{
 					ObjectData = Get_ASF_StreamPropertiesObjectData(Buffer + Index, DataSize);
+				}
+				else if(GUIDValue == g_ASF_CodecListObjectGUID)
+				{
+					ObjectData = Get_ASF_CodecListObjectData(Buffer + Index, DataSize);
 				}
 				else
 				{
