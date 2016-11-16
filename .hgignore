@@ -1,14 +1,12 @@
 syntax: regexp
 
 ^id3inspector$
-^id3/id3inspector\.o$
+^id3/.*\.o$
 ^mpeginspector$
-^mpeg/mpeginspector\.o$
+^mpeg/.*\.o$
 ^riffinspector$
-^riff/riffinspector\.o$
+^riff/.*\.o$
 ^vorbisinspector$
-^vorbis/vorbisinspector\.o$
+^vorbis/.*\.o$
 ^asfinspector$
 ^asf/.*\.o$
-^common/getters/.*\.o$
-^common/.*\.o$
