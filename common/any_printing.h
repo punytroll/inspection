@@ -15,6 +15,14 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 	{
 		return OStream << std::experimental::any_cast< std::string >(Any);
 	}
+	else if(Any.type() == typeid(bool))
+	{
+		std::stringstream StringStream;
+		
+		StringStream << std::boolalpha << std::experimental::any_cast< bool >(Any);
+		
+		return OStream << StringStream.str();
+	}
 	else if(Any.type() == typeid(std::uint16_t))
 	{
 		return OStream << std::experimental::any_cast< std::uint16_t >(Any);
