@@ -153,7 +153,7 @@ std::unique_ptr< Results::Result > Get_ASF_CodecEntryType(const std::uint8_t * B
 	{
 		Success = true;
 		Index += Type->GetLength();
-		Value->Append("Nominal Value", Type->GetValue());
+		Value->SetAny(Type->GetAny());
 		
 		auto TypeValue{std::experimental::any_cast< std::uint16_t >(Type->GetAny())};
 		
@@ -187,7 +187,7 @@ std::unique_ptr< Results::Result > Get_ASF_CodecListObjectData(const std::uint8_
 	
 	if(ReservedGUID->GetSuccess() == true)
 	{
-		auto ReservedGUIDValue{std::experimental::any_cast< GUID >(ReservedGUID->GetAny("Nominal value"))};
+		auto ReservedGUIDValue{std::experimental::any_cast< GUID >(ReservedGUID->GetAny())};
 		
 		if(ReservedGUIDValue == g_ASF_Reserved2)
 		{
@@ -244,7 +244,7 @@ std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std
 		
 		auto GUIDValue{std::experimental::any_cast< GUID >(GUIDResult->GetAny())};
 		
-		Value->Append("Nominal value", GUIDValue);
+		Value->SetAny(GUIDResult->GetAny());
 		// Top-level ASF Object GUIDs
 		if(GUIDValue == g_ASF_HeaderObjectGUID)
 		{
