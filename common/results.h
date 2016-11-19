@@ -79,7 +79,7 @@ namespace Results
 				}
 			}
 			
-			throw new std::exception();
+			throw new std::invalid_argument("Could not find any value named \"" + Name + "\".");
 		}
 		
 		std::uint32_t GetCount(void) const
