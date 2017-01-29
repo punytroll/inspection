@@ -29,4 +29,4 @@ Is an associative container, mapping from string to an any value. The any value 
 
 Class "Result":
 ---------------
-Came about as a helper class to incorporate sucess, length and result into one value. Also, this calss was designed to be returned inside a unique_ptr, making it clear that the result of a getter can only be processed are passed around once, not to be contained in the result of another getter. The result value is carried by shared_ptr, which highlights the fact, that this value can be extracted and used in other places.
+Came about as a helper class to incorporate sucess, length and result into one value. Also, this class was designed to be returned inside a unique_ptr, making it clear that the result of a getter can only be processed are passed around once, not to be contained in the result of another getter. The result value is carried by shared_ptr, which highlights the fact, that this value can be extracted and used in other places.
