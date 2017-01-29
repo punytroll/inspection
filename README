@@ -23,6 +23,16 @@ The major drawback is the return-by-value semantic. The Values object is returne
 -----------------------
 These functions validate and extract in one go. They return a unique_ptr to an instance of type Result (see below).
 
+5th generation getters:
+-----------------------
+Currently developing the FLAC format inspector, it is becoming abundantly clear, that bit-precise access to data will be required. This functionality necessitates changes in two places:
+
+1. When reading a value, getter functions must be able to process only parts of a byte. The return value will be whatever the getter deems appropriate. The returned length, however, must reflect the actual amount of bits and bytes that have been read.
+
+2. When calling the next getter function, the buffer offset must be given in bytes and bits as well. Therefore a simple byte pointer to the start of the buffer is not sufficient anymore.
+
+
+
 Class "Values":
 ---------------
 Is an associative container, mapping from string to an any value. The any value is contained by value.
