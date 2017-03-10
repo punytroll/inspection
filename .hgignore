@@ -2,6 +2,8 @@ syntax: regexp
 
 ^id3inspector$
 ^id3/.*\.o$
+^flacinspector$
+^flac/.*\.o$
 ^mpeginspector$
 ^mpeg/.*\.o$
 ^riffinspector$
@@ -10,3 +12,6 @@ syntax: regexp
 ^vorbis/.*\.o$
 ^asfinspector$
 ^asf/.*\.o$
+^common/5th/test$
+^common/5th/.*\.o$
+^common/getters/.*\.o$

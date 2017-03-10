@@ -3,6 +3,7 @@ LDFLAGS = -g
 
 default: all
 
-all: 
+all:
+	$(MAKE) -C 5th
 
 clean:
