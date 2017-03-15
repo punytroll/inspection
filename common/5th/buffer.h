@@ -32,49 +32,50 @@ namespace Inspection
 			return _Position + Length <= _Length;
 		}
 		
-		std::uint8_t Get1Bit(void)
+		std::array< std::uint8_t, 1 > Get1Bit(void)
 		{
 			assert(Has(0ull, 1) == true);
 			
-			auto Result{(*(_Data + _Position.GetBytes()) >> (7 - _Position.GetBits())) & 0x01};
+			std::array< std::uint8_t, 1 > Result;
 			
+			Result[0] = (*(_Data + _Position.GetBytes()) >> (7 - _Position.GetBits())) & 0x01;
 			_Position += Inspection::Length(0ull, 1);
 			
 			return Result;
 		}
 		
-		std::uint8_t Get7Bits(void)
+		std::array< std::uint8_t, 1 > Get7Bits(void)
 		{
 			assert(Has(0ull, 7) == true);
 			
-			std::uint8_t Result;
+			std::array< std::uint8_t, 1 > Result;
 			
 			if(_Position.GetBits() < 2)
 			{
-				Result = (*(_Data + _Position.GetBytes()) >> (1 - _Position.GetBits())) & 0x7f;
+				Result[0] = (*(_Data + _Position.GetBytes()) >> (1 - _Position.GetBits())) & 0x7f;
 			}
 			else
 			{
-				Result = ((*(_Data + _Position.GetBytes()) << (_Position.GetBits() - 1)) + ((*(_Data + _Position.GetBytes() + 1ull)) >> (9 - _Position.GetBits()))) & 0x7f;
+				Result[0] = ((*(_Data + _Position.GetBytes()) << (_Position.GetBits() - 1)) + ((*(_Data + _Position.GetBytes() + 1ull)) >> (9 - _Position.GetBits()))) & 0x7f;
 			}
 			_Position += Inspection::Length(0ull, 7);
 			
 			return Result;
 		}
 		
-		std::uint8_t Get8Bits(void)
+		std::array< std::uint8_t, 1 > Get8Bits(void)
 		{
 			assert(Has(1ull, 0) == true);
 			
-			std::uint8_t Result{0};
+			std::array< std::uint8_t, 1 > Result;
 			
 			if(_Position.GetBits() == 0)
 			{
-				Result = _Data[_Position.GetBytes()];
+				Result[0] = _Data[_Position.GetBytes()];
 			}
 			else
 			{
-				Result = (*(_Data + _Position.GetBytes()) << _Position.GetBits()) + ((*(_Data + _Position.GetBytes() + 1ull) >> (8 - _Position.GetBits())) & ((1 << _Position.GetBits()) - 1));
+				Result[0] = (*(_Data + _Position.GetBytes()) << _Position.GetBits()) + ((*(_Data + _Position.GetBytes() + 1ull) >> (8 - _Position.GetBits())) & ((1 << _Position.GetBits()) - 1));
 			}
 			_Position += Inspection::Length(1ull, 0);
 			
@@ -87,9 +88,9 @@ namespace Inspection
 			
 			std::array< std::uint8_t, 3 > Result;
 			
-			Result[0] = Get8Bits();
-			Result[1] = Get8Bits();
-			Result[2] = Get8Bits();
+			Result[0] = Get8Bits()[0];
+			Result[1] = Get8Bits()[0];
+			Result[2] = Get8Bits()[0];
 			
 			return Result;
 		}
