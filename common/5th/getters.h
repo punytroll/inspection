@@ -16,7 +16,7 @@ namespace Inspection
 			Success = true;
 			for(auto Character : String)
 			{
-				if(Character != Buffer.Get8Bits())
+				if(Character != Buffer.Get8Bits()[0])
 				{
 					Success = false;
 					
@@ -39,7 +39,7 @@ namespace Inspection
 		
 		if(Buffer.Has(0ull, 1) == true)
 		{
-			Value = (0x01 & Buffer.Get1Bit()) == 0x01;
+			Value = (0x01 & Buffer.Get1Bit()[0]) == 0x01;
 			Success = true;
 		}
 		
@@ -53,7 +53,7 @@ namespace Inspection
 		
 		if(Buffer.Has(0ull, 7) == true)
 		{
-			Value = Buffer.Get7Bits();
+			Value = Buffer.Get7Bits()[0];
 			Success = true;
 		}
 		
