@@ -10,18 +10,132 @@
 #include <sstream>
 #include <string>
 
+namespace FLAC
+{
+	enum class MetaDataBlockType
+	{
+		StreamInfo,
+		Padding,
+		Application,
+		SeekTable,
+		VorbisComment,
+		CueSheet,
+		Picture,
+		Reserved,
+		Invalid
+	};
+}
+
+std::ostream & operator<<(std::ostream & OStream, FLAC::MetaDataBlockType Value)
+{
+	switch(Value)
+	{
+	case FLAC::MetaDataBlockType::StreamInfo:
+		{
+			return OStream << "StreamInfo";
+		}
+	case FLAC::MetaDataBlockType::Padding:
+		{
+			return OStream << "Padding";
+		}
+	case FLAC::MetaDataBlockType::Application:
+		{
+			return OStream << "Application";
+		}
+	case FLAC::MetaDataBlockType::SeekTable:
+		{
+			return OStream << "SeekTable";
+		}
+	case FLAC::MetaDataBlockType::VorbisComment:
+		{
+			return OStream << "VorbisComment";
+		}
+	case FLAC::MetaDataBlockType::CueSheet:
+		{
+			return OStream << "CueSheet";
+		}
+	case FLAC::MetaDataBlockType::Picture:
+		{
+			return OStream << "Picture";
+		}
+	case FLAC::MetaDataBlockType::Reserved:
+		{
+			return OStream << "Reserved";
+		}
+	case FLAC::MetaDataBlockType::Invalid:
+	default:
+		{
+			return OStream << "Invalid";
+		}
+	}
+}
+
 #include "../common/any_printing.h"
 #include "../common/file_handling.h"
 #include "../common/5th/buffer.h"
 #include "../common/5th/getters.h"
 #include "../common/5th/result.h"
-#include "../common/guid.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
+
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto MetaDataBlockType{Get_UnsignedInteger_7Bit(Buffer)};
+	
+	if(MetaDataBlockType->GetSuccess() == true)
+	{
+		Success = true;
+		Value->SetAny(MetaDataBlockType->GetAny());
+		
+		auto NumericValue{std::experimental::any_cast< std::uint8_t >(MetaDataBlockType->GetAny())};
+		
+		if(NumericValue == 0x00)
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::StreamInfo);
+		}
+		else if(NumericValue == 0x01)
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::Padding);
+		}
+		else if(NumericValue == 0x01)
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::Application);
+		}
+		else if(NumericValue == 0x01)
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::SeekTable);
+		}
+		else if(NumericValue == 0x01)
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::VorbisComment);
+		}
+		else if(NumericValue == 0x01)
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::CueSheet);
+		}
+		else if(NumericValue == 0x01)
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::Picture);
+		}
+		else if(NumericValue == 0xff)
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::Invalid);
+		}
+		else
+		{
+			Value->Append("Interpretation", FLAC::MetaDataBlockType::Reserved);
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
 
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer)
 {
@@ -32,7 +146,21 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffe
 	if(LastMetaDataBlock->GetSuccess() == true)
 	{
 		Value->Append("LastMetaDataBlock", LastMetaDataBlock->GetValue());
-		Success = true;
+		
+		auto MetaDataBlockType{Get_FLAC_MetaDataBlockType(Buffer)};
+		
+		if(MetaDataBlockType->GetSuccess() == true)
+		{
+			Value->Append("BlockType", MetaDataBlockType->GetValue());
+			
+			auto Length{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+			
+			if(Length->GetSuccess() == true)
+			{
+				Value->Append("Length", Length->GetValue());
+				Success = true;
+			}
+		}
 	}
 	
 	return Inspection::MakeResult(Success, Value);
@@ -46,7 +174,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 	
 	if(FLACStreamMarkerResult->GetSuccess() == true)
 	{
-		auto LastMetaDataBlock{false};
+		// auto LastMetaDataBlock{false};
 		
 		Value->Append("FLAC stream marker", FLACStreamMarkerResult->GetValue());
 		
@@ -54,7 +182,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 		
 		if(FLACStreamInfoBlockResult->GetSuccess() == true)
 		{
-			LastMetaDataBlock = std::any_cast< bool >(FLACStreamInfoBlockResult->GetAny("LastMetaDataBlock"));
+			// LastMetaDataBlock = std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetAny("LastMetaDataBlock"));
 			Value->Append("StreamInfoBlock", FLACStreamInfoBlockResult->GetValue());
 			Success = true;
 		}

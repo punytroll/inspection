@@ -6,6 +6,32 @@
 
 namespace Inspection
 {
+	std::unique_ptr< Inspection::Result > Get_ASCII_AlphaStringEndedByLength(Inspection::Buffer & Buffer, const std::string & String)
+	{
+		auto Success{false};
+		auto Value{std::string("")};
+		
+		if(Buffer.Has(String.length(), 0) == true)
+		{
+			Success = true;
+			for(auto Character : String)
+			{
+				if(Character != Buffer.Get8Bits())
+				{
+					Success = false;
+					
+					break;
+				}
+				else
+				{
+					Value += Character;
+				}
+			}
+		}
+		
+		return Inspection::MakeResult(Success, Value);
+	}
+	
 	std::unique_ptr< Inspection::Result > Get_Boolean_OneBit(Inspection::Buffer & Buffer)
 	{
 		auto Success{false};
@@ -20,30 +46,36 @@ namespace Inspection
 		return Inspection::MakeResult(Success, Value);
 	}
 	
-	std::unique_ptr< Inspection::Result > Get_ASCII_AlphaStringEndedByLength(Inspection::Buffer & Buffer, const std::string & String)
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_7Bit(Inspection::Buffer & Buffer)
 	{
 		auto Success{false};
-		auto Value{std::string("")};
+		std::uint8_t Value{0};
 		
-		if(Buffer.Has(String.length(), 0) == true)
+		if(Buffer.Has(0ull, 7) == true)
 		{
+			Value = Buffer.Get7Bits();
 			Success = true;
-			for(auto Character : String)
-			{
-				if(Character != Buffer.Get1Byte())
-				{
-					Success = false;
-					
-					break;
-				}
-				else
-				{
-					Value += Character;
-				}
-			}
 		}
 		
 		return Inspection::MakeResult(Success, Value);
+	}
+	
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_24Bit_BigEndian(Inspection::Buffer & Buffer)
+	{
+		auto Success{false};
+		std::uint32_t Result{0ul};
+		
+		if(Buffer.Has(0ull, 24) == true)
+		{
+			auto Value{Buffer.Get24Bits()};
+			
+			Result |= static_cast< std::uint32_t >(Value[0]) << 16;
+			Result |= static_cast< std::uint32_t >(Value[1]) << 8;
+			Result |= static_cast< std::uint32_t >(Value[2]);
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Result);
 	}
 }
 
