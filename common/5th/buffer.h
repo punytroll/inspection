@@ -1,6 +1,8 @@
 #ifndef COMMON_5TH_BUFFER_H
 #define COMMON_5TH_BUFFER_H
 
+#include <array>
+
 #include "length.h"
 
 namespace Inspection
@@ -34,14 +36,33 @@ namespace Inspection
 		{
 			assert(Has(0ull, 1) == true);
 			
-			auto Result{(_Data[_Position.GetBytes()] >> (7 - _Position.GetBits())) & 0x01};
+			auto Result{(*(_Data + _Position.GetBytes()) >> (7 - _Position.GetBits())) & 0x01};
 			
 			_Position += Inspection::Length(0ull, 1);
 			
 			return Result;
 		}
 		
-		std::uint8_t Get1Byte(void)
+		std::uint8_t Get7Bits(void)
+		{
+			assert(Has(0ull, 7) == true);
+			
+			std::uint8_t Result;
+			
+			if(_Position.GetBits() < 2)
+			{
+				Result = (*(_Data + _Position.GetBytes()) >> (1 - _Position.GetBits())) & 0x7f;
+			}
+			else
+			{
+				Result = ((*(_Data + _Position.GetBytes()) << (_Position.GetBits() - 1)) + ((*(_Data + _Position.GetBytes() + 1ull)) >> (9 - _Position.GetBits()))) & 0x7f;
+			}
+			_Position += Inspection::Length(0ull, 7);
+			
+			return Result;
+		}
+		
+		std::uint8_t Get8Bits(void)
 		{
 			assert(Has(1ull, 0) == true);
 			
@@ -53,9 +74,22 @@ namespace Inspection
 			}
 			else
 			{
-				Result = (_Data[_Position.GetBytes()] << _Position.GetBits()) + ((_Data[_Position.GetBytes() + 1] >> (8 - _Position.GetBits())) & ((1 << _Position.GetBits()) - 1));
+				Result = (*(_Data + _Position.GetBytes()) << _Position.GetBits()) + ((*(_Data + _Position.GetBytes() + 1ull) >> (8 - _Position.GetBits())) & ((1 << _Position.GetBits()) - 1));
 			}
 			_Position += Inspection::Length(1ull, 0);
+			
+			return Result;
+		}
+		
+		std::array< std::uint8_t, 3 > Get24Bits(void)
+		{
+			assert(Has(0ull, 24) == true);
+			
+			std::array< std::uint8_t, 3 > Result;
+			
+			Result[0] = Get8Bits();
+			Result[1] = Get8Bits();
+			Result[2] = Get8Bits();
 			
 			return Result;
 		}
