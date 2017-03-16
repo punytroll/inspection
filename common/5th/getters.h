@@ -16,7 +16,7 @@ namespace Inspection
 			Success = true;
 			for(auto Character : String)
 			{
-				if(Character != Buffer.Get8Bits()[0])
+				if(Character != Buffer.Get8Bits())
 				{
 					Success = false;
 					
@@ -39,7 +39,7 @@ namespace Inspection
 		
 		if(Buffer.Has(0ull, 1) == true)
 		{
-			Value = (0x01 & Buffer.Get1Bit()[0]) == 0x01;
+			Value = (0x01 & Buffer.Get1Bit()) == 0x01;
 			Success = true;
 		}
 		
@@ -53,11 +53,42 @@ namespace Inspection
 		
 		if(Buffer.Has(0ull, 7) == true)
 		{
-			Value = Buffer.Get7Bits()[0];
+			Value = Buffer.Get7Bits();
 			Success = true;
 		}
 		
 		return Inspection::MakeResult(Success, Value);
+	}
+	
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_16Bit_BigEndian(Inspection::Buffer & Buffer)
+	{
+		auto Success{false};
+		std::uint16_t Result{0ul};
+		
+		if(Buffer.Has(0ull, 16) == true)
+		{
+			Result |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
+			Result |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Result);
+	}
+	
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_20Bit_BigEndian(Inspection::Buffer & Buffer)
+	{
+		auto Success{false};
+		std::uint32_t Result{0ul};
+		
+		if(Buffer.Has(0ull, 20) == true)
+		{
+			Result |= static_cast< std::uint32_t >(Buffer.Get4Bits()) << 16;
+			Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+			Result |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Result);
 	}
 	
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_24Bit_BigEndian(Inspection::Buffer & Buffer)
@@ -67,11 +98,9 @@ namespace Inspection
 		
 		if(Buffer.Has(0ull, 24) == true)
 		{
-			auto Value{Buffer.Get24Bits()};
-			
-			Result |= static_cast< std::uint32_t >(Value[0]) << 16;
-			Result |= static_cast< std::uint32_t >(Value[1]) << 8;
-			Result |= static_cast< std::uint32_t >(Value[2]);
+			Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
+			Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+			Result |= static_cast< std::uint32_t >(Buffer.Get8Bits());
 			Success = true;
 		}
 		

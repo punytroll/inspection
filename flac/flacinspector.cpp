@@ -79,9 +79,40 @@ std::ostream & operator<<(std::ostream & OStream, FLAC::MetaDataBlockType Value)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer);
+
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto LastMetaDataBlock{Get_Boolean_OneBit(Buffer)};
+	
+	if(LastMetaDataBlock->GetSuccess() == true)
+	{
+		Value->Append("LastMetaDataBlock", LastMetaDataBlock->GetValue());
+		
+		auto MetaDataBlockType{Get_FLAC_MetaDataBlockType(Buffer)};
+		
+		if(MetaDataBlockType->GetSuccess() == true)
+		{
+			Value->Append("BlockType", MetaDataBlockType->GetValue());
+			
+			auto Length{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+			
+			if(Length->GetSuccess() == true)
+			{
+				Value->Append("Length", Length->GetValue());
+				Success = true;
+			}
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer)
 {
@@ -137,35 +168,6 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buf
 	return Inspection::MakeResult(Success, Value);
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer)
-{
-	auto Success{false};
-	auto Value{std::make_shared< Inspection::Value >()};
-	auto LastMetaDataBlock{Get_Boolean_OneBit(Buffer)};
-	
-	if(LastMetaDataBlock->GetSuccess() == true)
-	{
-		Value->Append("LastMetaDataBlock", LastMetaDataBlock->GetValue());
-		
-		auto MetaDataBlockType{Get_FLAC_MetaDataBlockType(Buffer)};
-		
-		if(MetaDataBlockType->GetSuccess() == true)
-		{
-			Value->Append("BlockType", MetaDataBlockType->GetValue());
-			
-			auto Length{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
-			
-			if(Length->GetSuccess() == true)
-			{
-				Value->Append("Length", Length->GetValue());
-				Success = true;
-			}
-		}
-	}
-	
-	return Inspection::MakeResult(Success, Value);
-}
-
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
@@ -185,6 +187,76 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 			// LastMetaDataBlock = std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetAny("LastMetaDataBlock"));
 			Value->Append("StreamInfoBlock", FLACStreamInfoBlockResult->GetValue());
 			Success = true;
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto MetaDataBlockHeader{Get_FLAC_MetaDataBlockHeader(Buffer)};
+	
+	if(MetaDataBlockHeader->GetSuccess() == true)
+	{
+		auto MetaDataBlockType{std::experimental::any_cast< FLAC::MetaDataBlockType >(MetaDataBlockHeader->GetValue("BlockType")->GetAny("Interpretation"))};
+		
+		if(MetaDataBlockType == FLAC::MetaDataBlockType::StreamInfo)
+		{
+			Value->Append("Header", MetaDataBlockHeader->GetValue());
+			
+			auto StreamInfoBlockData{Get_FLAC_StreamInfoBlockData(Buffer)};
+			
+			if(StreamInfoBlockData->GetSuccess() == true)
+			{
+				Value->Append("Data", StreamInfoBlockData->GetValue());
+				Success = true;
+			}
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto MinimumBlockSize{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+	
+	if(MinimumBlockSize->GetSuccess() == true)
+	{
+		Value->Append("MinimumBlockSize", MinimumBlockSize->GetValue());
+		
+		auto MaximumBlockSize{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		
+		if(MaximumBlockSize->GetSuccess() == true)
+		{
+			Value->Append("MaximumBlockSize", MaximumBlockSize->GetValue());
+			
+			auto MinimumFrameSize{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+			
+			if(MinimumFrameSize->GetSuccess() == true)
+			{
+				Value->Append("MinimumFrameSize", MinimumFrameSize->GetValue());
+				
+				auto MaximumFrameSize{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+				
+				if(MaximumFrameSize->GetSuccess() == true)
+				{
+					Value->Append("MaximumFrameSize", MaximumFrameSize->GetValue());
+					
+					auto SampleRate{Get_UnsignedInteger_20Bit_BigEndian(Buffer)};
+					
+					if(SampleRate->GetSuccess() == true)
+					{
+						Value->Append("SampleRate", SampleRate->GetValue());
+						Success = true;
+					}
+				}
+			}
 		}
 	}
 	
