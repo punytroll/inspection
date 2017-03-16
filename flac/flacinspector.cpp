@@ -79,11 +79,29 @@ std::ostream & operator<<(std::ostream & OStream, FLAC::MetaDataBlockType Value)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer);
+
+std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::shared_ptr< Inspection::Value > Value;
+	auto BitsPerSample{Get_UnsignedInteger_5Bit(Buffer)};
+	
+	if(BitsPerSample->GetSuccess() == true)
+	{
+		Value = BitsPerSample->GetValue();
+		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSample->GetAny()) + 1));
+		Success = true;
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer)
 {
@@ -163,6 +181,22 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buf
 		{
 			Value->Append("Interpretation", FLAC::MetaDataBlockType::Reserved);
 		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::shared_ptr< Inspection::Value > Value;
+	auto NumberOfChannels{Get_UnsignedInteger_3Bit(Buffer)};
+	
+	if(NumberOfChannels->GetSuccess() == true)
+	{
+		Value = NumberOfChannels->GetValue();
+		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannels->GetAny()) + 1));
+		Success = true;
 	}
 	
 	return Inspection::MakeResult(Success, Value);
@@ -253,7 +287,28 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::B
 					if(SampleRate->GetSuccess() == true)
 					{
 						Value->Append("SampleRate", SampleRate->GetValue());
-						Success = true;
+						
+						auto NumberOfChannels{Get_FLAC_NumberOfChannels(Buffer)};
+						
+						if(NumberOfChannels->GetSuccess() == true)
+						{
+							Value->Append("NumberOfChannels", NumberOfChannels->GetValue());
+							
+							auto BitsPerSample{Get_FLAC_BitsPerSample(Buffer)};
+							
+							if(BitsPerSample->GetSuccess() == true)
+							{
+								Value->Append("BitsPerSample", BitsPerSample->GetValue());
+								
+								auto TotalSamplesPerChannel{Get_UnsignedInteger_36Bit_BigEndian(Buffer)};
+								
+								if(TotalSamplesPerChannel->GetSuccess() == true)
+								{
+									Value->Append("TotalSamplesPerChannel", TotalSamplesPerChannel->GetValue());
+									Success = true;
+								}
+							}
+						}
 					}
 				}
 			}

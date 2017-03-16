@@ -46,6 +46,48 @@ namespace Inspection
 		return Inspection::MakeResult(Success, Value);
 	}
 	
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_3Bit(Inspection::Buffer & Buffer)
+	{
+		auto Success{false};
+		std::uint8_t Value{0};
+		
+		if(Buffer.Has(0ull, 3) == true)
+		{
+			Value = Buffer.Get3Bits();
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Value);
+	}
+	
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_4Bit(Inspection::Buffer & Buffer)
+	{
+		auto Success{false};
+		std::uint8_t Value{0};
+		
+		if(Buffer.Has(0ull, 4) == true)
+		{
+			Value = Buffer.Get4Bits();
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Value);
+	}
+	
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_5Bit(Inspection::Buffer & Buffer)
+	{
+		auto Success{false};
+		std::uint8_t Value{0};
+		
+		if(Buffer.Has(0ull, 5) == true)
+		{
+			Value = Buffer.Get5Bits();
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Value);
+	}
+	
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_7Bit(Inspection::Buffer & Buffer)
 	{
 		auto Success{false};
@@ -101,6 +143,24 @@ namespace Inspection
 			Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
 			Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
 			Result |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Result);
+	}
+	
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_36Bit_BigEndian(Inspection::Buffer & Buffer)
+	{
+		auto Success{false};
+		std::uint64_t Result{0ul};
+		
+		if(Buffer.Has(0ull, 36) == true)
+		{
+			Result |= static_cast< std::uint64_t >(Buffer.Get4Bits()) << 32;
+			Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
+			Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
+			Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
+			Result |= static_cast< std::uint64_t >(Buffer.Get8Bits());
 			Success = true;
 		}
 		
