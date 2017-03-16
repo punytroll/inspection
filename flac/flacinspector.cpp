@@ -305,7 +305,14 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::B
 								if(TotalSamplesPerChannel->GetSuccess() == true)
 								{
 									Value->Append("TotalSamplesPerChannel", TotalSamplesPerChannel->GetValue());
-									Success = true;
+									
+									auto MD5SignatureOfUnencodedAudioData{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 16)};
+									
+									if(MD5SignatureOfUnencodedAudioData->GetSuccess() == true)
+									{
+										Value->Append("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioData->GetValue());
+										Success = true;
+									}
 								}
 							}
 						}

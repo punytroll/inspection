@@ -46,6 +46,23 @@ namespace Inspection
 		return Inspection::MakeResult(Success, Value);
 	}
 	
+	std::unique_ptr< Inspection::Result > Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+	{
+		auto Success{false};
+		std::vector< std::uint8_t > Value;
+		
+		if(Buffer.Has(Length, 0) == true)
+		{
+			for(auto Index = 0ull; Index < Length; ++Index)
+			{
+				Value.push_back(Buffer.Get8Bits());
+			}
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Value);
+	}
+	
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_3Bit(Inspection::Buffer & Buffer)
 	{
 		auto Success{false};
@@ -96,6 +113,20 @@ namespace Inspection
 		if(Buffer.Has(0ull, 7) == true)
 		{
 			Value = Buffer.Get7Bits();
+			Success = true;
+		}
+		
+		return Inspection::MakeResult(Success, Value);
+	}
+	
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_8Bit(Inspection::Buffer & Buffer)
+	{
+		auto Success{false};
+		std::uint8_t Value{0};
+		
+		if(Buffer.Has(0ull, 8) == true)
+		{
+			Value = Buffer.Get8Bits();
 			Success = true;
 		}
 		
