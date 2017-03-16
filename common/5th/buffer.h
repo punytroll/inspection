@@ -42,6 +42,25 @@ namespace Inspection
 			return Result;
 		}
 		
+		std::uint8_t Get3Bits(void)
+		{
+			assert(Has(0ull, 3) == true);
+			
+			std::uint8_t Result;
+			
+			if(_Position.GetBits() < 6)
+			{
+				Result = (*(_Data + _Position.GetBytes()) >> (5 - _Position.GetBits())) & 0x07;
+			}
+			else
+			{
+				Result = ((*(_Data + _Position.GetBytes()) << (_Position.GetBits() - 5)) | ((*(_Data + _Position.GetBytes() + 1ull)) >> (13 - _Position.GetBits()))) & 0x07;
+			}
+			_Position += Inspection::Length(0ull, 3);
+			
+			return Result;
+		}
+		
 		std::uint8_t Get4Bits(void)
 		{
 			assert(Has(0ull, 4) == true);
@@ -57,6 +76,25 @@ namespace Inspection
 				Result = ((*(_Data + _Position.GetBytes()) << (_Position.GetBits() - 4)) | ((*(_Data + _Position.GetBytes() + 1ull)) >> (12 - _Position.GetBits()))) & 0x0f;
 			}
 			_Position += Inspection::Length(0ull, 4);
+			
+			return Result;
+		}
+		
+		std::uint8_t Get5Bits(void)
+		{
+			assert(Has(0ull, 5) == true);
+			
+			std::uint8_t Result;
+			
+			if(_Position.GetBits() < 4)
+			{
+				Result = (*(_Data + _Position.GetBytes()) >> (3 - _Position.GetBits())) & 0x07;
+			}
+			else
+			{
+				Result = ((*(_Data + _Position.GetBytes()) << (_Position.GetBits() - 3)) | ((*(_Data + _Position.GetBytes() + 1ull)) >> (11 - _Position.GetBits()))) & 0x1f;
+			}
+			_Position += Inspection::Length(0ull, 5);
 			
 			return Result;
 		}
