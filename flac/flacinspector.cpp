@@ -80,6 +80,7 @@ std::ostream & operator<<(std::ostream & OStream, FLAC::MetaDataBlockType Value)
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buffer & Buffer);
@@ -97,6 +98,34 @@ std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer 
 	{
 		Value = BitsPerSample->GetValue();
 		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSample->GetAny()) + 1));
+		Success = true;
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto MetaDataBlockHeader{Get_FLAC_MetaDataBlockHeader(Buffer)};
+	
+	if(MetaDataBlockHeader->GetSuccess() == true)
+	{
+		Value->Append("Header", MetaDataBlockHeader->GetValue());
+		
+		auto MetaDataBlockType{std::experimental::any_cast< FLAC::MetaDataBlockType >(MetaDataBlockHeader->GetValue("BlockType")->GetAny("Interpretation"))};
+		
+		if(MetaDataBlockType == FLAC::MetaDataBlockType::StreamInfo)
+		{
+			auto StreamInfoBlockData{Get_FLAC_StreamInfoBlockData(Buffer)};
+			
+			if(StreamInfoBlockData->GetSuccess() == true)
+			{
+				Value->Append("Data", StreamInfoBlockData->GetValue());
+				Success = true;
+			}
+		}
 		Success = true;
 	}
 	
@@ -210,17 +239,33 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 	
 	if(FLACStreamMarkerResult->GetSuccess() == true)
 	{
-		// auto LastMetaDataBlock{false};
-		
 		Value->Append("FLAC stream marker", FLACStreamMarkerResult->GetValue());
 		
 		auto FLACStreamInfoBlockResult{Get_FLAC_StreamInfoBlock(Buffer)};
 		
 		if(FLACStreamInfoBlockResult->GetSuccess() == true)
 		{
-			// LastMetaDataBlock = std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetAny("LastMetaDataBlock"));
 			Value->Append("StreamInfoBlock", FLACStreamInfoBlockResult->GetValue());
+			
+			auto LastMetaDataBlock{std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetValue("Header")->GetAny("LastMetaDataBlock"))};
+			
 			Success = true;
+			while(LastMetaDataBlock == false)
+			{
+				auto MetaDataBlock{Get_FLAC_MetaDataBlock(Buffer)};
+				
+				if(MetaDataBlock->GetSuccess() == true)
+				{
+					Value->Append("MetaDataBlock", MetaDataBlock->GetValue());
+					LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlock->GetValue("Header")->GetAny("LastMetaDataBlock"));
+				}
+				else
+				{
+					// Success = false;
+					
+					break;
+				}
+			}
 		}
 	}
 	
