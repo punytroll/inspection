@@ -1,6 +1,8 @@
 #ifndef COMMON_5TH_BUFFER_H
 #define COMMON_5TH_BUFFER_H
 
+#include <cassert>
+
 #include "length.h"
 
 namespace Inspection
