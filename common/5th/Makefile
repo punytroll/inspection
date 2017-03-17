@@ -4,10 +4,14 @@ LDFLAGS = -g
 default: all
 
 clean:
+	$(RM) getters.o
 	$(RM) test
 	$(RM) test.o
 
-all: test
+all: test getters.o
+
+getters.o: getters.cpp getters.h result.h buffer.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 test: test.o
 	$(CXX) $(LDFLAGS) $^ -o $@

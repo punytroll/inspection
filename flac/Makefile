@@ -9,7 +9,7 @@ clean:
 
 all: ../flacinspector
 
-../flacinspector: flacinspector.o
+../flacinspector: flacinspector.o ../common/5th/getters.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 flacinspector.o: flacinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h
