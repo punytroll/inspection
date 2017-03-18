@@ -182,23 +182,23 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buf
 		{
 			Value->Append("Interpretation", FLAC::MetaDataBlockType::Padding);
 		}
-		else if(NumericValue == 0x01)
+		else if(NumericValue == 0x02)
 		{
 			Value->Append("Interpretation", FLAC::MetaDataBlockType::Application);
 		}
-		else if(NumericValue == 0x01)
+		else if(NumericValue == 0x03)
 		{
 			Value->Append("Interpretation", FLAC::MetaDataBlockType::SeekTable);
 		}
-		else if(NumericValue == 0x01)
+		else if(NumericValue == 0x04)
 		{
 			Value->Append("Interpretation", FLAC::MetaDataBlockType::VorbisComment);
 		}
-		else if(NumericValue == 0x01)
+		else if(NumericValue == 0x05)
 		{
 			Value->Append("Interpretation", FLAC::MetaDataBlockType::CueSheet);
 		}
-		else if(NumericValue == 0x01)
+		else if(NumericValue == 0x06)
 		{
 			Value->Append("Interpretation", FLAC::MetaDataBlockType::Picture);
 		}
