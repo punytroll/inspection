@@ -87,6 +87,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buff
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlockData(Inspection::Buffer & Buffer);
 
 std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer & Buffer)
 {
@@ -123,6 +124,16 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 			if(StreamInfoBlockData->GetSuccess() == true)
 			{
 				Value->Append("Data", StreamInfoBlockData->GetValue());
+				Success = true;
+			}
+		}
+		else if(MetaDataBlockType == FLAC::MetaDataBlockType::VorbisComment)
+		{
+			auto VorbisCommentBlockData{Get_FLAC_VorbisCommentBlockData(Buffer)};
+			
+			if(VorbisCommentBlockData->GetSuccess() == true)
+			{
+				Value->Append("Data", VorbisCommentBlockData->GetValue());
 				Success = true;
 			}
 		}
@@ -261,7 +272,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 				}
 				else
 				{
-					// Success = false;
+					Success = false;
 					
 					break;
 				}
@@ -361,6 +372,76 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::B
 								}
 							}
 						}
+					}
+				}
+			}
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlockData(Inspection::Buffer & Buffer)
+{
+	/// @TODO Delegate to a Vorbis Comment Header  getter.
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto VendorLength{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	
+	if(VendorLength->GetSuccess() == true)
+	{
+		Value->Append("VendorLength", VendorLength->GetValue());
+		
+		auto VendorLengthValue{std::experimental::any_cast< std::uint32_t >(VendorLength->GetAny())};
+		auto VendorString{Get_UTF8_String_EndedByLength(Buffer, VendorLengthValue)};
+		
+		if(VendorString->GetSuccess() == true)
+		{
+			Value->Append("VendorString", VendorString->GetValue());
+			
+			/// @TODO Delegate to a Vorbis user comment list getter.
+			auto UserCommentListLength{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			
+			if(UserCommentListLength->GetSuccess() == true)
+			{
+				auto UserCommentList{std::make_shared< Inspection::Value >()};
+				
+				Value->Append("UserCommentList", UserCommentList);
+				UserCommentList->Append("Length", UserCommentListLength->GetValue());
+				Success = true;
+				
+				auto UserCommentListLengthValue{std::experimental::any_cast< std::uint32_t >(UserCommentListLength->GetAny())};
+				
+				for(std::uint32_t Index = 0ul; Index < UserCommentListLengthValue; ++Index)
+				{
+					/// @TODO Delegate to a user comment getter.
+					auto UserComment{std::make_shared< Inspection::Value >()};
+					auto UserCommentLength{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+					
+					if(UserCommentLength->GetSuccess() == true)
+					{
+						UserComment->Append("Length", UserCommentLength->GetValue());
+						
+						auto UserCommentLengthValue{std::experimental::any_cast< std::uint32_t >(UserCommentLength->GetAny())};
+						auto UserCommentString{Get_UTF8_String_EndedByLength(Buffer, UserCommentLengthValue)};
+						
+						if(UserCommentString->GetSuccess() == true)
+						{
+							UserComment->Append("String", UserCommentString->GetValue());
+							UserCommentList->Append("UserComment", UserComment);
+						}
+						else
+						{
+							Success = false;
+							
+							break;
+						}
+					}
+					else
+					{
+						Success = false;
+						
+						break;
 					}
 				}
 			}
