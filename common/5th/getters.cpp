@@ -177,6 +177,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 	return Inspection::MakeResult(Success, Result);
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::uint32_t Result{0ul};
+	
+	if(Buffer.Has(0ull, 32) == true)
+	{
+		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
+		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
+		Success = true;
+	}
+	
+	return Inspection::MakeResult(Success, Result);
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
@@ -193,4 +210,99 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 	}
 	
 	return Inspection::MakeResult(Success, Result);
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::string Value;
+	
+	if(Buffer.Has(1ull, 0) == true)
+	{
+		auto First{Buffer.Get8Bits()};
+		
+		Value += First;
+		if((First & 0x80) == 0x00)
+		{
+			Success = true;
+		}
+		else if((First & 0xe0) == 0xc0)
+		{
+			if(Buffer.Has(1ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				
+				if((Second & 0xc0) == 0x80)
+				{
+					Value += Second;
+					Success = true;
+				}
+			}
+		}
+		else if((First & 0xf0) == 0xe0)
+		{
+			if(Buffer.Has(2ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
+				{
+					Value += Second;
+					Value += Third;
+					Success = true;
+				}
+			}
+		}
+		else if((First & 0xf8) == 0xf0)
+		{
+			if(Buffer.Has(3ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
+				{
+					Value += Second;
+					Value += Third;
+					Value += Fourth;
+					Success = true;
+				}
+			}
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::string Value;
+	
+	if(Buffer.Has(Length, 0) == true)
+	{
+		auto End{Buffer.GetPosition() + Inspection::Length(Length, 0)};
+		
+		while(Buffer.GetPosition() < End)
+		{
+			auto Character{Get_UTF8_Character(Buffer)};
+			
+			if(Character->GetSuccess() == true)
+			{
+				Value += std::experimental::any_cast< std::string >(Character->GetAny());
+			}
+			else
+			{
+				break;
+			}
+		}
+		if(Buffer.GetPosition() == End)
+		{
+			Success = true;
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
 }
