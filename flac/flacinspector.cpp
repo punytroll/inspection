@@ -84,6 +84,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_PaddingBlockData(Inspection::Buffer & Buffer, std::uint64_t Length);
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer);
@@ -119,6 +120,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 		Value->Append("Header", MetaDataBlockHeader->GetValue());
 		
 		auto MetaDataBlockType{std::experimental::any_cast< FLAC::MetaDataBlockType >(MetaDataBlockHeader->GetValue("BlockType")->GetAny("Interpretation"))};
+		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(MetaDataBlockHeader->GetAny("Length"))};
 		
 		if(MetaDataBlockType == FLAC::MetaDataBlockType::StreamInfo)
 		{
@@ -127,6 +129,16 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 			if(StreamInfoBlockData->GetSuccess() == true)
 			{
 				Value->Append("Data", StreamInfoBlockData->GetValue());
+				Success = true;
+			}
+		}
+		else if(MetaDataBlockType == FLAC::MetaDataBlockType::Padding)
+		{
+			auto PaddingBlockData{Get_FLAC_PaddingBlockData(Buffer, MetaDataBlockDataLength)};
+			
+			if(PaddingBlockData->GetSuccess() == true)
+			{
+				Value->Append("Data", PaddingBlockData->GetValue());
 				Success = true;
 			}
 		}
@@ -240,6 +252,33 @@ std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buff
 		Value = NumberOfChannels->GetValue();
 		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannels->GetAny()) + 1));
 		Success = true;
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_PaddingBlockData(Inspection::Buffer & Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::shared_ptr< Inspection::Value > Value;
+	auto PaddingData{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+	
+	if(PaddingData->GetSuccess() == true)
+	{
+		Value = PaddingData->GetValue();
+		Success = true;
+		
+		auto PaddingDataValue{std::experimental::any_cast< const std::vector< std::uint8_t > & >(PaddingData->GetAny())};
+		
+		for(auto PaddingByte : PaddingDataValue)
+		{
+			if(PaddingByte != 0x00)
+			{
+				Success = false;
+				
+				break;
+			}
+		}
 	}
 	
 	return Inspection::MakeResult(Success, Value);
