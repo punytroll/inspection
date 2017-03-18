@@ -435,6 +435,7 @@ void ReadFile(const std::string & Path)
 				
 				if(FLACStream->GetSuccess() == true)
 				{
+					FLACStream->GetValue()->SetName("FLACStream");
 					PrintValue(FLACStream->GetValue());
 				}
 				else
