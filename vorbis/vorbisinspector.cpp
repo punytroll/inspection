@@ -12,15 +12,14 @@
 
 #include "../common/any_printing.h"
 #include "../common/file_handling.h"
-#include "../common/getters/4th.h"
-#include "../common/results.h"
+#include "../common/5th/buffer.h"
+#include "../common/5th/getters.h"
+#include "../common/5th/result.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// 4th generation getters                                                                        //
-//   - These functions validate and extract in one go.                                           //
-//   - They return a unique_ptr to an instance of type Result                                    //
+// 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Results::Result > Get_VorbisHeaderPacket(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Inspection::Result > Get_VorbisHeaderPacket(Inspection::Buffer & Buffer);
 
 //~ std::unique_ptr< Results::Result > Get_VorbisHeaderPacket(const std::uint8_t * Buffer, std::uint64_t Length)
 //~ {
@@ -50,52 +49,43 @@ std::unique_ptr< Results::Result > Get_VorbisHeaderPacket(const std::uint8_t * B
 	//~ return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
 //~ }
 
-std::unique_ptr< Results::Result > Get_VorbisPage(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_OggPage(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto CapturePatternResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "OggS")};
 	
-	if(Length - Index >= 4ull)
+	if(CapturePatternResult->GetSuccess() == true)
 	{
-		auto CapturePatternResult{Get_ASCII_AlphaString_EndedByLength(Buffer + Index, 4ull)};
+		Value->Append("CapturePattern", CapturePatternResult->GetValue());
 		
-		if((CapturePatternResult->GetSuccess() == true) && (std::experimental::any_cast< std::string >(CapturePatternResult->GetAny()) == "OggS"))
+		auto StreamStructureVersionResult{Get_UnsignedInteger_8Bit(Buffer)};
+		
+		if(StreamStructureVersionResult->GetSuccess() == true)
 		{
-			Index += CapturePatternResult->GetLength();
-			Value->Append("CapturePattern", CapturePatternResult->GetValue());
+			Value->Append("StreamStructureVersion", StreamStructureVersionResult->GetValue());
 			
-			auto StreamStructureVersionResult{Get_UnsignedInteger_8Bit(Buffer + Index, Length - Index)};
+			auto HeaderTypeFlagResult{Get_BitSet_8Bit(Buffer)};
 			
-			if(StreamStructureVersionResult->GetSuccess() == true)
+			if(HeaderTypeFlagResult->GetSuccess() == true)
 			{
-				Index += StreamStructureVersionResult->GetLength();
-				Value->Append("StreamStructureVersion", StreamStructureVersionResult->GetValue());
+				Value->Append("HeaderTypeFlag", HeaderTypeFlagResult->GetValue());
 				
-				auto HeaderTypeFlagResult{Get_BitSet_8Bit(Buffer + Index, Length - Index)};
+				auto GranulePositionResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 				
-				if(HeaderTypeFlagResult->GetSuccess() == true)
+				if(GranulePositionResult->GetSuccess() == true)
 				{
-					Index += HeaderTypeFlagResult->GetLength();
-					Value->Append("HeaderTypeFlag", HeaderTypeFlagResult->GetValue());
-					
-					auto GranulePositionResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-					
-					if(GranulePositionResult->GetSuccess() == true)
-					{
-						Index += HeaderTypeFlagResult->GetLength();
-						Value->Append("GranulePosition", GranulePositionResult->GetValue());
-						Success = true;
-					}
+					Value->Append("GranulePosition", GranulePositionResult->GetValue());
+					Success = true;
 				}
 			}
 		}
 	}
 	
-	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
+	return Inspection::MakeResult(Success, Value);
 }
 
-void PrintValue(const std::string & Indentation, std::shared_ptr< Results::Value > Value)
+void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Value > Value)
 {
 	auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
 	
@@ -146,21 +136,17 @@ void ReadFile(const std::string & Path)
 			}
 			else
 			{
-				std::int64_t Index{0};
+				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
+				auto OggPageResult(Get_OggPage(Buffer));
 				
-				while(Index < FileSize)
+				if(OggPageResult->GetSuccess() == true)
 				{
-					auto VorbisPageResult(Get_VorbisPage(Address + Index, FileSize - Index));
-					
-					if(VorbisPageResult->GetSuccess() == true)
-					{
-						Index += VorbisPageResult->GetLength();
-						PrintValue("", VorbisPageResult->GetValue());
-					}
-					else
-					{
-						Index += 1;
-					}
+					OggPageResult->GetValue()->SetName("OggPage");
+					PrintValue("", OggPageResult->GetValue());
+				}
+				else
+				{
+					std::cerr << "The file does not start with an OggPage." << std::endl;
 				}
 				munmap(Address, FileSize);
 			}
