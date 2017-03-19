@@ -3,7 +3,7 @@
 #include "buffer.h"
 #include "getters.h"
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_AlphaStringEndedByLength(Inspection::Buffer & Buffer, const std::string & String)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedTemplateByLength(Inspection::Buffer & Buffer, const std::string & String)
 {
 	auto Success{false};
 	auto Value{std::string("")};
