@@ -60,6 +60,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	return Inspection::MakeResult(Success, Value);
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	std::shared_ptr< Inspection::Value > Value;
+	auto Data{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+	
+	if(Data->GetSuccess() == true)
+	{
+		Success = true;
+		
+		const std::vector< std::uint8_t > & DataValue{std::experimental::any_cast< const std::vector< std::uint8_t > & >(Data->GetAny())};
+		
+		for(auto Byte : DataValue)
+		{
+			if(Byte != 0x00)
+			{
+				Success = false;
+				
+				break;
+			}
+		}
+		Value = Data->GetValue();
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
