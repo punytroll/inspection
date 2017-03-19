@@ -260,7 +260,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto FLACStreamMarkerResult{Get_ASCII_AlphaStringEndedByLength(Buffer, "fLaC")};
+	auto FLACStreamMarkerResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "fLaC")};
 	
 	if(FLACStreamMarkerResult->GetSuccess() == true)
 	{
