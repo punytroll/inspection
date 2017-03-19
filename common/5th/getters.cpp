@@ -1,3 +1,4 @@
+#include <bitset>
 #include <vector>
 
 #include "buffer.h"
@@ -24,6 +25,30 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 				Value += Character;
 			}
 		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::bitset<8> Value;
+	
+	if(Buffer.Has(0ull, 8) == true)
+	{
+		Success = true;
+		
+		auto Byte{Buffer.Get8Bits()};
+		
+		Value[0] = (Byte & 0x01) == 0x01;
+		Value[1] = (Byte & 0x02) == 0x02;
+		Value[2] = (Byte & 0x04) == 0x04;
+		Value[3] = (Byte & 0x08) == 0x08;
+		Value[4] = (Byte & 0x10) == 0x10;
+		Value[5] = (Byte & 0x20) == 0x20;
+		Value[6] = (Byte & 0x40) == 0x40;
+		Value[7] = (Byte & 0x80) == 0x80;
 	}
 	
 	return Inspection::MakeResult(Success, Value);
@@ -233,6 +258,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
 		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
 		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits());
+		Success = true;
+	}
+	
+	return Inspection::MakeResult(Success, Result);
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::uint64_t Result{0ull};
+	
+	if(Buffer.Has(0ull, 64) == true)
+	{
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits());
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 32;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 40;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 48;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 56;
 		Success = true;
 	}
 	
