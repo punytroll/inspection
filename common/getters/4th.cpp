@@ -128,29 +128,6 @@ std::unique_ptr< Results::Result > Get_BitSet_32Bit_LittleEndian(const std::uint
 	return Results::MakeResult(Success, Index, Value);
 }
 
-std::unique_ptr< Results::Result > Get_BitSet_8Bit(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::bitset<8> Value;
-	
-	if(Length >= 1ull)
-	{
-		Success = true;
-		Index = 1ull;
-		Value[0] = (Buffer[0] & 0x01) == 0x01;
-		Value[1] = (Buffer[0] & 0x02) == 0x02;
-		Value[2] = (Buffer[0] & 0x04) == 0x04;
-		Value[3] = (Buffer[0] & 0x08) == 0x08;
-		Value[4] = (Buffer[0] & 0x10) == 0x10;
-		Value[5] = (Buffer[0] & 0x20) == 0x20;
-		Value[6] = (Buffer[0] & 0x40) == 0x40;
-		Value[7] = (Buffer[0] & 0x80) == 0x80;
-	}
-	
-	return Results::MakeResult(Success, Index, Value);
-}
-
 std::unique_ptr< Results::Result > Get_Buffer_UnsignedInteger_8Bit_EndedByLength(const std::uint8_t * Buffer, std::uint64_t Length)
 {
 	auto Success{false};
