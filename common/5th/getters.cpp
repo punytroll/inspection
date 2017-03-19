@@ -224,7 +224,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Litt
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
-	std::uint64_t Result{0ul};
+	std::uint64_t Result{0ull};
 	
 	if(Buffer.Has(0ull, 36) == true)
 	{
