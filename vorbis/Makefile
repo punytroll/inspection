@@ -5,20 +5,16 @@ default: all
 
 clean:
 	$(RM) ../vorbisinspector
-	$(RM) 4th.o
+	$(RM) getters.o
 	$(RM) vorbisinspector.o
-	$(RM) unicode.o
 
 all: ../vorbisinspector
 
-../vorbisinspector: vorbisinspector.o 4th.o unicode.o
+../vorbisinspector: vorbisinspector.o getters.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-4th.o: ../common/getters/4th.cpp ../common/getters/4th.h
+getters.o: ../common/5th/getters.cpp ../common/5th/getters.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/getters/4th.h ../common/results.h ../common/unicode.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-unicode.o: ../common/unicode.cpp ../common/unicode.h
+vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/5th/getters.h ../common/results.h ../common/unicode.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
