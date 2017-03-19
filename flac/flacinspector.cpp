@@ -558,7 +558,7 @@ void ReadFile(const std::string & Path)
 				}
 				else
 				{
-					std::cerr << "The file does not start with FLACStream object." << std::endl;
+					std::cerr << "The file does not start with a FLACStream." << std::endl;
 				}
 				munmap(Address, FileSize);
 			}
