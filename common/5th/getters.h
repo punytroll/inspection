@@ -9,6 +9,7 @@ namespace Inspection
 	class Buffer;
 	
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_Alphabetical_EndedTemplateByLength(Inspection::Buffer & Buffer, const std::string & String);
+	std::unique_ptr< Inspection::Result > Get_BitSet_8Bit(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_Boolean_OneBit(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length);
 	std::unique_ptr< Inspection::Result > Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length);
@@ -22,6 +23,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_24Bit_BigEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_36Bit_BigEndian(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF8_Character(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF8_String_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length);
 }
