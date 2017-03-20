@@ -399,11 +399,11 @@ std::unique_ptr< Results::Result > Get_ASF_FilePropertiesFlags(const std::uint8_
 	
 	if(Flags->GetSuccess() == true)
 	{
-		auto FlagsValue{std::experimental::any_cast< std::bitset< 32 > >(Flags->GetAny())};
+		const std::bitset< 32 > & FlagsValue{std::experimental::any_cast< const std::bitset< 32 > & >(Flags->GetAny())};
 		
 		Value->SetAny(Flags->GetAny());
-		Value->Append("[0] Broadcast", bool(FlagsValue[0]));
-		Value->Append("[1] Seekable", bool(FlagsValue[1]));
+		Value->Append("[0] Broadcast", FlagsValue[0]);
+		Value->Append("[1] Seekable", FlagsValue[1]);
 		Value->Append("[2-31] Reserved", false);
 		Success = true;
 		for(auto Index = 2; Index < 32; ++Index)
