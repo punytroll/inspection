@@ -21,7 +21,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t Length);
+std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries);
 std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_VorbisHeaderPacket(Inspection::Buffer & Buffer);
 
@@ -74,11 +74,11 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer
 	return Inspection::MakeResult(Success, Value);
 }
 
-std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t Length)
+std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries)
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto SegmentTableResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+	auto SegmentTableResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, NumberOfEntries)};
 	
 	if(SegmentTableResult->GetSuccess() == true)
 	{
