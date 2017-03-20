@@ -84,6 +84,8 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_SeekPoint(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlockData(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints);
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer);
@@ -139,6 +141,19 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 			{
 				Value->Append("Data", PaddingBlockData->GetValue());
 				Success = true;
+			}
+		}
+		else if(MetaDataBlockType == FLAC::MetaDataBlockType::SeekTable)
+		{
+			if(MetaDataBlockDataLength % 18 == 0)
+			{
+				auto SeekTableBlockData{Get_FLAC_SeekTableBlockData(Buffer, MetaDataBlockDataLength / 18)};
+				
+				if(SeekTableBlockData->GetSuccess() == true)
+				{
+					Value->Append("Data", SeekTableBlockData->GetValue());
+					Success = true;
+				}
 			}
 		}
 		else if(MetaDataBlockType == FLAC::MetaDataBlockType::VorbisComment)
@@ -251,6 +266,59 @@ std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buff
 		Value = NumberOfChannels->GetValue();
 		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannels->GetAny()) + 1));
 		Success = true;
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_SeekPoint(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto SampleNumberOfFirstSampleInTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
+	
+	if(SampleNumberOfFirstSampleInTargetFrameResult->GetSuccess() == true)
+	{
+		Value->Append("SampleNumberOfFirstSampleInTargetFrame", SampleNumberOfFirstSampleInTargetFrameResult->GetValue());
+		
+		auto ByteOffsetOfTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
+		
+		if(ByteOffsetOfTargetFrameResult->GetSuccess() == true)
+		{
+			Value->Append("ByteOffsetOfTargetFrame", ByteOffsetOfTargetFrameResult->GetValue());
+			
+			auto NumberOfSamplesInTargetFrameResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+			
+			if(NumberOfSamplesInTargetFrameResult->GetSuccess() == true)
+			{
+				Value->Append("NumberOfSamplesInTargetFrame", NumberOfSamplesInTargetFrameResult->GetValue());
+				Success = true;
+			}
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlockData(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints)
+{
+	auto Success{true};
+	auto Value{std::make_shared< Inspection::Value >()};
+	
+	for(auto SeekPointIndex = 0ul; SeekPointIndex < NumberOfSeekPoints; ++SeekPointIndex)
+	{
+		auto SeekPointResult{Get_FLAC_SeekPoint(Buffer)};
+		
+		if(SeekPointResult->GetSuccess() == true)
+		{
+			Value->Append("SeekPoint", SeekPointResult->GetValue());
+		}
+		else
+		{
+			Success = false;
+			
+			break;
+		}
 	}
 	
 	return Inspection::MakeResult(Success, Value);
