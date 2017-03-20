@@ -19,6 +19,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t Length);
+std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_VorbisHeaderPacket(Inspection::Buffer & Buffer);
 
 //~ std::unique_ptr< Results::Result > Get_VorbisHeaderPacket(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -49,7 +53,49 @@ std::unique_ptr< Inspection::Result > Get_VorbisHeaderPacket(Inspection::Buffer 
 	//~ return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
 //~ }
 
-std::unique_ptr< Inspection::Result > Get_OggPage(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::shared_ptr< Inspection::Value > Value;
+	auto HeaderTypeResult{Get_BitSet_8Bit(Buffer)};
+	
+	if(HeaderTypeResult->GetSuccess() == true)
+	{
+		Success = true;
+		Value = HeaderTypeResult->GetValue();
+		
+		const std::bitset< 8 > & HeaderType{std::experimental::any_cast< const std::bitset< 8 > & >(HeaderTypeResult->GetAny())};
+		
+		Value->Append("Continuation", HeaderType[0]);
+		Value->Append("BeginOfStream", HeaderType[1]);
+		Value->Append("EndOfStream", HeaderType[2]);
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t Length)
+{
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto SegmentTableResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+	
+	if(SegmentTableResult->GetSuccess() == true)
+	{
+		Success = true;
+		
+		const std::vector< std::uint8_t > & SegmentTable{std::experimental::any_cast< std::vector< std::uint8_t > >(SegmentTableResult->GetAny())};
+		
+		for(auto SegmentTableEntry : SegmentTable)
+		{
+			Value->Append(SegmentTableEntry);
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
@@ -65,20 +111,100 @@ std::unique_ptr< Inspection::Result > Get_OggPage(Inspection::Buffer & Buffer)
 		{
 			Value->Append("StreamStructureVersion", StreamStructureVersionResult->GetValue());
 			
-			auto HeaderTypeFlagResult{Get_BitSet_8Bit(Buffer)};
+			auto HeaderTypeResult{Get_Ogg_Page_HeaderType(Buffer)};
 			
-			if(HeaderTypeFlagResult->GetSuccess() == true)
+			if(HeaderTypeResult->GetSuccess() == true)
 			{
-				Value->Append("HeaderTypeFlag", HeaderTypeFlagResult->GetValue());
+				Value->Append("HeaderType", HeaderTypeResult->GetValue());
 				
 				auto GranulePositionResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 				
 				if(GranulePositionResult->GetSuccess() == true)
 				{
 					Value->Append("GranulePosition", GranulePositionResult->GetValue());
-					Success = true;
+					
+					auto BitStreamSerialNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+					
+					if(BitStreamSerialNumberResult->GetSuccess() == true)
+					{
+						Value->Append("BitStreamSerialNumber", BitStreamSerialNumberResult->GetValue());
+						
+						auto PageSequenceNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+						
+						if(PageSequenceNumberResult->GetSuccess() == true)
+						{
+							Value->Append("PageSequenceNumber", PageSequenceNumberResult->GetValue());
+							
+							auto ChecksumResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+							
+							if(ChecksumResult->GetSuccess() == true)
+							{
+								Value->Append("Checksum", ChecksumResult->GetValue());
+								
+								auto PageSegmentsResult{Get_UnsignedInteger_8Bit(Buffer)};
+								
+								if(PageSegmentsResult->GetSuccess() == true)
+								{
+									Value->Append("PageSegments", PageSegmentsResult->GetValue());
+									
+									auto PageSegments{std::experimental::any_cast< std::uint8_t >(PageSegmentsResult->GetAny())};
+									auto SegmentTableResult{Get_Ogg_Page_SegmentTable(Buffer, PageSegments)};
+									
+									if(SegmentTableResult->GetSuccess() == true)
+									{
+										Value->Append("SegmentTable", SegmentTableResult->GetValue());
+										Success = true;
+									}
+								}
+							}
+						}
+					}
 				}
 			}
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	auto StreamStarted{false};
+	auto StreamEnded{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	
+	while(StreamEnded == false)
+	{
+		auto OggPageResult{Get_Ogg_Page(Buffer)};
+		
+		if(OggPageResult->GetSuccess() == true)
+		{
+			Value->Append("OggPage", OggPageResult->GetValue());
+			
+			bool BeginOfStream{std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetAny("BeginOfStream"))};
+			
+			if(BeginOfStream == true)
+			{
+				if(StreamStarted == false)
+				{
+					StreamStarted = true;
+					Success = true;
+				}
+				else
+				{
+					Success = false;
+					
+					break;
+				}
+			}
+			StreamEnded = std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetAny("EndOfStream"));
+		}
+		else
+		{
+			// Success = false;
+			
+			break;
 		}
 	}
 	
@@ -137,16 +263,16 @@ void ReadFile(const std::string & Path)
 			else
 			{
 				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
-				auto OggPageResult(Get_OggPage(Buffer));
+				auto OggStreamResult(Get_Ogg_Stream(Buffer));
 				
-				if(OggPageResult->GetSuccess() == true)
+				if(OggStreamResult->GetSuccess() == true)
 				{
-					OggPageResult->GetValue()->SetName("OggPage");
-					PrintValue("", OggPageResult->GetValue());
+					OggStreamResult->GetValue()->SetName("OggStream");
+					PrintValue("", OggStreamResult->GetValue());
 				}
 				else
 				{
-					std::cerr << "The file does not start with an OggPage." << std::endl;
+					std::cerr << "The file does not start with an OggStream." << std::endl;
 				}
 				munmap(Address, FileSize);
 			}
