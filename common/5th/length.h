@@ -47,6 +47,11 @@ namespace Inspection
 			_Bits = Bits;
 		}
 		
+		Length operator-(const Length & Length) const
+		{
+			return Inspection::Length(_Bytes - Length._Bytes, _Bits - Length._Bits);
+		}
+		
 		Length operator+(const Length & Length) const
 		{
 			return Inspection::Length(_Bytes + Length._Bytes, _Bits + Length._Bits);
