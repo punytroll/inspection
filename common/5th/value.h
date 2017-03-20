@@ -15,22 +15,6 @@ namespace Inspection
 		{
 		}
 		
-		Value(const std::string & Name) :
-			_Name(Name)
-		{
-		}
-		
-		Value(const std::experimental::any & Any) :
-			_Any(Any)
-		{
-		}
-		
-		Value(const std::string & Name, const std::experimental::any & Any) :
-			_Any(Any),
-			_Name(Name)
-		{
-		}
-		
 		void Append(std::shared_ptr< Value > Value)
 		{
 			_Values.push_back(Value);
@@ -40,16 +24,6 @@ namespace Inspection
 		{
 			Value->SetName(Name);
 			_Values.push_back(Value);
-		}
-		
-		void Append(const std::string & Name, const std::experimental::any & Value)
-		{
-			_Values.push_back(std::make_shared< Inspection::Value >(Name, Value));
-		}
-		
-		void Append(const std::experimental::any & Any)
-		{
-			_Values.push_back(std::make_shared< Inspection::Value >(Any));
 		}
 		
 		void Append(const std::list< std::shared_ptr< Inspection::Value > > & Values)
@@ -125,6 +99,17 @@ namespace Inspection
 		std::string _Name;
 		std::list< std::shared_ptr< Inspection::Value > > _Values;
 	};
+	
+	template< typename ValueType >
+	inline std::shared_ptr< Value > MakeValue(const std::string & Name, const ValueType & Value)
+	{
+		auto Result{std::make_shared< Inspection::Value >()};
+		
+		Result->SetName(Name);
+		Result->SetAny(Value);
+		
+		return Result;
+	}
 }
 
 #endif
