@@ -7,3 +7,4 @@ all:
 	$(MAKE) -C 5th
 
 clean:
+	$(MAKE) $@ -C 5th
