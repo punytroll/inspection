@@ -87,11 +87,7 @@ namespace Inspection
 	template< typename ValueType >
 	inline std::unique_ptr< Result > MakeResult(bool Success, const ValueType & Value)
 	{
-		auto SharedValue{std::make_shared< Inspection::Value >()};
-		
-		SharedValue->SetAny(Value);
-		
-		return std::make_unique< Inspection::Result >(Success, SharedValue);
+		return std::make_unique< Inspection::Result >(Success, Inspection::MakeValue("", Value));
 	}
 
 	inline std::unique_ptr< Result > MakeResult(bool Success, std::shared_ptr< Inspection::Value > Value)
