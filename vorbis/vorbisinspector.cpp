@@ -23,35 +23,8 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries);
 std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_VorbisHeaderPacket(Inspection::Buffer & Buffer);
-
-//~ std::unique_ptr< Results::Result > Get_VorbisHeaderPacket(const std::uint8_t * Buffer, std::uint64_t Length)
-//~ {
-	//~ auto Success{false};
-	//~ auto Index{0ull};
-	//~ auto Value{std::make_shared< Results::Value >()};
-	//~ auto PacketTypeResult{Get_8Bit_UnsignedInteger(Buffer + Index, Length - Index)};
-	
-	//~ if(PacketTypeResult->GetSuccess() == true)
-	//~ {
-		//~ Index += PacketTypeResult->GetLength();
-		//~ Value->Append("PacketType", PacketTypeResult->GetValue());
-		//~ if(Length - Index >= 6ull)
-		//~ {
-			//~ auto VorbisIdentifierResult{Get_ASCII_AlphaStringTerminatedByLength(Buffer + Index, 6ull)};
-			
-			//~ if((VorbisIdentifierResult->GetSuccess() == true) && (std::experimental::any_cast< std::string >(VorbisIdentifierResult->GetAny("VorbisIdentifier")) == "vorbis"))
-			//~ {
-				//~ Index += VorbisIdentifierResult->GetLength();
-				//~ Value->Append("VorbisIdentifier", VorbisIdentifierResult->GetValue());
-				//~ Success = true;
-			//~ }
-		//~ }
-		//~ Success = true;
-	//~ }
-	
-	//~ return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, Value));
-//~ }
+std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer & Buffer, std::uint64_t Length);
+std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Buffer & Buffer);
 
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer)
 {
@@ -154,6 +127,26 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 									{
 										Value->Append("SegmentTable", SegmentTableResult->GetValue());
 										Success = true;
+										
+										for(auto SegmentTableEntryValue : SegmentTableResult->GetValue()->GetValues())
+										{
+											auto SegmentTableEntry{std::experimental::any_cast< std::uint8_t >(SegmentTableEntryValue->GetAny())};
+											
+											// data interpretation:
+											// try different segment contents
+											auto VorbisHeaderPacketResult{Get_Vorbis_HeaderPacket(Buffer, static_cast< std::uint64_t >(SegmentTableEntry))};
+											
+											if(VorbisHeaderPacketResult->GetSuccess() == true)
+											{
+												Value->Append("Segment", VorbisHeaderPacketResult->GetValue());
+											}
+											else
+											{
+												Success = false;
+												
+												break;
+											}
+										}
 									}
 								}
 							}
@@ -206,6 +199,56 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 			
 			break;
 		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer & Buffer, std::uint64_t Length)
+{
+	auto Success{false};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto PacketTypeResult{Get_UnsignedInteger_8Bit(Buffer)};
+	
+	if(PacketTypeResult->GetSuccess() == true)
+	{
+		Value->Append("PacketType", PacketTypeResult->GetValue());
+		
+		auto VorbisIdentifierResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "vorbis")};
+		
+		if(VorbisIdentifierResult->GetSuccess() == true)
+		{
+			Value->Append("VorbisIdentifier", VorbisIdentifierResult->GetValue());
+			
+			auto PacketType{std::experimental::any_cast< std::uint8_t >(PacketTypeResult->GetAny())};
+			
+			if(PacketType == 0x01)
+			{
+				auto IdentificationHeader{Get_Vorbis_IdentificationHeader(Buffer)};
+				
+				if(IdentificationHeader->GetSuccess() == true)
+				{
+					Value->Append(IdentificationHeader->GetValue()->GetValues());
+					
+					Success = true;
+				}
+			}
+		}
+	}
+	
+	return Inspection::MakeResult(Success, Value);
+}
+
+std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Buffer & Buffer)
+{
+	auto Success{true};
+	auto Value{std::make_shared< Inspection::Value >()};
+	auto VorbisVersionResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	
+	if(VorbisVersionResult->GetSuccess() == true)
+	{
+		Value->Append("VorbisVersion", VorbisVersionResult->GetValue());
+		Success = true;
 	}
 	
 	return Inspection::MakeResult(Success, Value);
