@@ -33,7 +33,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
-	std::bitset<8> Value;
+	std::bitset< 8 > Value;
 	
 	if(Buffer.Has(0ull, 8) == true)
 	{
