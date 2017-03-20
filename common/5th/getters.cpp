@@ -197,6 +197,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigE
 	return Inspection::MakeResult(Success, Result);
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::uint16_t Result{0ul};
+	
+	if(Buffer.Has(0ull, 16) == true)
+	{
+		Result |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
+		Success = true;
+	}
+	
+	return Inspection::MakeResult(Success, Result);
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
