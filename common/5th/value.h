@@ -52,6 +52,14 @@ namespace Inspection
 			_Values.push_back(std::make_shared< Inspection::Value >(Any));
 		}
 		
+		void Append(const std::list< std::shared_ptr< Inspection::Value > > & Values)
+		{
+			for(auto Value : Values)
+			{
+				_Values.push_back(Value);
+			}
+		}
+		
 		const std::string & GetName(void) const
 		{
 			return _Name;
