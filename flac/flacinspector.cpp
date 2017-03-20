@@ -37,7 +37,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer 
 	if(BitsPerSampleResult->GetSuccess() == true)
 	{
 		Value = BitsPerSampleResult->GetValue();
-		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1));
+		Value->Append(Inspection::MakeValue("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1)));
 		Success = true;
 	}
 	
@@ -150,39 +150,39 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buf
 		
 		if(NumericValue == 0x00)
 		{
-			Value->Append("Interpretation", std::string("StreamInfo"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("StreamInfo")));
 		}
 		else if(NumericValue == 0x01)
 		{
-			Value->Append("Interpretation", std::string("Padding"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("Padding")));
 		}
 		else if(NumericValue == 0x02)
 		{
-			Value->Append("Interpretation", std::string("Application"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("Application")));
 		}
 		else if(NumericValue == 0x03)
 		{
-			Value->Append("Interpretation", std::string("SeekTable"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("SeekTable")));
 		}
 		else if(NumericValue == 0x04)
 		{
-			Value->Append("Interpretation", std::string("VorbisComment"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("VorbisComment")));
 		}
 		else if(NumericValue == 0x05)
 		{
-			Value->Append("Interpretation", std::string("CueSheet"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("CueSheet")));
 		}
 		else if(NumericValue == 0x06)
 		{
-			Value->Append("Interpretation", std::string("Picture"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("Picture")));
 		}
 		else if(NumericValue == 0xff)
 		{
-			Value->Append("Interpretation", std::string("Invalid"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("Invalid")));
 		}
 		else
 		{
-			Value->Append("Interpretation", std::string("Reserved"));
+			Value->Append(Inspection::MakeValue("Interpretation", std::string("Reserved")));
 		}
 	}
 	
@@ -198,7 +198,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buff
 	if(NumberOfChannelsResult->GetSuccess() == true)
 	{
 		Value = NumberOfChannelsResult->GetValue();
-		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
+		Value->Append(Inspection::MakeValue("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1)));
 		Success = true;
 	}
 	
