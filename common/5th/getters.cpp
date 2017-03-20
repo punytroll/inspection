@@ -6,17 +6,17 @@
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedTemplateByLength(Inspection::Buffer & Buffer, const std::string & String)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto Value{std::string("")};
 	
 	if(Buffer.Has(String.length(), 0) == true)
 	{
-		Success = true;
+		Result->SetSuccess(true);
 		for(auto Character : String)
 		{
 			if(Character != Buffer.Get8Bits())
 			{
-				Success = false;
+				Result->SetSuccess(false);
 				
 				break;
 			}
@@ -26,18 +26,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::bitset< 8 > Value;
 	
 	if(Buffer.Has(0ull, 8) == true)
 	{
-		Success = true;
+		Result->SetSuccess(true);
 		
 		auto Byte{Buffer.Get8Bits()};
 		
@@ -50,27 +51,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Bu
 		Value[6] = (Byte & 0x40) == 0x40;
 		Value[7] = (Byte & 0x80) == 0x80;
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_OneBit(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto Value{false};
 	
 	if(Buffer.Has(0ull, 1) == true)
 	{
 		Value = (0x01 & Buffer.Get1Bit()) == 0x01;
-		Success = true;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::vector< std::uint8_t > Value;
 	
 	if(Buffer.Has(Length, 0) == true)
@@ -79,21 +82,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 		{
 			Value.push_back(Buffer.Get8Bits());
 		}
-		Success = true;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
-	auto Success{false};
-	std::shared_ptr< Inspection::Value > Value;
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto Data{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
 	
 	if(Data->GetSuccess() == true)
 	{
-		Success = true;
+		Result->SetSuccess(true);
 		
 		const std::vector< std::uint8_t > & DataValue{std::experimental::any_cast< const std::vector< std::uint8_t > & >(Data->GetAny())};
 		
@@ -101,229 +104,243 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInte
 		{
 			if(Byte != 0x00)
 			{
-				Success = false;
+				Result->SetSuccess(false);
 				
 				break;
 			}
 		}
-		Value = Data->GetValue();
+		Result->SetValue(Data->GetValue());
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::uint8_t Value{0};
 	
 	if(Buffer.Has(0ull, 3) == true)
 	{
 		Value = Buffer.Get3Bits();
-		Success = true;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::uint8_t Value{0};
 	
 	if(Buffer.Has(0ull, 4) == true)
 	{
 		Value = Buffer.Get4Bits();
-		Success = true;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::uint8_t Value{0};
 	
 	if(Buffer.Has(0ull, 5) == true)
 	{
 		Value = Buffer.Get5Bits();
-		Success = true;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::uint8_t Value{0};
 	
 	if(Buffer.Has(0ull, 7) == true)
 	{
 		Value = Buffer.Get7Bits();
-		Success = true;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::uint8_t Value{0};
 	
 	if(Buffer.Has(0ull, 8) == true)
 	{
 		Value = Buffer.Get8Bits();
-		Success = true;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::uint16_t Result{0ul};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint16_t Value{0ul};
 	
 	if(Buffer.Has(0ull, 16) == true)
 	{
-		Result |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
-		Result |= static_cast< std::uint16_t >(Buffer.Get8Bits());
-		Success = true;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Result);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::uint16_t Result{0ul};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint16_t Value{0ul};
 	
 	if(Buffer.Has(0ull, 16) == true)
 	{
-		Result |= static_cast< std::uint16_t >(Buffer.Get8Bits());
-		Result |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
-		Success = true;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Result);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::uint32_t Result{0ul};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint32_t Value{0ul};
 	
 	if(Buffer.Has(0ull, 20) == true)
 	{
-		Result |= static_cast< std::uint32_t >(Buffer.Get4Bits()) << 16;
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits());
-		Success = true;
+		Value |= static_cast< std::uint32_t >(Buffer.Get4Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Result);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::uint32_t Result{0ul};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint32_t Value{0ul};
 	
 	if(Buffer.Has(0ull, 24) == true)
 	{
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits());
-		Success = true;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Result);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::uint32_t Result{0ul};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint32_t Value{0ul};
 	
 	if(Buffer.Has(0ull, 32) == true)
 	{
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits());
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
-		Result |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
-		Success = true;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Result);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::uint64_t Result{0ull};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint64_t Value{0ull};
 	
 	if(Buffer.Has(0ull, 36) == true)
 	{
-		Result |= static_cast< std::uint64_t >(Buffer.Get4Bits()) << 32;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits());
-		Success = true;
+		Value |= static_cast< std::uint64_t >(Buffer.Get4Bits()) << 32;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits());
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Result);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::uint64_t Result{0ull};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint64_t Value{0ull};
 	
 	if(Buffer.Has(0ull, 64) == true)
 	{
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 56;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 48;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 40;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 32;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits());
-		Success = true;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 56;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 48;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 40;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 32;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits());
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Result);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::uint64_t Result{0ull};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint64_t Value{0ull};
 	
 	if(Buffer.Has(0ull, 64) == true)
 	{
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits());
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 32;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 40;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 48;
-		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 56;
-		Success = true;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 32;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 40;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 48;
+		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 56;
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Result);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::string Value;
 	
 	if(Buffer.Has(1ull, 0) == true)
@@ -333,7 +350,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 		Value += First;
 		if((First & 0x80) == 0x00)
 		{
-			Success = true;
+			Result->SetSuccess(true);
 		}
 		else if((First & 0xe0) == 0xc0)
 		{
@@ -344,7 +361,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 				if((Second & 0xc0) == 0x80)
 				{
 					Value += Second;
-					Success = true;
+					Result->SetSuccess(true);
 				}
 			}
 		}
@@ -359,7 +376,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 				{
 					Value += Second;
 					Value += Third;
-					Success = true;
+					Result->SetSuccess(true);
 				}
 			}
 		}
@@ -376,18 +393,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 					Value += Second;
 					Value += Third;
 					Value += Fourth;
-					Success = true;
+					Result->SetSuccess(true);
 				}
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::string Value;
 	
 	if(Buffer.Has(Length, 0) == true)
@@ -409,9 +427,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(
 		}
 		if(Buffer.GetPosition() == End)
 		{
-			Success = true;
+			Result->SetSuccess(true);
 		}
 	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
