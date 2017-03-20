@@ -4,6 +4,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include <iostream>
+
 void ReadDirectory(const std::string & Path);
 void ReadFile(const std::string & Path);
 void ReadItem(const std::string & Path);
