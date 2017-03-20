@@ -16,5 +16,5 @@ all: ../flacinspector
 flacinspector.o: flacinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-getters.o: ../common/5th/getters.cpp ../common/5th/getters.h
+getters.o: ../common/5th/getters.cpp ../common/5th/getters.h ../common/5th/result.h ../common/5th/value.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
