@@ -1,6 +1,8 @@
 #ifndef COMMON_5TH_RESULT_H
 #define COMMON_5TH_RESULT_H
 
+#include <iostream>
+
 #include "length.h"
 #include "value.h"
 
@@ -11,6 +13,13 @@ namespace Inspection
 	public:
 		Result(void) :
 			_Success(false)
+		{
+		}
+		
+		Result(bool Success, const Inspection::Length & Offset) :
+			_Offset(Offset),
+			_Success(Success),
+			_Value(Inspection::MakeValue(""))
 		{
 		}
 		
@@ -65,6 +74,11 @@ namespace Inspection
 			throw new std::exception();
 		}
 		
+		const Inspection::Length & GetOffset(void) const
+		{
+			return _Offset;
+		}
+		
 		void SetSuccess(bool Success)
 		{
 			_Success = Success;
@@ -75,24 +89,34 @@ namespace Inspection
 			_Value = Value;
 		}
 	private:
+		Inspection::Length _Offset;
 		bool _Success;
 		std::shared_ptr< Value > _Value;
 	};
-
-	inline std::unique_ptr< Inspection::Result > MakeFailure()
+	
+	inline std::unique_ptr< Inspection::Result > InitializeResult(bool Success, const Inspection::Buffer & Buffer)
 	{
-		return std::make_unique< Inspection::Result >();
+		return std::make_unique< Inspection::Result >(Success, Buffer.GetPosition());
 	}
-
+	
+	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Buffer & Buffer)
+	{
+		if(Result->GetSuccess() == true)
+		{
+			Result->GetValue()->SetOffset(Result->GetOffset());
+			Result->GetValue()->SetLength(Buffer.GetPosition() - Result->GetValue()->GetOffset());
+		}
+	}
+	
 	template< typename ValueType >
-	inline std::unique_ptr< Result > MakeResult(bool Success, const ValueType & Value)
+	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const ValueType & Value, const Inspection::Buffer & Buffer)
 	{
-		return std::make_unique< Inspection::Result >(Success, Inspection::MakeValue("", Value));
-	}
-
-	inline std::unique_ptr< Result > MakeResult(bool Success, std::shared_ptr< Inspection::Value > Value)
-	{
-		return std::make_unique< Inspection::Result >(Success, Value);
+		if(Result->GetSuccess() == true)
+		{
+			Result->GetValue()->SetOffset(Result->GetOffset());
+			Result->GetValue()->SetAny(Value);
+			Result->GetValue()->SetLength(Buffer.GetPosition() - Result->GetValue()->GetOffset());
+		}
 	}
 }
 

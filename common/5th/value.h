@@ -34,16 +34,6 @@ namespace Inspection
 			}
 		}
 		
-		const std::string & GetName(void) const
-		{
-			return _Name;
-		}
-		
-		bool Has(const std::string & Name)
-		{
-			return std::find_if(std::begin(_Values), std::end(_Values), [&Name](const std::shared_ptr< Value > & Value) { return Value->GetName() == Name; }) != std::end(_Values);
-		}
-		
 		const std::experimental::any & GetAny(void)
 		{
 			return _Any;
@@ -67,6 +57,21 @@ namespace Inspection
 			return _Values.size();
 		}
 		
+		const Inspection::Length & GetLength(void) const
+		{
+			return _Length;
+		}
+		
+		const std::string & GetName(void) const
+		{
+			return _Name;
+		}
+		
+		const Inspection::Length & GetOffset(void) const
+		{
+			return _Offset;
+		}
+		
 		std::shared_ptr< Inspection::Value > GetValue(const std::string & Name)
 		{
 			for(auto & Value : _Values)
@@ -85,20 +90,46 @@ namespace Inspection
 			return _Values;
 		}
 		
-		void SetName(const std::string & Name)
+		bool Has(const std::string & Name)
 		{
-			_Name = Name;
+			return std::find_if(std::begin(_Values), std::end(_Values), [&Name](const std::shared_ptr< Value > & Value) { return Value->GetName() == Name; }) != std::end(_Values);
 		}
 		
 		void SetAny(const std::experimental::any & Any)
 		{
 			_Any = Any;
 		}
+		
+		void SetLength(const Inspection::Length & Length)
+		{
+			_Length = Length;
+		}
+		
+		void SetName(const std::string & Name)
+		{
+			_Name = Name;
+		}
+		
+		void SetOffset(const Inspection::Length & Offset)
+		{
+			_Offset = Offset;
+		}
 	private:
 		std::experimental::any _Any;
+		Inspection::Length _Length;
 		std::string _Name;
+		Inspection::Length _Offset;
 		std::list< std::shared_ptr< Inspection::Value > > _Values;
 	};
+	
+	inline std::shared_ptr< Value > MakeValue(const std::string & Name)
+	{
+		auto Result{std::make_shared< Inspection::Value >()};
+		
+		Result->SetName(Name);
+		
+		return Result;
+	}
 	
 	template< typename ValueType >
 	inline std::shared_ptr< Value > MakeValue(const std::string & Name, const ValueType & Value)
