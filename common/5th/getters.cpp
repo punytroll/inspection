@@ -264,6 +264,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 	return Inspection::MakeResult(Success, Result);
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Success{false};
+	std::uint64_t Result{0ull};
+	
+	if(Buffer.Has(0ull, 64) == true)
+	{
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 56;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 48;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 40;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 32;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
+		Result |= static_cast< std::uint64_t >(Buffer.Get8Bits());
+		Success = true;
+	}
+	
+	return Inspection::MakeResult(Success, Result);
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
