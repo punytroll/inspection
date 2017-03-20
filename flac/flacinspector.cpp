@@ -2,73 +2,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include <bitset>
-#include <cassert>
 #include <deque>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <string>
-
-namespace FLAC
-{
-	enum class MetaDataBlockType
-	{
-		StreamInfo,
-		Padding,
-		Application,
-		SeekTable,
-		VorbisComment,
-		CueSheet,
-		Picture,
-		Reserved,
-		Invalid
-	};
-}
-
-std::ostream & operator<<(std::ostream & OStream, FLAC::MetaDataBlockType Value)
-{
-	switch(Value)
-	{
-	case FLAC::MetaDataBlockType::StreamInfo:
-		{
-			return OStream << "StreamInfo";
-		}
-	case FLAC::MetaDataBlockType::Padding:
-		{
-			return OStream << "Padding";
-		}
-	case FLAC::MetaDataBlockType::Application:
-		{
-			return OStream << "Application";
-		}
-	case FLAC::MetaDataBlockType::SeekTable:
-		{
-			return OStream << "SeekTable";
-		}
-	case FLAC::MetaDataBlockType::VorbisComment:
-		{
-			return OStream << "VorbisComment";
-		}
-	case FLAC::MetaDataBlockType::CueSheet:
-		{
-			return OStream << "CueSheet";
-		}
-	case FLAC::MetaDataBlockType::Picture:
-		{
-			return OStream << "Picture";
-		}
-	case FLAC::MetaDataBlockType::Reserved:
-		{
-			return OStream << "Reserved";
-		}
-	case FLAC::MetaDataBlockType::Invalid:
-	default:
-		{
-			return OStream << "Invalid";
-		}
-	}
-}
 
 #include "../common/any_printing.h"
 #include "../common/file_handling.h"
@@ -98,12 +32,12 @@ std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer 
 {
 	auto Success{false};
 	std::shared_ptr< Inspection::Value > Value;
-	auto BitsPerSample{Get_UnsignedInteger_5Bit(Buffer)};
+	auto BitsPerSampleResult{Get_UnsignedInteger_5Bit(Buffer)};
 	
-	if(BitsPerSample->GetSuccess() == true)
+	if(BitsPerSampleResult->GetSuccess() == true)
 	{
-		Value = BitsPerSample->GetValue();
-		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSample->GetAny()) + 1));
+		Value = BitsPerSampleResult->GetValue();
+		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1));
 		Success = true;
 	}
 	
@@ -114,55 +48,55 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto MetaDataBlockHeader{Get_FLAC_MetaDataBlockHeader(Buffer)};
+	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlockHeader(Buffer)};
 	
-	if(MetaDataBlockHeader->GetSuccess() == true)
+	if(MetaDataBlockHeaderResult->GetSuccess() == true)
 	{
-		Value->Append("Header", MetaDataBlockHeader->GetValue());
+		Value->Append("Header", MetaDataBlockHeaderResult->GetValue());
 		
-		auto MetaDataBlockType{std::experimental::any_cast< FLAC::MetaDataBlockType >(MetaDataBlockHeader->GetValue("BlockType")->GetAny("Interpretation"))};
-		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(MetaDataBlockHeader->GetAny("Length"))};
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetAny("Interpretation"))};
+		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(MetaDataBlockHeaderResult->GetAny("Length"))};
 		
-		if(MetaDataBlockType == FLAC::MetaDataBlockType::StreamInfo)
+		if(MetaDataBlockType == "StreamInfo")
 		{
-			auto StreamInfoBlockData{Get_FLAC_StreamInfoBlockData(Buffer)};
+			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlockData(Buffer)};
 			
-			if(StreamInfoBlockData->GetSuccess() == true)
+			if(StreamInfoBlockDataResult->GetSuccess() == true)
 			{
-				Value->Append("Data", StreamInfoBlockData->GetValue());
+				Value->Append("Data", StreamInfoBlockDataResult->GetValue());
 				Success = true;
 			}
 		}
-		else if(MetaDataBlockType == FLAC::MetaDataBlockType::Padding)
+		else if(MetaDataBlockType == "Padding")
 		{
-			auto PaddingBlockData{Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Buffer, MetaDataBlockDataLength)};
+			auto PaddingBlockDataResult{Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Buffer, MetaDataBlockDataLength)};
 			
-			if(PaddingBlockData->GetSuccess() == true)
+			if(PaddingBlockDataResult->GetSuccess() == true)
 			{
-				Value->Append("Data", PaddingBlockData->GetValue());
+				Value->Append("Data", PaddingBlockDataResult->GetValue());
 				Success = true;
 			}
 		}
-		else if(MetaDataBlockType == FLAC::MetaDataBlockType::SeekTable)
+		else if(MetaDataBlockType == "SeekTable")
 		{
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
-				auto SeekTableBlockData{Get_FLAC_SeekTableBlockData(Buffer, MetaDataBlockDataLength / 18)};
+				auto SeekTableBlockDataResult{Get_FLAC_SeekTableBlockData(Buffer, MetaDataBlockDataLength / 18)};
 				
-				if(SeekTableBlockData->GetSuccess() == true)
+				if(SeekTableBlockDataResult->GetSuccess() == true)
 				{
-					Value->Append("Data", SeekTableBlockData->GetValue());
+					Value->Append("Data", SeekTableBlockDataResult->GetValue());
 					Success = true;
 				}
 			}
 		}
-		else if(MetaDataBlockType == FLAC::MetaDataBlockType::VorbisComment)
+		else if(MetaDataBlockType == "VorbisComment")
 		{
-			auto VorbisCommentBlockData{Get_FLAC_VorbisCommentBlockData(Buffer)};
+			auto VorbisCommentBlockDataResult{Get_FLAC_VorbisCommentBlockData(Buffer)};
 			
-			if(VorbisCommentBlockData->GetSuccess() == true)
+			if(VorbisCommentBlockDataResult->GetSuccess() == true)
 			{
-				Value->Append("Data", VorbisCommentBlockData->GetValue());
+				Value->Append("Data", VorbisCommentBlockDataResult->GetValue());
 				Success = true;
 			}
 		}
@@ -176,23 +110,23 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::B
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto LastMetaDataBlock{Get_Boolean_OneBit(Buffer)};
+	auto LastMetaDataBlockResult{Get_Boolean_OneBit(Buffer)};
 	
-	if(LastMetaDataBlock->GetSuccess() == true)
+	if(LastMetaDataBlockResult->GetSuccess() == true)
 	{
-		Value->Append("LastMetaDataBlock", LastMetaDataBlock->GetValue());
+		Value->Append("LastMetaDataBlock", LastMetaDataBlockResult->GetValue());
 		
-		auto MetaDataBlockType{Get_FLAC_MetaDataBlockType(Buffer)};
+		auto MetaDataBlockTypeResult{Get_FLAC_MetaDataBlockType(Buffer)};
 		
-		if(MetaDataBlockType->GetSuccess() == true)
+		if(MetaDataBlockTypeResult->GetSuccess() == true)
 		{
-			Value->Append("BlockType", MetaDataBlockType->GetValue());
+			Value->Append("BlockType", MetaDataBlockTypeResult->GetValue());
 			
-			auto Length{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+			auto LengthResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
 			
-			if(Length->GetSuccess() == true)
+			if(LengthResult->GetSuccess() == true)
 			{
-				Value->Append("Length", Length->GetValue());
+				Value->Append("Length", LengthResult->GetValue());
 				Success = true;
 			}
 		}
@@ -205,50 +139,50 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buf
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto MetaDataBlockType{Get_UnsignedInteger_7Bit(Buffer)};
+	auto MetaDataBlockTypeResult{Get_UnsignedInteger_7Bit(Buffer)};
 	
-	if(MetaDataBlockType->GetSuccess() == true)
+	if(MetaDataBlockTypeResult->GetSuccess() == true)
 	{
 		Success = true;
-		Value->SetAny(MetaDataBlockType->GetAny());
+		Value->SetAny(MetaDataBlockTypeResult->GetAny());
 		
-		auto NumericValue{std::experimental::any_cast< std::uint8_t >(MetaDataBlockType->GetAny())};
+		auto NumericValue{std::experimental::any_cast< std::uint8_t >(MetaDataBlockTypeResult->GetAny())};
 		
 		if(NumericValue == 0x00)
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::StreamInfo);
+			Value->Append("Interpretation", std::string("StreamInfo"));
 		}
 		else if(NumericValue == 0x01)
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::Padding);
+			Value->Append("Interpretation", std::string("Padding"));
 		}
 		else if(NumericValue == 0x02)
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::Application);
+			Value->Append("Interpretation", std::string("Application"));
 		}
 		else if(NumericValue == 0x03)
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::SeekTable);
+			Value->Append("Interpretation", std::string("SeekTable"));
 		}
 		else if(NumericValue == 0x04)
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::VorbisComment);
+			Value->Append("Interpretation", std::string("VorbisComment"));
 		}
 		else if(NumericValue == 0x05)
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::CueSheet);
+			Value->Append("Interpretation", std::string("CueSheet"));
 		}
 		else if(NumericValue == 0x06)
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::Picture);
+			Value->Append("Interpretation", std::string("Picture"));
 		}
 		else if(NumericValue == 0xff)
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::Invalid);
+			Value->Append("Interpretation", std::string("Invalid"));
 		}
 		else
 		{
-			Value->Append("Interpretation", FLAC::MetaDataBlockType::Reserved);
+			Value->Append("Interpretation", std::string("Reserved"));
 		}
 	}
 	
@@ -259,12 +193,12 @@ std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buff
 {
 	auto Success{false};
 	std::shared_ptr< Inspection::Value > Value;
-	auto NumberOfChannels{Get_UnsignedInteger_3Bit(Buffer)};
+	auto NumberOfChannelsResult{Get_UnsignedInteger_3Bit(Buffer)};
 	
-	if(NumberOfChannels->GetSuccess() == true)
+	if(NumberOfChannelsResult->GetSuccess() == true)
 	{
-		Value = NumberOfChannels->GetValue();
-		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannels->GetAny()) + 1));
+		Value = NumberOfChannelsResult->GetValue();
+		Value->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
 		Success = true;
 	}
 	
@@ -345,12 +279,12 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 			Success = true;
 			while(LastMetaDataBlock == false)
 			{
-				auto MetaDataBlock{Get_FLAC_MetaDataBlock(Buffer)};
+				auto MetaDataBlockResult{Get_FLAC_MetaDataBlock(Buffer)};
 				
-				if(MetaDataBlock->GetSuccess() == true)
+				if(MetaDataBlockResult->GetSuccess() == true)
 				{
-					Value->Append("MetaDataBlock", MetaDataBlock->GetValue());
-					LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlock->GetValue("Header")->GetAny("LastMetaDataBlock"));
+					Value->Append("MetaDataBlock", MetaDataBlockResult->GetValue());
+					LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlockResult->GetValue("Header")->GetAny("LastMetaDataBlock"));
 				}
 				else
 				{
@@ -369,21 +303,21 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffe
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto MetaDataBlockHeader{Get_FLAC_MetaDataBlockHeader(Buffer)};
+	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlockHeader(Buffer)};
 	
-	if(MetaDataBlockHeader->GetSuccess() == true)
+	if(MetaDataBlockHeaderResult->GetSuccess() == true)
 	{
-		auto MetaDataBlockType{std::experimental::any_cast< FLAC::MetaDataBlockType >(MetaDataBlockHeader->GetValue("BlockType")->GetAny("Interpretation"))};
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetAny("Interpretation"))};
 		
-		if(MetaDataBlockType == FLAC::MetaDataBlockType::StreamInfo)
+		if(MetaDataBlockType == "StreamInfo")
 		{
-			Value->Append("Header", MetaDataBlockHeader->GetValue());
+			Value->Append("Header", MetaDataBlockHeaderResult->GetValue());
 			
-			auto StreamInfoBlockData{Get_FLAC_StreamInfoBlockData(Buffer)};
+			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlockData(Buffer)};
 			
-			if(StreamInfoBlockData->GetSuccess() == true)
+			if(StreamInfoBlockDataResult->GetSuccess() == true)
 			{
-				Value->Append("Data", StreamInfoBlockData->GetValue());
+				Value->Append("Data", StreamInfoBlockDataResult->GetValue());
 				Success = true;
 			}
 		}
@@ -396,59 +330,59 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::B
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto MinimumBlockSize{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+	auto MinimumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 	
-	if(MinimumBlockSize->GetSuccess() == true)
+	if(MinimumBlockSizeResult->GetSuccess() == true)
 	{
-		Value->Append("MinimumBlockSize", MinimumBlockSize->GetValue());
+		Value->Append("MinimumBlockSize", MinimumBlockSizeResult->GetValue());
 		
-		auto MaximumBlockSize{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		auto MaximumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 		
-		if(MaximumBlockSize->GetSuccess() == true)
+		if(MaximumBlockSizeResult->GetSuccess() == true)
 		{
-			Value->Append("MaximumBlockSize", MaximumBlockSize->GetValue());
+			Value->Append("MaximumBlockSize", MaximumBlockSizeResult->GetValue());
 			
-			auto MinimumFrameSize{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+			auto MinimumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
 			
-			if(MinimumFrameSize->GetSuccess() == true)
+			if(MinimumFrameSizeResult->GetSuccess() == true)
 			{
-				Value->Append("MinimumFrameSize", MinimumFrameSize->GetValue());
+				Value->Append("MinimumFrameSize", MinimumFrameSizeResult->GetValue());
 				
-				auto MaximumFrameSize{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+				auto MaximumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
 				
-				if(MaximumFrameSize->GetSuccess() == true)
+				if(MaximumFrameSizeResult->GetSuccess() == true)
 				{
-					Value->Append("MaximumFrameSize", MaximumFrameSize->GetValue());
+					Value->Append("MaximumFrameSize", MaximumFrameSizeResult->GetValue());
 					
-					auto SampleRate{Get_UnsignedInteger_20Bit_BigEndian(Buffer)};
+					auto SampleRateResult{Get_UnsignedInteger_20Bit_BigEndian(Buffer)};
 					
-					if(SampleRate->GetSuccess() == true)
+					if(SampleRateResult->GetSuccess() == true)
 					{
-						Value->Append("SampleRate", SampleRate->GetValue());
+						Value->Append("SampleRate", SampleRateResult->GetValue());
 						
-						auto NumberOfChannels{Get_FLAC_NumberOfChannels(Buffer)};
+						auto NumberOfChannelsResult{Get_FLAC_NumberOfChannels(Buffer)};
 						
-						if(NumberOfChannels->GetSuccess() == true)
+						if(NumberOfChannelsResult->GetSuccess() == true)
 						{
-							Value->Append("NumberOfChannels", NumberOfChannels->GetValue());
+							Value->Append("NumberOfChannels", NumberOfChannelsResult->GetValue());
 							
-							auto BitsPerSample{Get_FLAC_BitsPerSample(Buffer)};
+							auto BitsPerSampleResult{Get_FLAC_BitsPerSample(Buffer)};
 							
-							if(BitsPerSample->GetSuccess() == true)
+							if(BitsPerSampleResult->GetSuccess() == true)
 							{
-								Value->Append("BitsPerSample", BitsPerSample->GetValue());
+								Value->Append("BitsPerSample", BitsPerSampleResult->GetValue());
 								
-								auto TotalSamplesPerChannel{Get_UnsignedInteger_36Bit_BigEndian(Buffer)};
+								auto TotalSamplesPerChannelResult{Get_UnsignedInteger_36Bit_BigEndian(Buffer)};
 								
-								if(TotalSamplesPerChannel->GetSuccess() == true)
+								if(TotalSamplesPerChannelResult->GetSuccess() == true)
 								{
-									Value->Append("TotalSamplesPerChannel", TotalSamplesPerChannel->GetValue());
+									Value->Append("TotalSamplesPerChannel", TotalSamplesPerChannelResult->GetValue());
 									
-									auto MD5SignatureOfUnencodedAudioData{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 16)};
+									auto MD5SignatureOfUnencodedAudioDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 16)};
 									
-									if(MD5SignatureOfUnencodedAudioData->GetSuccess() == true)
+									if(MD5SignatureOfUnencodedAudioDataResult->GetSuccess() == true)
 									{
-										Value->Append("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioData->GetValue());
+										Value->Append("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioDataResult->GetValue());
 										Success = true;
 									}
 								}
@@ -465,33 +399,33 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::B
 
 std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlockData(Inspection::Buffer & Buffer)
 {
-	auto VorbisCommentHeader{Get_Vorbis_CommentHeader(Buffer)};
+	auto VorbisCommentHeaderResult{Get_Vorbis_CommentHeader(Buffer)};
 	
-	return Inspection::MakeResult(VorbisCommentHeader->GetSuccess(), VorbisCommentHeader->GetValue());
+	return Inspection::MakeResult(VorbisCommentHeaderResult->GetSuccess(), VorbisCommentHeaderResult->GetValue());
 }
 
 std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer)
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto VendorLength{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto VendorLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
-	if(VendorLength->GetSuccess() == true)
+	if(VendorLengthResult->GetSuccess() == true)
 	{
-		Value->Append("VendorLength", VendorLength->GetValue());
+		Value->Append("VendorLength", VendorLengthResult->GetValue());
 		
-		auto VendorLengthValue{std::experimental::any_cast< std::uint32_t >(VendorLength->GetAny())};
-		auto VendorString{Get_UTF8_String_EndedByLength(Buffer, VendorLengthValue)};
+		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
+		auto VendorStringResult{Get_UTF8_String_EndedByLength(Buffer, VendorLength)};
 		
-		if(VendorString->GetSuccess() == true)
+		if(VendorStringResult->GetSuccess() == true)
 		{
-			Value->Append("VendorString", VendorString->GetValue());
+			Value->Append("VendorString", VendorStringResult->GetValue());
 			
-			auto UserCommentList{Get_Vorbis_CommentHeader_UserCommentList(Buffer)};
+			auto UserCommentListResult{Get_Vorbis_CommentHeader_UserCommentList(Buffer)};
 			
-			if(UserCommentList->GetSuccess() == true)
+			if(UserCommentListResult->GetSuccess() == true)
 			{
-				Value->Append("UserCommentList", UserCommentList->GetValue());
+				Value->Append("UserCommentList", UserCommentListResult->GetValue());
 				Success = true;
 			}
 		}
@@ -504,18 +438,18 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspe
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto UserCommentLength{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto UserCommentLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
-	if(UserCommentLength->GetSuccess() == true)
+	if(UserCommentLengthResult->GetSuccess() == true)
 	{
-		Value->Append("Length", UserCommentLength->GetValue());
+		Value->Append("Length", UserCommentLengthResult->GetValue());
 		
-		auto UserCommentLengthValue{std::experimental::any_cast< std::uint32_t >(UserCommentLength->GetAny())};
-		auto UserCommentString{Get_UTF8_String_EndedByLength(Buffer, UserCommentLengthValue)};
+		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
+		auto UserCommentStringResult{Get_UTF8_String_EndedByLength(Buffer, UserCommentLength)};
 		
-		if(UserCommentString->GetSuccess() == true)
+		if(UserCommentStringResult->GetSuccess() == true)
 		{
-			Value->Append("String", UserCommentString->GetValue());
+			Value->Append("String", UserCommentStringResult->GetValue());
 			Success = true;
 		}
 	}
@@ -527,22 +461,22 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(I
 {
 	auto Success{false};
 	auto Value{std::make_shared< Inspection::Value >()};
-	auto UserCommentListLength{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto UserCommentListLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
-	if(UserCommentListLength->GetSuccess() == true)
+	if(UserCommentListLengthResult->GetSuccess() == true)
 	{
-		Value->Append("Length", UserCommentListLength->GetValue());
+		Value->Append("Length", UserCommentListLengthResult->GetValue());
 		Success = true;
 		
-		auto UserCommentListLengthValue{std::experimental::any_cast< std::uint32_t >(UserCommentListLength->GetAny())};
+		auto UserCommentListLength{std::experimental::any_cast< std::uint32_t >(UserCommentListLengthResult->GetAny())};
 		
-		for(std::uint32_t Index = 0ul; Index < UserCommentListLengthValue; ++Index)
+		for(std::uint32_t Index = 0ul; Index < UserCommentListLength; ++Index)
 		{
-			auto UserComment{Get_Vorbis_CommentHeader_UserComment(Buffer)};
+			auto UserCommentResult{Get_Vorbis_CommentHeader_UserComment(Buffer)};
 			
-			if(UserComment->GetSuccess() == true)
+			if(UserCommentResult->GetSuccess() == true)
 			{
-				Value->Append("UserComment", UserComment->GetValue());
+				Value->Append("UserComment", UserCommentResult->GetValue());
 			}
 			else
 			{
