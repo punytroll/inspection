@@ -122,21 +122,11 @@ namespace Inspection
 		std::list< std::shared_ptr< Inspection::Value > > _Values;
 	};
 	
-	inline std::shared_ptr< Value > MakeValue(const std::string & Name)
-	{
-		auto Result{std::make_shared< Inspection::Value >()};
-		
-		Result->SetName(Name);
-		
-		return Result;
-	}
-	
 	template< typename ValueType >
-	inline std::shared_ptr< Value > MakeValue(const std::string & Name, const ValueType & Value)
+	inline std::shared_ptr< Value > MakeValue(const ValueType & Value)
 	{
 		auto Result{std::make_shared< Inspection::Value >()};
 		
-		Result->SetName(Name);
 		Result->SetAny(Value);
 		
 		return Result;

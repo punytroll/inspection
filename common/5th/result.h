@@ -19,7 +19,7 @@ namespace Inspection
 		Result(bool Success, const Inspection::Length & Offset) :
 			_Offset(Offset),
 			_Success(Success),
-			_Value(Inspection::MakeValue(""))
+			_Value(std::make_shared< Inspection::Value >())
 		{
 		}
 		
