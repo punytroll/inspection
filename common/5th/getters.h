@@ -27,7 +27,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_BigEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF8_Character(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_UTF8_String_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length);
+	std::unique_ptr< Inspection::Result > Get_UTF8_String_EndedByByteLength(Inspection::Buffer & Buffer, std::uint64_t Length);
 }
 
 #endif

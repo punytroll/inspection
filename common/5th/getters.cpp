@@ -403,7 +403,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByByteLength(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::string Value;
