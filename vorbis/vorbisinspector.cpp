@@ -38,9 +38,9 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer
 		
 		const std::bitset< 8 > & HeaderType{std::experimental::any_cast< const std::bitset< 8 > & >(HeaderTypeResult->GetAny())};
 		
-		Result->GetValue()->Append("Continuation", Inspection::MakeValue(HeaderType[0]));
-		Result->GetValue()->Append("BeginOfStream", Inspection::MakeValue(HeaderType[1]));
-		Result->GetValue()->Append("EndOfStream", Inspection::MakeValue(HeaderType[2]));
+		Result->GetValue()->Append("Continuation", HeaderType[0]);
+		Result->GetValue()->Append("BeginOfStream", HeaderType[1]);
+		Result->GetValue()->Append("EndOfStream", HeaderType[2]);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -60,7 +60,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buff
 		
 		for(auto SegmentTableEntry : SegmentTable)
 		{
-			Result->GetValue()->Append(Inspection::MakeValue(SegmentTableEntry));
+			Result->GetValue()->Append("", SegmentTableEntry);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
