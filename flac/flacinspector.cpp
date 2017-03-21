@@ -62,7 +62,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer 
 	if(BitsPerSampleResult->GetSuccess() == true)
 	{
 		Result->SetValue(BitsPerSampleResult->GetValue());
-		Result->GetValue()->Append("Interpretation", Inspection::MakeValue(static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1)));
+		Result->GetValue()->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1));
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -195,39 +195,39 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buf
 		
 		if(NumericValue == 0x00)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("StreamInfo")));
+			Result->GetValue()->Append("Interpretation", std::string("StreamInfo"));
 		}
 		else if(NumericValue == 0x01)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Padding")));
+			Result->GetValue()->Append("Interpretation", std::string("Padding"));
 		}
 		else if(NumericValue == 0x02)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Application")));
+			Result->GetValue()->Append("Interpretation", std::string("Application"));
 		}
 		else if(NumericValue == 0x03)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("SeekTable")));
+			Result->GetValue()->Append("Interpretation", std::string("SeekTable"));
 		}
 		else if(NumericValue == 0x04)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("VorbisComment")));
+			Result->GetValue()->Append("Interpretation", std::string("VorbisComment"));
 		}
 		else if(NumericValue == 0x05)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("CueSheet")));
+			Result->GetValue()->Append("Interpretation", std::string("CueSheet"));
 		}
 		else if(NumericValue == 0x06)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Picture")));
+			Result->GetValue()->Append("Interpretation", std::string("Picture"));
 		}
 		else if(NumericValue == 0xff)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Invalid")));
+			Result->GetValue()->Append("Interpretation", std::string("Invalid"));
 		}
 		else
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Reserved")));
+			Result->GetValue()->Append("Interpretation", std::string("Reserved"));
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -243,7 +243,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buff
 	if(NumberOfChannelsResult->GetSuccess() == true)
 	{
 		Result->SetValue(NumberOfChannelsResult->GetValue());
-		Result->GetValue()->Append("Interpretation", Inspection::MakeValue(static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1)));
+		Result->GetValue()->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -265,87 +265,87 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspecti
 		
 		if(PictureType == 0)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Other")));
+			Result->GetValue()->Append("Interpretation", std::string("Other"));
 		}
 		else if(PictureType == 1)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("32x32 pixels 'file icon' (PNG only)")));
+			Result->GetValue()->Append("Interpretation", std::string("32x32 pixels 'file icon' (PNG only)"));
 		}
 		else if(PictureType == 2)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Other file icon")));
+			Result->GetValue()->Append("Interpretation", std::string("Other file icon"));
 		}
 		else if(PictureType == 3)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Cover (front)")));
+			Result->GetValue()->Append("Interpretation", std::string("Cover (front)"));
 		}
 		else if(PictureType == 4)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Cover (back)")));
+			Result->GetValue()->Append("Interpretation", std::string("Cover (back)"));
 		}
 		else if(PictureType == 5)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Leaflet page")));
+			Result->GetValue()->Append("Interpretation", std::string("Leaflet page"));
 		}
 		else if(PictureType == 6)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Media (e.g. label side of CD")));
+			Result->GetValue()->Append("Interpretation", std::string("Media (e.g. label side of CD"));
 		}
 		else if(PictureType == 7)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Lead artist/lead performer/soloist")));
+			Result->GetValue()->Append("Interpretation", std::string("Lead artist/lead performer/soloist"));
 		}
 		else if(PictureType == 8)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Artist/performer")));
+			Result->GetValue()->Append("Interpretation", std::string("Artist/performer"));
 		}
 		else if(PictureType == 9)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Conductor")));
+			Result->GetValue()->Append("Interpretation", std::string("Conductor"));
 		}
 		else if(PictureType == 10)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Band/Orchestra")));
+			Result->GetValue()->Append("Interpretation", std::string("Band/Orchestra"));
 		}
 		else if(PictureType == 11)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Composer")));
+			Result->GetValue()->Append("Interpretation", std::string("Composer"));
 		}
 		else if(PictureType == 12)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Lyricist/text writer")));
+			Result->GetValue()->Append("Interpretation", std::string("Lyricist/text writer"));
 		}
 		else if(PictureType == 13)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Recording Location")));
+			Result->GetValue()->Append("Interpretation", std::string("Recording Location"));
 		}
 		else if(PictureType == 14)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("During recording")));
+			Result->GetValue()->Append("Interpretation", std::string("During recording"));
 		}
 		else if(PictureType == 15)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("During performance")));
+			Result->GetValue()->Append("Interpretation", std::string("During performance"));
 		}
 		else if(PictureType == 16)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Movie/video screen capture")));
+			Result->GetValue()->Append("Interpretation", std::string("Movie/video screen capture"));
 		}
 		else if(PictureType == 17)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("A bright coloured fish")));
+			Result->GetValue()->Append("Interpretation", std::string("A bright coloured fish"));
 		}
 		else if(PictureType == 18)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Illustration")));
+			Result->GetValue()->Append("Interpretation", std::string("Illustration"));
 		}
 		else if(PictureType == 19)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Band/artist logotype")));
+			Result->GetValue()->Append("Interpretation", std::string("Band/artist logotype"));
 		}
 		else if(PictureType == 20)
 		{
-			Result->GetValue()->Append("Interpretation", Inspection::MakeValue(std::string("Publisher/Studio logotype")));
+			Result->GetValue()->Append("Interpretation", std::string("Publisher/Studio logotype"));
 		}
 		else
 		{

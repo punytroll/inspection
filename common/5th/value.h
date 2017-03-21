@@ -20,6 +20,16 @@ namespace Inspection
 			_Values.push_back(Value);
 		}
 		
+		template< typename AnyType >
+		void Append(const std::string & Name, const AnyType & Any)
+		{
+			auto Value{std::make_shared< Inspection::Value >()};
+			
+			Value->SetName(Name);
+			Value->SetAny(Any);
+			_Values.push_back(Value);
+		}
+		
 		void Append(const std::string & Name, std::shared_ptr< Inspection::Value > Value)
 		{
 			Value->SetName(Name);
@@ -121,16 +131,6 @@ namespace Inspection
 		Inspection::Length _Offset;
 		std::list< std::shared_ptr< Inspection::Value > > _Values;
 	};
-	
-	template< typename ValueType >
-	inline std::shared_ptr< Value > MakeValue(const ValueType & Value)
-	{
-		auto Result{std::make_shared< Inspection::Value >()};
-		
-		Result->SetAny(Value);
-		
-		return Result;
-	}
 }
 
 #endif
