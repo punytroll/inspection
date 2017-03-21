@@ -14,6 +14,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 		Result->SetSuccess(true);
 		for(auto Character : String)
 		{
+			/// @TODO check for ASCII alphabetical
 			if(Character != Buffer.Get8Bits())
 			{
 				Result->SetSuccess(false);
