@@ -412,11 +412,11 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffe
 		Result->GetValue()->Append("VendorLength", VendorLengthResult->GetValue());
 		
 		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
-		auto VendorStringResult{Get_UTF8_String_EndedByLength(Buffer, VendorLength)};
+		auto VendorResult{Get_UTF8_String_EndedByByteLength(Buffer, VendorLength)};
 		
-		if(VendorStringResult->GetSuccess() == true)
+		if(VendorResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("VendorString", VendorStringResult->GetValue());
+			Result->GetValue()->Append("Vendor", VendorResult->GetValue());
 			
 			auto UserCommentListResult{Get_Vorbis_CommentHeader_UserCommentList(Buffer)};
 			
@@ -442,11 +442,11 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspe
 		Result->GetValue()->Append("Length", UserCommentLengthResult->GetValue());
 		
 		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
-		auto UserCommentStringResult{Get_UTF8_String_EndedByLength(Buffer, UserCommentLength)};
+		auto UserCommentResult{Get_UTF8_String_EndedByByteLength(Buffer, UserCommentLength)};
 		
-		if(UserCommentStringResult->GetSuccess() == true)
+		if(UserCommentResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("String", UserCommentStringResult->GetValue());
+			Result->GetValue()->Append("String", UserCommentResult->GetValue());
 			Result->SetSuccess(true);
 		}
 	}
