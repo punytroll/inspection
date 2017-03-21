@@ -32,6 +32,35 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByByteLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Value{std::string("")};
+	
+	if(Buffer.Has(Length, 0) == true)
+	{
+		Result->SetSuccess(true);
+		for(auto Index = 0ull; Index < Length; ++Index)
+		{
+			auto Character{Buffer.Get8Bits()};
+			
+			if((Character < 0x20) || (Character >= 0x7f))
+			{
+				Result->SetSuccess(false);
+				
+				break;
+			}
+			else
+			{
+				Value += Character;
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
@@ -248,6 +277,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 	
 	if(Buffer.Has(0ull, 24) == true)
 	{
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Value, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::uint32_t Value{0ul};
+	
+	if(Buffer.Has(0ull, 32) == true)
+	{
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
