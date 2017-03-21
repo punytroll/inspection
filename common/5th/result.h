@@ -107,17 +107,6 @@ namespace Inspection
 			Result->GetValue()->SetLength(Buffer.GetPosition() - Result->GetValue()->GetOffset());
 		}
 	}
-	
-	template< typename ValueType >
-	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const ValueType & Value, const Inspection::Buffer & Buffer)
-	{
-		if(Result->GetSuccess() == true)
-		{
-			Result->GetValue()->SetOffset(Result->GetOffset());
-			Result->GetValue()->SetAny(Value);
-			Result->GetValue()->SetLength(Buffer.GetPosition() - Result->GetValue()->GetOffset());
-		}
-	}
 }
 
 #endif
