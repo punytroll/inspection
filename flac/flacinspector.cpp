@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlockData(Inspection::Buffer & Buffer, std::uint64_t Length);
 std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer);
@@ -29,6 +30,29 @@ std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlockData(Inspection
 std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(Inspection::Buffer & Buffer);
+
+
+std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlockData(Inspection::Buffer & Buffer, std::uint64_t Length)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto RegisteredApplicationIdentifierResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+	
+	if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
+	{
+		Result->GetValue()->Append("RegisteredApplicationIdentifier", RegisteredApplicationIdentifierResult->GetValue());
+		
+		auto ApplicationDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length - 4)};
+		
+		if(ApplicationDataResult->GetSuccess() == true)
+		{
+			Result->GetValue()->Append("ApplicationData", ApplicationDataResult->GetValue());
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
 
 std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer & Buffer)
 {
@@ -75,6 +99,16 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 			if(PaddingBlockDataResult->GetSuccess() == true)
 			{
 				Result->GetValue()->Append("Data", PaddingBlockDataResult->GetValue());
+				Result->SetSuccess(true);
+			}
+		}
+		else if(MetaDataBlockType == "Application")
+		{
+			auto ApplicationBlockDataResult{Get_FLAC_ApplicationBlockData(Buffer, MetaDataBlockDataLength)};
+			
+			if(ApplicationBlockDataResult->GetSuccess() == true)
+			{
+				Result->GetValue()->Append("Data", ApplicationBlockDataResult->GetValue());
 				Result->SetSuccess(true);
 			}
 		}
