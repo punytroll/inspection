@@ -28,105 +28,104 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	std::shared_ptr< Inspection::Value > Value;
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto HeaderTypeResult{Get_BitSet_8Bit(Buffer)};
 	
 	if(HeaderTypeResult->GetSuccess() == true)
 	{
-		Success = true;
-		Value = HeaderTypeResult->GetValue();
+		Result->SetValue(HeaderTypeResult->GetValue());
+		Result->SetSuccess(true);
 		
 		const std::bitset< 8 > & HeaderType{std::experimental::any_cast< const std::bitset< 8 > & >(HeaderTypeResult->GetAny())};
 		
-		Value->Append(Inspection::MakeValue("Continuation", HeaderType[0]));
-		Value->Append(Inspection::MakeValue("BeginOfStream", HeaderType[1]));
-		Value->Append(Inspection::MakeValue("EndOfStream", HeaderType[2]));
+		Result->GetValue()->Append(Inspection::MakeValue("Continuation", HeaderType[0]));
+		Result->GetValue()->Append(Inspection::MakeValue("BeginOfStream", HeaderType[1]));
+		Result->GetValue()->Append(Inspection::MakeValue("EndOfStream", HeaderType[2]));
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries)
 {
-	auto Success{false};
-	auto Value{std::make_shared< Inspection::Value >()};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto SegmentTableResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, NumberOfEntries)};
 	
 	if(SegmentTableResult->GetSuccess() == true)
 	{
-		Success = true;
+		Result->SetSuccess(true);
 		
 		const std::vector< std::uint8_t > & SegmentTable{std::experimental::any_cast< std::vector< std::uint8_t > >(SegmentTableResult->GetAny())};
 		
 		for(auto SegmentTableEntry : SegmentTable)
 		{
-			Value->Append(Inspection::MakeValue("", SegmentTableEntry));
+			Result->GetValue()->Append(Inspection::MakeValue("", SegmentTableEntry));
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Value{std::make_shared< Inspection::Value >()};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto CapturePatternResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "OggS")};
 	
 	if(CapturePatternResult->GetSuccess() == true)
 	{
-		Value->Append("CapturePattern", CapturePatternResult->GetValue());
+		Result->GetValue()->Append("CapturePattern", CapturePatternResult->GetValue());
 		
 		auto StreamStructureVersionResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
 		if(StreamStructureVersionResult->GetSuccess() == true)
 		{
-			Value->Append("StreamStructureVersion", StreamStructureVersionResult->GetValue());
+			Result->GetValue()->Append("StreamStructureVersion", StreamStructureVersionResult->GetValue());
 			
 			auto HeaderTypeResult{Get_Ogg_Page_HeaderType(Buffer)};
 			
 			if(HeaderTypeResult->GetSuccess() == true)
 			{
-				Value->Append("HeaderType", HeaderTypeResult->GetValue());
+				Result->GetValue()->Append("HeaderType", HeaderTypeResult->GetValue());
 				
 				auto GranulePositionResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 				
 				if(GranulePositionResult->GetSuccess() == true)
 				{
-					Value->Append("GranulePosition", GranulePositionResult->GetValue());
+					Result->GetValue()->Append("GranulePosition", GranulePositionResult->GetValue());
 					
 					auto BitStreamSerialNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 					
 					if(BitStreamSerialNumberResult->GetSuccess() == true)
 					{
-						Value->Append("BitStreamSerialNumber", BitStreamSerialNumberResult->GetValue());
+						Result->GetValue()->Append("BitStreamSerialNumber", BitStreamSerialNumberResult->GetValue());
 						
 						auto PageSequenceNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 						
 						if(PageSequenceNumberResult->GetSuccess() == true)
 						{
-							Value->Append("PageSequenceNumber", PageSequenceNumberResult->GetValue());
+							Result->GetValue()->Append("PageSequenceNumber", PageSequenceNumberResult->GetValue());
 							
 							auto ChecksumResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 							
 							if(ChecksumResult->GetSuccess() == true)
 							{
-								Value->Append("Checksum", ChecksumResult->GetValue());
+								Result->GetValue()->Append("Checksum", ChecksumResult->GetValue());
 								
 								auto PageSegmentsResult{Get_UnsignedInteger_8Bit(Buffer)};
 								
 								if(PageSegmentsResult->GetSuccess() == true)
 								{
-									Value->Append("PageSegments", PageSegmentsResult->GetValue());
+									Result->GetValue()->Append("PageSegments", PageSegmentsResult->GetValue());
 									
 									auto PageSegments{std::experimental::any_cast< std::uint8_t >(PageSegmentsResult->GetAny())};
 									auto SegmentTableResult{Get_Ogg_Page_SegmentTable(Buffer, PageSegments)};
 									
 									if(SegmentTableResult->GetSuccess() == true)
 									{
-										Value->Append("SegmentTable", SegmentTableResult->GetValue());
-										Success = true;
+										Result->GetValue()->Append("SegmentTable", SegmentTableResult->GetValue());
+										Result->SetSuccess(true);
 										
 										for(auto SegmentTableEntryValue : SegmentTableResult->GetValue()->GetValues())
 										{
@@ -138,11 +137,11 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 											
 											if(VorbisHeaderPacketResult->GetSuccess() == true)
 											{
-												Value->Append("Segment", VorbisHeaderPacketResult->GetValue());
+												Result->GetValue()->Append("Segment", VorbisHeaderPacketResult->GetValue());
 											}
 											else
 											{
-												Success = false;
+												Result->SetSuccess(false);
 												
 												break;
 											}
@@ -156,16 +155,16 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto StreamStarted{false};
 	auto StreamEnded{false};
-	auto Value{std::make_shared< Inspection::Value >()};
 	
 	while(StreamEnded == false)
 	{
@@ -173,7 +172,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 		
 		if(OggPageResult->GetSuccess() == true)
 		{
-			Value->Append("OggPage", OggPageResult->GetValue());
+			Result->GetValue()->Append("OggPage", OggPageResult->GetValue());
 			
 			bool BeginOfStream{std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetAny("BeginOfStream"))};
 			
@@ -182,11 +181,11 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 				if(StreamStarted == false)
 				{
 					StreamStarted = true;
-					Success = true;
+					Result->SetSuccess(true);
 				}
 				else
 				{
-					Success = false;
+					Result->SetSuccess(false);
 					
 					break;
 				}
@@ -200,25 +199,25 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 			break;
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
-	auto Success{false};
-	auto Value{std::make_shared< Inspection::Value >()};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto PacketTypeResult{Get_UnsignedInteger_8Bit(Buffer)};
 	
 	if(PacketTypeResult->GetSuccess() == true)
 	{
-		Value->Append("PacketType", PacketTypeResult->GetValue());
+		Result->GetValue()->Append("PacketType", PacketTypeResult->GetValue());
 		
 		auto VorbisIdentifierResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "vorbis")};
 		
 		if(VorbisIdentifierResult->GetSuccess() == true)
 		{
-			Value->Append("VorbisIdentifier", VorbisIdentifierResult->GetValue());
+			Result->GetValue()->Append("VorbisIdentifier", VorbisIdentifierResult->GetValue());
 			
 			auto PacketType{std::experimental::any_cast< std::uint8_t >(PacketTypeResult->GetAny())};
 			
@@ -228,30 +227,30 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 				
 				if(IdentificationHeader->GetSuccess() == true)
 				{
-					Value->Append(IdentificationHeader->GetValue()->GetValues());
-					
-					Success = true;
+					Result->GetValue()->Append(IdentificationHeader->GetValue()->GetValues());
+					Result->SetSuccess(true);
 				}
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Buffer & Buffer)
 {
-	auto Success{true};
-	auto Value{std::make_shared< Inspection::Value >()};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto VorbisVersionResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
 	if(VorbisVersionResult->GetSuccess() == true)
 	{
-		Value->Append("VorbisVersion", VorbisVersionResult->GetValue());
-		Success = true;
+		Result->GetValue()->Append("VorbisVersion", VorbisVersionResult->GetValue());
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Inspection::MakeResult(Success, Value);
+	return Result;
 }
 
 void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Value > Value)
