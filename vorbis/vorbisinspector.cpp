@@ -246,7 +246,63 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	if(VorbisVersionResult->GetSuccess() == true)
 	{
 		Result->GetValue()->Append("VorbisVersion", VorbisVersionResult->GetValue());
-		Result->SetSuccess(true);
+		
+		auto AudioChannelsResult{Get_UnsignedInteger_8Bit(Buffer)};
+		
+		if(AudioChannelsResult->GetSuccess() == true)
+		{
+			Result->GetValue()->Append("AudioChannels", AudioChannelsResult->GetValue());
+			
+			auto AudioSampleRateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			
+			if(AudioSampleRateResult->GetSuccess() == true)
+			{
+				Result->GetValue()->Append("AudioSampleRate", AudioSampleRateResult->GetValue());
+				
+				auto BitrateMaximumResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+				
+				if(BitrateMaximumResult->GetSuccess() == true)
+				{
+					Result->GetValue()->Append("BitrateMaximum", BitrateMaximumResult->GetValue());
+					
+					auto BitrateNominalResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+					
+					if(BitrateNominalResult->GetSuccess() == true)
+					{
+						Result->GetValue()->Append("BitrateNominal", BitrateNominalResult->GetValue());
+						
+						auto BitrateMinimumResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+						
+						if(BitrateMinimumResult->GetSuccess() == true)
+						{
+							Result->GetValue()->Append("BitrateMinimum", BitrateMinimumResult->GetValue());
+							
+							auto BlockSize0Result{Get_UnsignedInteger_4Bit(Buffer)};
+							
+							if(BlockSize0Result->GetSuccess() == true)
+							{
+								Result->GetValue()->Append("BlockSize0", BlockSize0Result->GetValue());
+								
+								auto BlockSize1Result{Get_UnsignedInteger_4Bit(Buffer)};
+								
+								if(BlockSize1Result->GetSuccess() == true)
+								{
+									Result->GetValue()->Append("BlockSize1", BlockSize1Result->GetValue());
+									
+									auto FramingFlagResult{Get_UnsignedInteger_1Bit(Buffer)};
+									
+									if(FramingFlagResult->GetSuccess() == true)
+									{
+										Result->GetValue()->Append("FramingFlag", FramingFlagResult->GetValue());
+										Result->SetSuccess(true);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
