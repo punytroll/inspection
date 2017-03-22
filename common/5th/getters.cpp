@@ -154,6 +154,60 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInte
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(0ull, 32) == true)
+	{
+		std::int32_t Value{0l};
+		
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(0ull, 32) == true)
+	{
+		std::int32_t Value{0l};
+		
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
+		Result->GetValue()->SetAny(Value);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(0ull, 1) == true)
+	{
+		Result->GetValue()->SetAny(Buffer.Get1Bit());
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
