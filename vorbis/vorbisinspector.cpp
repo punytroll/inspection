@@ -362,7 +362,7 @@ void ReadFile(const std::string & Path)
 			{
 				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
 				
-				Buffer.SetBitstreamReaderType(Inspection::Buffer::BitstreamReaderType::LeastSignificantBitFirst);
+				Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 				
 				auto OggStreamResult(Get_Ogg_Stream(Buffer));
 				
