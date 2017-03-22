@@ -99,7 +99,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_OneBit(Inspection:
 	
 	if(Buffer.Has(0ull, 1) == true)
 	{
-		Result->GetValue()->SetAny((0x01 & Buffer.Get1Bit()) == 0x01);
+		Result->GetValue()->SetAny((0x01 & Buffer.Get1Bits()) == 0x01);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -200,7 +200,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspe
 	
 	if(Buffer.Has(0ull, 1) == true)
 	{
-		Result->GetValue()->SetAny(Buffer.Get1Bit());
+		Result->GetValue()->SetAny(Buffer.Get1Bits());
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
