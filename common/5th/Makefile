@@ -13,7 +13,7 @@ all: test getters.o
 getters.o: getters.cpp getters.h result.h buffer.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-test: test.o
+test: getters.o test.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 test.o: test.cpp buffer.h length.h result.h value.h
