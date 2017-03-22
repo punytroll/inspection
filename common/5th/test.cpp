@@ -48,7 +48,7 @@ void SetupDataAndBufferVorbis(void)
 	g_Data[15] = 0x00;
 	delete g_Buffer;
 	g_Buffer = new Inspection::Buffer(g_Data, Inspection::Length(0ull, 27));
-	g_Buffer->SetBitstreamReaderType(Inspection::Buffer::BitstreamReaderType::LeastSignificantBitFirst);
+	g_Buffer->SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 }
 
 void TestStartingPosition(void)

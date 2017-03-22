@@ -334,7 +334,7 @@ namespace Inspection
 			}
 		};
 	public:
-		enum class BitstreamReaderType
+		enum class BitstreamType
 		{
 			MostSignificantBitFirst,
 			LeastSignificantBitFirst
@@ -345,15 +345,15 @@ namespace Inspection
 		{
 		}
 		
-		void SetBitstreamReaderType(Inspection::Buffer::BitstreamReaderType BitstreamReaderType)
+		void SetBitstreamType(Inspection::Buffer::BitstreamType BitstreamType)
 		{
 			Inspection::Buffer::BitstreamReader * NewBitstreamReader{nullptr};
 			
-			if(BitstreamReaderType == Inspection::Buffer::BitstreamReaderType::MostSignificantBitFirst)
+			if(BitstreamType == Inspection::Buffer::BitstreamType::MostSignificantBitFirst)
 			{
 				NewBitstreamReader = new Inspection::Buffer::MostSignificantBitFirstBitstreamReader(_BitstreamReader->_Data, _BitstreamReader->_Length, _BitstreamReader->_Position);
 			}
-			else if(BitstreamReaderType == Inspection::Buffer::BitstreamReaderType::LeastSignificantBitFirst)
+			else if(BitstreamType == Inspection::Buffer::BitstreamType::LeastSignificantBitFirst)
 			{
 				NewBitstreamReader = new Inspection::Buffer::LeastSignificantBitFirstBitstreamReader(_BitstreamReader->_Data, _BitstreamReader->_Length, _BitstreamReader->_Position);
 			}
