@@ -13,6 +13,12 @@ namespace Inspection
 		{
 		}
 		
+		Length(const Length & Length) :
+			_Bits(Length._Bits),
+			_Bytes(Length._Bytes)
+		{
+		}
+		
 		Length(std::uint64_t Bytes) :
 			Length(Bytes, 0)
 		{
@@ -62,6 +68,17 @@ namespace Inspection
 			_Bytes += Length._Bytes;
 			_Bits += Length._Bits;
 			_Normalize();
+			
+			return *this;
+		}
+		
+		Length & operator=(const Length & Length)
+		{
+			if(&Length != this)
+			{
+				_Bytes  = Length._Bytes;
+				_Bits = Length._Bits;
+			}
 			
 			return *this;
 		}
