@@ -293,8 +293,17 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 									
 									if(FramingFlagResult->GetSuccess() == true)
 									{
-										Result->GetValue()->Append("FramingFlag", FramingFlagResult->GetValue());
-										Result->SetSuccess(true);
+										auto FramingFlag{std::experimental::any_cast< std::uint8_t >(FramingFlagResult->GetAny())};
+										
+										if(FramingFlag == 0x01)
+										{
+											Result->GetValue()->Append("FramingFlag", FramingFlagResult->GetValue());
+											Result->SetSuccess(true);
+										}
+										else
+										{
+											Result->SetSuccess(false);
+										}
 									}
 								}
 							}
