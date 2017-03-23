@@ -29,6 +29,11 @@ namespace Inspection
 				return _Position + Length <= _Length;
 			}
 			
+			void SetPosition(const Inspection::Length & Position)
+			{
+				_Position = Position;
+			}
+			
 			virtual std::uint8_t Get0Bits(void) = 0;
 			virtual std::uint8_t Get1Bits(void) = 0;
 			virtual std::uint8_t Get2Bits(void) = 0;
@@ -361,27 +366,6 @@ namespace Inspection
 			_BitstreamReader = NewBitstreamReader;
 		}
 		
-		const Inspection::Length & GetPosition(void) const
-		{
-			assert(_BitstreamReader != nullptr);
-			
-			return _BitstreamReader->_Position;
-		}
-		
-		bool Has(std::uint64_t Bytes, std::uint8_t Bits)
-		{
-			assert(_BitstreamReader != nullptr);
-			
-			return _BitstreamReader->Has(Inspection::Length(Bytes, Bits));
-		}
-		
-		bool Has(const Inspection::Length & Length)
-		{
-			assert(_BitstreamReader != nullptr);
-			
-			return _BitstreamReader->Has(Length);
-		}
-		
 		std::uint8_t Get0Bits(void)
 		{
 			assert(_BitstreamReader != nullptr);
@@ -452,6 +436,34 @@ namespace Inspection
 			assert(_BitstreamReader->Has(Inspection::Length(0ull, 8)) == true);
 			
 			return _BitstreamReader->Get8Bits();
+		}
+		
+		const Inspection::Length & GetPosition(void) const
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			return _BitstreamReader->_Position;
+		}
+		
+		bool Has(std::uint64_t Bytes, std::uint8_t Bits)
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			return _BitstreamReader->Has(Inspection::Length(Bytes, Bits));
+		}
+		
+		bool Has(const Inspection::Length & Length)
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			return _BitstreamReader->Has(Length);
+		}
+		
+		void SetPosition(const Inspection::Length & Position)
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			_BitstreamReader->SetPosition(Position);
 		}
 	private:
 		BitstreamReader * _BitstreamReader;
