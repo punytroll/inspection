@@ -126,9 +126,9 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 									{
 										Result->GetValue()->Append("SegmentTable", SegmentTableResult->GetValue());
 										Result->SetSuccess(true);
-										
 										for(auto SegmentTableEntryValue : SegmentTableResult->GetValue()->GetValues())
 										{
+											auto StartOfSegment{Buffer.GetPosition()};
 											auto SegmentTableEntry{std::experimental::any_cast< std::uint8_t >(SegmentTableEntryValue->GetAny())};
 											
 											// data interpretation:
@@ -137,14 +137,27 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 											
 											if(VorbisHeaderPacketResult->GetSuccess() == true)
 											{
-												Result->GetValue()->Append("Segment", VorbisHeaderPacketResult->GetValue());
+												Result->GetValue()->Append("Segment as VorbisHeaderPacket", VorbisHeaderPacketResult->GetValue());
 											}
 											else
 											{
-												Result->SetSuccess(false);
+												Buffer.SetPosition(StartOfSegment);
 												
-												break;
+												auto SegmentDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, SegmentTableEntry)};
+												
+												if(SegmentDataResult->GetSuccess() == true)
+												{
+													Result->GetValue()->Append("Segment", SegmentDataResult->GetValue());
+												}
+												else
+												{
+													Result->SetSuccess(false);
+													
+													break;
+												}
 											}
+											// No matter what data gets read before - successfully or ansuccessfully - we heed the values from the segment table!
+											Buffer.SetPosition(StartOfSegment + SegmentTableEntry);
 										}
 									}
 								}
