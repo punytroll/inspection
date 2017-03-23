@@ -19,12 +19,46 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer, std::uint64_t Length);
 std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries);
 std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer & Buffer, std::uint64_t Length);
 std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Buffer & Buffer);
+
+
+std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer, std::uint64_t Length)
+{
+	auto Start{Buffer.GetPosition()};
+	auto Result{Inspection::InitializeResult(true, Buffer)};
+	auto VorbisHeaderPacketResult{Get_Vorbis_HeaderPacket(Buffer, Length)};
+	
+	if(VorbisHeaderPacketResult->GetSuccess() == true)
+	{
+		Result->SetValue(VorbisHeaderPacketResult->GetValue());
+	}
+	else
+	{
+		// reset buffer position, so we can try something else
+		Buffer.SetPosition(Start);
+		
+		auto PacketResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+		
+		if(PacketResult->GetSuccess() == true)
+		{
+			Result->GetValue()->Append("Length", Length);
+			Result->GetValue()->Append("Data", PacketResult->GetValue());
+		}
+		else
+		{
+			Result->SetSuccess(false);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
 
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer)
 {
@@ -126,38 +160,34 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 									{
 										Result->GetValue()->Append("SegmentTable", SegmentTableResult->GetValue());
 										Result->SetSuccess(true);
+										
+										auto PacketStart{Buffer.GetPosition()};
+										auto PacketLength{0ull};
+										
 										for(auto SegmentTableEntryValue : SegmentTableResult->GetValue()->GetValues())
 										{
-											auto StartOfSegment{Buffer.GetPosition()};
 											auto SegmentTableEntry{std::experimental::any_cast< std::uint8_t >(SegmentTableEntryValue->GetAny())};
 											
-											// data interpretation:
-											// try different segment contents
-											auto VorbisHeaderPacketResult{Get_Vorbis_HeaderPacket(Buffer, static_cast< std::uint64_t >(SegmentTableEntry))};
-											
-											if(VorbisHeaderPacketResult->GetSuccess() == true)
+											PacketLength += SegmentTableEntry;
+											if(SegmentTableEntry != 0xff)
 											{
-												Result->GetValue()->Append("Segment as VorbisHeaderPacket", VorbisHeaderPacketResult->GetValue());
-											}
-											else
-											{
-												Buffer.SetPosition(StartOfSegment);
+												// the packet ends here, read its content and try interpretation
+												auto PacketResult{Get_Ogg_Packet(Buffer, PacketLength)};
 												
-												auto SegmentDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, SegmentTableEntry)};
-												
-												if(SegmentDataResult->GetSuccess() == true)
+												if(PacketResult->GetSuccess() == true)
 												{
-													Result->GetValue()->Append("Segment", SegmentDataResult->GetValue());
+													Result->GetValue()->Append("Packet", PacketResult->GetValue());
 												}
-												else
-												{
-													Result->SetSuccess(false);
-													
-													break;
-												}
+												// No matter what data gets read before - successfully or ansuccessfully - we heed the values from the segment table!
+												Buffer.SetPosition(PacketStart + PacketLength);
+												PacketStart = Buffer.GetPosition();
+												PacketLength = 0ull;
 											}
-											// No matter what data gets read before - successfully or ansuccessfully - we heed the values from the segment table!
-											Buffer.SetPosition(StartOfSegment + SegmentTableEntry);
+										}
+										if(PacketLength > 0ull)
+										{
+											std::cerr << "A packet spans multiple pages, which is not yet supported." << std::endl;
+											Result->SetSuccess(false);
 										}
 									}
 								}
@@ -207,7 +237,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 		}
 		else
 		{
-			// Success = false;
+			//~ Result->SetSuccess(false);
 			
 			break;
 		}
