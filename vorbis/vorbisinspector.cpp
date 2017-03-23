@@ -223,11 +223,11 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 			
 			if(PacketType == 0x01)
 			{
-				auto IdentificationHeader{Get_Vorbis_IdentificationHeader(Buffer)};
+				auto IdentificationHeaderResult{Get_Vorbis_IdentificationHeader(Buffer)};
 				
-				if(IdentificationHeader->GetSuccess() == true)
+				if(IdentificationHeaderResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append(IdentificationHeader->GetValue()->GetValues());
+					Result->GetValue()->Append(IdentificationHeaderResult->GetValue()->GetValues());
 					Result->SetSuccess(true);
 				}
 			}
