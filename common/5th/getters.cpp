@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 
+#include "../guid.h"
 #include "../helper.h"
 #include "buffer.h"
 #include "getters.h"
@@ -142,6 +143,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInte
 			}
 		}
 		Result->SetValue(Data->GetValue());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(16ull, 0) == true)
+	{
+		GUID Value;
+		
+		Value.Data1 = static_cast< std::uint32_t >(Buffer.Get8Bits()) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24);
+		Value.Data2 = static_cast< std::uint32_t >(Buffer.Get8Bits()) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8);
+		Value.Data3 = static_cast< std::uint32_t >(Buffer.Get8Bits()) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8);
+		Value.Data4[0] = Buffer.Get8Bits();
+		Value.Data4[1] = Buffer.Get8Bits();
+		Value.Data4[2] = Buffer.Get8Bits();
+		Value.Data4[3] = Buffer.Get8Bits();
+		Value.Data4[4] = Buffer.Get8Bits();
+		Value.Data4[5] = Buffer.Get8Bits();
+		Value.Data4[6] = Buffer.Get8Bits();
+		Value.Data4[7] = Buffer.Get8Bits();
+		Result->GetValue()->SetAny(Value);
+		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
