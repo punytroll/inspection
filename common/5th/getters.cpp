@@ -93,7 +93,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_OneBit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_1Bit(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	

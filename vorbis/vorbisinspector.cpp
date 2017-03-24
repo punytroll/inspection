@@ -332,21 +332,14 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 								{
 									Result->GetValue()->Append("BlockSize1", BlockSize1Result->GetValue());
 									
-									auto FramingFlagResult{Get_UnsignedInteger_1Bit(Buffer)};
+									auto FramingFlagResult{Get_Boolean_1Bit(Buffer)};
 									
 									if(FramingFlagResult->GetSuccess() == true)
 									{
-										auto FramingFlag{std::experimental::any_cast< std::uint8_t >(FramingFlagResult->GetAny())};
+										auto FramingFlag{std::experimental::any_cast< bool >(FramingFlagResult->GetAny())};
 										
-										if(FramingFlag == 0x01)
-										{
-											Result->GetValue()->Append("FramingFlag", FramingFlagResult->GetValue());
-											Result->SetSuccess(true);
-										}
-										else
-										{
-											Result->SetSuccess(false);
-										}
+										Result->GetValue()->Append("FramingFlag", FramingFlagResult->GetValue());
+										Result->SetSuccess(FramingFlag);
 									}
 								}
 							}
