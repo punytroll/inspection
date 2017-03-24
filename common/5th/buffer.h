@@ -351,24 +351,33 @@ namespace Inspection
 		};
 			
 		Buffer(const std::uint8_t * Data, const Inspection::Length & Length) :
-			_BitstreamReader(new MostSignificantBitFirstBitstreamReader(Data, Length, Inspection::Length(0ull, 0)))
+			_BitstreamReader(new MostSignificantBitFirstBitstreamReader(Data, Length, Inspection::Length(0ull, 0))),
+			_BitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst)
 		{
 		}
 		
 		void SetBitstreamType(Inspection::Buffer::BitstreamType BitstreamType)
 		{
-			Inspection::Buffer::BitstreamReader * NewBitstreamReader{nullptr};
-			
-			if(BitstreamType == Inspection::Buffer::BitstreamType::MostSignificantBitFirst)
+			if(BitstreamType != _BitstreamType)
 			{
-				NewBitstreamReader = new Inspection::Buffer::MostSignificantBitFirstBitstreamReader(_BitstreamReader->_Data, _BitstreamReader->_Length, _BitstreamReader->_Position);
+				Inspection::Buffer::BitstreamReader * NewBitstreamReader{nullptr};
+				
+				if(_BitstreamReader != nullptr)
+				{
+					assert(_BitstreamReader->GetPosition().GetBits() == 0);
+				}
+				if(BitstreamType == Inspection::Buffer::BitstreamType::MostSignificantBitFirst)
+				{
+					NewBitstreamReader = new Inspection::Buffer::MostSignificantBitFirstBitstreamReader(_BitstreamReader->_Data, _BitstreamReader->_Length, _BitstreamReader->_Position);
+				}
+				else if(BitstreamType == Inspection::Buffer::BitstreamType::LeastSignificantBitFirst)
+				{
+					NewBitstreamReader = new Inspection::Buffer::LeastSignificantBitFirstBitstreamReader(_BitstreamReader->_Data, _BitstreamReader->_Length, _BitstreamReader->_Position);
+				}
+				_BitstreamType = BitstreamType;
+				delete _BitstreamReader;
+				_BitstreamReader = NewBitstreamReader;
 			}
-			else if(BitstreamType == Inspection::Buffer::BitstreamType::LeastSignificantBitFirst)
-			{
-				NewBitstreamReader = new Inspection::Buffer::LeastSignificantBitFirstBitstreamReader(_BitstreamReader->_Data, _BitstreamReader->_Length, _BitstreamReader->_Position);
-			}
-			delete _BitstreamReader;
-			_BitstreamReader = NewBitstreamReader;
 		}
 		
 		std::uint8_t Get0Bits(void)
@@ -443,6 +452,13 @@ namespace Inspection
 			return _BitstreamReader->Get8Bits();
 		}
 		
+		Inspection::Buffer::BitstreamType GetBitstreamType(void) const
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			return _BitstreamType;
+		}
+		
 		const Inspection::Length & GetPosition(void) const
 		{
 			assert(_BitstreamReader != nullptr);
@@ -472,6 +488,7 @@ namespace Inspection
 		}
 	private:
 		BitstreamReader * _BitstreamReader;
+		BitstreamType _BitstreamType;
 	};
 }
 
