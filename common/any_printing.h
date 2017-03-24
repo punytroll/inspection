@@ -68,9 +68,9 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 	{
 		return OStream << std::experimental::any_cast< std::bitset<8> >(Any);
 	}
-	else if(Any.type() == typeid(GUID))
+	else if(Any.type() == typeid(Inspection::GUID))
 	{
-		auto Value{std::experimental::any_cast< GUID >(Any)};
+		auto Value{std::experimental::any_cast< Inspection::GUID >(Any)};
 		std::stringstream StringStream;
 		
 		StringStream << std::hex << std::setw(8) << std::right << std::setfill('0') << Value.Data1 << '-' << std::setw(4) << std::right << std::setfill('0') << Value.Data2 << '-' << std::setw(4) << std::right << std::setfill('0') << Value.Data3 << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[0]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[1]) << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[2]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[3]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[4]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[5]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[6]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[7]);

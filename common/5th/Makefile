@@ -11,7 +11,7 @@ clean:
 
 all: test getters.o
 
-getters.o: getters.cpp getters.h result.h buffer.h
+getters.o: getters.cpp getters.h ../guid.h result.h buffer.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 helper.o: ../helper.cpp ../helper.h
