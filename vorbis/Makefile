@@ -12,10 +12,13 @@ clean:
 
 all: ../vorbisinspector
 
-../vorbisinspector: vorbisinspector.o getters.o
+../vorbisinspector: vorbisinspector.o getters.o helper.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 getters.o: ../common/5th/getters.cpp ../common/5th/getters.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+helper.o: ../common/helper.cpp ../common/helper.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/result.h ../common/unicode.h ../common/5th/value.h
