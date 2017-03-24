@@ -97,6 +97,11 @@ namespace Inspection
 		{
 			return (_Bytes == Length._Bytes) && (_Bits == Length._Bits);
 		}
+		
+		bool operator!=(const Length & Length) const
+		{
+			return (_Bytes != Length._Bytes) || (_Bits != Length._Bits);
+		}
 	private:
 		void _Normalize(void)
 		{
