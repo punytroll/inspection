@@ -24,6 +24,11 @@ namespace Inspection
 			{
 			}
 			
+			const Inspection::Length & GetLength(void) const
+			{
+				return _Length;
+			}
+			
 			const Inspection::Length & GetPosition(void) const
 			{
 				return _Position;
@@ -457,6 +462,13 @@ namespace Inspection
 			assert(_BitstreamReader != nullptr);
 			
 			return _BitstreamType;
+		}
+		
+		const Inspection::Length & GetLength(void) const
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			return _BitstreamReader->GetLength();
 		}
 		
 		const Inspection::Length & GetPosition(void) const
