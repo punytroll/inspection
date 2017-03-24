@@ -1,6 +1,8 @@
 #include <bitset>
+#include <sstream>
 #include <vector>
 
+#include "../helper.h"
 #include "buffer.h"
 #include "getters.h"
 
@@ -11,24 +13,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 	if(Buffer.Has(String.length(), 0) == true)
 	{
 		Result->SetSuccess(true);
-		
-		auto Value{std::string("")};
-		
 		for(auto Character : String)
 		{
-			/// @TODO check for ASCII alphabetical
-			if(Character != Buffer.Get8Bits())
+			if((Character != Buffer.Get8Bits()) || (Is_ASCII_Character_Alphabetical(Character) == false))
 			{
 				Result->SetSuccess(false);
 				
 				break;
 			}
-			else
-			{
-				Value += Character;
-			}
 		}
-		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->SetAny(String);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -43,24 +37,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	{
 		Result->SetSuccess(true);
 		
-		auto Value{std::string("")};
+		std::stringstream Value;
 		
 		for(auto Index = 0ull; Index < Length; ++Index)
 		{
 			auto Character{Buffer.Get8Bits()};
 			
-			if((Character < 0x20) || (Character >= 0x7f))
+			if(Is_ASCII_Character_Printable(Character) == true)
+			{
+				Value << Character;
+			}
+			else
 			{
 				Result->SetSuccess(false);
 				
 				break;
 			}
-			else
-			{
-				Value += Character;
-			}
 		}
-		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->SetAny(Value.str());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
