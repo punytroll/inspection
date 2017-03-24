@@ -155,7 +155,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto LastMetaDataBlockResult{Get_Boolean_OneBit(Buffer)};
+	auto LastMetaDataBlockResult{Get_Boolean_1Bit(Buffer)};
 	
 	if(LastMetaDataBlockResult->GetSuccess() == true)
 	{
