@@ -24,6 +24,11 @@ namespace Inspection
 			{
 			}
 			
+			const Inspection::Length & GetPosition(void) const
+			{
+				return _Position;
+			}
+			
 			bool Has(const Inspection::Length & Length)
 			{
 				return _Position + Length <= _Length;
@@ -442,7 +447,7 @@ namespace Inspection
 		{
 			assert(_BitstreamReader != nullptr);
 			
-			return _BitstreamReader->_Position;
+			return _BitstreamReader->GetPosition();
 		}
 		
 		bool Has(std::uint64_t Bytes, std::uint8_t Bits)
