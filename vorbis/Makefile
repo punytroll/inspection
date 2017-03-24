@@ -5,10 +5,9 @@ default: all
 
 clean:
 	$(RM) ../vorbisinspector
-	$(RM) 4th.o
 	$(RM) getters.o
+	$(RM) helper.o
 	$(RM) vorbisinspector.o
-	$(RM) unicode.o
 
 all: ../vorbisinspector
 

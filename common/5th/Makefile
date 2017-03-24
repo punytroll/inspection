@@ -5,6 +5,7 @@ default: all
 
 clean:
 	$(RM) getters.o
+	$(RM) helper.o
 	$(RM) test
 	$(RM) test.o
 

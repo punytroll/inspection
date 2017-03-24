@@ -7,6 +7,7 @@ clean:
 	$(RM) ../flacinspector
 	$(RM) flacinspector.o
 	$(RM) getters.o
+	$(RM) helper.o
 
 all: ../flacinspector
 
