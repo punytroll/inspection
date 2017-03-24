@@ -33,6 +33,10 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF8_Character(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF8_String_EndedByByteLength(Inspection::Buffer & Buffer, std::uint64_t Length);
+	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Buffer & Buffer);
 }
 
 #endif

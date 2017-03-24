@@ -27,9 +27,6 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlockData(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(Inspection::Buffer & Buffer);
 
 
 std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlockData(Inspection::Buffer & Buffer, std::uint64_t Length)
@@ -639,93 +636,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::B
 
 std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlockData(Inspection::Buffer & Buffer)
 {
-	return Get_Vorbis_CommentHeader(Buffer);
-}
-
-std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto VendorLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-	
-	if(VendorLengthResult->GetSuccess() == true)
-	{
-		Result->GetValue()->Append("VendorLength", VendorLengthResult->GetValue());
-		
-		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
-		auto VendorResult{Get_UTF8_String_EndedByByteLength(Buffer, VendorLength)};
-		
-		if(VendorResult->GetSuccess() == true)
-		{
-			Result->GetValue()->Append("Vendor", VendorResult->GetValue());
-			
-			auto UserCommentListResult{Get_Vorbis_CommentHeader_UserCommentList(Buffer)};
-			
-			if(UserCommentListResult->GetSuccess() == true)
-			{
-				Result->GetValue()->Append("UserCommentList", UserCommentListResult->GetValue());
-				Result->SetSuccess(true);
-			}
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto UserCommentLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-	
-	if(UserCommentLengthResult->GetSuccess() == true)
-	{
-		Result->GetValue()->Append("Length", UserCommentLengthResult->GetValue());
-		
-		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
-		auto UserCommentResult{Get_UTF8_String_EndedByByteLength(Buffer, UserCommentLength)};
-		
-		if(UserCommentResult->GetSuccess() == true)
-		{
-			Result->GetValue()->Append("String", UserCommentResult->GetValue());
-			Result->SetSuccess(true);
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto UserCommentListLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-	
-	if(UserCommentListLengthResult->GetSuccess() == true)
-	{
-		Result->GetValue()->Append("Length", UserCommentListLengthResult->GetValue());
-		Result->SetSuccess(true);
-		
-		auto UserCommentListLength{std::experimental::any_cast< std::uint32_t >(UserCommentListLengthResult->GetAny())};
-		
-		for(std::uint32_t Index = 0ul; Index < UserCommentListLength; ++Index)
-		{
-			auto UserCommentResult{Get_Vorbis_CommentHeader_UserComment(Buffer)};
-			
-			if(UserCommentResult->GetSuccess() == true)
-			{
-				Result->GetValue()->Append("UserComment", UserCommentResult->GetValue());
-			}
-			else
-			{
-				Result->SetSuccess(false);
-				
-				break;
-			}
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
+	return Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer);
 }
 
 void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Value > Value)

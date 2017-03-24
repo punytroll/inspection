@@ -274,6 +274,16 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 					Result->SetSuccess(true);
 				}
 			}
+			else if(PacketType == 0x03)
+			{
+				auto CommentHeaderResult{Get_Vorbis_CommentHeader(Buffer)};
+				
+				if(CommentHeaderResult->GetSuccess() == true)
+				{
+					Result->GetValue()->Append(CommentHeaderResult->GetValue()->GetValues());
+					Result->SetSuccess(true);
+				}
+			}
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
