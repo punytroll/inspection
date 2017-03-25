@@ -67,6 +67,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 				
 				break;
 			}
+			++CharacterIndex;
 		}
 	}
 	Result->GetValue()->SetAny(Value.str());
@@ -88,7 +89,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 		
 		while(CharacterIndex < Length)
 		{
-			auto  CharacterResult{Get_ASCII_Character_AlphaNumericOrSpace(Buffer)};
+			auto CharacterResult{Get_ASCII_Character_AlphaNumericOrSpace(Buffer)};
 			
 			Value << std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny());
 			if(CharacterResult->GetSuccess() == false)
@@ -97,6 +98,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 				
 				break;
 			}
+			++CharacterIndex;
 		}
 	}
 	Result->GetValue()->SetAny(Value.str());
