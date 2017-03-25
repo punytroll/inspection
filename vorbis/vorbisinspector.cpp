@@ -103,7 +103,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buff
 std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto CapturePatternResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "OggS")};
+	auto CapturePatternResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "OggS")};
 	
 	if(CapturePatternResult->GetSuccess() == true)
 	{
@@ -254,7 +254,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 	{
 		Result->GetValue()->Append("PacketType", PacketTypeResult->GetValue());
 		
-		auto VorbisIdentifierResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "vorbis")};
+		auto VorbisIdentifierResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "vorbis")};
 		
 		if(VorbisIdentifierResult->GetSuccess() == true)
 		{
