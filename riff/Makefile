@@ -20,5 +20,5 @@ getters.o: ../common/5th/getters.cpp ../common/5th/length.h ../common/5th/getter
 helper.o: ../common/helper.cpp ../common/helper.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-riffinspector.o: riffinspector.cpp ../common/file_handling.h ../common/5th.h ../common/5th/length.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h
+riffinspector.o: riffinspector.cpp ../common/file_handling.h ../common/5th.h ../common/5th/length.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h ../common/5th/value_printing.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "../common/5th.h"
-#include "../common/any_printing.h"
 #include "../common/file_handling.h"
 #include "../common/guid.h"
 
@@ -763,39 +762,6 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspect
 	return Result;
 }
 
-void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
-{
-	auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
-	
-	if(HeaderLine == true)
-	{
-		std::cout << Indentation;
-	}
-	if(Value->GetName().empty() == false)
-	{
-		std::cout << Value->GetName() << ": ";
-	}
-	if(Value->GetAny().empty() == false)
-	{
-		std::cout << Value->GetAny();
-	}
-	
-	auto SubIndentation{Indentation};
-	
-	if(HeaderLine == true)
-	{
-		std::cout << std::endl;
-		SubIndentation += "    ";
-	}
-	if(Value->GetCount() > 0)
-	{
-		for(auto & SubValue : Value->GetValues())
-		{
-			PrintValue(SubValue, SubIndentation);
-		}
-	}
-}
-
 void ReadFile(const std::string & Path)
 {
 	auto FileDescriptor{open(Path.c_str(), O_RDONLY)};
@@ -826,6 +792,15 @@ void ReadFile(const std::string & Path)
 				if(ASFFileResult->GetSuccess() == false)
 				{
 					std::cerr << "The file is not an ASF file." << std::endl;
+				}
+				else
+				{
+					auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
+					
+					if(Rest > 0ull)
+					{
+						std::cerr << "There are " << Rest.GetBytes() << "." << Rest.GetBits() << " bytes and bits after the data." << std::endl;
+					}
 				}
 				munmap(Address, FileSize);
 			}

@@ -6,7 +6,6 @@
 #include <string>
 
 #include "../common/5th.h"
-#include "../common/any_printing.h"
 #include "../common/file_handling.h"
 
 /// RIFF GUIDs
@@ -475,39 +474,6 @@ std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
-}
-
-void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
-{
-	auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
-	
-	if(HeaderLine == true)
-	{
-		std::cout << Indentation;
-	}
-	if(Value->GetName().empty() == false)
-	{
-		std::cout << Value->GetName() << ": ";
-	}
-	if(Value->GetAny().empty() == false)
-	{
-		std::cout << Value->GetAny();
-	}
-	
-	auto SubIndentation{Indentation};
-	
-	if(HeaderLine == true)
-	{
-		std::cout << std::endl;
-		SubIndentation += "    ";
-	}
-	if(Value->GetCount() > 0)
-	{
-		for(auto & SubValue : Value->GetValues())
-		{
-			PrintValue(SubValue, SubIndentation);
-		}
-	}
 }
 
 void ReadFile(const std::string & Path)
