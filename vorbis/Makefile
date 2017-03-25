@@ -20,5 +20,5 @@ getters.o: ../common/5th/getters.cpp ../common/5th/getters.h
 helper.o: ../common/helper.cpp ../common/helper.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/result.h ../common/5th/value.h ../common/5th/value_printing.h
+vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h ../common/5th/value_printing.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
