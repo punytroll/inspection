@@ -74,6 +74,13 @@ namespace Inspection
 			throw new std::exception();
 		}
 		
+		const Inspection::Length & GetLength(void) const
+		{
+			assert(_Value != nullptr);
+			
+			return _Value->GetLength();
+		}
+		
 		const Inspection::Length & GetOffset(void) const
 		{
 			return _Offset;
