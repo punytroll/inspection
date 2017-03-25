@@ -2396,7 +2396,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers22.find(_Identifier));
+			std::map< std::string, std::uint64_t (*)(const uint8_t *, std::uint64_t) >::iterator HanderIterator(_Handlers22.find(_Identifier));
 			
 			if(HanderIterator != _Handlers22.end())
 			{
@@ -2437,7 +2437,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers23.find(_Identifier));
+			std::map< std::string, std::uint64_t (*)(const uint8_t *, std::uint64_t) >::iterator HanderIterator(_Handlers23.find(_Identifier));
 			
 			if(HanderIterator != _Handlers23.end())
 			{
@@ -2480,7 +2480,7 @@ public:
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
 			
-			std::map< std::string, int (*)(const uint8_t *, int) >::iterator HanderIterator(_Handlers24.find(_Identifier));
+			std::map< std::string, std::uint64_t (*)(const uint8_t *, std::uint64_t) >::iterator HanderIterator(_Handlers24.find(_Identifier));
 			
 			if(HanderIterator != _Handlers24.end())
 			{
@@ -2682,7 +2682,7 @@ public:
 		_Forbidden22.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle22(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
+	static void Handle22(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
 		_Handlers22.insert(std::make_pair(Identifier, Handler));
 		_Names22.insert(std::make_pair(Identifier, Name));
@@ -2693,7 +2693,7 @@ public:
 		_Forbidden23.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle23(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
+	static void Handle23(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
 		_Handlers23.insert(std::make_pair(Identifier, Handler));
 		_Names23.insert(std::make_pair(Identifier, Name));
@@ -2704,7 +2704,7 @@ public:
 		_Forbidden24.insert(std::make_pair(Identifier, Reason));
 	}
 	
-	static void Handle24(const std::string & Identifier, const std::string & Name, int (* Handler) (const uint8_t *, int))
+	static void Handle24(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
 		_Handlers24.insert(std::make_pair(Identifier, Handler));
 		_Names24.insert(std::make_pair(Identifier, Name));
@@ -2714,9 +2714,9 @@ private:
 	static std::map< std::string, std::string > _Forbidden22;
 	static std::map< std::string, std::string > _Forbidden23;
 	static std::map< std::string, std::string > _Forbidden24;
-	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers22;
-	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers23;
-	static std::map< std::string, int (*) (const uint8_t *, int) > _Handlers24;
+	static std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > _Handlers22;
+	static std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > _Handlers23;
+	static std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > _Handlers24;
 	static std::map< std::string, std::string > _Names22;
 	static std::map< std::string, std::string > _Names23;
 	static std::map< std::string, std::string > _Names24;
@@ -2729,7 +2729,7 @@ private:
 	bool _Forbidden;
 	std::string _ForbiddenReason;
 	bool _GroupingIdentity;
-	int (* _Handler)(const uint8_t * Buffer, int Length);
+	std::uint64_t (* _Handler)(const uint8_t * Buffer, std::uint64_t Length);
 	unsigned int _HeaderSize;
 	std::string _Identifier;
 	std::string _Name;
@@ -2753,17 +2753,17 @@ std::map< std::string, std::string > FrameHeader::_Forbidden24;
 std::map< std::string, std::string > FrameHeader::_Names22;
 std::map< std::string, std::string > FrameHeader::_Names23;
 std::map< std::string, std::string > FrameHeader::_Names24;
-std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers22;
-std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers23;
-std::map< std::string, int (*) (const uint8_t *, int) > FrameHeader::_Handlers24;
+std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > FrameHeader::_Handlers22;
+std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > FrameHeader::_Handlers23;
+std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > FrameHeader::_Handlers24;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // specific to tag version 2.2                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-int Handle22COMFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle22COMFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -2925,9 +2925,9 @@ int Handle22COMFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle22PICFrames(const uint8_t * Buffer, int Length)
+std::uint64_t Handle22PICFrames(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -3052,9 +3052,9 @@ int Handle22PICFrames(const uint8_t * Buffer, int Length)
 	return Length;
 }
 
-int Handle22T__Frames(const uint8_t * Buffer, int Length)
+std::uint64_t Handle22T__Frames(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -3156,9 +3156,9 @@ int Handle22T__Frames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle22UFIFrames(const uint8_t * Buffer, int Length)
+std::uint64_t Handle22UFIFrames(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(OwnerIdentifier) == true)
@@ -3188,9 +3188,9 @@ int Handle22UFIFrames(const uint8_t * Buffer, int Length)
 // specific to tag version 2.3                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-int Handle23APICFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23APICFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -3296,9 +3296,9 @@ int Handle23APICFrame(const uint8_t * Buffer, int Length)
 	return Length;
 }
 
-int Handle23COMMFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23COMMFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -3518,9 +3518,9 @@ int Handle23COMMFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23GEOB_Frame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -3583,9 +3583,9 @@ int Handle23GEOB_Frame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23MCDIFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23MCDIFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto TableOfContents(Get_CDTableOfContents(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(TableOfContents) == true)
@@ -3738,9 +3738,9 @@ int Handle23MCDIFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23MJCFFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	
 	if((Length >= 4) && (Buffer[0] == 0x00) && (Buffer[1] == 0x00) && (Buffer[2] == 0x00) && (Buffer[3] == 0x00))
 	{
@@ -3798,9 +3798,9 @@ int Handle23MJCFFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23PCNTFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23PCNTFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	
 	if(Length < 4)
 	{
@@ -3822,9 +3822,9 @@ int Handle23PCNTFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23POPMFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23POPMFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	
 	if(Length >= 6)
 	{
@@ -3883,9 +3883,9 @@ int Handle23POPMFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23PRIVFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(ReadOwnerIdentifier) == true)
@@ -4224,9 +4224,9 @@ int Handle23PRIVFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23RGADFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23RGADFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto PeakAmplitude(Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(PeakAmplitude) == true)
@@ -4266,9 +4266,9 @@ int Handle23RGADFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23T___Frames(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23T___Frames(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -4403,9 +4403,9 @@ int Handle23T___Frames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23TFLTFrames(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23TFLTFrames(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -4548,9 +4548,9 @@ int Handle23TFLTFrames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23TLANFrames(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23TLANFrames(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -4693,9 +4693,9 @@ int Handle23TLANFrames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23TCMPFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -4829,9 +4829,9 @@ int Handle23TCMPFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23TCONFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23TCONFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -4980,9 +4980,9 @@ int Handle23TCONFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23TSRCFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -5120,9 +5120,9 @@ int Handle23TSRCFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23TXXXFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -5322,9 +5322,9 @@ int Handle23TXXXFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23UFIDFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 	
 	assert(std::get<0>(OwnerIdentifier) == true);
@@ -5354,9 +5354,9 @@ int Handle23UFIDFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23USLTFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23USLTFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -5517,9 +5517,9 @@ int Handle23USLTFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23W___Frames(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23W___Frames(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto URL(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(URL) == true)
@@ -5545,9 +5545,9 @@ int Handle23W___Frames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle23WXXXFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle23WXXXFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -5660,9 +5660,9 @@ int Handle23WXXXFrame(const uint8_t * Buffer, int Length)
 // specific to tag version 2.4                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-int Handle24APICFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle24APICFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -5733,9 +5733,9 @@ int Handle24APICFrame(const uint8_t * Buffer, int Length)
 	return Length;
 }
 
-int Handle24COMMFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle24COMMFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -5914,9 +5914,9 @@ int Handle24COMMFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle24MCDIFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle24MCDIFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto TableOfContents(Get_CDTableOfContents(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(TableOfContents) == true)
@@ -6009,9 +6009,9 @@ int Handle24MCDIFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle24T___Frames(const uint8_t * Buffer, int Length)
+std::uint64_t Handle24T___Frames(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -6127,9 +6127,9 @@ int Handle24T___Frames(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle24TXXXFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -6285,9 +6285,9 @@ int Handle24TXXXFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle24USLTFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle24USLTFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
@@ -6468,9 +6468,9 @@ int Handle24USLTFrame(const uint8_t * Buffer, int Length)
 	return Index;
 }
 
-int Handle24WXXXFrame(const uint8_t * Buffer, int Length)
+std::uint64_t Handle24WXXXFrame(const uint8_t * Buffer, std::uint64_t Length)
 {
-	int Index(0);
+	std::uint64_t Index(0);
 	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
 	
 	if(std::get<0>(Encoding) == true)
