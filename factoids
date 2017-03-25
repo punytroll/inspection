@@ -1,0 +1,4 @@
+UCS stands for Universal Character Set.
+UCS-2 is an older encryption of unicode codepoints.
+UCS-2 is a fixed width encoding, always using 2 bytes / 16 bits.
+UCS-2 (as opposed to UTF-16) cannot encode with surrogate pairs.
