@@ -75,7 +75,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::stringstream Value;
