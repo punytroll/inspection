@@ -362,7 +362,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	return Result;
 }
 
-void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Value > Value)
+void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 {
 	auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
 	
@@ -378,15 +378,19 @@ void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Va
 	{
 		std::cout << Value->GetAny();
 	}
+	
+	auto SubIndentation{Indentation};
+	
 	if(HeaderLine == true)
 	{
 		std::cout << std::endl;
+		SubIndentation += "    ";
 	}
 	if(Value->GetCount() > 0)
 	{
 		for(auto & SubValue : Value->GetValues())
 		{
-			PrintValue(Indentation + "    ", SubValue);
+			PrintValue(SubValue, SubIndentation);
 		}
 	}
 }
@@ -420,7 +424,7 @@ void ReadFile(const std::string & Path)
 				auto OggStreamResult(Get_Ogg_Stream(Buffer));
 				
 				OggStreamResult->GetValue()->SetName("OggStream");
-				PrintValue("", OggStreamResult->GetValue());
+				PrintValue(OggStreamResult->GetValue());
 				if(OggStreamResult->GetSuccess() == false)
 				{
 					std::cerr << "The file does not start with an OggStream." << std::endl;

@@ -763,7 +763,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspect
 	return Result;
 }
 
-void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Value > Value)
+void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 {
 	auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
 	
@@ -791,14 +791,9 @@ void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Va
 	{
 		for(auto & SubValue : Value->GetValues())
 		{
-			PrintValue(SubIndentation, SubValue);
+			PrintValue(SubValue, SubIndentation);
 		}
 	}
-}
-
-void PrintValue(std::shared_ptr< Inspection::Value > Value)
-{
-	PrintValue("", Value);
 }
 
 void ReadFile(const std::string & Path)

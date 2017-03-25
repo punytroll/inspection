@@ -607,7 +607,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlock_Data(Inspectio
 	return Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer);
 }
 
-void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Value > Value)
+void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 {
 	auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
 	
@@ -635,14 +635,9 @@ void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Va
 	{
 		for(auto & SubValue : Value->GetValues())
 		{
-			PrintValue(SubIndentation, SubValue);
+			PrintValue(SubValue, SubIndentation);
 		}
 	}
-}
-
-void PrintValue(std::shared_ptr< Inspection::Value > Value)
-{
-	PrintValue("", Value);
 }
 
 void ReadFile(const std::string & Path)
@@ -668,11 +663,11 @@ void ReadFile(const std::string & Path)
 			else
 			{
 				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
-				auto FLACStream{Get_FLAC_Stream(Buffer)};
+				auto FLACStreamResult{Get_FLAC_Stream(Buffer)};
 				
-				FLACStream->GetValue()->SetName("FLACStream");
-				PrintValue(FLACStream->GetValue());
-				if(FLACStream->GetSuccess() == false)
+				FLACStreamResult->GetValue()->SetName("FLACStream");
+				PrintValue(FLACStreamResult->GetValue());
+				if(FLACStreamResult->GetSuccess() == false)
 				{
 					std::cerr << "The file does not start with a FLACStream." << std::endl;
 				}
