@@ -8,9 +8,34 @@ bool Inspection::Is_ASCII_Character_Alphabetical(std::uint8_t Character)
 	return ((Character >= 0x41) && (Character < 0x5b)) || ((Character >= 0x61) && (Character < 0x7b));
 }
 
+bool Inspection::Is_ASCII_Character_Alphabetical_LowerCase(std::uint8_t Character)
+{
+	return (Character >= 0x61) && (Character < 0x7b);
+}
+
+bool Inspection::Is_ASCII_Character_Alphabetical_UpperCase(std::uint8_t Character)
+{
+	return (Character >= 0x41) && (Character < 0x5b);
+}
+
+bool Inspection::Is_ASCII_Character_DecimalDigit(std::uint8_t Character)
+{
+	return (Character >= 0x30) && (Character < 0x3a);
+}
+
+bool Inspection::Is_ASCII_Character_HexadecimalDigit(std::uint8_t Character)
+{
+	return ((Character >= 0x30) && (Character < 0x3a)) || ((Character >= 0x41) && (Character < 0x47)) || ((Character >= 0x61) && (Character < 0x67));
+}
+
 bool Inspection::Is_ASCII_Character_Printable(std::uint8_t Character)
 {
 	return (Character >= 0x20) && (Character < 0x7f);
+}
+
+bool Inspection::Is_ASCII_Character_Space(std::uint8_t Character)
+{
+	return Character == 0x20;
 }
 
 std::uint8_t Inspection::Get_UnsignedInteger_8Bit_FromHexadecimalDigit(char Character)
