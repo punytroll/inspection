@@ -70,17 +70,113 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Bu
 	{
 		Result->SetSuccess(true);
 		
-		auto Byte{Buffer.Get8Bits()};
 		std::bitset< 8 > Value;
+		auto Byte1{Buffer.Get8Bits()};
 		
-		Value[0] = (Byte & 0x01) == 0x01;
-		Value[1] = (Byte & 0x02) == 0x02;
-		Value[2] = (Byte & 0x04) == 0x04;
-		Value[3] = (Byte & 0x08) == 0x08;
-		Value[4] = (Byte & 0x10) == 0x10;
-		Value[5] = (Byte & 0x20) == 0x20;
-		Value[6] = (Byte & 0x40) == 0x40;
-		Value[7] = (Byte & 0x80) == 0x80;
+		Value[0] = (Byte1 & 0x01) == 0x01;
+		Value[1] = (Byte1 & 0x02) == 0x02;
+		Value[2] = (Byte1 & 0x04) == 0x04;
+		Value[3] = (Byte1 & 0x08) == 0x08;
+		Value[4] = (Byte1 & 0x10) == 0x10;
+		Value[5] = (Byte1 & 0x20) == 0x20;
+		Value[6] = (Byte1 & 0x40) == 0x40;
+		Value[7] = (Byte1 & 0x80) == 0x80;
+		Result->GetValue()->SetAny(Value);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(0ull, 16) == true)
+	{
+		Result->SetSuccess(true);
+		
+		std::bitset< 16 > Value;
+		auto Byte1{Buffer.Get8Bits()};
+		
+		Value[0] = (Byte1 & 0x01) == 0x01;
+		Value[1] = (Byte1 & 0x02) == 0x02;
+		Value[2] = (Byte1 & 0x04) == 0x04;
+		Value[3] = (Byte1 & 0x08) == 0x08;
+		Value[4] = (Byte1 & 0x10) == 0x10;
+		Value[5] = (Byte1 & 0x20) == 0x20;
+		Value[6] = (Byte1 & 0x40) == 0x40;
+		Value[7] = (Byte1 & 0x80) == 0x80;
+		
+		auto Byte2{Buffer.Get8Bits()};
+		
+		Value[8] = (Byte2 & 0x01) == 0x01;
+		Value[9] = (Byte2 & 0x02) == 0x02;
+		Value[10] = (Byte2 & 0x04) == 0x04;
+		Value[11] = (Byte2 & 0x08) == 0x08;
+		Value[12] = (Byte2 & 0x10) == 0x10;
+		Value[13] = (Byte2 & 0x20) == 0x20;
+		Value[14] = (Byte2 & 0x40) == 0x40;
+		Value[15] = (Byte2 & 0x80) == 0x80;
+		Result->GetValue()->SetAny(Value);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(0ull, 32) == true)
+	{
+		Result->SetSuccess(true);
+		
+		std::bitset< 32 > Value;
+		auto Byte1{Buffer.Get8Bits()};
+		
+		Value[0] = (Byte1 & 0x01) == 0x01;
+		Value[1] = (Byte1 & 0x02) == 0x02;
+		Value[2] = (Byte1 & 0x04) == 0x04;
+		Value[3] = (Byte1 & 0x08) == 0x08;
+		Value[4] = (Byte1 & 0x10) == 0x10;
+		Value[5] = (Byte1 & 0x20) == 0x20;
+		Value[6] = (Byte1 & 0x40) == 0x40;
+		Value[7] = (Byte1 & 0x80) == 0x80;
+		
+		auto Byte2{Buffer.Get8Bits()};
+		
+		Value[8] = (Byte2 & 0x01) == 0x01;
+		Value[9] = (Byte2 & 0x02) == 0x02;
+		Value[10] = (Byte2 & 0x04) == 0x04;
+		Value[11] = (Byte2 & 0x08) == 0x08;
+		Value[12] = (Byte2 & 0x10) == 0x10;
+		Value[13] = (Byte2 & 0x20) == 0x20;
+		Value[14] = (Byte2 & 0x40) == 0x40;
+		Value[15] = (Byte2 & 0x80) == 0x80;
+		
+		auto Byte3{Buffer.Get8Bits()};
+		
+		Value[16] = (Byte3 & 0x01) == 0x01;
+		Value[17] = (Byte3 & 0x02) == 0x02;
+		Value[18] = (Byte3 & 0x04) == 0x04;
+		Value[19] = (Byte3 & 0x08) == 0x08;
+		Value[20] = (Byte3 & 0x10) == 0x10;
+		Value[21] = (Byte3 & 0x20) == 0x20;
+		Value[22] = (Byte3 & 0x40) == 0x40;
+		Value[23] = (Byte3 & 0x80) == 0x80;
+		
+		auto Byte4{Buffer.Get8Bits()};
+		
+		Value[24] = (Byte4 & 0x01) == 0x01;
+		Value[25] = (Byte4 & 0x02) == 0x02;
+		Value[26] = (Byte4 & 0x04) == 0x04;
+		Value[27] = (Byte4 & 0x08) == 0x08;
+		Value[28] = (Byte4 & 0x10) == 0x10;
+		Value[29] = (Byte4 & 0x20) == 0x20;
+		Value[30] = (Byte4 & 0x40) == 0x40;
+		Value[31] = (Byte4 & 0x80) == 0x80;
 		Result->GetValue()->SetAny(Value);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
