@@ -7,11 +7,13 @@ These functions perfom no validating on the input - they simply expect the input
 
 Obviously the major drawback was the missing input validation. This was fixed with side-by-side version of validator functions, which had to be called prior to calling the getters to assert, that reading the value was safe to do. But in most cases this meant iterating over the input twice, resulting in doubled reading time. The second generation of getters was required to validate and extract in one go and report the result of their validation step back to the caller.
 
+
 2nd generation getters:
 -----------------------
 These functions validate and extract a value in one go. They have two or three return values contained in a return tuple. The first tuple component is a boolean value indicating the success of getting the desired value from the data block. If a value could be extracted successfully, the second value conatins an integer value indicating the length of the processed data. The third value, which may be omitted, is templated with different types and contains the actual result value. If the success return value is false, the length and return values may contain bogus data.
 
 The major drawback is the single return value. In particular this setup made it necessary to separate reading a value from interpreting it. Therefore the third generation was required to allow multiple return values.
+
 
 3rd generation getters:
 -----------------------
@@ -19,24 +21,20 @@ These functions validate and extract in one go. They have three return values co
 
 The major drawback is the return-by-value semantic. The Values object is returned by value which means a lot of copying around. Also, when getters begin to aggregate values from different fields into one return value and and even cascade Values objects, the copying got out of hand. The fourth generation of getters was required to pass objects by reference.
 
-4th generation getters:
------------------------
-These functions validate and extract in one go. They return a unique_ptr to an instance of type Result (see below).
-
-5th generation getters:
------------------------
-Currently developing the FLAC format inspector, it is becoming abundantly clear, that bit-precise access to data will be required. This functionality necessitates changes in two places:
-
-1. When reading a value, getter functions must be able to process only parts of a byte. The return value will be whatever the getter deems appropriate. The returned length, however, must reflect the actual amount of bits and bytes that have been read.
-
-2. When calling the next getter function, the buffer offset must be given in bytes and bits as well. Therefore a simple byte pointer to the start of the buffer is not sufficient anymore.
-
-
-
 Class "Values":
 ---------------
 Is an associative container, mapping from string to an any value. The any value is contained by value.
 
+
+4th generation getters:
+-----------------------
+These functions validate and extract in one go. They return a unique_ptr to an instance of type Result (see below).
+
 Class "Result":
 ---------------
 Came about as a helper class to incorporate sucess, length and result into one value. Also, this class was designed to be returned inside a unique_ptr, making it clear that the result of a getter can only be processed are passed around once, not to be contained in the result of another getter. The result value is carried by shared_ptr, which highlights the fact, that this value can be extracted and used in other places.
+
+
+5th generation getters:
+-----------------------
+This generation finally allows bit-precise access to data. A new class Length is responsible for storing byte-and-bit-pairs and a new class Buffer uses that functionality to allow reading from 0 to 8 bits in one uint8_t value. Multiple such values have to be combined in the getters to synthesize larger values. The buffer advances its internal position according to the data that has already been read, thus removing the necessity to advance the index by hand.
