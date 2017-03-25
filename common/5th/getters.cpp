@@ -681,6 +681,113 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByByteLen
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_Character(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto CodePointResult{Get_UTF16LE_CodePoint(Buffer)};
+	
+	if(CodePointResult->GetSuccess() == true)
+	{
+		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+		Result->GetValue()->SetAny(Get_UTF8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodePoint(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto FirstCodeUnitResult{Get_UTF16LE_CodeUnit(Buffer)};
+	
+	if(FirstCodeUnitResult->GetSuccess() == true)
+	{
+		auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetAny())};
+		
+		if((FirstCodeUnit < 0xd800) || (FirstCodeUnit >= 0xe000))
+		{
+			std::uint32_t Value{FirstCodeUnit};
+			
+			Result->GetValue()->SetAny(Value);
+			Result->SetSuccess(true);
+		}
+		else if((FirstCodeUnit >= 0xd800) && (FirstCodeUnit < 0xdc00))
+		{
+			auto SecondCodeUnitResult{Get_UTF16LE_CodeUnit(Buffer)};
+			
+			if(SecondCodeUnitResult->GetSuccess() == true)
+			{
+				auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetAny())};
+				
+				if((SecondCodeUnit >= 0xdc00) && (SecondCodeUnit < 0xe000))
+				{
+					std::uint32_t Value{(static_cast< std::uint32_t >(FirstCodeUnit - 0xd800) << 10) | static_cast< std::uint32_t >(SecondCodeUnit - 0xdc00)};
+					
+					Result->GetValue()->SetAny(Value);
+					Result->SetSuccess(true);
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodeUnit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(2ull, 0) == true)
+	{
+		Result->GetValue()->SetAny(static_cast< std::uint16_t >(static_cast< std::uint16_t >(Buffer.Get8Bits()) | (static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8)));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::stringstream Value;
+	std::uint64_t CodePointIndex{0ull};
+	
+	while(true)
+	{
+		auto CharacterResult{Get_UTF16LE_Character(Buffer)};
+		
+		if(CharacterResult->GetSuccess() == true)
+		{
+			++CodePointIndex;
+			if(std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint")) == 0x00000000)
+			{
+				if(CodePointIndex == NumberOfCodePoints)
+				{
+					Result->SetSuccess(true);
+					
+					break;
+				}
+			}
+			else
+			{
+				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer)
 {
 	assert(Buffer.GetBitstreamType() == Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);

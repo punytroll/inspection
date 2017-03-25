@@ -4,63 +4,44 @@
 
 #include <deque>
 
+#include "../common/5th.h"
 #include "../common/any_printing.h"
 #include "../common/file_handling.h"
-#include "../common/5th/buffer.h"
-#include "../common/5th/getters.h"
-#include "../common/5th/result.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlockData(Inspection::Buffer & Buffer, std::uint64_t Length);
-std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Buffer & Buffer, std::uint64_t Length);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlockData(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_FLAC_SeekPoint(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlockData(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints);
+std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints);
+std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlockData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlock_Data(Inspection::Buffer & Buffer);
 
 
-std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlockData(Inspection::Buffer & Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto RegisteredApplicationIdentifierResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 	
+	Result->GetValue()->Append("RegisteredApplicationIdentifier", RegisteredApplicationIdentifierResult->GetValue());
 	if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("RegisteredApplicationIdentifier", RegisteredApplicationIdentifierResult->GetValue());
-		
 		auto ApplicationDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length - 4)};
 		
+		Result->GetValue()->Append("ApplicationData", ApplicationDataResult->GetValue());
 		if(ApplicationDataResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("ApplicationData", ApplicationDataResult->GetValue());
 			Result->SetSuccess(true);
 		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto BitsPerSampleResult{Get_UnsignedInteger_5Bit(Buffer)};
-	
-	if(BitsPerSampleResult->GetSuccess() == true)
-	{
-		Result->SetValue(BitsPerSampleResult->GetValue());
-		Result->GetValue()->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1));
-		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -70,22 +51,21 @@ std::unique_ptr< Inspection::Result > Get_FLAC_BitsPerSample(Inspection::Buffer 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlockHeader(Buffer)};
+	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlock_Header(Buffer)};
 	
+	Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
 	if(MetaDataBlockHeaderResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
-		
 		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetAny("Interpretation"))};
 		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(MetaDataBlockHeaderResult->GetAny("Length"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
-			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlockData(Buffer)};
+			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
 			
+			Result->GetValue()->Append("Data", StreamInfoBlockDataResult->GetValue());
 			if(StreamInfoBlockDataResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Data", StreamInfoBlockDataResult->GetValue());
 				Result->SetSuccess(true);
 			}
 		}
@@ -93,19 +73,19 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 		{
 			auto PaddingBlockDataResult{Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Buffer, MetaDataBlockDataLength)};
 			
+			Result->GetValue()->Append("Data", PaddingBlockDataResult->GetValue());
 			if(PaddingBlockDataResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Data", PaddingBlockDataResult->GetValue());
 				Result->SetSuccess(true);
 			}
 		}
 		else if(MetaDataBlockType == "Application")
 		{
-			auto ApplicationBlockDataResult{Get_FLAC_ApplicationBlockData(Buffer, MetaDataBlockDataLength)};
+			auto ApplicationBlockDataResult{Get_FLAC_ApplicationBlock_Data(Buffer, MetaDataBlockDataLength)};
 			
+			Result->GetValue()->Append("Data", ApplicationBlockDataResult->GetValue());
 			if(ApplicationBlockDataResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Data", ApplicationBlockDataResult->GetValue());
 				Result->SetSuccess(true);
 			}
 		}
@@ -113,32 +93,32 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 		{
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
-				auto SeekTableBlockDataResult{Get_FLAC_SeekTableBlockData(Buffer, MetaDataBlockDataLength / 18)};
+				auto SeekTableBlockDataResult{Get_FLAC_SeekTableBlock_Data(Buffer, MetaDataBlockDataLength / 18)};
 				
+				Result->GetValue()->Append("Data", SeekTableBlockDataResult->GetValue());
 				if(SeekTableBlockDataResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append("Data", SeekTableBlockDataResult->GetValue());
 					Result->SetSuccess(true);
 				}
 			}
 		}
 		else if(MetaDataBlockType == "VorbisComment")
 		{
-			auto VorbisCommentBlockDataResult{Get_FLAC_VorbisCommentBlockData(Buffer)};
+			auto VorbisCommentBlockDataResult{Get_FLAC_VorbisCommentBlock_Data(Buffer)};
 			
+			Result->GetValue()->Append("Data", VorbisCommentBlockDataResult->GetValue());
 			if(VorbisCommentBlockDataResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Data", VorbisCommentBlockDataResult->GetValue());
 				Result->SetSuccess(true);
 			}
 		}
 		else if(MetaDataBlockType == "Picture")
 		{
-			auto PictureBlockDataResult{Get_FLAC_PictureBlockData(Buffer)};
+			auto PictureBlockDataResult{Get_FLAC_PictureBlock_Data(Buffer)};
 			
+			Result->GetValue()->Append("Data", PictureBlockDataResult->GetValue());
 			if(PictureBlockDataResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Data", PictureBlockDataResult->GetValue());
 				Result->SetSuccess(true);
 			}
 		}
@@ -149,26 +129,24 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto LastMetaDataBlockResult{Get_Boolean_1Bit(Buffer)};
 	
+	Result->GetValue()->Append("LastMetaDataBlock", LastMetaDataBlockResult->GetValue());
 	if(LastMetaDataBlockResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("LastMetaDataBlock", LastMetaDataBlockResult->GetValue());
+		auto MetaDataBlockTypeResult{Get_FLAC_MetaDataBlock_Type(Buffer)};
 		
-		auto MetaDataBlockTypeResult{Get_FLAC_MetaDataBlockType(Buffer)};
-		
+		Result->GetValue()->Append("BlockType", MetaDataBlockTypeResult->GetValue());
 		if(MetaDataBlockTypeResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("BlockType", MetaDataBlockTypeResult->GetValue());
-			
 			auto LengthResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
 			
+			Result->GetValue()->Append("Length", LengthResult->GetValue());
 			if(LengthResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Length", LengthResult->GetValue());
 				Result->SetSuccess(true);
 			}
 		}
@@ -178,15 +156,15 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockHeader(Inspection::B
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto MetaDataBlockTypeResult{Get_UnsignedInteger_7Bit(Buffer)};
 	
+	Result->GetValue()->SetAny(MetaDataBlockTypeResult->GetAny());
 	if(MetaDataBlockTypeResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
-		Result->GetValue()->SetAny(MetaDataBlockTypeResult->GetAny());
 		
 		auto NumericValue{std::experimental::any_cast< std::uint8_t >(MetaDataBlockTypeResult->GetAny())};
 		
@@ -232,30 +210,14 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlockType(Inspection::Buf
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_NumberOfChannels(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto NumberOfChannelsResult{Get_UnsignedInteger_3Bit(Buffer)};
-	
-	if(NumberOfChannelsResult->GetSuccess() == true)
-	{
-		Result->SetValue(NumberOfChannelsResult->GetValue());
-		Result->GetValue()->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
-		Result->SetSuccess(true);
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto PictureTypeResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 	
+	Result->SetValue(PictureTypeResult->GetValue());
 	if(PictureTypeResult->GetSuccess() == true)
 	{
-		Result->SetValue(PictureTypeResult->GetValue());
 		Result->SetSuccess(true);
 		
 		auto PictureType{std::experimental::any_cast< std::uint32_t >(PictureTypeResult->GetAny())};
@@ -354,77 +316,67 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspecti
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlockData(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto PictureTypeResult{Get_FLAC_PictureBlock_PictureType(Buffer)};
 	
+	Result->GetValue()->Append("PictureType", PictureTypeResult->GetValue());
 	if(PictureTypeResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("PictureType", PictureTypeResult->GetValue());
-		
 		auto MIMETypeLengthResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 		
+		Result->GetValue()->Append("MIMETypeLength", MIMETypeLengthResult->GetValue());
 		if(MIMETypeLengthResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("MIMETypeLength", MIMETypeLengthResult->GetValue());
-			
 			auto MIMETypeLength{std::experimental::any_cast< std::uint32_t >(MIMETypeLengthResult->GetAny())};
 			auto MIMETypeResult{Get_ASCII_String_Printable_EndedByByteLength(Buffer, MIMETypeLength)};
 			
+			Result->GetValue()->Append("MIMType", MIMETypeResult->GetValue());
 			if(MIMETypeResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("MIMType", MIMETypeResult->GetValue());
-				
 				auto DescriptionLengthResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 				
+				Result->GetValue()->Append("DescriptionLength", DescriptionLengthResult->GetValue());
 				if(DescriptionLengthResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append("DescriptionLength", DescriptionLengthResult->GetValue());
-					
 					auto DescriptionLength{std::experimental::any_cast< std::uint32_t >(DescriptionLengthResult->GetAny())};
 					auto DescriptionResult{Get_UTF8_String_EndedByByteLength(Buffer, DescriptionLength)};
 					
+					Result->GetValue()->Append("Description", DescriptionResult->GetValue());
 					if(DescriptionResult->GetSuccess() == true)
 					{
-						Result->GetValue()->Append("Description", DescriptionResult->GetValue());
-						
 						auto PictureWidthInPixelsResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 						
+						Result->GetValue()->Append("PictureWidthInPixels", PictureWidthInPixelsResult->GetValue());
 						if(PictureWidthInPixelsResult->GetSuccess() == true)
 						{
-							Result->GetValue()->Append("PictureWidthInPixels", PictureWidthInPixelsResult->GetValue());
-							
 							auto PictureHeightInPixelsResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 							
+							Result->GetValue()->Append("PictureHeightInPixels", PictureHeightInPixelsResult->GetValue());
 							if(PictureHeightInPixelsResult->GetSuccess() == true)
 							{
-								Result->GetValue()->Append("PictureHeightInPixels", PictureHeightInPixelsResult->GetValue());
-								
 								auto BitsPerPixelResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 								
+								Result->GetValue()->Append("BitsPerPixel", BitsPerPixelResult->GetValue());
 								if(BitsPerPixelResult->GetSuccess() == true)
 								{
-									Result->GetValue()->Append("BitsPerPixel", BitsPerPixelResult->GetValue());
-									
 									auto NumberOfColorsResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 									
+									Result->GetValue()->Append("NumberOfColors", NumberOfColorsResult->GetValue());
 									if(NumberOfColorsResult->GetSuccess() == true)
 									{
-										Result->GetValue()->Append("NumberOfColors", NumberOfColorsResult->GetValue());
-										
 										auto PictureDataLengthResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 										
+										Result->GetValue()->Append("PictureDataLength", PictureDataLengthResult->GetValue());
 										if(PictureDataLengthResult->GetSuccess() == true)
 										{
-											Result->GetValue()->Append("PictureDataLength", PictureDataLengthResult->GetValue());
-											
 											auto PictureDataLength{std::experimental::any_cast< std::uint32_t >(PictureDataLengthResult->GetAny())};
 											auto PictureDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, PictureDataLength)};
 											
+											Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
 											if(PictureDataResult->GetSuccess() == true)
 											{
-												Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
 												Result->SetSuccess(true);
 											}
 										}
@@ -442,28 +394,20 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlockData(Inspection::Buff
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_SeekPoint(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto SampleNumberOfFirstSampleInTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
+	auto Result{Inspection::InitializeResult(true, Buffer)};
 	
-	if(SampleNumberOfFirstSampleInTargetFrameResult->GetSuccess() == true)
+	for(auto SeekPointIndex = 0ul; SeekPointIndex < NumberOfSeekPoints; ++SeekPointIndex)
 	{
-		Result->GetValue()->Append("SampleNumberOfFirstSampleInTargetFrame", SampleNumberOfFirstSampleInTargetFrameResult->GetValue());
+		auto SeekPointResult{Get_FLAC_SeekTableBlock_SeekPoint(Buffer)};
 		
-		auto ByteOffsetOfTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
-		
-		if(ByteOffsetOfTargetFrameResult->GetSuccess() == true)
+		Result->GetValue()->Append("SeekPoint", SeekPointResult->GetValue());
+		if(SeekPointResult->GetSuccess() == false)
 		{
-			Result->GetValue()->Append("ByteOffsetOfTargetFrame", ByteOffsetOfTargetFrameResult->GetValue());
+			Result->SetSuccess(false);
 			
-			auto NumberOfSamplesInTargetFrameResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
-			
-			if(NumberOfSamplesInTargetFrameResult->GetSuccess() == true)
-			{
-				Result->GetValue()->Append("NumberOfSamplesInTargetFrame", NumberOfSamplesInTargetFrameResult->GetValue());
-				Result->SetSuccess(true);
-			}
+			break;
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -471,23 +415,26 @@ std::unique_ptr< Inspection::Result > Get_FLAC_SeekPoint(Inspection::Buffer & Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlockData(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints)
+std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(true, Buffer)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto SampleNumberOfFirstSampleInTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
 	
-	for(auto SeekPointIndex = 0ul; SeekPointIndex < NumberOfSeekPoints; ++SeekPointIndex)
+	Result->GetValue()->Append("SampleNumberOfFirstSampleInTargetFrame", SampleNumberOfFirstSampleInTargetFrameResult->GetValue());
+	if(SampleNumberOfFirstSampleInTargetFrameResult->GetSuccess() == true)
 	{
-		auto SeekPointResult{Get_FLAC_SeekPoint(Buffer)};
+		auto ByteOffsetOfTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
 		
-		if(SeekPointResult->GetSuccess() == true)
+		Result->GetValue()->Append("ByteOffsetOfTargetFrame", ByteOffsetOfTargetFrameResult->GetValue());
+		if(ByteOffsetOfTargetFrameResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("SeekPoint", SeekPointResult->GetValue());
-		}
-		else
-		{
-			Result->SetSuccess(false);
+			auto NumberOfSamplesInTargetFrameResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 			
-			break;
+			Result->GetValue()->Append("NumberOfSamplesInTargetFrame", NumberOfSamplesInTargetFrameResult->GetValue());
+			if(NumberOfSamplesInTargetFrameResult->GetSuccess() == true)
+			{
+				Result->SetSuccess(true);
+			}
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -500,16 +447,14 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto FLACStreamMarkerResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "fLaC")};
 	
+	Result->GetValue()->Append("FLAC stream marker", FLACStreamMarkerResult->GetValue());
 	if(FLACStreamMarkerResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("FLAC stream marker", FLACStreamMarkerResult->GetValue());
-		
 		auto FLACStreamInfoBlockResult{Get_FLAC_StreamInfoBlock(Buffer)};
 		
+		Result->GetValue()->Append("StreamInfoBlock", FLACStreamInfoBlockResult->GetValue());
 		if(FLACStreamInfoBlockResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("StreamInfoBlock", FLACStreamInfoBlockResult->GetValue());
-			
 			auto LastMetaDataBlock{std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetValue("Header")->GetAny("LastMetaDataBlock"))};
 			
 			Result->SetSuccess(true);
@@ -517,9 +462,9 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 			{
 				auto MetaDataBlockResult{Get_FLAC_MetaDataBlock(Buffer)};
 				
+				Result->GetValue()->Append("MetaDataBlock", MetaDataBlockResult->GetValue());
 				if(MetaDataBlockResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append("MetaDataBlock", MetaDataBlockResult->GetValue());
 					LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlockResult->GetValue("Header")->GetAny("LastMetaDataBlock"));
 				}
 				else
@@ -539,21 +484,20 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlockHeader(Buffer)};
+	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlock_Header(Buffer)};
 	
+	Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
 	if(MetaDataBlockHeaderResult->GetSuccess() == true)
 	{
 		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetAny("Interpretation"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
-			Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
+			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
 			
-			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlockData(Buffer)};
-			
+			Result->GetValue()->Append("Data", StreamInfoBlockDataResult->GetValue());
 			if(StreamInfoBlockDataResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Data", StreamInfoBlockDataResult->GetValue());
 				Result->SetSuccess(true);
 			}
 		}
@@ -563,62 +507,70 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto BitsPerSampleResult{Get_UnsignedInteger_5Bit(Buffer)};
+	
+	Result->SetValue(BitsPerSampleResult->GetValue());
+	if(BitsPerSampleResult->GetSuccess() == true)
+	{
+		Result->GetValue()->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto MinimumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 	
+	Result->GetValue()->Append("MinimumBlockSize", MinimumBlockSizeResult->GetValue());
 	if(MinimumBlockSizeResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("MinimumBlockSize", MinimumBlockSizeResult->GetValue());
-		
 		auto MaximumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 		
+		Result->GetValue()->Append("MaximumBlockSize", MaximumBlockSizeResult->GetValue());
 		if(MaximumBlockSizeResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("MaximumBlockSize", MaximumBlockSizeResult->GetValue());
-			
 			auto MinimumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
 			
+			Result->GetValue()->Append("MinimumFrameSize", MinimumFrameSizeResult->GetValue());
 			if(MinimumFrameSizeResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("MinimumFrameSize", MinimumFrameSizeResult->GetValue());
-				
 				auto MaximumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
 				
+				Result->GetValue()->Append("MaximumFrameSize", MaximumFrameSizeResult->GetValue());
 				if(MaximumFrameSizeResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append("MaximumFrameSize", MaximumFrameSizeResult->GetValue());
-					
 					auto SampleRateResult{Get_UnsignedInteger_20Bit_BigEndian(Buffer)};
 					
+					Result->GetValue()->Append("SampleRate", SampleRateResult->GetValue());
 					if(SampleRateResult->GetSuccess() == true)
 					{
-						Result->GetValue()->Append("SampleRate", SampleRateResult->GetValue());
+						auto NumberOfChannelsResult{Get_FLAC_StreamInfoBlock_NumberOfChannels(Buffer)};
 						
-						auto NumberOfChannelsResult{Get_FLAC_NumberOfChannels(Buffer)};
-						
+						Result->GetValue()->Append("NumberOfChannels", NumberOfChannelsResult->GetValue());
 						if(NumberOfChannelsResult->GetSuccess() == true)
 						{
-							Result->GetValue()->Append("NumberOfChannels", NumberOfChannelsResult->GetValue());
+							auto BitsPerSampleResult{Get_FLAC_StreamInfoBlock_BitsPerSample(Buffer)};
 							
-							auto BitsPerSampleResult{Get_FLAC_BitsPerSample(Buffer)};
-							
+							Result->GetValue()->Append("BitsPerSample", BitsPerSampleResult->GetValue());
 							if(BitsPerSampleResult->GetSuccess() == true)
 							{
-								Result->GetValue()->Append("BitsPerSample", BitsPerSampleResult->GetValue());
-								
 								auto TotalSamplesPerChannelResult{Get_UnsignedInteger_36Bit_BigEndian(Buffer)};
 								
+								Result->GetValue()->Append("TotalSamplesPerChannel", TotalSamplesPerChannelResult->GetValue());
 								if(TotalSamplesPerChannelResult->GetSuccess() == true)
 								{
-									Result->GetValue()->Append("TotalSamplesPerChannel", TotalSamplesPerChannelResult->GetValue());
-									
 									auto MD5SignatureOfUnencodedAudioDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 16)};
 									
+									Result->GetValue()->Append("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioDataResult->GetValue());
 									if(MD5SignatureOfUnencodedAudioDataResult->GetSuccess() == true)
 									{
-										Result->GetValue()->Append("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioDataResult->GetValue());
 										Result->SetSuccess(true);
 									}
 								}
@@ -634,7 +586,23 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlockData(Inspection::B
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlockData(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto NumberOfChannelsResult{Get_UnsignedInteger_3Bit(Buffer)};
+	
+	Result->SetValue(NumberOfChannelsResult->GetValue());
+	if(NumberOfChannelsResult->GetSuccess() == true)
+	{
+		Result->GetValue()->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlock_Data(Inspection::Buffer & Buffer)
 {
 	return Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer);
 }
@@ -702,12 +670,9 @@ void ReadFile(const std::string & Path)
 				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
 				auto FLACStream{Get_FLAC_Stream(Buffer)};
 				
-				if(FLACStream->GetSuccess() == true)
-				{
-					FLACStream->GetValue()->SetName("FLACStream");
-					PrintValue(FLACStream->GetValue());
-				}
-				else
+				FLACStream->GetValue()->SetName("FLACStream");
+				PrintValue(FLACStream->GetValue());
+				if(FLACStream->GetSuccess() == false)
 				{
 					std::cerr << "The file does not start with a FLACStream." << std::endl;
 				}
