@@ -445,7 +445,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspecti
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto FLACStreamMarkerResult{Get_ASCII_String_Alphabetical_EndedTemplateByLength(Buffer, "fLaC")};
+	auto FLACStreamMarkerResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "fLaC")};
 	
 	Result->GetValue()->Append("FLAC stream marker", FLACStreamMarkerResult->GetValue());
 	if(FLACStreamMarkerResult->GetSuccess() == true)
