@@ -7,7 +7,12 @@
 namespace Inspection
 {
 	bool Is_ASCII_Character_Alphabetical(std::uint8_t Character);
+	bool Is_ASCII_Character_Alphabetical_LowerCase(std::uint8_t Character);
+	bool Is_ASCII_Character_Alphabetical_UpperCase(std::uint8_t Character);
+	bool Is_ASCII_Character_DecimalDigit(std::uint8_t Character);
+	bool Is_ASCII_Character_HexadecimalDigit(std::uint8_t Character);
 	bool Is_ASCII_Character_Printable(std::uint8_t Character);
+	bool Is_ASCII_Character_Space(std::uint8_t Character);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalDigit(char HexadecimalDigit);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalString(const std::string & HexadecimalString);
 	std::uint16_t Get_UnsignedInteger_16Bit_FromHexadecimalString(const std::string & HexadecimalString);
