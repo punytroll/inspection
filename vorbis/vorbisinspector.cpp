@@ -10,11 +10,9 @@
 #include <sstream>
 #include <string>
 
+#include "../common/5th.h"
 #include "../common/any_printing.h"
 #include "../common/file_handling.h"
-#include "../common/5th/buffer.h"
-#include "../common/5th/getters.h"
-#include "../common/5th/result.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
@@ -421,12 +419,9 @@ void ReadFile(const std::string & Path)
 				
 				auto OggStreamResult(Get_Ogg_Stream(Buffer));
 				
-				if(OggStreamResult->GetSuccess() == true)
-				{
-					OggStreamResult->GetValue()->SetName("OggStream");
-					PrintValue("", OggStreamResult->GetValue());
-				}
-				else
+				OggStreamResult->GetValue()->SetName("OggStream");
+				PrintValue("", OggStreamResult->GetValue());
+				if(OggStreamResult->GetSuccess() == false)
 				{
 					std::cerr << "The file does not start with an OggStream." << std::endl;
 				}

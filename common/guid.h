@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "explode.h"
-#include "hexadecimal_strings.h"
+#include "helper.h"
 
 namespace Inspection
 {
@@ -39,17 +39,17 @@ namespace Inspection
 			{
 				if(Fields[0].length() == 8)
 				{
-					Data1 = Get32BitUnsignedIntegerFromHexadecimalString(Fields[0]);
-					Data2 = Get16BitUnsignedIntegerFromHexadecimalString(Fields[1]);
-					Data3 = Get16BitUnsignedIntegerFromHexadecimalString(Fields[2]);
-					Data4[0] = Get8BitUnsignedIntegerFromHexadecimalString(Fields[3].substr(0, 2));
-					Data4[1] = Get8BitUnsignedIntegerFromHexadecimalString(Fields[3].substr(2, 2));
-					Data4[2] = Get8BitUnsignedIntegerFromHexadecimalString(Fields[4].substr(0, 2));
-					Data4[3] = Get8BitUnsignedIntegerFromHexadecimalString(Fields[4].substr(2, 2));
-					Data4[4] = Get8BitUnsignedIntegerFromHexadecimalString(Fields[4].substr(4, 2));
-					Data4[5] = Get8BitUnsignedIntegerFromHexadecimalString(Fields[4].substr(6, 2));
-					Data4[6] = Get8BitUnsignedIntegerFromHexadecimalString(Fields[4].substr(8, 2));
-					Data4[7] = Get8BitUnsignedIntegerFromHexadecimalString(Fields[4].substr(10, 2));
+					Data1 = Get_UnsignedInteger_32Bit_FromHexadecimalString(Fields[0]);
+					Data2 = Get_UnsignedInteger_16Bit_FromHexadecimalString(Fields[1]);
+					Data3 = Get_UnsignedInteger_16Bit_FromHexadecimalString(Fields[2]);
+					Data4[0] = Get_UnsignedInteger_8Bit_FromHexadecimalString(Fields[3].substr(0, 2));
+					Data4[1] = Get_UnsignedInteger_8Bit_FromHexadecimalString(Fields[3].substr(2, 2));
+					Data4[2] = Get_UnsignedInteger_8Bit_FromHexadecimalString(Fields[4].substr(0, 2));
+					Data4[3] = Get_UnsignedInteger_8Bit_FromHexadecimalString(Fields[4].substr(2, 2));
+					Data4[4] = Get_UnsignedInteger_8Bit_FromHexadecimalString(Fields[4].substr(4, 2));
+					Data4[5] = Get_UnsignedInteger_8Bit_FromHexadecimalString(Fields[4].substr(6, 2));
+					Data4[6] = Get_UnsignedInteger_8Bit_FromHexadecimalString(Fields[4].substr(8, 2));
+					Data4[7] = Get_UnsignedInteger_8Bit_FromHexadecimalString(Fields[4].substr(10, 2));
 				}
 			}
 			else

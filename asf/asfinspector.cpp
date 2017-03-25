@@ -10,129 +10,119 @@
 #include <sstream>
 #include <string>
 
+#include "../common/5th.h"
 #include "../common/any_printing.h"
 #include "../common/file_handling.h"
-#include "../common/getters/4th.h"
 #include "../common/guid.h"
-#include "../common/results.h"
 
 /// Top-level ASF Object GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.1
-GUID g_ASF_HeaderObjectGUID{"75b22630-668e-11cf-a6d9-00aa0062ce6c"};
-GUID g_ASF_DataObjectGUID{"75b22636-668e-11cf-a6d9-00aa0062ce6c"};
-GUID g_ASF_SimpleIndexObjectGUID{"33000890-e5b1-11cf-89f4-00a0c90349cb"};
-GUID g_ASF_IndexObjectGUID{"D6E229D3-35DA-11D1-9034-00A0C90349BE"};
-GUID g_ASF_MediaObjectIndexObjectGUID{"feb103f8-12ad-4c64-840f-2a1d2f7ad48c"};
-GUID g_ASF_TimecodeIndexObject{"3cb73fd0-0c4a-4803-953d-edf7b6228f0c"};
+Inspection::GUID g_ASF_HeaderObjectGUID{"75b22630-668e-11cf-a6d9-00aa0062ce6c"};
+Inspection::GUID g_ASF_DataObjectGUID{"75b22636-668e-11cf-a6d9-00aa0062ce6c"};
+Inspection::GUID g_ASF_SimpleIndexObjectGUID{"33000890-e5b1-11cf-89f4-00a0c90349cb"};
+Inspection::GUID g_ASF_IndexObjectGUID{"D6E229D3-35DA-11D1-9034-00A0C90349BE"};
+Inspection::GUID g_ASF_MediaObjectIndexObjectGUID{"feb103f8-12ad-4c64-840f-2a1d2f7ad48c"};
+Inspection::GUID g_ASF_TimecodeIndexObject{"3cb73fd0-0c4a-4803-953d-edf7b6228f0c"};
 
 /// Header Object GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.2
-GUID g_ASF_FilePropertiesObjectGUID{"8cabdca1-a947-11cf-8ee4-00c00c205365"};
-GUID g_ASF_StreamPropertiesObjectGUID{"b7dc0791-a9b7-11cf-8ee6-00c00c205365"};
-GUID g_ASF_HeaderExtensionObjectGUID{"5fbf03b5-a92e-11cf-8ee3-00c00c205365"};
-GUID g_ASF_CodecListObjectGUID{"86d15240-311d-11d0-a3a4-00a0c90348f6"};
-GUID g_ASF_ScriptCommandObjectGUID{"1efb1a30-0b62-11d0-a39b-00a0c90348f6"};
-GUID g_ASF_MarkerObjectGUID{"f487cd01-a951-11cf-8ee6-00c00c205365"};
-GUID g_ASF_BitrateMutualExclusionObjectGUID{"d6e229dc-35da-11d1-9034-00a0c90349be"};
-GUID g_ASF_ErrorCorrectionObjectGUID{"75b22635-668e-11cf-a6d9-00aa0062ce6c"};
-GUID g_ASF_ContentDescriptionObjectGUID{"75b22633-668e-11cf-a6d9-00aa0062ce6c"};
-GUID g_ASF_ExtendedContentDescriptionObjectGUID{"d2d0a440-e307-11d2-97f0-00a0c95ea850"};
-GUID g_ASF_ContentBrandingObjectGUID{"2211b3fa-bd23-11d2-b4b7-00a0c955fc6e"};
-GUID g_ASF_StreamBitratePropertiesObjectGUID{"7bf875ce-468d-11d1-8d82-006097c9a2b2"};
-GUID g_ASF_ContentEncryptionObjectGUID{"2211b3fb-bd23-11d2-b4b7-00a0c955fc6e"};
-GUID g_ASF_ExtendedContentEncryptionObjectGUID{"298ae614-2622-4c17-b935-dae07ee9289c"};
-GUID g_ASF_DigitalSignatureObjectGUID{"2211b3fc-bd23-11d2-b4b7-00a0c955fc6e"};
-GUID g_ASF_PaddingObjectGUID{"1806d474-cadf-4509-a4ba-9aabcb96aae8"};
+Inspection::GUID g_ASF_FilePropertiesObjectGUID{"8cabdca1-a947-11cf-8ee4-00c00c205365"};
+Inspection::GUID g_ASF_StreamPropertiesObjectGUID{"b7dc0791-a9b7-11cf-8ee6-00c00c205365"};
+Inspection::GUID g_ASF_HeaderExtensionObjectGUID{"5fbf03b5-a92e-11cf-8ee3-00c00c205365"};
+Inspection::GUID g_ASF_CodecListObjectGUID{"86d15240-311d-11d0-a3a4-00a0c90348f6"};
+Inspection::GUID g_ASF_ScriptCommandObjectGUID{"1efb1a30-0b62-11d0-a39b-00a0c90348f6"};
+Inspection::GUID g_ASF_MarkerObjectGUID{"f487cd01-a951-11cf-8ee6-00c00c205365"};
+Inspection::GUID g_ASF_BitrateMutualExclusionObjectGUID{"d6e229dc-35da-11d1-9034-00a0c90349be"};
+Inspection::GUID g_ASF_ErrorCorrectionObjectGUID{"75b22635-668e-11cf-a6d9-00aa0062ce6c"};
+Inspection::GUID g_ASF_ContentDescriptionObjectGUID{"75b22633-668e-11cf-a6d9-00aa0062ce6c"};
+Inspection::GUID g_ASF_ExtendedContentDescriptionObjectGUID{"d2d0a440-e307-11d2-97f0-00a0c95ea850"};
+Inspection::GUID g_ASF_ContentBrandingObjectGUID{"2211b3fa-bd23-11d2-b4b7-00a0c955fc6e"};
+Inspection::GUID g_ASF_StreamBitratePropertiesObjectGUID{"7bf875ce-468d-11d1-8d82-006097c9a2b2"};
+Inspection::GUID g_ASF_ContentEncryptionObjectGUID{"2211b3fb-bd23-11d2-b4b7-00a0c955fc6e"};
+Inspection::GUID g_ASF_ExtendedContentEncryptionObjectGUID{"298ae614-2622-4c17-b935-dae07ee9289c"};
+Inspection::GUID g_ASF_DigitalSignatureObjectGUID{"2211b3fc-bd23-11d2-b4b7-00a0c955fc6e"};
+Inspection::GUID g_ASF_PaddingObjectGUID{"1806d474-cadf-4509-a4ba-9aabcb96aae8"};
 
 /// Stream Properties Object Stream Type GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.4
-GUID g_ASF_AudioMediaGUID{"f8699e40-5b4d-11cf-a8fd-00805f5c442b"};
-GUID g_ASF_VideoMediaGUID{"bc19efc0-5b4d-11cf-a8fd-00805f5c442b"};
-GUID g_ASF_CommandMediaGUID{"59dacfc0-59e6-11d0-a3ac-00a0c90348f6"};
-GUID g_ASF_JFIFMediaGUID{"b61be100-5b4e-11cf-a8fd-00805f5c442b"};
-GUID g_ASF_DegradableJPEGMediaGUID{"35907de0-e415-11cf-a917-00805f5c442b"};
-GUID g_ASF_FileTransferMediaGUID{"91bd222c-f21c-497a-8b6d-5aa86bfc0185"};
-GUID g_ASF_BinaryMediaGUID{"3afb65e2-47ef-40f2-ac2c-70a90d71d343"};
+Inspection::GUID g_ASF_AudioMediaGUID{"f8699e40-5b4d-11cf-a8fd-00805f5c442b"};
+Inspection::GUID g_ASF_VideoMediaGUID{"bc19efc0-5b4d-11cf-a8fd-00805f5c442b"};
+Inspection::GUID g_ASF_CommandMediaGUID{"59dacfc0-59e6-11d0-a3ac-00a0c90348f6"};
+Inspection::GUID g_ASF_JFIFMediaGUID{"b61be100-5b4e-11cf-a8fd-00805f5c442b"};
+Inspection::GUID g_ASF_DegradableJPEGMediaGUID{"35907de0-e415-11cf-a917-00805f5c442b"};
+Inspection::GUID g_ASF_FileTransferMediaGUID{"91bd222c-f21c-497a-8b6d-5aa86bfc0185"};
+Inspection::GUID g_ASF_BinaryMediaGUID{"3afb65e2-47ef-40f2-ac2c-70a90d71d343"};
 
 /// Stream Properties Object Error Correction Type GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.5
-GUID g_ASF_NoErrorCorrection{"20fb5700-5b55-11cf-a8fd-00805f5c442b"};
-GUID g_ASF_AudioSpread{"bfc3cd50-618f-11cf-8bb2-00aa00b4e220"};
+Inspection::GUID g_ASF_NoErrorCorrection{"20fb5700-5b55-11cf-a8fd-00805f5c442b"};
+Inspection::GUID g_ASF_AudioSpread{"bfc3cd50-618f-11cf-8bb2-00aa00b4e220"};
 
 /// Codec List Object GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.8
-GUID g_ASF_Reserved2{"86d15241-311d-11d0-a3a4-00a0c90348f6"};
+Inspection::GUID g_ASF_Reserved2{"86d15241-311d-11d0-a3a4-00a0c90348f6"};
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// 4th generation getters                                                                        //
+// 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Results::Result > Get_ASF_CodecEntry(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_CodecEntryType(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_CodecListObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_FilePropertiesFlags(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_FilePropertiesObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_HeaderObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_StreamPropertiesFlags(const std::uint8_t * Buffer, std::uint64_t Length);
-std::unique_ptr< Results::Result > Get_ASF_StreamPropertiesObjectData(const std::uint8_t * Buffer, std::uint64_t Length);
+std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_ObjectHeader(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesFlags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspection::Buffer & Buffer);
 
-std::unique_ptr< Results::Result > Get_ASF_CodecEntry(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Buffer)
 {
-	auto Success{true};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto Type{Get_ASF_CodecEntryType(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto TypeResult{Get_ASF_CodecEntryType(Buffer)};
 	
-	if(Type->GetSuccess() == true)
+	TypeResult->GetValue()->Append("Type", TypeResult->GetValue());
+	if(TypeResult->GetSuccess() == true)
 	{
-		Index += Type->GetLength();
-		Value->Append("Type", Type->GetValue());
+		auto CodecNameLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 		
-		auto CodecNameLength{Get_UnsignedInteger_16Bit_LittleEndian(Buffer + Index, Length - Index)};
-		
-		if(CodecNameLength->GetSuccess() == true)
+		Result->GetValue()->Append("CodecNameLength", CodecNameLengthResult->GetValue());
+		if(CodecNameLengthResult->GetSuccess() == true)
 		{
-			Index += CodecNameLength->GetLength();
-			Value->Append("Codec Name Length", CodecNameLength->GetValue());
+			auto CodecNameLength{std::experimental::any_cast< std::uint16_t >(CodecNameLengthResult->GetAny())};
+			auto CodecNameResult{Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecNameLength)};
 			
-			auto CodecNameLengthValue{std::experimental::any_cast< std::uint16_t >(CodecNameLength->GetAny())};
-			auto CodecName{Get_UTF16LE_String_EndedByTermination(Buffer + Index, Length - Index)};
-			
-			if((CodecName->GetSuccess() == true) && (CodecName->GetLength() == CodecNameLengthValue * 2))
+			Result->GetValue()->Append("CodecName", CodecNameResult->GetValue());
+			if(CodecNameResult->GetSuccess() == true)
 			{
-				Index += CodecName->GetLength();
-				Value->Append("Codec Name", CodecName->GetValue());
+				auto CodecDescriptionLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 				
-				auto CodecDescriptionLength{Get_UnsignedInteger_16Bit_LittleEndian(Buffer + Index, Length - Index)};
-				
-				if(CodecDescriptionLength->GetSuccess() == true)
+				Result->GetValue()->Append("CodecDescriptionLength", CodecDescriptionLengthResult->GetValue());
+				if(CodecDescriptionLengthResult->GetSuccess() == true)
 				{
-					Index += CodecDescriptionLength->GetLength();
-					Value->Append("Codec Description Length", CodecDescriptionLength->GetValue());
+					auto CodecDescriptionLength{std::experimental::any_cast< std::uint16_t >(CodecDescriptionLengthResult->GetAny())};
+					auto CodecDescriptionResult{Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecDescriptionLength)};
 					
-					auto CodecDescriptionLengthValue{std::experimental::any_cast< std::uint16_t >(CodecDescriptionLength->GetAny())};
-					auto CodecDescription{Get_UTF16LE_String_EndedByTermination(Buffer + Index, Length - Index)};
-					
-					if((CodecDescription->GetSuccess() == true) && (CodecDescription->GetLength() == CodecDescriptionLengthValue * 2))
+					Result->GetValue()->Append("CodecDescription", CodecDescriptionResult->GetValue());
+					if(CodecDescriptionResult->GetSuccess() == true)
 					{
-						Index += CodecDescription->GetLength();
-						Value->Append("Codec Description", CodecDescription->GetValue());
+						auto CodecInformationLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 						
-						auto CodecInformationLength{Get_UnsignedInteger_16Bit_LittleEndian(Buffer + Index, Length - Index)};
-						
-						if(CodecInformationLength->GetSuccess() == true)
+						Result->GetValue()->Append("CodecInformation Length", CodecInformationLengthResult->GetValue());
+						if(CodecInformationLengthResult->GetSuccess() == true)
 						{
-							Index += CodecInformationLength->GetLength();
-							Value->Append("Codec Information Length", CodecInformationLength->GetValue());
+							auto CodecInformationLength{std::experimental::any_cast< std::uint16_t >(CodecInformationLengthResult->GetAny())};
+							auto CodecInformationResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, CodecInformationLength)};
 							
-							auto CodecInformationLengthValue{std::experimental::any_cast< std::uint16_t >(CodecInformationLength->GetAny())};
-							auto CodecInformation{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, CodecInformationLengthValue)};
-							
-							if(CodecInformation->GetSuccess() == true)
+							Result->GetValue()->Append("CodecInformation", CodecInformationResult->GetValue());
+							if(CodecInformationResult->GetSuccess() == true)
 							{
-								Index += CodecInformation->GetLength();
-								Value->Append("Codec Information", CodecInformation->GetValue());
+								Result->SetSuccess(true);
 							}
 						}
 					}
@@ -140,364 +130,382 @@ std::unique_ptr< Results::Result > Get_ASF_CodecEntry(const std::uint8_t * Buffe
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-std::unique_ptr< Results::Result > Get_ASF_CodecEntryType(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto Type{Get_UnsignedInteger_16Bit_LittleEndian(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto TypeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
-	if(Type->GetSuccess() == true)
+	Result->SetValue(TypeResult->GetValue());
+	if(TypeResult->GetSuccess() == true)
 	{
-		Success = true;
-		Index += Type->GetLength();
-		Value->SetAny(Type->GetAny());
+		auto Type{std::experimental::any_cast< std::uint16_t >(TypeResult->GetAny())};
 		
-		auto TypeValue{std::experimental::any_cast< std::uint16_t >(Type->GetAny())};
-		
-		if(TypeValue == 0x0001)
+		if(Type == 0x0001)
 		{
-			Value->Append("Interpretation", std::string("Video Codec"));
+			Result->GetValue()->Append("Interpretation", std::string("Video Codec"));
 		}
-		else if(TypeValue == 0x0002)
+		else if(Type == 0x0002)
 		{
-			Value->Append("Interpretation", std::string("Audio Codec"));
+			Result->GetValue()->Append("Interpretation", std::string("Audio Codec"));
 		}
-		else if(TypeValue == 0xffff)
+		else if(Type == 0xffff)
 		{
-			Value->Append("Interpretation", std::string("Unknown Codec"));
+			Result->GetValue()->Append("Interpretation", std::string("Unknown Codec"));
 		}
 		else
 		{
-			Value->Append("Interpretation", std::string("<unknown Type value>"));
+			Result->GetValue()->Append("Interpretation", std::string("<unknown Type value>"));
 		}
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-std::unique_ptr< Results::Result > Get_ASF_CodecListObjectData(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto ReservedGUID{Get_ASF_GUID(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ReservedGUIDResult{Get_ASF_GUID(Buffer)};
 	
-	if(ReservedGUID->GetSuccess() == true)
+	Result->GetValue()->Append("Reserved", ReservedGUIDResult->GetValue());
+	if((ReservedGUIDResult->GetSuccess() == true) && (std::experimental::any_cast< Inspection::GUID >(ReservedGUIDResult->GetAny()) == g_ASF_Reserved2))
 	{
-		auto ReservedGUIDValue{std::experimental::any_cast< GUID >(ReservedGUID->GetAny())};
+		auto CodecEntriesCountResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 		
-		if(ReservedGUIDValue == g_ASF_Reserved2)
+		Result->GetValue()->Append("CodecEntriesCount", CodecEntriesCountResult->GetValue());
+		if(CodecEntriesCountResult->GetSuccess() == true)
 		{
-			Index += ReservedGUID->GetLength();
-			Value->Append("Reserved", ReservedGUID->GetValue());
+			Result->SetSuccess(true);
 			
-			auto CodecEntriesCount{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
+			auto CodecEntries(std::make_shared< Inspection::Value >());
 			
-			if(CodecEntriesCount->GetSuccess() == true)
+			Result->GetValue()->Append("CodecEntries", CodecEntries);
+			
+			auto CodecEntriesCount{std::experimental::any_cast< std::uint32_t >(CodecEntriesCountResult->GetAny())};
+			
+			for(auto CodecEntryIndex = 0ul; CodecEntryIndex < CodecEntriesCount; ++CodecEntryIndex)
 			{
-				Index += CodecEntriesCount->GetLength();
-				Value->Append("Codec Entries Count", CodecEntriesCount->GetValue());
+				auto CodecEntryResult{Get_ASF_CodecEntry(Buffer)};
 				
-				auto CodecEntries(std::make_shared< Results::Value >());
-				
-				CodecEntries->SetName("Codec Entries");
-				
-				auto CodecEntriesCountValue{std::experimental::any_cast< std::uint32_t >(CodecEntriesCount->GetAny())};
-				
-				for(auto CodecEntryIndex = 0ul; CodecEntryIndex < CodecEntriesCountValue; ++CodecEntryIndex)
+				CodecEntries->Append(CodecEntryResult->GetValue());
+				if(CodecEntryResult->GetSuccess() == false)
 				{
-					auto CodecEntry{Get_ASF_CodecEntry(Buffer + Index, Length - Index)};
+					Result->SetSuccess(false);
 					
-					if(CodecEntry->GetSuccess() == true)
-					{
-						Index += CodecEntry->GetLength();
-						CodecEntries->Append(CodecEntry->GetValue());
-					}
-					else
-					{
-						return Results::MakeFailure();
-					}
+					break;
 				}
-				Value->Append(CodecEntries);
-				Success = true;
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-std::unique_ptr< Results::Result > Get_ASF_GUID(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto GUIDResult{Get_GUID_LittleEndian(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
+	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
+	if(ObjectHeaderResult->GetSuccess() == true)
+	{
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
+		auto Size{std::experimental::any_cast< std::uint64_t >(ObjectHeaderResult->GetAny("Size"))};
+		
+		if(GUID == g_ASF_DataObjectGUID)
+		{
+			auto DataObjectDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size - ObjectHeaderResult->GetValue()->GetLength().GetBytes())};
+			
+			Result->GetValue()->Append("Data", DataObjectDataResult->GetValue());
+			if(DataObjectDataResult->GetSuccess() == true)
+			{
+				Result->SetSuccess(true);
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto GUIDResult{Get_GUID_LittleEndian(Buffer)};
+	
+	Result->SetValue(GUIDResult->GetValue());
 	if(GUIDResult->GetSuccess() == true)
 	{
-		Success = true;
-		Index += GUIDResult->GetLength();
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(GUIDResult->GetAny())};
 		
-		auto GUIDValue{std::experimental::any_cast< GUID >(GUIDResult->GetAny())};
-		
-		Value->SetAny(GUIDResult->GetAny());
 		// Top-level ASF Object GUIDs
-		if(GUIDValue == g_ASF_HeaderObjectGUID)
+		if(GUID == g_ASF_HeaderObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Header_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Header_Object"));
 		}
-		else if(GUIDValue == g_ASF_DataObjectGUID)
+		else if(GUID == g_ASF_DataObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Data_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Data_Object"));
 		}
-		else if(GUIDValue == g_ASF_SimpleIndexObjectGUID)
+		else if(GUID == g_ASF_SimpleIndexObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Simple_Index_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Simple_Index_Object"));
 		}
-		else if(GUIDValue == g_ASF_IndexObjectGUID)
+		else if(GUID == g_ASF_IndexObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Index_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Index_Object"));
 		}
-		else if(GUIDValue == g_ASF_MediaObjectIndexObjectGUID)
+		else if(GUID == g_ASF_MediaObjectIndexObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Media_Object_Index_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Media_Object_Index_Object"));
 		}
-		else if(GUIDValue == g_ASF_TimecodeIndexObject)
+		else if(GUID == g_ASF_TimecodeIndexObject)
 		{
-			Value->Append("Interpretation", std::string("ASF_Timecode_Index_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Timecode_Index_Object"));
 		}
 		// Header Object GUIDs
-		else if(GUIDValue == g_ASF_FilePropertiesObjectGUID)
+		else if(GUID == g_ASF_FilePropertiesObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_File_Properties_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_File_Properties_Object"));
 		}
-		else if(GUIDValue == g_ASF_StreamPropertiesObjectGUID)
+		else if(GUID == g_ASF_StreamPropertiesObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Stream_Properties_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Stream_Properties_Object"));
 		}
-		else if(GUIDValue == g_ASF_HeaderExtensionObjectGUID)
+		else if(GUID == g_ASF_HeaderExtensionObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Header_Extension_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Header_Extension_Object"));
 		}
-		else if(GUIDValue == g_ASF_CodecListObjectGUID)
+		else if(GUID == g_ASF_CodecListObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Codec_List_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Codec_List_Object"));
 		}
-		else if(GUIDValue == g_ASF_ScriptCommandObjectGUID)
+		else if(GUID == g_ASF_ScriptCommandObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Script_Command_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Script_Command_Object"));
 		}
-		else if(GUIDValue == g_ASF_MarkerObjectGUID)
+		else if(GUID == g_ASF_MarkerObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Marker_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Marker_Object"));
 		}
-		else if(GUIDValue == g_ASF_BitrateMutualExclusionObjectGUID)
+		else if(GUID == g_ASF_BitrateMutualExclusionObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Bitrate_Mutual_Exclusion_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Bitrate_Mutual_Exclusion_Object"));
 		}
-		else if(GUIDValue == g_ASF_ErrorCorrectionObjectGUID)
+		else if(GUID == g_ASF_ErrorCorrectionObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Error_Correction_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Error_Correction_Object"));
 		}
-		else if(GUIDValue == g_ASF_ContentDescriptionObjectGUID)
+		else if(GUID == g_ASF_ContentDescriptionObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Content_Description_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Content_Description_Object"));
 		}
-		else if(GUIDValue == g_ASF_ExtendedContentDescriptionObjectGUID)
+		else if(GUID == g_ASF_ExtendedContentDescriptionObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Extended_Content_Description_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Extended_Content_Description_Object"));
 		}
-		else if(GUIDValue == g_ASF_ContentBrandingObjectGUID)
+		else if(GUID == g_ASF_ContentBrandingObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Content_Branding_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Content_Branding_Object"));
 		}
-		else if(GUIDValue == g_ASF_StreamBitratePropertiesObjectGUID)
+		else if(GUID == g_ASF_StreamBitratePropertiesObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Stream_Bitrate_Properties_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Stream_Bitrate_Properties_Object"));
 		}
-		else if(GUIDValue == g_ASF_ContentEncryptionObjectGUID)
+		else if(GUID == g_ASF_ContentEncryptionObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Content_Encryption_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Content_Encryption_Object"));
 		}
-		else if(GUIDValue == g_ASF_ExtendedContentEncryptionObjectGUID)
+		else if(GUID == g_ASF_ExtendedContentEncryptionObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Extended_Content_Encryption_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Extended_Content_Encryption_Object"));
 		}
-		else if(GUIDValue == g_ASF_DigitalSignatureObjectGUID)
+		else if(GUID == g_ASF_DigitalSignatureObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Digital_Signature_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Digital_Signature_Object"));
 		}
-		else if(GUIDValue == g_ASF_PaddingObjectGUID)
+		else if(GUID == g_ASF_PaddingObjectGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Padding_Object"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Padding_Object"));
 		}
 		// Stream Properties Object Stream Type GUIDs
-		else if(GUIDValue == g_ASF_AudioMediaGUID)
+		else if(GUID == g_ASF_AudioMediaGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Audio_Media"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Audio_Media"));
 		}
-		else if(GUIDValue == g_ASF_VideoMediaGUID)
+		else if(GUID == g_ASF_VideoMediaGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Video_Media"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Video_Media"));
 		}
-		else if(GUIDValue == g_ASF_CommandMediaGUID)
+		else if(GUID == g_ASF_CommandMediaGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Command_Media"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Command_Media"));
 		}
-		else if(GUIDValue == g_ASF_JFIFMediaGUID)
+		else if(GUID == g_ASF_JFIFMediaGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_JFIF_Media"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_JFIF_Media"));
 		}
-		else if(GUIDValue == g_ASF_DegradableJPEGMediaGUID)
+		else if(GUID == g_ASF_DegradableJPEGMediaGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Degradable_JPEG_Media"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Degradable_JPEG_Media"));
 		}
-		else if(GUIDValue == g_ASF_FileTransferMediaGUID)
+		else if(GUID == g_ASF_FileTransferMediaGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_File_Transfer_Media"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_File_Transfer_Media"));
 		}
-		else if(GUIDValue == g_ASF_BinaryMediaGUID)
+		else if(GUID == g_ASF_BinaryMediaGUID)
 		{
-			Value->Append("Interpretation", std::string("ASF_Binary_Media"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Binary_Media"));
 		}
 		// Stream Properties Object Error Correction Type GUIDs
-		else if(GUIDValue == g_ASF_NoErrorCorrection)
+		else if(GUID == g_ASF_NoErrorCorrection)
 		{
-			Value->Append("Interpretation", std::string("ASF_No_Error_Correction"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_No_Error_Correction"));
 		}
-		else if(GUIDValue == g_ASF_AudioSpread)
+		else if(GUID == g_ASF_AudioSpread)
 		{
-			Value->Append("Interpretation", std::string("ASF_Audio_Spread"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Audio_Spread"));
 		}
 		// Codec List Object GUIDs
-		else if(GUIDValue == g_ASF_Reserved2)
+		else if(GUID == g_ASF_Reserved2)
 		{
-			Value->Append("Interpretation", std::string("ASF_Reserved_2"));
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Reserved_2"));
 		}
 		// unknown
 		else
 		{
-			Value->Append("Interpretation", std::string("<unknown GUID value>"));
+			Result->GetValue()->Append("Interpretation", std::string("<unknown GUID value>"));
 		}
+		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-std::unique_ptr< Results::Result > Get_ASF_FilePropertiesFlags(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto Flags{Get_BitSet_32Bit_LittleEndian(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto HeaderObjectResult{Get_ASF_HeaderObject(Buffer)};
 	
-	if(Flags->GetSuccess() == true)
+	Result->GetValue()->Append("HeaderObject", HeaderObjectResult->GetValue());
+	if(HeaderObjectResult->GetSuccess() == true)
 	{
-		const std::bitset< 32 > & FlagsValue{std::experimental::any_cast< const std::bitset< 32 > & >(Flags->GetAny())};
+		auto DataObjectResult{Get_ASF_DataObject(Buffer)};
 		
-		Value->SetAny(Flags->GetAny());
-		Value->Append("[0] Broadcast", FlagsValue[0]);
-		Value->Append("[1] Seekable", FlagsValue[1]);
-		Value->Append("[2-31] Reserved", false);
-		Success = true;
+		Result->GetValue()->Append("DataObject", DataObjectResult->GetValue());
+		if(DataObjectResult->GetSuccess() == true)
+		{
+			Result->SetSuccess(true);
+			while(Buffer.GetPosition() < Buffer.GetLength())
+			{
+				auto ObjectResult{Get_ASF_Object(Buffer)};
+				
+				Result->GetValue()->Append("Object", ObjectResult->GetValue());
+				if(ObjectResult->GetSuccess() == false)
+				{
+					Result->SetSuccess(false);
+					
+					break;
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto FlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
+	
+	Result->SetValue(FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(FlagsResult->GetAny())};
+		
+		Result->GetValue()->Append("[0] Broadcast", Flags[0]);
+		Result->GetValue()->Append("[1] Seekable", Flags[1]);
+		Result->GetValue()->Append("[2-31] Reserved", false);
+		Result->SetSuccess(true);
 		for(auto Index = 2; Index < 32; ++Index)
 		{
-			Success &= ~FlagsValue[Index];
+			Result->SetSuccess(Result->GetSuccess() & ~Flags[Index]);
 		}
-		Index += Flags->GetLength();
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-std::unique_ptr< Results::Result > Get_ASF_FilePropertiesObjectData(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto FileID{Get_GUID_LittleEndian(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto FileIDResult{Get_GUID_LittleEndian(Buffer)};
 	
-	if(FileID->GetSuccess() == true)
+	Result->GetValue()->Append("FileID", FileIDResult->GetValue());
+	if(FileIDResult->GetSuccess() == true)
 	{
-		Index += FileID->GetLength();
-		Value->Append("File ID", FileID->GetValue());
+		auto FileSizeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 		
-		auto FileSize{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-		
-		if(FileSize->GetSuccess() == true)
+		Result->GetValue()->Append("FileSize", FileSizeResult->GetValue());
+		if(FileSizeResult->GetSuccess() == true)
 		{
-			Index += FileSize->GetLength();
-			Value->Append("File Size", FileSize->GetValue());
+			auto CreationDateResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 			
-			auto CreationDate{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-			
-			if(CreationDate->GetSuccess() == true)
+			Result->GetValue()->Append("CreationDate", CreationDateResult->GetValue());
+			if(CreationDateResult->GetSuccess() == true)
 			{
-				Index += CreationDate->GetLength();
-				Value->Append("Creation Date", CreationDate->GetValue());
+				auto DataPacketsCountResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 				
-				auto DataPacketsCount{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-				
-				if(DataPacketsCount->GetSuccess() == true)
+				Result->GetValue()->Append("DataPacketsCount", DataPacketsCountResult->GetValue());
+				if(DataPacketsCountResult->GetSuccess() == true)
 				{
-					Index += DataPacketsCount->GetLength();
-					Value->Append("Data Packets Count", DataPacketsCount->GetValue());
+					auto PlayDurationResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 					
-					auto PlayDuration{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-					
-					if(PlayDuration->GetSuccess() == true)
+					Result->GetValue()->Append("PlayDuration", PlayDurationResult->GetValue());
+					if(PlayDurationResult->GetSuccess() == true)
 					{
-						Index += PlayDuration->GetLength();
-						Value->Append("Play Duration", PlayDuration->GetValue());
+						auto SendDurationResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 						
-						auto SendDuration{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-						
-						if(SendDuration->GetSuccess() == true)
+						Result->GetValue()->Append("SendDuration", SendDurationResult->GetValue());
+						if(SendDurationResult->GetSuccess() == true)
 						{
-							Index += SendDuration->GetLength();
-							Value->Append("Send Duration", SendDuration->GetValue());
+							auto PrerollResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 							
-							auto Preroll{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-							
-							if(Preroll->GetSuccess() == true)
+							Result->GetValue()->Append("Preroll", PrerollResult->GetValue());
+							if(PrerollResult->GetSuccess() == true)
 							{
-								Index += Preroll->GetLength();
-								Value->Append("Preroll", Preroll->GetValue());
+								auto FlagsResult{Get_ASF_FilePropertiesFlags(Buffer)};
 								
-								auto Flags{Get_ASF_FilePropertiesFlags(Buffer + Index, Length - Index)};
-								
-								if(Flags->GetSuccess() == true)
+								Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+								if(FlagsResult->GetSuccess() == true)
 								{
-									Index += Flags->GetLength();
-									Value->Append("Flags", Flags->GetValue());
+									auto MinimumDataPacketSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 									
-									auto MinimumDataPacketSize{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
-									
-									if(MinimumDataPacketSize->GetSuccess() == true)
+									Result->GetValue()->Append("MinimumDataPacketSize", MinimumDataPacketSizeResult->GetValue());
+									if(MinimumDataPacketSizeResult->GetSuccess() == true)
 									{
-										Index += MinimumDataPacketSize->GetLength();
-										Value->Append("Minimum Data Packet Size", MinimumDataPacketSize->GetValue());
+										auto MaximumDataPacketSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 										
-										auto MaximumDataPacketSize{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
-										
-										if(MaximumDataPacketSize->GetSuccess() == true)
+										Result->GetValue()->Append("MaximumDataPacketSize", MaximumDataPacketSizeResult->GetValue());
+										if(MaximumDataPacketSizeResult->GetSuccess() == true)
 										{
-											Index += MaximumDataPacketSize->GetLength();
-											Value->Append("Maximum Data Packet Size", MaximumDataPacketSize->GetValue());
+											auto MaximumBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 											
-											auto MaximumBitrate{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
-											
-											if(MaximumBitrate->GetSuccess() == true)
+											Result->GetValue()->Append("MaximumBitrate", MaximumBitrateResult->GetValue());
+											if(MaximumBitrateResult->GetSuccess() == true)
 											{
-												Index += MaximumBitrate->GetLength();
-												Value->Append("Maximum Bitrate", MaximumBitrate->GetValue());
-												Success = true;
+												Result->SetSuccess(true);
 											}
 										}
 									}
@@ -509,251 +517,238 @@ std::unique_ptr< Results::Result > Get_ASF_FilePropertiesObjectData(const std::u
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-std::unique_ptr< Results::Result > Get_ASF_HeaderObjectData(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto NumberOfHeaderObjects{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
+	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
+	if(ObjectHeaderResult->GetSuccess() == true)
+	{
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
+		
+		if(GUID == g_ASF_HeaderObjectGUID)
+		{
+			auto HeaderObjectDataResult{Get_ASF_HeaderObjectData(Buffer)};
+			
+			Result->GetValue()->Append(HeaderObjectDataResult->GetValue()->GetValues());
+			if(HeaderObjectDataResult->GetSuccess() ==true)
+			{
+				Result->SetSuccess(true);
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto NumberOfHeaderObjects{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	
+	Result->GetValue()->Append("Number of header objects", NumberOfHeaderObjects->GetValue());
 	if(NumberOfHeaderObjects->GetSuccess() == true)
 	{
-		Index += NumberOfHeaderObjects->GetLength();
-		Value->Append("Number of header objects", NumberOfHeaderObjects->GetValue());
+		auto Reserved1{Get_UnsignedInteger_8Bit(Buffer)};
 		
-		auto Reserved1{Get_UnsignedInteger_8Bit(Buffer + Index, Length - Index)};
-		
+		Result->GetValue()->Append("Reserved1", Reserved1->GetValue());
 		if((Reserved1->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(Reserved1->GetAny()) == 0x01))
 		{
-			Index += Reserved1->GetLength();
-			Value->Append("Reserved1", Reserved1->GetValue());
+			auto Reserved2{Get_UnsignedInteger_8Bit(Buffer)};
 			
-			auto Reserved2{Get_UnsignedInteger_8Bit(Buffer + Index, Length - Index)};
-			
+			Result->GetValue()->Append("Reserved2", Reserved2->GetValue());
 			if((Reserved2->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(Reserved2->GetAny()) == 0x02))
 			{
-				Index += Reserved2->GetLength();
-				Value->Append("Reserved2", Reserved2->GetValue());
+				Result->SetSuccess(true);
 				
-				auto HeaderObjects(std::make_shared< Results::Value >());
+				auto HeaderObjects(std::make_shared< Inspection::Value >());
 				
-				HeaderObjects->SetName("Header objects");
+				Result->GetValue()->Append("HeaderObjects", HeaderObjects);
 				
 				auto NumberOfHeaderObjectsValue{std::experimental::any_cast< std::uint32_t >(NumberOfHeaderObjects->GetAny())};
 				
 				for(auto ObjectIndex = 0ul; ObjectIndex < NumberOfHeaderObjectsValue; ++ObjectIndex)
 				{
-					auto HeaderObject{Get_ASF_Object(Buffer + Index, Length - Index)};
+					auto HeaderObject{Get_ASF_Object(Buffer)};
 					
-					if(HeaderObject->GetSuccess() == true)
+					HeaderObjects->Append("Object", HeaderObject->GetValue());
+					if(HeaderObject->GetSuccess() == false)
 					{
-						Index += HeaderObject->GetLength();
-						HeaderObjects->Append(HeaderObject->GetValue());
+						Result->SetSuccess(false);
+						
+						break;
 					}
-					else
-					{
-						return Results::MakeFailure();
-					}
-				}
-				Value->Append(HeaderObjects);
-				Success = true;
-			}
-		}
-	}
-	
-	return Results::MakeResult(Success, Index, Value);
-}
-
-std::unique_ptr< Results::Result > Get_ASF_Object(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto ObjectGUID{Get_ASF_GUID(Buffer + Index, Length - Index)};
-	
-	if(ObjectGUID->GetSuccess() == true)
-	{
-		Value->SetName("ASF Object");
-		Index += ObjectGUID->GetLength();
-		Value->Append("GUID", ObjectGUID->GetValue());
-		
-		auto ObjectSize{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-		
-		if(ObjectSize->GetSuccess() == true)
-		{
-			Index += ObjectSize->GetLength();
-			Value->Append("Size", ObjectSize->GetValue());
-			
-			auto DataSize{std::experimental::any_cast< std::uint64_t >(ObjectSize->GetAny())};
-			
-			if(DataSize <= Length)
-			{
-				DataSize -= Index;
-				
-				auto GUIDValue{std::experimental::any_cast< GUID >(ObjectGUID->GetAny())};
-				std::unique_ptr< Results::Result > ObjectData;
-				
-				if(GUIDValue == g_ASF_HeaderObjectGUID)
-				{
-					ObjectData = Get_ASF_HeaderObjectData(Buffer + Index, DataSize);
-				}
-				else if(GUIDValue == g_ASF_FilePropertiesObjectGUID)
-				{
-					ObjectData = Get_ASF_FilePropertiesObjectData(Buffer + Index, DataSize);
-				}
-				else if(GUIDValue == g_ASF_StreamPropertiesObjectGUID)
-				{
-					ObjectData = Get_ASF_StreamPropertiesObjectData(Buffer + Index, DataSize);
-				}
-				else if(GUIDValue == g_ASF_CodecListObjectGUID)
-				{
-					ObjectData = Get_ASF_CodecListObjectData(Buffer + Index, DataSize);
-				}
-				else
-				{
-					ObjectData = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, DataSize);
-				}
-				if(ObjectData->GetSuccess() == true)
-				{
-					Index += ObjectData->GetLength();
-					Value->Append("Data", ObjectData->GetValue());
-					Success = true;
 				}
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-std::unique_ptr< Results::Result > Get_ASF_StreamPropertiesFlags(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto Flags{Get_BitSet_16Bit_LittleEndian(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
-	if(Flags->GetSuccess() == true)
+	Result->SetValue(ObjectHeaderResult->GetValue());
+	if(ObjectHeaderResult->GetSuccess() == true)
 	{
-		Value->SetAny(Flags->GetAny());
+		auto Size{std::experimental::any_cast< std::uint64_t >(ObjectHeaderResult->GetAny("Size"))};
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
+		std::unique_ptr< Inspection::Result > ObjectDataResult;
 		
-		auto FlagsValue{std::experimental::any_cast< std::bitset< 16 > >(Flags->GetAny())};
-		std::uint8_t StreamNumber{0};
-		
-		if(FlagsValue[0] == true)
+		if(GUID == g_ASF_HeaderObjectGUID)
 		{
-			StreamNumber += 1;
+			ObjectDataResult = Get_ASF_HeaderObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
-		if(FlagsValue[1] == true)
+		else if(GUID == g_ASF_FilePropertiesObjectGUID)
 		{
-			StreamNumber += 2;
+			ObjectDataResult = Get_ASF_FilePropertiesObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
-		if(FlagsValue[2] == true)
+		else if(GUID == g_ASF_StreamPropertiesObjectGUID)
 		{
-			StreamNumber += 4;
+			ObjectDataResult = Get_ASF_StreamPropertiesObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
-		if(FlagsValue[3] == true)
+		else if(GUID == g_ASF_CodecListObjectGUID)
 		{
-			StreamNumber += 8;
+			ObjectDataResult = Get_ASF_CodecListObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
-		if(FlagsValue[4] == true)
+		else
 		{
-			StreamNumber += 16;
+			ObjectDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size - ObjectHeaderResult->GetValue()->GetLength().GetBytes());
+			Result->GetValue()->Append("Data", ObjectDataResult->GetValue());
 		}
-		if(FlagsValue[5] == true)
+		if(ObjectDataResult->GetSuccess() == true)
 		{
-			StreamNumber += 32;
+			Result->SetSuccess(true);
 		}
-		if(FlagsValue[6] == true)
-		{
-			StreamNumber += 64;
-		}
-		Value->Append("[0-6] Stream Number", StreamNumber);
-		Value->Append("[7-14] Reserved", false);
-		Value->Append("[15] Encrypted Content Flag", bool(FlagsValue[15]));
-		Success = true;
-		for(auto Index = 7; Index < 15; ++Index)
-		{
-			Success &= ~FlagsValue[Index];
-		}
-		Index += Flags->GetLength();
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-std::unique_ptr< Results::Result > Get_ASF_StreamPropertiesObjectData(const std::uint8_t * Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_ASF_ObjectHeader(Inspection::Buffer & Buffer)
 {
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto StreamType{Get_ASF_GUID(Buffer + Index, Length - Index)};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto GUIDResult{Get_ASF_GUID(Buffer)};
 	
-	if(StreamType->GetSuccess() == true)
+	Result->GetValue()->Append("GUID", GUIDResult->GetValue());
+	if(GUIDResult->GetSuccess() == true)
 	{
-		Index += StreamType->GetLength();
-		Value->Append("Stream Type", StreamType->GetValue());
+		auto SizeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 		
-		auto ErrorCorrectionType{Get_ASF_GUID(Buffer + Index, Length - Index)};
-		
-		if(ErrorCorrectionType->GetSuccess() == true)
+		Result->GetValue()->Append("Size", SizeResult->GetValue());
+		if(SizeResult->GetSuccess() == true)
 		{
-			Index += ErrorCorrectionType->GetLength();
-			Value->Append("Error Correction Type", ErrorCorrectionType->GetValue());
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesFlags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Position{Buffer.GetPosition()};
+	auto FlagsResult{Get_BitSet_16Bit_LittleEndian(Buffer)};
+	
+	Result->SetValue(FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		Buffer.SetPosition(Position);
+		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
+		
+		auto StreamNumberResult{Get_UnsignedInteger_7Bit(Buffer)};
+		
+		Result->GetValue()->Append("[0-6] StreamNumber", StreamNumberResult->GetValue());
+		if(StreamNumberResult->GetSuccess() == true)
+		{
+			auto ReservedResult{Get_UnsignedInteger_8Bit(Buffer)};
 			
-			auto TimeOffset{Get_UnsignedInteger_64Bit_LittleEndian(Buffer + Index, Length - Index)};
-			
-			if(TimeOffset->GetSuccess() == true)
+			Result->GetValue()->Append("[7-14] Reserved", ReservedResult->GetValue());
+			if((ReservedResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(ReservedResult->GetAny()) == 0x00))
 			{
-				Index += TimeOffset->GetLength();
-				Value->Append("Time Offset", TimeOffset->GetValue());
+				auto EncryptedContentFlagResult{Get_Boolean_1Bit(Buffer)};
 				
-				auto TypeSpecificDataLength{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
-				
-				if(TypeSpecificDataLength->GetSuccess() == true)
+				Result->GetValue()->Append("[15] EncryptedContentFlag", EncryptedContentFlagResult->GetValue());
+				if(EncryptedContentFlagResult->GetSuccess() == true)
 				{
-					Index += TypeSpecificDataLength->GetLength();
-					Value->Append("Type-Specific Data Length", TypeSpecificDataLength->GetValue());
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto StreamTypeResult{Get_ASF_GUID(Buffer)};
+	
+	Result->GetValue()->Append("StreamType", StreamTypeResult->GetValue());
+	if(StreamTypeResult->GetSuccess() == true)
+	{
+		auto ErrorCorrectionTypeResult{Get_ASF_GUID(Buffer)};
+		
+		Result->GetValue()->Append("ErrorCorrectionType", ErrorCorrectionTypeResult->GetValue());
+		if(ErrorCorrectionTypeResult->GetSuccess() == true)
+		{
+			auto TimeOffsetResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+			
+			Result->GetValue()->Append("TimeOffset", TimeOffsetResult->GetValue());
+			if(TimeOffsetResult->GetSuccess() == true)
+			{
+				auto TypeSpecificDataLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				
+				Result->GetValue()->Append("TypeSpecificDataLength", TypeSpecificDataLengthResult->GetValue());
+				if(TypeSpecificDataLengthResult->GetSuccess() == true)
+				{
+					auto ErrorCorrectionDataLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 					
-					auto ErrorCorrectionDataLength{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
-					
-					if(ErrorCorrectionDataLength->GetSuccess() == true)
+					Result->GetValue()->Append("ErrorCorrectionDataLength", ErrorCorrectionDataLengthResult->GetValue());
+					if(ErrorCorrectionDataLengthResult->GetSuccess() == true)
 					{
-						Index += ErrorCorrectionDataLength->GetLength();
-						Value->Append("Error Correction Data Length", ErrorCorrectionDataLength->GetValue());
+						auto FlagsResult{Get_ASF_StreamPropertiesFlags(Buffer)};
 						
-						auto Flags{Get_ASF_StreamPropertiesFlags(Buffer + Index, Length - Index)};
-						
-						if(Flags->GetSuccess() == true)
+						Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+						if(FlagsResult->GetSuccess() == true)
 						{
-							Index += Flags->GetLength();
-							Value->Append("Flags", Flags->GetValue());
+							auto ReservedResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 							
-							auto Reserved{Get_UnsignedInteger_32Bit_LittleEndian(Buffer + Index, Length - Index)};
-							
-							if(Reserved->GetSuccess() == true)
+							Result->GetValue()->Append("Reserved", ReservedResult->GetValue());
+							if(ReservedResult->GetSuccess() == true)
 							{
-								Index += Reserved->GetLength();
-								Value->Append("Reserved", Reserved->GetValue());
+								auto TypeSpecificDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, std::experimental::any_cast< std::uint32_t >(TypeSpecificDataLengthResult->GetAny()))};
 								
-								auto TypeSpecificData{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, std::experimental::any_cast< std::uint32_t >(TypeSpecificDataLength->GetAny()))};
-								
-								if(TypeSpecificData->GetSuccess() == true)
+								Result->GetValue()->Append("TypeSpecificData", TypeSpecificDataResult->GetValue());
+								if(TypeSpecificDataResult->GetSuccess() == true)
 								{
-									Index += TypeSpecificData->GetLength();
-									Value->Append("Type-Specific Data", TypeSpecificData->GetValue());
+									auto ErrorCorrectionDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, std::experimental::any_cast< std::uint32_t >(ErrorCorrectionDataLengthResult->GetAny()))};
 									
-									auto ErrorCorrectionData{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer + Index, std::experimental::any_cast< std::uint32_t >(ErrorCorrectionDataLength->GetAny()))};
-									
-									if(ErrorCorrectionData->GetSuccess() == true)
+									Result->GetValue()->Append("ErrorCorrectionData", ErrorCorrectionDataResult->GetValue());
+									if(ErrorCorrectionDataResult->GetSuccess() == true)
 									{
-										Index += ErrorCorrectionData->GetLength();
-										Value->Append("Error Correction Data", ErrorCorrectionData->GetValue());
-										Success = true;
+										Result->SetSuccess(true);
 									}
 								}
 							}
@@ -763,11 +758,12 @@ std::unique_ptr< Results::Result > Get_ASF_StreamPropertiesObjectData(const std:
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return Results::MakeResult(Success, Index, Value);
+	return Result;
 }
 
-void PrintValue(const std::string & Indentation, std::shared_ptr< Results::Value > Value)
+void PrintValue(const std::string & Indentation, std::shared_ptr< Inspection::Value > Value)
 {
 	auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
 	
@@ -800,7 +796,7 @@ void PrintValue(const std::string & Indentation, std::shared_ptr< Results::Value
 	}
 }
 
-void PrintValue(std::shared_ptr< Results::Value > Value)
+void PrintValue(std::shared_ptr< Inspection::Value > Value)
 {
 	PrintValue("", Value);
 }
@@ -827,33 +823,14 @@ void ReadFile(const std::string & Path)
 			}
 			else
 			{
-				std::int64_t Index{0};
-				std::int64_t Skipping{0};
+				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
+				auto ASFFileResult{Get_ASF_File(Buffer)};
 				
-				while(Index < FileSize)
+				ASFFileResult->GetValue()->SetName("ASFFile");
+				PrintValue(ASFFileResult->GetValue());
+				if(ASFFileResult->GetSuccess() == false)
 				{
-					auto ASFObject{Get_ASF_Object(Address + Index, FileSize - Index)};
-					
-					if(ASFObject->GetSuccess() == true)
-					{
-						if(Skipping > 0)
-						{
-							std::cerr << "Skipping " << Skipping << " bytes of unrecognized data." << std::endl;
-							Skipping = 0;
-						}
-						Index += ASFObject->GetLength();
-						PrintValue(ASFObject->GetValue());
-					}
-					else
-					{
-						Skipping += 1;
-						Index += 1;
-					}
-				}
-				if(Skipping > 0)
-				{
-					std::cerr << "Skipping " << Skipping << " bytes of unrecognized data." << std::endl;
-					Skipping = 0;
+					std::cerr << "The file is not an ASF file." << std::endl;
 				}
 				munmap(Address, FileSize);
 			}

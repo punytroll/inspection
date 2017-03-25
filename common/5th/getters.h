@@ -1,7 +1,6 @@
 #ifndef COMMON_5TH_GETTERS_H
 #define COMMON_5TH_GETTERS_H
 
-#include "buffer.h"
 #include "result.h"
 
 namespace Inspection
@@ -36,6 +35,10 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF8_Character(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF8_String_EndedByByteLength(Inspection::Buffer & Buffer, std::uint64_t Length);
+	std::unique_ptr< Inspection::Result > Get_UTF16LE_Character(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_UTF16LE_CodePoint(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_UTF16LE_CodeUnit(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints);
 	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(Inspection::Buffer & Buffer);

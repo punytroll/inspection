@@ -2,7 +2,6 @@
 #include <cstring>
 
 #include "../guid.h"
-#include "../unicode.h"
 #include "4th.h"
 
 std::unique_ptr< Results::Result > Get_ASCII_AlphaCharacter(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -48,37 +47,6 @@ std::unique_ptr< Results::Result > Get_ASCII_AlphaString_EndedByLength(const std
 	}
 	
 	return std::unique_ptr< Results::Result >(new Results::Result(Success, Index, std::make_shared< Results::Value >("", StringStream.str())));
-}
-
-std::unique_ptr< Results::Result > Get_BitSet_16Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::bitset<16> Value;
-	
-	if(Length >= 2ull)
-	{
-		Success = true;
-		Index = 2ull;
-		Value[0] = (Buffer[0] & 0x01) == 0x01;
-		Value[1] = (Buffer[0] & 0x02) == 0x02;
-		Value[2] = (Buffer[0] & 0x04) == 0x04;
-		Value[3] = (Buffer[0] & 0x08) == 0x08;
-		Value[4] = (Buffer[0] & 0x10) == 0x10;
-		Value[5] = (Buffer[0] & 0x20) == 0x20;
-		Value[6] = (Buffer[0] & 0x40) == 0x40;
-		Value[7] = (Buffer[0] & 0x80) == 0x80;
-		Value[8] = (Buffer[1] & 0x01) == 0x01;
-		Value[9] = (Buffer[1] & 0x02) == 0x02;
-		Value[10] = (Buffer[1] & 0x04) == 0x04;
-		Value[11] = (Buffer[1] & 0x08) == 0x08;
-		Value[12] = (Buffer[1] & 0x10) == 0x10;
-		Value[13] = (Buffer[1] & 0x20) == 0x20;
-		Value[14] = (Buffer[1] & 0x40) == 0x40;
-		Value[15] = (Buffer[1] & 0x80) == 0x80;
-	}
-	
-	return Results::MakeResult(Success, Index, Value);
 }
 
 std::unique_ptr< Results::Result > Get_BitSet_32Bit_LittleEndian(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -199,115 +167,6 @@ std::unique_ptr< Results::Result > Get_UnsignedInteger_8Bit(const std::uint8_t *
 		Success = true;
 		Index = 1ull;
 		Value = Buffer[0];
-	}
-	
-	return Results::MakeResult(Success, Index, Value);
-}
-
-std::unique_ptr< Results::Result > Get_UTF16LE_Character(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	auto Value{std::make_shared< Results::Value >()};
-	auto CodePoint{Get_UTF16LE_CodePoint(Buffer + Index, Length - Index)};
-	
-	if(CodePoint->GetSuccess() == true)
-	{
-		Success = true;
-		Index += CodePoint->GetLength();
-		Value->Append("CodePoint", CodePoint->GetValue());
-		Value->Append("Character", Get_UTF8_CharacterFromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePoint->GetAny())));
-	}
-	
-	return Results::MakeResult(Success, Index, Value);
-}
-
-std::unique_ptr< Results::Result > Get_UTF16LE_CodePoint(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::uint32_t Value{0x00000000};
-	auto FirstCodeUnit{Get_UTF16LE_CodeUnit(Buffer + Index, Length - Index)};
-	
-	if(FirstCodeUnit->GetSuccess() == true)
-	{
-		auto FirstCodeUnitValue{std::experimental::any_cast< std::uint16_t >(FirstCodeUnit->GetAny())};
-		
-		Index += FirstCodeUnit->GetLength();
-		if((FirstCodeUnitValue < 0xd800) || (FirstCodeUnitValue >= 0xe000))
-		{
-			Success = true;
-			Value = FirstCodeUnitValue;
-		}
-		else if((FirstCodeUnitValue >= 0xd800) && (FirstCodeUnitValue < 0xdc00))
-		{
-			auto SecondCodeUnit{Get_UTF16LE_CodeUnit(Buffer + Index, Length - Index)};
-			
-			if(SecondCodeUnit->GetSuccess() == true)
-			{
-				Index += SecondCodeUnit->GetLength();
-				
-				auto SecondCodeUnitValue{std::experimental::any_cast< std::uint16_t >(SecondCodeUnit->GetAny())};
-				
-				if((SecondCodeUnitValue >= 0xdc00) && (FirstCodeUnitValue < 0xe000))
-				{
-					Success = true;
-					Value = (static_cast< std::uint32_t >(FirstCodeUnitValue - 0xd800) << 10) + static_cast< std::uint32_t >(SecondCodeUnitValue - 0xdc00);
-				}
-			}
-		}
-	}
-	
-	return Results::MakeResult(Success, Index, Value);
-}
-
-std::unique_ptr< Results::Result > Get_UTF16LE_CodeUnit(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::uint16_t Value{0x0000};
-	
-	if(Length >= 2ull)
-	{
-		Success = true;
-		Index = 2ull;
-		Value = (static_cast< std::uint16_t >(Buffer[1]) << 8) + static_cast< std::uint16_t >(Buffer[0]);
-	}
-	
-	return Results::MakeResult(Success, Index, Value);
-}
-
-std::unique_ptr< Results::Result > Get_UTF16LE_String_EndedByTermination(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	std::string Value;
-	
-	while(true)
-	{
-		auto Character{Get_UTF16LE_Character(Buffer + Index, Length - Index)};
-		
-		if(Character->GetSuccess() == true)
-		{
-			Index += Character->GetLength();
-			
-			auto CodePoint{std::experimental::any_cast< std::uint32_t >(Character->GetAny("CodePoint"))};
-			
-			if(CodePoint == 0x00000000)
-			{
-				Success = true;
-				
-				break;
-			}
-			else
-			{
-				Value += std::experimental::any_cast< std::string >(Character->GetAny("Character"));
-			}
-		}
-		else
-		{
-			break;
-		}
 	}
 	
 	return Results::MakeResult(Success, Index, Value);
