@@ -5,16 +5,20 @@ default: all
 
 clean:
 	$(RM) ../riffinspector
-	$(RM) 4th.o
+	$(RM) getters.o
+	$(RM) helper.o
 	$(RM) riffinspector.o
 
 all: ../riffinspector
 
-../riffinspector: riffinspector.o 4th.o
+../riffinspector: riffinspector.o getters.o helper.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-4th.o: ../common/getters/4th.cpp ../common/getters/4th.h
+getters.o: ../common/5th/getters.cpp ../common/5th/length.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-riffinspector.o: riffinspector.cpp ../common/file_handling.h ../common/getters/4th.h ../common/results.h
+helper.o: ../common/helper.cpp ../common/helper.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+riffinspector.o: riffinspector.cpp ../common/file_handling.h ../common/5th.h ../common/5th/length.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
