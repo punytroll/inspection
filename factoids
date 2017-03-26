@@ -6,3 +6,4 @@ ISO/IEC 8859-1:1997 is undefined in the inclusive hexadecimal ranges 0x00-0x1f a
 ID3v2.3 is contradicting itself when stating that ISO/IEC 8859-1:1997 strings may contain characters in the range 0x20-0xff, because some of those vaules are undefined.
 ID3v2.4 is contradicting itself when stating that ISO/IEC 8859-1:1997 strings may contain characters in the range 0x20-0xff, because some of those vaules are undefined.
 ID3v2.3 is not sufficiently precise on whether strings ending on a frame boundary may be terminated.
+ISO/IEC 8859-1 was incorporated as the first 256 code points of ISO/IEC 10646 and Unicode.
