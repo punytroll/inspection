@@ -44,6 +44,11 @@ namespace Inspection
 			}
 		}
 		
+		void AppendTag(const std::experimental::any & Any)
+		{
+			_Tags.push_back(Any);
+		}
+		
 		const std::experimental::any & GetAny(void)
 		{
 			return _Any;
@@ -80,6 +85,11 @@ namespace Inspection
 		const Inspection::Length & GetOffset(void) const
 		{
 			return _Offset;
+		}
+		
+		const std::list< std::experimental::any > & GetTags(void) const
+		{
+			return _Tags;
 		}
 		
 		std::shared_ptr< Inspection::Value > GetValue(const std::string & Name)
@@ -129,6 +139,7 @@ namespace Inspection
 		Inspection::Length _Length;
 		std::string _Name;
 		Inspection::Length _Offset;
+		std::list< std::experimental::any > _Tags;
 		std::list< std::shared_ptr< Inspection::Value > > _Values;
 	};
 }

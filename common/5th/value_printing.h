@@ -29,6 +29,22 @@ namespace Inspection
 		{
 			std::cout << Value->GetAny();
 		}
+		if(Value->GetTags().empty() == false)
+		{
+			auto First{true};
+			
+			std::cout << " (";
+			for(auto & Tag : Value->GetTags())
+			{
+				if(First == false)
+				{
+					std::cout << ", ";
+				}
+				std::cout << Tag;
+				First = false;
+			}
+			std::cout << ')';
+		}
 		
 		auto SubIndentation{Indentation};
 		
