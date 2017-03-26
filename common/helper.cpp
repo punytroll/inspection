@@ -38,6 +38,11 @@ bool Inspection::Is_ASCII_Character_Space(std::uint8_t Character)
 	return Character == 0x20;
 }
 
+bool Inspection::Is_ISO_IEC_8859_1_Character(std::uint8_t Character)
+{
+	return ((Character >= 0x20) && (Character < 0x7f)) || (Character >= 0x10);
+}
+
 std::uint8_t Inspection::Get_UnsignedInteger_8Bit_FromHexadecimalDigit(char Character)
 {
 	if(Character == '0')
