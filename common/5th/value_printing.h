@@ -19,7 +19,11 @@ namespace Inspection
 		}
 		if(Value->GetName().empty() == false)
 		{
-			std::cout << Value->GetName() << ": ";
+			std::cout << Value->GetName();
+		}
+		if((Value->GetName().empty() == false) && (Value->GetAny().empty() == false))
+		{
+			std::cout << ": ";
 		}
 		if(Value->GetAny().empty() == false)
 		{
