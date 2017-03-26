@@ -18,7 +18,7 @@ namespace Inspection
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalString(const std::string & HexadecimalString);
 	std::uint16_t Get_UnsignedInteger_16Bit_FromHexadecimalString(const std::string & HexadecimalString);
 	std::uint32_t Get_UnsignedInteger_32Bit_FromHexadecimalString(const std::string & HexadecimalString);
-	std::string Get_UTF8_Character_FromUnicodeCodePoint(std::uint32_t CodePoint);
+	std::string Get_UTF_8_Character_FromUnicodeCodePoint(std::uint32_t CodePoint);
 }
 
 #endif

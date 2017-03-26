@@ -199,7 +199,7 @@ std::uint32_t Inspection::Get_UnsignedInteger_32Bit_FromHexadecimalString(const 
 	}
 }
 
-std::string Inspection::Get_UTF8_Character_FromUnicodeCodePoint(std::uint32_t CodePoint)
+std::string Inspection::Get_UTF_8_Character_FromUnicodeCodePoint(std::uint32_t CodePoint)
 {
 	std::stringstream Result;
 	

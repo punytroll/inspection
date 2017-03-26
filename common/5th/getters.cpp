@@ -789,7 +789,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_Character(Inspecti
 	if(CodePointResult->GetSuccess() == true)
 	{
 		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
-		Result->GetValue()->SetAny(Get_UTF8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
+		Result->GetValue()->SetAny(Get_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
