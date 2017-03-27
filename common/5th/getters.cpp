@@ -748,13 +748,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByByteLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByBoundary(Inspection::Buffer & Buffer, const Inspection::Length & Boundary)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	
-	if(Buffer.Has(Length, 0) == true)
+	if(Buffer.Has(Boundary) == true)
 	{
-		auto End{Buffer.GetPosition() + Inspection::Length(Length, 0)};
+		auto End{Buffer.GetPosition() + Boundary};
 		std::string Value;
 		
 		while(Buffer.GetPosition() < End)
@@ -924,7 +924,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 		Result->GetValue()->Append("Length", UserCommentLengthResult->GetValue());
 		
 		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
-		auto UserCommentResult{Get_UTF8_String_EndedByByteLength(Buffer, UserCommentLength)};
+		auto UserCommentResult{Get_UTF8_String_EndedByBoundary(Buffer, UserCommentLength)};
 		
 		if(UserCommentResult->GetSuccess() == true)
 		{
@@ -980,7 +980,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 		Result->GetValue()->Append("VendorLength", VendorLengthResult->GetValue());
 		
 		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
-		auto VendorResult{Get_UTF8_String_EndedByByteLength(Buffer, VendorLength)};
+		auto VendorResult{Get_UTF8_String_EndedByBoundary(Buffer, VendorLength)};
 		
 		if(VendorResult->GetSuccess() == true)
 		{
