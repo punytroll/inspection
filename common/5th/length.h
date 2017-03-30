@@ -55,7 +55,22 @@ namespace Inspection
 		
 		Length operator-(const Length & Length) const
 		{
-			return Inspection::Length(_Bytes - Length._Bytes, _Bits - Length._Bits);
+			assert(*this >= Length);
+			
+			std::uint8_t Bits;
+			std::uint64_t Bytes{_Bytes - Length._Bytes};
+			
+			if(_Bits >= Length._Bits)
+			{
+				Bits = _Bits - Length._Bits;
+			}
+			else
+			{
+				Bits = (_Bits + 8) - Length._Bits;
+				Bytes -= 1ull;
+			}
+			
+			return Inspection::Length(Bytes, Bits);
 		}
 		
 		Length operator+(const Length & Length) const
