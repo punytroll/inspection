@@ -99,6 +99,8 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_LanguageIDRecord(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_LanguageListObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_ObjectHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesFlags(Inspection::Buffer & Buffer);
@@ -727,6 +729,55 @@ std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffe
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ASF_LanguageIDRecord(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto LanguageIDLengthResult{Get_UnsignedInteger_8Bit(Buffer)};
+	
+	Result->GetValue()->Append("LanguageIDLength", LanguageIDLengthResult->GetValue());
+	if(LanguageIDLengthResult->GetSuccess() == true)
+	{
+		auto LanguageIDLength{std::experimental::any_cast< std::uint8_t >(LanguageIDLengthResult->GetAny())};
+		auto LanguageIDResult{Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, LanguageIDLength)};
+		
+		Result->GetValue()->Append("LanguageID", LanguageIDResult->GetValue());
+		Result->SetSuccess(LanguageIDResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_LanguageListObjectData(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto LanguageIDRecordsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	
+	Result->GetValue()->Append("LanguageIDRecordsCount", LanguageIDRecordsCountResult->GetValue());
+	if(LanguageIDRecordsCountResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto LanguageIDRecordsCount{std::experimental::any_cast< std::uint16_t >(LanguageIDRecordsCountResult->GetAny())};
+		
+		for(auto LanguageIDRecordIndex = 0; LanguageIDRecordIndex < LanguageIDRecordsCount; ++LanguageIDRecordIndex)
+		{
+			auto LanguageIDRecordResult{Get_ASF_LanguageIDRecord(Buffer)};
+			
+			Result->GetValue()->Append("LanguageIDRecord", LanguageIDRecordResult->GetValue());
+			if(LanguageIDRecordResult->GetSuccess() == false)
+			{
+				Result->SetSuccess(false);
+				
+				break;
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
@@ -762,6 +813,11 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 		else if(GUID == g_ASF_HeaderExtensionObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_HeaderExtensionObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+		}
+		else if(GUID == g_ASF_LanguageListObjectGUID)
+		{
+			ObjectDataResult = Get_ASF_LanguageListObjectData(Buffer);
 			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == g_ASF_PaddingObjectGUID)
