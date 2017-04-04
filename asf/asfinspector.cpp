@@ -14,6 +14,8 @@
 #include "../common/file_handling.h"
 #include "../common/guid.h"
 
+using namespace std::string_literals;
+
 /// Top-level ASF Object GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.1
 Inspection::GUID g_ASF_HeaderObjectGUID{"75b22630-668e-11cf-a6d9-00aa0062ce6c"};
@@ -42,6 +44,22 @@ Inspection::GUID g_ASF_ExtendedContentEncryptionObjectGUID{"298ae614-2622-4c17-b
 Inspection::GUID g_ASF_DigitalSignatureObjectGUID{"2211b3fc-bd23-11d2-b4b7-00a0c955fc6e"};
 Inspection::GUID g_ASF_PaddingObjectGUID{"1806d474-cadf-4509-a4ba-9aabcb96aae8"};
 
+/// Header Extension Object GUIDs
+/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.3
+Inspection::GUID g_ASF_ExtendedStreamPropertiesObjectGUID{"14e6a5cb-c672-4332-8399-a96952065b5a"};
+Inspection::GUID g_ASF_AdvancedMutualExclusionObjectGUID{"a08649cf-4775-4670-8a16-6e35357566cd"};
+Inspection::GUID g_ASF_GroupMutualExclusionObjectGUID{"d1465a40-5a79-4338-b71b-e36b8fd6c249"};
+Inspection::GUID g_ASF_StreamPrioritizationObjectGUID{"d4fed15b-88d3-454f-81f0-ed5c45999e24"};
+Inspection::GUID g_ASF_BandwidthSharingObjectGUID{"a69609e6-517b-11d2-b6af-00c04fd908e9"};
+Inspection::GUID g_ASF_LanguageListObjectGUID{"7c4346a9-efe0-4bfc-b229-393ede415c85"};
+Inspection::GUID g_ASF_MetadataObjectGUID{"c5f8cbea-5baf-4877-8467-aa8c44fa4cca"};
+Inspection::GUID g_ASF_MetadataLibraryObjectGUID{"44231c94-9498-49d1-a141-1d134e457054"};
+Inspection::GUID g_ASF_IndexParametersObjectGUID{"d6e229df-35da-11d1-9034-00a0c90349be"};
+Inspection::GUID g_ASF_MediaObjectIndexParametersObjectGUID{"6b203bad-3f11-48e4-aca8-d7613de2cfa7"};
+Inspection::GUID g_ASF_TimecodeIndexParametersObjectGUID{"f55e496d-9797-4b5d-8c8b-604dfe9bfb24"};
+Inspection::GUID g_ASF_CompatibilityObjectGUID{"26f18b5d-4584-47ec-9f5f-0e651f0452c9"};
+Inspection::GUID g_ASF_AdvancedContentEncryptionObjectGUID{"43058533-6981-49e6-9b74-ad12cb86d58c"};
+
 /// Stream Properties Object Stream Type GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.4
 Inspection::GUID g_ASF_AudioMediaGUID{"f8699e40-5b4d-11cf-a8fd-00805f5c442b"};
@@ -56,6 +74,10 @@ Inspection::GUID g_ASF_BinaryMediaGUID{"3afb65e2-47ef-40f2-ac2c-70a90d71d343"};
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.5
 Inspection::GUID g_ASF_NoErrorCorrection{"20fb5700-5b55-11cf-a8fd-00805f5c442b"};
 Inspection::GUID g_ASF_AudioSpread{"bfc3cd50-618f-11cf-8bb2-00aa00b4e220"};
+
+/// Header Extension Object GUIDs
+/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.6
+Inspection::GUID g_ASF_Reserved1{"abd3d211-a9ba-11cf-8ee6-00c00c205365"};
 
 /// Codec List Object GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.8
@@ -73,6 +95,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer);
@@ -334,6 +357,59 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 		{
 			Result->GetValue()->Append("Interpretation", std::string("ASF_Padding_Object"));
 		}
+		// Header Extension Object GUIDs
+		else if(GUID == g_ASF_ExtendedStreamPropertiesObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Extended_Stream_Properties_Object"s);
+		}
+		else if(GUID == g_ASF_AdvancedMutualExclusionObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Advanced_Mutual_Exclusion_Object"s);
+		}
+		else if(GUID == g_ASF_GroupMutualExclusionObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Group_Mutual_Exclusion_Object"s);
+		}
+		else if(GUID == g_ASF_StreamPrioritizationObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Stream_Prioritization_Object"s);
+		}
+		else if(GUID == g_ASF_BandwidthSharingObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Bandwidth_Sharing_Object"s);
+		}
+		else if(GUID == g_ASF_LanguageListObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Language_List_Object"s);
+		}
+		else if(GUID == g_ASF_MetadataObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Metadata_Object"s);
+		}
+		else if(GUID == g_ASF_MetadataLibraryObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Metadata_Library_Object"s);
+		}
+		else if(GUID == g_ASF_IndexParametersObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Index_Parameters_Object"s);
+		}
+		else if(GUID == g_ASF_MediaObjectIndexParametersObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Media_Object_Index_Parameters_Object"s);
+		}
+		else if(GUID == g_ASF_TimecodeIndexParametersObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Timecode_Index_Parameters_Object"s);
+		}
+		else if(GUID == g_ASF_CompatibilityObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Compatibility_Object"s);
+		}
+		else if(GUID == g_ASF_AdvancedContentEncryptionObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Advanced_Content_Encryption_Object"s);
+		}
 		// Stream Properties Object Stream Type GUIDs
 		else if(GUID == g_ASF_AudioMediaGUID)
 		{
@@ -372,6 +448,11 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 		{
 			Result->GetValue()->Append("Interpretation", std::string("ASF_Audio_Spread"));
 		}
+		// Header Extension Object GUIDs
+		else if(GUID == g_ASF_Reserved1)
+		{
+			Result->GetValue()->Append("Interpretation", std::string("ASF_Reserved_1"));
+		}
 		// Codec List Object GUIDs
 		else if(GUID == g_ASF_Reserved2)
 		{
@@ -383,6 +464,58 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 			Result->GetValue()->Append("Interpretation", std::string("<unknown GUID value>"));
 		}
 		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ReservedField1Result{Get_ASF_GUID(Buffer)};
+	
+	Result->GetValue()->Append("ReservedField1", ReservedField1Result->GetValue());
+	if(ReservedField1Result->GetSuccess() == true)
+	{
+		auto Reserved1Field{std::experimental::any_cast< Inspection::GUID >(ReservedField1Result->GetAny())};
+		
+		if(Reserved1Field == g_ASF_Reserved1)
+		{
+			auto ReservedField2Result{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+			
+			Result->GetValue()->Append("ReservedField2", ReservedField2Result->GetValue());
+			if(ReservedField2Result->GetSuccess() == true)
+			{
+				auto ReservedField2{std::experimental::any_cast< std::uint16_t >(ReservedField2Result->GetAny())};
+				
+				if(ReservedField2 == 0x0006)
+				{
+					auto HeaderExtensionDataSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+					
+					Result->GetValue()->Append("HeaderExtensionDataSize", HeaderExtensionDataSizeResult->GetValue());
+					if(HeaderExtensionDataSizeResult->GetSuccess() == true)
+					{
+						auto HeaderExtensionDataSize{std::experimental::any_cast< std::uint32_t >(HeaderExtensionDataSizeResult->GetAny())};
+						Inspection::Length Boundary{Buffer.GetPosition() + HeaderExtensionDataSize};
+						
+						Result->SetSuccess(true);
+						while(Buffer.GetPosition() < Boundary)
+						{
+							auto AdditionalExtendedHeaderObjectResult{Get_ASF_Object(Buffer)};
+							
+							Result->GetValue()->Append("AdditionalExtendedHeader", AdditionalExtendedHeaderObjectResult->GetValue());
+							if(AdditionalExtendedHeaderObjectResult->GetSuccess() == false)
+							{
+								Result->SetSuccess(false);
+								
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -623,6 +756,11 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 		else if(GUID == g_ASF_CodecListObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_CodecListObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+		}
+		else if(GUID == g_ASF_HeaderExtensionObjectGUID)
+		{
+			ObjectDataResult = Get_ASF_HeaderExtensionObjectData(Buffer);
 			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
 		else
