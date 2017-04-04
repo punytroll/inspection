@@ -8,10 +8,11 @@ clean:
 	$(RM) asfinspector.o
 	$(RM) getters.o
 	$(RM) helper.o
+	$(RM) string_cast.o
 
 all: ../asfinspector
 
-../asfinspector: asfinspector.o getters.o helper.o
+../asfinspector: asfinspector.o getters.o helper.o string_cast.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 asfinspector.o: asfinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/guid.h ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h ../common/5th/value_printing.h
@@ -21,4 +22,7 @@ getters.o: ../common/5th/getters.cpp ../common/5th/buffer.h ../common/5th/getter
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 helper.o: ../common/helper.cpp ../common/helper.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+string_cast.o: ../common/string_cast.cpp ../common/string_cast.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@

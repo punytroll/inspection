@@ -13,6 +13,7 @@
 #include "../common/5th.h"
 #include "../common/file_handling.h"
 #include "../common/guid.h"
+#include "../common/string_cast.h"
 
 using namespace std::string_literals;
 
@@ -762,6 +763,13 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 		{
 			ObjectDataResult = Get_ASF_HeaderExtensionObjectData(Buffer);
 			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+		}
+		else if(GUID == g_ASF_PaddingObjectGUID)
+		{
+			auto Length{Inspection::Length(Size) - ObjectHeaderResult->GetValue()->GetLength()};
+			
+			ObjectDataResult = Get_Bits_Unset_EndedByLength(Buffer, Length);
+			Result->GetValue()->Append("Data", to_string_cast(ObjectDataResult->GetLength().GetBytes()) + '.' + to_string_cast(ObjectDataResult->GetLength().GetBits()) + " bytes of zeroed data");
 		}
 		else
 		{

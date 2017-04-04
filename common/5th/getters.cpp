@@ -162,6 +162,57 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(Length) == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto Boundary{Buffer.GetPosition() + Length};
+		
+		while(Buffer.GetPosition() < Boundary)
+		{
+			if(Buffer.Get1Bits() == 0x00)
+			{
+				Result->SetSuccess(false);
+				
+				break;
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(Length) == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto Boundary{Buffer.GetPosition() + Length};
+		
+		while(Buffer.GetPosition() < Boundary)
+		{
+			if(Buffer.Get1Bits() == 0x01)
+			{
+				std::cout << "HERE" << std::endl;
+				Result->SetSuccess(false);
+				
+				break;
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
@@ -419,6 +470,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspe
 	if(Buffer.Has(0ull, 1) == true)
 	{
 		Result->GetValue()->SetAny(Buffer.Get1Bits());
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(0ull, 2) == true)
+	{
+		Result->GetValue()->SetAny(Buffer.Get2Bits());
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
