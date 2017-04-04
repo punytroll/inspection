@@ -915,6 +915,52 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodeUnit(Inspectio
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	assert(Length.GetBytes() % 2 == 0);
+	assert(Length.GetBits() == 0);
+	
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::stringstream Value;
+	
+	while(Buffer.GetPosition() < Boundary)
+	{
+		auto CharacterResult{Get_UTF16LE_Character(Buffer)};
+		
+		if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
+		{
+			auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+			
+			if(Buffer.GetPosition() == Boundary)
+			{
+				Result->SetSuccess(CodePoint == 0x00000000);
+				
+				break;
+			}
+			else
+			{
+				if(CodePoint == 0x00000000)
+				{
+					break;
+				}
+				else
+				{
+					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
