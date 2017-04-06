@@ -92,6 +92,8 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Bu
 std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Buffer & Buffer);
@@ -252,6 +254,139 @@ std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Bu
 			if(DataObjectDataResult->GetSuccess() == true)
 			{
 				Result->SetSuccess(true);
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto FlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
+	
+	Result->SetValue(FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(FlagsResult->GetAny())};
+		
+		Result->GetValue()->Append("[0] Reliable", Flags[0]);
+		Result->GetValue()->Append("[1] Seekable", Flags[1]);
+		Result->GetValue()->Append("[2] No Cleanpoints", Flags[2]);
+		Result->GetValue()->Append("[3] Resend Live Cleanpoints", Flags[3]);
+		Result->GetValue()->Append("[4-31] Reserved", false);
+		Result->SetSuccess(true);
+		for(auto Index = 4; Index < 32; ++Index)
+		{
+			Result->SetSuccess(Result->GetSuccess() & ~Flags[Index]);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto StartTimeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+	
+	Result->GetValue()->Append("StartTime", StartTimeResult->GetValue());
+	Result->GetValue("StartTime")->AppendTag("milliseconds"s);
+	if(StartTimeResult->GetSuccess() == true)
+	{
+		auto EndTimeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		
+		Result->GetValue()->Append("EndTime", EndTimeResult->GetValue());
+		Result->GetValue("EndTime")->AppendTag("milliseconds"s);
+		if(EndTimeResult->GetSuccess() == true)
+		{
+			auto DataBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			
+			Result->GetValue()->Append("DataBitrate", DataBitrateResult->GetValue());
+			Result->GetValue("DataBitrate")->AppendTag("bits per second"s);
+			if(DataBitrateResult->GetSuccess() == true)
+			{
+				auto BufferSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				
+				Result->GetValue()->Append("BufferSize", BufferSizeResult->GetValue());
+				Result->GetValue("BufferSize")->AppendTag("milliseconds"s);
+				if(BufferSizeResult->GetSuccess() == true)
+				{
+					auto InitialBufferFullnessResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+					
+					Result->GetValue()->Append("InitialBufferFullness", InitialBufferFullnessResult->GetValue());
+					Result->GetValue("InitialBufferFullness")->AppendTag("milliseconds"s);
+					if(InitialBufferFullnessResult->GetSuccess() == true)
+					{
+						auto AlternateDataBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+						
+						Result->GetValue()->Append("AlternateDataBitrate", AlternateDataBitrateResult->GetValue());
+						Result->GetValue("AlternateDataBitrate")->AppendTag("bits per second"s);
+						if(AlternateDataBitrateResult->GetSuccess() == true)
+						{
+							auto AlternateBufferSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+							
+							Result->GetValue()->Append("AlternateBufferSize", AlternateBufferSizeResult->GetValue());
+							Result->GetValue("AlternateBufferSize")->AppendTag("milliseconds"s);
+							if(AlternateBufferSizeResult->GetSuccess() == true)
+							{
+								auto AlternateInitialBufferFullnessResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+								
+								Result->GetValue()->Append("AlternateInitialBufferFullness", AlternateInitialBufferFullnessResult->GetValue());
+								Result->GetValue("AlternateInitialBufferFullness")->AppendTag("milliseconds"s);
+								if(AlternateInitialBufferFullnessResult->GetSuccess() == true)
+								{
+									auto MaximumObjectSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+									
+									Result->GetValue()->Append("MaximumObjectSize", MaximumObjectSizeResult->GetValue());
+									if(MaximumObjectSizeResult->GetSuccess() == true)
+									{
+										auto FlagsResult{Get_ASF_ExtendedStreamPropertiesObject_Flags(Buffer)};
+										
+										Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+										if(FlagsResult->GetSuccess() == true)
+										{
+											auto StreamNumberResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+											
+											Result->GetValue()->Append("StreamNumber", StreamNumberResult->GetValue());
+											if(StreamNumberResult->GetSuccess() == true)
+											{
+												auto StreamLanguageIndexResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+												
+												Result->GetValue()->Append("StreamLanguageIndex", StreamLanguageIndexResult->GetValue());
+												if(StreamLanguageIndexResult->GetSuccess() == true)
+												{
+													auto AverageTimePerFrameResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+													
+													Result->GetValue()->Append("AverageTimePerFrame", AverageTimePerFrameResult->GetValue());
+													if(AverageTimePerFrameResult->GetSuccess() == true)
+													{
+														auto StreamNameCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+														
+														Result->GetValue()->Append("StreamNameCount", StreamNameCountResult->GetValue());
+														if(StreamNameCountResult->GetSuccess() == true)
+														{
+															auto PayloadExtensionSystemCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+															
+															Result->GetValue()->Append("PayloadExtensionSystemCount", PayloadExtensionSystemCountResult->GetValue());
+															if(PayloadExtensionSystemCountResult->GetSuccess() == true)
+															{
+																
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -818,6 +953,11 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 		else if(GUID == g_ASF_LanguageListObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_LanguageListObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+		}
+		else if(GUID == g_ASF_ExtendedStreamPropertiesObjectGUID)
+		{
+			ObjectDataResult = Get_ASF_ExtendedStreamPropertiesObjectData(Buffer);
 			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == g_ASF_PaddingObjectGUID)
