@@ -2,6 +2,10 @@
 #define COMMON_LENGTH_H
 
 #include <cstdint>
+#include <sstream>
+#include <string>
+
+#include "../string_cast.h"
 
 namespace Inspection
 {
@@ -140,6 +144,16 @@ namespace Inspection
 		std::uint8_t _Bits;
 		std::uint64_t _Bytes;
 	};
+}
+
+template < >
+inline std::string to_string_cast< Inspection::Length >(const Inspection::Length & Value)
+{
+	std::ostringstream StringStream;
+	
+	StringStream << Value.GetBytes() << '.' << static_cast< std::uint32_t >(Value.GetBits());
+	
+	return StringStream.str();
 }
 
 #endif
