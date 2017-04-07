@@ -93,7 +93,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer 
 std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Buffer & Buffer);
@@ -106,6 +106,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_LanguageListObjectData(Inspection:
 std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_ObjectHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesFlags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspection::Buffer & Buffer);
 
 std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Buffer)
@@ -288,8 +289,9 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Fla
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto StartTimeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 	
@@ -374,7 +376,27 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData
 															Result->GetValue()->Append("PayloadExtensionSystemCount", PayloadExtensionSystemCountResult->GetValue());
 															if(PayloadExtensionSystemCountResult->GetSuccess() == true)
 															{
+																auto StreamNameCount{std::experimental::any_cast< std::uint16_t >(StreamNameCountResult->GetAny())};
+																auto PayloadExtensionSystemCount{std::experimental::any_cast< std::uint16_t >(PayloadExtensionSystemCountResult->GetAny())};
 																
+																if((StreamNameCount == 0) && (PayloadExtensionSystemCount == 0))
+																{
+																	if(Buffer.GetPosition() < Boundary)
+																	{
+																		auto StreamPropertiesObjectResult{Get_ASF_StreamPropertiesObject(Buffer)};
+																		
+																		Result->GetValue()->Append("StreamPropertiesObject", StreamPropertiesObjectResult->GetValue());
+																		Result->SetSuccess(StreamPropertiesObjectResult->GetSuccess());
+																	}
+																	else
+																	{
+																		Result->SetSuccess(true);
+																	}
+																}
+																else
+																{
+																	throw std::runtime_error("Not implemented.");
+																}
 															}
 														}
 													}
@@ -957,7 +979,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 		}
 		else if(GUID == g_ASF_ExtendedStreamPropertiesObjectGUID)
 		{
-			ObjectDataResult = Get_ASF_ExtendedStreamPropertiesObjectData(Buffer);
+			ObjectDataResult = Get_ASF_ExtendedStreamPropertiesObjectData(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
 			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == g_ASF_PaddingObjectGUID)
@@ -1035,6 +1057,32 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesFlags(Inspection::
 			}
 		}
 		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
+	
+	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
+	if(ObjectHeaderResult->GetSuccess() == true)
+	{
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
+		
+		if(GUID == g_ASF_StreamPropertiesObjectGUID)
+		{
+			auto HeaderObjectDataResult{Get_ASF_StreamPropertiesObjectData(Buffer)};
+			
+			Result->GetValue()->Append(HeaderObjectDataResult->GetValue()->GetValues());
+			if(HeaderObjectDataResult->GetSuccess() ==true)
+			{
+				Result->SetSuccess(true);
+			}
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
