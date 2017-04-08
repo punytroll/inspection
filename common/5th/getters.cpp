@@ -411,6 +411,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 	
 	if(Buffer.Has(16ull, 0) == true)
 	{
+		Result->GetValue()->AppendTag("guid"s);
+		Result->GetValue()->AppendTag("binary"s);
+		Result->GetValue()->AppendTag("little endian"s);
+		
 		GUID Value;
 		
 		Value.Data1 = static_cast< std::uint32_t >(Buffer.Get8Bits()) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24);
