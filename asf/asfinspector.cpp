@@ -120,6 +120,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRec
 std::unique_ptr< Inspection::Result > Get_ASF_StreamBitratePropertiesObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspection::Buffer & Buffer);
 
@@ -1652,9 +1653,18 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_
 							Result->GetValue("CodecSpecificDataSize")->AppendTag("bytes"s);
 							if(CodecSpecificDataSizeResult->GetSuccess() == true)
 							{
+								auto FormatTag{std::experimental::any_cast< const std::string & >(FormatTagResult->GetAny("ConstantName"))};
 								auto CodecSpecificDataSize{std::experimental::any_cast< std::uint16_t >(CodecSpecificDataSizeResult->GetAny())};
-								auto CodecSpecificDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(CodecSpecificDataSize))};
+								std::unique_ptr< Inspection::Result > CodecSpecificDataResult;
 								
+								if(FormatTag == "WAVE_FORMAT_WMAUDIO2")
+								{
+									CodecSpecificDataResult = Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Buffer, CodecSpecificDataSize);
+								}
+								else
+								{
+									CodecSpecificDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(CodecSpecificDataSize));
+								}
 								Result->GetValue()->Append("CodecSpecificData", CodecSpecificDataResult->GetValue());
 								Result->SetSuccess(CodecSpecificDataResult->GetSuccess());
 								//
@@ -1664,6 +1674,34 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_
 						}
 					}
 				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Length == Inspection::Length(10ull, 0))
+	{
+		auto SamplesPerBlockResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		
+		Result->GetValue()->Append("SamplesPerBlock", SamplesPerBlockResult->GetValue());
+		if(SamplesPerBlockResult->GetSuccess() == true)
+		{
+			auto EncodeOptionsResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+			
+			Result->GetValue()->Append("EncodeOptions", EncodeOptionsResult->GetValue());
+			if(EncodeOptionsResult->GetSuccess() == true)
+			{
+				auto SuperBlockAlignResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				
+				Result->GetValue()->Append("SuperBlockAlign", SuperBlockAlignResult->GetValue());
+				Result->SetSuccess(SuperBlockAlignResult->GetSuccess());
 			}
 		}
 	}
