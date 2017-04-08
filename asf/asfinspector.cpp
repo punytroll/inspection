@@ -119,7 +119,10 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord_D
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_ObjectHeader(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesFlags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRecord(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamBitratePropertiesObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspection::Buffer & Buffer);
 
@@ -1463,6 +1466,11 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 			ObjectDataResult = Get_ASF_ExtendedContentDescriptionObjectData(Buffer);
 			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
+		else if(GUID == g_ASF_StreamBitratePropertiesObjectGUID)
+		{
+			ObjectDataResult = Get_ASF_StreamBitratePropertiesObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+		}
 		else
 		{
 			ObjectDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
@@ -1499,7 +1507,77 @@ std::unique_ptr< Inspection::Result > Get_ASF_ObjectHeader(Inspection::Buffer & 
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesFlags(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRecord(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto FlagsResult{Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Buffer)};
+	
+	Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		auto AverageBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		
+		Result->GetValue()->Append("AverageBitrate", AverageBitrateResult->GetValue());
+		Result->SetSuccess(AverageBitrateResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Position{Buffer.GetPosition()};
+	auto FlagsResult{Get_BitSet_16Bit_LittleEndian(Buffer)};
+	
+	Result->SetValue(FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		Buffer.SetPosition(Position);
+		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
+		
+		auto StreamNumberResult{Get_UnsignedInteger_7Bit(Buffer)};
+		
+		Result->GetValue()->Append("[0-6] StreamNumber", StreamNumberResult->GetValue());
+		if(StreamNumberResult->GetSuccess() == true)
+		{
+			auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0ull, 9))};
+			
+			Result->GetValue()->Append("[7-15] Reserved", ReservedResult->GetValue());
+			Result->SetSuccess(ReservedResult->GetSuccess());
+		}
+		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_StreamBitratePropertiesObjectData(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto BitrateRecordsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	
+	Result->GetValue()->Append("BitrateRecordsCount", BitrateRecordsCountResult->GetValue());
+	if(BitrateRecordsCountResult->GetSuccess() == true)
+	{
+		auto BitrateRecordsCount{std::experimental::any_cast< std::uint16_t >(BitrateRecordsCountResult->GetAny())};
+		
+		for(auto BitrateRecordsIndex = 0; BitrateRecordsIndex < BitrateRecordsCount; ++BitrateRecordsIndex)
+		{
+			auto BitrateRecordResult{Get_ASF_StreamBitrateProperties_BitrateRecord(Buffer)};
+			
+			Result->GetValue()->Append("BitrateRecord", BitrateRecordResult->GetValue());
+			Result->SetSuccess(BitrateRecordResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_Flags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto Position{Buffer.GetPosition()};
@@ -1591,7 +1669,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspect
 					Result->GetValue()->Append("ErrorCorrectionDataLength", ErrorCorrectionDataLengthResult->GetValue());
 					if(ErrorCorrectionDataLengthResult->GetSuccess() == true)
 					{
-						auto FlagsResult{Get_ASF_StreamPropertiesFlags(Buffer)};
+						auto FlagsResult{Get_ASF_StreamProperties_Flags(Buffer)};
 						
 						Result->GetValue()->Append("Flags", FlagsResult->GetValue());
 						if(FlagsResult->GetSuccess() == true)
