@@ -7,6 +7,8 @@
 #include "buffer.h"
 #include "getters.h"
 
+using namespace std::string_literals;
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetical(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
@@ -1036,6 +1038,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::stringstream Value;
 	
+	Result->GetValue()->AppendTag("UTF16"s);
+	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AppendTag("without byte order mark"s);
 	while(Buffer.GetPosition() < Boundary)
 	{
 		auto CharacterResult{Get_UTF16LE_Character(Buffer)};
@@ -1044,22 +1049,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 		{
 			auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
 			
-			if(Buffer.GetPosition() == Boundary)
+			if(CodePoint == 0x00000000)
 			{
-				Result->SetSuccess(CodePoint == 0x00000000);
-				
-				break;
-			}
-			else
-			{
-				if(CodePoint == 0x00000000)
+				if(Buffer.GetPosition() == Boundary)
 				{
-					break;
+					Result->GetValue()->AppendTag("ended by termination and boundary"s);
+					Result->SetSuccess(true);
 				}
 				else
 				{
-					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+					Result->GetValue()->AppendTag("ended by termination"s);
+					
+					break;
 				}
+			}
+			else
+			{
+				if(Buffer.GetPosition() == Boundary)
+				{
+					Result->GetValue()->AppendTag("ended by boundary"s);
+				}
+				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
 			}
 		}
 		else
