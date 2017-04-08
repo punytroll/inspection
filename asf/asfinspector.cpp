@@ -93,6 +93,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Bu
 std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_ContentDescriptionObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_DataType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_ContentDescriptor(Inspection::Buffer & Buffer);
@@ -335,6 +336,77 @@ std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection
 				if(Mode == 0x01)
 				{
 					Result->SetSuccess(true);
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_ContentDescriptionObjectData(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto TitleLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	
+	Result->GetValue()->Append("TitleLength", TitleLengthResult->GetValue());
+	if(TitleLengthResult->GetSuccess() == true)
+	{
+		auto AuthorLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		
+		Result->GetValue()->Append("AuthorLength", AuthorLengthResult->GetValue());
+		if(AuthorLengthResult->GetSuccess() == true)
+		{
+			auto CopyrightLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+			
+			Result->GetValue()->Append("CopyrightLength", CopyrightLengthResult->GetValue());
+			if(CopyrightLengthResult->GetSuccess() == true)
+			{
+				auto DescriptionLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+				
+				Result->GetValue()->Append("DescriptionLength", DescriptionLengthResult->GetValue());
+				if(DescriptionLengthResult->GetSuccess() == true)
+				{
+					auto RatingLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+					
+					Result->GetValue()->Append("RatingLength", RatingLengthResult->GetValue());
+					if(RatingLengthResult->GetSuccess() == true)
+					{
+						auto TitleLength{std::experimental::any_cast< std::uint16_t >(TitleLengthResult->GetAny())};
+						auto TitleResult{Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, TitleLength)};
+						
+						Result->GetValue()->Append("Title", TitleResult->GetValue());
+						if(TitleResult->GetSuccess() == true)
+						{
+							auto AuthorLength{std::experimental::any_cast< std::uint16_t >(AuthorLengthResult->GetAny())};
+							auto AuthorResult{Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, AuthorLength)};
+							
+							Result->GetValue()->Append("Author", AuthorResult->GetValue());
+							if(AuthorResult->GetSuccess() == true)
+							{
+								auto CopyrightLength{std::experimental::any_cast< std::uint16_t >(CopyrightLengthResult->GetAny())};
+								auto CopyrightResult{Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, CopyrightLength)};
+								
+								Result->GetValue()->Append("Copyright", CopyrightResult->GetValue());
+								if(CopyrightResult->GetSuccess() == true)
+								{
+									auto DescriptionLength{std::experimental::any_cast< std::uint16_t >(DescriptionLengthResult->GetAny())};
+									auto DescriptionResult{Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, DescriptionLength)};
+									
+									Result->GetValue()->Append("Description", DescriptionResult->GetValue());
+									if(DescriptionResult->GetSuccess() == true)
+									{
+										auto RatingLength{std::experimental::any_cast< std::uint16_t >(RatingLengthResult->GetAny())};
+										auto RatingResult{Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, RatingLength)};
+										
+										Result->GetValue()->Append("Rating", RatingResult->GetValue());
+										Result->SetSuccess(RatingResult->GetSuccess());
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1467,6 +1539,11 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 		else if(GUID == g_ASF_StreamBitratePropertiesObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_StreamBitratePropertiesObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+		}
+		else if(GUID == g_ASF_ContentDescriptionObjectGUID)
+		{
+			ObjectDataResult = Get_ASF_ContentDescriptionObjectData(Buffer);
 			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
 		else
