@@ -1,7 +1,3 @@
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <unistd.h>
-
 #include <deque>
 #include <string>
 
@@ -476,51 +472,13 @@ std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer
 	return Result;
 }
 
-void ReadFile(const std::string & Path)
+std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
-	auto FileDescriptor{open(Path.c_str(), O_RDONLY)};
+	auto RIFFChunkResult{Get_RIFF_Chunk(Buffer)};
 	
-	if(FileDescriptor == -1)
-	{
-		std::cerr << "Could not open the file \"" << Path << "\"." << std::endl;
-	}
-	else
-	{
-		std::int64_t FileSize{GetFileSize(Path)};
-		
-		if(FileSize != -1)
-		{
-			auto Address{reinterpret_cast< std::uint8_t * >(mmap(NULL, FileSize, PROT_READ, MAP_PRIVATE, FileDescriptor, 0))};
-			
-			if(Address == MAP_FAILED)
-			{
-				std::cerr << "Could not map the file \"" + Path + "\" into memory." << std::endl;
-			}
-			else
-			{
-				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
-				auto RIFFChunkResult{Get_RIFF_Chunk(Buffer)};
-				
-				RIFFChunkResult->GetValue()->SetName("RIFFChunk");
-				PrintValue(RIFFChunkResult->GetValue());
-				if(RIFFChunkResult->GetSuccess() == false)
-				{
-					std::cerr << "The file does not start with a RIFF chunk." << std::endl;
-				}
-				else
-				{
-					auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
-					
-					if(Rest > 0ull)
-					{
-						std::cerr << "There are " << Rest.GetBytes() << "." << Rest.GetBits() << " bytes and bits after the data." << std::endl;
-					}
-				}
-				munmap(Address, FileSize);
-			}
-		}
-		close(FileDescriptor);
-	}
+	RIFFChunkResult->GetValue()->SetName("RIFFChunk");
+	
+	return RIFFChunkResult;
 }
 
 int main(int argc, char ** argv)
@@ -541,7 +499,7 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front());
+		ReadItem(Paths.front(), ProcessBuffer);
 		Paths.pop_front();
 	}
 	

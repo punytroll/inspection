@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 
+#include "../common/5th.h"
 #include "../common/file_handling.h"
 
 std::tuple< bool, unsigned int, std::string > GetMPEGFrameInfo(uint8_t * Buffer, unsigned int Length)
