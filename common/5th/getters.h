@@ -47,6 +47,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UTF16LE_CodePoint(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF16LE_CodeUnit(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+	std::unique_ptr< Inspection::Result > Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints);
 	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer);
