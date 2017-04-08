@@ -107,23 +107,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & String)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & TemplateString)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
+	std::stringstream Value;
 	
-	if(Buffer.Has(String.length(), 0) == true)
+	if(Buffer.Has(TemplateString.length(), 0) == true)
 	{
 		Result->SetSuccess(true);
-		for(auto Character : String)
+		for(auto TemplateCharacter : TemplateString)
 		{
-			if((Character != Buffer.Get8Bits()) || (Is_ASCII_Character_Alphabetical(Character) == false))
+			auto BufferCharacter{Buffer.Get8Bits()};
+			
+			Value << BufferCharacter;
+			if((TemplateCharacter != BufferCharacter) || (Is_ASCII_Character_Alphabetical(BufferCharacter) == false))
 			{
 				Result->SetSuccess(false);
 				
 				break;
 			}
 		}
-		Result->GetValue()->SetAny(String);
+		Result->GetValue()->SetAny(Value.str());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
