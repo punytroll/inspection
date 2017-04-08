@@ -489,21 +489,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_Forma
 		case 0x0161:
 			{
 				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO2"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio Standard"));
+				Result->GetValue()->Append("Description", std::string("Windows Media Audio Standard (Versions 7, 8, and 9 Series)"));
 				
 				break;
 			}
 		case 0x0162:
 			{
 				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO3"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio Professional"));
+				Result->GetValue()->Append("Description", std::string("Windows Media Audio Professional (9 Series)"));
 				
 				break;
 			}
 		case 0x0163:
 			{
 				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO_LOSSLESS"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio Lossless"));
+				Result->GetValue()->Append("Description", std::string("Windows Media Audio Lossless (9 Series)"));
 				
 				break;
 			}
