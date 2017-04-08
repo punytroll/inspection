@@ -349,15 +349,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_1Bit(Inspection::B
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	assert(Length.GetBits() == 0);
+	
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	
-	if(Buffer.Has(Length, 0) == true)
+	if(Buffer.Has(Length) == true)
 	{
+		auto Boundary{Buffer.GetPosition() + Length};
 		std::vector< std::uint8_t > Value;
 		
-		for(auto Index = 0ull; Index < Length; ++Index)
+		while(Buffer.GetPosition() < Boundary)
 		{
 			Value.push_back(Buffer.Get8Bits());
 		}
@@ -369,7 +372,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto Data{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
