@@ -18,7 +18,6 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatTag(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_RIFF_File(Inspection::Buffer & Buffer);
@@ -243,7 +242,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto FormatTagResult{Get_RIFF_fmt_ChunkData_FormatTag(Buffer)};
+	auto FormatTagResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
 	
 	Result->GetValue()->Append("FormatTag", FormatTagResult->GetValue());
 	if(FormatTagResult->GetSuccess() == true)
@@ -319,104 +318,6 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 	
 	Result->GetValue()->Append(BitsPerSampleResult->GetValue());
 	Result->SetSuccess(BitsPerSampleResult->GetSuccess());
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatTag(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto FormatTagResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-	
-	Result->SetValue(FormatTagResult->GetValue());
-	if(FormatTagResult->GetSuccess() == true)
-	{
-		Result->SetSuccess(true);
-		
-		auto FormatTag{std::experimental::any_cast< std::uint16_t >(FormatTagResult->GetAny())};
-		
-		switch(FormatTag)
-		{
-		case 0x0000:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_UNKNOWN"));
-				Result->GetValue()->Append("Description", std::string("Unknown or invalid format tag"));
-				
-				break;
-			}
-		case 0x0001:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_PCM"));
-				Result->GetValue()->Append("Description", std::string("Pulse Code Modulation"));
-				
-				break;
-			}
-		case 0x0002:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_ADPCM"));
-				Result->GetValue()->Append("Description", std::string("Microsoft Adaptive Differental PCM"));
-				
-				break;
-			}
-		case 0x0003:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_IEEE_FLOAT"));
-				Result->GetValue()->Append("Description", std::string("32-bit floating-point"));
-				
-				break;
-			}
-		case 0x0055:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_MPEGLAYER3"));
-				Result->GetValue()->Append("Description", std::string("ISO/MPEG Layer3"));
-				
-				break;
-			}
-		case 0x0092:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_DOLBY_AC3_SPDIF"));
-				Result->GetValue()->Append("Description", std::string("Dolby Audio Codec 3 over S/PDIF"));
-				
-				break;
-			}
-		case 0x0161:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO2"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio"));
-				
-				break;
-			}
-		case 0x0162:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO3"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio Pro"));
-				
-				break;
-			}
-		case 0x0164:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMASPDIF"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio over S/PDIF"));
-				
-				break;
-			}
-		case 0xFFFE:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_EXTENSIBLE"));
-				Result->GetValue()->Append("Description", std::string("All new audio formats"));
-				
-				break;
-			}
-		default:
-			{
-				Result->GetValue()->Append("ConstantName", std::string("<no interpretation>"));
-				Result->GetValue()->Append("Description", std::string("<no interpretation>"));
-				
-				break;
-			}
-		}
-	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;

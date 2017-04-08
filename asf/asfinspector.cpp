@@ -1615,7 +1615,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_Flags(Inspection:
 std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
-	auto FormatTagResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto FormatTagResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
 	
 	Result->GetValue()->Append("FormatTag", FormatTagResult->GetValue());
 	if(FormatTagResult->GetSuccess() == true)
