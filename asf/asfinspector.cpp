@@ -73,16 +73,16 @@ Inspection::GUID g_ASF_BinaryMediaGUID{"3afb65e2-47ef-40f2-ac2c-70a90d71d343"};
 
 /// Stream Properties Object Error Correction Type GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.5
-Inspection::GUID g_ASF_NoErrorCorrection{"20fb5700-5b55-11cf-a8fd-00805f5c442b"};
-Inspection::GUID g_ASF_AudioSpread{"bfc3cd50-618f-11cf-8bb2-00aa00b4e220"};
+Inspection::GUID g_ASF_NoErrorCorrectionGUID{"20fb5700-5b55-11cf-a8fd-00805f5c442b"};
+Inspection::GUID g_ASF_AudioSpreadGUID{"bfc3cd50-618f-11cf-8bb2-00aa00b4e220"};
 
 /// Header Extension Object GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.6
-Inspection::GUID g_ASF_Reserved1{"abd3d211-a9ba-11cf-8ee6-00c00c205365"};
+Inspection::GUID g_ASF_Reserved1GUID{"abd3d211-a9ba-11cf-8ee6-00c00c205365"};
 
 /// Codec List Object GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.8
-Inspection::GUID g_ASF_Reserved2{"86d15241-311d-11d0-a3a4-00a0c90348f6"};
+Inspection::GUID g_ASF_Reserved2GUID{"86d15241-311d-11d0-a3a4-00a0c90348f6"};
 
 /// Other GUIDs found on the web
 Inspection::GUID g_ASF_IndexPlaceholderObjectGUID{"d9aade20-7c17-4f9c-bc28-8555dd98e2a2"};
@@ -123,6 +123,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRec
 std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamBitratePropertiesObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_Flags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspection::Buffer & Buffer);
 
@@ -281,7 +282,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Bu
 	auto ReservedGUIDResult{Get_ASF_GUID(Buffer)};
 	
 	Result->GetValue()->Append("Reserved", ReservedGUIDResult->GetValue());
-	if((ReservedGUIDResult->GetSuccess() == true) && (std::experimental::any_cast< Inspection::GUID >(ReservedGUIDResult->GetAny()) == g_ASF_Reserved2))
+	if((ReservedGUIDResult->GetSuccess() == true) && (std::experimental::any_cast< Inspection::GUID >(ReservedGUIDResult->GetAny()) == g_ASF_Reserved2GUID))
 	{
 		auto CodecEntriesCountResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 		
@@ -889,21 +890,21 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 			Result->GetValue()->Append("Interpretation", "ASF_Binary_Media"s);
 		}
 		// Stream Properties Object Error Correction Type GUIDs
-		else if(GUID == g_ASF_NoErrorCorrection)
+		else if(GUID == g_ASF_NoErrorCorrectionGUID)
 		{
 			Result->GetValue()->Append("Interpretation", "ASF_No_Error_Correction"s);
 		}
-		else if(GUID == g_ASF_AudioSpread)
+		else if(GUID == g_ASF_AudioSpreadGUID)
 		{
 			Result->GetValue()->Append("Interpretation", "ASF_Audio_Spread"s);
 		}
 		// Header Extension Object GUIDs
-		else if(GUID == g_ASF_Reserved1)
+		else if(GUID == g_ASF_Reserved1GUID)
 		{
 			Result->GetValue()->Append("Interpretation", "ASF_Reserved_1"s);
 		}
 		// Codec List Object GUIDs
-		else if(GUID == g_ASF_Reserved2)
+		else if(GUID == g_ASF_Reserved2GUID)
 		{
 			Result->GetValue()->Append("Interpretation", "ASF_Reserved_2"s);
 		}
@@ -934,7 +935,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspecti
 	{
 		auto Reserved1Field{std::experimental::any_cast< Inspection::GUID >(ReservedField1Result->GetAny())};
 		
-		if(Reserved1Field == g_ASF_Reserved1)
+		if(Reserved1Field == g_ASF_Reserved1GUID)
 		{
 			auto ReservedField2Result{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 			
@@ -1615,6 +1616,66 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_Flags(Inspection:
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto FormatTagResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	
+	Result->GetValue()->Append("FormatTag", FormatTagResult->GetValue());
+	if(FormatTagResult->GetSuccess() == true)
+	{
+		auto NumberOfChannelsResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		
+		Result->GetValue()->Append("NumberOfChannels", NumberOfChannelsResult->GetValue());
+		if(NumberOfChannelsResult->GetSuccess() == true)
+		{
+			auto SamplesPerSecondResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			
+			Result->GetValue()->Append("SamplesPerSecond", SamplesPerSecondResult->GetValue());
+			if(SamplesPerSecondResult->GetSuccess() == true)
+			{
+				auto AverageNumberOfBytesPerSecondResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				
+				Result->GetValue()->Append("AverageNumberOfBytesPerSecond", AverageNumberOfBytesPerSecondResult->GetValue());
+				if(AverageNumberOfBytesPerSecondResult->GetSuccess() == true)
+				{
+					auto BlockAlignmentResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+					
+					Result->GetValue()->Append("BlockAlignment", BlockAlignmentResult->GetValue());
+					Result->GetValue("BlockAlignment")->AppendTag("block size in bytes"s);
+					if(BlockAlignmentResult->GetSuccess() == true)
+					{
+						auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+						
+						Result->GetValue()->Append("BitsPerSample", BitsPerSampleResult->GetValue());
+						if(BitsPerSampleResult->GetSuccess() == true)
+						{
+							auto CodecSpecificDataSizeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+							
+							Result->GetValue()->Append("CodecSpecificDataSize", CodecSpecificDataSizeResult->GetValue());
+							Result->GetValue("CodecSpecificDataSize")->AppendTag("bytes"s);
+							if(CodecSpecificDataSizeResult->GetSuccess() == true)
+							{
+								auto CodecSpecificDataSize{std::experimental::any_cast< std::uint16_t >(CodecSpecificDataSizeResult->GetAny())};
+								auto CodecSpecificDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(CodecSpecificDataSize))};
+								
+								Result->GetValue()->Append("CodecSpecificData", CodecSpecificDataResult->GetValue());
+								Result->SetSuccess(CodecSpecificDataResult->GetSuccess());
+								//
+								Result->GetValue()->AppendTag("AudioMedia"s);
+								Result->GetValue()->AppendTag("WAVEFORMATEX"s);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
@@ -1679,8 +1740,18 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspect
 							Result->GetValue()->Append("Reserved", ReservedResult->GetValue());
 							if(ReservedResult->GetSuccess() == true)
 							{
-								auto TypeSpecificDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, std::experimental::any_cast< std::uint32_t >(TypeSpecificDataLengthResult->GetAny()))};
+								auto TypeSpecificDataLength{std::experimental::any_cast< std::uint32_t >(TypeSpecificDataLengthResult->GetAny())};
+								auto StreamType{std::experimental::any_cast< Inspection::GUID >(StreamTypeResult->GetAny())};
+								std::unique_ptr< Inspection::Result > TypeSpecificDataResult;
 								
+								if(StreamType == g_ASF_AudioMediaGUID)
+								{
+									TypeSpecificDataResult = Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Buffer, TypeSpecificDataLength);
+								}
+								else
+								{
+									TypeSpecificDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, TypeSpecificDataLength);
+								}
 								Result->GetValue()->Append("TypeSpecificData", TypeSpecificDataResult->GetValue());
 								if(TypeSpecificDataResult->GetSuccess() == true)
 								{
