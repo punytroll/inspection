@@ -84,6 +84,9 @@ Inspection::GUID g_ASF_Reserved1{"abd3d211-a9ba-11cf-8ee6-00c00c205365"};
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.8
 Inspection::GUID g_ASF_Reserved2{"86d15241-311d-11d0-a3a4-00a0c90348f6"};
 
+/// Other GUIDs found on the web
+Inspection::GUID g_ASF_IndexPlaceholderObjectGUID{"d9aade20-7c17-4f9c-bc28-8555dd98e2a2"};
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
@@ -92,6 +95,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_Boolean_16Bit_LittleEndian(Inspect
 std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -102,6 +106,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ASF_IndexPlaceholderObjectData(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ASF_LanguageIDRecord(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_LanguageListObjectData(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord(Inspection::Buffer & Buffer);
@@ -263,6 +268,37 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Bu
 					Result->SetSuccess(false);
 					
 					break;
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ProfileResult{Get_UnsignedInteger_8Bit(Buffer)};
+	
+	Result->GetValue()->Append("Profile", ProfileResult->GetValue());
+	if(ProfileResult->GetSuccess() == true)
+	{
+		auto Profile{std::experimental::any_cast< std::uint8_t >(ProfileResult->GetAny())};
+		
+		if(Profile == 0x02)
+		{
+			auto ModeResult{Get_UnsignedInteger_8Bit(Buffer)};
+			
+			Result->GetValue()->Append("Mode", ModeResult->GetValue());
+			if(ModeResult->GetSuccess() == true)
+			{
+				auto Mode{std::experimental::any_cast< std::uint8_t >(ModeResult->GetAny())};
+				
+				if(Mode == 0x01)
+				{
+					Result->SetSuccess(true);
 				}
 			}
 		}
@@ -466,92 +502,92 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 		// Top-level ASF Object GUIDs
 		if(GUID == g_ASF_HeaderObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Header_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Header_Object"s);
 		}
 		else if(GUID == g_ASF_DataObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Data_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Data_Object"s);
 		}
 		else if(GUID == g_ASF_SimpleIndexObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Simple_Index_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Simple_Index_Object"s);
 		}
 		else if(GUID == g_ASF_IndexObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Index_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Index_Object"s);
 		}
 		else if(GUID == g_ASF_MediaObjectIndexObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Media_Object_Index_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Media_Object_Index_Object"s);
 		}
 		else if(GUID == g_ASF_TimecodeIndexObject)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Timecode_Index_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Timecode_Index_Object"s);
 		}
 		// Header Object GUIDs
 		else if(GUID == g_ASF_FilePropertiesObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_File_Properties_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_File_Properties_Object"s);
 		}
 		else if(GUID == g_ASF_StreamPropertiesObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Stream_Properties_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Stream_Properties_Object"s);
 		}
 		else if(GUID == g_ASF_HeaderExtensionObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Header_Extension_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Header_Extension_Object"s);
 		}
 		else if(GUID == g_ASF_CodecListObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Codec_List_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Codec_List_Object"s);
 		}
 		else if(GUID == g_ASF_ScriptCommandObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Script_Command_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Script_Command_Object"s);
 		}
 		else if(GUID == g_ASF_MarkerObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Marker_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Marker_Object"s);
 		}
 		else if(GUID == g_ASF_BitrateMutualExclusionObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Bitrate_Mutual_Exclusion_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Bitrate_Mutual_Exclusion_Object"s);
 		}
 		else if(GUID == g_ASF_ErrorCorrectionObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Error_Correction_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Error_Correction_Object"s);
 		}
 		else if(GUID == g_ASF_ContentDescriptionObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Content_Description_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Content_Description_Object"s);
 		}
 		else if(GUID == g_ASF_ExtendedContentDescriptionObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Extended_Content_Description_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Extended_Content_Description_Object"s);
 		}
 		else if(GUID == g_ASF_ContentBrandingObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Content_Branding_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Content_Branding_Object"s);
 		}
 		else if(GUID == g_ASF_StreamBitratePropertiesObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Stream_Bitrate_Properties_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Stream_Bitrate_Properties_Object"s);
 		}
 		else if(GUID == g_ASF_ContentEncryptionObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Content_Encryption_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Content_Encryption_Object"s);
 		}
 		else if(GUID == g_ASF_ExtendedContentEncryptionObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Extended_Content_Encryption_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Extended_Content_Encryption_Object"s);
 		}
 		else if(GUID == g_ASF_DigitalSignatureObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Digital_Signature_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Digital_Signature_Object"s);
 		}
 		else if(GUID == g_ASF_PaddingObjectGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Padding_Object"));
+			Result->GetValue()->Append("Interpretation", "ASF_Padding_Object"s);
 		}
 		// Header Extension Object GUIDs
 		else if(GUID == g_ASF_ExtendedStreamPropertiesObjectGUID)
@@ -609,55 +645,60 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 		// Stream Properties Object Stream Type GUIDs
 		else if(GUID == g_ASF_AudioMediaGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Audio_Media"));
+			Result->GetValue()->Append("Interpretation", "ASF_Audio_Media"s);
 		}
 		else if(GUID == g_ASF_VideoMediaGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Video_Media"));
+			Result->GetValue()->Append("Interpretation", "ASF_Video_Media"s);
 		}
 		else if(GUID == g_ASF_CommandMediaGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Command_Media"));
+			Result->GetValue()->Append("Interpretation", "ASF_Command_Media"s);
 		}
 		else if(GUID == g_ASF_JFIFMediaGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_JFIF_Media"));
+			Result->GetValue()->Append("Interpretation", "ASF_JFIF_Media"s);
 		}
 		else if(GUID == g_ASF_DegradableJPEGMediaGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Degradable_JPEG_Media"));
+			Result->GetValue()->Append("Interpretation", "ASF_Degradable_JPEG_Media"s);
 		}
 		else if(GUID == g_ASF_FileTransferMediaGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_File_Transfer_Media"));
+			Result->GetValue()->Append("Interpretation", "ASF_File_Transfer_Media"s);
 		}
 		else if(GUID == g_ASF_BinaryMediaGUID)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Binary_Media"));
+			Result->GetValue()->Append("Interpretation", "ASF_Binary_Media"s);
 		}
 		// Stream Properties Object Error Correction Type GUIDs
 		else if(GUID == g_ASF_NoErrorCorrection)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_No_Error_Correction"));
+			Result->GetValue()->Append("Interpretation", "ASF_No_Error_Correction"s);
 		}
 		else if(GUID == g_ASF_AudioSpread)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Audio_Spread"));
+			Result->GetValue()->Append("Interpretation", "ASF_Audio_Spread"s);
 		}
 		// Header Extension Object GUIDs
 		else if(GUID == g_ASF_Reserved1)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Reserved_1"));
+			Result->GetValue()->Append("Interpretation", "ASF_Reserved_1"s);
 		}
 		// Codec List Object GUIDs
 		else if(GUID == g_ASF_Reserved2)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("ASF_Reserved_2"));
+			Result->GetValue()->Append("Interpretation", "ASF_Reserved_2"s);
+		}
+		// other GUIDs
+		else if(GUID == g_ASF_IndexPlaceholderObjectGUID)
+		{
+			Result->GetValue()->Append("Interpretation", "ASF_Index_Placeholder_Object"s);
 		}
 		// unknown
 		else
 		{
-			Result->GetValue()->Append("Interpretation", std::string("<no interpretation>"));
+			Result->GetValue()->Append("Interpretation", "<no interpretation>"s);
 		}
 		Result->SetSuccess(true);
 	}
@@ -915,6 +956,25 @@ std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffe
 					}
 				}
 			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ASF_IndexPlaceholderObjectData(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Length == Inspection::Length(10ull, 0))
+	{
+		auto DataResult{Get_Bits_Unset_EndedByLength(Buffer, Length)};
+		
+		if(DataResult->GetSuccess() == true)
+		{
+			Result->GetValue()->Append("Data", to_string_cast(Length) + " bytes of zeroed data");
+			Result->SetSuccess(true);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1191,16 +1251,26 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 			ObjectDataResult = Get_ASF_MetadataObjectData(Buffer);
 			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
 		}
+		else if(GUID == g_ASF_CompatibilityObjectGUID)
+		{
+			ObjectDataResult = Get_ASF_CompatibilityObjectData(Buffer);
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+		}
+		else if(GUID == g_ASF_IndexPlaceholderObjectGUID)
+		{
+			ObjectDataResult = Get_ASF_IndexPlaceholderObjectData(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
+			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+		}
 		else if(GUID == g_ASF_PaddingObjectGUID)
 		{
 			auto Length{Inspection::Length(Size) - ObjectHeaderResult->GetValue()->GetLength()};
 			
 			ObjectDataResult = Get_Bits_Unset_EndedByLength(Buffer, Length);
-			Result->GetValue()->Append("Data", to_string_cast(ObjectDataResult->GetLength().GetBytes()) + '.' + to_string_cast(ObjectDataResult->GetLength().GetBits()) + " bytes of zeroed data");
+			Result->GetValue()->Append("Data", to_string_cast(ObjectDataResult->GetLength()) + " bytes of zeroed data");
 		}
 		else
 		{
-			ObjectDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size - ObjectHeaderResult->GetValue()->GetLength().GetBytes());
+			ObjectDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
 			Result->GetValue()->Append("Data", ObjectDataResult->GetValue());
 		}
 		if(ObjectDataResult->GetSuccess() == true)
