@@ -9,6 +9,12 @@
 
 namespace Inspection
 {
+	const std::string g_Yellow{"\033[33;1m"};
+	const std::string g_Green{"\033[32;1m"};
+	const std::string g_Gray{"\033[30;1m"};
+	const std::string g_Red{"\033[31;1m"};
+	const std::string g_White{"\033[0m"};
+	
 	void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 	{
 		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
@@ -27,23 +33,23 @@ namespace Inspection
 		}
 		if(Value->GetAny().empty() == false)
 		{
-			std::cout << Value->GetAny();
+			std::cout << g_Yellow << Value->GetAny() << g_White;
 		}
 		if(Value->GetTags().empty() == false)
 		{
 			auto First{true};
 			
-			std::cout << " (";
+			std::cout << " (" << g_Gray;
 			for(auto & Tag : Value->GetTags())
 			{
 				if(First == false)
 				{
-					std::cout << ", ";
+					std::cout << g_White << ", " << g_Gray;
 				}
 				std::cout << Tag;
 				First = false;
 			}
-			std::cout << ')';
+			std::cout << g_White << ')';
 		}
 		
 		auto SubIndentation{Indentation};
