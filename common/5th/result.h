@@ -11,21 +11,10 @@ namespace Inspection
 	class Result
 	{
 	public:
-		Result(void) :
-			_Success(false)
-		{
-		}
-		
 		Result(bool Success, const Inspection::Length & Offset) :
 			_Offset(Offset),
 			_Success(Success),
 			_Value(std::make_shared< Inspection::Value >())
-		{
-		}
-		
-		Result(bool Success, std::shared_ptr< Value > Value) :
-			_Success(Success),
-			_Value(Value)
 		{
 		}
 		
