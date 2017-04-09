@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "guid.h"
 
