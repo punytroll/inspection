@@ -4,8 +4,87 @@
 #include <cstdint>
 #include <string>
 
+#include "guid.h"
+
 namespace Inspection
 {
+	/// Top-level ASF Object GUIDs
+	/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.1
+	extern Inspection::GUID g_ASF_HeaderObjectGUID;
+	extern Inspection::GUID g_ASF_DataObjectGUID;
+	extern Inspection::GUID g_ASF_SimpleIndexObjectGUID;
+	extern Inspection::GUID g_ASF_IndexObjectGUID;
+	extern Inspection::GUID g_ASF_MediaObjectIndexObjectGUID;
+	extern Inspection::GUID g_ASF_TimecodeIndexObject;
+
+	/// ASF Header Object GUIDs
+	/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.2
+	extern Inspection::GUID g_ASF_FilePropertiesObjectGUID;
+	extern Inspection::GUID g_ASF_StreamPropertiesObjectGUID;
+	extern Inspection::GUID g_ASF_HeaderExtensionObjectGUID;
+	extern Inspection::GUID g_ASF_CodecListObjectGUID;
+	extern Inspection::GUID g_ASF_ScriptCommandObjectGUID;
+	extern Inspection::GUID g_ASF_MarkerObjectGUID;
+	extern Inspection::GUID g_ASF_BitrateMutualExclusionObjectGUID;
+	extern Inspection::GUID g_ASF_ErrorCorrectionObjectGUID;
+	extern Inspection::GUID g_ASF_ContentDescriptionObjectGUID;
+	extern Inspection::GUID g_ASF_ExtendedContentDescriptionObjectGUID;
+	extern Inspection::GUID g_ASF_ContentBrandingObjectGUID;
+	extern Inspection::GUID g_ASF_StreamBitratePropertiesObjectGUID;
+	extern Inspection::GUID g_ASF_ContentEncryptionObjectGUID;
+	extern Inspection::GUID g_ASF_ExtendedContentEncryptionObjectGUID;
+	extern Inspection::GUID g_ASF_DigitalSignatureObjectGUID;
+	extern Inspection::GUID g_ASF_PaddingObjectGUID;
+
+	/// ASF Header Extension Object GUIDs
+	/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.3
+	extern Inspection::GUID g_ASF_ExtendedStreamPropertiesObjectGUID;
+	extern Inspection::GUID g_ASF_AdvancedMutualExclusionObjectGUID;
+	extern Inspection::GUID g_ASF_GroupMutualExclusionObjectGUID;
+	extern Inspection::GUID g_ASF_StreamPrioritizationObjectGUID;
+	extern Inspection::GUID g_ASF_BandwidthSharingObjectGUID;
+	extern Inspection::GUID g_ASF_LanguageListObjectGUID;
+	extern Inspection::GUID g_ASF_MetadataObjectGUID;
+	extern Inspection::GUID g_ASF_MetadataLibraryObjectGUID;
+	extern Inspection::GUID g_ASF_IndexParametersObjectGUID;
+	extern Inspection::GUID g_ASF_MediaObjectIndexParametersObjectGUID;
+	extern Inspection::GUID g_ASF_TimecodeIndexParametersObjectGUID;
+	extern Inspection::GUID g_ASF_CompatibilityObjectGUID;
+	extern Inspection::GUID g_ASF_AdvancedContentEncryptionObjectGUID;
+
+	/// ASF Stream Properties Object Stream Type GUIDs
+	/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.4
+	extern Inspection::GUID g_ASF_AudioMediaGUID;
+	extern Inspection::GUID g_ASF_VideoMediaGUID;
+	extern Inspection::GUID g_ASF_CommandMediaGUID;
+	extern Inspection::GUID g_ASF_JFIFMediaGUID;
+	extern Inspection::GUID g_ASF_DegradableJPEGMediaGUID;
+	extern Inspection::GUID g_ASF_FileTransferMediaGUID;
+	extern Inspection::GUID g_ASF_BinaryMediaGUID;
+
+	/// ASF Stream Properties Object Error Correction Type GUIDs
+	/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.5
+	extern Inspection::GUID g_ASF_NoErrorCorrectionGUID;
+	extern Inspection::GUID g_ASF_AudioSpreadGUID;
+
+	/// ASF Header Extension Object GUIDs
+	/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.6
+	extern Inspection::GUID g_ASF_Reserved1GUID;
+
+	/// ASF Codec List Object GUIDs
+	/// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.8
+	extern Inspection::GUID g_ASF_Reserved2GUID;
+
+	/// Other ASF GUIDs found on the web
+	extern Inspection::GUID g_ASF_IndexPlaceholderObjectGUID;
+	
+	/// WM/MediaClassPrimaryID
+	extern Inspection::GUID g_WM_MediaClassPrimaryID_AudioNoMusic;
+	extern Inspection::GUID g_WM_MediaClassPrimaryID_AudioMusic;
+	extern Inspection::GUID g_WM_MediaClassPrimaryID_Video;
+	extern Inspection::GUID g_WM_MediaClassPrimaryID_NeitherAudioNorMusic;
+
+	// validators
 	bool Is_ASCII_Character_Alphabetical(std::uint8_t Character);
 	bool Is_ASCII_Character_Alphabetical_LowerCase(std::uint8_t Character);
 	bool Is_ASCII_Character_Alphabetical_UpperCase(std::uint8_t Character);
@@ -14,6 +93,9 @@ namespace Inspection
 	bool Is_ASCII_Character_Printable(std::uint8_t Character);
 	bool Is_ASCII_Character_Space(std::uint8_t Character);
 	bool Is_ISO_IEC_8859_1_1998_Character(std::uint8_t Character);
+	// getters
+	Inspection::GUID Get_GUID_FromString_WithCurlyBraces(const std::string & String);
+	std::string Get_GUID_Interpretation(const Inspection::GUID & GUID);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalDigit(char HexadecimalDigit);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalString(const std::string & HexadecimalString);
 	std::uint16_t Get_UnsignedInteger_16Bit_FromHexadecimalString(const std::string & HexadecimalString);

@@ -1045,6 +1045,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	Result->GetValue()->AppendTag("UTF16"s);
 	Result->GetValue()->AppendTag("little endian"s);
 	Result->GetValue()->AppendTag("without byte order mark"s);
+	
+	auto NumberOfCodePoints{0ul};
+	
 	while(Buffer.GetPosition() < Boundary)
 	{
 		auto CharacterResult{Get_UTF16LE_Character(Buffer)};
@@ -1058,6 +1061,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 				if(Buffer.GetPosition() == Boundary)
 				{
 					Result->GetValue()->AppendTag("ended by termination and boundary"s);
+					if(NumberOfCodePoints == 0)
+					{
+						Result->GetValue()->AppendTag("empty"s);
+					}
 					Result->SetSuccess(true);
 				}
 				else
@@ -1069,6 +1076,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 			}
 			else
 			{
+				NumberOfCodePoints += 1;
 				if(Buffer.GetPosition() == Boundary)
 				{
 					Result->GetValue()->AppendTag("ended by boundary"s);
@@ -1081,6 +1089,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 			break;
 		}
 	}
+	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
 	Result->GetValue()->SetAny(Value.str());
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -1095,14 +1104,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	std::stringstream Value;
+	auto NumberOfCodePoints{0ul};
 	
 	Result->GetValue()->AppendTag("UTF16"s);
 	Result->GetValue()->AppendTag("little endian"s);
 	Result->GetValue()->AppendTag("without byte order mark"s);
 	if(Buffer.GetPosition() == Boundary)
 	{
-		Result->GetValue()->AppendTag("empty"s);
 		Result->GetValue()->AppendTag("ended by boundary"s);
+		Result->GetValue()->AppendTag("empty"s);
 		Result->SetSuccess(true);
 	}
 	else
@@ -1131,6 +1141,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 				}
 				else
 				{
+					NumberOfCodePoints += 1;
 					if(Buffer.GetPosition() == Boundary)
 					{
 						Result->GetValue()->AppendTag("ended by boundary"s);
@@ -1145,6 +1156,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 			}
 		}
 	}
+	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
 	Result->GetValue()->SetAny(Value.str());
 	Inspection::FinalizeResult(Result, Buffer);
 	
