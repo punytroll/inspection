@@ -9,6 +9,9 @@
 
 #include <iostream>
 
+const std::string g_Green{"\033[32;1m"};
+const std::string g_White{"\033[0m"};
+
 void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor);
 void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor);
 void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor);
@@ -122,6 +125,7 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
 				auto ParseResult{Processor(Buffer)};
 				
+				ParseResult->GetValue()->SetAny(g_Green + Path + g_White);
 				PrintValue(ParseResult->GetValue());
 				if(ParseResult->GetSuccess() == false)
 				{
