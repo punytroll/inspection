@@ -385,6 +385,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 			Value.push_back(Buffer.Get8Bits());
 		}
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("buffer"s);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("8bit values"s);
+		Result->GetValue()->AppendTag(to_string_cast(Length) + " bytes and bits");
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1265,6 +1270,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	std::stringstream Value;
 	std::uint64_t CodePointIndex{0ull};
 	
+	Result->GetValue()->AppendTag("UTF16"s);
+	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AppendTag("without byte order mark"s);
 	while(true)
 	{
 		auto CharacterResult{Get_UTF16LE_Character(Buffer)};
@@ -1276,10 +1284,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 			{
 				if(CodePointIndex == NumberOfCodePoints)
 				{
+					Result->GetValue()->AppendTag("ended by termination and number of code points"s);
 					Result->SetSuccess(true);
-					
-					break;
 				}
+				
+				break;
 			}
 			else
 			{
@@ -1291,6 +1300,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 			break;
 		}
 	}
+	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
 	Result->GetValue()->SetAny(Value.str());
 	Inspection::FinalizeResult(Result, Buffer);
 	
