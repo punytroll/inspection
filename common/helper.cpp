@@ -121,6 +121,23 @@ bool Inspection::Is_ISO_IEC_8859_1_1998_Character(std::uint8_t Character)
 	return ((Character >= 0x20) && (Character < 0x7f)) || (Character >= 0x10);
 }
 
+Inspection::DateTime Inspection::Get_DateTime_FromMicrosoftFileTime(std::uint64_t FileTime)
+{
+	Inspection::DateTime Result;
+	time_t UnixTimeStamp{Get_Unix_TimeStamp_FromWindowsFileTime(FileTime)};
+	
+	auto UnixTime{gmtime(&UnixTimeStamp)};
+	
+	Result.Year = UnixTime->tm_year + 1900;
+	Result.Month = UnixTime->tm_mon + 1;
+	Result.Day = UnixTime->tm_mday;
+	Result.Hour = UnixTime->tm_hour;
+	Result.Minute = UnixTime->tm_min;
+	Result.Second = UnixTime->tm_sec;
+	
+	return Result;
+}
+
 Inspection::GUID Inspection::Get_GUID_FromString_WithCurlyBraces(const std::string & String)
 {
 	Inspection::GUID Result;
@@ -376,6 +393,14 @@ std::string Inspection::Get_GUID_Interpretation(const Inspection::GUID & GUID)
 	{
 		return "<unknown GUID>";
 	}
+}
+
+std::uint32_t Inspection::Get_Unix_TimeStamp_FromWindowsFileTime(std::uint64_t FileTime)
+{
+	const auto SecondsToUnixEpoch{11644473600ull};
+	const auto WindowsTick{10000000ull};
+	
+	return (FileTime / WindowsTick) - SecondsToUnixEpoch;
 }
 
 std::uint8_t Inspection::Get_UnsignedInteger_8Bit_FromHexadecimalDigit(char Character)

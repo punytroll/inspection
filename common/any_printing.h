@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "date_time.h"
 #include "guid.h"
 
 inline std::ostream & operator<<(std::ostream & OStream, const std::experimental::any & Any)
@@ -75,6 +76,15 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 		std::stringstream StringStream;
 		
 		StringStream << std::hex << std::setw(8) << std::right << std::setfill('0') << Value.Data1 << '-' << std::setw(4) << std::right << std::setfill('0') << Value.Data2 << '-' << std::setw(4) << std::right << std::setfill('0') << Value.Data3 << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[0]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[1]) << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[2]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[3]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[4]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[5]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[6]) << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Data4[7]);
+		
+		return OStream << StringStream.str();
+	}
+	else if(Any.type() == typeid(Inspection::DateTime))
+	{
+		auto Value{std::experimental::any_cast< Inspection::DateTime >(Any)};
+		std::stringstream StringStream;
+		
+		StringStream << Value.Year << '/' << std::setw(2) << std::right << std::setfill('0') << static_cast< std::uint32_t >(Value.Month) << '/' << std::setw(2) << static_cast< std::uint32_t >(Value.Day) << ' ' << std::setw(2) << static_cast< std::uint32_t >(Value.Hour) << ':' << std::setw(2) << static_cast< std::uint32_t >(Value.Minute) << ':' << std::setw(2) << static_cast< std::uint32_t >(Value.Second);
 		
 		return OStream << StringStream.str();
 	}
