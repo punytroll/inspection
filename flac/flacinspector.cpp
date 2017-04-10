@@ -65,9 +65,9 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 		}
 		else if(MetaDataBlockType == "Padding")
 		{
-			auto PaddingBlockDataResult{Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Buffer, MetaDataBlockDataLength)};
+			auto PaddingBlockDataResult{Get_Bits_Unset_EndedByLength(Buffer, MetaDataBlockDataLength)};
 			
-			Result->GetValue()->Append("Data", PaddingBlockDataResult->GetValue());
+			Result->GetValue()->Append("Data", to_string_cast(PaddingBlockDataResult->GetLength()) + " bytes of zeroed data");
 			Result->SetSuccess(PaddingBlockDataResult->GetSuccess());
 		}
 		else if(MetaDataBlockType == "Application")
