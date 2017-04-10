@@ -49,6 +49,11 @@ namespace Inspection
 			_Tags.push_back(Any);
 		}
 		
+		void PrependTag(const std::experimental::any & Any)
+		{
+			_Tags.push_front(Any);
+		}
+		
 		const std::experimental::any & GetAny(void)
 		{
 			return _Any;
