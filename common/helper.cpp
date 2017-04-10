@@ -163,12 +163,12 @@ Inspection::GUID Inspection::Get_GUID_FromString_WithCurlyBraces(const std::stri
 		}
 		else
 		{
-			throw std::invalid_argument("The given string does not contain a valid GUID with curly braces.");
+			throw std::invalid_argument("The given string is not a valid GUID with curly braces.");
 		}
 	}
 	else
 	{
-		throw std::invalid_argument("The given string does not contain a valid GUID with curly braces.");
+		throw std::invalid_argument("The given string is not a valid GUID with curly braces.");
 	}
 	
 	return Result;
