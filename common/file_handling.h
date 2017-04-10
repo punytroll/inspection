@@ -137,7 +137,7 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 					
 					if(Rest > 0ull)
 					{
-						std::cerr << "There are " << Rest.GetBytes() << "." << Rest.GetBits() << " bytes and bits after the data." << std::endl;
+						std::cerr << "There are " << to_string_cast(Rest) << " bytes and bits after the data." << std::endl;
 					}
 				}
 				munmap(Address, FileSize);
