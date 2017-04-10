@@ -213,6 +213,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 			}
 		}
 	}
+	if(Result->GetSuccess() == true)
+	{
+		Result->GetValue()->AppendTag("zeroed data"s);
+		Result->GetValue()->AppendTag(to_string_cast(Length) + " bytes and bits"s);
+	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
