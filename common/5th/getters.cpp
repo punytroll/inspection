@@ -207,7 +207,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 		{
 			if(Buffer.Get1Bits() == 0x01)
 			{
-				std::cout << "HERE" << std::endl;
 				Result->SetSuccess(false);
 				
 				break;
