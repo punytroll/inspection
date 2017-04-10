@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 
+#include "date_time.h"
 #include "guid.h"
 
 namespace Inspection
@@ -94,8 +95,10 @@ namespace Inspection
 	bool Is_ASCII_Character_Space(std::uint8_t Character);
 	bool Is_ISO_IEC_8859_1_1998_Character(std::uint8_t Character);
 	// getters
+	Inspection::DateTime Get_DateTime_FromMicrosoftFileTime(std::uint64_t FileTime);
 	Inspection::GUID Get_GUID_FromString_WithCurlyBraces(const std::string & String);
 	std::string Get_GUID_Interpretation(const Inspection::GUID & GUID);
+	std::uint32_t Get_Unix_TimeStamp_FromWindowsFileTime(std::uint64_t FileTime);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalDigit(char HexadecimalDigit);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalString(const std::string & HexadecimalString);
 	std::uint16_t Get_UnsignedInteger_16Bit_FromHexadecimalString(const std::string & HexadecimalString);

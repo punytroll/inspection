@@ -517,6 +517,15 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_Content
 		
 		Result->SetValue(UnsignedInteger64BitResult->GetValue());
 		Result->SetSuccess(UnsignedInteger64BitResult->GetSuccess());
+		if(Name == "WM/EncodingTime")
+		{
+			auto UnsignedInteger64Bit{std::experimental::any_cast< std::uint64_t >(Result->GetAny())};
+			auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
+			
+			Result->GetValue()->Append("DateTime", DateTime);
+			Result->GetValue("DateTime")->AppendTag("date and time"s);
+			Result->GetValue("DateTime")->AppendTag("from Microsoft filetime"s);
+		}
 	}
 	else if(DataType == "Unsigned integer 16bit")
 	{
