@@ -7,6 +7,7 @@ clean:
 	$(RM) ../asfinspector
 	$(RM) asfinspector.o
 	$(RM) getters.o
+	$(RM) guid.o
 	$(RM) helper.o
 	$(RM) string_cast.o
 
