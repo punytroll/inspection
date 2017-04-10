@@ -1013,7 +1013,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_IndexPlaceholderObjectData(Inspect
 		
 		if(DataResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("Data", to_string_cast(Length) + " bytes of zeroed data");
+			Result->GetValue()->Append("Data", DataResult->GetValue());
 			Result->SetSuccess(true);
 		}
 	}
@@ -1076,7 +1076,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord(I
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(2ull, 0))};
 	
-	Result->GetValue()->Append("Reserved", to_string_cast(ReservedResult->GetLength()) + " bytes of zeroed data");
+	Result->GetValue()->Append("Reserved", ReservedResult->GetValue());
 	if(ReservedResult->GetSuccess() == true)
 	{
 		auto StreamNumberResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
@@ -1282,7 +1282,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 			auto Length{Inspection::Length(Size) - ObjectHeaderResult->GetValue()->GetLength()};
 			
 			ObjectDataResult = Get_Bits_Unset_EndedByLength(Buffer, Length);
-			Result->GetValue()->Append("Data", to_string_cast(ObjectDataResult->GetLength()) + " bytes of zeroed data");
+			Result->GetValue()->Append("Data", ObjectDataResult->GetValue());
 		}
 		else if(GUID == Inspection::g_ASF_ExtendedContentDescriptionObjectGUID)
 		{
