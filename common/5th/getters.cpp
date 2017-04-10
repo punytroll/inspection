@@ -188,6 +188,43 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Ins
 			}
 		}
 	}
+	if(Result->GetSuccess() == true)
+	{
+		Result->GetValue()->AppendTag("set data"s);
+		Result->GetValue()->AppendTag(to_string_cast(Length) + " bytes and bits"s);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(Length) == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto Boundary{Buffer.GetPosition() + Length};
+		
+		while(Buffer.GetPosition() < Boundary)
+		{
+			if(Buffer.GetPosition().GetBits() == 0)
+			{
+				Buffer.Get8Bits();
+			}
+			else
+			{
+				Buffer.Get1Bits();
+			}
+		}
+	}
+	if(Result->GetSuccess() == true)
+	{
+		Result->GetValue()->AppendTag("any data"s);
+		Result->GetValue()->AppendTag(to_string_cast(Length) + " bytes and bits"s);
+	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -215,7 +252,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 	}
 	if(Result->GetSuccess() == true)
 	{
-		Result->GetValue()->AppendTag("zeroed data"s);
+		Result->GetValue()->AppendTag("unset data"s);
 		Result->GetValue()->AppendTag(to_string_cast(Length) + " bytes and bits"s);
 	}
 	Inspection::FinalizeResult(Result, Buffer);

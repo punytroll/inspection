@@ -363,7 +363,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Bu
 		
 		if(GUID == Inspection::g_ASF_DataObjectGUID)
 		{
-			auto DataObjectDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size - ObjectHeaderResult->GetValue()->GetLength().GetBytes())};
+			auto DataObjectDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(Size, 0) - ObjectHeaderResult->GetLength())};
 			
 			Result->GetValue()->Append("Data", DataObjectDataResult->GetValue());
 			if(DataObjectDataResult->GetSuccess() == true)
