@@ -243,6 +243,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Bu
 		Value[6] = (Byte1 & 0x40) == 0x40;
 		Value[7] = (Byte1 & 0x80) == 0x80;
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("bitset"s);
+		Result->GetValue()->AppendTag("8bit"s);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -280,6 +282,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(
 		Value[14] = (Byte2 & 0x40) == 0x40;
 		Value[15] = (Byte2 & 0x80) == 0x80;
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("bitset"s);
+		Result->GetValue()->AppendTag("16bit"s);
+		Result->GetValue()->AppendTag("little endian"s);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -339,6 +344,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 		Value[30] = (Byte4 & 0x40) == 0x40;
 		Value[31] = (Byte4 & 0x80) == 0x80;
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("bitset"s);
+		Result->GetValue()->AppendTag("32bit"s);
+		Result->GetValue()->AppendTag("little endian"s);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -352,6 +360,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_1Bit(Inspection::B
 	if(Buffer.Has(0ull, 1) == true)
 	{
 		Result->GetValue()->SetAny((0x01 & Buffer.Get1Bits()) == 0x01);
+		Result->GetValue()->AppendTag("boolean"s);
+		Result->GetValue()->AppendTag("1bit"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -558,6 +568,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEnd
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("signed"s);
+		Result->GetValue()->AppendTag("32bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -578,6 +592,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_Little
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("signed"s);
+		Result->GetValue()->AppendTag("32bit"s);
+		Result->GetValue()->AppendTag("little endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -592,6 +610,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspe
 	if(Buffer.Has(0ull, 1) == true)
 	{
 		Result->GetValue()->SetAny(Buffer.Get1Bits());
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("1bit"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -606,6 +627,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspe
 	if(Buffer.Has(0ull, 2) == true)
 	{
 		Result->GetValue()->SetAny(Buffer.Get2Bits());
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("2bit"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -620,6 +644,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspe
 	if(Buffer.Has(0ull, 3) == true)
 	{
 		Result->GetValue()->SetAny(Buffer.Get3Bits());
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("3bit"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -634,6 +661,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspe
 	if(Buffer.Has(0ull, 4) == true)
 	{
 		Result->GetValue()->SetAny(Buffer.Get4Bits());
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("4bit"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -648,6 +678,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspe
 	if(Buffer.Has(0ull, 5) == true)
 	{
 		Result->GetValue()->SetAny(Buffer.Get5Bits());
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("5bit"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_6Bit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(0ull, 6) == true)
+	{
+		Result->GetValue()->SetAny(Buffer.Get6Bits());
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("6bit"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -662,6 +712,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspe
 	if(Buffer.Has(0ull, 7) == true)
 	{
 		Result->GetValue()->SetAny(Buffer.Get7Bits());
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("7bit"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -676,6 +729,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspe
 	if(Buffer.Has(0ull, 8) == true)
 	{
 		Result->GetValue()->SetAny(Buffer.Get8Bits());
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("8bit"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -694,6 +750,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigE
 		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
 		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("16bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -712,6 +772,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_Litt
 		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
 		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("16bit"s);
+		Result->GetValue()->AppendTag("little endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -731,6 +795,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigE
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("20bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -750,6 +818,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("24bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -770,6 +842,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigE
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("32bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -790,6 +866,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Litt
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
 		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("32bit"s);
+		Result->GetValue()->AppendTag("little endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -811,6 +891,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
 		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits());
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("36bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -835,6 +919,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigE
 		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
 		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits());
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("64bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -859,6 +947,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 48;
 		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 56;
 		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("64bit"s);
+		Result->GetValue()->AppendTag("little endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
