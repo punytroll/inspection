@@ -608,49 +608,49 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData
 	auto StartTimeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("StartTime", StartTimeResult->GetValue());
-	Result->GetValue("StartTime")->AppendTag("milliseconds"s);
+	Result->GetValue("StartTime")->PrependTag("milliseconds"s);
 	if(StartTimeResult->GetSuccess() == true)
 	{
 		auto EndTimeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 		
 		Result->GetValue()->Append("EndTime", EndTimeResult->GetValue());
-		Result->GetValue("EndTime")->AppendTag("milliseconds"s);
+		Result->GetValue("EndTime")->PrependTag("milliseconds"s);
 		if(EndTimeResult->GetSuccess() == true)
 		{
 			auto DataBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 			
 			Result->GetValue()->Append("DataBitrate", DataBitrateResult->GetValue());
-			Result->GetValue("DataBitrate")->AppendTag("bits per second"s);
+			Result->GetValue("DataBitrate")->PrependTag("bits per second"s);
 			if(DataBitrateResult->GetSuccess() == true)
 			{
 				auto BufferSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 				
 				Result->GetValue()->Append("BufferSize", BufferSizeResult->GetValue());
-				Result->GetValue("BufferSize")->AppendTag("milliseconds"s);
+				Result->GetValue("BufferSize")->PrependTag("milliseconds"s);
 				if(BufferSizeResult->GetSuccess() == true)
 				{
 					auto InitialBufferFullnessResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 					
 					Result->GetValue()->Append("InitialBufferFullness", InitialBufferFullnessResult->GetValue());
-					Result->GetValue("InitialBufferFullness")->AppendTag("milliseconds"s);
+					Result->GetValue("InitialBufferFullness")->PrependTag("milliseconds"s);
 					if(InitialBufferFullnessResult->GetSuccess() == true)
 					{
 						auto AlternateDataBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 						
 						Result->GetValue()->Append("AlternateDataBitrate", AlternateDataBitrateResult->GetValue());
-						Result->GetValue("AlternateDataBitrate")->AppendTag("bits per second"s);
+						Result->GetValue("AlternateDataBitrate")->PrependTag("bits per second"s);
 						if(AlternateDataBitrateResult->GetSuccess() == true)
 						{
 							auto AlternateBufferSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 							
 							Result->GetValue()->Append("AlternateBufferSize", AlternateBufferSizeResult->GetValue());
-							Result->GetValue("AlternateBufferSize")->AppendTag("milliseconds"s);
+							Result->GetValue("AlternateBufferSize")->PrependTag("milliseconds"s);
 							if(AlternateBufferSizeResult->GetSuccess() == true)
 							{
 								auto AlternateInitialBufferFullnessResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 								
 								Result->GetValue()->Append("AlternateInitialBufferFullness", AlternateInitialBufferFullnessResult->GetValue());
-								Result->GetValue("AlternateInitialBufferFullness")->AppendTag("milliseconds"s);
+								Result->GetValue("AlternateInitialBufferFullness")->PrependTag("milliseconds"s);
 								if(AlternateInitialBufferFullnessResult->GetSuccess() == true)
 								{
 									auto MaximumObjectSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
@@ -874,6 +874,12 @@ std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspectio
 			Result->GetValue()->Append("CreationDate", CreationDateResult->GetValue());
 			if(CreationDateResult->GetSuccess() == true)
 			{
+				auto CreationDate{std::experimental::any_cast< std::uint64_t >(CreationDateResult->GetAny())};
+				
+				Result->GetValue("CreationDate")->Append("DateTime", Inspection::Get_DateTime_FromMicrosoftFileTime(CreationDate));
+				Result->GetValue("CreationDate")->GetValue("DateTime")->AppendTag("date and time"s);
+				Result->GetValue("CreationDate")->GetValue("DateTime")->AppendTag("from Microsoft filetime"s);
+				
 				auto DataPacketsCountResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 				
 				Result->GetValue()->Append("DataPacketsCount", DataPacketsCountResult->GetValue());
@@ -1469,7 +1475,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_
 					auto BlockAlignmentResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 					
 					Result->GetValue()->Append("BlockAlignment", BlockAlignmentResult->GetValue());
-					Result->GetValue("BlockAlignment")->AppendTag("block size in bytes"s);
+					Result->GetValue("BlockAlignment")->PrependTag("block size in bytes"s);
 					if(BlockAlignmentResult->GetSuccess() == true)
 					{
 						auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
@@ -1480,7 +1486,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_
 							auto CodecSpecificDataSizeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 							
 							Result->GetValue()->Append("CodecSpecificDataSize", CodecSpecificDataSizeResult->GetValue());
-							Result->GetValue("CodecSpecificDataSize")->AppendTag("bytes"s);
+							Result->GetValue("CodecSpecificDataSize")->PrependTag("bytes"s);
 							if(CodecSpecificDataSizeResult->GetSuccess() == true)
 							{
 								auto FormatTag{std::experimental::any_cast< const std::string & >(FormatTagResult->GetAny("ConstantName"))};
@@ -1497,7 +1503,6 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_
 								}
 								Result->GetValue()->Append("CodecSpecificData", CodecSpecificDataResult->GetValue());
 								Result->SetSuccess(CodecSpecificDataResult->GetSuccess());
-								//
 								Result->GetValue()->AppendTag("AudioMedia"s);
 								Result->GetValue()->AppendTag("WAVEFORMATEX"s);
 							}
