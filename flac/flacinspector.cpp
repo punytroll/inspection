@@ -67,7 +67,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 		{
 			auto PaddingBlockDataResult{Get_Bits_Unset_EndedByLength(Buffer, MetaDataBlockDataLength)};
 			
-			Result->GetValue()->Append("Data", to_string_cast(PaddingBlockDataResult->GetLength()) + " bytes of zeroed data");
+			Result->GetValue()->Append("Data", PaddingBlockDataResult->GetValue());
 			Result->SetSuccess(PaddingBlockDataResult->GetSuccess());
 		}
 		else if(MetaDataBlockType == "Application")
@@ -308,7 +308,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buf
 		if(MIMETypeLengthResult->GetSuccess() == true)
 		{
 			auto MIMETypeLength{std::experimental::any_cast< std::uint32_t >(MIMETypeLengthResult->GetAny())};
-			auto MIMETypeResult{Get_ASCII_String_Printable_EndedByByteLength(Buffer, MIMETypeLength)};
+			auto MIMETypeResult{Get_ASCII_String_Printable_EndedByLength(Buffer, Inspection::Length(MIMETypeLength, 0))};
 			
 			Result->GetValue()->Append("MIMType", MIMETypeResult->GetValue());
 			if(MIMETypeResult->GetSuccess() == true)
@@ -350,13 +350,10 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buf
 										if(PictureDataLengthResult->GetSuccess() == true)
 										{
 											auto PictureDataLength{std::experimental::any_cast< std::uint32_t >(PictureDataLengthResult->GetAny())};
-											auto PictureDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, PictureDataLength)};
+											auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(PictureDataLength, 0))};
 											
 											Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
-											if(PictureDataResult->GetSuccess() == true)
-											{
-												Result->SetSuccess(true);
-											}
+											Result->SetSuccess(PictureDataResult->GetSuccess());
 										}
 									}
 								}
@@ -409,10 +406,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspecti
 			auto NumberOfSamplesInTargetFrameResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 			
 			Result->GetValue()->Append("NumberOfSamplesInTargetFrame", NumberOfSamplesInTargetFrameResult->GetValue());
-			if(NumberOfSamplesInTargetFrameResult->GetSuccess() == true)
-			{
-				Result->SetSuccess(true);
-			}
+			Result->SetSuccess(NumberOfSamplesInTargetFrameResult->GetSuccess());
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -474,10 +468,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffe
 			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
 			
 			Result->GetValue()->Append("Data", StreamInfoBlockDataResult->GetValue());
-			if(StreamInfoBlockDataResult->GetSuccess() == true)
-			{
-				Result->SetSuccess(true);
-			}
+			Result->SetSuccess(StreamInfoBlockDataResult->GetSuccess());
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -547,10 +538,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::
 									auto MD5SignatureOfUnencodedAudioDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 16)};
 									
 									Result->GetValue()->Append("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioDataResult->GetValue());
-									if(MD5SignatureOfUnencodedAudioDataResult->GetSuccess() == true)
-									{
-										Result->SetSuccess(true);
-									}
+									Result->SetSuccess(MD5SignatureOfUnencodedAudioDataResult->GetSuccess());
 								}
 							}
 						}

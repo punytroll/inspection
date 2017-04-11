@@ -4,6 +4,7 @@
 
 #include "../guid.h"
 #include "../helper.h"
+#include "../string_cast.h"
 #include "buffer.h"
 #include "getters.h"
 
@@ -136,22 +137,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByByteLength(Inspection::Buffer & Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
 	
-	if(Buffer.Has(Length, 0) == true)
+	if((Length.GetBits() == 0) && (Buffer.Has(Length) == true))
 	{
+		Result->GetValue()->AppendTag("string"s);
+		Result->GetValue()->AppendTag("ASCII"s);
+		Result->GetValue()->AppendTag("printables only"s);
 		Result->SetSuccess(true);
 		
+		auto Boundary{Buffer.GetPosition() + Length};
+		auto NumberOfCharacters{0ul};
 		std::stringstream Value;
 		
-		for(auto Index = 0ull; Index < Length; ++Index)
+		while(Buffer.GetPosition() < Boundary)
 		{
 			auto Character{Buffer.Get8Bits()};
 			
 			if(Is_ASCII_Character_Printable(Character) == true)
 			{
+				NumberOfCharacters += 1;
 				Value << Character;
 			}
 			else
@@ -160,6 +167,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 				
 				break;
 			}
+		}
+		if(Buffer.GetPosition() == Boundary)
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -254,6 +266,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 	{
 		Result->GetValue()->AppendTag("unset data"s);
 		Result->GetValue()->AppendTag(to_string_cast(Length) + " bytes and bits"s);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(true, Buffer)};
+	
+	Result->GetValue()->AppendTag("ASCII printable"s);
+	if((Length.GetBits() == 0) && (Buffer.Has(Length) == true))
+	{
+		auto Boundary{Buffer.GetPosition() + Length};
+		std::stringstream Value;
+		
+		while(Buffer.GetPosition() < Boundary)
+		{
+			auto Character{Buffer.Get8Bits()};
+			
+			if(Is_ASCII_Character_Printable(Character) == true)
+			{
+				Value << Character;
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("ended by invalid character '" + to_string_cast(Character) + '\'');
+				Buffer.SetPosition(Buffer.GetPosition() - 1ull);
+				
+				break;
+			}
+		}
+		if(Buffer.GetPosition() == Boundary)
+		{
+			Result->GetValue()->AppendTag("ended by boundary"s);
+		}
+		
+		auto String{Value.str()};
+		
+		Result->GetValue()->SetAny(String);
+		Result->GetValue()->AppendTag(to_string_cast(String.length()) + " characters long");
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
