@@ -131,14 +131,12 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				{
 					std::cerr << "The file does not start with a " << ParseResult->GetValue()->GetName() << '.' << std::endl;
 				}
-				else
+				
+				auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
+				
+				if(Rest > 0ull)
 				{
-					auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
-					
-					if(Rest > 0ull)
-					{
-						std::cerr << "There are " << to_string_cast(Rest) << " bytes and bits after the data." << std::endl;
-					}
+					std::cerr << "There are " << to_string_cast(Rest) << " bytes and bits after the data." << std::endl;
 				}
 				munmap(Address, FileSize);
 			}
