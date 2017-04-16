@@ -341,6 +341,46 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Bu
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	if(Buffer.Has(0ull, 16) == true)
+	{
+		Result->SetSuccess(true);
+		
+		std::bitset< 16 > Value;
+		auto Byte1{Buffer.Get8Bits()};
+		
+		Value[8] = (Byte1 & 0x01) == 0x01;
+		Value[9] = (Byte1 & 0x02) == 0x02;
+		Value[10] = (Byte1 & 0x04) == 0x04;
+		Value[11] = (Byte1 & 0x08) == 0x08;
+		Value[12] = (Byte1 & 0x10) == 0x10;
+		Value[13] = (Byte1 & 0x20) == 0x20;
+		Value[14] = (Byte1 & 0x40) == 0x40;
+		Value[15] = (Byte1 & 0x80) == 0x80;
+		
+		auto Byte2{Buffer.Get8Bits()};
+		
+		Value[0] = (Byte2 & 0x01) == 0x01;
+		Value[1] = (Byte2 & 0x02) == 0x02;
+		Value[2] = (Byte2 & 0x04) == 0x04;
+		Value[3] = (Byte2 & 0x08) == 0x08;
+		Value[4] = (Byte2 & 0x10) == 0x10;
+		Value[5] = (Byte2 & 0x20) == 0x20;
+		Value[6] = (Byte2 & 0x40) == 0x40;
+		Value[7] = (Byte2 & 0x80) == 0x80;
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("bitset"s);
+		Result->GetValue()->AppendTag("16bit"s);
+		Result->GetValue()->AppendTag("little endian"s);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(false, Buffer)};
