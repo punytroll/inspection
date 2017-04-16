@@ -69,7 +69,7 @@ namespace Inspection
 				}
 			}
 			
-			throw new std::invalid_argument("Could not find any value named \"" + Name + "\".");
+			throw std::invalid_argument("Could not find any value named \"" + Name + "\".");
 		}
 		
 		std::uint32_t GetCount(void) const
@@ -107,7 +107,7 @@ namespace Inspection
 				}
 			}
 			
-			throw new std::exception();
+			throw std::exception();
 		}
 		
 		const std::list< std::shared_ptr< Inspection::Value > > & GetValues(void)
