@@ -3,893 +3,826 @@
 #include <unistd.h>
 
 #include <deque>
-#include <iomanip>
-#include <iostream>
-#include <map>
-#include <sstream>
-#include <string>
-#include <tuple>
 
+#include "../common/5th.h"
 #include "../common/5th.h"
 #include "../common/file_handling.h"
 
-std::tuple< bool, unsigned int, std::string > GetMPEGFrameInfo(uint8_t * Buffer, unsigned int Length)
+using namespace std::string_literals;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// 5th generation getters                                                                        //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_AudioVersionID(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_BitRateIndex(Inspection::Buffer & Buffer, std::uint8_t LayerDescription);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Copyright(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Emphasis(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_LayerDescription(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Mode(Inspection::Buffer & Buffer, std::uint8_t LayerDescription);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Buffer & Buffer, std::uint8_t LayerDescription, std::uint8_t Mode);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_OriginalHome(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_PaddingBit(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ProtectionBit(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_SamplingFrequency(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Buffer & Buffer);
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Buffer & Buffer)
 {
-	std::tuple< bool, unsigned int, std::string > Result(false, 0, "");
+	auto Start{Buffer.GetPosition()};
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto FrameHeaderResult{Get_MPEG_1_FrameHeader(Buffer)};
 	
-	if(Length >= 4)
+	Result->GetValue()->Append("Header", FrameHeaderResult->GetValue());
+	if(FrameHeaderResult->GetSuccess() == true)
 	{
-		unsigned int Index(0);
+		auto ProtectionBit{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("ProtectionBit"))};
+		auto Continue{true};
 		
-		if((Buffer[Index] == 0xFF) && ((Buffer[Index + 1] & 0xF0) == 0xF0))
+		if(ProtectionBit == 0x00)
 		{
-			std::stringstream Stream;
+			auto ErrorCheckResult{Get_BitSet_16Bit_BigEndian(Buffer)};
 			
-			Stream << "MPEG Audio Frame" << std::endl;
+			Result->GetValue()->Append("ErrorCheck", ErrorCheckResult->GetValue());
+			Continue = ErrorCheckResult->GetSuccess();
+		}
+		if(Continue == true)
+		{
+			auto LayerDescription{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("LayerDescription"))};
+			auto BitRate{std::experimental::any_cast< std::uint32_t >(FrameHeaderResult->GetValue("BitRateIndex")->GetAny("Numeric"))};
+			auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(FrameHeaderResult->GetValue("SamplingFrequency")->GetAny("Numeric"))};
+			auto PaddingBit{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("PaddingBit"))};
+			auto FrameLength{0ul};
 			
-			unsigned int IDValue((Buffer[Index + 1] & 0x08) >> 3);
-			
-			switch(IDValue)
+			if(LayerDescription == 0x03)
 			{
-				case 1:
-				{
-					Stream << "  ID: MPEG Audio Version 1 (" << IDValue << ')' << std::endl;
-					
-					break;
-				}
-				default:
-				{
-					std::cerr << "*** ERROR: Invalid ID (" << IDValue << ") found." << std::endl;
-					
-					return Result;
-				}
+				FrameLength = (12 * BitRate / SamplingFrequency + PaddingBit) * 4;
+			}
+			else if((LayerDescription == 0x01) || (LayerDescription == 0x02))
+			{
+				FrameLength = 144 * BitRate / SamplingFrequency + PaddingBit;
 			}
 			
-			unsigned int LayerValue((Buffer[Index + 1] & 0x06) >> 1);
+			auto AudioDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(FrameLength) + Start - Buffer.GetPosition())};
 			
-			switch(LayerValue)
-			{
-			case 1:
-				{
-					Stream << "  Layer: Layer III (" << LayerValue << ')' << std::endl;
-					
-					break;
-				}
-			case 2:
-				{
-					Stream << "  Layer: Layer II (" << LayerValue << ')' << std::endl;
-					
-					break;
-				}
-			case 3:
-				{
-					Stream << "  Layer: Layer I (" << LayerValue << ')' << std::endl;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid Layer (" << LayerValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			
-			unsigned int ProtectionBitValue((Buffer[Index + 1] & 0x01) >> 0);
-			
-			switch(ProtectionBitValue)
-			{
-			case 0:
-				{
-					Stream << "  Protection: yes (" << ProtectionBitValue << ')' << std::endl;
-					
-					break;
-				}
-			case 1:
-				{
-					Stream << "  Protection: no (" << ProtectionBitValue << ')' << std::endl;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid Protection (" << ProtectionBitValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			
-			unsigned int BitRateIndexValue((Buffer[Index + 2] & 0xF0) >> 4);
-			unsigned int BitRate;
-			
-			switch(LayerValue)
-			{
-			case 1: // Layer III
-				{
-					switch(BitRateIndexValue)
-					{
-					case 0:
-						{
-							Stream << "  Bit Rate: free format (" << BitRateIndexValue << ')' << std::endl;
-							
-							break;
-						}
-					case 1:
-						{
-							Stream << "  Bit Rate: 32 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 32000;
-							
-							break;
-						}
-					case 2:
-						{
-							Stream << "  Bit Rate: 40 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 40000;
-							
-							break;
-						}
-					case 3:
-						{
-							Stream << "  Bit Rate: 48 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 48000;
-							
-							break;
-						}
-					case 4:
-						{
-							Stream << "  Bit Rate: 56 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 56000;
-							
-							break;
-						}
-					case 5:
-						{
-							Stream << "  Bit Rate: 64 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 64000;
-							
-							break;
-						}
-					case 6:
-						{
-							Stream << "  Bit Rate: 80 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 80000;
-							
-							break;
-						}
-					case 7:
-						{
-							Stream << "  Bit Rate: 96 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 96000;
-							
-							break;
-						}
-					case 8:
-						{
-							Stream << "  Bit Rate: 112 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 112000;
-							
-							break;
-						}
-					case 9:
-						{
-							Stream << "  Bit Rate: 128 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 128000;
-							
-							break;
-						}
-					case 10:
-						{
-							Stream << "  Bit Rate: 160 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 160000;
-							
-							break;
-						}
-					case 11:
-						{
-							Stream << "  Bit Rate: 192 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 192000;
-							
-							break;
-						}
-					case 12:
-						{
-							Stream << "  Bit Rate: 224 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 224000;
-							
-							break;
-						}
-					case 13:
-						{
-							Stream << "  Bit Rate: 256 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 256000;
-							
-							break;
-						}
-					case 14:
-						{
-							Stream << "  Bit Rate: 320 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 320000;
-							
-							break;
-						}
-					default:
-						{
-							std::cerr << "*** ERROR: Invalid bit rate (" << BitRateIndexValue << ") found." << std::endl;
-							
-							return Result;
-						}
-					}
-					
-					break;
-				}
-			case 2: // Layer II
-				{
-					switch(BitRateIndexValue)
-					{
-					case 0:
-						{
-							Stream << "  Bit Rate: free format (" << BitRateIndexValue << ')' << std::endl;
-							
-							break;
-						}
-					case 1:
-						{
-							Stream << "  Bit Rate: 32 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 32000;
-							
-							break;
-						}
-					case 2:
-						{
-							Stream << "  Bit Rate: 48 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 48000;
-							
-							break;
-						}
-					case 3:
-						{
-							Stream << "  Bit Rate: 56 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 56000;
-							
-							break;
-						}
-					case 4:
-						{
-							Stream << "  Bit Rate: 64 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 64000;
-							
-							break;
-						}
-					case 5:
-						{
-							Stream << "  Bit Rate: 80 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 80000;
-							
-							break;
-						}
-					case 6:
-						{
-							Stream << "  Bit Rate: 96 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 96000;
-							
-							break;
-						}
-					case 7:
-						{
-							Stream << "  Bit Rate: 112 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 112000;
-							
-							break;
-						}
-					case 8:
-						{
-							Stream << "  Bit Rate: 128 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 128000;
-							
-							break;
-						}
-					case 9:
-						{
-							Stream << "  Bit Rate: 160 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 160000;
-							
-							break;
-						}
-					case 10:
-						{
-							Stream << "  Bit Rate: 192 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 192000;
-							
-							break;
-						}
-					case 11:
-						{
-							Stream << "  Bit Rate: 224 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 224000;
-							
-							break;
-						}
-					case 12:
-						{
-							Stream << "  Bit Rate: 256 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 256000;
-							
-							break;
-						}
-					case 13:
-						{
-							Stream << "  Bit Rate: 320 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 320000;
-							
-							break;
-						}
-					case 14:
-						{
-							Stream << "  Bit Rate: 384 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 384000;
-							
-							break;
-						}
-					default:
-						{
-							std::cerr << "*** ERROR: Invalid bit rate (" << BitRateIndexValue << ") found." << std::endl;
-							
-							return Result;
-						}
-					}
-					
-					break;
-				}
-			case 3: // Layer I
-				{
-					switch(BitRateIndexValue)
-					{
-					case 0:
-						{
-							Stream << "  Bit Rate: free format (" << BitRateIndexValue << ')' << std::endl;
-							
-							break;
-						}
-					case 1:
-						{
-							Stream << "  Bit Rate: 32 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 32000;
-							
-							break;
-						}
-					case 2:
-						{
-							Stream << "  Bit Rate: 64 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 64000;
-							
-							break;
-						}
-					case 3:
-						{
-							Stream << "  Bit Rate: 96 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 96000;
-							
-							break;
-						}
-					case 4:
-						{
-							Stream << "  Bit Rate: 128 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 128000;
-							
-							break;
-						}
-					case 5:
-						{
-							Stream << "  Bit Rate: 160 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 160000;
-							
-							break;
-						}
-					case 6:
-						{
-							Stream << "  Bit Rate: 192 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 192000;
-							
-							break;
-						}
-					case 7:
-						{
-							Stream << "  Bit Rate: 224 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 224000;
-							
-							break;
-						}
-					case 8:
-						{
-							Stream << "  Bit Rate: 256 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 256000;
-							
-							break;
-						}
-					case 9:
-						{
-							Stream << "  Bit Rate: 288 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 288000;
-							
-							break;
-						}
-					case 10:
-						{
-							Stream << "  Bit Rate: 320 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 320000;
-							
-							break;
-						}
-					case 11:
-						{
-							Stream << "  Bit Rate: 352 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 352000;
-							
-							break;
-						}
-					case 12:
-						{
-							Stream << "  Bit Rate: 384 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 384000;
-							
-							break;
-						}
-					case 13:
-						{
-							Stream << "  Bit Rate: 416 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 416000;
-							
-							break;
-						}
-					case 14:
-						{
-							Stream << "  Bit Rate: 448 kbits/s (" << BitRateIndexValue << ')' << std::endl;
-							BitRate = 448000;
-							
-							break;
-						}
-					default:
-						{
-							std::cerr << "*** ERROR: Invalid bit rate (" << BitRateIndexValue << ") found." << std::endl;
-							
-							return Result;
-						}
-					}
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid layer (" << LayerValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			
-			unsigned int SamplingRateFrequencyValue((Buffer[Index + 2] & 0x0C) >> 2);
-			unsigned int SamplingRateFrequency(0);
-			
-			switch(SamplingRateFrequencyValue)
-			{
-			case 0:
-				{
-					Stream << "  Sampling Rate Frequency: 44.1 kHz (" << SamplingRateFrequencyValue << ')' << std::endl;
-					SamplingRateFrequency = 44100;
-					
-					break;
-				}
-			case 1:
-				{
-					Stream << "  Sampling Rate Frequency: 48 kHz (" << SamplingRateFrequencyValue << ')' << std::endl;
-					SamplingRateFrequency = 48000;
-					
-					break;
-				}
-			case 2:
-				{
-					Stream << "  Sampling Rate Frequency: 32 kHz (" << SamplingRateFrequencyValue << ')' << std::endl;
-					SamplingRateFrequency = 32000;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid sampling rate frequency (" << SamplingRateFrequencyValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			
-			unsigned int PaddingBitValue((Buffer[Index + 2] & 0x02) >> 1);
-			
-			switch(PaddingBitValue)
-			{
-			case 0:
-				{
-					Stream << "  Padding: No, frame contains no extra slot. (" << PaddingBitValue << ')' << std::endl;
-					
-					break;
-				}
-			case 1:
-				{
-					Stream << "  Padding: Yes, frame contains extra slot. (" << PaddingBitValue << ')' << std::endl;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid padding value (" << PaddingBitValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			
-			unsigned int PrivateBitValue((Buffer[Index + 2] & 0x01) >> 0);
-			
-			Stream << "  Private Bit: " << PrivateBitValue << std::endl;
-			
-			unsigned int ModeValue((Buffer[Index + 3] & 0xC0) >> 6);
-			
-			switch(ModeValue)
-			{
-			case 0:
-				{
-					Stream << "  Mode: stereo (" << ModeValue << ')' << std::endl;
-					
-					break;
-				}
-			case 1:
-				{
-					switch(LayerValue)
-					{
-					case 1: // Layer III
-						{
-							Stream << "  Mode: joint stereo (intensity stereo and/or m/s stereo) (" << ModeValue << ')' << std::endl;
-							
-							break;
-						}
-					case 2: // Layer II
-						{
-							Stream << "  Mode: joint stereo (intensity stereo) (" << ModeValue << ')' << std::endl;
-							
-							break;
-						}
-					case 3: // Layer I
-						{
-							Stream << "  Mode: joint stereo (intensity stereo) (" << ModeValue << ')' << std::endl;
-							
-							break;
-						}
-					default:
-						{
-							std::cerr << "*** ERROR: Invalid layer (" << LayerValue << ") found." << std::endl;
-							
-							return Result;
-						}
-					}
-					
-					break;
-				}
-			case 2:
-				{
-					Stream << "  Mode: dual channel (" << ModeValue << ')' << std::endl;
-					
-					break;
-				}
-			case 3:
-				{
-					Stream << "  Mode: single channel (" << ModeValue << ')' << std::endl;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid mode (" << ModeValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			
-			unsigned int ModeExtensionValue((Buffer[Index + 3] & 0x30) >> 4);
-			
-			switch(LayerValue)
-			{
-			case 1: // Layer III
-				{
-					switch(ModeExtensionValue)
-					{
-					case 0:
-						{
-							Stream << "  Mode Extension: intensity stereo OFF, m/s stereo OFF (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 1:
-						{
-							Stream << "  Mode Extension: intensity stereo ON, m/s stereo OFF (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 2:
-						{
-							Stream << "  Mode Extension: intensity stereo OFF, m/s stereo ON (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 3:
-						{
-							Stream << "  Mode Extension: intensity stereo ON, m/s stereo ON (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					default:
-						{
-							std::cerr << "*** ERROR: Invalid mode extension (" << ModeExtensionValue << ") found." << std::endl;
-							
-							return Result;
-						}
-					}
-					
-					break;
-				}
-			case 2: // Layer II
-				{
-					switch(ModeExtensionValue)
-					{
-					case 0:
-						{
-							Stream << "  Mode Extension: intensity stereo in subbands 4-31, bound==4 (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 1:
-						{
-							Stream << "  Mode Extension: intensity stereo in subbands 8-31, bound==8 (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 2:
-						{
-							Stream << "  Mode Extension: intensity stereo in subbands 12-31, bound==12 (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 3:
-						{
-							Stream << "  Mode Extension: intensity stereo in subbands 16-31, bound==16 (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					default:
-						{
-							std::cerr << "*** ERROR: Invalid mode extension (" << ModeExtensionValue << ") found." << std::endl;
-							
-							return Result;
-						}
-					}
-					
-					break;
-				}
-			case 3: // Layer I
-				{
-					switch(ModeExtensionValue)
-					{
-					case 0:
-						{
-							Stream << "  Mode Extension: intensity stereo in subbands 4-31, bound==4 (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 1:
-						{
-							Stream << "  Mode Extension: intensity stereo in subbands 8-31, bound==8 (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 2:
-						{
-							Stream << "  Mode Extension: intensity stereo in subbands 12-31, bound==12 (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					case 3:
-						{
-							Stream << "  Mode Extension: intensity stereo in subbands 16-31, bound==16 (" << ModeExtensionValue << ')' << std::endl;
-							
-							break;
-						}
-					default:
-						{
-							std::cerr << "*** ERROR: Invalid mode extension (" << ModeExtensionValue << ") found." << std::endl;
-							
-							return Result;
-						}
-					}
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid layer (" << LayerValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			
-			unsigned int CopyrightValue((Buffer[Index + 3] & 0x08) >> 3);
-			
-			switch(CopyrightValue)
-			{
-			case 0:
-				{
-					Stream << "  Copyright: audio is not copyrighted (" << CopyrightValue << ')' << std::endl;
-					
-					break;
-				}
-			case 1:
-				{
-					Stream << "  Copyright: audio is copyrighted (" << CopyrightValue << ')' << std::endl;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid copyright (" << CopyrightValue << ") found." << std::endl;
-					
-					
-					return Result;
-				}
-			}
-			
-			unsigned int OriginalValue((Buffer[Index + 3] & 0x04) >> 2);
-			
-			switch(OriginalValue)
-			{
-			case 0:
-				{
-					Stream << "  Original: copied media (" << OriginalValue << ')' << std::endl;
-					
-					break;
-				}
-			case 1:
-				{
-					Stream << "  Original: original media (" << OriginalValue << ')' << std::endl;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid original (" << OriginalValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			
-			unsigned int EmphasisValue((Buffer[Index + 3] & 0x03) >> 0);
-			
-			switch(EmphasisValue)
-			{
-			case 0:
-				{
-					Stream << "  Emphasis: no emphasis (" << EmphasisValue << ')' << std::endl;
-					
-					break;
-				}
-			case 1:
-				{
-					Stream << "  Emphasis: 50/15 microsec. emphasis (" << EmphasisValue << ')' << std::endl;
-					
-					break;
-				}
-			case 3:
-				{
-					Stream << "  Emphasis: CCITT J.7 (" << EmphasisValue << ')' << std::endl;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Invalid emphasis (" << EmphasisValue << ") found." << std::endl;
-					
-					return Result;
-				}
-			}
-			std::get< 0 >(Result) = true;
-			switch(LayerValue)
-			{
-			case 1:
-			case 2:
-				{
-					std::get< 1 >(Result) = 144 * BitRate / SamplingRateFrequency + ((PaddingBitValue == 0) ? (0) : (1));
-					Stream << "  Frame length in bytes: " << std::get< 1 >(Result) << std::endl;
-					
-					break;
-				}
-			case 3:
-				{
-					std::get< 1 >(Result) = (12 * BitRate / SamplingRateFrequency + ((PaddingBitValue == 0) ? (0) : (1))) * 4;
-					Stream << "  Frame length in bytes: " << std::get< 1 >(Result) << std::endl;
-					
-					break;
-				}
-			default:
-				{
-					std::cerr << "*** ERROR: Couldn't calculate frame length because of invalid layer value (" << LayerValue << ")." << std::endl;
-					
-					break;
-				}
-			}
-			std::get< 2 >(Result) = Stream.str();
+			Result->GetValue()->Append("AudioData", AudioDataResult->GetValue());
+			Result->SetSuccess(AudioDataResult->GetSuccess());
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
 }
 
-void ReadFile(const std::string & Path)
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader(Inspection::Buffer & Buffer)
 {
-	int FileDescriptor(open(Path.c_str(), O_RDONLY));
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto FrameSyncResult{Get_Bits_Set_EndedByLength(Buffer, Inspection::Length(0ull, 12))};
 	
-	if(FileDescriptor == -1)
+	Result->GetValue()->Append("FrameSync", FrameSyncResult->GetValue());
+	if(FrameSyncResult->GetSuccess() == true)
 	{
-		std::cerr << "Could not open the file \"" << Path << "\"." << std::endl;
-	}
-	else
-	{
-		int FileSize(GetFileSize(Path));
+		auto AudioVersionIDResult{Get_MPEG_1_FrameHeader_AudioVersionID(Buffer)};
 		
-		if(FileSize != -1)
+		Result->GetValue()->Append("AudioVersionID", AudioVersionIDResult->GetValue());
+		if(AudioVersionIDResult->GetSuccess() == true)
 		{
-			uint8_t * Address((uint8_t *)mmap(NULL, FileSize, PROT_READ, MAP_PRIVATE, FileDescriptor, 0));
+			auto LayerDescriptionResult{Get_MPEG_1_FrameHeader_LayerDescription(Buffer)};
 			
-			if(Address == (uint8_t *)(-1))
+			Result->GetValue()->Append("LayerDescription", LayerDescriptionResult->GetValue());
+			if(LayerDescriptionResult->GetSuccess() == true)
 			{
-				std::cerr << "Could not map the file \"" + Path + "\" into memory." << std::endl;
-			}
-			else
-			{
-				int Index(0);
-				int NoFrameSince(0);
+				auto ProtectionBitResult{Get_MPEG_1_FrameHeader_ProtectionBit(Buffer)};
 				
-				while(Index < FileSize)
+				Result->GetValue()->Append("ProtectionBit", ProtectionBitResult->GetValue());
+				if(ProtectionBitResult->GetSuccess() == true)
 				{
-					std::tuple< bool, unsigned int, std::string > MPEGFrameInfo(GetMPEGFrameInfo(Address + Index, FileSize - Index));
+					auto LayerDescription{std::experimental::any_cast< std::uint8_t >(LayerDescriptionResult->GetAny())};
+					auto BitRateIndexResult{Get_MPEG_1_FrameHeader_BitRateIndex(Buffer, LayerDescription)};
 					
-					if(std::get< 0 >(MPEGFrameInfo) == true)
+					Result->GetValue()->Append("BitRateIndex", BitRateIndexResult->GetValue());
+					if(BitRateIndexResult->GetSuccess() == true)
 					{
-						if(NoFrameSince != Index)
+						auto SamplingFrequencyResult{Get_MPEG_1_FrameHeader_SamplingFrequency(Buffer)};
+						
+						Result->GetValue()->Append("SamplingFrequency", SamplingFrequencyResult->GetValue());
+						if(SamplingFrequencyResult->GetSuccess() == true)
 						{
-							std::cout << "No frames between " << NoFrameSince << " and " << (Index - 1) << "." << std::endl;
+							auto PaddingBitResult{Get_MPEG_1_FrameHeader_PaddingBit(Buffer)};
+							
+							Result->GetValue()->Append("PaddingBit", PaddingBitResult->GetValue());
+							if(PaddingBitResult->GetSuccess() == true)
+							{
+								auto PrivateBitResult{Get_UnsignedInteger_1Bit(Buffer)};
+								
+								Result->GetValue()->Append("PrivateBit", PrivateBitResult->GetValue());
+								if(PrivateBitResult->GetSuccess() == true)
+								{
+									auto ModeResult{Get_MPEG_1_FrameHeader_Mode(Buffer, LayerDescription)};
+									
+									Result->GetValue()->Append("Mode", ModeResult->GetValue());
+									if(ModeResult->GetSuccess() == true)
+									{
+										auto Mode{std::experimental::any_cast< std::uint8_t >(ModeResult->GetAny())};
+										auto ModeExtensionResult{Get_MPEG_1_FrameHeader_ModeExtension(Buffer, LayerDescription, Mode)};
+										
+										Result->GetValue()->Append("ModeExtension", ModeExtensionResult->GetValue());
+										if(ModeExtensionResult->GetSuccess() == true)
+										{
+											auto CopyrightResult{Get_MPEG_1_FrameHeader_Copyright(Buffer)};
+											
+											Result->GetValue()->Append("Copyright", CopyrightResult->GetValue());
+											if(CopyrightResult->GetSuccess() == true)
+											{
+												auto OriginalHomeResult{Get_MPEG_1_FrameHeader_OriginalHome(Buffer)};
+												
+												Result->GetValue()->Append("Original/Home", OriginalHomeResult->GetValue());
+												if(OriginalHomeResult->GetSuccess() == true)
+												{
+													auto EmphasisResult{Get_MPEG_1_FrameHeader_Emphasis(Buffer)};
+													
+													Result->GetValue()->Append("Emphasis", EmphasisResult->GetValue());
+													Result->SetSuccess(EmphasisResult->GetSuccess());
+												}
+											}
+										}
+									}
+								}
+							}
 						}
-						std::cout << "Frame at: " << Index << std::endl;
-						std::cout << std::get< 2 >(MPEGFrameInfo) << std::endl;
-						Index += std::get< 1 >(MPEGFrameInfo);
-						NoFrameSince = Index;
-					}
-					else
-					{
-						Index += 1;
 					}
 				}
-				if(NoFrameSince != Index)
-				{
-					std::cout << "No frames between " << NoFrameSince << " and " << (Index - 1) << "." << std::endl;
-				}
-				
-				munmap(Address, FileSize);
 			}
 		}
-		close(FileDescriptor);
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_AudioVersionID(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto AudioVersionIDResult{Get_UnsignedInteger_1Bit(Buffer)};
+	
+	Result->SetValue(AudioVersionIDResult->GetValue());
+	if(AudioVersionIDResult->GetSuccess() == true)
+	{
+		auto AudioVersionID{std::experimental::any_cast< std::uint8_t >(AudioVersionIDResult->GetAny())};
+		
+		if(AudioVersionID == 0x01)
+		{
+			Result->GetValue()->PrependTag("MPEG Version 1 (ISO/IEC 11172-3)"s);
+			Result->SetSuccess(true);
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("<reserved>");
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_BitRateIndex(Inspection::Buffer & Buffer, std::uint8_t LayerDescription)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto BitRateIndexResult{Get_UnsignedInteger_4Bit(Buffer)};
+	
+	Result->SetValue(BitRateIndexResult->GetValue());
+	if(BitRateIndexResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto BitRateIndex{std::experimental::any_cast< std::uint8_t >(BitRateIndexResult->GetAny())};
+		
+		if(LayerDescription == 0x03)
+		{
+			if(BitRateIndex == 0x00)
+			{
+				Result->GetValue()->PrependTag("free format"s);
+			}
+			else if(BitRateIndex == 0x01)
+			{
+				Result->GetValue()->PrependTag("32 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 32000u);
+			}
+			else if(BitRateIndex == 0x02)
+			{
+				Result->GetValue()->PrependTag("64 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 64000u);
+			}
+			else if(BitRateIndex == 0x03)
+			{
+				Result->GetValue()->PrependTag("96 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 96000u);
+			}
+			else if(BitRateIndex == 0x04)
+			{
+				Result->GetValue()->PrependTag("128 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 128000u);
+			}
+			else if(BitRateIndex == 0x05)
+			{
+				Result->GetValue()->PrependTag("160 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 160000u);
+			}
+			else if(BitRateIndex == 0x06)
+			{
+				Result->GetValue()->PrependTag("192 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 192000u);
+			}
+			else if(BitRateIndex == 0x07)
+			{
+				Result->GetValue()->PrependTag("224 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 224000u);
+			}
+			else if(BitRateIndex == 0x08)
+			{
+				Result->GetValue()->PrependTag("256 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 256000u);
+			}
+			else if(BitRateIndex == 0x09)
+			{
+				Result->GetValue()->PrependTag("288 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 288000u);
+			}
+			else if(BitRateIndex == 0x0a)
+			{
+				Result->GetValue()->PrependTag("320 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 320000u);
+			}
+			else if(BitRateIndex == 0x0b)
+			{
+				Result->GetValue()->PrependTag("352 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 352000u);
+			}
+			else if(BitRateIndex == 0x0c)
+			{
+				Result->GetValue()->PrependTag("384 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 384000u);
+			}
+			else if(BitRateIndex == 0x0d)
+			{
+				Result->GetValue()->PrependTag("416 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 416000u);
+			}
+			else if(BitRateIndex == 0x0e)
+			{
+				Result->GetValue()->PrependTag("448 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 448000u);
+			}
+			else if(BitRateIndex == 0x0f)
+			{
+				Result->GetValue()->PrependTag("<reserved>"s);
+				Result->SetSuccess(false);
+			}
+		}
+		else if(LayerDescription == 0x02)
+		{
+			if(BitRateIndex == 0x00)
+			{
+				Result->GetValue()->PrependTag("free format"s);
+			}
+			else if(BitRateIndex == 0x01)
+			{
+				Result->GetValue()->PrependTag("32 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 32000u);
+			}
+			else if(BitRateIndex == 0x02)
+			{
+				Result->GetValue()->PrependTag("48 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 48000u);
+			}
+			else if(BitRateIndex == 0x03)
+			{
+				Result->GetValue()->PrependTag("56 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 56000u);
+			}
+			else if(BitRateIndex == 0x04)
+			{
+				Result->GetValue()->PrependTag("64 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 64000u);
+			}
+			else if(BitRateIndex == 0x05)
+			{
+				Result->GetValue()->PrependTag("80 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 80000u);
+			}
+			else if(BitRateIndex == 0x06)
+			{
+				Result->GetValue()->PrependTag("96 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 96000u);
+			}
+			else if(BitRateIndex == 0x07)
+			{
+				Result->GetValue()->PrependTag("112 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 112000u);
+			}
+			else if(BitRateIndex == 0x08)
+			{
+				Result->GetValue()->PrependTag("128 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 128000u);
+			}
+			else if(BitRateIndex == 0x09)
+			{
+				Result->GetValue()->PrependTag("160 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 160000u);
+			}
+			else if(BitRateIndex == 0x0a)
+			{
+				Result->GetValue()->PrependTag("192 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 192000u);
+			}
+			else if(BitRateIndex == 0x0b)
+			{
+				Result->GetValue()->PrependTag("224 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 224000u);
+			}
+			else if(BitRateIndex == 0x0c)
+			{
+				Result->GetValue()->PrependTag("256 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 256000u);
+			}
+			else if(BitRateIndex == 0x0d)
+			{
+				Result->GetValue()->PrependTag("320 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 320000u);
+			}
+			else if(BitRateIndex == 0x0e)
+			{
+				Result->GetValue()->PrependTag("384 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 384000u);
+			}
+			else if(BitRateIndex == 0x0f)
+			{
+				Result->GetValue()->PrependTag("<reserved>"s);
+				Result->SetSuccess(false);
+			}
+		}
+		else if(LayerDescription == 0x01)
+		{
+			if(BitRateIndex == 0x00)
+			{
+				Result->GetValue()->PrependTag("free format"s);
+			}
+			else if(BitRateIndex == 0x01)
+			{
+				Result->GetValue()->PrependTag("32 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 32000u);
+			}
+			else if(BitRateIndex == 0x02)
+			{
+				Result->GetValue()->PrependTag("40 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 40000u);
+			}
+			else if(BitRateIndex == 0x03)
+			{
+				Result->GetValue()->PrependTag("48 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 48000u);
+			}
+			else if(BitRateIndex == 0x04)
+			{
+				Result->GetValue()->PrependTag("56 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 56000u);
+			}
+			else if(BitRateIndex == 0x05)
+			{
+				Result->GetValue()->PrependTag("64 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 64000u);
+			}
+			else if(BitRateIndex == 0x06)
+			{
+				Result->GetValue()->PrependTag("80 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 80000u);
+			}
+			else if(BitRateIndex == 0x07)
+			{
+				Result->GetValue()->PrependTag("96 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 96000u);
+			}
+			else if(BitRateIndex == 0x08)
+			{
+				Result->GetValue()->PrependTag("112 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 112000u);
+			}
+			else if(BitRateIndex == 0x09)
+			{
+				Result->GetValue()->PrependTag("128 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 128000u);
+			}
+			else if(BitRateIndex == 0x0a)
+			{
+				Result->GetValue()->PrependTag("160 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 160000u);
+			}
+			else if(BitRateIndex == 0x0b)
+			{
+				Result->GetValue()->PrependTag("192 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 192000u);
+			}
+			else if(BitRateIndex == 0x0c)
+			{
+				Result->GetValue()->PrependTag("224 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 224000u);
+			}
+			else if(BitRateIndex == 0x0d)
+			{
+				Result->GetValue()->PrependTag("256 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 256000u);
+			}
+			else if(BitRateIndex == 0x0e)
+			{
+				Result->GetValue()->PrependTag("320 kbit/s"s);
+				Result->GetValue()->Append("Numeric", 320000u);
+			}
+			else if(BitRateIndex == 0x0f)
+			{
+				Result->GetValue()->PrependTag("<reserved>"s);
+				Result->SetSuccess(false);
+			}
+		}
+		else
+		{
+			Result->SetSuccess(false);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Copyright(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto CopyrightResult{Get_UnsignedInteger_1Bit(Buffer)};
+	
+	Result->SetValue(CopyrightResult->GetValue());
+	if(CopyrightResult->GetSuccess() == true)
+	{
+		auto Copyright{std::experimental::any_cast< std::uint8_t >(CopyrightResult->GetAny())};
+		
+		if(Copyright == 0x00)
+		{
+			Result->GetValue()->PrependTag("no copyright"s);
+			Result->SetSuccess(true);
+		}
+		else if(Copyright == 0x01)
+		{
+			Result->GetValue()->PrependTag("copyright"s);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Emphasis(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto EmphasisResult{Get_UnsignedInteger_2Bit(Buffer)};
+	
+	Result->SetValue(EmphasisResult->GetValue());
+	if(EmphasisResult->GetSuccess() == true)
+	{
+		auto Emphasis{std::experimental::any_cast< std::uint8_t >(EmphasisResult->GetAny())};
+		
+		if(Emphasis == 0x00)
+		{
+			Result->GetValue()->PrependTag("no emphasis"s);
+			Result->SetSuccess(true);
+		}
+		else if(Emphasis == 0x01)
+		{
+			Result->GetValue()->PrependTag("50/15 microsec. emphasis"s);
+			Result->SetSuccess(true);
+		}
+		else if(Emphasis == 0x02)
+		{
+			Result->GetValue()->PrependTag("<reserved>"s);
+		}
+		else if(Emphasis == 0x03)
+		{
+			Result->GetValue()->PrependTag("CCITT J.17"s);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_LayerDescription(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto LayerDescriptionResult{Get_UnsignedInteger_2Bit(Buffer)};
+	
+	Result->SetValue(LayerDescriptionResult->GetValue());
+	if(LayerDescriptionResult->GetSuccess() == true)
+	{
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(LayerDescriptionResult->GetAny())};
+		
+		if(LayerDescription == 0x00)
+		{
+			Result->GetValue()->PrependTag("<reserved>"s);
+		}
+		else if(LayerDescription == 0x01)
+		{
+			Result->GetValue()->PrependTag("Layer III"s);
+			Result->SetSuccess(true);
+		}
+		else if(LayerDescription == 0x02)
+		{
+			Result->GetValue()->PrependTag("Layer II"s);
+			Result->SetSuccess(true);
+		}
+		else if(LayerDescription == 0x03)
+		{
+			Result->GetValue()->PrependTag("Layer I"s);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Mode(Inspection::Buffer & Buffer, std::uint8_t LayerDescription)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ModeResult{Get_UnsignedInteger_2Bit(Buffer)};
+	
+	Result->SetValue(ModeResult->GetValue());
+	if(ModeResult->GetSuccess() == true)
+	{
+		auto Mode{std::experimental::any_cast< std::uint8_t >(ModeResult->GetAny())};
+		
+		if(Mode == 0x00)
+		{
+			Result->GetValue()->PrependTag("stereo"s);
+			Result->SetSuccess(true);
+		}
+		else if(Mode == 0x01)
+		{
+			if((LayerDescription == 0x03) || (LayerDescription == 0x02))
+			{
+				Result->GetValue()->PrependTag("joint stereo (intensity_stereo)"s);
+				Result->SetSuccess(true);
+			}
+			else if(LayerDescription == 0x01)
+			{
+				Result->GetValue()->PrependTag("joint stereo (intensity_stereo and/or ms_stereo)"s);
+				Result->SetSuccess(true);
+			}
+		}
+		else if(Mode == 0x02)
+		{
+			Result->GetValue()->PrependTag("dual_channel"s);
+			Result->SetSuccess(true);
+		}
+		else if(Mode == 0x03)
+		{
+			Result->GetValue()->PrependTag("single_channel"s);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Buffer & Buffer, std::uint8_t LayerDescription, std::uint8_t Mode)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ModeExtensionResult{Get_UnsignedInteger_2Bit(Buffer)};
+	
+	Result->SetValue(ModeExtensionResult->GetValue());
+	if(ModeExtensionResult->GetSuccess() == true)
+	{
+		auto ModeExtension{std::experimental::any_cast< std::uint8_t >(ModeExtensionResult->GetAny())};
+		
+		if(Mode == 0x01)
+		{
+			if((LayerDescription == 0x03) || (LayerDescription == 0x02))
+			{
+				if(ModeExtension == 0x00)
+				{
+					Result->GetValue()->PrependTag("subbands 4-31 in intensity_stereo, bound==4"s);
+					Result->SetSuccess(true);
+				}
+				else if(ModeExtension == 0x01)
+				{
+					Result->GetValue()->PrependTag("subbands 8-31 in intensity_stereo, bound==8"s);
+					Result->SetSuccess(true);
+				}
+				else if(ModeExtension == 0x02)
+				{
+					Result->GetValue()->PrependTag("subbands 12-31 in intensity_stereo, bound==12"s);
+					Result->SetSuccess(true);
+				}
+				else if(ModeExtension == 0x03)
+				{
+					Result->GetValue()->PrependTag("subbands 16-31 in intensity_stereo, bound==16"s);
+					Result->SetSuccess(true);
+				}
+			}
+			else if(LayerDescription == 0x01)
+			{
+				if(ModeExtension == 0x00)
+				{
+					Result->GetValue()->PrependTag("intensity_stereo=off; ms_stereo=off"s);
+					Result->SetSuccess(true);
+				}
+				else if(ModeExtension == 0x01)
+				{
+					Result->GetValue()->PrependTag("intensity_stereo=on; ms_stereo=off"s);
+					Result->SetSuccess(true);
+				}
+				else if(ModeExtension == 0x02)
+				{
+					Result->GetValue()->PrependTag("intensity_stereo=off; ms_stereo=on"s);
+					Result->SetSuccess(true);
+				}
+				else if(ModeExtension == 0x03)
+				{
+					Result->GetValue()->PrependTag("intensity_stereo=on; ms_stereo=on"s);
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("<ignored>"s);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_OriginalHome(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto OriginalHomeResult{Get_UnsignedInteger_1Bit(Buffer)};
+	
+	Result->SetValue(OriginalHomeResult->GetValue());
+	if(OriginalHomeResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(OriginalHomeResult->GetAny())};
+		
+		if(OriginalHome == 0x00)
+		{
+			Result->GetValue()->PrependTag("copy"s);
+		}
+		else if(OriginalHome == 0x01)
+		{
+			Result->GetValue()->PrependTag("original"s);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_PaddingBit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto PaddingBitResult{Get_UnsignedInteger_1Bit(Buffer)};
+	
+	Result->SetValue(PaddingBitResult->GetValue());
+	if(PaddingBitResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto PaddingBit{std::experimental::any_cast< std::uint8_t >(PaddingBitResult->GetAny())};
+		
+		if(PaddingBit == 0x00)
+		{
+			Result->GetValue()->PrependTag("no padding"s);
+		}
+		else if(PaddingBit == 0x01)
+		{
+			Result->GetValue()->PrependTag("padding"s);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ProtectionBit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto ProtectionBitResult{Get_UnsignedInteger_1Bit(Buffer)};
+	
+	Result->SetValue(ProtectionBitResult->GetValue());
+	if(ProtectionBitResult->GetSuccess() == true)
+	{
+		auto ProtectionBit{std::experimental::any_cast< std::uint8_t >(ProtectionBitResult->GetAny())};
+		
+		if(ProtectionBit == 0x00)
+		{
+			Result->GetValue()->PrependTag("redundancy in the audio bitstream"s);
+			Result->SetSuccess(true);
+		}
+		else if(ProtectionBit == 0x01)
+		{
+			Result->GetValue()->PrependTag("no redundancy in the audio bitstream"s);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_SamplingFrequency(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto SamplingFrequencyResult{Get_UnsignedInteger_2Bit(Buffer)};
+	
+	Result->SetValue(SamplingFrequencyResult->GetValue());
+	if(SamplingFrequencyResult->GetSuccess() == true)
+	{
+		auto SamplingFrequency{std::experimental::any_cast< std::uint8_t >(SamplingFrequencyResult->GetAny())};
+		
+		if(SamplingFrequency == 0x00)
+		{
+			Result->GetValue()->PrependTag("44.1 kHz"s);
+			Result->GetValue()->Append("Numeric", 44100u);
+			Result->SetSuccess(true);
+		}
+		else if(SamplingFrequency == 0x01)
+		{
+			Result->GetValue()->PrependTag("48 kHz"s);
+			Result->GetValue()->Append("Numeric", 48000u);
+			Result->SetSuccess(true);
+		}
+		else if(SamplingFrequency == 0x02)
+		{
+			Result->GetValue()->PrependTag("32 kHz"s);
+			Result->GetValue()->Append("Numeric", 32000u);
+			Result->SetSuccess(true);
+		}
+		else if(SamplingFrequency == 0x03)
+		{
+			Result->GetValue()->PrependTag("<reserved>"s);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(false, Buffer)};
+	
+	Result->SetSuccess(true);
+	while(Buffer.GetPosition() < Buffer.GetLength())
+	{
+		auto Position{Buffer.GetPosition()};
+		auto MPEGFrameResult{Get_MPEG_1_Frame(Buffer)};
+		
+		if(MPEGFrameResult->GetSuccess() == true)
+		{
+			Result->GetValue()->Append("MPEGFrame", MPEGFrameResult->GetValue());
+		}
+		else
+		{
+			Buffer.SetPosition(Position);
+			Result->SetSuccess(false);
+			
+			break;
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
+{
+	auto MPEGStreamResult{Get_MPEG_1_Stream(Buffer)};
+	
+	MPEGStreamResult->GetValue()->SetName("MPEGStream");
+	
+	return MPEGStreamResult;
 }
 
 int main(int argc, char ** argv)
 {
-	std::cout << "This program is intentionally strict according to ISO/IEC 11172-3!\n" << std::endl;
+	std::cout << "This program is intentionally strict according to MPEG-1 audio (ISO/IEC 11172-3)!" << std::endl;
 	
 	std::deque< std::string > Paths;
-	unsigned int Arguments(argc);
-	unsigned int Argument(0);
+	auto Arguments{argc};
+	auto Argument{0};
 	
 	while(++Argument < Arguments)
 	{
@@ -903,7 +836,7 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front());
+		ReadItem(Paths.front(), ProcessBuffer);
 		Paths.pop_front();
 	}
 	
