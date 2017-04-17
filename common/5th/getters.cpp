@@ -139,9 +139,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	assert(Length.GetBits() == 0);
+	
 	auto Result{Inspection::InitializeResult(Buffer)};
 	
-	if((Length.GetBits() == 0) && (Buffer.Has(Length) == true))
+	if(Buffer.Has(Length) == true)
 	{
 		Result->GetValue()->AppendTag("string"s);
 		Result->GetValue()->AppendTag("ASCII"s);
