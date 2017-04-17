@@ -3424,7 +3424,7 @@ std::uint64_t Handle22UFIFrames(const uint8_t * Buffer, std::uint64_t Length)
 
 std::uint64_t Handle23APICFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	Inspection::Buffer Buffer{RawBuffer, Length};
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
 	auto FrameResult{Get_ID3_2_3_Frame_APIC_Body(Buffer)};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
