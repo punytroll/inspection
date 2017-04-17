@@ -67,21 +67,21 @@ std::unique_ptr< Inspection::Result > Get_ASF_Boolean_16Bit_LittleEndian(Inspect
 	Result->SetValue(UnsignedInteger16BitResult->GetValue());
 	if(UnsignedInteger16BitResult->GetSuccess() == true)
 	{
-		Result->SetSuccess(true);
-		
 		auto UnsignedInteger16Bit{std::experimental::any_cast< std::uint16_t >(UnsignedInteger16BitResult->GetAny())};
 		
 		if(UnsignedInteger16Bit == 0x0000)
 		{
-			Result->GetValue()->Append("Interpretation", false);
+			Result->GetValue()->PrependTag("value", false);
+			Result->SetSuccess(true);
 		}
 		else if(UnsignedInteger16Bit == 0x0001)
 		{
-			Result->GetValue()->Append("Interpretation", true);
+			Result->GetValue()->PrependTag("value", true);
+			Result->SetSuccess(true);
 		}
 		else
 		{
-			Result->GetValue()->Append("Interpretation", "<no interpretation>"s);
+			Result->GetValue()->PrependTag("value", "<no interpretation>"s);
 			Result->SetSuccess(false);
 		}
 	}
@@ -98,21 +98,21 @@ std::unique_ptr< Inspection::Result > Get_ASF_Boolean_32Bit_LittleEndian(Inspect
 	Result->SetValue(UnsignedInteger32BitResult->GetValue());
 	if(UnsignedInteger32BitResult->GetSuccess() == true)
 	{
-		Result->SetSuccess(true);
-		
 		auto UnsignedInteger32Bit{std::experimental::any_cast< std::uint32_t >(UnsignedInteger32BitResult->GetAny())};
 		
 		if(UnsignedInteger32Bit == 0x00000000)
 		{
-			Result->GetValue()->Append("Interpretation", false);
+			Result->GetValue()->PrependTag("value", false);
+			Result->SetSuccess(true);
 		}
 		else if(UnsignedInteger32Bit == 0x00000001)
 		{
-			Result->GetValue()->Append("Interpretation", true);
+			Result->GetValue()->PrependTag("value", true);
+			Result->SetSuccess(true);
 		}
 		else
 		{
-			Result->GetValue()->Append("Interpretation", "<no interpretation>"s);
+			Result->GetValue()->PrependTag("value", "<no interpretation>"s);
 			Result->SetSuccess(false);
 		}
 	}
@@ -187,19 +187,19 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer 
 		
 		if(Type == 0x0001)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("Video Codec"));
+			Result->GetValue()->PrependTag("interpretation", "Video Codec"s);
 		}
 		else if(Type == 0x0002)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("Audio Codec"));
+			Result->GetValue()->PrependTag("interpretation", "Audio Codec"s);
 		}
 		else if(Type == 0xffff)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("Unknown Codec"));
+			Result->GetValue()->PrependTag("interpretation", "Unknown Codec"s);
 		}
 		else
 		{
-			Result->GetValue()->Append("Interpretation", std::string("<no interpretation>"));
+			Result->GetValue()->PrependTag("interpretation", "<no interpretation>"s);
 		}
 		Result->SetSuccess(true);
 	}
@@ -366,10 +366,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Bu
 			auto DataObjectDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(Size, 0) - ObjectHeaderResult->GetLength())};
 			
 			Result->GetValue()->Append("Data", DataObjectDataResult->GetValue());
-			if(DataObjectDataResult->GetSuccess() == true)
-			{
-				Result->SetSuccess(true);
-			}
+			Result->SetSuccess(DataObjectDataResult->GetSuccess());
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -385,37 +382,41 @@ std::unique_ptr< Inspection::Result > Get_ASF_DataType(Inspection::Buffer & Buff
 	Result->SetValue(DataTypeResult->GetValue());
 	if(DataTypeResult->GetSuccess() == true)
 	{
-		Result->SetSuccess(true);
-		
 		auto DataType{std::experimental::any_cast< std::uint16_t >(DataTypeResult->GetAny())};
 		
 		if(DataType == 0x0000)
 		{
-			Result->GetValue()->Append("Interpretation", "Unicode string"s);
+			Result->GetValue()->PrependTag("interpretation", "Unicode string"s);
+			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0001)
 		{
-			Result->GetValue()->Append("Interpretation", "Byte array"s);
+			Result->GetValue()->PrependTag("interpretation", "Byte array"s);
+			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0002)
 		{
-			Result->GetValue()->Append("Interpretation", "Boolean"s);
+			Result->GetValue()->PrependTag("interpretation", "Boolean"s);
+			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0003)
 		{
-			Result->GetValue()->Append("Interpretation", "Unsigned integer 32bit"s);
+			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 32bit"s);
+			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0004)
 		{
-			Result->GetValue()->Append("Interpretation", "Unsigned integer 64bit"s);
+			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 64bit"s);
+			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0005)
 		{
-			Result->GetValue()->Append("Interpretation", "Unsigned integer 16bit"s);
+			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 16bit"s);
+			Result->SetSuccess(true);
 		}
 		else
 		{
-			Result->GetValue()->Append("Interpretation", "<no interpretation>"s);
+			Result->GetValue()->PrependTag("interpretation", "<no interpretation>"s);
 			Result->SetSuccess(false);
 		}
 	}
@@ -449,7 +450,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_Content
 				if(ValueLengthResult->GetSuccess() == true)
 				{
 					auto ValueLength{std::experimental::any_cast< std::uint16_t >(ValueLengthResult->GetAny())};
-					auto ValueDataType{std::experimental::any_cast< const std::string & >(ValueDataTypeResult->GetAny("Interpretation"))};
+					auto ValueDataType{std::experimental::any_cast< const std::string & >(ValueDataTypeResult->GetValue()->GetTagAny("interpretation"))};
 					auto Name{std::experimental::any_cast< const std::string & >(NameResult->GetAny())};
 					auto DataValueResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Buffer, ValueLength, ValueDataType, Name)};
 					
@@ -743,7 +744,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 	{
 		auto GUIDInterpretation{Get_GUID_Interpretation(std::experimental::any_cast< Inspection::GUID >(GUIDResult->GetAny()))};
 		
-		Result->GetValue()->Append("Interpretation", GUIDInterpretation);
+		Result->GetValue()->PrependTag("interpretation", GUIDInterpretation);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1325,7 +1326,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord(I
 						if(NameResult->GetSuccess() == true)
 						{
 							auto DataLength{std::experimental::any_cast< std::uint32_t >(DataLengthResult->GetAny())};
-							auto DataType{std::experimental::any_cast< std::string >(DataTypeResult->GetAny("Interpretation"))};
+							auto DataType{std::experimental::any_cast< std::string >(DataTypeResult->GetValue()->GetTagAny("interpretation"))};
 							auto DataValueResult{Get_ASF_MetadataObject_DescriptionRecord_Data(Buffer, DataLength, DataType)};
 							
 							Result->GetValue()->Append("Data", DataValueResult->GetValue());
