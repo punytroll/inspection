@@ -103,7 +103,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer 
 	Result->GetValue()->Append(CommonFieldsResult->GetValue()->GetValues());
 	if(CommonFieldsResult->GetSuccess() == true)
 	{
-		const std::string & Format{std::experimental::any_cast< const std::string & >(CommonFieldsResult->GetValue("FormatTag")->GetAny("ConstantName"))};
+		const std::string & Format{std::experimental::any_cast< const std::string & >(CommonFieldsResult->GetValue("FormatTag")->GetValueAny("ConstantName"))};
 		std::unique_ptr< Inspection::Result > FormatSpecificFieldsResult;
 		
 		if(Format == "WAVE_FORMAT_PCM")

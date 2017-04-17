@@ -50,8 +50,8 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Buffer & Buff
 		if(Continue == true)
 		{
 			auto LayerDescription{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("LayerDescription"))};
-			auto BitRate{std::experimental::any_cast< std::uint32_t >(FrameHeaderResult->GetValue("BitRateIndex")->GetAny("Numeric"))};
-			auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(FrameHeaderResult->GetValue("SamplingFrequency")->GetAny("Numeric"))};
+			auto BitRate{std::experimental::any_cast< std::uint32_t >(FrameHeaderResult->GetValue("BitRateIndex")->GetTagAny("numeric"))};
+			auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(FrameHeaderResult->GetValue("SamplingFrequency")->GetTagAny("numeric"))};
 			auto PaddingBit{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("PaddingBit"))};
 			auto FrameLength{0ul};
 			
@@ -206,73 +206,73 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_BitRateIndex(Inspec
 			}
 			else if(BitRateIndex == 0x01)
 			{
+				Result->GetValue()->PrependTag("numeric", 32000u);
 				Result->GetValue()->PrependTag("32 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 32000u);
 			}
 			else if(BitRateIndex == 0x02)
 			{
+				Result->GetValue()->PrependTag("numeric", 64000u);
 				Result->GetValue()->PrependTag("64 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 64000u);
 			}
 			else if(BitRateIndex == 0x03)
 			{
+				Result->GetValue()->PrependTag("numeric", 96000u);
 				Result->GetValue()->PrependTag("96 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 96000u);
 			}
 			else if(BitRateIndex == 0x04)
 			{
+				Result->GetValue()->PrependTag("numeric", 128000u);
 				Result->GetValue()->PrependTag("128 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 128000u);
 			}
 			else if(BitRateIndex == 0x05)
 			{
+				Result->GetValue()->PrependTag("numeric", 160000u);
 				Result->GetValue()->PrependTag("160 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 160000u);
 			}
 			else if(BitRateIndex == 0x06)
 			{
+				Result->GetValue()->PrependTag("numeric", 192000u);
 				Result->GetValue()->PrependTag("192 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 192000u);
 			}
 			else if(BitRateIndex == 0x07)
 			{
+				Result->GetValue()->PrependTag("numeric", 224000u);
 				Result->GetValue()->PrependTag("224 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 224000u);
 			}
 			else if(BitRateIndex == 0x08)
 			{
+				Result->GetValue()->PrependTag("numeric", 256000u);
 				Result->GetValue()->PrependTag("256 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 256000u);
 			}
 			else if(BitRateIndex == 0x09)
 			{
+				Result->GetValue()->PrependTag("numeric", 288000u);
 				Result->GetValue()->PrependTag("288 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 288000u);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
+				Result->GetValue()->PrependTag("numeric", 320000u);
 				Result->GetValue()->PrependTag("320 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 320000u);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
+				Result->GetValue()->PrependTag("numeric", 352000u);
 				Result->GetValue()->PrependTag("352 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 352000u);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
+				Result->GetValue()->PrependTag("numeric", 384000u);
 				Result->GetValue()->PrependTag("384 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 384000u);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
+				Result->GetValue()->PrependTag("numeric", 416000u);
 				Result->GetValue()->PrependTag("416 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 416000u);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
+				Result->GetValue()->PrependTag("numeric", 448000u);
 				Result->GetValue()->PrependTag("448 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 448000u);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
@@ -288,73 +288,73 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_BitRateIndex(Inspec
 			}
 			else if(BitRateIndex == 0x01)
 			{
+				Result->GetValue()->PrependTag("numeric", 32000u);
 				Result->GetValue()->PrependTag("32 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 32000u);
 			}
 			else if(BitRateIndex == 0x02)
 			{
+				Result->GetValue()->PrependTag("numeric", 48000u);
 				Result->GetValue()->PrependTag("48 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 48000u);
 			}
 			else if(BitRateIndex == 0x03)
 			{
+				Result->GetValue()->PrependTag("numeric", 56000u);
 				Result->GetValue()->PrependTag("56 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 56000u);
 			}
 			else if(BitRateIndex == 0x04)
 			{
+				Result->GetValue()->PrependTag("numeric", 64000u);
 				Result->GetValue()->PrependTag("64 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 64000u);
 			}
 			else if(BitRateIndex == 0x05)
 			{
+				Result->GetValue()->PrependTag("numeric", 80000u);
 				Result->GetValue()->PrependTag("80 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 80000u);
 			}
 			else if(BitRateIndex == 0x06)
 			{
+				Result->GetValue()->PrependTag("numeric", 96000u);
 				Result->GetValue()->PrependTag("96 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 96000u);
 			}
 			else if(BitRateIndex == 0x07)
 			{
+				Result->GetValue()->PrependTag("numeric", 112000u);
 				Result->GetValue()->PrependTag("112 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 112000u);
 			}
 			else if(BitRateIndex == 0x08)
 			{
+				Result->GetValue()->PrependTag("numeric", 128000u);
 				Result->GetValue()->PrependTag("128 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 128000u);
 			}
 			else if(BitRateIndex == 0x09)
 			{
+				Result->GetValue()->PrependTag("numeric", 160000u);
 				Result->GetValue()->PrependTag("160 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 160000u);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
+				Result->GetValue()->PrependTag("numeric", 192000u);
 				Result->GetValue()->PrependTag("192 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 192000u);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
+				Result->GetValue()->PrependTag("numeric", 224000u);
 				Result->GetValue()->PrependTag("224 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 224000u);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
+				Result->GetValue()->PrependTag("numeric", 256000u);
 				Result->GetValue()->PrependTag("256 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 256000u);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
+				Result->GetValue()->PrependTag("numeric", 320000u);
 				Result->GetValue()->PrependTag("320 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 320000u);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
+				Result->GetValue()->PrependTag("numeric", 384000u);
 				Result->GetValue()->PrependTag("384 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 384000u);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
@@ -370,73 +370,73 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_BitRateIndex(Inspec
 			}
 			else if(BitRateIndex == 0x01)
 			{
+				Result->GetValue()->PrependTag("numeric", 32000u);
 				Result->GetValue()->PrependTag("32 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 32000u);
 			}
 			else if(BitRateIndex == 0x02)
 			{
+				Result->GetValue()->PrependTag("numeric", 40000u);
 				Result->GetValue()->PrependTag("40 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 40000u);
 			}
 			else if(BitRateIndex == 0x03)
 			{
+				Result->GetValue()->PrependTag("numeric", 48000u);
 				Result->GetValue()->PrependTag("48 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 48000u);
 			}
 			else if(BitRateIndex == 0x04)
 			{
+				Result->GetValue()->PrependTag("numeric", 56000u);
 				Result->GetValue()->PrependTag("56 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 56000u);
 			}
 			else if(BitRateIndex == 0x05)
 			{
+				Result->GetValue()->PrependTag("numeric", 64000u);
 				Result->GetValue()->PrependTag("64 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 64000u);
 			}
 			else if(BitRateIndex == 0x06)
 			{
+				Result->GetValue()->PrependTag("numeric", 80000u);
 				Result->GetValue()->PrependTag("80 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 80000u);
 			}
 			else if(BitRateIndex == 0x07)
 			{
+				Result->GetValue()->PrependTag("numeric", 96000u);
 				Result->GetValue()->PrependTag("96 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 96000u);
 			}
 			else if(BitRateIndex == 0x08)
 			{
+				Result->GetValue()->PrependTag("numeric", 112000u);
 				Result->GetValue()->PrependTag("112 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 112000u);
 			}
 			else if(BitRateIndex == 0x09)
 			{
+				Result->GetValue()->PrependTag("numeric", 128000u);
 				Result->GetValue()->PrependTag("128 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 128000u);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
+				Result->GetValue()->PrependTag("numeric", 160000u);
 				Result->GetValue()->PrependTag("160 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 160000u);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
+				Result->GetValue()->PrependTag("numeric", 192000u);
 				Result->GetValue()->PrependTag("192 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 192000u);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
+				Result->GetValue()->PrependTag("numeric", 224000u);
 				Result->GetValue()->PrependTag("224 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 224000u);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
+				Result->GetValue()->PrependTag("numeric", 256000u);
 				Result->GetValue()->PrependTag("256 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 256000u);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
+				Result->GetValue()->PrependTag("numeric", 320000u);
 				Result->GetValue()->PrependTag("320 kbit/s"s);
-				Result->GetValue()->Append("Numeric", 320000u);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
@@ -466,12 +466,12 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Copyright(Inspectio
 		
 		if(Copyright == 0x00)
 		{
-			Result->GetValue()->PrependTag("no copyright"s);
+			Result->GetValue()->PrependTag("copyright", false);
 			Result->SetSuccess(true);
 		}
 		else if(Copyright == 0x01)
 		{
-			Result->GetValue()->PrependTag("copyright"s);
+			Result->GetValue()->PrependTag("copyright", true);
 			Result->SetSuccess(true);
 		}
 	}
@@ -633,22 +633,26 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ModeExtension(Inspe
 			{
 				if(ModeExtension == 0x00)
 				{
-					Result->GetValue()->PrependTag("intensity_stereo=off; ms_stereo=off"s);
+					Result->GetValue()->PrependTag("ms_stereo", "off"s);
+					Result->GetValue()->PrependTag("intensity_stereo", "off"s);
 					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x01)
 				{
-					Result->GetValue()->PrependTag("intensity_stereo=on; ms_stereo=off"s);
+					Result->GetValue()->PrependTag("ms_stereo", "off"s);
+					Result->GetValue()->PrependTag("intensity_stereo", "on"s);
 					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x02)
 				{
-					Result->GetValue()->PrependTag("intensity_stereo=off; ms_stereo=on"s);
+					Result->GetValue()->PrependTag("ms_stereo", "on"s);
+					Result->GetValue()->PrependTag("intensity_stereo", "off"s);
 					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x03)
 				{
-					Result->GetValue()->PrependTag("intensity_stereo=on; ms_stereo=on"s);
+					Result->GetValue()->PrependTag("ms_stereo", "on"s);
+					Result->GetValue()->PrependTag("intensity_stereo", "on"s);
 					Result->SetSuccess(true);
 				}
 			}
@@ -678,11 +682,11 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_OriginalHome(Inspec
 		
 		if(OriginalHome == 0x00)
 		{
-			Result->GetValue()->PrependTag("copy"s);
+			Result->GetValue()->PrependTag("original", false);
 		}
 		else if(OriginalHome == 0x01)
 		{
-			Result->GetValue()->PrependTag("original"s);
+			Result->GetValue()->PrependTag("original", true);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -704,11 +708,11 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_PaddingBit(Inspecti
 		
 		if(PaddingBit == 0x00)
 		{
-			Result->GetValue()->PrependTag("no padding"s);
+			Result->GetValue()->PrependTag("padding", false);
 		}
 		else if(PaddingBit == 0x01)
 		{
-			Result->GetValue()->PrependTag("padding"s);
+			Result->GetValue()->PrependTag("padding", true);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -728,12 +732,12 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ProtectionBit(Inspe
 		
 		if(ProtectionBit == 0x00)
 		{
-			Result->GetValue()->PrependTag("redundancy in the audio bitstream"s);
+			Result->GetValue()->PrependTag("redundancy", true);
 			Result->SetSuccess(true);
 		}
 		else if(ProtectionBit == 0x01)
 		{
-			Result->GetValue()->PrependTag("no redundancy in the audio bitstream"s);
+			Result->GetValue()->PrependTag("redundancy", false);
 			Result->SetSuccess(true);
 		}
 	}
@@ -754,20 +758,20 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_SamplingFrequency(I
 		
 		if(SamplingFrequency == 0x00)
 		{
+			Result->GetValue()->PrependTag("numeric", 44100u);
 			Result->GetValue()->PrependTag("44.1 kHz"s);
-			Result->GetValue()->Append("Numeric", 44100u);
 			Result->SetSuccess(true);
 		}
 		else if(SamplingFrequency == 0x01)
 		{
+			Result->GetValue()->PrependTag("numeric", 48000u);
 			Result->GetValue()->PrependTag("48 kHz"s);
-			Result->GetValue()->Append("Numeric", 48000u);
 			Result->SetSuccess(true);
 		}
 		else if(SamplingFrequency == 0x02)
 		{
+			Result->GetValue()->PrependTag("numeric", 32000u);
 			Result->GetValue()->PrependTag("32 kHz"s);
-			Result->GetValue()->Append("Numeric", 32000u);
 			Result->SetSuccess(true);
 		}
 		else if(SamplingFrequency == 0x03)

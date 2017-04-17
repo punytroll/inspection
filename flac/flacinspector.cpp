@@ -53,7 +53,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 	Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
 	if(MetaDataBlockHeaderResult->GetSuccess() == true)
 	{
-		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetAny("Interpretation"))};
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetValueAny("Interpretation"))};
 		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(MetaDataBlockHeaderResult->GetAny("Length"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
@@ -427,7 +427,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 		Result->GetValue()->Append("StreamInfoBlock", FLACStreamInfoBlockResult->GetValue());
 		if(FLACStreamInfoBlockResult->GetSuccess() == true)
 		{
-			auto LastMetaDataBlock{std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetValue("Header")->GetAny("LastMetaDataBlock"))};
+			auto LastMetaDataBlock{std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
 			
 			Result->SetSuccess(true);
 			while(LastMetaDataBlock == false)
@@ -437,7 +437,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 				Result->GetValue()->Append("MetaDataBlock", MetaDataBlockResult->GetValue());
 				if(MetaDataBlockResult->GetSuccess() == true)
 				{
-					LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlockResult->GetValue("Header")->GetAny("LastMetaDataBlock"));
+					LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlockResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"));
 				}
 				else
 				{
@@ -461,7 +461,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffe
 	Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
 	if(MetaDataBlockHeaderResult->GetSuccess() == true)
 	{
-		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetAny("Interpretation"))};
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetValueAny("Interpretation"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{

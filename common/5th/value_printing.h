@@ -9,10 +9,13 @@
 
 namespace Inspection
 {
-	const std::string g_Yellow{"\033[33;1m"};
-	const std::string g_Green{"\033[32;1m"};
-	const std::string g_Gray{"\033[30;1m"};
-	const std::string g_Red{"\033[31;1m"};
+	const std::string g_Blue{"\033[34m"};
+	const std::string g_Green{"\033[32m"};
+	const std::string g_DarkGray{"\033[90m"};
+	const std::string g_DarkYellow{"\033[33m"};
+	const std::string g_LightGray{"\033[37m"};
+	const std::string g_LightYellow{"\033[93m"};
+	const std::string g_Red{"\033[31m"};
 	const std::string g_White{"\033[0m"};
 	
 	void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
@@ -33,20 +36,35 @@ namespace Inspection
 		}
 		if(Value->GetAny().empty() == false)
 		{
-			std::cout << g_Yellow << Value->GetAny() << g_White;
+			std::cout << g_LightYellow << Value->GetAny() << g_White;
 		}
 		if(Value->GetTags().empty() == false)
 		{
 			auto First{true};
 			
-			std::cout << " (" << g_Gray;
+			std::cout << " (" << g_DarkGray;
 			for(auto & Tag : Value->GetTags())
 			{
 				if(First == false)
 				{
-					std::cout << g_White << ", " << g_Gray;
+					std::cout << g_White << ", " << g_DarkGray;
 				}
-				std::cout << Tag;
+				if(Tag->GetName().empty() == false)
+				{
+					std::cout << g_LightGray << Tag->GetName() << g_DarkGray;
+				}
+				if((Tag->GetName().empty() == false) && (Tag->GetAny().empty() == false))
+				{
+					std::cout << '=' << g_DarkYellow;
+				}
+				if(Tag->GetAny().empty() == false)
+				{
+					std::cout << Tag->GetAny();
+				}
+				if((Tag->GetValues().size() > 0) || (Tag->GetTags().size() > 0))
+				{
+					throw std::exception();
+				}
 				First = false;
 			}
 			std::cout << g_White << ')';
