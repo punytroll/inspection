@@ -9,8 +9,11 @@
 
 #include <iostream>
 
-const std::string g_Green{"\033[32;1m"};
-const std::string g_White{"\033[0m"};
+const std::string g_DarkGray{"\033[90m"};
+const std::string g_LightRed{"\033[91m"};
+const std::string g_LightGreen{"\033[92m"};
+const std::string g_White{"\033[97m"};
+const std::string g_DarkYellow{"\033[33m"};
 
 void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor);
 void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor);
@@ -125,18 +128,18 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
 				auto ParseResult{Processor(Buffer)};
 				
-				ParseResult->GetValue()->SetAny(g_Green + Path + g_White);
+				ParseResult->GetValue()->SetAny(g_LightGreen + Path + g_White);
 				PrintValue(ParseResult->GetValue());
 				if(ParseResult->GetSuccess() == false)
 				{
-					std::cerr << "The file does not start with a " << ParseResult->GetValue()->GetName() << '.' << std::endl;
+					std::cerr << g_LightRed << "The file does not start with a " << ParseResult->GetValue()->GetName() << '.' << g_White << std::endl;
 				}
 				
 				auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
 				
 				if(Rest > 0ull)
 				{
-					std::cerr << "There are " << to_string_cast(Rest) << " bytes and bits after the data." << std::endl;
+					std::cerr << g_DarkGray << "There are " << g_DarkYellow << to_string_cast(Rest) << g_DarkGray << " bytes and bits after the data." << std::endl;
 				}
 				munmap(Address, FileSize);
 			}
