@@ -761,14 +761,95 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(2ull, 0) == true)
+	{
+		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 2ull)};
+		
+		Result->SetValue(BytesResult->GetValue());
+		if(BytesResult->GetSuccess() == true)
+		{
+			const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(BytesResult->GetAny())};
+			
+			if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
+			{
+				Result->GetValue()->AppendTag("interpretation", "BigEndian"s);
+				Result->SetSuccess(true);
+			}
+			else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
+			{
+				Result->GetValue()->AppendTag("interpretation", "LittleEndian"s);
+				Result->SetSuccess(true);
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_BigEndian(Inspection::Buffer & Buffer)
+{
+	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_BigEndian()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_LittleEndian(Inspection::Buffer & Buffer)
+{
+	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_LittleEndian()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_BigEndian_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_BigEndian_EndedByTerminationOrLength()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_LittleEndian_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_LittleEndian_EndedByTerminationOrLength()");
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
 {
-	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination()");
+	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination()");
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength()");
+	auto StartPosition{Buffer.GetPosition()};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UCS-2"s);
+	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	
+	auto ByteOrderMarkResult{Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Buffer)};
+	
+	Result->GetValue()->Append("ByteOrderMark", ByteOrderMarkResult->GetValue());
+	if(ByteOrderMarkResult->GetSuccess() == true)
+	{
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(ByteOrderMarkResult->GetValue()->GetTagAny("interpretation"))};
+		
+		if(ByteOrderMark == "BigEndian")
+		{
+			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_BigEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			
+			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->SetSuccess(StringResult->GetSuccess());
+		}
+		else if(ByteOrderMark == "LittleEndian")
+		{
+			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_LittleEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			
+			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->SetSuccess(StringResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_FormatTag(Inspection::Buffer & Buffer)
