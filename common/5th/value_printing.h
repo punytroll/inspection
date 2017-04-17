@@ -16,7 +16,7 @@ namespace Inspection
 	const std::string g_LightGray{"\033[37m"};
 	const std::string g_LightYellow{"\033[93m"};
 	const std::string g_Red{"\033[31m"};
-	const std::string g_White{"\033[0m"};
+	const std::string g_White{"\033[97m"};
 	
 	void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 	{
@@ -24,15 +24,15 @@ namespace Inspection
 		
 		if(HeaderLine == true)
 		{
-			std::cout << Indentation;
+			std::cout << g_LightGray << Indentation;
 		}
 		if(Value->GetName().empty() == false)
 		{
-			std::cout << Value->GetName();
+			std::cout << g_White << Value->GetName();
 		}
 		if((Value->GetName().empty() == false) && (Value->GetAny().empty() == false))
 		{
-			std::cout << ": ";
+			std::cout << g_LightGray << ": ";
 		}
 		if(Value->GetAny().empty() == false)
 		{
@@ -42,12 +42,12 @@ namespace Inspection
 		{
 			auto First{true};
 			
-			std::cout << " (" << g_DarkGray;
+			std::cout << g_LightGray <<" (" << g_DarkGray;
 			for(auto & Tag : Value->GetTags())
 			{
 				if(First == false)
 				{
-					std::cout << g_White << ", " << g_DarkGray;
+					std::cout << g_LightGray << ", " << g_DarkGray;
 				}
 				if(Tag->GetName().empty() == false)
 				{
@@ -55,7 +55,7 @@ namespace Inspection
 				}
 				if((Tag->GetName().empty() == false) && (Tag->GetAny().empty() == false))
 				{
-					std::cout << '=' << g_DarkYellow;
+					std::cout << g_LightGray << '=' << g_DarkYellow;
 				}
 				if(Tag->GetAny().empty() == false)
 				{
@@ -67,7 +67,7 @@ namespace Inspection
 				}
 				First = false;
 			}
-			std::cout << g_White << ')';
+			std::cout << g_LightGray << ')';
 		}
 		
 		auto SubIndentation{Indentation};
