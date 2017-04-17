@@ -665,7 +665,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	
 	while(true)
 	{
-		auto Position{Buffer.GetPosition()};
 		auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
 		
 		if(CharacterResult->GetSuccess() == true)
