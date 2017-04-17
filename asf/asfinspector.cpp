@@ -61,7 +61,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspect
 
 std::unique_ptr< Inspection::Result > Get_ASF_Boolean_16Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto UnsignedInteger16BitResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(UnsignedInteger16BitResult->GetValue());
@@ -92,7 +92,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_Boolean_16Bit_LittleEndian(Inspect
 
 std::unique_ptr< Inspection::Result > Get_ASF_Boolean_32Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto UnsignedInteger32BitResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(UnsignedInteger32BitResult->GetValue());
@@ -123,7 +123,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_Boolean_32Bit_LittleEndian(Inspect
 
 std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TypeResult{Get_ASF_CodecEntryType(Buffer)};
 	
 	TypeResult->GetValue()->Append("Type", TypeResult->GetValue());
@@ -177,7 +177,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Bu
 
 std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TypeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(TypeResult->GetValue());
@@ -210,7 +210,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer 
 
 std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ReservedGUIDResult{Get_ASF_GUID(Buffer)};
 	
 	Result->GetValue()->Append("Reserved", ReservedGUIDResult->GetValue());
@@ -250,7 +250,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Bu
 
 std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ProfileResult{Get_UnsignedInteger_8Bit(Buffer)};
 	
 	Result->GetValue()->Append("Profile", ProfileResult->GetValue());
@@ -281,7 +281,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection
 
 std::unique_ptr< Inspection::Result > Get_ASF_ContentDescriptionObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TitleLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("TitleLength", TitleLengthResult->GetValue());
@@ -352,7 +352,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ContentDescriptionObjectData(Inspe
 
 std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
 	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
@@ -376,7 +376,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Bu
 
 std::unique_ptr< Inspection::Result > Get_ASF_DataType(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto DataTypeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(DataTypeResult->GetValue());
@@ -427,7 +427,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_DataType(Inspection::Buffer & Buff
 
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_ContentDescriptor(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto NameLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("NameLength", NameLengthResult->GetValue());
@@ -467,7 +467,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_Content
 
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Buffer & Buffer, const Inspection::Length & Length, const std::string & DataType, const std::string & Name)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(DataType == "Unicode string")
 	{
@@ -552,7 +552,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_Content
 
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescriptionObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ContentDescriptorsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("ContentDescriptorsCount", ContentDescriptorsCountResult->GetValue());
@@ -582,7 +582,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescriptionObjectDa
 
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(FlagsResult->GetValue());
@@ -609,7 +609,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Fla
 std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto StartTimeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("StartTime", StartTimeResult->GetValue());
@@ -736,7 +736,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData
 
 std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto GUIDResult{Get_GUID_LittleEndian(Buffer)};
 	
 	Result->SetValue(GUIDResult->GetValue());
@@ -754,7 +754,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer)
 
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ReservedField1Result{Get_ASF_GUID(Buffer)};
 	
 	Result->GetValue()->Append("ReservedField1", ReservedField1Result->GetValue());
@@ -806,7 +806,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspecti
 
 std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto HeaderObjectResult{Get_ASF_HeaderObject(Buffer)};
 	
 	Result->GetValue()->Append("HeaderObject", HeaderObjectResult->GetValue());
@@ -839,7 +839,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Buffer & Buffer)
 
 std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(FlagsResult->GetValue());
@@ -863,7 +863,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Bu
 
 std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FileIDResult{Get_GUID_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("FileID", FileIDResult->GetValue());
@@ -944,7 +944,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspectio
 
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
 	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
@@ -970,7 +970,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & 
 
 std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto NumberOfHeaderObjects{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("Number of header objects", NumberOfHeaderObjects->GetValue());
@@ -1016,7 +1016,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffe
 
 std::unique_ptr< Inspection::Result > Get_ASF_IndexPlaceholderObjectData(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Length == Inspection::Length(10ull, 0))
 	{
@@ -1035,7 +1035,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_IndexPlaceholderObjectData(Inspect
 
 std::unique_ptr< Inspection::Result > Get_ASF_LanguageIDRecord(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto LanguageIDLengthResult{Get_UnsignedInteger_8Bit(Buffer)};
 	
 	Result->GetValue()->Append("LanguageIDLength", LanguageIDLengthResult->GetValue());
@@ -1054,7 +1054,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_LanguageIDRecord(Inspection::Buffe
 
 std::unique_ptr< Inspection::Result > Get_ASF_LanguageListObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto LanguageIDRecordsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("LanguageIDRecordsCount", LanguageIDRecordsCountResult->GetValue());
@@ -1084,7 +1084,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_LanguageListObjectData(Inspection:
 
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto LanguageListIndexResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("LanguageListIndex", LanguageListIndexResult->GetValue());
@@ -1135,7 +1135,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord(
 
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Buffer & Buffer, const std::string & Type, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Type == "Unicode string")
 	{
@@ -1212,7 +1212,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_
 
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto DataTypeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(DataTypeResult->GetValue());
@@ -1263,7 +1263,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_
 
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibraryObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto DescriptionRecordsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("DescriptionRecordsCount", DescriptionRecordsCountResult->GetValue());
@@ -1293,7 +1293,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibraryObjectData(Inspecti
 
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(2ull, 0))};
 	
 	Result->GetValue()->Append("Reserved", ReservedResult->GetValue());
@@ -1344,7 +1344,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord(I
 
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord_Data(Inspection::Buffer & Buffer, const Inspection::Length & Length, const std::string & DataType)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(DataType == "Unicode string")
 	{
@@ -1407,7 +1407,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord_D
 
 std::unique_ptr< Inspection::Result > Get_ASF_MetadataObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto DescriptionRecordsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("DescriptionRecordsCount", DescriptionRecordsCountResult->GetValue());
@@ -1437,7 +1437,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataObjectData(Inspection::Buf
 
 std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
 	Result->SetValue(ObjectHeaderResult->GetValue());
@@ -1541,7 +1541,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 
 std::unique_ptr< Inspection::Result > Get_ASF_ObjectHeader(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto GUIDResult{Get_ASF_GUID(Buffer)};
 	
 	Result->GetValue()->Append("GUID", GUIDResult->GetValue());
@@ -1562,7 +1562,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ObjectHeader(Inspection::Buffer & 
 
 std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRecord(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FlagsResult{Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Buffer)};
 	
 	Result->GetValue()->Append("Flags", FlagsResult->GetValue());
@@ -1580,7 +1580,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRec
 
 std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Position{Buffer.GetPosition()};
 	auto FlagsResult{Get_BitSet_16Bit_LittleEndian(Buffer)};
 	
@@ -1609,7 +1609,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRec
 
 std::unique_ptr< Inspection::Result > Get_ASF_StreamBitratePropertiesObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto BitrateRecordsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("BitrateRecordsCount", BitrateRecordsCountResult->GetValue());
@@ -1632,7 +1632,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamBitratePropertiesObjectData(
 
 std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_Flags(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Position{Buffer.GetPosition()};
 	auto FlagsResult{Get_BitSet_16Bit_LittleEndian(Buffer)};
 	
@@ -1670,7 +1670,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_Flags(Inspection:
 
 std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FormatTagResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
 	
 	Result->GetValue()->Append("FormatTag", FormatTagResult->GetValue());
@@ -1738,7 +1738,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_
 
 std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Length == Inspection::Length(10ull, 0))
 	{
@@ -1766,7 +1766,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_
 
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
 	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
@@ -1792,7 +1792,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection:
 
 std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto StreamTypeResult{Get_ASF_GUID(Buffer)};
 	
 	Result->GetValue()->Append("StreamType", StreamTypeResult->GetValue());

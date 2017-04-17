@@ -12,7 +12,7 @@ using namespace std::string_literals;
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetical(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(1ull, 0) == true)
 	{
@@ -31,7 +31,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(1ull, 0) == true)
 	{
@@ -50,7 +50,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	std::stringstream Value;
 	
 	if(Buffer.Has(Length, 0) == true)
@@ -81,7 +81,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	std::stringstream Value;
 	
 	if(Buffer.Has(Length, 0) == true)
@@ -112,7 +112,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & TemplateString)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	std::stringstream Value;
 	
 	if(Buffer.Has(TemplateString.length(), 0) == true)
@@ -139,7 +139,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if((Length.GetBits() == 0) && (Buffer.Has(Length) == true))
 	{
@@ -182,7 +182,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(Length) == true)
 	{
@@ -212,7 +212,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Ins
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(Length) == true)
 	{
@@ -244,7 +244,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_EndedByLen
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(Length) == true)
 	{
@@ -274,11 +274,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(true, Buffer)};
+	assert(Length.GetBits() == 0);
+	
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	Result->GetValue()->AppendTag("ASCII printable"s);
-	if((Length.GetBits() == 0) && (Buffer.Has(Length) == true))
+	if(Buffer.Has(Length) == true)
 	{
+		Result->SetSuccess(true);
+		
 		auto Boundary{Buffer.GetPosition() + Length};
 		std::stringstream Value;
 		
@@ -315,7 +319,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 8) == true)
 	{
@@ -343,7 +347,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Bu
 
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 16) == true)
 	{
@@ -383,7 +387,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Ins
 
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 16) == true)
 	{
@@ -423,7 +427,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(
 
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 32) == true)
 	{
@@ -485,7 +489,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_1Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 1) == true)
 	{
@@ -503,7 +507,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 {
 	assert(Length.GetBits() == 0);
 	
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(Length) == true)
 	{
@@ -529,7 +533,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Data{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
 	
 	if(Data->GetSuccess() == true)
@@ -556,7 +560,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInte
 
 std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(16ull, 0) == true)
 	{
@@ -587,7 +591,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_FormatTag(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FormatTagResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(FormatTagResult->GetValue());
@@ -692,7 +696,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_Forma
 
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 32) == true)
 	{
@@ -716,7 +720,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEnd
 
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 32) == true)
 	{
@@ -740,7 +744,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_Little
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 1) == true)
 	{
@@ -757,7 +761,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 2) == true)
 	{
@@ -774,7 +778,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 3) == true)
 	{
@@ -791,7 +795,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 4) == true)
 	{
@@ -808,7 +812,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 5) == true)
 	{
@@ -825,7 +829,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_6Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 6) == true)
 	{
@@ -842,7 +846,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_6Bit(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 7) == true)
 	{
@@ -859,7 +863,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 8) == true)
 	{
@@ -876,7 +880,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 16) == true)
 	{
@@ -898,7 +902,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigE
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 16) == true)
 	{
@@ -920,7 +924,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_Litt
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 20) == true)
 	{
@@ -943,7 +947,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigE
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 24) == true)
 	{
@@ -966,7 +970,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 32) == true)
 	{
@@ -990,7 +994,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigE
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 32) == true)
 	{
@@ -1014,7 +1018,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Litt
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 36) == true)
 	{
@@ -1039,7 +1043,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 64) == true)
 	{
@@ -1067,7 +1071,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigE
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(0ull, 64) == true)
 	{
@@ -1095,7 +1099,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(1ull, 0) == true)
 	{
@@ -1164,7 +1168,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(Length) == true)
 	{
@@ -1204,7 +1208,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_Character(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto CodePointResult{Get_UTF16LE_CodePoint(Buffer)};
 	
 	if(CodePointResult->GetSuccess() == true)
@@ -1220,7 +1224,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_Character(Inspecti
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodePoint(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FirstCodeUnitResult{Get_UTF16LE_CodeUnit(Buffer)};
 	
 	if(FirstCodeUnitResult->GetSuccess() == true)
@@ -1259,7 +1263,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodePoint(Inspecti
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodeUnit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(2ull, 0) == true)
 	{
@@ -1277,7 +1281,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	assert(Length.GetBits() == 0);
 	
 	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	std::stringstream Value;
 	
 	Result->GetValue()->AppendTag("UTF16"s);
@@ -1340,7 +1344,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	assert(Length.GetBits() == 0);
 	
 	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	std::stringstream Value;
 	auto NumberOfCodePoints{0ul};
 	
@@ -1403,7 +1407,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	std::stringstream Value;
 	std::uint64_t CodePointIndex{0ull};
 	
@@ -1448,7 +1452,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 {
 	assert(Buffer.GetBitstreamType() == Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 	
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto CommentHeaderWithoutFramingFlag{Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer)};
 	
 	if(CommentHeaderWithoutFramingFlag->GetSuccess() == true)
@@ -1470,7 +1474,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto UserCommentLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("Length", UserCommentLengthResult->GetValue());
@@ -1492,7 +1496,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserCommentList(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto UserCommentListLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("Length", UserCommentListLengthResult->GetValue());
@@ -1522,7 +1526,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto VendorLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("VendorLength", VendorLengthResult->GetValue());

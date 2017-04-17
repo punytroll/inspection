@@ -11,9 +11,9 @@ namespace Inspection
 	class Result
 	{
 	public:
-		Result(bool Success, const Inspection::Length & Offset) :
+		Result(const Inspection::Length & Offset) :
 			_Offset(Offset),
-			_Success(Success),
+			_Success(false),
 			_Value(std::make_shared< Inspection::Value >())
 		{
 		}
@@ -90,9 +90,9 @@ namespace Inspection
 		std::shared_ptr< Value > _Value;
 	};
 	
-	inline std::unique_ptr< Inspection::Result > InitializeResult(bool Success, const Inspection::Buffer & Buffer)
+	inline std::unique_ptr< Inspection::Result > InitializeResult(const Inspection::Buffer & Buffer)
 	{
-		return std::make_unique< Inspection::Result >(Success, Buffer.GetPosition());
+		return std::make_unique< Inspection::Result >(Buffer.GetPosition());
 	}
 	
 	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Buffer & Buffer)

@@ -31,7 +31,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Buffer & Buf
 std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Buffer & Buffer)
 {
 	auto Start{Buffer.GetPosition()};
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FrameHeaderResult{Get_MPEG_1_FrameHeader(Buffer)};
 	
 	Result->GetValue()->Append("Header", FrameHeaderResult->GetValue());
@@ -77,7 +77,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Buffer & Buff
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FrameSyncResult{Get_Bits_Set_EndedByLength(Buffer, Inspection::Length(0ull, 12))};
 	
 	Result->GetValue()->Append("FrameSync", FrameSyncResult->GetValue());
@@ -163,7 +163,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader(Inspection::Buffer 
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_AudioVersionID(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto AudioVersionIDResult{Get_UnsignedInteger_1Bit(Buffer)};
 	
 	Result->SetValue(AudioVersionIDResult->GetValue());
@@ -188,7 +188,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_AudioVersionID(Insp
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_BitRateIndex(Inspection::Buffer & Buffer, std::uint8_t LayerDescription)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto BitRateIndexResult{Get_UnsignedInteger_4Bit(Buffer)};
 	
 	Result->SetValue(BitRateIndexResult->GetValue());
@@ -456,7 +456,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_BitRateIndex(Inspec
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Copyright(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto CopyrightResult{Get_UnsignedInteger_1Bit(Buffer)};
 	
 	Result->SetValue(CopyrightResult->GetValue());
@@ -482,7 +482,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Copyright(Inspectio
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Emphasis(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto EmphasisResult{Get_UnsignedInteger_2Bit(Buffer)};
 	
 	Result->SetValue(EmphasisResult->GetValue());
@@ -517,7 +517,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Emphasis(Inspection
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_LayerDescription(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto LayerDescriptionResult{Get_UnsignedInteger_2Bit(Buffer)};
 	
 	Result->SetValue(LayerDescriptionResult->GetValue());
@@ -552,7 +552,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_LayerDescription(In
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Mode(Inspection::Buffer & Buffer, std::uint8_t LayerDescription)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ModeResult{Get_UnsignedInteger_2Bit(Buffer)};
 	
 	Result->SetValue(ModeResult->GetValue());
@@ -596,7 +596,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Mode(Inspection::Bu
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Buffer & Buffer, std::uint8_t LayerDescription, std::uint8_t Mode)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ModeExtensionResult{Get_UnsignedInteger_2Bit(Buffer)};
 	
 	Result->SetValue(ModeExtensionResult->GetValue());
@@ -670,7 +670,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ModeExtension(Inspe
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_OriginalHome(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto OriginalHomeResult{Get_UnsignedInteger_1Bit(Buffer)};
 	
 	Result->SetValue(OriginalHomeResult->GetValue());
@@ -696,7 +696,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_OriginalHome(Inspec
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_PaddingBit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto PaddingBitResult{Get_UnsignedInteger_1Bit(Buffer)};
 	
 	Result->SetValue(PaddingBitResult->GetValue());
@@ -722,7 +722,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_PaddingBit(Inspecti
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ProtectionBit(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ProtectionBitResult{Get_UnsignedInteger_1Bit(Buffer)};
 	
 	Result->SetValue(ProtectionBitResult->GetValue());
@@ -748,7 +748,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ProtectionBit(Inspe
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_SamplingFrequency(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto SamplingFrequencyResult{Get_UnsignedInteger_2Bit(Buffer)};
 	
 	Result->SetValue(SamplingFrequencyResult->GetValue());
@@ -786,7 +786,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_SamplingFrequency(I
 
 std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	Result->SetSuccess(true);
 	while(Buffer.GetPosition() < Buffer.GetLength())

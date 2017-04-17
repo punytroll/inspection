@@ -26,7 +26,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlock_Data(Inspectio
 
 std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto RegisteredApplicationIdentifierResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 	
 	Result->GetValue()->Append("RegisteredApplicationIdentifier", RegisteredApplicationIdentifierResult->GetValue());
@@ -47,7 +47,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection:
 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlock_Header(Buffer)};
 	
 	Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
@@ -109,7 +109,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto LastMetaDataBlockResult{Get_Boolean_1Bit(Buffer)};
 	
 	Result->GetValue()->Append("LastMetaDataBlock", LastMetaDataBlockResult->GetValue());
@@ -136,7 +136,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::
 
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto MetaDataBlockTypeResult{Get_UnsignedInteger_7Bit(Buffer)};
 	
 	Result->GetValue()->SetAny(MetaDataBlockTypeResult->GetAny());
@@ -190,7 +190,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Bu
 
 std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto PictureTypeResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 	
 	Result->SetValue(PictureTypeResult->GetValue());
@@ -296,7 +296,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspecti
 
 std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto PictureTypeResult{Get_FLAC_PictureBlock_PictureType(Buffer)};
 	
 	Result->GetValue()->Append("PictureType", PictureTypeResult->GetValue());
@@ -371,8 +371,9 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buf
 
 std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints)
 {
-	auto Result{Inspection::InitializeResult(true, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	
+	Result->SetSuccess(true);
 	for(auto SeekPointIndex = 0ul; SeekPointIndex < NumberOfSeekPoints; ++SeekPointIndex)
 	{
 		auto SeekPointResult{Get_FLAC_SeekTableBlock_SeekPoint(Buffer)};
@@ -392,7 +393,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::B
 
 std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto SampleNumberOfFirstSampleInTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
 	
 	Result->GetValue()->Append("SampleNumberOfFirstSampleInTargetFrame", SampleNumberOfFirstSampleInTargetFrameResult->GetValue());
@@ -416,7 +417,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspecti
 
 std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FLACStreamMarkerResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "fLaC")};
 	
 	Result->GetValue()->Append("FLAC stream marker", FLACStreamMarkerResult->GetValue());
@@ -455,7 +456,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlock_Header(Buffer)};
 	
 	Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
@@ -478,7 +479,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffe
 
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto BitsPerSampleResult{Get_UnsignedInteger_5Bit(Buffer)};
 	
 	Result->SetValue(BitsPerSampleResult->GetValue());
@@ -494,7 +495,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_BitsPerSample(Ins
 
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto MinimumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 	
 	Result->GetValue()->Append("MinimumBlockSize", MinimumBlockSizeResult->GetValue());
@@ -554,7 +555,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::
 
 std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto NumberOfChannelsResult{Get_UnsignedInteger_3Bit(Buffer)};
 	
 	Result->SetValue(NumberOfChannelsResult->GetValue());

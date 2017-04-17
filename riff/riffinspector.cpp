@@ -24,7 +24,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_File(Inspection::Buffer & Buffer)
 
 std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ChunkHeaderResult{Get_RIFF_ChunkHeader(Buffer)};
 	
 	Result->GetValue()->Append(ChunkHeaderResult->GetValue()->GetValues());
@@ -67,7 +67,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer
 
 std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto IdentifierResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, 4ull)};
 	
 	Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
@@ -85,7 +85,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Buffer & 
 
 std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto NumberOfSamplesResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("NumberOfSamples", NumberOfSamplesResult->GetValue());
@@ -97,7 +97,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Buffer
 
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto CommonFieldsResult{Get_RIFF_fmt_ChunkData_CommonFields(Buffer)};
 	
 	Result->GetValue()->Append(CommonFieldsResult->GetValue()->GetValues());
@@ -127,7 +127,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer 
 
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ChannelMaskResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
 	
 	Result->SetValue(ChannelMaskResult->GetValue());
@@ -241,7 +241,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FormatTagResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
 	
 	Result->GetValue()->Append("FormatTag", FormatTagResult->GetValue());
@@ -277,7 +277,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspec
 
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append("BitsPerSample", BitsPerSampleResult->GetValue());
@@ -313,7 +313,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
 	Result->GetValue()->Append(BitsPerSampleResult->GetValue());
@@ -325,7 +325,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Buffer & Buffer)
 {
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto GUIDResult{Get_GUID_LittleEndian(Buffer)};
 	
 	Result->SetValue(GUIDResult->GetValue());
@@ -348,7 +348,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspectio
 std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto EndPosition{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(false, Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FormTypeResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, 4ull)};
 	
 	Result->GetValue()->Append("FormType", FormTypeResult->GetValue());
