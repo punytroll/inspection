@@ -37,9 +37,8 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 		// reset buffer position, so we can try something else
 		Buffer.SetPosition(Start);
 		
-		auto PacketResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+		auto PacketResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Length)};
 		
-		Result->GetValue()->Append("Length", Length);
 		Result->GetValue()->Append("Data", PacketResult->GetValue());
 		Result->SetSuccess(PacketResult->GetSuccess());
 	}
