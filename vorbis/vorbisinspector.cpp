@@ -210,7 +210,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 		{
 			Result->GetValue()->Append("OggPage", OggPageResult->GetValue());
 			
-			bool BeginOfStream{std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetAny("BeginOfStream"))};
+			bool BeginOfStream{std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetValueAny("BeginOfStream"))};
 			
 			if(BeginOfStream == true)
 			{
@@ -226,7 +226,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 					break;
 				}
 			}
-			StreamEnded = std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetAny("EndOfStream"));
+			StreamEnded = std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetValueAny("EndOfStream"));
 		}
 		else
 		{

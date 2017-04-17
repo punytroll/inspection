@@ -46,12 +46,36 @@ namespace Inspection
 		
 		void AppendTag(const std::experimental::any & Any)
 		{
-			_Tags.push_back(Any);
+			auto Tag{std::make_shared< Inspection::Value >()};
+			
+			Tag->SetAny(Any);
+			_Tags.push_back(Tag);
+		}
+		
+		void AppendTag(const std::string & Name, const std::experimental::any & Any)
+		{
+			auto Tag{std::make_shared< Inspection::Value >()};
+			
+			Tag->SetAny(Any);
+			Tag->SetName(Name);
+			_Tags.push_back(Tag);
 		}
 		
 		void PrependTag(const std::experimental::any & Any)
 		{
-			_Tags.push_front(Any);
+			auto Tag{std::make_shared< Inspection::Value >()};
+			
+			Tag->SetAny(Any);
+			_Tags.push_front(Tag);
+		}
+		
+		void PrependTag(const std::string & Name, const std::experimental::any & Any)
+		{
+			auto Tag{std::make_shared< Inspection::Value >()};
+			
+			Tag->SetAny(Any);
+			Tag->SetName(Name);
+			_Tags.push_front(Tag);
 		}
 		
 		const std::experimental::any & GetAny(void)
@@ -59,7 +83,19 @@ namespace Inspection
 			return _Any;
 		}
 		
-		const std::experimental::any & GetAny(const std::string & Name)
+		const std::experimental::any & GetTagAny(const std::string & Name)
+		{
+			for(auto & Tag : _Tags)
+			{
+				if(Tag->GetName() == Name)
+				{
+					return Tag->GetAny();
+				}
+			}
+			throw std::invalid_argument("Could not find any value named \"" + Name + "\".");
+		}
+		
+		const std::experimental::any & GetValueAny(const std::string & Name)
 		{
 			for(auto & Value : _Values)
 			{
@@ -68,7 +104,6 @@ namespace Inspection
 					return Value->GetAny();
 				}
 			}
-			
 			throw std::invalid_argument("Could not find any value named \"" + Name + "\".");
 		}
 		
@@ -92,9 +127,21 @@ namespace Inspection
 			return _Offset;
 		}
 		
-		const std::list< std::experimental::any > & GetTags(void) const
+		const std::list< std::shared_ptr< Inspection::Value > > & GetTags(void) const
 		{
 			return _Tags;
+		}
+		
+		std::shared_ptr< Inspection::Value > GetTag(const std::string & Name)
+		{
+			for(auto & Tag : _Tags)
+			{
+				if(Tag->GetName() == Name)
+				{
+					return Tag;
+				}
+			}
+			throw std::invalid_argument("Could not find a tag named \"" + Name + "\".");
 		}
 		
 		std::shared_ptr< Inspection::Value > GetValue(const std::string & Name)
@@ -106,8 +153,7 @@ namespace Inspection
 					return Value;
 				}
 			}
-			
-			throw std::exception();
+			throw std::invalid_argument("Could not find a value named \"" + Name + "\".");
 		}
 		
 		const std::list< std::shared_ptr< Inspection::Value > > & GetValues(void)
@@ -115,7 +161,12 @@ namespace Inspection
 			return _Values;
 		}
 		
-		bool Has(const std::string & Name)
+		bool HasTag(const std::string & Name)
+		{
+			return std::find_if(std::begin(_Tags), std::end(_Tags), [&Name](const std::shared_ptr< Inspection::Value > & Tag) { return Tag->GetName() == Name; }) != std::end(_Tags);
+		}
+		
+		bool HasValue(const std::string & Name)
 		{
 			return std::find_if(std::begin(_Values), std::end(_Values), [&Name](const std::shared_ptr< Value > & Value) { return Value->GetName() == Name; }) != std::end(_Values);
 		}
@@ -144,7 +195,7 @@ namespace Inspection
 		Inspection::Length _Length;
 		std::string _Name;
 		Inspection::Length _Offset;
-		std::list< std::experimental::any > _Tags;
+		std::list< std::shared_ptr< Inspection::Value > > _Tags;
 		std::list< std::shared_ptr< Inspection::Value > > _Values;
 	};
 }
