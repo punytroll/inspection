@@ -7,6 +7,7 @@
 #include "../string_cast.h"
 #include "buffer.h"
 #include "getters.h"
+#include "not_implemented_exception.h"
 
 using namespace std::string_literals;
 
@@ -630,6 +631,71 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Character(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(1ull, 0) == true)
+	{
+		auto Character{Buffer.Get8Bits()};
+		
+		Result->GetValue()->Append("byte", Character);
+		if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
+		{
+			Result->GetValue()->SetAny(Get_UTF_8_Character_FromUnicodeCodePoint(Character));
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	
+	auto NumberOfCharacters{0ul};
+	
+	while(true)
+	{
+		auto Position{Buffer.GetPosition()};
+		auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+		
+		if(CharacterResult->GetSuccess() == true)
+		{
+			NumberOfCharacters += 1;
+			Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+		}
+		else
+		{
+			auto Byte{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny("byte"))};
+			
+			if(Byte == 0x00)
+			{
+				Result->GetValue()->AppendTag("ended by termination"s);
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->SetSuccess(true);
+			}
+			
+			break;
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination()");
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_FormatTag(Inspection::Buffer & Buffer)
