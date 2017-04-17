@@ -182,6 +182,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ASCII"s);
+	Result->GetValue()->AppendTag("printables only"s);
+	Result->SetSuccess(true);
+	
+	auto NumberOfCharacters{0ul};
+	std::stringstream Value;
+	
+	while(Buffer.Has(1ull, 0) == true)
+	{
+		auto Character{Buffer.Get8Bits()};
+		
+		if(Character == 0x00)
+		{
+			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+			
+			break;
+		}
+		else if(Is_ASCII_Character_Printable(Character) == true)
+		{
+			NumberOfCharacters += 1;
+			Value << Character;
+		}
+		else
+		{
+			Result->SetSuccess(false);
+			
+			break;
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
