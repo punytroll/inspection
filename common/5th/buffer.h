@@ -44,6 +44,11 @@ namespace Inspection
 				_Position = Position;
 			}
 			
+			const std::uint8_t * const GetDataAtPosition(void) const
+			{
+				return _Data + _Position.GetBytes();
+			}
+			
 			virtual std::uint8_t Get0Bits(void) = 0;
 			virtual std::uint8_t Get1Bits(void) = 0;
 			virtual std::uint8_t Get2Bits(void) = 0;
@@ -497,6 +502,13 @@ namespace Inspection
 			assert(_BitstreamReader != nullptr);
 			
 			_BitstreamReader->SetPosition(Position);
+		}
+		
+		const std::uint8_t * const GetDataAtPosition(void) const
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			return _BitstreamReader->GetDataAtPosition();
 		}
 	private:
 		BitstreamReader * _BitstreamReader;
