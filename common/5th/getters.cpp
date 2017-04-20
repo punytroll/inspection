@@ -1385,19 +1385,35 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_Character(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto CodePointResult{Get_UTF_8_CodePoint(Buffer)};
+	
+	Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+	if(CodePointResult->GetSuccess() == true)
+	{
+		auto CodePoint{std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())};
+		
+		Result->GetValue()->SetAny(Get_UTF_8_Character_FromUnicodeCodePoint(CodePoint));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_CodePoint(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	if(Buffer.Has(1ull, 0) == true)
 	{
 		auto First{Buffer.Get8Bits()};
-		std::string Value;
 		
-		Value += First;
 		if((First & 0x80) == 0x00)
 		{
-			Result->GetValue()->SetAny(Value);
+			Result->GetValue()->SetAny(static_cast< std::uint32_t >(First));
 			Result->SetSuccess(true);
 		}
 		else if((First & 0xe0) == 0xc0)
@@ -1408,8 +1424,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 				
 				if((Second & 0xc0) == 0x80)
 				{
-					Value += Second;
-					Result->GetValue()->SetAny(Value);
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x1f) << 6) | static_cast< std::uint32_t >(Second & 0x3f));
 					Result->SetSuccess(true);
 				}
 			}
@@ -1423,9 +1438,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
 				{
-					Value += Second;
-					Value += Third;
-					Result->GetValue()->SetAny(Value);
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x0f) << 12)| static_cast< std::uint32_t >((Second & 0x3f) << 6) | static_cast< std::uint32_t >(Third & 0x3f));
 					Result->SetSuccess(true);
 				}
 			}
@@ -1440,10 +1453,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
 				{
-					Value += Second;
-					Value += Third;
-					Value += Fourth;
-					Result->GetValue()->SetAny(Value);
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x07) << 18)| static_cast< std::uint32_t >((Second & 0x3f) << 12) | static_cast< std::uint32_t >((Third & 0x3f) << 6) | static_cast< std::uint32_t >(Fourth & 0x3f));
 					Result->SetSuccess(true);
 				}
 			}
@@ -1454,7 +1464,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_Character(Inspection:
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	
@@ -1469,7 +1479,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(
 		
 		while(Buffer.GetPosition() < Boundary)
 		{
-			auto Character{Get_UTF8_Character(Buffer)};
+			auto Character{Get_UTF_8_Character(Buffer)};
 			
 			if(Character->GetSuccess() == true)
 			{
@@ -1494,10 +1504,91 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF8_String_EndedByLength(
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_Character(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UTF-8"s);
+	if(Buffer.GetPosition() == Boundary)
+	{
+		Result->GetValue()->AppendTag("ended by length"s);
+		Result->GetValue()->AppendTag("empty"s);
+	}
+	else
+	{
+		auto NumberOfCharacters{0ul};
+		
+		while(true)
+		{
+			auto CharacterResult{Get_UTF_8_Character(Buffer)};
+			
+			if(Buffer.GetPosition() <= Boundary)
+			{
+				if(CharacterResult->GetSuccess() == true)
+				{
+					auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+					
+					if(CodePoint == 0x00000000)
+					{
+						if(Buffer.GetPosition() == Boundary)
+						{
+							Result->GetValue()->AppendTag("ended by termination and boundary"s);
+						}
+						else
+						{
+							Result->GetValue()->AppendTag("ended by termination"s);
+						}
+						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+						Result->SetSuccess(true);
+					}
+					else
+					{
+						NumberOfCharacters += 1;
+						Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+						if(Buffer.GetPosition() == Boundary)
+						{
+							Result->GetValue()->AppendTag("ended by boundary"s);
+							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+							Result->SetSuccess(true);
+							
+							break;
+						}
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	throw new NotImplementedException("Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	throw new NotImplementedException("Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_Character(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto CodePointResult{Get_UTF16LE_CodePoint(Buffer)};
+	auto CodePointResult{Get_UTF_16LE_CodePoint(Buffer)};
 	
 	if(CodePointResult->GetSuccess() == true)
 	{
@@ -1510,10 +1601,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_Character(Inspecti
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodePoint(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_CodePoint(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FirstCodeUnitResult{Get_UTF16LE_CodeUnit(Buffer)};
+	auto FirstCodeUnitResult{Get_UTF_16LE_CodeUnit(Buffer)};
 	
 	if(FirstCodeUnitResult->GetSuccess() == true)
 	{
@@ -1528,7 +1619,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodePoint(Inspecti
 		}
 		else if((FirstCodeUnit >= 0xd800) && (FirstCodeUnit < 0xdc00))
 		{
-			auto SecondCodeUnitResult{Get_UTF16LE_CodeUnit(Buffer)};
+			auto SecondCodeUnitResult{Get_UTF_16LE_CodeUnit(Buffer)};
 			
 			if(SecondCodeUnitResult->GetSuccess() == true)
 			{
@@ -1549,7 +1640,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodePoint(Inspecti
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodeUnit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_CodeUnit(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	
@@ -1563,7 +1654,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_CodeUnit(Inspectio
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	assert(Length.GetBytes() % 2 == 0);
 	assert(Length.GetBits() == 0);
@@ -1580,7 +1671,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	
 	while(Buffer.GetPosition() < Boundary)
 	{
-		auto CharacterResult{Get_UTF16LE_Character(Buffer)};
+		auto CharacterResult{Get_UTF_16LE_Character(Buffer)};
 		
 		if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
 		{
@@ -1626,7 +1717,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	assert(Length.GetBytes() % 2 == 0);
 	assert(Length.GetBits() == 0);
@@ -1649,7 +1740,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	{
 		while(Buffer.GetPosition() < Boundary)
 		{
-			auto CharacterResult{Get_UTF16LE_Character(Buffer)};
+			auto CharacterResult{Get_UTF_16LE_Character(Buffer)};
 			
 			if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
 			{
@@ -1693,7 +1784,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints)
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	std::stringstream Value;
@@ -1704,7 +1795,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF16LE_String_WithoutByte
 	Result->GetValue()->AppendTag("without byte order mark"s);
 	while(true)
 	{
-		auto CharacterResult{Get_UTF16LE_Character(Buffer)};
+		auto CharacterResult{Get_UTF_16LE_Character(Buffer)};
 		
 		if(CharacterResult->GetSuccess() == true)
 		{
@@ -1769,7 +1860,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	if(UserCommentLengthResult->GetSuccess() == true)
 	{
 		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
-		auto UserCommentResult{Get_UTF8_String_EndedByLength(Buffer, UserCommentLength)};
+		auto UserCommentResult{Get_UTF_8_String_EndedByLength(Buffer, UserCommentLength)};
 		
 		Result->GetValue()->Append("String", UserCommentResult->GetValue());
 		if(UserCommentResult->GetSuccess() == true)
@@ -1821,7 +1912,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	if(VendorLengthResult->GetSuccess() == true)
 	{
 		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
-		auto VendorResult{Get_UTF8_String_EndedByLength(Buffer, VendorLength)};
+		auto VendorResult{Get_UTF_8_String_EndedByLength(Buffer, VendorLength)};
 		
 		Result->GetValue()->Append("Vendor", VendorResult->GetValue());
 		if(VendorResult->GetSuccess() == true)
