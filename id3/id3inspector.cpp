@@ -2330,7 +2330,8 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_MIMEType(Inspection
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto MIMETypeResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
 	
-	/// @todo There are certain opportunities for at least validating the data!
+	/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
+	/// @todo As per [ID3 2.3.0], the value '-->' is also permitted to signal a URL [RFC 1738] in the picture data.
 	Result->SetValue(MIMETypeResult->GetValue());
 	Result->SetSuccess(MIMETypeResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
