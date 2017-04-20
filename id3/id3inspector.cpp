@@ -2665,9 +2665,10 @@ class TagHeader
 {
 public:
 	// constructor
-	TagHeader(std::istream & Stream)
+	TagHeader(Inspection::Buffer & Buffer) :
+		_Buffer(Buffer.GetDataAtPosition())
 	{
-		Stream.read(_Buffer, 10);
+		Buffer.SetPosition(Buffer.GetPosition() + Inspection::Length(10ull, 0));
 	}
 	
 	// getters
@@ -2753,7 +2754,7 @@ public:
 	
 	std::string GetID3Identifier(void) const
 	{
-		return std::string(_Buffer, 3);
+		return std::string(reinterpret_cast< const char * const >(_Buffer), 3);
 	}
 	
 	unsigned int GetMajorVersion(void) const
@@ -2801,14 +2802,14 @@ public:
 		return true;
 	}
 private:
-	char _Buffer[10];
+	const std::uint8_t * const _Buffer;
 };
 
 class FrameHeader
 {
 public:
 	// constructor
-	FrameHeader(TagHeader * TagHeader, std::istream & Stream) :
+	FrameHeader(TagHeader * TagHeader, Inspection::Buffer & Buffer) :
 		_Compression(false),
 		_DataLengthIndicator(false),
 		_Encryption(false),
@@ -2830,16 +2831,14 @@ public:
 		_TagAlterPreservation(0),
 		_Unsynchronisation(0)
 	{
+		auto RawBuffer{Buffer.GetDataAtPosition()};
+		
 		if(TagHeader->GetMajorVersion() == 2)
 		{
 			_HeaderSize = 6;
-			
-			char Buffer[_HeaderSize];
-			
-			Stream.read(Buffer, _HeaderSize);
-			_Identifier = std::string(Buffer, 3);
+			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 3);
 			_Name = _Names22[_Identifier];
-			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5]));
+			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5]));
 			_SupportsFlags = false;
 			
 			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden22.find(_Identifier));
@@ -2860,26 +2859,22 @@ public:
 		else if(TagHeader->GetMajorVersion() == 3)
 		{
 			_HeaderSize = 10;
-			
-			char Buffer[_HeaderSize];
-			
-			Stream.read(Buffer, _HeaderSize);
-			_Identifier = std::string(Buffer, 4);
+			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 4);
 			_Name = _Names23[_Identifier];
-			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
+			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[7]));
 			_SupportsFlags = true;
 			_SupportsTagAlterPreservation = true;
-			_TagAlterPreservation = (Buffer[8] & 0x80) == 0x80;
+			_TagAlterPreservation = (RawBuffer[8] & 0x80) == 0x80;
 			_SupportsFileAlterPreservation = true;
-			_FileAlterPreservation = (Buffer[8] & 0x40) == 0x40;
+			_FileAlterPreservation = (RawBuffer[8] & 0x40) == 0x40;
 			_SupportsReadOnly = true;
-			_ReadOnly = (Buffer[8] & 0x20) == 0x20;
+			_ReadOnly = (RawBuffer[8] & 0x20) == 0x20;
 			_SupportsCompression = true;
-			_Compression = (Buffer[9] & 0x80) == 0x80;
+			_Compression = (RawBuffer[9] & 0x80) == 0x80;
 			_SupportsEncryption = true;
-			_Encryption = (Buffer[9] & 0x40) == 0x40;
+			_Encryption = (RawBuffer[9] & 0x40) == 0x40;
 			_SupportsGroupingIdentity = true;
-			_GroupingIdentity = (Buffer[9] & 0x20) == 0x20;
+			_GroupingIdentity = (RawBuffer[9] & 0x20) == 0x20;
 			_SupportsUnsynchronisation = false;
 			_SupportsDataLengthIndicator = false;
 			
@@ -2901,30 +2896,26 @@ public:
 		else if(TagHeader->GetMajorVersion() == 4)
 		{
 			_HeaderSize = 10;
-			
-			char Buffer[_HeaderSize];
-			
-			Stream.read(Buffer, _HeaderSize);
-			_Identifier = std::string(Buffer, 4);
+			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 4);
 			_Name = _Names24[_Identifier];
-			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[4])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[5])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(Buffer[6])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[7]));
+			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[6])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[7]));
 			_SupportsFlags = true;
 			_SupportsTagAlterPreservation = true;
-			_TagAlterPreservation = (Buffer[8] & 0x40) == 0x40;
+			_TagAlterPreservation = (RawBuffer[8] & 0x40) == 0x40;
 			_SupportsFileAlterPreservation = true;
-			_FileAlterPreservation = (Buffer[8] & 0x20) == 0x20;
+			_FileAlterPreservation = (RawBuffer[8] & 0x20) == 0x20;
 			_SupportsReadOnly = true;
-			_ReadOnly = (Buffer[8] & 0x10) == 0x10;
+			_ReadOnly = (RawBuffer[8] & 0x10) == 0x10;
 			_SupportsGroupingIdentity = true;
-			_GroupingIdentity = (Buffer[9] & 0x40) == 0x40;
+			_GroupingIdentity = (RawBuffer[9] & 0x40) == 0x40;
 			_SupportsCompression = true;
-			_Compression = (Buffer[9] & 0x08) == 0x08;
+			_Compression = (RawBuffer[9] & 0x08) == 0x08;
 			_SupportsEncryption = true;
-			_Encryption = (Buffer[9] & 0x04) == 0x04;
+			_Encryption = (RawBuffer[9] & 0x04) == 0x04;
 			_SupportsUnsynchronisation = true;
-			_Unsynchronisation = (Buffer[9] & 0x02) == 0x02;
+			_Unsynchronisation = (RawBuffer[9] & 0x02) == 0x02;
 			_SupportsDataLengthIndicator = true;
-			_DataLengthIndicator = (Buffer[9] & 0x01) == 0x01;
+			_DataLengthIndicator = (RawBuffer[9] & 0x01) == 0x01;
 			
 			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden24.find(_Identifier));
 			
@@ -2941,6 +2932,7 @@ public:
 				_Handler = HanderIterator->second;
 			}
 		}
+		Buffer.SetPosition(Buffer.GetPosition() + Inspection::Length(_HeaderSize, 0));
 	}
 	
 	// getters
@@ -6585,13 +6577,11 @@ std::uint64_t Handle24WXXXFrame(const uint8_t * Buffer, std::uint64_t Length)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void ReadID3v2Tag(std::ifstream & Stream)
+void ReadID3v2Tag(Inspection::Buffer & Buffer)
 {
-	Stream.seekg(0, std::ios::beg);
+	Buffer.SetPosition(Inspection::Length(0ull, 0));
 	
-	TagHeader * NewTagHeader(new TagHeader(Stream));
-	unsigned int BufferLength(1000);
-	uint8_t * Buffer(new uint8_t[BufferLength]);
+	TagHeader * NewTagHeader(new TagHeader(Buffer));
 	
 	if(NewTagHeader->GetID3Identifier() == "ID3")
 	{
@@ -6601,13 +6591,12 @@ void ReadID3v2Tag(std::ifstream & Stream)
 		std::cout << "\tFlags: " << NewTagHeader->GetFlagsAsString() << std::endl;
 		std::cout << "\tSize: " << NewTagHeader->GetSize() << std::endl;
 		
-		auto Position{Stream.tellg()};
+		auto Position{Buffer.GetPosition()};
 		
 		if((NewTagHeader->GetMajorVersion() == 4) && (NewTagHeader->GetExtendedHeader() == true))
 		{
-			Stream.read(reinterpret_cast< char * >(Buffer), BufferLength);
-			
-			auto ExtendedHeader{Get_ID3_2_4_ExtendedTagHeader(Buffer, BufferLength)};
+			auto RawBuffer{Buffer.GetDataAtPosition()};
+			auto ExtendedHeader{Get_ID3_2_4_ExtendedTagHeader(RawBuffer, (Buffer.GetLength() - Buffer.GetPosition()).GetBytes())};
 			
 			if(std::get<0>(ExtendedHeader) == true)
 			{
@@ -6655,17 +6644,17 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				}
 				Position += std::get<1>(ExtendedHeader);
 			}
-			Stream.seekg(Position);
+			Buffer.SetPosition(Position);
 		}
 
 		auto SkippingSize{0};
-		auto Size{NewTagHeader->GetSize()};
+		auto Size{Inspection::Length(NewTagHeader->GetSize(), 0)};
 
 		std::cout << "\tFrames:" << std::endl;
 		while(Size > Position)
 		{
-			Stream.seekg(Position, std::ios::beg);
-			FrameHeader * NewFrameHeader(new FrameHeader(NewTagHeader, Stream));
+			Buffer.SetPosition(Position);
+			FrameHeader * NewFrameHeader(new FrameHeader(NewTagHeader, Buffer));
 			
 			if(NewFrameHeader->IsValid() == true)
 			{
@@ -6685,22 +6674,18 @@ void ReadID3v2Tag(std::ifstream & Stream)
 				{
 					std::cout << "\t\t\tFlags: " << NewFrameHeader->GetFlagsAsString() << std::endl;
 				}
-				while(NewFrameHeader->GetDataSize() > BufferLength)
-				{
-					delete[] Buffer;
-					BufferLength <<= 1;
-					Buffer = new uint8_t[BufferLength];
-				}
-				Stream.read(reinterpret_cast< char * >(Buffer), NewFrameHeader->GetDataSize());
+				
+				auto RawBuffer{Buffer.GetDataAtPosition()};
+				
 				if(g_PrintBytes == true)
 				{
-					std::cout << "\t\t\tBytes: " << GetHexadecimalStringFromUInt8Buffer(Buffer, NewFrameHeader->GetDataSize()) << std::endl;
+					std::cout << "\t\t\tBytes: " << GetHexadecimalStringFromUInt8Buffer(RawBuffer, NewFrameHeader->GetDataSize()) << std::endl;
 				}
 				std::cout << "\t\t\tContent:" << std::endl;
 				
 				unsigned int HandledFrameSize(0);
 				
-				HandledFrameSize = NewFrameHeader->HandleData(Buffer, NewFrameHeader->GetDataSize());
+				HandledFrameSize = NewFrameHeader->HandleData(RawBuffer, NewFrameHeader->GetDataSize());
 				if(HandledFrameSize < NewFrameHeader->GetDataSize())
 				{
 					std::cout << "*** ERROR *** Frame size exceeds frame data." << std::endl;
@@ -6719,6 +6704,7 @@ void ReadID3v2Tag(std::ifstream & Stream)
 			}
 			delete NewFrameHeader;
 		}
+		Buffer.SetPosition(Position);
 		if(SkippingSize > 0)
 		{
 			std::cout << "# Skipped " << SkippingSize << " bytes of padding." << std::endl;
@@ -6728,183 +6714,191 @@ void ReadID3v2Tag(std::ifstream & Stream)
 	delete NewTagHeader;
 }
 
-void ReadFile(const std::string & Path)
+void ReadFile(Inspection::Buffer & Buffer)
 {
-	uint8_t * Buffer(new uint8_t[1000]);
-	int u4Track = 0;
-	bool bID3v11 = false;
-
-	std::ifstream ReadFile;
-
-	ReadFile.open(Path.c_str(), std::ios::in | std::ios::binary);
-	if(!ReadFile)
+	if(Buffer.GetLength() >= Inspection::Length(128ull, 0))
 	{
-		std::cerr << Path << ": Can not be opened." << std::endl;
-	}
-	ReadFile.seekg(-128, std::ios::end);
-	ReadFile.read(reinterpret_cast< char * >(Buffer), 3);
-	Buffer[3] = '\0';
-	if(strcmp(reinterpret_cast< char * >(Buffer), "TAG") == 0)
-	{
-		std::cout << "ID3v1 TAG:" << std::endl;
-		ReadFile.read(reinterpret_cast< char * >(Buffer), 30);
+		Buffer.SetPosition(Buffer.GetLength() - Inspection::Length(128ull, -0));
 		
-		auto Title(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer, 30));
+		int u4Track = 0;
+		bool bID3v11 = false;
 		
-		if(std::get<0>(Title) == true)
+		auto RawBuffer{Buffer.GetDataAtPosition()};
+		
+		if((RawBuffer[0] == 'T') && (RawBuffer[1] == 'A') && (RawBuffer[2] == 'G'))
 		{
-			std::cout << "\tTitle:\t \"" << std::get<2>(Title) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Title) - 1 << " of 30)" << std::endl;
-		}
-		else
-		{
-			auto Title(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer, 30));
+			std::cout << "ID3v1 TAG:" << std::endl;
+			RawBuffer += 3;
+			
+			auto Title(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
 			
 			if(std::get<0>(Title) == true)
 			{
-				std::cout << "\tTitle:\t \"" << std::get<2>(Title) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Title) << " of 30)" << std::endl;
+				std::cout << "\tTitle:\t \"" << std::get<2>(Title) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Title) - 1 << " of 30)" << std::endl;
 			}
 			else
 			{
-				std::cout << "*** ERROR *** The 'Title' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+				auto Title(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 30));
 				
-				auto Title = GetHexadecimalStringTerminatedByLength(Buffer, 30);
-				
-				std::cout << "*** Binary content: " << Title.second << std::endl;
+				if(std::get<0>(Title) == true)
+				{
+					std::cout << "\tTitle:\t \"" << std::get<2>(Title) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Title) << " of 30)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The 'Title' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+					
+					auto Title = GetHexadecimalStringTerminatedByLength(RawBuffer, 30);
+					
+					std::cout << "*** Binary content: " << Title.second << std::endl;
+				}
 			}
-		}
-		ReadFile.read(reinterpret_cast< char * >(Buffer), 30);
-		
-		auto Artist(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer, 30));
-		
-		if(std::get<0>(Artist) == true)
-		{
-			std::cout << "\tArtist:\t \"" << std::get<2>(Artist) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Artist) - 1 << " of 30)" << std::endl;
-		}
-		else
-		{
-			auto Artist(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer, 30));
+			RawBuffer += 30;
+			
+			auto Artist(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
 			
 			if(std::get<0>(Artist) == true)
 			{
-				std::cout << "\tArtist:\t \"" << std::get<2>(Artist) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Artist) << " of 30)" << std::endl;
+				std::cout << "\tArtist:\t \"" << std::get<2>(Artist) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Artist) - 1 << " of 30)" << std::endl;
 			}
 			else
 			{
-				std::cout << "*** ERROR *** The 'Artist' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+				auto Artist(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 30));
 				
-				auto Artist = GetHexadecimalStringTerminatedByLength(Buffer, 30);
-				
-				std::cout << "*** Binary content: " << Artist.second << std::endl;
+				if(std::get<0>(Artist) == true)
+				{
+					std::cout << "\tArtist:\t \"" << std::get<2>(Artist) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Artist) << " of 30)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The 'Artist' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+					
+					auto Artist = GetHexadecimalStringTerminatedByLength(RawBuffer, 30);
+					
+					std::cout << "*** Binary content: " << Artist.second << std::endl;
+				}
 			}
-		}
-		ReadFile.read(reinterpret_cast< char * >(Buffer), 30);
-		
-		auto Album(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer, 30));
-		
-		if(std::get<0>(Album) == true)
-		{
-			std::cout << "\tAlbum:\t \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Album) - 1 << " of 30)" << std::endl;
-		}
-		else
-		{
-			auto Album(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer, 30));
+			RawBuffer += 30;
+			
+			auto Album(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
 			
 			if(std::get<0>(Album) == true)
 			{
-				std::cout << "\tAlbum:\t \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Album) << " of 30)" << std::endl;
+				std::cout << "\tAlbum:\t \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Album) - 1 << " of 30)" << std::endl;
 			}
 			else
 			{
-				std::cout << "*** ERROR *** The 'Album' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+				auto Album(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 30));
 				
-				auto Album = GetHexadecimalStringTerminatedByLength(Buffer, 30);
-				
-				std::cout << "*** Binary content: " << Album.second << std::endl;
+				if(std::get<0>(Album) == true)
+				{
+					std::cout << "\tAlbum:\t \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Album) << " of 30)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The 'Album' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+					
+					auto Album = GetHexadecimalStringTerminatedByLength(RawBuffer, 30);
+					
+					std::cout << "*** Binary content: " << Album.second << std::endl;
+				}
 			}
-		}
-		ReadFile.read(reinterpret_cast< char * >(Buffer), 4);
-		
-		auto Year(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer, 4));
-		
-		if(std::get<0>(Year) == true)
-		{
-			std::cout << "\tYear:\t \"" << std::get<2>(Year) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Year) - 1 << " of 4)" << std::endl;
-		}
-		else
-		{
-			auto Year(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer, 4));
+			RawBuffer += 30;
+			
+			auto Year(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 4));
 			
 			if(std::get<0>(Year) == true)
 			{
-				std::cout << "\tYear:\t \"" << std::get<2>(Year) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Year) << " of 4)" << std::endl;
+				std::cout << "\tYear:\t \"" << std::get<2>(Year) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Year) - 1 << " of 4)" << std::endl;
 			}
 			else
 			{
-				std::cout << "*** ERROR *** The 'Year' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+				auto Year(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 4));
 				
-				auto Year = GetHexadecimalStringTerminatedByLength(Buffer, 4);
-				
-				std::cout << "*** Binary content: " << Year.second << std::endl;
+				if(std::get<0>(Year) == true)
+				{
+					std::cout << "\tYear:\t \"" << std::get<2>(Year) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Year) << " of 4)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The 'Year' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+					
+					auto Year = GetHexadecimalStringTerminatedByLength(RawBuffer, 4);
+					
+					std::cout << "*** Binary content: " << Year.second << std::endl;
+				}
 			}
-		}
-		ReadFile.read(reinterpret_cast< char * >(Buffer), 30);
-		
-		auto Comment(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer, 30));
-		
-		if(std::get<0>(Comment) == true)
-		{
-			std::cout << "\tComment: \"" << std::get<2>(Comment) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Comment) - 1 << " of 30)" << std::endl;
-		}
-		else
-		{
-			auto Comment(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer, 30));
+			RawBuffer += 30;
+			
+			auto Comment(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
 			
 			if(std::get<0>(Comment) == true)
 			{
-				std::cout << "\tComment: \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Comment) << " of 30)" << std::endl;
+				std::cout << "\tComment: \"" << std::get<2>(Comment) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Comment) - 1 << " of 30)" << std::endl;
 			}
 			else
 			{
-				std::cout << "*** ERROR *** The 'Comment' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+				auto Comment(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 30));
 				
-				auto Comment = GetHexadecimalStringTerminatedByLength(Buffer, 30);
-				
-				std::cout << "*** Binary content: " << Comment.second << std::endl;
+				if(std::get<0>(Comment) == true)
+				{
+					std::cout << "\tComment: \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Comment) << " of 30)" << std::endl;
+				}
+				else
+				{
+					std::cout << "*** ERROR *** The 'Comment' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
+					
+					auto Comment = GetHexadecimalStringTerminatedByLength(RawBuffer, 30);
+					
+					std::cout << "*** Binary content: " << Comment.second << std::endl;
+				}
 			}
-		}
-		bID3v11 = false;
-		if(Buffer[28] == '\0')
-		{
-			bID3v11 = true;
-			u4Track = static_cast< int >(Buffer[29]);
-		}
-		ReadFile.read(reinterpret_cast< char * >(Buffer), 1);
-		
-		std::map< unsigned int, std::string >::iterator NumericGenreIterator(g_NumericGenresID3_1.find(Buffer[0]));
-		
-		if(NumericGenreIterator != g_NumericGenresID3_1.end())
-		{
-			std::cout << "\tGenre:\t " << NumericGenreIterator->second << "  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*Buffer)) << "] (ID3v1 standard)" << std::endl;
-		}
-		else
-		{
-			NumericGenreIterator = g_NumericGenresWinamp.find(Buffer[0]);
-			if(NumericGenreIterator != g_NumericGenresWinamp.end())
+			bID3v11 = false;
+			if(RawBuffer[28] == '\0')
 			{
-				std::cout << "\tGenre:\t " << NumericGenreIterator->second << "  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*Buffer)) << "] (Winamp extension)" << std::endl;
+				bID3v11 = true;
+				u4Track = static_cast< int >(RawBuffer[29]);
+			}
+			RawBuffer += 30;
+			
+			std::map< unsigned int, std::string >::iterator NumericGenreIterator(g_NumericGenresID3_1.find(RawBuffer[0]));
+			
+			if(NumericGenreIterator != g_NumericGenresID3_1.end())
+			{
+				std::cout << "\tGenre:\t " << NumericGenreIterator->second << "  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*RawBuffer)) << "] (ID3v1 standard)" << std::endl;
 			}
 			else
 			{
-				std::cout << "\tGenre:\t unrecognized genre  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*Buffer)) << "]" << std::endl;
+				NumericGenreIterator = g_NumericGenresWinamp.find(RawBuffer[0]);
+				if(NumericGenreIterator != g_NumericGenresWinamp.end())
+				{
+					std::cout << "\tGenre:\t " << NumericGenreIterator->second << "  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*RawBuffer)) << "] (Winamp extension)" << std::endl;
+				}
+				else
+				{
+					std::cout << "\tGenre:\t unrecognized genre  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*RawBuffer)) << "]" << std::endl;
+				}
 			}
-		}
-		if(bID3v11 == true)
-		{
-			std::cout << "ID3v1.1 TAG:" << std::endl;
-			std::cout << "\tTrack:\t \"" << u4Track << "\"" << std::endl;
+			if(bID3v11 == true)
+			{
+				std::cout << "ID3v1.1 TAG:" << std::endl;
+				std::cout << "\tTrack:\t \"" << u4Track << "\"" << std::endl;
+			}
 		}
 	}
-	ReadID3v2Tag(ReadFile);
+	ReadID3v2Tag(Buffer);
+}
+
+std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
+{
+	ReadFile(Buffer);
+	
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->SetSuccess(true);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
 }
 
 int main(int argc, char **argv)
@@ -7231,7 +7225,7 @@ int main(int argc, char **argv)
 	// processing
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front());
+		ReadItem(Paths.front(), ProcessBuffer);
 		Paths.pop_front();
 	}
 
