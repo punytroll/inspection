@@ -6561,6 +6561,8 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 	
 	if(TagHeaderResult->GetSuccess() == true)
 	{
+		std::cout << "ID3v2 TAG:" << std::endl;
+		
 		auto Position{Buffer.GetPosition()};
 		
 		PrintValue(TagHeaderResult->GetValue(), "\t");
@@ -6803,7 +6805,7 @@ void ReadFile(Inspection::Buffer & Buffer)
 					std::cout << "*** Binary content: " << Year.second << std::endl;
 				}
 			}
-			RawBuffer += 30;
+			RawBuffer += 4;
 			
 			auto Comment(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
 			
