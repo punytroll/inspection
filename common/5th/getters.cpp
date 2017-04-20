@@ -30,6 +30,25 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumeric(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(1ull, 0) == true)
+	{
+		auto Character{Buffer.Get8Bits()};
+		
+		if((Is_ASCII_Character_Alphabetical(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true))
+		{
+			Result->GetValue()->SetAny(Character);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -80,6 +99,82 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & TemplateString)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	if(Buffer.Has(TemplateString.length(), 0) == true)
+	{
+		Result->SetSuccess(true);
+		for(auto TemplateCharacter : TemplateString)
+		{
+			auto BufferCharacter{Buffer.Get8Bits()};
+			
+			Value << BufferCharacter;
+			if((TemplateCharacter != BufferCharacter) || (Is_ASCII_Character_Alphabetical(BufferCharacter) == false))
+			{
+				Result->SetSuccess(false);
+				
+				break;
+			}
+		}
+		Result->GetValue()->SetAny(Value.str());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & TemplateString)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(TemplateString.length(), 0) == true)
+	{
+		std::stringstream Value;
+		auto NumberOfCharacters{0};
+		
+		Result->SetSuccess(true);
+		Result->GetValue()->AppendTag("string"s);
+		Result->GetValue()->AppendTag("ASCII"s);
+		Result->GetValue()->AppendTag("alpha numeric"s);
+		for(auto TemplateCharacter : TemplateString)
+		{
+			auto CharacterResult{Get_ASCII_Character_AlphaNumeric(Buffer)};
+			
+			if(CharacterResult->GetSuccess() == true)
+			{
+				auto Character{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny())};
+				
+				NumberOfCharacters += 1;
+				Value << Character;
+				if(TemplateCharacter != Character)
+				{
+					Result->SetSuccess(false);
+					
+					break;
+				}
+			}
+			else
+			{
+				Result->SetSuccess(false);
+				
+				break;
+			}
+		}
+		if(Result->GetSuccess() == true)
+		{
+			Result->GetValue()->AppendTag("ended by template"s);
+		}
+		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
+		Result->GetValue()->SetAny(Value.str());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Buffer & Buffer, std::uint64_t Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -106,33 +201,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 		}
 	}
 	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & TemplateString)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
-	
-	if(Buffer.Has(TemplateString.length(), 0) == true)
-	{
-		Result->SetSuccess(true);
-		for(auto TemplateCharacter : TemplateString)
-		{
-			auto BufferCharacter{Buffer.Get8Bits()};
-			
-			Value << BufferCharacter;
-			if((TemplateCharacter != BufferCharacter) || (Is_ASCII_Character_Alphabetical(BufferCharacter) == false))
-			{
-				Result->SetSuccess(false);
-				
-				break;
-			}
-		}
-		Result->GetValue()->SetAny(Value.str());
-	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
