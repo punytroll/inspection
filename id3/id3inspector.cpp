@@ -2220,6 +2220,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_E
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader_Flags(Inspection::Buffer & Buffer, std::uint8_t MajorVersion);
+std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Inspection::Buffer & Buffer);
 
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buffer & Buffer)
 {
@@ -2655,161 +2658,134 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FileIdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Buffer, "ID3")};
+	
+	Result->GetValue()->Append("FileIdentifier", FileIdentifierResult->GetValue());
+	if(FileIdentifierResult->GetSuccess() == true)
+	{
+		auto MajorVersionResult{Get_UnsignedInteger_8Bit(Buffer)};
+		
+		Result->GetValue()->Append("MajorVersion", MajorVersionResult->GetValue());
+		if(MajorVersionResult->GetSuccess() == true)
+		{
+			auto RevisionNumberResult{Get_UnsignedInteger_8Bit(Buffer)};
+			
+			Result->GetValue()->Append("RevisionNumber", RevisionNumberResult->GetValue());
+			if(RevisionNumberResult->GetSuccess() == true)
+			{
+				auto MajorVersion{std::experimental::any_cast< std::uint8_t >(MajorVersionResult->GetAny())};
+				auto FlagsResult{Get_ID3_2_TagHeader_Flags(Buffer, MajorVersion)};
+				
+				Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+				if(FlagsResult->GetSuccess() == true)
+				{
+					auto SizeResult{Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Buffer)};
+					
+					Result->GetValue()->Append("Size", SizeResult->GetValue());
+					Result->SetSuccess(SizeResult->GetSuccess());
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader_Flags(Inspection::Buffer & Buffer, std::uint8_t MajorVersion)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
+	
+	Result->SetValue(FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
+		auto StartIndex{2};
+		
+		Result->GetValue()->Append("[0] Unsynchronization", Flags[0]);
+		if(MajorVersion == 0x02)
+		{
+			Result->GetValue()->Append("[1] Compression", Flags[1]);
+		}
+		else if((MajorVersion == 0x03) || (MajorVersion == 0x04))
+		{
+			Result->GetValue()->Append("[1] Extended header", Flags[1]);
+		}
+		if((MajorVersion == 0x03) || (MajorVersion == 0x04))
+		{
+			Result->GetValue()->Append("[2] Experimental indicator", Flags[2]);
+			StartIndex = 3;
+		}
+		if(MajorVersion == 0x04)
+		{
+			Result->GetValue()->Append("[3] Footer present", Flags[3]);
+			StartIndex = 4;
+		}
+		Result->GetValue()->Append('[' + to_string_cast(StartIndex) + "-7] Reserved", false);
+		for(auto FlagIndex = StartIndex; FlagIndex < 8; ++FlagIndex)
+		{
+			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(Inspection::Length(4ull, 0)) == true)
+	{
+		if(Buffer.Get1Bits() == 0x00)
+		{
+			std::uint32_t First{Buffer.Get7Bits()};
+			
+			if(Buffer.Get1Bits() == 0x00)
+			{
+				std::uint32_t Second{Buffer.Get7Bits()};
+				
+				if(Buffer.Get1Bits() == 0x00)
+				{
+					std::uint32_t Third{Buffer.Get7Bits()};
+					
+					if(Buffer.Get1Bits() == 0x00)
+					{
+						std::uint32_t Fourth{Buffer.Get7Bits()};
+						
+						Result->GetValue()->SetAny((First << 21) | (Second << 14) | (Third << 7) | (Fourth));
+						Result->GetValue()->AppendTag("integer"s);
+						Result->GetValue()->AppendTag("unsigned"s);
+						Result->GetValue()->AppendTag("28bit value"s);
+						Result->GetValue()->AppendTag("32bit field"s);
+						Result->GetValue()->AppendTag("unsynchronized"s);
+						Result->SetSuccess(true);
+					}
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Tag and Frame header classes                                                                  //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-class FrameHeader;
-
-class TagHeader
-{
-public:
-	// constructor
-	TagHeader(Inspection::Buffer & Buffer) :
-		_Buffer(Buffer.GetDataAtPosition())
-	{
-		Buffer.SetPosition(Buffer.GetPosition() + Inspection::Length(10ull, 0));
-	}
-	
-	// getters
-	bool GetCompression(void) const
-	{
-		if(SupportsCompressionFlag() == true)
-		{
-			return (_Buffer[5] & 0x40) == 0x40;
-		}
-		else
-		{
-			throw "The compression flag is not supported by this tag version.";
-		}
-	}
-	
-	bool GetExperimentalIndicator(void) const
-	{
-		if(SupportsExperimentalIndicatorFlag() == true)
-		{
-			return (_Buffer[5] & 0x20) == 0x20;
-		}
-		else
-		{
-			throw "The experimental indicator flag is not supported by this tag version.";
-		}
-	}
-	
-	bool GetExtendedHeader(void) const
-	{
-		if(SupportsExtendedHeaderFlag() == true)
-		{
-			return (_Buffer[5] & 0x40) == 0x40;
-		}
-		else
-		{
-			throw "The extended header flag is not supported by this tag version.";
-		}
-	}
-	
-	std::string GetFlagsAsString(void) const
-	{
-		std::string Result;
-		
-		if((SupportsUnsynchronizationFlag() == true) && (GetUnsynchronization() == true))
-		{
-			AppendSeparated(Result, "Unsynchronization", ", ");
-		}
-		if((SupportsCompressionFlag() == true) && (GetCompression() == true))
-		{
-			AppendSeparated(Result, "Compression", ", ");
-		}
-		if((SupportsExtendedHeaderFlag() == true) && (GetExtendedHeader() == true))
-		{
-			AppendSeparated(Result, "Extended Header", ", ");
-		}
-		if((SupportsExperimentalIndicatorFlag() == true) && (GetExperimentalIndicator() == true))
-		{
-			AppendSeparated(Result, "Experimental Indicator", ", ");
-		}
-		if((SupportsFooterPresentFlag() == true) && (GetFooterPresent() == true))
-		{
-			AppendSeparated(Result, "Footer present", ", ");
-		}
-		if(Result.empty() == true)
-		{
-			Result = "None";
-		}
-		
-		return Result;
-	}
-	
-	bool GetFooterPresent(void) const
-	{
-		if(SupportsFooterPresentFlag() == true)
-		{
-			return (_Buffer[5] & 0x10) == 0x10;
-		}
-		else
-		{
-			throw "The footer present flag is not supported by this tag version.";
-		}
-	}
-	
-	std::string GetID3Identifier(void) const
-	{
-		return std::string(reinterpret_cast< const char * const >(_Buffer), 3);
-	}
-	
-	unsigned int GetMajorVersion(void) const
-	{
-		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[3]));
-	}
-	
-	unsigned int GetRevisionNumber(void) const
-	{
-		return static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[4]));
-	}
-	
-	unsigned int GetSize(void) const
-	{
-		return (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[6])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[7])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[8])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(_Buffer[9]));
-	}
-	
-	bool GetUnsynchronization(void) const
-	{
-		return (_Buffer[5] & 0x80) == 0x80;
-	}
-	
-	bool SupportsExperimentalIndicatorFlag(void) const
-	{
-		return GetMajorVersion() > 2;
-	}
-	
-	bool SupportsExtendedHeaderFlag(void) const
-	{
-		return GetMajorVersion() > 2;
-	}
-	
-	bool SupportsFooterPresentFlag(void) const
-	{
-		return GetMajorVersion() > 3;
-	}
-	
-	bool SupportsCompressionFlag(void) const
-	{
-		return GetMajorVersion() == 2;
-	}
-	
-	bool SupportsUnsynchronizationFlag(void) const
-	{
-		return true;
-	}
-private:
-	const std::uint8_t * const _Buffer;
-};
 
 class FrameHeader
 {
 public:
 	// constructor
-	FrameHeader(TagHeader * TagHeader, Inspection::Buffer & Buffer) :
+	FrameHeader(std::uint8_t MajorVersion, Inspection::Buffer & Buffer) :
 		_Compression(false),
 		_DataLengthIndicator(false),
 		_Encryption(false),
@@ -2833,7 +2809,7 @@ public:
 	{
 		auto RawBuffer{Buffer.GetDataAtPosition()};
 		
-		if(TagHeader->GetMajorVersion() == 2)
+		if(MajorVersion == 0x02)
 		{
 			_HeaderSize = 6;
 			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 3);
@@ -2856,7 +2832,7 @@ public:
 				_Handler = HanderIterator->second;
 			}
 		}
-		else if(TagHeader->GetMajorVersion() == 3)
+		else if(MajorVersion == 0x03)
 		{
 			_HeaderSize = 10;
 			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 4);
@@ -2893,7 +2869,7 @@ public:
 				_Handler = HanderIterator->second;
 			}
 		}
-		else if(TagHeader->GetMajorVersion() == 4)
+		else if(MajorVersion == 0x04)
 		{
 			_HeaderSize = 10;
 			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 4);
@@ -6581,80 +6557,80 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 {
 	Buffer.SetPosition(Inspection::Length(0ull, 0));
 	
-	TagHeader * NewTagHeader(new TagHeader(Buffer));
+	auto TagHeaderResult{Get_ID3_2_TagHeader(Buffer)};
 	
-	if(NewTagHeader->GetID3Identifier() == "ID3")
+	if(TagHeaderResult->GetSuccess() == true)
 	{
-		std::cout << "ID3v2 TAG:" << std::endl;
-		std::cout << "\tFile Identifier: " << NewTagHeader->GetID3Identifier() << std::endl;
-		std::cout << "\tVersion: 2." << NewTagHeader->GetMajorVersion() << "." << NewTagHeader->GetRevisionNumber() << std::endl;
-		std::cout << "\tFlags: " << NewTagHeader->GetFlagsAsString() << std::endl;
-		std::cout << "\tSize: " << NewTagHeader->GetSize() << std::endl;
-		
 		auto Position{Buffer.GetPosition()};
 		
-		if((NewTagHeader->GetMajorVersion() == 4) && (NewTagHeader->GetExtendedHeader() == true))
+		PrintValue(TagHeaderResult->GetValue(), "\t");
+		if(TagHeaderResult->GetValue("Flags")->HasValue("[1] Extended header") == true)
 		{
-			auto RawBuffer{Buffer.GetDataAtPosition()};
-			auto ExtendedHeader{Get_ID3_2_4_ExtendedTagHeader(RawBuffer, (Buffer.GetLength() - Buffer.GetPosition()).GetBytes())};
+			auto ExtendedHeader{std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("[1] Extended header"))};
 			
-			if(std::get<0>(ExtendedHeader) == true)
+			if(ExtendedHeader == true)
 			{
-				auto ExtendedHeaderValues{std::experimental::any_cast< Values >(std::get<2>(ExtendedHeader))};
+				auto RawBuffer{Buffer.GetDataAtPosition()};
+				auto ExtendedHeader{Get_ID3_2_4_ExtendedTagHeader(RawBuffer, (Buffer.GetLength() - Buffer.GetPosition()).GetBytes())};
 				
-				std::cout << "\tExtended Header:" << std::endl;
-				std::cout << "\t\tSize: " << std::experimental::any_cast< std::uint32_t >(ExtendedHeaderValues.Get("Size")) << std::endl;
-				std::cout << "\t\tNumber Of Flag Bytes: " << std::experimental::any_cast< uint32_t >(ExtendedHeaderValues.Get("NumberOfFlagBytes")) << std::endl;
-				if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("TagIsAnUpdateFlag")) == true)
+				if(std::get<0>(ExtendedHeader) == true)
 				{
-					std::cout << "\t\t\tTag is an update: yes" << std::endl;
+					auto ExtendedHeaderValues{std::experimental::any_cast< Values >(std::get<2>(ExtendedHeader))};
 					
-					auto TagIsAnUpdateData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("TagIsAnUpdateData"))};
-					
-					std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(TagIsAnUpdateData.Get("FlagDataLength")) << std::endl;
+					std::cout << "\tExtended Header:" << std::endl;
+					std::cout << "\t\tSize: " << std::experimental::any_cast< std::uint32_t >(ExtendedHeaderValues.Get("Size")) << std::endl;
+					std::cout << "\t\tNumber Of Flag Bytes: " << std::experimental::any_cast< uint32_t >(ExtendedHeaderValues.Get("NumberOfFlagBytes")) << std::endl;
+					if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("TagIsAnUpdateFlag")) == true)
+					{
+						std::cout << "\t\t\tTag is an update: yes" << std::endl;
+						
+						auto TagIsAnUpdateData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("TagIsAnUpdateData"))};
+						
+						std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(TagIsAnUpdateData.Get("FlagDataLength")) << std::endl;
+					}
+					else
+					{
+						std::cout << "\t\t\tTag is an update: no" << std::endl;
+					}
+					if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("CRCDataPresentFlag")) == true)
+					{
+						std::cout << "\t\t\tCRC data present: yes" << std::endl;
+						
+						auto CRCDataPresentData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("CRCDataPresentData"))};
+						
+						std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(CRCDataPresentData.Get("FlagDataLength")) << std::endl;
+						std::cout << "\t\t\t\tTotal Frame CRC: " << std::experimental::any_cast< std::string >(CRCDataPresentData.Get("TotalFrameCRC")) << std::endl;
+					}
+					else
+					{
+						std::cout << "\t\t\tCRC data present: no" << std::endl;
+					}
+					if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("TagRestrictionsFlag")) == true)
+					{
+						std::cout << "\t\t\tTag restrictions: yes" << std::endl;
+						
+						auto TagRestrictionsData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("TagRestrictionsData"))};
+						
+						std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(TagRestrictionsData.Get("FlagDataLength")) << std::endl;
+					}
+					else
+					{
+						std::cout << "\t\t\tTag restrictions: no" << std::endl;
+					}
+					Position += std::get<1>(ExtendedHeader);
 				}
-				else
-				{
-					std::cout << "\t\t\tTag is an update: no" << std::endl;
-				}
-				if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("CRCDataPresentFlag")) == true)
-				{
-					std::cout << "\t\t\tCRC data present: yes" << std::endl;
-					
-					auto CRCDataPresentData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("CRCDataPresentData"))};
-					
-					std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(CRCDataPresentData.Get("FlagDataLength")) << std::endl;
-					std::cout << "\t\t\t\tTotal Frame CRC: " << std::experimental::any_cast< std::string >(CRCDataPresentData.Get("TotalFrameCRC")) << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\tCRC data present: no" << std::endl;
-				}
-				if(std::experimental::any_cast< bool >(ExtendedHeaderValues.Get("TagRestrictionsFlag")) == true)
-				{
-					std::cout << "\t\t\tTag restrictions: yes" << std::endl;
-					
-					auto TagRestrictionsData{std::experimental::any_cast< Values >(ExtendedHeaderValues.Get("TagRestrictionsData"))};
-					
-					std::cout << "\t\t\t\tFlag Data Length: " << std::experimental::any_cast< std::uint32_t >(TagRestrictionsData.Get("FlagDataLength")) << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\tTag restrictions: no" << std::endl;
-				}
-				Position += std::get<1>(ExtendedHeader);
+				Buffer.SetPosition(Position);
 			}
-			Buffer.SetPosition(Position);
 		}
 
 		auto SkippingSize{0};
-		auto Size{Inspection::Length(NewTagHeader->GetSize(), 0)};
+		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(TagHeaderResult->GetAny("Size")), 0)};
 
 		std::cout << "\tFrames:" << std::endl;
 		while(Size > Position)
 		{
 			Buffer.SetPosition(Position);
-			FrameHeader * NewFrameHeader(new FrameHeader(NewTagHeader, Buffer));
+			FrameHeader * NewFrameHeader(new FrameHeader(std::experimental::any_cast< std::uint8_t >(TagHeaderResult->GetAny("MajorVersion")), Buffer));
 			
 			if(NewFrameHeader->IsValid() == true)
 			{
@@ -6711,7 +6687,6 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 		}
 		std::cout << std::endl;
 	}
-	delete NewTagHeader;
 }
 
 void ReadFile(Inspection::Buffer & Buffer)
