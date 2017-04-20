@@ -2207,6 +2207,9 @@ std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_PictureType(Inspection::Buffer & Buffer);
@@ -2214,6 +2217,76 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TextEncodingResult{Get_ID3_2_2_TextEncoding(Buffer)};
+	
+	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	if(TextEncodingResult->GetSuccess() == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
+		auto InformationResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Buffer.GetLength() - Buffer.GetPosition())};
+		
+		Result->GetValue()->Append("Information", InformationResult->GetValue());
+		Result->SetSuccess(InformationResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TextEncodingResult{Get_UnsignedInteger_8Bit(Buffer)};
+	
+	Result->SetValue(TextEncodingResult->GetValue());
+	if(TextEncodingResult->GetSuccess() == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
+		
+		if(TextEncoding == 0x00)
+		{
+			Result->GetValue()->PrependTag("name", "Latin alphabet No. 1"s);
+			Result->GetValue()->PrependTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->SetSuccess(true);
+		}
+		else if(TextEncoding == 0x01)
+		{
+			Result->GetValue()->PrependTag("name", "UCS-2"s);
+			Result->GetValue()->PrependTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(TextEncoding == 0x00)
+	{
+		auto ISO_IEC_8859_1_1998_StringResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
+		
+		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
+		Result->SetSuccess(ISO_IEC_8859_1_1998_StringResult->GetSuccess());
+	}
+	else if(TextEncoding == 0x01)
+	{
+		auto ISO_IEC_10646_1_1993_UCS_2_StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
+		
+		Result->SetValue(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetValue());
+		Result->SetSuccess(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
 
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_Body(Inspection::Buffer & Buffer)
 {
@@ -3330,108 +3403,14 @@ std::uint64_t Handle22PICFrames(const uint8_t * Buffer, std::uint64_t Length)
 	return Length;
 }
 
-std::uint64_t Handle22T__Frames(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle22T__Frames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_2_Frame_T___Body(Buffer)};
 	
-	if(std::get<0>(Encoding) == true)
-	{
-		Index += std::get<1>(Encoding);
-		std::cout << "\t\t\t\tText Encoding: " << std::experimental::any_cast< std::string >(std::get<2>(Encoding).Get("Name")) << std::endl;
-		if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
-		{
-			auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(String) == true)
-			{
-				Index += std::get<1>(String);
-				std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
-			}
-			else
-			{
-				auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(String) == true)
-				{
-					Index += std::get<1>(String);
-					std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
-				}
-			}
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UCS_2)
-		{
-			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ByteOrderMark) == true)
-			{
-				Index += std::get<1>(ByteOrderMark);
-				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
-				{
-					auto String(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(String) == true)
-					{
-						Index += std::get<1>(String);
-						std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (UCS-2, big endian, ended by termination)" << std::endl;
-					}
-					else
-					{
-						auto String(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-						
-						if(std::get<0>(String) == true)
-						{
-							Index += std::get<1>(String);
-							std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (UCS-2, big endian, ended by boundary)" << std::endl;
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in big endian with or without termination." << std::endl;
-						}
-					}
-				}
-				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
-				{
-					auto String(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(String) == true)
-					{
-						Index += std::get<1>(String);
-						std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
-					}
-					else
-					{
-						auto String(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-						
-						if(std::get<0>(String) == true)
-						{
-							Index += std::get<1>(String);
-							std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
-						}
-					}
-				}
-			}
-			else
-			{
-				std::cout << "*** The UCS-2 string is expected to start with a byte order mark but it is not." << std::endl;
-				Index = Length;
-			}
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.2.0 [4.2], \"T__\" frames MUST contain a \"Text encoding\" field with a valid tag version 2.2 encoding identifier." << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle22UFIFrames(const uint8_t * Buffer, std::uint64_t Length)
