@@ -2597,7 +2597,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Bu
 	{
 		Result->SetSuccess(true);
 		
-		auto Information{std::experimental::any_cast< const std::string & >(FrameT___BodyResult->GetValue("Information")->GetTagAny("content"))};
+		auto Information{std::experimental::any_cast< const std::string & >(FrameT___BodyResult->GetValue("Information")->GetTagAny("string"))};
 		auto Interpretation{GetContentTypeInterpretation2_3(Information)};
 		
 		if(std::get<0>(Interpretation) == true)
@@ -2672,7 +2672,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_E
 		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
 		if(ISO_IEC_8859_1_1998_StringResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("content", Result->GetAny());
+			Result->GetValue()->PrependTag("string", Result->GetAny());
 			Result->SetSuccess(true);
 		}
 	}
@@ -2684,7 +2684,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_E
 		if(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetSuccess() == true)
 		{
 			Result->GetValue()->ClearTags();
-			Result->GetValue()->PrependTag("content", Result->GetAny("String"));
+			Result->GetValue()->PrependTag("string", Result->GetAny("String"));
 			Result->SetSuccess(true);
 		}
 	}
@@ -2938,7 +2938,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
 		if(ISO_IEC_8859_1_1998_StringResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("content", ISO_IEC_8859_1_1998_StringResult->GetAny());
+			Result->GetValue()->PrependTag("string", ISO_IEC_8859_1_1998_StringResult->GetAny());
 			Result->SetSuccess(true);
 		}
 	}
@@ -2950,7 +2950,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 		if(UTF_16_StringResult->GetSuccess() == true)
 		{
 			Result->GetValue()->ClearTags();
-			Result->GetValue()->PrependTag("content", UTF_16_StringResult->GetAny("String"));
+			Result->GetValue()->PrependTag("string", UTF_16_StringResult->GetAny("String"));
 			Result->SetSuccess(true);
 		}
 	}
@@ -2961,7 +2961,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 		Result->SetValue(UTF_16_BE_StringResult->GetValue());
 		if(UTF_16_BE_StringResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("content", UTF_16_BE_StringResult->GetAny());
+			Result->GetValue()->PrependTag("string", UTF_16_BE_StringResult->GetAny());
 			Result->SetSuccess(true);
 		}
 	}
@@ -2972,7 +2972,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 		Result->SetValue(UTF_8_StringResult->GetValue());
 		if(UTF_8_StringResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("content", UTF_8_StringResult->GetAny());
+			Result->GetValue()->PrependTag("string", UTF_8_StringResult->GetAny());
 			Result->SetSuccess(true);
 		}
 	}
@@ -2992,7 +2992,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
 		if(ISO_IEC_8859_1_1998_StringResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("content", ISO_IEC_8859_1_1998_StringResult->GetAny());
+			Result->GetValue()->PrependTag("string", ISO_IEC_8859_1_1998_StringResult->GetAny());
 			Result->SetSuccess(true);
 		}
 	}
@@ -3004,7 +3004,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 		if(UTF_16_StringResult->GetSuccess() == true)
 		{
 			Result->GetValue()->ClearTags();
-			Result->GetValue()->PrependTag("content", UTF_16_StringResult->GetAny("String"));
+			Result->GetValue()->PrependTag("string", UTF_16_StringResult->GetAny("String"));
 			Result->SetSuccess(true);
 		}
 	}
@@ -3015,7 +3015,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 		Result->SetValue(UTF_16_BE_StringResult->GetValue());
 		if(UTF_16_BE_StringResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("content", UTF_16_BE_StringResult->GetAny());
+			Result->GetValue()->PrependTag("string", UTF_16_BE_StringResult->GetAny());
 			Result->SetSuccess(true);
 		}
 	}
@@ -3026,7 +3026,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 		Result->SetValue(UTF_8_StringResult->GetValue());
 		if(UTF_8_StringResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("content", UTF_8_StringResult->GetAny());
+			Result->GetValue()->PrependTag("string", UTF_8_StringResult->GetAny());
 			Result->SetSuccess(true);
 		}
 	}
