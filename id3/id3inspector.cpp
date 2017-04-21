@@ -6825,7 +6825,7 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 				}
 				else
 				{
-					std::cout << "*** ERROR *** No handler defined for the frame type \"" << NewFrameHeader->GetIdentifier() << "\" in tag version 2." << MajorVersion << "." << std::endl;
+					std::cout << "*** ERROR *** No handler defined for the frame type \"" << NewFrameHeader->GetIdentifier() << "\" in tag version 2." << to_string_cast(MajorVersion) << "." << std::endl;
 					HandledFrameSize = NewFrameHeader->GetDataSize();
 				}
 				if(HandledFrameSize < NewFrameHeader->GetDataSize())
