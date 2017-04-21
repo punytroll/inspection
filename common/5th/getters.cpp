@@ -1774,6 +1774,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByLength
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_ByteOrderMark(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(2ull, 0) == true)
+	{
+		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 2ull)};
+		
+		Result->SetValue(BytesResult->GetValue());
+		if(BytesResult->GetSuccess() == true)
+		{
+			const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(BytesResult->GetAny())};
+			
+			if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
+			{
+				Result->GetValue()->PrependTag("interpretation", "BigEndian"s);
+				Result->SetSuccess(true);
+			}
+			else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
+			{
+				Result->GetValue()->PrependTag("interpretation", "LittleEndian"s);
+				Result->SetSuccess(true);
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByTermination(Inspection::Buffer & Buffer)
 {
 	throw NotImplementedException("Inspection::Get_UTF_8_String_EndedByTermination()");
@@ -1857,7 +1887,38 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_String_WithByteOrde
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	throw NotImplementedException("Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength()");
+	auto StartPosition{Buffer.GetPosition()};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UTF-16"s);
+	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	
+	auto ByteOrderMarkResult{Get_UTF_16_ByteOrderMark(Buffer)};
+	
+	Result->GetValue()->Append("ByteOrderMark", ByteOrderMarkResult->GetValue());
+	if(ByteOrderMarkResult->GetSuccess() == true)
+	{
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(ByteOrderMarkResult->GetValue()->GetTagAny("interpretation"))};
+		
+		if(ByteOrderMark == "BigEndian")
+		{
+			auto StringResult{Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			
+			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->SetSuccess(StringResult->GetSuccess());
+		}
+		else if(ByteOrderMark == "LittleEndian")
+		{
+			auto StringResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			
+			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->SetSuccess(StringResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
