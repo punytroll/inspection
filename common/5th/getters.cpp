@@ -829,6 +829,152 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	if(Buffer.GetPosition() < Boundary)
+	{
+		auto NumberOfCharacters{0ul};
+		auto NumberOfTerminations{0ul};
+		
+		while(true)
+		{
+			auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+			
+			if(Buffer.GetPosition() <= Boundary)
+			{
+				if(CharacterResult->GetSuccess() == true)
+				{
+					NumberOfCharacters += 1;
+					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+				}
+				else
+				{
+					auto Byte{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny("byte"))};
+					
+					if(Byte == 0x00)
+					{
+						if(NumberOfTerminations == 0)
+						{
+							Result->GetValue()->AppendTag("ended by termination"s);
+							if(NumberOfCharacters > 0)
+							{
+								Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+							}
+							else
+							{
+								Result->GetValue()->AppendTag("empty"s);
+							}
+						}
+						NumberOfTerminations += 1;
+						if(Buffer.GetPosition() == Boundary)
+						{
+							Result->GetValue()->AppendTag("until length"s);
+							Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
+							Result->SetSuccess(true);
+							
+							break;
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	if(Buffer.GetPosition() == Boundary)
+	{
+		Result->GetValue()->AppendTag("ended by length"s);
+		Result->GetValue()->AppendTag("empty"s);
+	}
+	else
+	{
+		auto NumberOfCharacters{0ul};
+		auto NumberOfTerminations{0ul};
+		
+		while(true)
+		{
+			auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+			
+			if(Buffer.GetPosition() <= Boundary)
+			{
+				if(CharacterResult->GetSuccess() == true)
+				{
+					NumberOfCharacters += 1;
+					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+					if(Buffer.GetPosition() == Boundary)
+					{
+						Result->GetValue()->AppendTag("ended by length"s);
+						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+						Result->SetSuccess(true);
+						
+						break;
+					}
+				}
+				else
+				{
+					auto Byte{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny("byte"))};
+					
+					if(Byte == 0x00)
+					{
+						if(NumberOfTerminations == 0)
+						{
+							Result->GetValue()->AppendTag("ended by termination"s);
+							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+						}
+						NumberOfTerminations += 1;
+						if(Buffer.GetPosition() == Boundary)
+						{
+							Result->GetValue()->AppendTag("ended by length"s);
+							Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
+							Result->SetSuccess(true);
+							
+							break;
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
