@@ -919,53 +919,50 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 		
 		while(true)
 		{
+			auto Position{Buffer.GetPosition()};
 			auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
 			
-			if(Buffer.GetPosition() <= Boundary)
+			if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
 			{
-				if(CharacterResult->GetSuccess() == true)
+				NumberOfCharacters += 1;
+				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+				if(Buffer.GetPosition() == Boundary)
 				{
-					NumberOfCharacters += 1;
-					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-					if(Buffer.GetPosition() == Boundary)
-					{
-						Result->GetValue()->AppendTag("ended by length"s);
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-						Result->SetSuccess(true);
-						
-						break;
-					}
-				}
-				else
-				{
-					auto Byte{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny("byte"))};
+					Result->GetValue()->AppendTag("ended by length"s);
+					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+					Result->SetSuccess(true);
 					
-					if(Byte == 0x00)
-					{
-						if(NumberOfTerminations == 0)
-						{
-							Result->GetValue()->AppendTag("ended by termination"s);
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-						}
-						NumberOfTerminations += 1;
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by length"s);
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
-							Result->SetSuccess(true);
-							
-							break;
-						}
-					}
-					else
-					{
-						break;
-					}
+					break;
 				}
 			}
 			else
 			{
+				Buffer.SetPosition(Position);
+				
 				break;
+			}
+		}
+		while(Buffer.GetPosition() < Boundary)
+		{
+			auto Position{Buffer.GetPosition()};
+			auto Byte{Buffer.Get8Bits()};
+			
+			if(Byte == 0x00)
+			{
+				if(NumberOfTerminations == 0)
+				{
+					Result->GetValue()->AppendTag("ended by termination"s);
+					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+				}
+				NumberOfTerminations += 1;
+				if(Buffer.GetPosition() == Boundary)
+				{
+					Result->GetValue()->AppendTag("ended by length"s);
+					Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
+					Result->SetSuccess(true);
+					
+					break;
+				}
 			}
 		}
 	}
