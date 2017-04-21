@@ -6787,6 +6787,9 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	auto Result{Inspection::InitializeResult(Buffer)};
 	
 	ReadID3v2Tag(Buffer);
+	
+	auto Position{Buffer.GetPosition()};
+	
 	if(Buffer.GetLength() >= Inspection::Length(128ull, 0))
 	{
 		Buffer.SetPosition(Buffer.GetLength() - Inspection::Length(128ull, -0));
@@ -6803,6 +6806,10 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			{
 				Result->GetValue()->Append("ID3v1", ID3v1TagResult->GetValue());
 			}
+		}
+		else
+		{
+			Buffer.SetPosition(Position);
 		}
 	}
 	Result->SetSuccess(true);
