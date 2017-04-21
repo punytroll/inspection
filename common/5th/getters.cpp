@@ -990,12 +990,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			
 			if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
 			{
-				Result->GetValue()->AppendTag("interpretation", "BigEndian"s);
+				Result->GetValue()->PrependTag("interpretation", "BigEndian"s);
 				Result->SetSuccess(true);
 			}
 			else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
 			{
-				Result->GetValue()->AppendTag("interpretation", "LittleEndian"s);
+				Result->GetValue()->PrependTag("interpretation", "LittleEndian"s);
 				Result->SetSuccess(true);
 			}
 		}
