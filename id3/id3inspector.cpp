@@ -2944,7 +2944,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 	}
 	else if(TextEncoding == 0x01)
 	{
-		auto UTF_16_StringResult{Get_UTF_16_String_WithByteOrderMark_EndedByTermination(Buffer)};
+		auto UTF_16_StringResult{Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTermination(Buffer)};
 		
 		Result->SetValue(UTF_16_StringResult->GetValue());
 		if(UTF_16_StringResult->GetSuccess() == true)
@@ -2956,7 +2956,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 	}
 	else if(TextEncoding == 0x02)
 	{
-		auto UTF_16_BE_StringResult{Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Buffer)};
+		auto UTF_16_BE_StringResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Buffer)};
 		
 		Result->SetValue(UTF_16_BE_StringResult->GetValue());
 		if(UTF_16_BE_StringResult->GetSuccess() == true)
@@ -2967,7 +2967,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 	}
 	else if(TextEncoding == 0x03)
 	{
-		auto UTF_8_StringResult{Get_UTF_8_String_EndedByTermination(Buffer)};
+		auto UTF_8_StringResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Buffer)};
 		
 		Result->SetValue(UTF_8_StringResult->GetValue());
 		if(UTF_8_StringResult->GetSuccess() == true)
@@ -2998,7 +2998,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 	}
 	else if(TextEncoding == 0x01)
 	{
-		auto UTF_16_StringResult{Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
+		auto UTF_16_StringResult{Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
 		
 		Result->SetValue(UTF_16_StringResult->GetValue());
 		if(UTF_16_StringResult->GetSuccess() == true)
@@ -3010,7 +3010,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 	}
 	else if(TextEncoding == 0x02)
 	{
-		auto UTF_16_BE_StringResult{Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
+		auto UTF_16_BE_StringResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
 		
 		Result->SetValue(UTF_16_BE_StringResult->GetValue());
 		if(UTF_16_BE_StringResult->GetSuccess() == true)
@@ -3021,7 +3021,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 	}
 	else if(TextEncoding == 0x03)
 	{
-		auto UTF_8_StringResult{Get_UTF_8_String_EndedByTerminationOrLength(Buffer, Length)};
+		auto UTF_8_StringResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Buffer, Length)};
 		
 		Result->SetValue(UTF_8_StringResult->GetValue());
 		if(UTF_8_StringResult->GetSuccess() == true)

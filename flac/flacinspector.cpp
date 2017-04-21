@@ -319,7 +319,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buf
 				if(DescriptionLengthResult->GetSuccess() == true)
 				{
 					auto DescriptionLength{std::experimental::any_cast< std::uint32_t >(DescriptionLengthResult->GetAny())};
-					auto DescriptionResult{Get_UTF_8_String_EndedByLength(Buffer, DescriptionLength)};
+					auto DescriptionResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, DescriptionLength)};
 					
 					Result->GetValue()->Append("Description", DescriptionResult->GetValue());
 					if(DescriptionResult->GetSuccess() == true)

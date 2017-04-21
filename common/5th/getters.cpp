@@ -699,7 +699,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Charac
 		Result->GetValue()->Append("byte", Character);
 		if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
 		{
-			Result->GetValue()->SetAny(Get_UTF_8_Character_FromUnicodeCodePoint(Character));
+			Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character));
 			Result->SetSuccess(true);
 		}
 	}
@@ -1003,7 +1003,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	if(CodePointResult->GetSuccess() == true)
 	{
 		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
-		Result->GetValue()->SetAny(Get_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
+		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1142,6 +1142,661 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			Result->SetSuccess(StringResult->GetSuccess());
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto CodePointResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Buffer)};
+	
+	Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+	if(CodePointResult->GetSuccess() == true)
+	{
+		auto CodePoint{std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())};
+		
+		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(1ull, 0) == true)
+	{
+		auto First{Buffer.Get8Bits()};
+		
+		if((First & 0x80) == 0x00)
+		{
+			Result->GetValue()->SetAny(static_cast< std::uint32_t >(First));
+			Result->SetSuccess(true);
+		}
+		else if((First & 0xe0) == 0xc0)
+		{
+			if(Buffer.Has(1ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				
+				if((Second & 0xc0) == 0x80)
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x1f) << 6) | static_cast< std::uint32_t >(Second & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xf0) == 0xe0)
+		{
+			if(Buffer.Has(2ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x0f) << 12)| static_cast< std::uint32_t >((Second & 0x3f) << 6) | static_cast< std::uint32_t >(Third & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xf8) == 0xf0)
+		{
+			if(Buffer.Has(3ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x07) << 18)| static_cast< std::uint32_t >((Second & 0x3f) << 12) | static_cast< std::uint32_t >((Third & 0x3f) << 6) | static_cast< std::uint32_t >(Fourth & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(Length) == true)
+	{
+		Result->GetValue()->AppendTag("string"s);
+		Result->GetValue()->AppendTag("UTF-8"s);
+		
+		auto Boundary{Buffer.GetPosition() + Length};
+		auto NumberOfCharacters{0ul};
+		std::string String;
+		
+		while(Buffer.GetPosition() < Boundary)
+		{
+			auto Character{Get_ISO_IEC_10646_1_1993_UTF_8_Character(Buffer)};
+			
+			if(Character->GetSuccess() == true)
+			{
+				NumberOfCharacters += 1;
+				String += std::experimental::any_cast< std::string >(Character->GetAny());
+			}
+			else
+			{
+				break;
+			}
+		}
+		Result->GetValue()->SetAny(String);
+		if(Buffer.GetPosition() == Boundary)
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
+			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(2ull, 0) == true)
+	{
+		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 2ull)};
+		
+		Result->SetValue(BytesResult->GetValue());
+		if(BytesResult->GetSuccess() == true)
+		{
+			const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(BytesResult->GetAny())};
+			
+			if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
+			{
+				Result->GetValue()->PrependTag("interpretation", "BigEndian"s);
+				Result->SetSuccess(true);
+			}
+			else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
+			{
+				Result->GetValue()->PrependTag("interpretation", "LittleEndian"s);
+				Result->SetSuccess(true);
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UTF-8"s);
+	if(Buffer.GetPosition() == Boundary)
+	{
+		Result->GetValue()->AppendTag("ended by length"s);
+		Result->GetValue()->AppendTag("empty"s);
+	}
+	else
+	{
+		auto NumberOfCharacters{0ul};
+		
+		while(true)
+		{
+			auto CharacterResult{Get_ISO_IEC_10646_1_1993_UTF_8_Character(Buffer)};
+			
+			if(Buffer.GetPosition() <= Boundary)
+			{
+				if(CharacterResult->GetSuccess() == true)
+				{
+					auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+					
+					if(CodePoint == 0x00000000)
+					{
+						if(Buffer.GetPosition() == Boundary)
+						{
+							Result->GetValue()->AppendTag("ended by termination and boundary"s);
+						}
+						else
+						{
+							Result->GetValue()->AppendTag("ended by termination"s);
+						}
+						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+						Result->SetSuccess(true);
+					}
+					else
+					{
+						NumberOfCharacters += 1;
+						Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+						if(Buffer.GetPosition() == Boundary)
+						{
+							Result->GetValue()->AppendTag("ended by boundary"s);
+							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+							Result->SetSuccess(true);
+							
+							break;
+						}
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTermination()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto StartPosition{Buffer.GetPosition()};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UTF-16"s);
+	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	
+	auto ByteOrderMarkResult{Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(Buffer)};
+	
+	Result->GetValue()->Append("ByteOrderMark", ByteOrderMarkResult->GetValue());
+	if(ByteOrderMarkResult->GetSuccess() == true)
+	{
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(ByteOrderMarkResult->GetValue()->GetTagAny("interpretation"))};
+		
+		if(ByteOrderMark == "BigEndian")
+		{
+			auto StringResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			
+			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->SetSuccess(StringResult->GetSuccess());
+		}
+		else if(ByteOrderMark == "LittleEndian")
+		{
+			auto StringResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			
+			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->SetSuccess(StringResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_Character(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto CodePointResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Buffer)};
+	
+	if(CodePointResult->GetSuccess() == true)
+	{
+		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FirstCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Buffer)};
+	
+	if(FirstCodeUnitResult->GetSuccess() == true)
+	{
+		auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetAny())};
+		
+		if((FirstCodeUnit < 0xd800) || (FirstCodeUnit >= 0xe000))
+		{
+			std::uint32_t Value{FirstCodeUnit};
+			
+			Result->GetValue()->SetAny(Value);
+			Result->SetSuccess(true);
+		}
+		else if((FirstCodeUnit >= 0xd800) && (FirstCodeUnit < 0xdc00))
+		{
+			auto SecondCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Buffer)};
+			
+			if(SecondCodeUnitResult->GetSuccess() == true)
+			{
+				auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetAny())};
+				
+				if((SecondCodeUnit >= 0xdc00) && (SecondCodeUnit < 0xe000))
+				{
+					std::uint32_t Value{(static_cast< std::uint32_t >(FirstCodeUnit - 0xd800) << 10) | static_cast< std::uint32_t >(SecondCodeUnit - 0xdc00)};
+					
+					Result->GetValue()->SetAny(Value);
+					Result->SetSuccess(true);
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(2ull, 0) == true)
+	{
+		auto First{Buffer.Get8Bits()};
+		auto Second{Buffer.Get8Bits()};
+		
+		Result->GetValue()->SetAny(static_cast< std::uint16_t >(static_cast< std::uint16_t >(First << 8) | static_cast< std::uint16_t >(Second)));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	assert(Length.GetBytes() % 2 == 0);
+	assert(Length.GetBits() == 0);
+	
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	auto NumberOfCodePoints{0ul};
+	
+	Result->GetValue()->AppendTag("UTF16"s);
+	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AppendTag("without byte order mark"s);
+	if(Buffer.GetPosition() == Boundary)
+	{
+		Result->GetValue()->AppendTag("ended by boundary"s);
+		Result->GetValue()->AppendTag("empty"s);
+		Result->SetSuccess(true);
+	}
+	else
+	{
+		while(Buffer.GetPosition() < Boundary)
+		{
+			auto CharacterResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_Character(Buffer)};
+			
+			if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
+			{
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+				
+				if(CodePoint == 0x00000000)
+				{
+					if(Buffer.GetPosition() == Boundary)
+					{
+						Result->GetValue()->AppendTag("ended by termination and boundary"s);
+					}
+					else
+					{
+						Result->GetValue()->AppendTag("ended by termination"s);
+					}
+					Result->SetSuccess(true);
+					
+					break;
+				}
+				else
+				{
+					NumberOfCodePoints += 1;
+					if(Buffer.GetPosition() == Boundary)
+					{
+						Result->GetValue()->AppendTag("ended by boundary"s);
+						Result->SetSuccess(true);
+					}
+					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_Character(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto CodePointResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Buffer)};
+	
+	if(CodePointResult->GetSuccess() == true)
+	{
+		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FirstCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Buffer)};
+	
+	if(FirstCodeUnitResult->GetSuccess() == true)
+	{
+		auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetAny())};
+		
+		if((FirstCodeUnit < 0xd800) || (FirstCodeUnit >= 0xe000))
+		{
+			std::uint32_t Value{FirstCodeUnit};
+			
+			Result->GetValue()->SetAny(Value);
+			Result->SetSuccess(true);
+		}
+		else if((FirstCodeUnit >= 0xd800) && (FirstCodeUnit < 0xdc00))
+		{
+			auto SecondCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Buffer)};
+			
+			if(SecondCodeUnitResult->GetSuccess() == true)
+			{
+				auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetAny())};
+				
+				if((SecondCodeUnit >= 0xdc00) && (SecondCodeUnit < 0xe000))
+				{
+					std::uint32_t Value{(static_cast< std::uint32_t >(FirstCodeUnit - 0xd800) << 10) | static_cast< std::uint32_t >(SecondCodeUnit - 0xdc00)};
+					
+					Result->GetValue()->SetAny(Value);
+					Result->SetSuccess(true);
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(2ull, 0) == true)
+	{
+		auto First{Buffer.Get8Bits()};
+		auto Second{Buffer.Get8Bits()};
+		
+		Result->GetValue()->SetAny(static_cast< std::uint16_t >(static_cast< std::uint16_t >(First) | (static_cast< std::uint16_t >(Second) << 8)));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	assert(Length.GetBytes() % 2 == 0);
+	assert(Length.GetBits() == 0);
+	
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	Result->GetValue()->AppendTag("UTF16"s);
+	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AppendTag("without byte order mark"s);
+	
+	auto NumberOfCodePoints{0ul};
+	
+	while(Buffer.GetPosition() < Boundary)
+	{
+		auto CharacterResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_Character(Buffer)};
+		
+		if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
+		{
+			auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+			
+			if(CodePoint == 0x00000000)
+			{
+				if(Buffer.GetPosition() == Boundary)
+				{
+					Result->GetValue()->AppendTag("ended by termination and boundary"s);
+					if(NumberOfCodePoints == 0)
+					{
+						Result->GetValue()->AppendTag("empty"s);
+					}
+					Result->SetSuccess(true);
+				}
+				else
+				{
+					Result->GetValue()->AppendTag("ended by termination"s);
+					
+					break;
+				}
+			}
+			else
+			{
+				NumberOfCodePoints += 1;
+				if(Buffer.GetPosition() == Boundary)
+				{
+					Result->GetValue()->AppendTag("ended by boundary"s);
+				}
+				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	assert(Length.GetBytes() % 2 == 0);
+	assert(Length.GetBits() == 0);
+	
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	auto NumberOfCodePoints{0ul};
+	
+	Result->GetValue()->AppendTag("UTF16"s);
+	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AppendTag("without byte order mark"s);
+	if(Buffer.GetPosition() == Boundary)
+	{
+		Result->GetValue()->AppendTag("ended by boundary"s);
+		Result->GetValue()->AppendTag("empty"s);
+		Result->SetSuccess(true);
+	}
+	else
+	{
+		while(Buffer.GetPosition() < Boundary)
+		{
+			auto CharacterResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_Character(Buffer)};
+			
+			if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
+			{
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+				
+				if(CodePoint == 0x00000000)
+				{
+					if(Buffer.GetPosition() == Boundary)
+					{
+						Result->GetValue()->AppendTag("ended by termination and boundary"s);
+					}
+					else
+					{
+						Result->GetValue()->AppendTag("ended by termination"s);
+					}
+					Result->SetSuccess(true);
+					
+					break;
+				}
+				else
+				{
+					NumberOfCodePoints += 1;
+					if(Buffer.GetPosition() == Boundary)
+					{
+						Result->GetValue()->AppendTag("ended by boundary"s);
+						Result->SetSuccess(true);
+					}
+					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	std::uint64_t CodePointIndex{0ull};
+	
+	Result->GetValue()->AppendTag("UTF16"s);
+	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AppendTag("without byte order mark"s);
+	while(true)
+	{
+		auto CharacterResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_Character(Buffer)};
+		
+		if(CharacterResult->GetSuccess() == true)
+		{
+			++CodePointIndex;
+			if(std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint")) == 0x00000000)
+			{
+				if(CodePointIndex == NumberOfCodePoints)
+				{
+					Result->GetValue()->AppendTag("ended by termination and number of code points"s);
+					Result->SetSuccess(true);
+				}
+				
+				break;
+			}
+			else
+			{
+				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
+	Result->GetValue()->SetAny(Value.str());
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1655,661 +2310,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_Character(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto CodePointResult{Get_UTF_8_CodePoint(Buffer)};
-	
-	Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
-	if(CodePointResult->GetSuccess() == true)
-	{
-		auto CodePoint{std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())};
-		
-		Result->GetValue()->SetAny(Get_UTF_8_Character_FromUnicodeCodePoint(CodePoint));
-		Result->SetSuccess(true);
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_CodePoint(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	if(Buffer.Has(1ull, 0) == true)
-	{
-		auto First{Buffer.Get8Bits()};
-		
-		if((First & 0x80) == 0x00)
-		{
-			Result->GetValue()->SetAny(static_cast< std::uint32_t >(First));
-			Result->SetSuccess(true);
-		}
-		else if((First & 0xe0) == 0xc0)
-		{
-			if(Buffer.Has(1ull, 0) == true)
-			{
-				auto Second{Buffer.Get8Bits()};
-				
-				if((Second & 0xc0) == 0x80)
-				{
-					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x1f) << 6) | static_cast< std::uint32_t >(Second & 0x3f));
-					Result->SetSuccess(true);
-				}
-			}
-		}
-		else if((First & 0xf0) == 0xe0)
-		{
-			if(Buffer.Has(2ull, 0) == true)
-			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x0f) << 12)| static_cast< std::uint32_t >((Second & 0x3f) << 6) | static_cast< std::uint32_t >(Third & 0x3f));
-					Result->SetSuccess(true);
-				}
-			}
-		}
-		else if((First & 0xf8) == 0xf0)
-		{
-			if(Buffer.Has(3ull, 0) == true)
-			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				auto Fourth{Buffer.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x07) << 18)| static_cast< std::uint32_t >((Second & 0x3f) << 12) | static_cast< std::uint32_t >((Third & 0x3f) << 6) | static_cast< std::uint32_t >(Fourth & 0x3f));
-					Result->SetSuccess(true);
-				}
-			}
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	if(Buffer.Has(Length) == true)
-	{
-		Result->GetValue()->AppendTag("string"s);
-		Result->GetValue()->AppendTag("UTF-8"s);
-		
-		auto Boundary{Buffer.GetPosition() + Length};
-		auto NumberOfCharacters{0ul};
-		std::string String;
-		
-		while(Buffer.GetPosition() < Boundary)
-		{
-			auto Character{Get_UTF_8_Character(Buffer)};
-			
-			if(Character->GetSuccess() == true)
-			{
-				NumberOfCharacters += 1;
-				String += std::experimental::any_cast< std::string >(Character->GetAny());
-			}
-			else
-			{
-				break;
-			}
-		}
-		Result->GetValue()->SetAny(String);
-		if(Buffer.GetPosition() == Boundary)
-		{
-			Result->GetValue()->AppendTag("ended by length"s);
-			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
-			Result->SetSuccess(true);
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_ByteOrderMark(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	if(Buffer.Has(2ull, 0) == true)
-	{
-		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 2ull)};
-		
-		Result->SetValue(BytesResult->GetValue());
-		if(BytesResult->GetSuccess() == true)
-		{
-			const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(BytesResult->GetAny())};
-			
-			if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
-			{
-				Result->GetValue()->PrependTag("interpretation", "BigEndian"s);
-				Result->SetSuccess(true);
-			}
-			else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
-			{
-				Result->GetValue()->PrependTag("interpretation", "LittleEndian"s);
-				Result->SetSuccess(true);
-			}
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByTermination(Inspection::Buffer & Buffer)
-{
-	throw NotImplementedException("Inspection::Get_UTF_8_String_EndedByTermination()");
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
-{
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
-	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UTF-8"s);
-	if(Buffer.GetPosition() == Boundary)
-	{
-		Result->GetValue()->AppendTag("ended by length"s);
-		Result->GetValue()->AppendTag("empty"s);
-	}
-	else
-	{
-		auto NumberOfCharacters{0ul};
-		
-		while(true)
-		{
-			auto CharacterResult{Get_UTF_8_Character(Buffer)};
-			
-			if(Buffer.GetPosition() <= Boundary)
-			{
-				if(CharacterResult->GetSuccess() == true)
-				{
-					auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
-					
-					if(CodePoint == 0x00000000)
-					{
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by termination and boundary"s);
-						}
-						else
-						{
-							Result->GetValue()->AppendTag("ended by termination"s);
-						}
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-						Result->SetSuccess(true);
-					}
-					else
-					{
-						NumberOfCharacters += 1;
-						Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by boundary"s);
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-							Result->SetSuccess(true);
-							
-							break;
-						}
-					}
-				}
-				else
-				{
-					break;
-				}
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
-{
-	throw NotImplementedException("Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTermination()");
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
-{
-	auto StartPosition{Buffer.GetPosition()};
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UTF-16"s);
-	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
-	
-	auto ByteOrderMarkResult{Get_UTF_16_ByteOrderMark(Buffer)};
-	
-	Result->GetValue()->Append("ByteOrderMark", ByteOrderMarkResult->GetValue());
-	if(ByteOrderMarkResult->GetSuccess() == true)
-	{
-		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(ByteOrderMarkResult->GetValue()->GetTagAny("interpretation"))};
-		
-		if(ByteOrderMark == "BigEndian")
-		{
-			auto StringResult{Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
-			
-			Result->GetValue()->Append("String", StringResult->GetValue());
-			Result->SetSuccess(StringResult->GetSuccess());
-		}
-		else if(ByteOrderMark == "LittleEndian")
-		{
-			auto StringResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
-			
-			Result->GetValue()->Append("String", StringResult->GetValue());
-			Result->SetSuccess(StringResult->GetSuccess());
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_Character(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto CodePointResult{Get_UTF_16BE_CodePoint(Buffer)};
-	
-	if(CodePointResult->GetSuccess() == true)
-	{
-		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
-		Result->GetValue()->SetAny(Get_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
-		Result->SetSuccess(true);
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_CodePoint(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FirstCodeUnitResult{Get_UTF_16BE_CodeUnit(Buffer)};
-	
-	if(FirstCodeUnitResult->GetSuccess() == true)
-	{
-		auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetAny())};
-		
-		if((FirstCodeUnit < 0xd800) || (FirstCodeUnit >= 0xe000))
-		{
-			std::uint32_t Value{FirstCodeUnit};
-			
-			Result->GetValue()->SetAny(Value);
-			Result->SetSuccess(true);
-		}
-		else if((FirstCodeUnit >= 0xd800) && (FirstCodeUnit < 0xdc00))
-		{
-			auto SecondCodeUnitResult{Get_UTF_16BE_CodeUnit(Buffer)};
-			
-			if(SecondCodeUnitResult->GetSuccess() == true)
-			{
-				auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetAny())};
-				
-				if((SecondCodeUnit >= 0xdc00) && (SecondCodeUnit < 0xe000))
-				{
-					std::uint32_t Value{(static_cast< std::uint32_t >(FirstCodeUnit - 0xd800) << 10) | static_cast< std::uint32_t >(SecondCodeUnit - 0xdc00)};
-					
-					Result->GetValue()->SetAny(Value);
-					Result->SetSuccess(true);
-				}
-			}
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_CodeUnit(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	if(Buffer.Has(2ull, 0) == true)
-	{
-		auto First{Buffer.Get8Bits()};
-		auto Second{Buffer.Get8Bits()};
-		
-		Result->GetValue()->SetAny(static_cast< std::uint16_t >(static_cast< std::uint16_t >(First << 8) | static_cast< std::uint16_t >(Second)));
-		Result->SetSuccess(true);
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
-{
-	throw NotImplementedException("Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination()");
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
-{
-	assert(Length.GetBytes() % 2 == 0);
-	assert(Length.GetBits() == 0);
-	
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
-	auto NumberOfCodePoints{0ul};
-	
-	Result->GetValue()->AppendTag("UTF16"s);
-	Result->GetValue()->AppendTag("big endian"s);
-	Result->GetValue()->AppendTag("without byte order mark"s);
-	if(Buffer.GetPosition() == Boundary)
-	{
-		Result->GetValue()->AppendTag("ended by boundary"s);
-		Result->GetValue()->AppendTag("empty"s);
-		Result->SetSuccess(true);
-	}
-	else
-	{
-		while(Buffer.GetPosition() < Boundary)
-		{
-			auto CharacterResult{Get_UTF_16BE_Character(Buffer)};
-			
-			if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
-			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
-				
-				if(CodePoint == 0x00000000)
-				{
-					if(Buffer.GetPosition() == Boundary)
-					{
-						Result->GetValue()->AppendTag("ended by termination and boundary"s);
-					}
-					else
-					{
-						Result->GetValue()->AppendTag("ended by termination"s);
-					}
-					Result->SetSuccess(true);
-					
-					break;
-				}
-				else
-				{
-					NumberOfCodePoints += 1;
-					if(Buffer.GetPosition() == Boundary)
-					{
-						Result->GetValue()->AppendTag("ended by boundary"s);
-						Result->SetSuccess(true);
-					}
-					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-				}
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_Character(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto CodePointResult{Get_UTF_16LE_CodePoint(Buffer)};
-	
-	if(CodePointResult->GetSuccess() == true)
-	{
-		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
-		Result->GetValue()->SetAny(Get_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
-		Result->SetSuccess(true);
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_CodePoint(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FirstCodeUnitResult{Get_UTF_16LE_CodeUnit(Buffer)};
-	
-	if(FirstCodeUnitResult->GetSuccess() == true)
-	{
-		auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetAny())};
-		
-		if((FirstCodeUnit < 0xd800) || (FirstCodeUnit >= 0xe000))
-		{
-			std::uint32_t Value{FirstCodeUnit};
-			
-			Result->GetValue()->SetAny(Value);
-			Result->SetSuccess(true);
-		}
-		else if((FirstCodeUnit >= 0xd800) && (FirstCodeUnit < 0xdc00))
-		{
-			auto SecondCodeUnitResult{Get_UTF_16LE_CodeUnit(Buffer)};
-			
-			if(SecondCodeUnitResult->GetSuccess() == true)
-			{
-				auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetAny())};
-				
-				if((SecondCodeUnit >= 0xdc00) && (SecondCodeUnit < 0xe000))
-				{
-					std::uint32_t Value{(static_cast< std::uint32_t >(FirstCodeUnit - 0xd800) << 10) | static_cast< std::uint32_t >(SecondCodeUnit - 0xdc00)};
-					
-					Result->GetValue()->SetAny(Value);
-					Result->SetSuccess(true);
-				}
-			}
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_CodeUnit(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	if(Buffer.Has(2ull, 0) == true)
-	{
-		auto First{Buffer.Get8Bits()};
-		auto Second{Buffer.Get8Bits()};
-		
-		Result->GetValue()->SetAny(static_cast< std::uint16_t >(static_cast< std::uint16_t >(First) | (static_cast< std::uint16_t >(Second) << 8)));
-		Result->SetSuccess(true);
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
-{
-	assert(Length.GetBytes() % 2 == 0);
-	assert(Length.GetBits() == 0);
-	
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
-	
-	Result->GetValue()->AppendTag("UTF16"s);
-	Result->GetValue()->AppendTag("little endian"s);
-	Result->GetValue()->AppendTag("without byte order mark"s);
-	
-	auto NumberOfCodePoints{0ul};
-	
-	while(Buffer.GetPosition() < Boundary)
-	{
-		auto CharacterResult{Get_UTF_16LE_Character(Buffer)};
-		
-		if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
-		{
-			auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
-			
-			if(CodePoint == 0x00000000)
-			{
-				if(Buffer.GetPosition() == Boundary)
-				{
-					Result->GetValue()->AppendTag("ended by termination and boundary"s);
-					if(NumberOfCodePoints == 0)
-					{
-						Result->GetValue()->AppendTag("empty"s);
-					}
-					Result->SetSuccess(true);
-				}
-				else
-				{
-					Result->GetValue()->AppendTag("ended by termination"s);
-					
-					break;
-				}
-			}
-			else
-			{
-				NumberOfCodePoints += 1;
-				if(Buffer.GetPosition() == Boundary)
-				{
-					Result->GetValue()->AppendTag("ended by boundary"s);
-				}
-				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
-	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
-{
-	assert(Length.GetBytes() % 2 == 0);
-	assert(Length.GetBits() == 0);
-	
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
-	auto NumberOfCodePoints{0ul};
-	
-	Result->GetValue()->AppendTag("UTF16"s);
-	Result->GetValue()->AppendTag("little endian"s);
-	Result->GetValue()->AppendTag("without byte order mark"s);
-	if(Buffer.GetPosition() == Boundary)
-	{
-		Result->GetValue()->AppendTag("ended by boundary"s);
-		Result->GetValue()->AppendTag("empty"s);
-		Result->SetSuccess(true);
-	}
-	else
-	{
-		while(Buffer.GetPosition() < Boundary)
-		{
-			auto CharacterResult{Get_UTF_16LE_Character(Buffer)};
-			
-			if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
-			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
-				
-				if(CodePoint == 0x00000000)
-				{
-					if(Buffer.GetPosition() == Boundary)
-					{
-						Result->GetValue()->AppendTag("ended by termination and boundary"s);
-					}
-					else
-					{
-						Result->GetValue()->AppendTag("ended by termination"s);
-					}
-					Result->SetSuccess(true);
-					
-					break;
-				}
-				else
-				{
-					NumberOfCodePoints += 1;
-					if(Buffer.GetPosition() == Boundary)
-					{
-						Result->GetValue()->AppendTag("ended by boundary"s);
-						Result->SetSuccess(true);
-					}
-					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-				}
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Buffer & Buffer, std::uint64_t NumberOfCodePoints)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
-	std::uint64_t CodePointIndex{0ull};
-	
-	Result->GetValue()->AppendTag("UTF16"s);
-	Result->GetValue()->AppendTag("little endian"s);
-	Result->GetValue()->AppendTag("without byte order mark"s);
-	while(true)
-	{
-		auto CharacterResult{Get_UTF_16LE_Character(Buffer)};
-		
-		if(CharacterResult->GetSuccess() == true)
-		{
-			++CodePointIndex;
-			if(std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint")) == 0x00000000)
-			{
-				if(CodePointIndex == NumberOfCodePoints)
-				{
-					Result->GetValue()->AppendTag("ended by termination and number of code points"s);
-					Result->SetSuccess(true);
-				}
-				
-				break;
-			}
-			else
-			{
-				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
-	Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer)
 {
 	assert(Buffer.GetBitstreamType() == Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
@@ -2343,7 +2343,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	if(UserCommentLengthResult->GetSuccess() == true)
 	{
 		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
-		auto UserCommentResult{Get_UTF_8_String_EndedByLength(Buffer, UserCommentLength)};
+		auto UserCommentResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, UserCommentLength)};
 		
 		Result->GetValue()->Append("String", UserCommentResult->GetValue());
 		if(UserCommentResult->GetSuccess() == true)
@@ -2395,7 +2395,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	if(VendorLengthResult->GetSuccess() == true)
 	{
 		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
-		auto VendorResult{Get_UTF_8_String_EndedByLength(Buffer, VendorLength)};
+		auto VendorResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, VendorLength)};
 		
 		Result->GetValue()->Append("Vendor", VendorResult->GetValue());
 		if(VendorResult->GetSuccess() == true)
