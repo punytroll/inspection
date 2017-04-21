@@ -1773,6 +1773,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByLength
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	throw NotImplementedException("Inspection::Get_UTF_8_String_EndedByTermination()");
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
@@ -1844,14 +1849,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UTF_8_String_EndedByTermin
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	throw NotImplementedException("Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTermination()");
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	throw new NotImplementedException("Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength()");
+	throw NotImplementedException("Inspection::Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	throw NotImplementedException("Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination()");
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	throw new NotImplementedException("Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength()");
+	throw NotImplementedException("Inspection::Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength()");
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UTF_16LE_Character(Inspection::Buffer & Buffer)

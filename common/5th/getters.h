@@ -64,8 +64,11 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UTF_8_Character(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF_8_CodePoint(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF_8_String_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+	std::unique_ptr< Inspection::Result > Get_UTF_8_String_EndedByTermination(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF_8_String_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+	std::unique_ptr< Inspection::Result > Get_UTF_16_String_WithByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+	std::unique_ptr< Inspection::Result > Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_UTF_16LE_Character(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UTF_16LE_CodePoint(Inspection::Buffer & Buffer);
