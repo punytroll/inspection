@@ -2207,6 +2207,7 @@ std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
@@ -2223,6 +2224,99 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader_Flags(Inspection::Buffer & Buffer, std::uint8_t MajorVersion);
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Inspection::Buffer & Buffer);
+
+std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TagIdentifierResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "TAG")};
+	
+	Result->GetValue()->Append("Identifier", TagIdentifierResult->GetValue());
+	if(TagIdentifierResult->GetSuccess() == true)
+	{
+		auto TitelResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+		
+		Result->GetValue()->Append("Title", TitelResult->GetValue());
+		if(TitelResult->GetSuccess() == true)
+		{
+			auto ArtistResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+			
+			Result->GetValue()->Append("Artist", ArtistResult->GetValue());
+			if(ArtistResult->GetSuccess() == true)
+			{
+				auto AlbumResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+				
+				Result->GetValue()->Append("Album", AlbumResult->GetValue());
+				if(AlbumResult->GetSuccess() == true)
+				{
+					auto YearResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(4ull, 0))};
+					
+					Result->GetValue()->Append("Year", YearResult->GetValue());
+					if(YearResult->GetSuccess() == true)
+					{
+						auto StartOfComment{Buffer.GetPosition()};
+						auto CommentResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+						auto Continue{false};
+						
+						if(CommentResult->GetSuccess() == true)
+						{
+							Result->GetValue()->Append("Comment", CommentResult->GetValue());
+							Continue = true;
+						}
+						else
+						{
+							Buffer.SetPosition(StartOfComment);
+							CommentResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Buffer, Inspection::Length(29ull, 0));
+							Result->GetValue()->Append("Comment", CommentResult->GetValue());
+							if(CommentResult->GetSuccess() == true)
+							{
+								auto AlbumTrackResult{Get_UnsignedInteger_8Bit(Buffer)};
+								
+								Result->GetValue()->Append("AlbumTrack", AlbumTrackResult->GetValue());
+								Continue = AlbumTrackResult->GetSuccess();
+							}
+						}
+						if(Continue == true)
+						{
+							auto GenreResult{Get_UnsignedInteger_8Bit(Buffer)};
+							
+							Result->GetValue()->Append("Genre", GenreResult->GetValue());
+							if(GenreResult->GetSuccess() == true)
+							{
+								Result->SetSuccess(true);
+								
+								auto Genre{std::experimental::any_cast< std::uint8_t >(GenreResult->GetAny())};
+								auto NumericGenreIterator(g_NumericGenresID3_1.find(Genre));
+								
+								if(NumericGenreIterator != g_NumericGenresID3_1.end())
+								{
+									Result->GetValue("Genre")->PrependTag("interpretation", NumericGenreIterator->second);
+									Result->GetValue("Genre")->PrependTag("standard", "ID3v1"s);
+								}
+								else
+								{
+									NumericGenreIterator = g_NumericGenresWinamp.find(Genre);
+									if(NumericGenreIterator != g_NumericGenresWinamp.end())
+									{
+										Result->GetValue("Genre")->PrependTag("interpretation", NumericGenreIterator->second);
+										Result->GetValue("Genre")->PrependTag("standard", "Winamp extension"s);
+									}
+									else
+									{
+										Result->GetValue("Genre")->PrependTag("interpretation", "<unrecognized>");
+									}
+								}
+							}
+						}
+						Result->SetSuccess(true);
+					}
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
 
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buffer & Buffer)
 {
@@ -6552,11 +6646,8 @@ std::uint64_t Handle24WXXXFrame(const uint8_t * Buffer, std::uint64_t Length)
 // application                                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 void ReadID3v2Tag(Inspection::Buffer & Buffer)
 {
-	Buffer.SetPosition(Inspection::Length(0ull, 0));
-	
 	auto TagHeaderResult{Get_ID3_2_TagHeader(Buffer)};
 	
 	if(TagHeaderResult->GetSuccess() == true)
@@ -6691,187 +6782,29 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 	}
 }
 
-void ReadFile(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	ReadID3v2Tag(Buffer);
 	if(Buffer.GetLength() >= Inspection::Length(128ull, 0))
 	{
 		Buffer.SetPosition(Buffer.GetLength() - Inspection::Length(128ull, -0));
 		
-		int u4Track = 0;
-		bool bID3v11 = false;
+		auto ID3v1TagResult{Get_ID3_1_Tag(Buffer)};
 		
-		auto RawBuffer{Buffer.GetDataAtPosition()};
-		
-		if((RawBuffer[0] == 'T') && (RawBuffer[1] == 'A') && (RawBuffer[2] == 'G'))
+		if(ID3v1TagResult->GetSuccess() == true)
 		{
-			std::cout << "ID3v1 TAG:" << std::endl;
-			RawBuffer += 3;
-			
-			auto Title(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
-			
-			if(std::get<0>(Title) == true)
+			if(ID3v1TagResult->GetValue()->HasValue("AlbumTrack") == true)
 			{
-				std::cout << "\tTitle:\t \"" << std::get<2>(Title) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Title) - 1 << " of 30)" << std::endl;
+				Result->GetValue()->Append("ID3v1.1", ID3v1TagResult->GetValue());
 			}
 			else
 			{
-				auto Title(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 30));
-				
-				if(std::get<0>(Title) == true)
-				{
-					std::cout << "\tTitle:\t \"" << std::get<2>(Title) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Title) << " of 30)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The 'Title' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
-					
-					auto Title = GetHexadecimalStringTerminatedByLength(RawBuffer, 30);
-					
-					std::cout << "*** Binary content: " << Title.second << std::endl;
-				}
-			}
-			RawBuffer += 30;
-			
-			auto Artist(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
-			
-			if(std::get<0>(Artist) == true)
-			{
-				std::cout << "\tArtist:\t \"" << std::get<2>(Artist) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Artist) - 1 << " of 30)" << std::endl;
-			}
-			else
-			{
-				auto Artist(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 30));
-				
-				if(std::get<0>(Artist) == true)
-				{
-					std::cout << "\tArtist:\t \"" << std::get<2>(Artist) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Artist) << " of 30)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The 'Artist' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
-					
-					auto Artist = GetHexadecimalStringTerminatedByLength(RawBuffer, 30);
-					
-					std::cout << "*** Binary content: " << Artist.second << std::endl;
-				}
-			}
-			RawBuffer += 30;
-			
-			auto Album(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
-			
-			if(std::get<0>(Album) == true)
-			{
-				std::cout << "\tAlbum:\t \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Album) - 1 << " of 30)" << std::endl;
-			}
-			else
-			{
-				auto Album(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 30));
-				
-				if(std::get<0>(Album) == true)
-				{
-					std::cout << "\tAlbum:\t \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Album) << " of 30)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The 'Album' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
-					
-					auto Album = GetHexadecimalStringTerminatedByLength(RawBuffer, 30);
-					
-					std::cout << "*** Binary content: " << Album.second << std::endl;
-				}
-			}
-			RawBuffer += 30;
-			
-			auto Year(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 4));
-			
-			if(std::get<0>(Year) == true)
-			{
-				std::cout << "\tYear:\t \"" << std::get<2>(Year) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Year) - 1 << " of 4)" << std::endl;
-			}
-			else
-			{
-				auto Year(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 4));
-				
-				if(std::get<0>(Year) == true)
-				{
-					std::cout << "\tYear:\t \"" << std::get<2>(Year) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Year) << " of 4)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The 'Year' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
-					
-					auto Year = GetHexadecimalStringTerminatedByLength(RawBuffer, 4);
-					
-					std::cout << "*** Binary content: " << Year.second << std::endl;
-				}
-			}
-			RawBuffer += 4;
-			
-			auto Comment(Get_ISO_IEC_8859_1_StringEndedByTermination(RawBuffer, 30));
-			
-			if(std::get<0>(Comment) == true)
-			{
-				std::cout << "\tComment: \"" << std::get<2>(Comment) << "\"  (ISO/IEC 8859-1:1998, ended by termination, length: " << std::get<1>(Comment) - 1 << " of 30)" << std::endl;
-			}
-			else
-			{
-				auto Comment(Get_ISO_IEC_8859_1_StringEndedByLength(RawBuffer, 30));
-				
-				if(std::get<0>(Comment) == true)
-				{
-					std::cout << "\tComment: \"" << std::get<2>(Album) << "\"  (ISO/IEC 8859-1:1998, ended by boundary, length: " << std::get<1>(Comment) << " of 30)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The 'Comment' field contains data that can not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
-					
-					auto Comment = GetHexadecimalStringTerminatedByLength(RawBuffer, 30);
-					
-					std::cout << "*** Binary content: " << Comment.second << std::endl;
-				}
-			}
-			bID3v11 = false;
-			if(RawBuffer[28] == '\0')
-			{
-				bID3v11 = true;
-				u4Track = static_cast< int >(RawBuffer[29]);
-			}
-			RawBuffer += 30;
-			
-			std::map< unsigned int, std::string >::iterator NumericGenreIterator(g_NumericGenresID3_1.find(RawBuffer[0]));
-			
-			if(NumericGenreIterator != g_NumericGenresID3_1.end())
-			{
-				std::cout << "\tGenre:\t " << NumericGenreIterator->second << "  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*RawBuffer)) << "] (ID3v1 standard)" << std::endl;
-			}
-			else
-			{
-				NumericGenreIterator = g_NumericGenresWinamp.find(RawBuffer[0]);
-				if(NumericGenreIterator != g_NumericGenresWinamp.end())
-				{
-					std::cout << "\tGenre:\t " << NumericGenreIterator->second << "  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*RawBuffer)) << "] (Winamp extension)" << std::endl;
-				}
-				else
-				{
-					std::cout << "\tGenre:\t unrecognized genre  [number: " << static_cast< unsigned int >(static_cast< unsigned char >(*RawBuffer)) << "]" << std::endl;
-				}
-			}
-			if(bID3v11 == true)
-			{
-				std::cout << "ID3v1.1 TAG:" << std::endl;
-				std::cout << "\tTrack:\t \"" << u4Track << "\"" << std::endl;
+				Result->GetValue()->Append("ID3v1", ID3v1TagResult->GetValue());
 			}
 		}
 	}
-	ReadID3v2Tag(Buffer);
-}
-
-std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
-{
-	ReadFile(Buffer);
-	
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
 	Result->SetSuccess(true);
 	Inspection::FinalizeResult(Result, Buffer);
 	
