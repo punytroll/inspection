@@ -688,6 +688,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto CodeResult{Get_ASCII_String_Alphabetical_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
+	
+	Result->SetValue(CodeResult->GetValue());
+	if(CodeResult->GetSuccess() == true)
+	{
+		const std::string & Code{std::experimental::any_cast< const std::string & >(CodeResult->GetAny())};
+		
+		try
+		{
+			auto Interpretation{Get_LanguageName_From_ISO_639_2_1998_Code(Code)};
+			
+			Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+			Result->GetValue()->PrependTag("interpretation", Interpretation);
+			Result->SetSuccess(true);
+		}
+		catch(...)
+		{
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Character(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
