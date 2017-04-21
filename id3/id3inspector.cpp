@@ -76,6 +76,9 @@ std::map< std::string, std::string > g_ISO_3166_1_Alpha_2_Codes;
 std::map< unsigned int, std::string > g_PictureTypes;
 std::map< TextEncoding, std::string > g_EncodingNames;
 std::map< std::string, std::string > g_GUIDDescriptions;
+std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_2;
+std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_3;
+std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_4;
 bool g_PrintBytes(false);
 
 void AppendSeparated(std::string & String, const std::string & Append, const std::string & Separator)
@@ -2936,7 +2939,6 @@ public:
 		_FileAlterPreservation(false),
 		_Forbidden(false),
 		_GroupingIdentity(false),
-		_Handler(0),
 		_HeaderSize(0),
 		_ReadOnly(false),
 		_SupportsCompression(false),
@@ -2968,13 +2970,6 @@ public:
 				_Forbidden = true;
 				_ForbiddenReason = ForbiddenIterator->second;
 			}
-			
-			std::map< std::string, std::uint64_t (*)(const uint8_t *, std::uint64_t) >::iterator HanderIterator(_Handlers22.find(_Identifier));
-			
-			if(HanderIterator != _Handlers22.end())
-			{
-				_Handler = HanderIterator->second;
-			}
 		}
 		else if(MajorVersion == 0x03)
 		{
@@ -3004,13 +2999,6 @@ public:
 			{
 				_Forbidden = true;
 				_ForbiddenReason = ForbiddenIterator->second;
-			}
-			
-			std::map< std::string, std::uint64_t (*)(const uint8_t *, std::uint64_t) >::iterator HanderIterator(_Handlers23.find(_Identifier));
-			
-			if(HanderIterator != _Handlers23.end())
-			{
-				_Handler = HanderIterator->second;
 			}
 		}
 		else if(MajorVersion == 0x04)
@@ -3043,13 +3031,6 @@ public:
 			{
 				_Forbidden = true;
 				_ForbiddenReason = ForbiddenIterator->second;
-			}
-			
-			std::map< std::string, std::uint64_t (*)(const uint8_t *, std::uint64_t) >::iterator HanderIterator(_Handlers24.find(_Identifier));
-			
-			if(HanderIterator != _Handlers24.end())
-			{
-				_Handler = HanderIterator->second;
 			}
 		}
 		Buffer.SetPosition(Buffer.GetPosition() + Inspection::Length(_HeaderSize, 0));
@@ -3170,20 +3151,6 @@ public:
 		return _Unsynchronisation;
 	}
 	
-	int HandleData(const uint8_t * Buffer, unsigned int Length)
-	{
-		if(_Handler != 0)
-		{
-			return _Handler(Buffer, Length);
-		}
-		else
-		{
-			std::cout << "*** ERROR ***  No handler defined for the frame type \"" << _Identifier << "\" in this tag version." << std::endl;
-			
-			return Length;
-		}
-	}
-	
 	bool IsValid(void) const
 	{
 		for(std::string::size_type Index = 0; Index < _Identifier.length(); ++Index)
@@ -3250,7 +3217,7 @@ public:
 	
 	static void Handle22(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
-		_Handlers22.insert(std::make_pair(Identifier, Handler));
+		g_FrameHandlers_2_2.insert(std::make_pair(Identifier, Handler));
 		_Names22.insert(std::make_pair(Identifier, Name));
 	}
 	
@@ -3261,7 +3228,7 @@ public:
 	
 	static void Handle23(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
-		_Handlers23.insert(std::make_pair(Identifier, Handler));
+		g_FrameHandlers_2_3.insert(std::make_pair(Identifier, Handler));
 		_Names23.insert(std::make_pair(Identifier, Name));
 	}
 	
@@ -3272,20 +3239,18 @@ public:
 	
 	static void Handle24(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
-		_Handlers24.insert(std::make_pair(Identifier, Handler));
+		g_FrameHandlers_2_4.insert(std::make_pair(Identifier, Handler));
 		_Names24.insert(std::make_pair(Identifier, Name));
 	}
-private:
+	
 	// static setup
 	static std::map< std::string, std::string > _Forbidden22;
 	static std::map< std::string, std::string > _Forbidden23;
 	static std::map< std::string, std::string > _Forbidden24;
-	static std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > _Handlers22;
-	static std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > _Handlers23;
-	static std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > _Handlers24;
 	static std::map< std::string, std::string > _Names22;
 	static std::map< std::string, std::string > _Names23;
 	static std::map< std::string, std::string > _Names24;
+private:
 	// member variables
 	bool _Compression;
 	bool _DataLengthIndicator;
@@ -3295,7 +3260,6 @@ private:
 	bool _Forbidden;
 	std::string _ForbiddenReason;
 	bool _GroupingIdentity;
-	std::uint64_t (* _Handler)(const uint8_t * Buffer, std::uint64_t Length);
 	unsigned int _HeaderSize;
 	std::string _Identifier;
 	std::string _Name;
@@ -3319,9 +3283,6 @@ std::map< std::string, std::string > FrameHeader::_Forbidden24;
 std::map< std::string, std::string > FrameHeader::_Names22;
 std::map< std::string, std::string > FrameHeader::_Names23;
 std::map< std::string, std::string > FrameHeader::_Names24;
-std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > FrameHeader::_Handlers22;
-std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > FrameHeader::_Handlers23;
-std::map< std::string, std::uint64_t (*) (const uint8_t *, std::uint64_t) > FrameHeader::_Handlers24;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // specific to tag version 2.2                                                                   //
@@ -6663,9 +6624,45 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 				}
 				std::cout << "\t\t\tContent:" << std::endl;
 				
-				unsigned int HandledFrameSize(0);
+				auto HandledFrameSize{0ull};
+				std::function< std::uint64_t (const std::uint8_t *, std::uint64_t) > Handler;
 				
-				HandledFrameSize = NewFrameHeader->HandleData(RawBuffer, NewFrameHeader->GetDataSize());
+				if(MajorVersion == 0x02)
+				{
+					auto HandlerIterator{g_FrameHandlers_2_2.find(NewFrameHeader->GetIdentifier())};
+					
+					if(HandlerIterator != g_FrameHandlers_2_2.end())
+					{
+						Handler = HandlerIterator->second;
+					}
+				}
+				else if(MajorVersion == 0x03)
+				{
+					auto HandlerIterator{g_FrameHandlers_2_3.find(NewFrameHeader->GetIdentifier())};
+					
+					if(HandlerIterator != g_FrameHandlers_2_3.end())
+					{
+						Handler = HandlerIterator->second;
+					}
+				}
+				else if(MajorVersion == 0x04)
+				{
+					auto HandlerIterator{g_FrameHandlers_2_4.find(NewFrameHeader->GetIdentifier())};
+					
+					if(HandlerIterator != g_FrameHandlers_2_4.end())
+					{
+						Handler = HandlerIterator->second;
+					}
+				}
+				if(Handler != nullptr)
+				{
+					HandledFrameSize = Handler(RawBuffer, NewFrameHeader->GetDataSize());
+				}
+				else
+				{
+					std::cout << "*** ERROR *** No handler defined for the frame type \"" << NewFrameHeader->GetIdentifier() << "\" in tag version 2." << MajorVersion << "." << std::endl;
+					HandledFrameSize = NewFrameHeader->GetDataSize();
+				}
 				if(HandledFrameSize < NewFrameHeader->GetDataSize())
 				{
 					std::cout << "*** ERROR *** Frame size exceeds frame data." << std::endl;
