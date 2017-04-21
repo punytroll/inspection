@@ -759,6 +759,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	{
 		Result->GetValue()->AppendTag("ended by length"s);
 		Result->GetValue()->AppendTag("empty"s);
+		Result->SetSuccess(true);
 	}
 	else
 	{
