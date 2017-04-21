@@ -329,20 +329,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_EndedByLen
 	if(Buffer.Has(Length) == true)
 	{
 		Result->SetSuccess(true);
-		
-		auto Boundary{Buffer.GetPosition() + Length};
-		
-		while(Buffer.GetPosition() < Boundary)
-		{
-			if(Buffer.GetPosition().GetBits() == 0)
-			{
-				Buffer.Get8Bits();
-			}
-			else
-			{
-				Buffer.Get1Bits();
-			}
-		}
+		Buffer.SetPosition(Buffer.GetPosition() + Length);
 	}
 	if(Result->GetSuccess() == true)
 	{
