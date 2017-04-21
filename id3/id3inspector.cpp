@@ -6690,9 +6690,6 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 	if(TagHeaderResult->GetSuccess() == true)
 	{
 		TagHeaderResult->GetValue()->SetName("ID3v2");
-		
-		auto Position{Buffer.GetPosition()};
-		
 		PrintValue(TagHeaderResult->GetValue(), "    ");
 		if(TagHeaderResult->GetValue("Flags")->HasValue("[1] Extended header") == true)
 		{
@@ -6700,6 +6697,7 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 			
 			if(ExtendedHeader == true)
 			{
+				auto Position{Buffer.GetPosition()};
 				auto RawBuffer{Buffer.GetDataAtPosition()};
 				auto ExtendedHeader{Get_ID3_2_4_ExtendedTagHeader(RawBuffer, (Buffer.GetLength() - Buffer.GetPosition()).GetBytes())};
 				
@@ -6755,13 +6753,13 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 		
 		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(TagHeaderResult->GetAny("MajorVersion"))};
 		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(TagHeaderResult->GetAny("Size")), 0)};
+		auto Boundary{Buffer.GetPosition() + Size};
 		auto SkippingSize{0};
 
 		std::cout << "\tFrames:" << std::endl;
-		while(Position < Size)
+		while(Buffer.GetPosition() < Boundary)
 		{
-			Buffer.SetPosition(Position);
-			
+			auto Start{Buffer.GetPosition()};
 			FrameHeader * NewFrameHeader(new FrameHeader(MajorVersion, Buffer));
 			
 			if(NewFrameHeader->IsValid() == true)
@@ -6832,23 +6830,22 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 				}
 				if(HandledFrameSize < NewFrameHeader->GetDataSize())
 				{
-					std::cout << "*** ERROR *** Frame size exceeds frame data." << std::endl;
+					std::cout << "*** ERROR *** Frame size exceeds frame data. (handled=" << HandledFrameSize << " < size=" << NewFrameHeader->GetDataSize() << ')' << std::endl;
 				}
 				else if(HandledFrameSize > NewFrameHeader->GetDataSize())
 				{
-					std::cout << "*** ERROR *** Frame data exceeds frame size." << std::endl;
+					std::cout << "*** ERROR *** Frame data exceeds frame size. (handled=" << HandledFrameSize << " > size=" << NewFrameHeader->GetDataSize() << ')' << std::endl;
 				}
 				std::cout << std::endl;
-				Position += NewFrameHeader->GetHeaderSize() + NewFrameHeader->GetDataSize();
+				Buffer.SetPosition(Start + NewFrameHeader->GetHeaderSize() + NewFrameHeader->GetDataSize());
 			}
 			else
 			{
 				SkippingSize += 1;
-				Position += 1;
+				Buffer.SetPosition(Start + 1);
 			}
 			delete NewFrameHeader;
 		}
-		Buffer.SetPosition(Position);
 		if(SkippingSize > 0)
 		{
 			std::cout << "# Skipped " << SkippingSize << " bytes of padding." << std::endl;
