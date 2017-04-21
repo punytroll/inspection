@@ -789,7 +789,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
 					if(Buffer.GetPosition() == Boundary)
 					{
-						Result->GetValue()->AppendTag("ended by boundary"s);
+						Result->GetValue()->AppendTag("ended by length"s);
 						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
 						Result->SetSuccess(true);
 						
@@ -804,7 +804,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 					{
 						if(Buffer.GetPosition() == Boundary)
 						{
-							Result->GetValue()->AppendTag("ended by termination and boundary"s);
+							Result->GetValue()->AppendTag("ended by termination and length"s);
 						}
 						else
 						{
