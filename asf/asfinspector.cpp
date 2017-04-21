@@ -135,7 +135,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Bu
 		if(CodecNameLengthResult->GetSuccess() == true)
 		{
 			auto CodecNameLength{std::experimental::any_cast< std::uint16_t >(CodecNameLengthResult->GetAny())};
-			auto CodecNameResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecNameLength)};
+			auto CodecNameResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecNameLength)};
 			
 			Result->GetValue()->Append("CodecName", CodecNameResult->GetValue());
 			if(CodecNameResult->GetSuccess() == true)
@@ -146,7 +146,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Bu
 				if(CodecDescriptionLengthResult->GetSuccess() == true)
 				{
 					auto CodecDescriptionLength{std::experimental::any_cast< std::uint16_t >(CodecDescriptionLengthResult->GetAny())};
-					auto CodecDescriptionResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecDescriptionLength)};
+					auto CodecDescriptionResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecDescriptionLength)};
 					
 					Result->GetValue()->Append("CodecDescription", CodecDescriptionResult->GetValue());
 					if(CodecDescriptionResult->GetSuccess() == true)
@@ -308,31 +308,31 @@ std::unique_ptr< Inspection::Result > Get_ASF_ContentDescriptionObjectData(Inspe
 					if(RatingLengthResult->GetSuccess() == true)
 					{
 						auto TitleLength{std::experimental::any_cast< std::uint16_t >(TitleLengthResult->GetAny())};
-						auto TitleResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, TitleLength)};
+						auto TitleResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, TitleLength)};
 						
 						Result->GetValue()->Append("Title", TitleResult->GetValue());
 						if(TitleResult->GetSuccess() == true)
 						{
 							auto AuthorLength{std::experimental::any_cast< std::uint16_t >(AuthorLengthResult->GetAny())};
-							auto AuthorResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, AuthorLength)};
+							auto AuthorResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, AuthorLength)};
 							
 							Result->GetValue()->Append("Author", AuthorResult->GetValue());
 							if(AuthorResult->GetSuccess() == true)
 							{
 								auto CopyrightLength{std::experimental::any_cast< std::uint16_t >(CopyrightLengthResult->GetAny())};
-								auto CopyrightResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, CopyrightLength)};
+								auto CopyrightResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, CopyrightLength)};
 								
 								Result->GetValue()->Append("Copyright", CopyrightResult->GetValue());
 								if(CopyrightResult->GetSuccess() == true)
 								{
 									auto DescriptionLength{std::experimental::any_cast< std::uint16_t >(DescriptionLengthResult->GetAny())};
-									auto DescriptionResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, DescriptionLength)};
+									auto DescriptionResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, DescriptionLength)};
 									
 									Result->GetValue()->Append("Description", DescriptionResult->GetValue());
 									if(DescriptionResult->GetSuccess() == true)
 									{
 										auto RatingLength{std::experimental::any_cast< std::uint16_t >(RatingLengthResult->GetAny())};
-										auto RatingResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, RatingLength)};
+										auto RatingResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, RatingLength)};
 										
 										Result->GetValue()->Append("Rating", RatingResult->GetValue());
 										Result->SetSuccess(RatingResult->GetSuccess());
@@ -434,7 +434,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_Content
 	if(NameLengthResult->GetSuccess() == true)
 	{
 		auto NameLength{std::experimental::any_cast< std::uint16_t >(NameLengthResult->GetAny())};
-		auto NameResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, NameLength)};
+		auto NameResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, NameLength)};
 		
 		Result->GetValue()->Append("Name", NameResult->GetValue());
 		if(NameResult->GetSuccess() == true)
@@ -471,7 +471,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_Content
 	
 	if(DataType == "Unicode string")
 	{
-		auto UnicodeStringResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
+		auto UnicodeStringResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
 		
 		Result->SetValue(UnicodeStringResult->GetValue());
 		Result->SetSuccess(UnicodeStringResult->GetSuccess());
@@ -1042,7 +1042,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_LanguageIDRecord(Inspection::Buffe
 	if(LanguageIDLengthResult->GetSuccess() == true)
 	{
 		auto LanguageIDLength{std::experimental::any_cast< std::uint8_t >(LanguageIDLengthResult->GetAny())};
-		auto LanguageIDResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, LanguageIDLength)};
+		auto LanguageIDResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, LanguageIDLength)};
 		
 		Result->GetValue()->Append("LanguageID", LanguageIDResult->GetValue());
 		Result->SetSuccess(LanguageIDResult->GetSuccess());
@@ -1111,7 +1111,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord(
 					if(DataLengthResult->GetSuccess() == true)
 					{
 						auto NameLength{std::experimental::any_cast< std::uint16_t >(NameLengthResult->GetAny())};
-						auto NameResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Inspection::Length(NameLength, 0))};
+						auto NameResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Inspection::Length(NameLength, 0))};
 						
 						Result->GetValue()->Append("Name", NameResult->GetValue());
 						if(NameResult->GetSuccess() == true)
@@ -1139,7 +1139,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_
 	
 	if(Type == "Unicode string")
 	{
-		auto UnicodeStringResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
+		auto UnicodeStringResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
 		
 		Result->SetValue(UnicodeStringResult->GetValue());
 		Result->SetSuccess(UnicodeStringResult->GetSuccess());
@@ -1320,7 +1320,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord(I
 					if(DataLengthResult->GetSuccess() == true)
 					{
 						auto NameLength{std::experimental::any_cast< std::uint16_t >(NameLengthResult->GetAny())};
-						auto NameResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, NameLength)};
+						auto NameResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, NameLength)};
 						
 						Result->GetValue()->Append("Name", NameResult->GetValue());
 						if(NameResult->GetSuccess() == true)
@@ -1348,7 +1348,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord_D
 	
 	if(DataType == "Unicode string")
 	{
-		auto UnicodeStringResult{Get_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
+		auto UnicodeStringResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
 		
 		Result->SetValue(UnicodeStringResult->GetValue());
 		Result->SetSuccess(UnicodeStringResult->GetSuccess());

@@ -559,7 +559,7 @@ std::uint32_t Inspection::Get_UnsignedInteger_32Bit_FromHexadecimalString(const 
 	}
 }
 
-std::string Inspection::Get_UTF_8_Character_FromUnicodeCodePoint(std::uint32_t CodePoint)
+std::string Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::uint32_t CodePoint)
 {
 	std::stringstream Result;
 	
