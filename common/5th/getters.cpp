@@ -1032,7 +1032,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	
 	if(Buffer.Has(2ull, 0) == true)
 	{
-		Result->GetValue()->SetAny(static_cast< std::uint16_t >(static_cast< std::uint16_t >(Buffer.Get8Bits()) | (static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8)));
+		auto First{Buffer.Get8Bits()};
+		auto Second{Buffer.Get8Bits()};
+		
+		Result->GetValue()->SetAny(static_cast< std::uint32_t >(First) | (static_cast< std::uint32_t >(Second) << 8));
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
