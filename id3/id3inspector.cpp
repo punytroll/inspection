@@ -4841,6 +4841,16 @@ std::uint64_t Handle23T___Frames(const uint8_t * RawBuffer, std::uint64_t Length
 	return FrameResult->GetLength().GetBytes();
 }
 
+std::uint64_t Handle23TCONFrame(const uint8_t * RawBuffer, std::uint64_t Length)
+{
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_TCON_Body(Buffer)};
+	
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
+	
+	return FrameResult->GetLength().GetBytes();
+}
+
 std::uint64_t Handle23TFLTFrames(const uint8_t * Buffer, std::uint64_t Length)
 {
 	std::uint64_t Index(0);
@@ -5265,16 +5275,6 @@ std::uint64_t Handle23TCMPFrame(const uint8_t * Buffer, std::uint64_t Length)
 	}
 	
 	return Index;
-}
-
-std::uint64_t Handle23TCONFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_TCON_Body(Buffer)};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23TSRCFrame(const uint8_t * Buffer, std::uint64_t Length)
