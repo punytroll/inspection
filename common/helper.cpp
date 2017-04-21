@@ -592,3 +592,36 @@ std::string Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCode
 	
 	return Result.str();
 }
+
+std::string Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(const std::string & ISO_639_2_1998_Code)
+{
+	if(ISO_639_2_1998_Code == "eng")
+	{
+		return "English";
+	}
+	else if((ISO_639_2_1998_Code == "ger") || (ISO_639_2_1998_Code == "deu"))
+	{
+		return "German";
+	}
+	/// Scope: Special
+	else if(ISO_639_2_1998_Code == "mis")
+	{
+		return "<Uncoded language>";
+	}
+	else if(ISO_639_2_1998_Code == "mul")
+	{
+		return "<Multiple languages>";
+	}
+	else if(ISO_639_2_1998_Code == "und")
+	{
+		return "<Undetermined>";
+	}
+	else if(ISO_639_2_1998_Code == "zxx")
+	{
+		return "<No linguistic content>";
+	}
+	else
+	{
+		throw std::invalid_argument("The ISO 639-2:1998 (alpha-3) code '" + ISO_639_2_1998_Code + "' is unknown.");
+	}
+}
