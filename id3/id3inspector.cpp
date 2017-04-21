@@ -2302,7 +2302,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
 									}
 									else
 									{
-										Result->GetValue("Genre")->PrependTag("interpretation", "<unrecognized>");
+										Result->GetValue("Genre")->PrependTag("interpretation", "<unrecognized>"s);
 									}
 								}
 							}
