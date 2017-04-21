@@ -429,8 +429,8 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 		if(FLACStreamInfoBlockResult->GetSuccess() == true)
 		{
 			auto LastMetaDataBlock{std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
+			auto Continue{true};
 			
-			Result->SetSuccess(true);
 			while(LastMetaDataBlock == false)
 			{
 				auto MetaDataBlockResult{Get_FLAC_MetaDataBlock(Buffer)};
@@ -442,10 +442,17 @@ std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffe
 				}
 				else
 				{
-					Result->SetSuccess(false);
+					Continue = false;
 					
 					break;
 				}
+			}
+			if(Continue == true)
+			{
+				auto FramesResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+				
+				Result->GetValue()->Append("Frames", FramesResult->GetValue());
+				Result->SetSuccess(FramesResult->GetSuccess());
 			}
 		}
 	}
