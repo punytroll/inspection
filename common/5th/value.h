@@ -61,6 +61,11 @@ namespace Inspection
 			_Tags.push_back(Tag);
 		}
 		
+		void ClearTags(void)
+		{
+			_Tags.clear();
+		}
+		
 		void PrependTag(const std::experimental::any & Any)
 		{
 			auto Tag{std::make_shared< Inspection::Value >()};
