@@ -17,6 +17,7 @@ namespace Inspection
 	const std::string g_LightYellow{"\033[93m"};
 	const std::string g_Red{"\033[31m"};
 	const std::string g_White{"\033[97m"};
+	const std::string g_Reset{"\033[0m"};
 	
 	void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 	{
@@ -84,6 +85,7 @@ namespace Inspection
 				PrintValue(SubValue, SubIndentation);
 			}
 		}
+		std::cout << g_Reset;
 	}
 }
 
