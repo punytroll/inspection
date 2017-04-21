@@ -6624,15 +6624,17 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 				Buffer.SetPosition(Position);
 			}
 		}
-
-		auto SkippingSize{0};
+		
+		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(TagHeaderResult->GetAny("MajorVersion"))};
 		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(TagHeaderResult->GetAny("Size")), 0)};
+		auto SkippingSize{0};
 
 		std::cout << "\tFrames:" << std::endl;
-		while(Size > Position)
+		while(Position < Size)
 		{
 			Buffer.SetPosition(Position);
-			FrameHeader * NewFrameHeader(new FrameHeader(std::experimental::any_cast< std::uint8_t >(TagHeaderResult->GetAny("MajorVersion")), Buffer));
+			
+			FrameHeader * NewFrameHeader(new FrameHeader(MajorVersion, Buffer));
 			
 			if(NewFrameHeader->IsValid() == true)
 			{
