@@ -1319,39 +1319,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	
-	if(Buffer.Has(2ull, 0) == true)
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UTF-8"s);
+	
+	std::stringstream Value;
+	auto NumberOfCharacters{0ul};
+	
+	while(true)
 	{
-		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 2ull)};
+		auto CharacterResult{Get_ISO_IEC_10646_1_1993_UTF_8_Character(Buffer)};
 		
-		Result->SetValue(BytesResult->GetValue());
-		if(BytesResult->GetSuccess() == true)
+		if(CharacterResult->GetSuccess() == true)
 		{
-			const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(BytesResult->GetAny())};
+			auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
 			
-			if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
+			if(CodePoint == 0x00000000)
 			{
-				Result->GetValue()->PrependTag("interpretation", "BigEndian"s);
+				Result->GetValue()->AppendTag("ended by termination"s);
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 				Result->SetSuccess(true);
+				
+				break;
 			}
-			else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
+			else
 			{
-				Result->GetValue()->PrependTag("interpretation", "LittleEndian"s);
-				Result->SetSuccess(true);
+				NumberOfCharacters += 1;
+				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
 			}
 		}
+		else
+		{
+			break;
+		}
 	}
+	Result->GetValue()->SetAny(Value.str());
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Inspection::Buffer & Buffer)
-{
-	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination()");
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
@@ -1420,6 +1428,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 		}
 	}
 	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(2ull, 0) == true)
+	{
+		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 2ull)};
+		
+		Result->SetValue(BytesResult->GetValue());
+		if(BytesResult->GetSuccess() == true)
+		{
+			const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(BytesResult->GetAny())};
+			
+			if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
+			{
+				Result->GetValue()->PrependTag("interpretation", "BigEndian"s);
+				Result->SetSuccess(true);
+			}
+			else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
+			{
+				Result->GetValue()->PrependTag("interpretation", "LittleEndian"s);
+				Result->SetSuccess(true);
+			}
+		}
+	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
