@@ -2217,6 +2217,8 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_E
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_PictureType(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer);
@@ -2565,6 +2567,56 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_PictureType(Inspect
 			Result->SetSuccess(true);
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
+	
+	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	if(TextEncodingResult->GetSuccess() == true)
+	{
+		auto MIMETypeResult{Get_ID3_2_3_Frame_GEOB_MIMEType(Buffer)};
+		
+		Result->GetValue()->Append("MIMEType", MIMETypeResult->GetValue());
+		if(MIMETypeResult->GetSuccess() == true)
+		{
+			auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
+			auto FileNameResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+			
+			Result->GetValue()->Append("FileName", FileNameResult->GetValue());
+			if(FileNameResult->GetSuccess() == true)
+			{
+				auto ContentDescriptionResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+				
+				Result->GetValue()->Append("ContentDescription", ContentDescriptionResult->GetValue());
+				if(ContentDescriptionResult->GetSuccess() == true)
+				{
+					auto EncapsulatedObjectResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+					
+					Result->GetValue()->Append("EncapsulatedObject", EncapsulatedObjectResult->GetValue());
+					Result->SetSuccess(EncapsulatedObjectResult->GetSuccess());
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_MIMEType(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto MIMETypeResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+	
+	/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
+	Result->SetValue(MIMETypeResult->GetValue());
+	Result->SetSuccess(MIMETypeResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -4151,69 +4203,14 @@ std::uint64_t Handle23COMMFrame(const uint8_t * Buffer, std::uint64_t Length)
 	return Index;
 }
 
-std::uint64_t Handle23GEOB_Frame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23GEOB_Frame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_GEOB_Body(Buffer)};
 	
-	if(std::get<0>(Encoding) == true)
-	{
-		Index += std::get<1>(Encoding);
-		std::cout << "\t\t\t\tText Encoding: " << std::experimental::any_cast< std::string >(std::get<2>(Encoding).Get("Name")) << std::endl;
-		
-		auto MIMEType(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(MIMEType) == true)
-		{
-			Index += std::get<1>(MIMEType);
-			std::cout << "\t\t\t\tMIME type: \"" << std::get<2>(MIMEType) << "\"" << std::endl;
-			if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
-			{
-				auto FileName(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(FileName) == true)
-				{
-					Index += std::get<1>(FileName);
-					std::cout << "\t\t\t\tFilename: \"" << std::get<2>(FileName) << "\"" << std::endl;
-					
-					auto ContentDescription(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(ContentDescription) == true)
-					{
-						Index += std::get<1>(ContentDescription);
-						std::cout << "\t\t\t\tContent description: \"" << std::get<2>(ContentDescription) << "\"" << std::endl;
-						Index = Length;
-					}
-					else
-					{
-						std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"Content description\" field." << std::endl;
-					}
-				}
-				else
-				{
-					std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"Filename\" field." << std::endl;
-				}
-			}
-			else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UCS_2)
-			{
-				assert(false);
-			}
-			else
-			{
-				assert(false);
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"MIME type\" field with a zero-terminated ISO/IEC 8859-1:1998 string." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.16], a \"GEOB\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.3 encoding identifier." << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23MCDIFrame(const uint8_t * Buffer, std::uint64_t Length)
