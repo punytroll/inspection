@@ -1081,12 +1081,62 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_BigEndian_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTermination(Inspection::Buffer & Buffer)
 {
-	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_BigEndian_EndedByTerminationOrLength()");
+	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTermination");
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_LittleEndian_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength()");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTermination(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UCS-2"s);
+	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AppendTag("little endian"s);
+	
+	auto NumberOfCharacters{0ul};
+	
+	while(true)
+	{
+		auto CharacterResult{Get_ISO_IEC_10646_1_1993_UCS_2_Character_LittleEndian(Buffer)};
+		
+		if(CharacterResult->GetSuccess() == true)
+		{
+			auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+			
+			if(CodePoint == 0x00000000)
+			{
+				Result->GetValue()->AppendTag("ended by termination"s);
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->SetSuccess(true);
+				
+				break;
+			}
+			else
+			{
+				NumberOfCharacters += 1;
+				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -1161,7 +1211,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
 {
-	throw Inspection::NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination()");
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UCS-2"s);
+	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	
+	auto ByteOrderMarkResult{Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Buffer)};
+	
+	Result->GetValue()->Append("ByteOrderMark", ByteOrderMarkResult->GetValue());
+	if(ByteOrderMarkResult->GetSuccess() == true)
+	{
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(ByteOrderMarkResult->GetValue()->GetTagAny("interpretation"))};
+		
+		if(ByteOrderMark == "BigEndian")
+		{
+			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTermination(Buffer)};
+			
+			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->SetSuccess(StringResult->GetSuccess());
+		}
+		else if(ByteOrderMark == "LittleEndian")
+		{
+			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTermination(Buffer)};
+			
+			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->SetSuccess(StringResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
@@ -1182,14 +1262,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		if(ByteOrderMark == "BigEndian")
 		{
-			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_BigEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
 			
 			Result->GetValue()->Append("String", StringResult->GetValue());
 			Result->SetSuccess(StringResult->GetSuccess());
 		}
 		else if(ByteOrderMark == "LittleEndian")
 		{
-			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_LittleEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
 			
 			Result->GetValue()->Append("String", StringResult->GetValue());
 			Result->SetSuccess(StringResult->GetSuccess());
