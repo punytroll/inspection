@@ -2225,7 +2225,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_E
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_PictureType(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
@@ -2865,6 +2867,37 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_PictureType(Inspect
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
+	
+	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	if(TextEncodingResult->GetSuccess() == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
+		auto LanguageResult{Get_ID3_2_4_Language(Buffer)};
+		
+		Result->GetValue()->Append("Language", LanguageResult->GetValue());
+		if(LanguageResult->GetSuccess() == true)
+		{
+			auto ShortContentDescriptionResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+			
+			Result->GetValue()->Append("ShortContentDescription", ShortContentDescriptionResult->GetValue());
+			if(ShortContentDescriptionResult->GetSuccess() == true)
+			{
+				auto CommentResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Buffer.GetLength() - Buffer.GetPosition())};
+				
+				Result->GetValue()->Append("Comment", CommentResult->GetValue());
+				Result->SetSuccess(CommentResult->GetSuccess());
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -2878,6 +2911,41 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Bu
 		
 		Result->GetValue()->Append("Information", InformationResult->GetValue());
 		Result->SetSuccess(InformationResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & Buffer)
+{
+	auto Start{Buffer.GetPosition()};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto LanguageResult{Get_ISO_639_2_1998_Code(Buffer)};
+	
+	Result->SetValue(LanguageResult->GetValue());
+	if(LanguageResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+	}
+	else
+	{
+		Buffer.SetPosition(Start);
+		
+		auto CodeResult{Get_ASCII_String_Alphabetical_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
+		
+		Result->SetValue(CodeResult->GetValue());
+		if(CodeResult->GetSuccess() == true)
+		{
+			const std::string & Code{std::experimental::any_cast< const std::string & >(CodeResult->GetAny())};
+			
+			if(Code == "XXX")
+			{
+				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
+				Result->GetValue()->PrependTag("interpretation", "<unknown>"s);
+				Result->SetSuccess(true);
+			}
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -5967,185 +6035,14 @@ std::uint64_t Handle24APICFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle24COMMFrame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle24COMMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto Encoding(Get_ID3_2_4_Encoding(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_4_Frame_COMM_Body(Buffer)};
 	
-	if(std::get<0>(Encoding) == true)
-	{
-		Index += std::get<1>(Encoding);
-		std::cout << "\t\t\t\tText Encoding: " << std::experimental::any_cast< std::string >(std::get<2>(Encoding).Get("Name")) << std::endl;
-		
-		std::string ISO_639_2_Code(Buffer + Index, Buffer + Index + 3);
-		
-		Index += 3;
-		if(ISO_639_2_Code.empty() == false)
-		{
-			if(ISO_639_2_Code == "XXX")
-			{
-				std::cout << "\t\t\t\tLanguage: <unknown> (as per ID3 2.4 \"" << ISO_639_2_Code << "\")" << std::endl;
-			}
-			else
-			{
-				auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code));
-				
-				if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
-				{
-					std::cout << "\t\t\t\tLanguage: " << ISO_639_2_Iterator->second << " (as per ISO 639-2 \"" << ISO_639_2_Code << "\")" << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\tLanguage: <unknown> (\"" << ISO_639_2_Code << "\" is not defined by ISO 639-2)" << std::endl;
-					std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code << "' is not defined by ISO 639-2." << std::endl;
-				}
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
-		}
-		if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
-		{
-			auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			assert(std::get<0>(Description) == true);
-			Index += std::get<1>(Description);
-			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UTF_16)
-		{
-			auto Description(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-			
-			assert(std::get<0>(Description) == true);
-			Index += std::get<1>(Description);
-			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UTF_16_BE)
-		{
-			auto Description(Get_UTF_16BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-			
-			assert(std::get<0>(Description) == true);
-			Index += std::get<1>(Description);
-			std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UTF_8)
-		{
-			auto Description(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(Description) == true)
-			{
-				Index += std::get<1>(Description);
-				std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << '"' << std::endl;
-			}
-			else
-			{
-				std::cout << "*** ERROR *** The content of the \"Description\" field string could not be interpreted as an UTF-8 string with termination." << std::endl;
-			}
-		}
-		if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
-		{
-			auto Comment(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(Comment) == true)
-			{
-				Index += std::get<1>(Comment);
-				std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
-			}
-			else
-			{
-				auto Comment(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(Comment) == true)
-				{
-					Index += std::get<1>(Comment);
-					std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without termination." << std::endl;
-				}
-			}
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UTF_16)
-		{
-			auto Comment(Get_UTF_16_StringWithByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(Comment) == true)
-			{
-				Index += std::get<1>(Comment);
-				std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-16, ended by termination)" << std::endl;
-			}
-			else
-			{
-				auto Comment(Get_UTF_16_StringWithByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(Comment) == true)
-				{
-					Index += std::get<1>(Comment);
-					std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-16, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an UTF-16 string with or without termination." << std::endl;
-				}
-			}
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UTF_16_BE)
-		{
-			auto Comment(Get_UTF_16BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(Comment) == true)
-			{
-				Index += std::get<1>(Comment);
-				std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-16BE, ended by termination)" << std::endl;
-			}
-			else
-			{
-				auto Comment(Get_UTF_16BE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(Comment) == true)
-				{
-					Index += std::get<1>(Comment);
-					std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-16BE, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an UTF-16BE string with or without termination." << std::endl;
-				}
-			}
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UTF_8)
-		{
-			auto Comment(Get_UTF_8_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(Comment) == true)
-			{
-				Index += std::get<1>(Comment);
-				std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-8, ended by termination)" << std::endl;
-			}
-			else
-			{
-				auto Comment(Get_UTF_8_StringEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(Comment) == true)
-				{
-					Index += std::get<1>(Comment);
-					std::cout << "\t\t\t\tComment: \"" << std::get<2>(Comment) << "\" (UTF-8, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an UTF-8 string with or without termination." << std::endl;
-				}
-			}
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.4.0 [4.10], a \"COMM\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.4 encoding identifier." << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle24MCDIFrame(const uint8_t * Buffer, std::uint64_t Length)
