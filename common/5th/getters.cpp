@@ -656,7 +656,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_Zeroed_UnsignedInteger_8Bit_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Data{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
