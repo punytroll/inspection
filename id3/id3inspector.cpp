@@ -2215,6 +2215,9 @@ std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_COM_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_ImageFormat(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_PictureType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer);
@@ -2363,6 +2366,198 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_COM_Body(Inspection::Buf
 				Result->GetValue()->Append("Comment", CommentResult->GetValue());
 				Result->SetSuccess(CommentResult->GetSuccess());
 			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_Body(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TextEncodingResult{Get_ID3_2_2_TextEncoding(Buffer)};
+	
+	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	if(TextEncodingResult->GetSuccess() == true)
+	{
+		auto ImageFormatResult{Get_ID3_2_2_Frame_PIC_ImageFormat(Buffer)};
+		
+		Result->GetValue()->Append("ImageFormat", ImageFormatResult->GetValue());
+		if(ImageFormatResult->GetSuccess() == true)
+		{
+			auto PictureTypeResult{Get_ID3_2_2_Frame_PIC_PictureType(Buffer)};
+			
+			Result->GetValue()->Append("PictureType", PictureTypeResult->GetValue());
+			if(PictureTypeResult->GetSuccess() == true)
+			{
+				auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
+				auto DescriptionResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+				
+				Result->GetValue()->Append("Description", DescriptionResult->GetValue());
+				if(DescriptionResult->GetSuccess() == true)
+				{
+					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+					
+					Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
+					Result->SetSuccess(PictureDataResult->GetSuccess());
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_ImageFormat(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto ImageFormatResult{Get_ISO_IEC_8859_1_1998_String_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
+	
+	Result->SetValue(ImageFormatResult->GetValue());
+	if(ImageFormatResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::string & ImageFormat{std::experimental::any_cast< const std::string & >(ImageFormatResult->GetAny())};
+		
+		if(ImageFormat == "-->")
+		{
+			Result->GetValue()->PrependTag("mime-type", "application/x-url"s);
+		}
+		else if(ImageFormat == "PNG")
+		{
+			Result->GetValue()->PrependTag("mime-type", "image/png"s);
+		}
+		else if(ImageFormat == "JPG")
+		{
+			Result->GetValue()->PrependTag("mime-type", "image/jpeg"s);
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("mime-type", "<unrecognized>"s);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_PictureType(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto PictureTypeResult{Get_UnsignedInteger_8Bit(Buffer)};
+	
+	Result->SetValue(PictureTypeResult->GetValue());
+	if(PictureTypeResult->GetSuccess() == true)
+	{
+		auto PictureType{std::experimental::any_cast< std::uint8_t >(PictureTypeResult->GetAny())};
+		
+		if(PictureType == 0x00)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Other"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x01)
+		{
+			Result->GetValue()->PrependTag("interpretation", "32x32 pixels 'file icon' (PNG only)"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x02)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Other file icon"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x03)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Cover (front)"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x04)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Cover (back)"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x05)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Leaflet page"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x06)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Media (e.g. label side of CD"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x07)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Lead artist/lead performer/soloist"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x08)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Artist/performer"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x09)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Conductor"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x0a)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Band/Orchestra"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x0b)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Composer"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x0c)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Lyricist/text writer"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x0d)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Recording Location"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x0e)
+		{
+			Result->GetValue()->PrependTag("interpretation", "During recording"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x0f)
+		{
+			Result->GetValue()->PrependTag("interpretation", "During performance"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x10)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Movie/video screen capture"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x11)
+		{
+			Result->GetValue()->PrependTag("interpretation", "A bright coloured fish"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x12)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Illustration"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x13)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Band/artist logotype"s);
+			Result->SetSuccess(true);
+		}
+		else if(PictureType == 0x14)
+		{
+			Result->GetValue()->PrependTag("interpretation", "Publisher/Studio logotype"s);
+			Result->SetSuccess(true);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -3798,131 +3993,14 @@ std::uint64_t Handle22COMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle22PICFrames(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle22PICFrames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto Encoding(Get_ID3_2_2_Encoding(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_2_Frame_PIC_Body(Buffer)};
 	
-	if(std::get<0>(Encoding) == true)
-	{
-		Index += std::get<1>(Encoding);
-		std::cout << "\t\t\t\tText Encoding: " << std::experimental::any_cast< std::string >(std::get<2>(Encoding).Get("Name")) << std::endl;
-		
-		auto ImageFormat(Get_ISO_IEC_8859_1_StringEndedByBoundary(Buffer + Index, Length - Index, 3));
-		
-		if(std::get<0>(ImageFormat) == true)
-		{
-			Index += std::get<1>(ImageFormat);
-			std::cout << "\t\t\t\tImage format: \"" << std::get<2>(ImageFormat) << '"' << std::endl;
-			if(Length - Index >= 1)
-			{
-				unsigned int PictureType(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[Index])));
-				
-				Index += 1;
-				std::cout << "\t\t\t\tPicture type: " << GetPictureTypeString(PictureType) << std::endl;
-				if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
-				{
-					auto Description(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(Description) == true)
-					{
-						Index += std::get<1>(Description);
-						std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
-					}
-					else
-					{
-						auto Description(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-						
-						if(std::get<0>(Description) == true)
-						{
-							Index += std::get<1>(Description);
-							std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
-						}
-					}
-				}
-				else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UCS_2)
-				{
-					auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(ByteOrderMark) == true)
-					{
-						Index += std::get<1>(ByteOrderMark);
-						if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
-						{
-							auto Description(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-							
-							if(std::get<0>(Description) == true)
-							{
-								Index += std::get<1>(Description);
-								std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (UCS-2, big endian, ended by termination)" << std::endl;
-							}
-							else
-							{
-								auto Description(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-								
-								if(std::get<0>(Description) == true)
-								{
-									Index += std::get<1>(Description);
-									std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (UCS-2, big endian, ended by boundary)" << std::endl;
-								}
-								else
-								{
-									std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in big endian with or without termination." << std::endl;
-								}
-							}
-						}
-						else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
-						{
-							auto Description(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-							
-							if(std::get<0>(Description) == true)
-							{
-								Index += std::get<1>(Description);
-								std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
-							}
-							else
-							{
-								auto Description(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-								
-								if(std::get<0>(Description) == true)
-								{
-									Index += std::get<1>(Description);
-									std::cout << "\t\t\t\tDescription: \"" << std::get<2>(Description) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
-								}
-								else
-								{
-									std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
-								}
-							}
-						}
-					}
-					else
-					{
-						std::cout << "*** The UCS-2 string is expected to start with a byte order mark but it is not." << std::endl;
-						Index = Length;
-					}
-				}
-			}
-			else
-			{
-				std::cout << "*** ERROR *** The frame data is not long enough for the \"Picture type\" field." << std::endl;
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** According to ID3 2.2.0 [4.15], a \"PIC\" frame MUST contain a \"Image format\" field with 3 characters in the ISO/IEC 8859-1:1998 encoding." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.2.0 [4.15], a \"PIC\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.2 encoding identifier." << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Length;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle22T__Frames(const uint8_t * RawBuffer, std::uint64_t Length)
