@@ -97,11 +97,8 @@ namespace Inspection
 	
 	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Buffer & Buffer)
 	{
-		if(Result->GetSuccess() == true)
-		{
-			Result->GetValue()->SetOffset(Result->GetOffset());
-			Result->GetValue()->SetLength(Buffer.GetPosition() - Result->GetValue()->GetOffset());
-		}
+		Result->GetValue()->SetOffset(Result->GetOffset());
+		Result->GetValue()->SetLength(Buffer.GetPosition() - Result->GetValue()->GetOffset());
 	}
 }
 
