@@ -121,7 +121,7 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 			
 			if(Address == MAP_FAILED)
 			{
-				std::cerr << "Could not map the file \"" + Path + "\" into memory." << std::endl;
+				std::cout << "Could not map the file \"" + Path + "\" into memory." << std::endl;
 			}
 			else
 			{
@@ -132,58 +132,19 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				PrintValue(ParseResult->GetValue());
 				if(ParseResult->GetSuccess() == false)
 				{
-					std::cerr << g_LightRed << "The file does not start with a " << ParseResult->GetValue()->GetName() << '.' << g_White << std::endl;
+					std::cout << g_LightRed << "The file does not start with a " << ParseResult->GetValue()->GetName() << '.' << g_White << std::endl;
 				}
 				
 				auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
 				
 				if(Rest > 0ull)
 				{
-					std::cerr << g_DarkGray << "There are " << g_DarkYellow << to_string_cast(Rest) << g_DarkGray << " bytes and bits after the data." << std::endl;
+					std::cout << g_DarkGray << "There are " << g_DarkYellow << to_string_cast(Rest) << g_DarkGray << " bytes and bits after the data." << std::endl;
 				}
 				munmap(Address, FileSize);
 			}
 		}
 		close(FileDescriptor);
-	}
-}
-
-inline void ReadDirectory(const std::string & Path)
-{
-	DIR * Directory(opendir(Path.c_str()));
-	struct dirent * DirectoryEntry(0);
-	
-	while((DirectoryEntry = readdir(Directory)) != 0)
-	{
-		if((std::string(DirectoryEntry->d_name) != ".") && (std::string(DirectoryEntry->d_name) != ".."))
-		{
-			ReadItem(Path + '/' + DirectoryEntry->d_name);
-		}
-	}
-}
-
-inline void ReadItem(const std::string & Path)
-{
-	if(FileExists(Path) == true)
-	{
-		if(IsDirectory(Path) == true)
-		{
-			ReadDirectory(Path);
-		}
-		else if(IsRegularFile(Path) == true)
-		{
-			ReadFile(Path);
-		}
-		else
-		{
-			std::cerr << '"' << Path << "\" is no file or directory!" << std::endl;
-		}
-	}
-	else
-	{
-		std::cerr << '"' << Path << "\" does not exist!" << std::endl;
-		
-		return;
 	}
 }
 
