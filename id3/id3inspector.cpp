@@ -2767,6 +2767,24 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Bu
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_UFID_Body(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+	
+	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
+	if(OwnerIdentifierResult->GetSuccess() == true)
+	{
+		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+		
+		Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+		Result->SetSuccess(IdentifierResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Buffer & Buffer)
 {
 	auto Start{Buffer.GetPosition()};
@@ -5434,36 +5452,14 @@ std::uint64_t Handle23TXXXFrame(const uint8_t * Buffer, std::uint64_t Length)
 	return Index;
 }
 
-std::uint64_t Handle23UFIDFrame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23UFIDFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_UFID_Body(Buffer)};
 	
-	assert(std::get<0>(OwnerIdentifier) == true);
-	if(std::get<2>(OwnerIdentifier).length() == 0)
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Owner Identifier' field must be non-empty." << std::endl;
-	}
-	std::cout << "\t\t\t\tOwner Identifier: \"" << std::get<2>(OwnerIdentifier) << '"' << std::endl;
-	Index += std::get<1>(OwnerIdentifier);
-	if(Length - Index > 64)
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.1], the 'Identifier' field must not exceed 64 bytes." << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	auto Identifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-	
-	std::cout << "\t\t\t\tIdentifier (binary): " << Identifier.second << std::endl;
-	
-	auto IdentifierAsString(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-	
-	if(std::get<0>(IdentifierAsString) == true)
-	{
-		std::cout << "\t\t\t\tIdentifier (string): \"" << std::get<2>(IdentifierAsString) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-	}
-	Index += Identifier.first;
-	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23USLTFrame(const uint8_t * Buffer, std::uint64_t Length)
