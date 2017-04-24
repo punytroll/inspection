@@ -595,13 +595,45 @@ std::string Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCode
 
 std::string Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(const std::string & ISO_639_2_1998_Code)
 {
-	if(ISO_639_2_1998_Code == "eng")
+	if(ISO_639_2_1998_Code == "bul")
+	{
+		return "Bulgarian";
+	}
+	else if(ISO_639_2_1998_Code == "deu")
+	{
+		return "German";
+	}
+	else if(ISO_639_2_1998_Code == "dut")
+	{
+		return "Dutch";
+	}
+	else if(ISO_639_2_1998_Code == "eng")
 	{
 		return "English";
 	}
-	else if((ISO_639_2_1998_Code == "ger") || (ISO_639_2_1998_Code == "deu"))
+	else if(ISO_639_2_1998_Code == "fra")
+	{
+		return "French";
+	}
+	else if(ISO_639_2_1998_Code == "fre")
+	{
+		return "French";
+	}
+	else if(ISO_639_2_1998_Code == "ger")
 	{
 		return "German";
+	}
+	else if(ISO_639_2_1998_Code == "ita")
+	{
+		return "Italian";
+	}
+	else if(ISO_639_2_1998_Code == "nld")
+	{
+		return "Dutch";
+	}
+	else if(ISO_639_2_1998_Code == "rus")
+	{
+		return "Russian";
 	}
 	/// Scope: Special
 	else if(ISO_639_2_1998_Code == "mis")
