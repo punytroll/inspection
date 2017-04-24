@@ -2588,10 +2588,25 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Buffer & 
 {
 	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto LanguageResult{Get_ISO_639_2_1998_Code(Buffer)};
+	auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
 	
-	Result->SetValue(LanguageResult->GetValue());
-	Result->SetSuccess(LanguageResult->GetSuccess());
+	if(FieldResult->GetSuccess() == true)
+	{
+		Result->SetValue(FieldResult->GetValue());
+		Result->SetSuccess(true);
+	}
+	else
+	{
+		Buffer.SetPosition(Start);
+		FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length(3ull, 0));
+		Result->SetValue(FieldResult->GetValue());
+		if(FieldResult->GetSuccess() == true)
+		{
+			Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+			Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+			Result->SetSuccess(true);
+		}
+	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2988,10 +3003,25 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Buffer & 
 {
 	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto LanguageResult{Get_ISO_639_2_1998_Code(Buffer)};
+	auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
 	
-	Result->SetValue(LanguageResult->GetValue());
-	Result->SetSuccess(LanguageResult->GetSuccess());
+	if(FieldResult->GetSuccess() == true)
+	{
+		Result->SetValue(FieldResult->GetValue());
+		Result->SetSuccess(true);
+	}
+	else
+	{
+		Buffer.SetPosition(Start);
+		FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length(3ull, 0));
+		Result->SetValue(FieldResult->GetValue());
+		if(FieldResult->GetSuccess() == true)
+		{
+			Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+			Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+			Result->SetSuccess(true);
+		}
+	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -3324,28 +3354,39 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & 
 {
 	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto LanguageResult{Get_ISO_639_2_1998_Code(Buffer)};
+	auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
 	
-	Result->SetValue(LanguageResult->GetValue());
-	if(LanguageResult->GetSuccess() == true)
+	if(FieldResult->GetSuccess() == true)
 	{
+		Result->SetValue(FieldResult->GetValue());
 		Result->SetSuccess(true);
 	}
 	else
 	{
 		Buffer.SetPosition(Start);
-		
-		auto CodeResult{Get_ASCII_String_Alphabetical_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
-		
-		Result->SetValue(CodeResult->GetValue());
-		if(CodeResult->GetSuccess() == true)
+		FieldResult = Get_ASCII_String_Alphabetical_EndedByLength(Buffer, Inspection::Length(3ull, 0));
+		if(FieldResult->GetSuccess() == true)
 		{
-			const std::string & Code{std::experimental::any_cast< const std::string & >(CodeResult->GetAny())};
+			Result->SetValue(FieldResult->GetValue());
+			
+			const std::string & Code{std::experimental::any_cast< const std::string & >(FieldResult->GetAny())};
 			
 			if(Code == "XXX")
 			{
 				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("interpretation", "<unknown>"s);
+				Result->SetSuccess(true);
+			}
+		}
+		else
+		{
+			Buffer.SetPosition(Start);
+			FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length(3ull, 0));
+			Result->SetValue(FieldResult->GetValue());
+			if(FieldResult->GetSuccess() == true)
+			{
+				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+				Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 				Result->SetSuccess(true);
 			}
 		}
