@@ -79,6 +79,9 @@ std::map< std::string, std::string > g_GUIDDescriptions;
 std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_2;
 std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_3;
 std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_4;
+std::map< std::string, std::string > g_FrameNames_2_2;
+std::map< std::string, std::string > g_FrameNames_2_3;
+std::map< std::string, std::string > g_FrameNames_2_4;
 bool g_PrintBytes(false);
 
 void AppendSeparated(std::string & String, const std::string & Append, const std::string & Separator)
@@ -2234,6 +2237,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_MIMEType(Inspection
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_PictureType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_UFID_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
@@ -3103,6 +3107,24 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Bu
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_UFID_Body(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+	
+	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
+	if(OwnerIdentifierResult->GetSuccess() == true)
+	{
+		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+		
+		Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+		Result->SetSuccess(IdentifierResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & Buffer)
 {
 	auto Start{Buffer.GetPosition()};
@@ -3443,7 +3465,7 @@ public:
 		{
 			_HeaderSize = 6;
 			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 3);
-			_Name = _Names22[_Identifier];
+			_Name = g_FrameNames_2_2[_Identifier];
 			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5]));
 			_SupportsFlags = false;
 			
@@ -3459,7 +3481,7 @@ public:
 		{
 			_HeaderSize = 10;
 			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 4);
-			_Name = _Names23[_Identifier];
+			_Name = g_FrameNames_2_3[_Identifier];
 			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[7]));
 			_SupportsFlags = true;
 			_SupportsTagAlterPreservation = true;
@@ -3489,7 +3511,7 @@ public:
 		{
 			_HeaderSize = 10;
 			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 4);
-			_Name = _Names24[_Identifier];
+			_Name = g_FrameNames_2_4[_Identifier];
 			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 21) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[6])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[7]));
 			_SupportsFlags = true;
 			_SupportsTagAlterPreservation = true;
@@ -3702,7 +3724,7 @@ public:
 	static void Handle22(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
 		g_FrameHandlers_2_2.insert(std::make_pair(Identifier, Handler));
-		_Names22.insert(std::make_pair(Identifier, Name));
+		g_FrameNames_2_2.insert(std::make_pair(Identifier, Name));
 	}
 	
 	static void Forbid23(const std::string & Identifier, const std::string & Reason)
@@ -3713,7 +3735,7 @@ public:
 	static void Handle23(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
 		g_FrameHandlers_2_3.insert(std::make_pair(Identifier, Handler));
-		_Names23.insert(std::make_pair(Identifier, Name));
+		g_FrameNames_2_3.insert(std::make_pair(Identifier, Name));
 	}
 	
 	static void Forbid24(const std::string & Identifier, const std::string & Reason)
@@ -3724,16 +3746,13 @@ public:
 	static void Handle24(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
 	{
 		g_FrameHandlers_2_4.insert(std::make_pair(Identifier, Handler));
-		_Names24.insert(std::make_pair(Identifier, Name));
+		g_FrameNames_2_4.insert(std::make_pair(Identifier, Name));
 	}
 	
 	// static setup
 	static std::map< std::string, std::string > _Forbidden22;
 	static std::map< std::string, std::string > _Forbidden23;
 	static std::map< std::string, std::string > _Forbidden24;
-	static std::map< std::string, std::string > _Names22;
-	static std::map< std::string, std::string > _Names23;
-	static std::map< std::string, std::string > _Names24;
 private:
 	// member variables
 	bool _Compression;
@@ -3764,9 +3783,6 @@ private:
 std::map< std::string, std::string > FrameHeader::_Forbidden22;
 std::map< std::string, std::string > FrameHeader::_Forbidden23;
 std::map< std::string, std::string > FrameHeader::_Forbidden24;
-std::map< std::string, std::string > FrameHeader::_Names22;
-std::map< std::string, std::string > FrameHeader::_Names23;
-std::map< std::string, std::string > FrameHeader::_Names24;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // specific to tag version 2.2                                                                   //
@@ -6465,8 +6481,26 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 				}
 				else
 				{
-					std::cout << "*** ERROR *** No handler defined for the frame type \"" << NewFrameHeader->GetIdentifier() << "\" in tag version 2." << to_string_cast(MajorVersion) << "." << std::endl;
-					HandledFrameSize = NewFrameHeader->GetDataSize();
+					std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > InspectionHandler;
+					
+					if((MajorVersion == 0x04) && (NewFrameHeader->GetIdentifier() == "UFID"))
+					{
+						InspectionHandler = Get_ID3_2_4_Frame_UFID_Body;
+					}
+					if(InspectionHandler != nullptr)
+					{
+						Inspection::Buffer Buffer{RawBuffer, Inspection::Length(NewFrameHeader->GetDataSize(), 0)};
+						auto FrameResult{InspectionHandler(Buffer)};
+						
+						PrintValue(FrameResult->GetValue(), "\t\t\t\t");
+						
+						HandledFrameSize = FrameResult->GetLength().GetBytes();
+					}
+					else
+					{
+						std::cout << "*** ERROR *** No handler defined for the frame type \"" << NewFrameHeader->GetIdentifier() << "\" in tag version 2." << to_string_cast(MajorVersion) << "." << std::endl;
+						HandledFrameSize = NewFrameHeader->GetDataSize();
+					}
 				}
 				if(HandledFrameSize < NewFrameHeader->GetDataSize())
 				{
@@ -6850,6 +6884,8 @@ int main(int argc, char **argv)
 	// forbidden tags
 	FrameHeader::Forbid24("TYER", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3.");
 	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle23T___Frames);
+	
+	g_FrameNames_2_4.insert(std::make_pair("UFID", "Unique file identifier"));
 	
 	// processing
 	while(Paths.begin() != Paths.end())
