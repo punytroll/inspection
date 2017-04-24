@@ -14,6 +14,7 @@
 
 #include "../common/5th.h"
 #include "../common/file_handling.h"
+#include "../common/helper.h"
 #include "../common/values.h"
 
 using namespace std::string_literals;
@@ -71,7 +72,6 @@ enum class UTF16ByteOrderMark
 
 std::map< unsigned int, std::string > g_NumericGenresID3_1;
 std::map< unsigned int, std::string > g_NumericGenresWinamp;
-std::map< std::string, std::string > g_ISO_639_2_Codes;
 std::map< std::string, std::string > g_ISO_3166_1_Alpha_2_Codes;
 std::map< unsigned int, std::string > g_PictureTypes;
 std::map< TextEncoding, std::string > g_EncodingNames;
@@ -5041,24 +5041,7 @@ std::uint64_t Handle23TLANFrames(const uint8_t * Buffer, std::uint64_t Length)
 				}
 			}
 		}
-		if(ISO_639_2_Code_String.length() > 0)
-		{
-			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(ISO_639_2_Code_String));
-			
-			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
-			{
-				std::cout << "\t\t\t\tLanguage interpretation (ISO 639-2): " << ISO_639_2_Iterator->second << std::endl;
-			}
-			else
-			{
-				std::cout << "\t\t\t\tLanguage interpretation (ISO 639-2): <unknown>" << std::endl;
-				std::cout << "*** ERROR *** The language code '" << ISO_639_2_Code_String << "' is not defined by ISO 639-2." << std::endl;
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** The language code is empty, which is not allowed by either ID3 version 2.3 or ISO 639-2 for language codes." << std::endl;
-		}
+		std::cout << "\t\t\t\tLanguage (ISO 639-2): " << Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(ISO_639_2_Code_String) << " (\"" << ISO_639_2_Code_String << "\")" << std::endl;
 	}
 	else
 	{
@@ -5571,18 +5554,7 @@ std::uint64_t Handle23USLTFrame(const uint8_t * Buffer, std::uint64_t Length)
 		if(std::get<0>(Language) == true)
 		{
 			Index += std::get<1>(Language);
-			
-			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(std::get<2>(Language)));
-			
-			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
-			{
-				std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << " (\"" << std::get<2>(Language) << "\")" << std::endl;
-			}
-			else
-			{
-				std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown>" << std::endl;
-				std::cout << "*** ERROR *** The language code '" << std::get<2>(Language) << "' is not defined by ISO 639-2." << std::endl;
-			}
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): " << Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(std::get<2>(Language)) << " (\"" << std::get<2>(Language) << "\")" << std::endl;
 			if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
 			{
 				auto ContentDescriptor(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
@@ -6160,18 +6132,7 @@ std::uint64_t Handle24USLTFrame(const uint8_t * Buffer, std::uint64_t Length)
 		if(std::get<0>(Language) == true)
 		{
 			Index += std::get<1>(Language);
-			
-			auto ISO_639_2_Iterator(g_ISO_639_2_Codes.find(std::get<2>(Language)));
-			
-			if(ISO_639_2_Iterator != g_ISO_639_2_Codes.end())
-			{
-				std::cout << "\t\t\t\tLanguage (ISO 639-2): " << ISO_639_2_Iterator->second << " (\"" << std::get<2>(Language) << "\")" << std::endl;
-			}
-			else
-			{
-				std::cout << "\t\t\t\tLanguage (ISO 639-2): <unknown>" << std::endl;
-				std::cout << "*** ERROR *** The language code '" << std::get<2>(Language) << "' is not defined by ISO 639-2." << std::endl;
-			}
+			std::cout << "\t\t\t\tLanguage (ISO 639-2): " << Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(std::get<2>(Language)) << " (\"" << std::get<2>(Language) << "\")" << std::endl;
 			if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
 			{
 				auto ContentDescriptor(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
@@ -6811,16 +6772,6 @@ int main(int argc, char **argv)
 	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_16, "UTF-16 encoded Unicode with Byte Order Mark"));
 	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_16_BE, "UTF-16BE encoded Unicode in Big Endian"));
 	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_8, "UTF-8 encoded Unicode"));
-	
-	// language codes according to ISO 639-2 (alpha-3 code)
-	g_ISO_639_2_Codes.insert(std::make_pair("deu", "German"));
-	g_ISO_639_2_Codes.insert(std::make_pair("dut", "Dutch; Flemish"));
-	g_ISO_639_2_Codes.insert(std::make_pair("eng", "English"));
-	g_ISO_639_2_Codes.insert(std::make_pair("fra", "French"));
-	g_ISO_639_2_Codes.insert(std::make_pair("fre", "French"));
-	g_ISO_639_2_Codes.insert(std::make_pair("ger", "German"));
-	g_ISO_639_2_Codes.insert(std::make_pair("ita", "Italian"));
-	g_ISO_639_2_Codes.insert(std::make_pair("rus", "Russian"));
 	
 	// country codes according to ISO 3166-1 alpha-2
 	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("GB", "United Kingdom"));
