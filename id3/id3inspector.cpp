@@ -2231,6 +2231,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TLAN_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
@@ -2974,6 +2975,37 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Bu
 		if(std::get<0>(Interpretation) == true)
 		{
 			Result->GetValue("Information")->PrependTag("interpretation", std::get<1>(Interpretation));
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TLAN_Body(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FrameT___BodyResult{Get_ID3_2_3_Frame_T____Body(Buffer)};
+	
+	Result->SetValue(FrameT___BodyResult->GetValue());
+	if(FrameT___BodyResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto Information{std::experimental::any_cast< const std::string & >(FrameT___BodyResult->GetValue("Information")->GetTagAny("string"))};
+		
+		try
+		{
+			auto Interpretation{Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(Information)};
+			
+			Result->GetValue("Information")->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+			Result->GetValue("Information")->PrependTag("interpretation", Interpretation);
+		}
+		catch(...)
+		{
+			Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
+			Result->GetValue("Information")->PrependTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
+			Result->GetValue("Information")->PrependTag("interpretation", "<unkown>"s);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -4964,132 +4996,14 @@ std::uint64_t Handle23TFLTFrames(const uint8_t * Buffer, std::uint64_t Length)
 	return Index;
 }
 
-std::uint64_t Handle23TLANFrames(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23TLANFrames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_TLAN_Body(Buffer)};
 	
-	if(std::get<0>(Encoding) == true)
-	{
-		Index += std::get<1>(Encoding);
-		std::cout << "\t\t\t\tText Encoding: " << std::experimental::any_cast< std::string >(std::get<2>(Encoding).Get("Name")) << std::endl;
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-		std::string ISO_639_2_Code_String;
-		
-		if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
-		{
-			auto ISO_639_2_Code(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ISO_639_2_Code) == true)
-			{
-				Index += std::get<1>(ISO_639_2_Code);
-				std::cout << "\t\t\t\tString: \"" << std::get<2>(ISO_639_2_Code) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
-				ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
-			}
-			else
-			{
-				auto ISO_639_2_Code(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(ISO_639_2_Code) == true)
-				{
-					
-					Index += std::get<1>(ISO_639_2_Code);
-					std::cout << "\t\t\t\tString: \"" << std::get<2>(ISO_639_2_Code) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-					ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
-				}
-			}
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UCS_2)
-		{
-			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ByteOrderMark) == true)
-			{
-				Index += std::get<1>(ByteOrderMark);
-				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
-				{
-					std::cout << "\t\t\t\tString:" << std::endl;
-					std::cout << "\t\t\t\t\tByte order mark: big endian" << std::endl;
-					
-					auto ISO_639_2_Code(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(ISO_639_2_Code) == true)
-					{
-						Index += std::get<1>(ISO_639_2_Code);
-						std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(ISO_639_2_Code) << "\" (UCS-2, big endian, ended by termination)" << std::endl;
-						ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
-					}
-					else
-					{
-						auto ISO_639_2_Code(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-						
-						if(std::get<0>(ISO_639_2_Code) == true)
-						{
-							Index += std::get<1>(ISO_639_2_Code);
-							std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(ISO_639_2_Code) << "\" (UCS-2, big endian, ended by boundary)" << std::endl;
-							ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in big endian with or without termination." << std::endl;
-						}
-					}
-				}
-				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
-				{
-					std::cout << "\t\t\t\tString:" << std::endl;
-					std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
-					
-					auto ISO_639_2_Code(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(ISO_639_2_Code) == true)
-					{
-						Index += std::get<1>(ISO_639_2_Code);
-						std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(ISO_639_2_Code) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
-						ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
-					}
-					else
-					{
-						auto ISO_639_2_Code(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-						
-						if(std::get<0>(ISO_639_2_Code) == true)
-						{
-							Index += std::get<1>(ISO_639_2_Code);
-							std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(ISO_639_2_Code) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
-							ISO_639_2_Code_String = std::get<2>(ISO_639_2_Code);
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
-						}
-					}
-				}
-			}
-			else
-			{
-				if(Index == Length)
-				{
-					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 must start with a byte order mark, without explicitly excluding empty strings. The string for this text frame is empty without a byte order mark and terminates at the frame boundary." << std::endl;
-					std::cout << "\t\t\t\tString: \"\" (ISO/IEC 10646-1:1993, UCS-2, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
-				}
-			}
-		}
-		std::cout << "\t\t\t\tLanguage (ISO 639-2): " << Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(ISO_639_2_Code_String) << " (\"" << ISO_639_2_Code_String << "\")" << std::endl;
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.2.1], a \"TLAN\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.3 encoding identifier." << std::endl;
-	}
-	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23TCMPFrame(const uint8_t * Buffer, std::uint64_t Length)
