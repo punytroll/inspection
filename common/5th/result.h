@@ -41,8 +41,7 @@ namespace Inspection
 					return Value;
 				}
 			}
-			
-			throw new std::exception();
+			throw std::invalid_argument("Unknown sub value \"" + Name + "\".");
 		}
 		
 		const std::experimental::any & GetAny(void)
@@ -59,8 +58,7 @@ namespace Inspection
 					return Value->GetAny();
 				}
 			}
-			
-			throw new std::exception();
+			throw std::invalid_argument("Unknown sub value \"" + Name + "\".");
 		}
 		
 		const Inspection::Length & GetLength(void) const
