@@ -14,8 +14,8 @@ namespace Inspection
 	const std::string g_DarkGray{"\033[90m"};
 	const std::string g_DarkYellow{"\033[33m"};
 	const std::string g_LightGray{"\033[37m"};
+	const std::string g_LightRed{"\033[91m"};
 	const std::string g_LightYellow{"\033[93m"};
-	const std::string g_Red{"\033[31m"};
 	const std::string g_White{"\033[97m"};
 	const std::string g_Reset{"\033[0m"};
 	
@@ -52,7 +52,15 @@ namespace Inspection
 				}
 				if(Tag->GetName().empty() == false)
 				{
-					std::cout << g_LightGray << Tag->GetName() << g_DarkGray;
+					if(Tag->GetName() == "error")
+					{
+						std::cout << g_LightRed;
+					}
+					else
+					{
+						std::cout << g_LightGray;
+					}
+					std::cout << Tag->GetName() << g_DarkGray;
 				}
 				if((Tag->GetName().empty() == false) && (Tag->GetAny().empty() == false))
 				{
