@@ -2220,6 +2220,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_ImageFormat(Inspecti
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_PictureType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_TagHeader_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
@@ -2233,6 +2234,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TLAN_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_TagHeader_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
@@ -2244,11 +2246,11 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_TXXX_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_UFID_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_TagHeader_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader_Flags(Inspection::Buffer & Buffer, std::uint8_t MajorVersion);
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Inspection::Buffer & Buffer);
 
 std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
@@ -2607,6 +2609,31 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Buffer & 
 			Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
 			Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 			Result->SetSuccess(true);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_TagHeader_Flags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
+	
+	Result->SetValue(FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
+		
+		Result->GetValue()->Append("[7] Unsynchronization", Flags[7]);
+		Result->GetValue()->Append("[6] Compression", Flags[6]);
+		Result->GetValue()->Append("[5-0] Reserved", false);
+		for(auto FlagIndex = 0; FlagIndex <= 5; ++FlagIndex)
+		{
+			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -3060,6 +3087,32 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Buffer & 
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_TagHeader_Flags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
+	
+	Result->SetValue(FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
+		
+		Result->GetValue()->Append("[7] Unsynchronization", Flags[7]);
+		Result->GetValue()->Append("[6] Extended header", Flags[6]);
+		Result->GetValue()->Append("[5] Experimental indicator", Flags[5]);
+		Result->GetValue()->Append("[4-0] Reserved", false);
+		for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
+		{
+			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -3454,6 +3507,33 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & 
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_TagHeader_Flags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
+	
+	Result->SetValue(FlagsResult->GetValue());
+	if(FlagsResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
+		
+		Result->GetValue()->Append("[7] Unsynchronization", Flags[7]);
+		Result->GetValue()->Append("[6] Extended header", Flags[6]);
+		Result->GetValue()->Append("[5] Experimental indicator", Flags[5]);
+		Result->GetValue()->Append("[4] Footer present", Flags[4]);
+		Result->GetValue()->Append("[3-0] Reserved", false);
+		for(auto FlagIndex = 0; FlagIndex <= 3; ++FlagIndex)
+		{
+			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -3624,60 +3704,32 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader(Inspection::Buffer & B
 			if(RevisionNumberResult->GetSuccess() == true)
 			{
 				auto MajorVersion{std::experimental::any_cast< std::uint8_t >(MajorVersionResult->GetAny())};
-				auto FlagsResult{Get_ID3_2_TagHeader_Flags(Buffer, MajorVersion)};
+				std::unique_ptr< Inspection::Result > FlagsResult;
 				
-				Result->GetValue()->Append("Flags", FlagsResult->GetValue());
-				if(FlagsResult->GetSuccess() == true)
+				if(MajorVersion == 0x02)
 				{
-					auto SizeResult{Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Buffer)};
-					
-					Result->GetValue()->Append("Size", SizeResult->GetValue());
-					Result->SetSuccess(SizeResult->GetSuccess());
+					FlagsResult = Get_ID3_2_2_TagHeader_Flags(Buffer);
+				}
+				else if(MajorVersion == 0x03)
+				{
+					FlagsResult = Get_ID3_2_3_TagHeader_Flags(Buffer);
+				}
+				else if(MajorVersion == 0x04)
+				{
+					FlagsResult = Get_ID3_2_4_TagHeader_Flags(Buffer);
+				}
+				if(FlagsResult)
+				{
+					Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+					if(FlagsResult->GetSuccess() == true)
+					{
+						auto SizeResult{Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Buffer)};
+						
+						Result->GetValue()->Append("Size", SizeResult->GetValue());
+						Result->SetSuccess(SizeResult->GetSuccess());
+					}
 				}
 			}
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader_Flags(Inspection::Buffer & Buffer, std::uint8_t MajorVersion)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
-	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
-	{
-		Result->SetSuccess(true);
-		
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
-		auto StartIndex{2};
-		
-		Result->GetValue()->Append("[0] Unsynchronization", Flags[0]);
-		if(MajorVersion == 0x02)
-		{
-			Result->GetValue()->Append("[1] Compression", Flags[1]);
-		}
-		else if((MajorVersion == 0x03) || (MajorVersion == 0x04))
-		{
-			Result->GetValue()->Append("[1] Extended header", Flags[1]);
-		}
-		if((MajorVersion == 0x03) || (MajorVersion == 0x04))
-		{
-			Result->GetValue()->Append("[2] Experimental indicator", Flags[2]);
-			StartIndex = 3;
-		}
-		if(MajorVersion == 0x04)
-		{
-			Result->GetValue()->Append("[3] Footer present", Flags[3]);
-			StartIndex = 4;
-		}
-		Result->GetValue()->Append('[' + to_string_cast(StartIndex) + "-7] Reserved", false);
-		for(auto FlagIndex = StartIndex; FlagIndex < 8; ++FlagIndex)
-		{
-			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
