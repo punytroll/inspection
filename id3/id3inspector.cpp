@@ -3466,7 +3466,7 @@ public:
 			_HeaderSize = 6;
 			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 3);
 			_Name = g_FrameNames_2_2[_Identifier];
-			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[3])) << 14) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 7) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5]));
+			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[3])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5]));
 			_SupportsFlags = false;
 			
 			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden22.find(_Identifier));
