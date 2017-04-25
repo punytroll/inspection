@@ -12,6 +12,8 @@ syntax: regexp
 ^vorbis/.*\.o$
 ^asfinspector$
 ^asf/.*\.o$
+^apeinspector$
+^ape/.*\.o$
 ^common/5th/test$
 ^common/5th/.*\.o$
 ^common/getters/.*\.o$

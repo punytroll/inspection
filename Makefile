@@ -2,6 +2,7 @@ default: all
 
 all:
 	$(MAKE) -C common
+	$(MAKE) -C ape
 	$(MAKE) -C asf
 	$(MAKE) -C flac
 	$(MAKE) -C id3
@@ -11,6 +12,7 @@ all:
 
 clean:
 	$(MAKE) $@ -C common
+	$(MAKE) $@ -C ape
 	$(MAKE) $@ -C asf
 	$(MAKE) $@ -C flac
 	$(MAKE) $@ -C id3
