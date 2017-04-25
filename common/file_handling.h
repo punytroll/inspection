@@ -66,15 +66,24 @@ inline bool IsRegularFile(const std::string & Path)
 
 inline void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor)
 {
-	DIR * Directory(opendir(Path.c_str()));
-	struct dirent * DirectoryEntry(0);
+	auto Directory(opendir(Path.c_str()));
 	
-	while((DirectoryEntry = readdir(Directory)) != 0)
+	if(Directory != nullptr)
 	{
-		if((std::string(DirectoryEntry->d_name) != ".") && (std::string(DirectoryEntry->d_name) != ".."))
+		while(true)
 		{
-			ReadItem(Path + '/' + DirectoryEntry->d_name, Processor);
+			auto DirectoryEntry{readdir(Directory)};
+			
+			if(DirectoryEntry == nullptr)
+			{
+				break;
+			}
+			else if((std::string(DirectoryEntry->d_name) != ".") && (std::string(DirectoryEntry->d_name) != ".."))
+			{
+				ReadItem(Path + '/' + DirectoryEntry->d_name, Processor);
+			}
 		}
+		closedir(Directory);
 	}
 }
 
