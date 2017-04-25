@@ -6271,9 +6271,9 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 	{
 		TagHeaderResult->GetValue()->SetName("ID3v2");
 		PrintValue(TagHeaderResult->GetValue(), "    ");
-		if(TagHeaderResult->GetValue("Flags")->HasValue("[1] Extended header") == true)
+		if(TagHeaderResult->GetValue("Flags")->HasValue("[6] Extended header") == true)
 		{
-			auto ExtendedHeader{std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("[1] Extended header"))};
+			auto ExtendedHeader{std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("[6] Extended header"))};
 			
 			if(ExtendedHeader == true)
 			{
