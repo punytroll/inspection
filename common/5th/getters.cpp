@@ -140,6 +140,51 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	assert(Length.GetBits() == 0);
+	
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::stringstream Value;
+	
+	if(Buffer.Has(Length) == true)
+	{
+		Result->GetValue()->AppendTag("string"s);
+		Result->GetValue()->AppendTag("ASCII"s);
+		Result->GetValue()->AppendTag("alphanumeric"s);
+		
+		auto Boundary{Buffer.GetPosition() + Length};
+		auto NumberOfCharacters{0ul};
+		
+		while(true)
+		{
+			auto  CharacterResult{Get_ASCII_Character_AlphaNumeric(Buffer)};
+			
+			if(CharacterResult->GetSuccess() == false)
+			{
+				break;
+			}
+			else
+			{
+				NumberOfCharacters += 1;
+				Value << std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny());
+				if(Buffer.GetPosition() == Boundary)
+				{
+					Result->GetValue()->AppendTag("ended by length"s);
+					Result->SetSuccess(true);
+					
+					break;
+				}
+			}
+		}
+		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+	}
+	Result->GetValue()->SetAny(Value.str());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & TemplateString)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
