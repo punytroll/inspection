@@ -2251,7 +2251,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Buffe
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_SynchSafe(Inspection::Buffer & Buffer);
 
 std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
 {
@@ -3723,7 +3723,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader(Inspection::Buffer & B
 					Result->GetValue()->Append("Flags", FlagsResult->GetValue());
 					if(FlagsResult->GetSuccess() == true)
 					{
-						auto SizeResult{Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Buffer)};
+						auto SizeResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe(Buffer)};
 						
 						Result->GetValue()->Append("Size", SizeResult->GetValue());
 						Result->SetSuccess(SizeResult->GetSuccess());
@@ -3737,7 +3737,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_TagHeader(Inspection::Buffer & B
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_Unsynchronized(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_SynchSafe(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	
@@ -3764,7 +3764,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_Unsynchron
 						Result->GetValue()->AppendTag("unsigned"s);
 						Result->GetValue()->AppendTag("28bit value"s);
 						Result->GetValue()->AppendTag("32bit field"s);
-						Result->GetValue()->AppendTag("unsynchronized"s);
+						Result->GetValue()->AppendTag("synchsafe"s);
 						Result->SetSuccess(true);
 					}
 				}
