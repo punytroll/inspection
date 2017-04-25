@@ -1800,7 +1800,6 @@ std::tuple< bool, std::uint64_t, Values > Get_0_Byte_As_32Bit_Unsigned_Integer(c
 std::tuple< bool, std::uint64_t, Values > Get_1_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_5_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * Buffer, std::uint64_t Length);
-std::tuple< bool, std::uint64_t, Values > Get_ID3_2_2_Encoding(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_3_Encoding(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_Encoding(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_ExtendedTagHeader(const std::uint8_t * Buffer, std::uint64_t Length);
@@ -1904,44 +1903,6 @@ std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * B
 		if(DescriptionIterator != g_GUIDDescriptions.end())
 		{
 			Result.Add("GUIDDescription", DescriptionIterator->second);
-		}
-	}
-	
-	return std::make_tuple(Success, Index, Result);
-}
-
-std::tuple< bool, std::uint64_t, Values > Get_ID3_2_2_Encoding(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	Values Result;
-	
-	if(Length >= 1)
-	{
-		if(Buffer[0] == 0x00)
-		{
-			Success = true;
-			Index += 1;
-			Result.Add("Result", TextEncoding::ISO_IEC_8859_1_1998);
-		}
-		else if(Buffer[0] == 0x01)
-		{
-			Success = true;
-			Index += 1;
-			Result.Add("Result", TextEncoding::UCS_2);
-		}
-	}
-	if(Result.Has("Result") == true)
-	{
-		auto EncodingIterator{g_EncodingNames.find(std::experimental::any_cast< TextEncoding >(Result.Get("Result")))};
-		
-		if(EncodingIterator != g_EncodingNames.end())
-		{
-			Result.Add("Name", EncodingIterator->second);
-		}
-		else
-		{
-			Result.Add("Name", "<invalid encoding>");
 		}
 	}
 	
