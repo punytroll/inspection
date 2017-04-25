@@ -2219,6 +2219,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_Body(Inspection::Buf
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_ImageFormat(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_PIC_PictureType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_UFI_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TagHeader_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer);
@@ -2582,6 +2583,24 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_T___Body(Inspection::Buf
 		
 		Result->GetValue()->Append("Information", InformationResult->GetValue());
 		Result->SetSuccess(InformationResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_UFI_Body(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+	
+	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
+	if(OwnerIdentifierResult->GetSuccess() == true)
+	{
+		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+		
+		Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+		Result->SetSuccess(IdentifierResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -4164,31 +4183,14 @@ std::uint64_t Handle22T__Frames(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle22UFIFrames(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle22UFIFrames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto OwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_2_Frame_UFI_Body(Buffer)};
 	
-	if(std::get<0>(OwnerIdentifier) == true)
-	{
-		Index += std::get<1>(OwnerIdentifier);
-		std::cout << "\t\t\t\tOwner identifier: \"" << std::get<2>(OwnerIdentifier) << "\" (zero-terminated, ISO/IEC 8859-1:1998)" << std::endl;
-		
-		auto Identifier(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-		
-		Index += Identifier.first;
-		std::cout << "\t\t\t\tIdentifier: " << Identifier.second << " (boundary-terminated, binary)" << std::endl;
-	}
-	else
-	{
-		auto Hexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-		
-		Index += Hexadecimal.first;
-		std::cout << "*** ERROR *** Invalid string for ISO/IEC 8859-1 encoding." << std::endl;
-		std::cout << "              Binary content: " << Hexadecimal.second << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 
