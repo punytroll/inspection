@@ -73,7 +73,6 @@ enum class UTF16ByteOrderMark
 std::map< unsigned int, std::string > g_NumericGenresID3_1;
 std::map< unsigned int, std::string > g_NumericGenresWinamp;
 std::map< std::string, std::string > g_ISO_3166_1_Alpha_2_Codes;
-std::map< unsigned int, std::string > g_PictureTypes;
 std::map< TextEncoding, std::string > g_EncodingNames;
 std::map< std::string, std::string > g_GUIDDescriptions;
 std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_2;
@@ -384,24 +383,6 @@ std::pair< bool, std::string > GetWMUniqueFileIdentifierInterpretation(const std
 	Result = GetWMUniqueFileIdentifierAsAMGIdentifier(WMUniqueFileIdentifier);
 	
 	return Result;
-}
-
-std::string GetPictureTypeString(unsigned int PictureType)
-{
-	std::stringstream Result;
-	std::map< unsigned int, std::string >::iterator PictureTypeIterator(g_PictureTypes.find(PictureType));
-	
-	if(PictureTypeIterator != g_PictureTypes.end())
-	{
-		Result << PictureTypeIterator->second;
-	}
-	else
-	{
-		Result << "<invalid picture type>";
-	}
-	Result << " (" << PictureType << ")";
-	
-	return Result.str();
 }
 
 std::pair< int, std::string > GetHexadecimalStringTerminatedByLength(const uint8_t * Buffer, int Length)
@@ -6663,29 +6644,6 @@ int main(int argc, char **argv)
 	// country codes according to ISO 3166-1 alpha-2
 	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("GB", "United Kingdom"));
 	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("ZA", "South Africa"));
-	
-	// picture types
-	g_PictureTypes.insert(std::make_pair(0x00, "Other"));
-	g_PictureTypes.insert(std::make_pair(0x01, "32x32 pixels 'file icon' (PNG only)"));
-	g_PictureTypes.insert(std::make_pair(0x02, "Other file icon"));
-	g_PictureTypes.insert(std::make_pair(0x03, "Cover (front)"));
-	g_PictureTypes.insert(std::make_pair(0x04, "Cover (back)"));
-	g_PictureTypes.insert(std::make_pair(0x05, "Leaflet page"));
-	g_PictureTypes.insert(std::make_pair(0x06, "Media (e.g. lable side of CD)"));
-	g_PictureTypes.insert(std::make_pair(0x07, "Lead artist/lead performer/soloist"));
-	g_PictureTypes.insert(std::make_pair(0x08, "Artist/performer"));
-	g_PictureTypes.insert(std::make_pair(0x09, "Conductor"));
-	g_PictureTypes.insert(std::make_pair(0x0a, "Band/Orchestra"));
-	g_PictureTypes.insert(std::make_pair(0x0b, "Composer"));
-	g_PictureTypes.insert(std::make_pair(0x0c, "Lyricist/text writer"));
-	g_PictureTypes.insert(std::make_pair(0x0d, "Recording Location"));
-	g_PictureTypes.insert(std::make_pair(0x0e, "During recording"));
-	g_PictureTypes.insert(std::make_pair(0x0f, "During performance"));
-	g_PictureTypes.insert(std::make_pair(0x10, "Movie/video screen capture"));
-	g_PictureTypes.insert(std::make_pair(0x11, "A bright coloured fish"));
-	g_PictureTypes.insert(std::make_pair(0x12, "Illustration"));
-	g_PictureTypes.insert(std::make_pair(0x13, "Band/artist logotype"));
-	g_PictureTypes.insert(std::make_pair(0x14, "Publisher/Studio logotype"));
 	
 	// ID3v2.2.0
 	FrameHeader::Handle22("COM", "Comment", Handle22COMFrame);
