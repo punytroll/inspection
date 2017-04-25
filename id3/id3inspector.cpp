@@ -2176,6 +2176,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_PictureType(Inspect
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_COMM_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_MIMEType(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_POPM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TLAN_Body(Inspection::Buffer & Buffer);
@@ -3117,6 +3118,65 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_MIMEType(Inspection
 	/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
 	Result->SetValue(MIMETypeResult->GetValue());
 	Result->SetSuccess(MIMETypeResult->GetSuccess());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_POPM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto EMailToUserResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+	
+	Result->GetValue()->Append("EMailToUser", EMailToUserResult->GetValue());
+	if(EMailToUserResult->GetSuccess() == true)
+	{
+		auto RatingResult{Get_UnsignedInteger_8Bit(Buffer)};
+		
+		Result->GetValue()->Append("Rating", RatingResult->GetValue());
+		if(RatingResult->GetSuccess() == true)
+		{
+			if(Buffer.GetPosition() == Boundary)
+			{
+				auto CounterValue{std::make_shared< Inspection::Value >()};
+				
+				CounterValue->SetName("Counter");
+				CounterValue->AppendTag("omitted"s);
+				Result->GetValue()->Append(CounterValue);
+			}
+			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) > Boundary)
+			{
+				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+				
+				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				if(CounterResult->GetSuccess() == true)
+				{
+					Result->SetSuccess(true);
+				}
+				Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+				Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
+			}
+			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) == Boundary)
+			{
+				auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+				
+				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				Result->SetSuccess(CounterResult->GetSuccess());
+			}
+			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
+			{
+				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+				
+				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				if(CounterResult->GetSuccess() == true)
+				{
+					Result->SetSuccess(true);
+				}
+				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			}
+		}
+	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -4557,65 +4617,14 @@ std::uint64_t Handle23PCNTFrame(const uint8_t * Buffer, std::uint64_t Length)
 	return Index;
 }
 
-std::uint64_t Handle23POPMFrame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23POPMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_POPM_Body(Buffer, Inspection::Length(Length, 0))};
 	
-	if(Length >= 6)
-	{
-		auto EMailToUser(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(EMailToUser) == true)
-		{
-			Index += std::get<1>(EMailToUser);
-			std::cout << "\t\t\t\tEMail to user: \"" << std::get<2>(EMailToUser) << "\" (null-terminated ISO/IEC 8859-1 string)"  << std::endl;
-			if(Length - Index >= 1)
-			{
-				auto Rating(Get_UInt8(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(Rating) == true);
-				std::cout << "\t\t\t\tRating: " << static_cast< uint32_t >(std::get<2>(Rating)) << std::endl;
-				Index += std::get<1>(Rating);
-				if(Length - Index >= 4)
-				{
-					if(Length - Index == 4)
-					{
-						auto Counter(Get_UInt32_BE(Buffer + Index, Length - Index));
-						
-						std::cout << "\t\t\t\tCounter: " << std::get<2>(Counter) << std::endl;
-						Index += std::get<1>(Counter);
-					}
-					else
-					{
-						/** @todo Implement an output function for arbitrary sized unsigned numbers. **/
-						std::cout << "*** ERROR *** The program does not yet support printing the value of numbers with more than four bytes." << std::endl;
-						Index = Length;
-					}
-				}
-				else
-				{
-					std::cout << "\t\t\t\tCounter: - (The personal play counter is omitted.)" << std::endl;
-				}
-			}
-			else
-			{
-				std::cout << "*** ERROR *** Expected to find at least one more byte containing the rating." << std::endl;
-				Index = Length;
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** Expected to find a null-terminated ISO/IEC 8859-1 string in the first field." << std::endl;
-			Index = Length;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Expected a data length of at least 6 bytes." << std::endl;
-		Index = Length;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23PRIVFrame(const uint8_t * Buffer, std::uint64_t Length)
