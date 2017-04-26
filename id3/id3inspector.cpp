@@ -3330,14 +3330,23 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_E
 		auto ISO_IEC_8859_1_1998_StringResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
 		
 		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
-		Result->SetSuccess(ISO_IEC_8859_1_1998_StringResult->GetSuccess());
+		if(ISO_IEC_8859_1_1998_StringResult->GetSuccess() == true)
+		{
+			Result->GetValue()->PrependTag("string", Result->GetAny());
+			Result->SetSuccess(true);
+		}
 	}
 	else if(TextEncoding == 0x01)
 	{
 		auto ISO_IEC_10646_1_1993_UCS_2_StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Buffer)};
 		
 		Result->SetValue(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetValue());
-		Result->SetSuccess(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetSuccess());
+		if(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetSuccess() == true)
+		{
+			Result->GetValue()->ClearTags();
+			Result->GetValue()->PrependTag("string", Result->GetAny("String"));
+			Result->SetSuccess(true);
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
