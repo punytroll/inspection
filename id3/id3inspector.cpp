@@ -172,40 +172,6 @@ bool IsValidIdentifierCharacter(char Character)
 	return ((Character >= 'A') && (Character <= 'Z')) || ((Character >= '0') && (Character <= '9'));
 }
 
-std::string Get_UTF_8_CharacterFromUnicodeCodepoint(unsigned int Codepoint)
-{
-	std::string Result;
-	
-	if(Codepoint < 0x00000080)
-	{
-		Result += static_cast< char >(Codepoint & 0x0000007f);
-	}
-	else if(Codepoint < 0x00000800)
-	{
-		Result += static_cast< char >(0x00000c0 + ((Codepoint & 0x00000700) >> 6) + ((Codepoint & 0x000000c0) >> 6));
-		Result += static_cast< char >(0x0000080 + (Codepoint & 0x0000003f));
-	}
-	else if(Codepoint < 0x00010000)
-	{
-		Result += static_cast< char >(0x00000e0 + ((Codepoint & 0x0000f000) >> 12));
-		Result += static_cast< char >(0x0000080 + ((Codepoint & 0x00000f00) >> 6) + ((Codepoint & 0x000000c0) >> 6));
-		Result += static_cast< char >(0x0000080 + (Codepoint & 0x0000003f));
-	}
-	else if(Codepoint < 0x00110000)
-	{
-		Result += static_cast< char >(0x00000f0 + ((Codepoint & 0x001c0000) >> 18));
-		Result += static_cast< char >(0x0000080 + ((Codepoint & 0x00030000) >> 12) + ((Codepoint & 0x0000f000) >> 12));
-		Result += static_cast< char >(0x0000080 + ((Codepoint & 0x00000f00) >> 6) + ((Codepoint & 0x000000c0) >> 6));
-		Result += static_cast< char >(0x0000080 + (Codepoint & 0x0000003f));
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Codepoint 0x" << std::hex << std::setfill('0') << std::setw(8) << std::right << Codepoint << " could not be encoded as UTF-8." << std::endl;
-	}
-	
-	return Result;
-}
-
 std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIDigit(uint8_t ASCIIDigit)
 {
 	std::pair< bool, unsigned int > Result(false, 0);
@@ -702,7 +668,7 @@ std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t 
 	{
 		std::get<0>(Result) = true;
 		std::get<1>(Result) = 1;
-		std::get<2>(Result) = Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+		std::get<2>(Result) = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(static_cast< std::uint32_t >(Buffer[0]));
 	}
 	
 	return Result;
@@ -1143,7 +1109,7 @@ std::tuple< bool, int, std::string > Get_UCS_2BE_Character(const uint8_t * Buffe
 	{
 		std::get<0>(Result) = true;
 		std::get<1>(Result) = 2;
-		std::get<2>(Result) = Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])));
+		std::get<2>(Result) = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(static_cast< std::uint32_t >((static_cast< std::uint32_t >(Buffer[0]) << 8) | static_cast< std::uint32_t >(Buffer[1])));
 	}
 	
 	return Result;
@@ -1215,7 +1181,7 @@ std::tuple< bool, int, std::string > Get_UCS_2LE_Character(const uint8_t * Buffe
 	{
 		std::get<0>(Result) = true;
 		std::get<1>(Result) = 2;
-		std::get<2>(Result) = Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+		std::get<2>(Result) = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(static_cast< std::uint32_t >((static_cast< std::uint32_t >(Buffer[1]) << 8) | static_cast< std::uint32_t >(Buffer[0])));
 	}
 	
 	return Result;
@@ -1479,7 +1445,7 @@ std::tuple< bool, int, std::string > Get_UTF_16BE_Character(const uint8_t * Buff
 		{
 			std::get<0>(Result) = true;
 			std::get<1>(Result) = 2;
-			std::get<2>(Result) = Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])));
+			std::get<2>(Result) = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(static_cast< std::uint32_t >((static_cast< std::uint32_t >(Buffer[0]) << 8) | static_cast< std::uint32_t >(Buffer[1])));
 		}
 		else
 		{
@@ -1570,7 +1536,7 @@ std::tuple< bool, int, std::string > Get_UTF_16LE_Character(const uint8_t * Buff
 		{
 			std::get<0>(Result) = true;
 			std::get<1>(Result) = 2;
-			std::get<2>(Result) = Get_UTF_8_CharacterFromUnicodeCodepoint(static_cast< unsigned int >(static_cast< unsigned char >(Buffer[1])) * 256 + static_cast< unsigned int >(static_cast< unsigned char >(Buffer[0])));
+			std::get<2>(Result) = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(static_cast< std::uint32_t >((static_cast< std::uint32_t >(Buffer[1]) << 8) | static_cast< std::uint32_t >(Buffer[0])));
 		}
 		else
 		{
