@@ -2158,6 +2158,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_Body(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_PictureType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_POPM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_TXXX_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_UFID_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -3110,6 +3111,13 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_POPM_Body(Inspection::Bu
 		Result->GetValue()->Append("Rating", RatingResult->GetValue());
 		if(RatingResult->GetSuccess() == true)
 		{
+			auto Rating{std::experimental::any_cast< std::uint8_t >(RatingResult->GetAny())};
+			
+			if(Rating == 0)
+			{
+				Result->GetValue("Rating")->PrependTag("standard", "ID3 2.3"s);
+				Result->GetValue("Rating")->PrependTag("interpretation", "unknown"s);
+			}
 			if(Buffer.GetPosition() == Boundary)
 			{
 				auto CounterValue{std::make_shared< Inspection::Value >()};
@@ -3649,6 +3657,72 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Bu
 				
 				Result->GetValue()->Append("Comment", CommentResult->GetValue());
 				Result->SetSuccess(CommentResult->GetSuccess());
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_POPM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto EMailToUserResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+	
+	Result->GetValue()->Append("EMailToUser", EMailToUserResult->GetValue());
+	if(EMailToUserResult->GetSuccess() == true)
+	{
+		auto RatingResult{Get_UnsignedInteger_8Bit(Buffer)};
+		
+		Result->GetValue()->Append("Rating", RatingResult->GetValue());
+		if(RatingResult->GetSuccess() == true)
+		{
+			auto Rating{std::experimental::any_cast< std::uint8_t >(RatingResult->GetAny())};
+			
+			if(Rating == 0)
+			{
+				Result->GetValue("Rating")->PrependTag("standard", "ID3 2.3"s);
+				Result->GetValue("Rating")->PrependTag("interpretation", "unknown"s);
+			}
+			if(Buffer.GetPosition() == Boundary)
+			{
+				auto CounterValue{std::make_shared< Inspection::Value >()};
+				
+				CounterValue->SetName("Counter");
+				CounterValue->AppendTag("omitted"s);
+				Result->GetValue()->Append(CounterValue);
+			}
+			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) > Boundary)
+			{
+				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+				
+				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				if(CounterResult->GetSuccess() == true)
+				{
+					Result->SetSuccess(true);
+				}
+				Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+				Result->GetValue("Counter")->PrependTag("standard", "ID3 2.4"s);
+			}
+			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) == Boundary)
+			{
+				auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+				
+				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				Result->SetSuccess(CounterResult->GetSuccess());
+			}
+			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
+			{
+				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+				
+				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				if(CounterResult->GetSuccess() == true)
+				{
+					Result->SetSuccess(true);
+				}
+				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			}
 		}
 	}
@@ -6094,13 +6168,17 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 					{
 						std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > InspectionHandler;
 						
-						if((MajorVersion == 0x04) && (NewFrameHeader->GetIdentifier() == "UFID"))
+						if((MajorVersion == 0x04) && (NewFrameHeader->GetIdentifier() == "POPM"))
 						{
-							InspectionHandler = Get_ID3_2_4_Frame_UFID_Body;
+							InspectionHandler = Get_ID3_2_4_Frame_POPM_Body;
 						}
 						if((MajorVersion == 0x04) && (NewFrameHeader->GetIdentifier() == "TOAL"))
 						{
 							InspectionHandler = Get_ID3_2_4_Frame_T____Body;
+						}
+						if((MajorVersion == 0x04) && (NewFrameHeader->GetIdentifier() == "UFID"))
+						{
+							InspectionHandler = Get_ID3_2_4_Frame_UFID_Body;
 						}
 						if(InspectionHandler != nullptr)
 						{
@@ -6449,6 +6527,7 @@ int main(int argc, char **argv)
 	FrameHeader::Forbid24("TYER", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3.");
 	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle23T___Frames);
 	
+	g_FrameNames_2_4.insert(std::make_pair("POPM", "Popularimeter"));
 	g_FrameNames_2_4.insert(std::make_pair("TOAL", "Original album/movie/show title"));
 	g_FrameNames_2_4.insert(std::make_pair("UFID", "Unique file identifier"));
 	
