@@ -2136,31 +2136,31 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_TagHeader_Flags(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_PictureType(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_COMM_Body(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_COMM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_POPM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TLAN_Body(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TXXX_Body(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_UFID_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TLAN_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TXXX_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_UFID_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_USLT_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TagHeader_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_PictureType(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_TXXX_Body(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_UFID_Body(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_TXXX_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_UFID_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_USLT_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TagHeader_Flags(Inspection::Buffer & Buffer);
@@ -2840,8 +2840,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_E
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
@@ -2864,7 +2865,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_Body(Inspection::Bu
 				Result->GetValue()->Append("Description", DescriptionResult->GetValue());
 				if(DescriptionResult->GetSuccess() == true)
 				{
-					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 					
 					Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
 					Result->SetSuccess(PictureDataResult->GetSuccess());
@@ -3012,8 +3013,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_APIC_PictureType(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_COMM_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_COMM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
@@ -3031,7 +3033,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_COMM_Body(Inspection::Bu
 			Result->GetValue()->Append("ShortContentDescription", ShortContentDescriptionResult->GetValue());
 			if(ShortContentDescriptionResult->GetSuccess() == true)
 			{
-				auto CommentResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Buffer.GetLength() - Buffer.GetPosition())};
+				auto CommentResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 				
 				Result->GetValue()->Append("Comment", CommentResult->GetValue());
 				Result->SetSuccess(CommentResult->GetSuccess());
@@ -3043,8 +3045,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_COMM_Body(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
@@ -3067,7 +3070,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_GEOB_Body(Inspection::Bu
 				Result->GetValue()->Append("ContentDescription", ContentDescriptionResult->GetValue());
 				if(ContentDescriptionResult->GetSuccess() == true)
 				{
-					auto EncapsulatedObjectResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+					auto EncapsulatedObjectResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 					
 					Result->GetValue()->Append("EncapsulatedObject", EncapsulatedObjectResult->GetValue());
 					Result->SetSuccess(EncapsulatedObjectResult->GetSuccess());
@@ -3152,8 +3155,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_POPM_Body(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
@@ -3161,7 +3165,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Bu
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-		auto InformationResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Buffer.GetLength() - Buffer.GetPosition())};
+		auto InformationResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 		
 		Result->GetValue()->Append("Information", InformationResult->GetValue());
 		Result->SetSuccess(InformationResult->GetSuccess());
@@ -3171,10 +3175,10 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_T____Body(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FrameT___BodyResult{Get_ID3_2_3_Frame_T____Body(Buffer)};
+	auto FrameT___BodyResult{Get_ID3_2_3_Frame_T____Body(Buffer, Length)};
 	
 	Result->SetValue(FrameT___BodyResult->GetValue());
 	if(FrameT___BodyResult->GetSuccess() == true)
@@ -3194,10 +3198,10 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TCON_Body(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TLAN_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TLAN_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FrameT___BodyResult{Get_ID3_2_3_Frame_T____Body(Buffer)};
+	auto FrameT___BodyResult{Get_ID3_2_3_Frame_T____Body(Buffer, Length)};
 	
 	Result->SetValue(FrameT___BodyResult->GetValue());
 	if(FrameT___BodyResult->GetSuccess() == true)
@@ -3251,15 +3255,16 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_TXXX_Body(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_UFID_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_UFID_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
 	
 	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
 	if(OwnerIdentifierResult->GetSuccess() == true)
 	{
-		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
 		Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
 		Result->SetSuccess(IdentifierResult->GetSuccess());
@@ -3447,8 +3452,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_E
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
@@ -3471,7 +3477,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_Body(Inspection::Bu
 				Result->GetValue()->Append("Description", DescriptionResult->GetValue());
 				if(DescriptionResult->GetSuccess() == true)
 				{
-					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 					
 					Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
 					Result->SetSuccess(PictureDataResult->GetSuccess());
@@ -3619,8 +3625,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_APIC_PictureType(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
@@ -3638,7 +3645,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Bu
 			Result->GetValue()->Append("ShortContentDescription", ShortContentDescriptionResult->GetValue());
 			if(ShortContentDescriptionResult->GetSuccess() == true)
 			{
-				auto CommentResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Buffer.GetLength() - Buffer.GetPosition())};
+				auto CommentResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 				
 				Result->GetValue()->Append("Comment", CommentResult->GetValue());
 				Result->SetSuccess(CommentResult->GetSuccess());
@@ -3650,8 +3657,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_COMM_Body(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
@@ -3659,7 +3667,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Bu
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-		auto InformationResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Buffer.GetLength() - Buffer.GetPosition())};
+		auto InformationResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 		
 		Result->GetValue()->Append("Information", InformationResult->GetValue());
 		Result->SetSuccess(InformationResult->GetSuccess());
@@ -3669,8 +3677,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_TXXX_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_TXXX_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
@@ -3683,7 +3692,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_TXXX_Body(Inspection::Bu
 		Result->GetValue()->Append("Description", DescriptionResult->GetValue());
 		if(DescriptionResult->GetSuccess() == true)
 		{
-			auto ValueResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Buffer.GetLength() - Buffer.GetPosition())};
+			auto ValueResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 			
 			Result->GetValue()->Append("Value", ValueResult->GetValue());
 			Result->SetSuccess(ValueResult->GetSuccess());
@@ -3694,15 +3703,16 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_TXXX_Body(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_UFID_Body(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_UFID_Body(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
 	
 	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
 	if(OwnerIdentifierResult->GetSuccess() == true)
 	{
-		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
+		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
 		Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
 		Result->SetSuccess(IdentifierResult->GetSuccess());
@@ -4420,7 +4430,7 @@ std::map< std::string, std::string > FrameHeader::_Forbidden24;
 std::uint64_t Handle23APICFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_APIC_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_3_Frame_APIC_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -4430,7 +4440,7 @@ std::uint64_t Handle23APICFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 std::uint64_t Handle23COMMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_COMM_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_3_Frame_COMM_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -4440,7 +4450,7 @@ std::uint64_t Handle23COMMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 std::uint64_t Handle23GEOB_Frame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_GEOB_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_3_Frame_GEOB_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -5082,7 +5092,7 @@ std::uint64_t Handle23RGADFrame(const uint8_t * Buffer, std::uint64_t Length)
 std::uint64_t Handle23T___Frames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_T____Body(Buffer)};
+	auto FrameResult{Get_ID3_2_3_Frame_T____Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -5092,7 +5102,7 @@ std::uint64_t Handle23T___Frames(const uint8_t * RawBuffer, std::uint64_t Length
 std::uint64_t Handle23TCONFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_TCON_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_3_Frame_TCON_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -5247,7 +5257,7 @@ std::uint64_t Handle23TFLTFrames(const uint8_t * Buffer, std::uint64_t Length)
 std::uint64_t Handle23TLANFrames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_TLAN_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_3_Frame_TLAN_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -5543,7 +5553,7 @@ std::uint64_t Handle23TXXXFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 std::uint64_t Handle23UFIDFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_UFID_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_3_Frame_UFID_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -5706,7 +5716,7 @@ std::uint64_t Handle23WXXXFrame(const uint8_t * Buffer, std::uint64_t Length)
 std::uint64_t Handle24APICFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_4_Frame_APIC_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_4_Frame_APIC_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -5716,7 +5726,7 @@ std::uint64_t Handle24APICFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 std::uint64_t Handle24COMMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_4_Frame_COMM_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_4_Frame_COMM_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -5821,7 +5831,7 @@ std::uint64_t Handle24MCDIFrame(const uint8_t * Buffer, std::uint64_t Length)
 std::uint64_t Handle24T___Frames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_4_Frame_T____Body(Buffer)};
+	auto FrameResult{Get_ID3_2_4_Frame_T____Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -5831,7 +5841,7 @@ std::uint64_t Handle24T___Frames(const uint8_t * RawBuffer, std::uint64_t Length
 std::uint64_t Handle24TXXXFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_4_Frame_TXXX_Body(Buffer)};
+	auto FrameResult{Get_ID3_2_4_Frame_TXXX_Body(Buffer, Buffer.GetLength())};
 	
 	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
@@ -6082,7 +6092,7 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 					}
 					else
 					{
-						std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > InspectionHandler;
+						std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > InspectionHandler;
 						
 						if((MajorVersion == 0x04) && (NewFrameHeader->GetIdentifier() == "UFID"))
 						{
@@ -6091,7 +6101,7 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 						if(InspectionHandler != nullptr)
 						{
 							Inspection::Buffer Buffer{RawBuffer, Inspection::Length(NewFrameHeader->GetDataSize(), 0)};
-							auto FrameResult{InspectionHandler(Buffer)};
+							auto FrameResult{InspectionHandler(Buffer, Buffer.GetLength())};
 							
 							PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 							
