@@ -6098,6 +6098,10 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 						{
 							InspectionHandler = Get_ID3_2_4_Frame_UFID_Body;
 						}
+						if((MajorVersion == 0x04) && (NewFrameHeader->GetIdentifier() == "TOAL"))
+						{
+							InspectionHandler = Get_ID3_2_4_Frame_T____Body;
+						}
 						if(InspectionHandler != nullptr)
 						{
 							Inspection::Buffer Buffer{RawBuffer, Inspection::Length(NewFrameHeader->GetDataSize(), 0)};
@@ -6445,6 +6449,7 @@ int main(int argc, char **argv)
 	FrameHeader::Forbid24("TYER", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3.");
 	FrameHeader::Handle24("TYER", "Year (from tag version 2.3)", Handle23T___Frames);
 	
+	g_FrameNames_2_4.insert(std::make_pair("TOAL", "Original album/movie/show title"));
 	g_FrameNames_2_4.insert(std::make_pair("UFID", "Unique file identifier"));
 	
 	// processing
