@@ -21,19 +21,23 @@ namespace Inspection
 		}
 		
 		template< typename AnyType >
-		void Append(const std::string & Name, const AnyType & Any)
+		std::shared_ptr< Value > Append(const std::string & Name, const AnyType & Any)
 		{
-			auto Value{std::make_shared< Inspection::Value >()};
+			auto Result{std::make_shared< Inspection::Value >()};
 			
-			Value->SetName(Name);
-			Value->SetAny(Any);
-			_Values.push_back(Value);
+			Result->SetName(Name);
+			Result->SetAny(Any);
+			_Values.push_back(Result);
+			
+			return Result;
 		}
 		
-		void Append(const std::string & Name, std::shared_ptr< Inspection::Value > Value)
+		std::shared_ptr< Value > Append(const std::string & Name, std::shared_ptr< Inspection::Value > Value)
 		{
 			Value->SetName(Name);
 			_Values.push_back(Value);
+			
+			return Value;
 		}
 		
 		void Append(const std::list< std::shared_ptr< Inspection::Value > > & Values)
@@ -44,21 +48,25 @@ namespace Inspection
 			}
 		}
 		
-		void AppendTag(const std::experimental::any & Any)
+		std::shared_ptr< Value > AppendTag(const std::experimental::any & Any)
 		{
-			auto Tag{std::make_shared< Inspection::Value >()};
+			auto Result{std::make_shared< Inspection::Value >()};
 			
-			Tag->SetAny(Any);
-			_Tags.push_back(Tag);
+			Result->SetAny(Any);
+			_Tags.push_back(Result);
+			
+			return Result;
 		}
 		
-		void AppendTag(const std::string & Name, const std::experimental::any & Any)
+		std::shared_ptr< Value > AppendTag(const std::string & Name, const std::experimental::any & Any)
 		{
-			auto Tag{std::make_shared< Inspection::Value >()};
+			auto Result{std::make_shared< Inspection::Value >()};
 			
-			Tag->SetAny(Any);
-			Tag->SetName(Name);
-			_Tags.push_back(Tag);
+			Result->SetAny(Any);
+			Result->SetName(Name);
+			_Tags.push_back(Result);
+			
+			return Result;
 		}
 		
 		void ClearTags(void)
