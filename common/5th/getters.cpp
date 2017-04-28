@@ -487,6 +487,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 4) == true)
+	{
+		Result->SetSuccess(true);
+		
+		std::bitset< 4 > Value;
+		auto Byte1{Buffer.Get4Bits()};
+		
+		Value[0] = (Byte1 & 0x08) == 0x08;
+		Value[1] = (Byte1 & 0x04) == 0x04;
+		Value[2] = (Byte1 & 0x02) == 0x02;
+		Value[3] = (Byte1 & 0x01) == 0x01;
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("bitset"s);
+		Result->GetValue()->AppendTag("4bit"s);
+		Result->GetValue()->AppendTag("most significant bit first"s);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
