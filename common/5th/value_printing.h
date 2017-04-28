@@ -21,7 +21,7 @@ namespace Inspection
 	
 	void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 	{
-		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false)};
+		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false) || (Value->GetTags().empty() == false)};
 		
 		if(HeaderLine == true)
 		{
