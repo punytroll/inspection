@@ -75,10 +75,8 @@ std::map< unsigned int, std::string > g_NumericGenresWinamp;
 std::map< std::string, std::string > g_ISO_3166_1_Alpha_2_Codes;
 std::map< TextEncoding, std::string > g_EncodingNames;
 std::map< std::string, std::string > g_GUIDDescriptions;
-std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_2;
 std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_3;
 std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_4;
-std::map< std::string, std::string > g_FrameNames_2_2;
 std::map< std::string, std::string > g_FrameNames_2_3;
 std::map< std::string, std::string > g_FrameNames_2_4;
 bool g_PrintBytes(false);
@@ -4174,23 +4172,7 @@ public:
 	{
 		auto RawBuffer{Buffer.GetDataAtPosition()};
 		
-		if(MajorVersion == 0x02)
-		{
-			_HeaderSize = 6;
-			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 3);
-			_Name = g_FrameNames_2_2[_Identifier];
-			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[3])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5]));
-			_SupportsFlags = false;
-			
-			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden22.find(_Identifier));
-			
-			if(ForbiddenIterator != _Forbidden22.end())
-			{
-				_Forbidden = true;
-				_ForbiddenReason = ForbiddenIterator->second;
-			}
-		}
-		else if(MajorVersion == 0x03)
+		if(MajorVersion == 0x03)
 		{
 			_HeaderSize = 10;
 			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 4);
@@ -4429,17 +4411,6 @@ public:
 	}
 	
 	// static setup
-	static void Forbid22(const std::string & Identifier, const std::string & Reason)
-	{
-		_Forbidden22.insert(std::make_pair(Identifier, Reason));
-	}
-	
-	static void Handle22(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
-	{
-		g_FrameHandlers_2_2.insert(std::make_pair(Identifier, Handler));
-		g_FrameNames_2_2.insert(std::make_pair(Identifier, Name));
-	}
-	
 	static void Forbid23(const std::string & Identifier, const std::string & Reason)
 	{
 		_Forbidden23.insert(std::make_pair(Identifier, Reason));
@@ -4463,7 +4434,6 @@ public:
 	}
 	
 	// static setup
-	static std::map< std::string, std::string > _Forbidden22;
 	static std::map< std::string, std::string > _Forbidden23;
 	static std::map< std::string, std::string > _Forbidden24;
 private:
@@ -4493,7 +4463,6 @@ private:
 	bool _Unsynchronisation;
 };
 
-std::map< std::string, std::string > FrameHeader::_Forbidden22;
 std::map< std::string, std::string > FrameHeader::_Forbidden23;
 std::map< std::string, std::string > FrameHeader::_Forbidden24;
 
