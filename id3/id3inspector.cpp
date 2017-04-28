@@ -19,29 +19,6 @@
 
 using namespace std::string_literals;
 
-class CDTableOfContents
-{
-public:
-	class TrackDescriptor
-	{
-	public:
-		uint32_t Reserved1;
-		uint32_t ADR;
-		bool HasFourChannels;
-		bool IsDataTrack;
-		bool IsDigitalCopyPermitted;
-		bool AudioTrackWithEmphasisOrIncrementalDataTrack;
-		uint32_t TrackNumber;
-		uint32_t Reserved2;
-		uint32_t TrackStartAddress;
-	};
-	
-	uint32_t DataLength;
-	uint32_t FirstTrackNumber;
-	uint32_t LastTrackNumber;
-	std::list< TrackDescriptor > TrackDescriptors;
-};
-
 enum class TextEncoding
 {
 	Undefined,
@@ -488,7 +465,6 @@ std::tuple< bool, int, bool > Get_Boolean_4(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, bool > Get_Boolean_5(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, bool > Get_Boolean_6(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, bool > Get_Boolean_7(const uint8_t * Buffer, int Length);
-std::tuple< bool, int, CDTableOfContents > Get_CDTableOfContents(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByBoundary(const uint8_t * Buffer, int Length, int Boundary);
 std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByLength(const uint8_t * Buffer, int Length);
@@ -920,144 +896,6 @@ std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_
 		std::get<0>(Result) = true;
 		std::get<1>(Result) = 4;
 		std::get<2>(Result) = *(reinterpret_cast< const float * >(Buffer));
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, CDTableOfContents > Get_CDTableOfContents(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, CDTableOfContents > Result(true, 0, CDTableOfContents());
-	
-	int & Index(std::get<1>(Result));
-	CDTableOfContents & TableOfContents(std::get<2>(Result));
-	
-	auto DataLength(Get_UInt16_BE(Buffer + Index, Length - Index));
-	
-	if(std::get<0>(DataLength) == true)
-	{
-		Index += std::get<1>(DataLength);
-		TableOfContents.DataLength = std::get<2>(DataLength);
-		
-		auto FirstTrackNumber(Get_UInt8(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(FirstTrackNumber) == true)
-		{
-			Index += std::get<1>(FirstTrackNumber);
-			TableOfContents.FirstTrackNumber = std::get<2>(FirstTrackNumber);
-		
-			auto LastTrackNumber(Get_UInt8(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(LastTrackNumber) == true)
-			{
-				Index += std::get<1>(LastTrackNumber);
-				TableOfContents.LastTrackNumber = std::get<2>(LastTrackNumber);
-				std::get<0>(Result) = true;
-				while(true)
-				{
-					CDTableOfContents::TrackDescriptor TrackDescriptor;
-					auto Reserved1(Get_UInt8(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(Reserved1) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					Index += std::get<1>(Reserved1);
-					TrackDescriptor.Reserved1 = std::get<2>(Reserved1);
-					
-					auto ADR(Get_UInt4_0_3(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(ADR) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					TrackDescriptor.ADR = std::get<2>(ADR);
-					
-					auto HasFourChannels(Get_Boolean_4(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(HasFourChannels) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					TrackDescriptor.HasFourChannels = std::get<2>(HasFourChannels);
-					
-					auto IsDataTrack(Get_Boolean_5(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(IsDataTrack) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					TrackDescriptor.IsDataTrack = std::get<2>(IsDataTrack);
-					
-					auto IsDigitalCopyPermitted(Get_Boolean_6(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(IsDigitalCopyPermitted) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					TrackDescriptor.IsDigitalCopyPermitted = std::get<2>(IsDigitalCopyPermitted);
-					
-					auto AudioTrackWithEmphasisOrIncrementalDataTrack(Get_Boolean_7(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(AudioTrackWithEmphasisOrIncrementalDataTrack) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					TrackDescriptor.AudioTrackWithEmphasisOrIncrementalDataTrack = std::get<2>(AudioTrackWithEmphasisOrIncrementalDataTrack);
-					Index += std::get<1>(ADR);
-					
-					auto TrackNumber(Get_UInt8(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(TrackNumber) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					Index += std::get<1>(TrackNumber);
-					TrackDescriptor.TrackNumber = std::get<2>(TrackNumber);
-					
-					auto Reserved2(Get_UInt8(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(Reserved2) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					Index += std::get<1>(Reserved2);
-					TrackDescriptor.Reserved2 = std::get<2>(Reserved2);
-					
-					auto TrackStartAddress(Get_UInt32_BE(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(TrackStartAddress) == false)
-					{
-						std::get<0>(Result) = false;
-						
-						break;
-					}
-					Index += std::get<1>(TrackStartAddress);
-					TrackDescriptor.TrackStartAddress = std::get<2>(TrackStartAddress);
-					TableOfContents.TrackDescriptors.push_back(TrackDescriptor);
-					if(std::get<2>(TrackNumber) == 0xAA)
-					{
-						break;
-					}
-				}
-			}
-		}
 	}
 	
 	return Result;
