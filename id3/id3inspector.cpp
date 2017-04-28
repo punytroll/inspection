@@ -3741,8 +3741,26 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_T____Body(Inspection::Bu
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto InformationResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Information", InformationResult->GetValue());
-		Result->SetSuccess(InformationResult->GetSuccess());
+		Result->GetValue()->Append("Information[0]", InformationResult->GetValue());
+		if(InformationResult->GetSuccess() == true)
+		{
+			Result->SetSuccess(true);
+			
+			auto InformationIndex{1ul};
+			
+			while(Buffer.GetPosition() < Boundary)
+			{
+				InformationResult = Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition());
+				Result->GetValue()->Append("Information[" + to_string_cast(InformationIndex) + "]", InformationResult->GetValue());
+				if(InformationResult->GetSuccess() == false)
+				{
+					Result->SetSuccess(false);
+					
+					break;
+				}
+				InformationIndex += 1;
+			}
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
