@@ -1767,8 +1767,6 @@ std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * B
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_3_Encoding(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_Encoding(const std::uint8_t * Buffer, std::uint64_t Length);
 std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_ExtendedTagHeader(const std::uint8_t * Buffer, std::uint64_t Length);
-std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_28Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length);
-std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As_HexadecimalString(const std::uint8_t * Buffer, std::uint64_t Length);
 
 
 std::tuple< bool, std::uint64_t, Values > Get_0_Byte_As_32Bit_Unsigned_Integer(const std::uint8_t * Buffer, std::uint64_t Length)
@@ -1955,52 +1953,6 @@ std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_Encoding(const std::uint8_
 		else
 		{
 			Result.Add("Name", "<invalid encoding>");
-		}
-	}
-	
-	return std::make_tuple(Success, Index, Result);
-}
-
-std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_28Bit_UnsignedInteger(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	std::uint64_t Index{0};
-	Values Result;
-	
-	if(Length >= 4)
-	{
-		if((Buffer[0] < 128) && (Buffer[1] < 128) && (Buffer[2] < 128) && (Buffer[3] < 128))
-		{
-			Result.Add("Result", (static_cast< std::uint32_t >(Buffer[0]) << 21) | (static_cast< std::uint32_t >(Buffer[1]) << 14) | (static_cast< std::uint32_t >(Buffer[2]) << 7) | (static_cast< std::uint32_t >(Buffer[3])));
-			Index += 4;
-			Success = true;
-		}
-	}
-	
-	return std::make_tuple(Success, Index, Result);
-}
-
-std::tuple< bool, std::uint64_t, Values > Get_SynchSafe_32Bit_UnsignedInteger_As_HexadecimalString(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	std::uint64_t Index{0};
-	Values Result;
-	
-	if(Length >= 5)
-	{
-		if((Buffer[0] < 16) && (Buffer[1] < 128) && (Buffer[2] < 128) && (Buffer[3] < 128) && (Buffer[4] < 128))
-		{
-			Index += 5;
-			Success = true;
-			
-			std::stringstream StringStream;
-			
-			StringStream << std::hex << std::setfill('0') << std::right;
-			StringStream << std::setw(2) << static_cast< std::uint32_t >(((static_cast< std::uint32_t >(Buffer[0]) << 4) & 0xFF) | (static_cast< std::uint32_t >(Buffer[1]) >> 3));
-			StringStream << std::setw(2) << static_cast< std::uint32_t >(((static_cast< std::uint32_t >(Buffer[1]) << 5) & 0xFF) | (static_cast< std::uint32_t >(Buffer[2]) >> 2));
-			StringStream << std::setw(2) << static_cast< std::uint32_t >(((static_cast< std::uint32_t >(Buffer[2]) << 6) & 0xFF) | (static_cast< std::uint32_t >(Buffer[3]) >> 1));
-			StringStream << std::setw(2) << static_cast< std::uint32_t >(((static_cast< std::uint32_t >(Buffer[3]) << 7) & 0xFF) | (static_cast< std::uint32_t >(Buffer[5]) >> 0));
-			Result.Add("Result", StringStream.str());
 		}
 	}
 	
