@@ -77,6 +77,22 @@ namespace Inspection
 			return Inspection::Length(Bytes, Bits);
 		}
 		
+		Length & operator-=(const Length & Length)
+		{
+			assert(*this >= Length);
+			if(_Bits >= Length._Bits)
+			{
+				_Bits -= Length._Bits;
+				_Bytes -= Length._Bytes;
+			}
+			else
+			{
+				_Bits += 8 - Length._Bits;
+				_Bytes -= Length._Bytes + 1ull;
+			}
+			return *this;
+		}
+		
 		Length operator+(const Length & Length) const
 		{
 			return Inspection::Length(_Bytes + Length._Bytes, _Bits + Length._Bits);
