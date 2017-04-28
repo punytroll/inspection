@@ -1962,6 +1962,12 @@ std::tuple< bool, std::uint64_t, Values > Get_ID3_2_4_Encoding(const std::uint8_
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Header(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track_Control(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Buffer & Buffer, std::uint8_t FirstTrackNumber, std::uint8_t LastTrackNumber);
 std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_COM(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -1983,6 +1989,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_APIC_PictureType(In
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_COMM(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_T___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCON(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -2019,6 +2026,209 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Buffer & 
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(Inspection::Buffer & Buffer);
+
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->GetValue()->AppendTag("standard", "IEC 60908:1999"s);
+	Result->GetValue()->AppendTag("name", "Compact Disc Digital Audio"s);
+	
+	auto HeaderResult{Get_IEC_60908_1999_TableOfContents_Header(Buffer)};
+	
+	Result->GetValue()->Append(HeaderResult->GetValue()->GetValues());
+	if(HeaderResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto FirstTrackNumber{std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("FirstTrackNumber"))};
+		auto LastTrackNumber{std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("LastTrackNumber"))};
+		auto TracksResult{Get_IEC_60908_1999_TableOfContents_Tracks(Buffer, FirstTrackNumber, LastTrackNumber)};
+		
+		Result->GetValue()->Append(TracksResult->GetValue()->GetValues());
+		Result->SetSuccess(TracksResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Header(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto DataLengthResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+	
+	Result->GetValue()->Append("DataLength", DataLengthResult->GetValue());
+	if(DataLengthResult->GetSuccess() == true)
+	{
+		auto FirstTrackNumberResult{Get_UnsignedInteger_8Bit(Buffer)};
+		
+		Result->GetValue()->Append("FirstTrackNumber", FirstTrackNumberResult->GetValue());
+		if(FirstTrackNumberResult->GetSuccess() == true)
+		{
+			auto LastTrackNumberResult{Get_UnsignedInteger_8Bit(Buffer)};
+			
+			Result->GetValue()->Append("LastTrackNumber", LastTrackNumberResult->GetValue());
+			Result->SetSuccess(LastTrackNumberResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TrackResult{Get_IEC_60908_1999_TableOfContents_Track(Buffer)};
+	
+	Result->SetValue(TrackResult->GetValue());
+	Result->SetSuccess((TrackResult->GetSuccess() == true) && (TrackResult->GetValue("Number")->HasTag("interpretation") == true) && (std::experimental::any_cast< const std::string & >(TrackResult->GetValue("Number")->GetTagAny("interpretation")) == "Lead-Out"));
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Reserved1Result{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 8))};
+	
+	Result->GetValue()->Append("Reserved", Reserved1Result->GetValue());
+	if(Reserved1Result->GetSuccess() == true)
+	{
+		auto ADRResult{Get_UnsignedInteger_4Bit(Buffer)};
+		
+		Result->GetValue()->Append("ADR", ADRResult->GetValue());
+		if((ADRResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(ADRResult->GetAny())))
+		{
+			auto ControlResult{Get_IEC_60908_1999_TableOfContents_Track_Control(Buffer)};
+			
+			Result->GetValue()->Append("Control", ControlResult->GetValue());
+			if(ControlResult->GetSuccess() == true)
+			{
+				auto NumberResult{Get_UnsignedInteger_8Bit(Buffer)};
+				
+				Result->GetValue()->Append("Number", NumberResult->GetValue());
+				if(NumberResult->GetSuccess() == true)
+				{
+					auto Number{std::experimental::any_cast< std::uint8_t >(NumberResult->GetAny())};
+					
+					if(Number == 0xaa)
+					{
+						Result->GetValue("Number")->PrependTag("interpretation", "Lead-Out"s);
+					}
+					
+					auto Reserved2Result{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 8))};
+					
+					Result->GetValue()->Append("Reserved", Reserved2Result->GetValue());
+					if(Reserved2Result->GetSuccess() == true)
+					{
+						auto StartAddressResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+						
+						Result->GetValue()->Append("StartAddress", StartAddressResult->GetValue());
+						Result->SetSuccess(StartAddressResult->GetSuccess());
+					}
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track_Control(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto ControlResult{Get_BitSet_4Bit_MostSignificantBitFirst(Buffer)};
+	
+	Result->SetValue(ControlResult->GetValue());
+	if(ControlResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::bitset< 4 > & Control{std::experimental::any_cast< const std::bitset< 4 > & >(ControlResult->GetAny())};
+		
+		if(Control[1] == true)
+		{
+			if(Control[0] == true)
+			{
+				Result->SetSuccess(false);
+				
+				auto Value{Result->GetValue()->Append("Reserved", true)};
+				
+				Value->AppendTag("error", "The track type is \"Data\" so this bit must be off.");
+			}
+			else
+			{
+				Result->GetValue()->Append("Reserved", false);
+			}
+			Result->GetValue()->Append("TrackType", "Data"s);
+			Result->GetValue()->Append("DigitalCopyProhibited", !Control[2]);
+			if(Control[3] == true)
+			{
+				Result->GetValue()->Append("DataRecorded", "incrementally"s);
+			}
+			else
+			{
+				Result->GetValue()->Append("DataRecorded", "uninterrupted"s);
+			}
+		}
+		else
+		{
+			if(Control[0] == true)
+			{
+				Result->GetValue()->Append("NumberOfChannels", 4);
+			}
+			else
+			{
+				Result->GetValue()->Append("NumberOfChannels", 2);
+			}
+			Result->GetValue()->Append("TrackType", "Audio"s);
+			Result->GetValue()->Append("DigitalCopyProhibited", !Control[2]);
+			Result->GetValue()->Append("PreEmphasis", Control[3]);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Buffer & Buffer, std::uint8_t FirstTrackNumber, std::uint8_t LastTrackNumber)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->SetSuccess(true);
+	for(auto TrackNumber = FirstTrackNumber; TrackNumber <= LastTrackNumber; ++TrackNumber)
+	{
+		auto TrackResult{Get_IEC_60908_1999_TableOfContents_Track(Buffer)};
+		auto TrackValue{Result->GetValue()->Append("Track", TrackResult->GetValue())};
+		
+		if(TrackResult->GetSuccess() == true)
+		{
+			auto TrackNumber{std::experimental::any_cast< std::uint8_t >(TrackResult->GetAny("Number"))};
+			
+			TrackValue->SetName("Track " + to_string_cast(TrackNumber));
+		}
+		else
+		{
+			Result->SetSuccess(false);
+			
+			break;
+		}
+	}
+	if(Result->GetSuccess() == true)
+	{
+		auto LeadOutTrackResult{Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Buffer)};
+		
+		Result->GetValue()->Append("LeadOutTrack", LeadOutTrackResult->GetValue());
+		Result->SetSuccess(LeadOutTrackResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
 
 std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
 {
@@ -2937,6 +3147,18 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB(Inspection::Bu
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TableOfContentsResult{Get_IEC_60908_1999_TableOfContents(Buffer)};
+	
+	Result->SetValue(TableOfContentsResult->GetValue());
+	Result->SetSuccess(TableOfContentsResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -4644,159 +4866,14 @@ std::uint64_t Handle23GEOB_Frame(const uint8_t * RawBuffer, std::uint64_t Length
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle23MCDIFrame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23MCDIFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto TableOfContents(Get_CDTableOfContents(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_Body_MCDI(Buffer, Buffer.GetLength())};
 	
-	if(std::get<0>(TableOfContents) == true)
-	{
-		Index += std::get<1>(TableOfContents);
-		std::cout << "\t\t\t\tLength: " << std::get<2>(TableOfContents).DataLength << std::endl;
-		std::cout << "\t\t\t\tFirst track number: " << std::get<2>(TableOfContents).FirstTrackNumber << std::endl;
-		std::cout << "\t\t\t\tLast track number: " << std::get<2>(TableOfContents).LastTrackNumber << std::endl;
-		for(auto & TrackDescriptor : std::get<2>(TableOfContents).TrackDescriptors)
-		{
-			std::cout << std::endl;
-			std::cout << "\t\t\t\tReserved: " << GetBinaryStringFromUInt8(TrackDescriptor.Reserved1) << 'b' << std::endl;
-			std::cout << "\t\t\t\tADR: " << TrackDescriptor.ADR << std::endl;
-			if((TrackDescriptor.HasFourChannels == true) && (TrackDescriptor.IsDataTrack == false))
-			{
-				std::cout << "\t\t\t\tNumber of channels: 4" << std::endl;
-			}
-			else
-			{
-				std::cout << "\t\t\t\tNumber of channels: 2" << std::endl;
-			}
-			if(TrackDescriptor.IsDataTrack == true)
-			{
-				std::cout << "\t\t\t\tTrack type: data" << std::endl;
-			}
-			else
-			{
-				std::cout << "\t\t\t\tTrack type: audio" << std::endl;
-			}
-			if(TrackDescriptor.IsDigitalCopyPermitted == true)
-			{
-				std::cout << "\t\t\t\tCopying permitted: true" << std::endl;
-			}
-			else
-			{
-				std::cout << "\t\t\t\tCopying permitted: false" << std::endl;
-			}
-			if(TrackDescriptor.IsDataTrack == true)
-			{
-				if(TrackDescriptor.AudioTrackWithEmphasisOrIncrementalDataTrack == true)
-				{
-					std::cout << "\t\t\t\tRecorded incrementally: true" << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\tRecorded incrementally: false" << std::endl;
-				}
-			}
-			else
-			{
-				if(TrackDescriptor.AudioTrackWithEmphasisOrIncrementalDataTrack == true)
-				{
-					std::cout << "\t\t\t\tPre-emphasis enabled: true" << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\tPre-emphasis enabled: false" << std::endl;
-				}
-			}
-			std::cout << "\t\t\t\tTrack number: " << TrackDescriptor.TrackNumber << std::endl;
-			std::cout << "\t\t\t\tReserved: " << GetBinaryStringFromUInt8(TrackDescriptor.Reserved2) << 'b' << std::endl;
-			std::cout << "\t\t\t\tTrack start address: " << TrackDescriptor.TrackStartAddress << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.5], a \"MCDI\" frame MUST contain a valid CD table of content." << std::endl;
-		std::cout << "*** ERROR *** Trying to interpret the data as a UCS-2 string in little endian as a table of content encoding." << std::endl;
-		
-		auto TableOfContentsString(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(TableOfContentsString) == true)
-		{
-			Index += std::get<1>(TableOfContentsString);
-			std::cout << "\t\t\t\tTable of contents: \"" << std::get<2>(TableOfContentsString) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
-		}
-		else
-		{
-			auto TableOfContentsString(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(TableOfContentsString) == true)
-			{
-				Index += std::get<1>(TableOfContentsString);
-				std::cout << "\t\t\t\tTable of contents: \"" << std::get<2>(TableOfContentsString) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
-			}
-			else
-			{
-				std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
-			}
-		}
-		if(std::get<0>(TableOfContentsString) == true)
-		{
-			std::cout << "\t\t\t\tInterpretation:" << std::endl;
-			
-			std::uint32_t IndexInString(0);
-			auto NumberOfTracks(GetUInt32NumberFromUnformattedHexadecimalString(std::get<2>(TableOfContentsString), IndexInString));
-			
-			if(std::get<0>(NumberOfTracks) == true)
-			{
-				IndexInString += std::get<1>(NumberOfTracks);
-				std::cout << "\t\t\t\t\tNumber of tracks:" << std::get<2>(NumberOfTracks) << std::endl;
-				for(std::uint32_t TrackIndex = 0; TrackIndex <= std::get<2>(NumberOfTracks); ++TrackIndex)
-				{
-					if(IndexInString < std::get<2>(TableOfContentsString).length())
-					{
-						if(std::get<2>(TableOfContentsString)[IndexInString] != '+')
-						{
-							std::cout << "*** ERROR *** The table of content string contains invalid information." << std::endl;
-							
-							break;
-						}
-						else
-						{
-							IndexInString += 1;
-							
-							auto TrackOffset(GetUInt32NumberFromUnformattedHexadecimalString(std::get<2>(TableOfContentsString), IndexInString));
-							
-							if(std::get<0>(TrackOffset) == true)
-							{
-								IndexInString += std::get<1>(TrackOffset);
-								if(TrackIndex < std::get<2>(NumberOfTracks))
-								{
-									std::cout << "\t\t\t\t\tTrack offset for track " << TrackIndex + 1;
-								}
-								else
-								{
-									std::cout << "\t\t\t\t\tTrack offset for lead out";
-								}
-								std::cout << ": " << std::get<2>(TrackOffset) << std::endl;
-							}
-						}
-					}
-				}
-			}
-			
-			auto Rest(Get_Zeroes_EndedByLength(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(Rest) == true)
-			{
-				Index += std::get<1>(Rest);
-				std::cout << "\t\t\t\tAnother " << std::get<1>(Rest) << " bytes of zeroes until the end of the frame." << std::endl;
-			}
-			else
-			{
-				std::cout << "*** ERROR *** The frame contains unrecognizable data after the table of contents string." << std::endl;
-			}
-		}
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23MJCFFrame(const uint8_t * Buffer, std::uint64_t Length)
