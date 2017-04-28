@@ -23,20 +23,10 @@ enum class TextEncoding
 {
 	Undefined,
 	ISO_IEC_8859_1_1998,
-	UCS_2,
-	UTF_16,
-	UTF_16_BE,
-	UTF_8
+	UCS_2
 };
 
 enum class UCS2ByteOrderMark
-{
-	Undefined,
-	LittleEndian,
-	BigEndian
-};
-
-enum class UTF16ByteOrderMark
 {
 	Undefined,
 	LittleEndian,
@@ -5375,9 +5365,6 @@ int main(int argc, char **argv)
 	// encodings for version 2.2
 	g_EncodingNames.insert(std::make_pair(TextEncoding::ISO_IEC_8859_1_1998, "ISO/IEC 8859-1:1998"));
 	g_EncodingNames.insert(std::make_pair(TextEncoding::UCS_2, "ISO/IEC 10646-1:1993, UCS-2"));
-	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_16, "UTF-16 encoded Unicode with Byte Order Mark"));
-	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_16_BE, "UTF-16BE encoded Unicode in Big Endian"));
-	g_EncodingNames.insert(std::make_pair(TextEncoding::UTF_8, "UTF-8 encoded Unicode"));
 	
 	// country codes according to ISO 3166-1 alpha-2
 	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("GB", "United Kingdom"));
