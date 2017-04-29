@@ -3066,7 +3066,11 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame(Inspection::Buffer & Buf
 		else
 		{
 			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
-			Result->SetSuccess(false);
+			
+			auto BodyResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size)};
+			
+			Result->GetValue()->Append("Data", BodyResult->GetValue());
+			Result->SetSuccess(BodyResult->GetSuccess());
 		}
 		Buffer.SetPosition(Start + Size);
 	}
