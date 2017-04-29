@@ -1673,7 +1673,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header(Inspection::Buffe
 		}
 		else if(Identifier == "TCP")
 		{
-			Result->GetValue()->AppendTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless.");
+			Result->GetValue()->AppendTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
 			Result->GetValue()->AppendTag("name", "Compilation"s);
 			Result->GetValue()->AppendTag("standard", "<from the internet>"s);
 		}
@@ -2629,18 +2629,18 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame(Inspection::Buffer & Buf
 			
 			if(Start + Size > Buffer.GetPosition())
 			{
-				Result->GetValue()->PrependTag("error", "Frame size is stated larger than the handled size."s);
+				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the frame size is stated larger than the actual handled size."s);
 			}
 			else if(Start + Size < Buffer.GetPosition())
 			{
-				Result->GetValue()->PrependTag("error", "Handled size is larger than the stated frame size."s);
+				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the acutal handled size is larger than the stated frame size."s);
 			}
 			Result->GetValue()->Append(BodyResult->GetValue()->GetValues());
 			Result->SetSuccess(BodyResult->GetSuccess());
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "This frame has no handler."s);
+			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			Result->SetSuccess(false);
 		}
 		Buffer.SetPosition(Start + Size);
@@ -3509,7 +3509,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Buffe
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("error", "Unkown frame identifier."s);
+			Result->GetValue()->PrependTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
 			Result->SetSuccess(false);
 		}
 		if(Result->GetSuccess() == true)
