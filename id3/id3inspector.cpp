@@ -1467,6 +1467,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TLAN(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_UFID(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_USLT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_WXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Tag_Header_Flags(Inspection::Buffer & Buffer);
@@ -1484,6 +1485,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_T___(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_TXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_UFID(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_USLT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_WXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -2722,6 +2724,19 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_USLT(Inspection::Bu
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto URLResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
+	
+	Result->GetValue()->Append("URL", URLResult->GetValue());
+	Result->SetSuccess(URLResult->GetSuccess());
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_WXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
@@ -2950,6 +2965,10 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame(Inspection::Buffer & Buf
 		else if(Identifier == "USLT")
 		{
 			BodyHandler = Get_ID3_2_4_Frame_Body_USLT;
+		}
+		else if(Identifier == "WCOM")
+		{
+			BodyHandler = Get_ID3_2_4_Frame_Body_W___;
 		}
 		else if(Identifier == "WXXX")
 		{
@@ -3286,6 +3305,19 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_USLT(Inspection::Bu
 			}
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto URLResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
+	
+	Result->GetValue()->Append("URL", URLResult->GetValue());
+	Result->SetSuccess(URLResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -5124,32 +5156,14 @@ std::uint64_t Handle23USLTFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle23W___Frames(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23W___Frames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto URL(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_Body_W___(Buffer, Buffer.GetLength())};
 	
-	if(std::get<0>(URL) == true)
-	{
-		Index += std::get<1>(URL);
-		std::cout << "\t\t\t\tURL: \"" << std::get<2>(URL) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
-	}
-	else
-	{
-		auto URL(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(URL) == true)
-		{
-			Index += std::get<1>(URL);
-			std::cout << "\t\t\t\tURL: \"" << std::get<2>(URL) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-		}
-		else
-		{
-			std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
-		}
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23WXXXFrame(const uint8_t * RawBuffer, std::uint64_t Length)
