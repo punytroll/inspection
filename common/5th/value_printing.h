@@ -9,10 +9,13 @@
 
 namespace Inspection
 {
-	const std::string g_Blue{"\033[34m"};
-	const std::string g_Green{"\033[32m"};
+	const std::string g_DarkBlue{"\033[34m"};
+	const std::string g_DarkCyan{"\033[36m"};
 	const std::string g_DarkGray{"\033[90m"};
+	const std::string g_DarkGreen{"\033[32m"};
 	const std::string g_DarkYellow{"\033[33m"};
+	const std::string g_LightBlue{"\033[94m"};
+	const std::string g_LightCyan{"\033[96m"};
 	const std::string g_LightGray{"\033[37m"};
 	const std::string g_LightRed{"\033[91m"};
 	const std::string g_LightYellow{"\033[93m"};
@@ -37,7 +40,7 @@ namespace Inspection
 		}
 		if(Value->GetAny().empty() == false)
 		{
-			std::cout << g_LightYellow << Value->GetAny() << g_White;
+			std::cout << g_LightCyan << Value->GetAny() << g_White;
 		}
 		if(Value->GetTags().empty() == false)
 		{
@@ -58,14 +61,15 @@ namespace Inspection
 					}
 					else
 					{
-						std::cout << g_LightGray;
+						std::cout << g_DarkYellow;
 					}
-					std::cout << Tag->GetName() << g_DarkGray;
+					std::cout << Tag->GetName();
 				}
 				if((Tag->GetName().empty() == false) && (Tag->GetAny().empty() == false))
 				{
-					std::cout << g_LightGray << '=' << g_DarkYellow;
+					std::cout << g_LightGray << '=';
 				}
+				std::cout << g_DarkGray;
 				if(Tag->GetAny().empty() == false)
 				{
 					std::cout << Tag->GetAny();
