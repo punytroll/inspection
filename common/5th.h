@@ -8,5 +8,6 @@
 #include "5th/result.h"
 #include "5th/value.h"
 #include "5th/value_printing.h"
+#include "5th/unknown_value_exception.h"
 
 #endif
