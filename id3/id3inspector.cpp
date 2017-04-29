@@ -5429,26 +5429,7 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 			TagHeaderResult->SetSuccess(FramesResult->GetSuccess());
 			PrintValue(TagHeaderResult->GetValue(), "    ");
 		}
-		else if(MajorVersion == 0x04)
-		{
-			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
-			{
-				auto ExtendedHeaderResult{Get_ID3_2_4_Tag_ExtendedHeader(Buffer)};
-				
-				TagHeaderResult->GetValue()->Append("ExtendedHeader", ExtendedHeaderResult->GetValue());
-				TagHeaderResult->SetSuccess(ExtendedHeaderResult->GetSuccess());
-				Size -= ExtendedHeaderResult->GetLength();
-			}
-			if(TagHeaderResult->GetSuccess() == true)
-			{
-				auto FramesResult{Get_ID3_2_4_Frames(Buffer, Size)};
-				
-				TagHeaderResult->GetValue()->Append(FramesResult->GetValue()->GetValues());
-				TagHeaderResult->SetSuccess(FramesResult->GetSuccess());
-			}
-			PrintValue(TagHeaderResult->GetValue(), "    ");
-		}
-		else
+		else if(MajorVersion == 0x03)
 		{
 			PrintValue(TagHeaderResult->GetValue(), "    ");
 			if(TagHeaderResult->GetSuccess() == true)
@@ -5534,6 +5515,30 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 				}
 				std::cout << std::endl;
 			}
+		}
+		else if(MajorVersion == 0x04)
+		{
+			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
+			{
+				auto ExtendedHeaderResult{Get_ID3_2_4_Tag_ExtendedHeader(Buffer)};
+				
+				TagHeaderResult->GetValue()->Append("ExtendedHeader", ExtendedHeaderResult->GetValue());
+				TagHeaderResult->SetSuccess(ExtendedHeaderResult->GetSuccess());
+				Size -= ExtendedHeaderResult->GetLength();
+			}
+			if(TagHeaderResult->GetSuccess() == true)
+			{
+				auto FramesResult{Get_ID3_2_4_Frames(Buffer, Size)};
+				
+				TagHeaderResult->GetValue()->Append(FramesResult->GetValue()->GetValues());
+				TagHeaderResult->SetSuccess(FramesResult->GetSuccess());
+			}
+			PrintValue(TagHeaderResult->GetValue(), "    ");
+		}
+		else
+		{
+			TagHeaderResult->GetValue()->PrependTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
+			PrintValue(TagHeaderResult->GetValue(), "    ");
 		}
 	}
 }
