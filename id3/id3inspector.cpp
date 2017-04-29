@@ -172,18 +172,6 @@ std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIString(const s
 	return Result;
 }
 
-std::pair< bool, std::string > GetInterpretation(const std::string & Content, const std::string & InterpretationKey, const std::string & InterpretationValue)
-{
-	if(Content == InterpretationKey)
-	{
-		return std::make_pair(true, InterpretationValue);
-	}
-	else
-	{
-		return std::make_pair(false, "");
-	}
-}
-
 std::pair< bool, std::string > GetSimpleID3_1GenreReferenceInterpretation(const std::string & ContentType)
 {
 	std::pair< bool, std::string > Result(false, "");
@@ -241,49 +229,6 @@ std::pair< bool, std::string > GetContentTypeInterpretation2_3(const std::string
 	}
 	
 	return Interpretation;
-}
-
-std::tuple< bool, bool, std::string > GetFileTypeInterpretation2_3(const std::string FileType)
-{
-	std::pair< bool, std::string > Interpretation(false, "");
-	bool Strict(true);
-	
-	Interpretation = GetInterpretation(FileType, "MPG", "MPEG Audio");
-	if(std::get<0>(Interpretation) == false)
-	{
-		Interpretation = GetInterpretation(FileType, "MPG/1", "MPEG Audio, MPEG 1/2 layer I");
-		if(std::get<0>(Interpretation) == false)
-		{
-			Interpretation = GetInterpretation(FileType, "MPG/2", "MPEG Audio, MPEG 1/2 layer II");
-			if(std::get<0>(Interpretation) == false)
-			{
-				Interpretation = GetInterpretation(FileType, "MPG/3", "MPEG Audio, MPEG 1/2 layer III");
-				if(std::get<0>(Interpretation) == false)
-				{
-					Interpretation = GetInterpretation(FileType, "MPG/2.5", "MPEG Audio, MPEG 2.5");
-					if(std::get<0>(Interpretation) == false)
-					{
-						Interpretation = GetInterpretation(FileType, "AAC", "MPEG Audio, Advanced audio compression");
-						if(std::get<0>(Interpretation) == false)
-						{
-							Interpretation = GetInterpretation(FileType, "VQF", "Transform-domain Weighted Interleave Vector Quantization");
-							if(std::get<0>(Interpretation) == false)
-							{
-								Interpretation = GetInterpretation(FileType, "PCM", "Pulse Code Modulated audio");
-								if(std::get<0>(Interpretation) == false)
-								{
-									Strict = false;
-									Interpretation = GetInterpretation(FileType, "/3", "MPEG Audio, MPEG 1/2 layer III");
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	return std::make_tuple(std::get<0>(Interpretation), Strict, std::get<1>(Interpretation));
 }
 
 std::pair< bool, std::string > GetWMUniqueFileIdentifierAsAMGIdentifier(const std::string & WMUniqueFileIdentifier)
