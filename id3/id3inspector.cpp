@@ -5574,18 +5574,18 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("RGAD", "Replay Gain Adjustment", Handle23RGADFrame);
 	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
 	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
-	//~ FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	//~ FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle24T___Frames);
-	//~ FrameHeader::Forbid23("TDTG", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	//~ FrameHeader::Handle23("TDTG", "Tagging time (from tag version 2.4)", Handle24T___Frames);
-	//~ FrameHeader::Forbid23("TSST", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	//~ FrameHeader::Handle23("TSST", "Set subtitle (from tag version 2.4)", Handle24T___Frames);
-	//~ FrameHeader::Forbid23("TSOA", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	//~ FrameHeader::Handle23("TSOA", "Album sort order (from tag version 2.4)", Handle24T___Frames);
-	//~ FrameHeader::Forbid23("TSOP", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	//~ FrameHeader::Handle23("TSOP", "Performer sort order (from tag version 2.4)", Handle24T___Frames);
-	//~ FrameHeader::Forbid23("TSO2", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the Album Artist sort order.");
-	//~ FrameHeader::Handle23("TSO2", "Album artist sort order (by iTunes)", Handle24T___Frames);
+	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
+	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle23T___Frames);
+	FrameHeader::Forbid23("TDTG", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
+	FrameHeader::Handle23("TDTG", "Tagging time (from tag version 2.4)", Handle23T___Frames);
+	FrameHeader::Forbid23("TSST", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
+	FrameHeader::Handle23("TSST", "Set subtitle (from tag version 2.4)", Handle23T___Frames);
+	FrameHeader::Forbid23("TSOA", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
+	FrameHeader::Handle23("TSOA", "Album sort order (from tag version 2.4)", Handle23T___Frames);
+	FrameHeader::Forbid23("TSOP", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
+	FrameHeader::Handle23("TSOP", "Performer sort order (from tag version 2.4)", Handle23T___Frames);
+	FrameHeader::Forbid23("TSO2", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the Album Artist sort order.");
+	FrameHeader::Handle23("TSO2", "Album artist sort order (by iTunes)", Handle23T___Frames);
 	
 	// processing
 	while(Paths.begin() != Paths.end())
