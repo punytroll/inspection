@@ -952,8 +952,101 @@ std::tuple< bool, std::uint64_t, Values > Get_ID3_2_3_Encoding(const std::uint8_
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation helpers                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+std::string Get_ID3_2_PictureType_Interpretation(std::uint8_t Value);
 std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value);
-std::string Get_ID3_2_4_FrameIdentifier_Interpretation(const std::string & Identifier);
+std::string Get_ID3_2_4_FrameIdentifier_Interpretation(const std::string & Value);
+
+std::string Get_ID3_2_PictureType_Interpretation(std::uint8_t Value)
+{
+	if(Value == 0x00)
+	{
+		return "Other";
+	}
+	else if(Value == 0x01)
+	{
+		return "32x32 pixels 'file icon' (PNG only)";
+	}
+	else if(Value == 0x02)
+	{
+		return "Other file icon";
+	}
+	else if(Value == 0x03)
+	{
+		return "Cover (front)";
+	}
+	else if(Value == 0x04)
+	{
+		return "Cover (back)";
+	}
+	else if(Value == 0x05)
+	{
+		return "Leaflet page";
+	}
+	else if(Value == 0x06)
+	{
+		return "Media (e.g. label side of CD";
+	}
+	else if(Value == 0x07)
+	{
+		return "Lead artist/lead performer/soloist";
+	}
+	else if(Value == 0x08)
+	{
+		return "Artist/performer";
+	}
+	else if(Value == 0x09)
+	{
+		return "Conductor";
+	}
+	else if(Value == 0x0a)
+	{
+		return "Band/Orchestra";
+	}
+	else if(Value == 0x0b)
+	{
+		return "Composer";
+	}
+	else if(Value == 0x0c)
+	{
+		return "Lyricist/text writer";
+	}
+	else if(Value == 0x0d)
+	{
+		return "Recording Location";
+	}
+	else if(Value == 0x0e)
+	{
+		return "During recording";
+	}
+	else if(Value == 0x0f)
+	{
+		return "During performance";
+	}
+	else if(Value == 0x10)
+	{
+		return "Movie/video screen capture";
+	}
+	else if(Value == 0x11)
+	{
+		return "A bright coloured fish";
+	}
+	else if(Value == 0x12)
+	{
+		return "Illustration";
+	}
+	else if(Value == 0x13)
+	{
+		return "Band/artist logotype";
+	}
+	else if(Value == 0x14)
+	{
+		return "Publisher/Studio logotype";
+	}
+	else
+	{
+		throw Inspection::UnknownValueException(to_string_cast(Value));
+	}
+}
 
 std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value)
 {
@@ -995,343 +1088,343 @@ std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value)
 	}
 }
 
-std::string Get_ID3_2_4_FrameIdentifier_Interpretation(const std::string & Identifier)
+std::string Get_ID3_2_4_FrameIdentifier_Interpretation(const std::string & Value)
 {
-	if(Identifier == "AENC")
+	if(Value == "AENC")
 	{
 		return "Audio encryption";
 	}
-	else if(Identifier == "APIC")
+	else if(Value == "APIC")
 	{
 		return "Attached Picture";
 	}
-	else if(Identifier == "ASPI")
+	else if(Value == "ASPI")
 	{
 		return "Audio seek point index";
 	}
-	else if(Identifier == "COMM")
+	else if(Value == "COMM")
 	{
 		return "Comments";
 	}
-	else if(Identifier == "COMR")
+	else if(Value == "COMR")
 	{
 		return "Commercial frame";
 	}
-	else if(Identifier == "ENCR")
+	else if(Value == "ENCR")
 	{
 		return "Encryption method registration";
 	}
-	else if(Identifier == "EQU2")
+	else if(Value == "EQU2")
 	{
 		return "Equalisation (2)";
 	}
-	else if(Identifier == "ETCO")
+	else if(Value == "ETCO")
 	{
 		return "Event timing codes";
 	}
-	else if(Identifier == "GEOB")
+	else if(Value == "GEOB")
 	{
 		return "General encapsulated object";
 	}
-	else if(Identifier == "GRID")
+	else if(Value == "GRID")
 	{
 		return "Group identification registration";
 	}
-	else if(Identifier == "LINK")
+	else if(Value == "LINK")
 	{
 		return "Linked information";
 	}
-	else if(Identifier == "MCDI")
+	else if(Value == "MCDI")
 	{
 		return "Music CD identifier";
 	}
-	else if(Identifier == "MLLT")
+	else if(Value == "MLLT")
 	{
 		return "MPEG location lookup table";
 	}
-	else if(Identifier == "OWNE")
+	else if(Value == "OWNE")
 	{
 		return "Ownership frame";
 	}
-	else if(Identifier == "PRIV")
+	else if(Value == "PRIV")
 	{
 		return "Private frame";
 	}
-	else if(Identifier == "PCNT")
+	else if(Value == "PCNT")
 	{
 		return "Play counter";
 	}
-	else if(Identifier == "POPM")
+	else if(Value == "POPM")
 	{
 		return "Popularimeter";
 	}
-	else if(Identifier == "POSS")
+	else if(Value == "POSS")
 	{
 		return "Position synchronisation frame";
 	}
-	else if(Identifier == "RBUF")
+	else if(Value == "RBUF")
 	{
 		return "Recommended buffer size";
 	}
-	else if(Identifier == "RVA2")
+	else if(Value == "RVA2")
 	{
 		return "Relative volume adjustment (2)";
 	}
-	else if(Identifier == "RVRB")
+	else if(Value == "RVRB")
 	{
 		return "Reverb";
 	}
-	else if(Identifier == "SEEK")
+	else if(Value == "SEEK")
 	{
 		return "Seek frame";
 	}
-	else if(Identifier == "SIGN")
+	else if(Value == "SIGN")
 	{
 		return "Signature frame";
 	}
-	else if(Identifier == "SYLT")
+	else if(Value == "SYLT")
 	{
 		return "Synchronised lyric/text";
 	}
-	else if(Identifier == "SYTC")
+	else if(Value == "SYTC")
 	{
 		return "Synchronised tempo codes";
 	}
-	else if(Identifier == "TALB")
+	else if(Value == "TALB")
 	{
 		return "Album/Movie/Show title";
 	}
-	else if(Identifier == "TBMP")
+	else if(Value == "TBMP")
 	{
 		return "BMP (beats per minute)";
 	}
-	else if(Identifier == "TCOM")
+	else if(Value == "TCOM")
 	{
 		return "Composer";
 	}
-	else if(Identifier == "TCON")
+	else if(Value == "TCON")
 	{
 		return "Content type";
 	}
-	else if(Identifier == "TCOP")
+	else if(Value == "TCOP")
 	{
 		return "Copyright message";
 	}
-	else if(Identifier == "TDEN")
+	else if(Value == "TDEN")
 	{
 		return "Encoding time";
 	}
-	else if(Identifier == "TDLY")
+	else if(Value == "TDLY")
 	{
 		return "Playlist delay";
 	}
-	else if(Identifier == "TDOR")
+	else if(Value == "TDOR")
 	{
 		return "Original release time";
 	}
-	else if(Identifier == "TDRC")
+	else if(Value == "TDRC")
 	{
 		return "Recording time";
 	}
-	else if(Identifier == "TDRL")
+	else if(Value == "TDRL")
 	{
 		return "Release time";
 	}
-	else if(Identifier == "TDTG")
+	else if(Value == "TDTG")
 	{
 		return "Tagging time";
 	}
-	else if(Identifier == "TENC")
+	else if(Value == "TENC")
 	{
 		return "Encoded by";
 	}
-	else if(Identifier == "TEXT")
+	else if(Value == "TEXT")
 	{
 		return "Lyricist/Text writer";
 	}
-	else if(Identifier == "TFLT")
+	else if(Value == "TFLT")
 	{
 		return "File type";
 	}
-	else if(Identifier == "TIPL")
+	else if(Value == "TIPL")
 	{
 		return "Involved people list";
 	}
-	else if(Identifier == "TIT1")
+	else if(Value == "TIT1")
 	{
 		return "Content group description";
 	}
-	else if(Identifier == "TIT2")
+	else if(Value == "TIT2")
 	{
 		return "Title/songname/content description";
 	}
-	else if(Identifier == "TIT3")
+	else if(Value == "TIT3")
 	{
 		return "Subtitle/Description refinement";
 	}
-	else if(Identifier == "TKEY")
+	else if(Value == "TKEY")
 	{
 		return "Initial key";
 	}
-	else if(Identifier == "TLAN")
+	else if(Value == "TLAN")
 	{
 		return "Language(s)";
 	}
-	else if(Identifier == "TLEN")
+	else if(Value == "TLEN")
 	{
 		return "Length";
 	}
-	else if(Identifier == "TMCL")
+	else if(Value == "TMCL")
 	{
 		return "Musician credits list";
 	}
-	else if(Identifier == "TMED")
+	else if(Value == "TMED")
 	{
 		return "Media type";
 	}
-	else if(Identifier == "TMOO")
+	else if(Value == "TMOO")
 	{
 		return "Mood";
 	}
-	else if(Identifier == "TOAL")
+	else if(Value == "TOAL")
 	{
 		return "Original album/movie/show title";
 	}
-	else if(Identifier == "TOFN")
+	else if(Value == "TOFN")
 	{
 		return "Original filename";
 	}
-	else if(Identifier == "TOLY")
+	else if(Value == "TOLY")
 	{
 		return "Original lyricist(s)/text writer(s)";
 	}
-	else if(Identifier == "TOPE")
+	else if(Value == "TOPE")
 	{
 		return "Original artist(s)/performer(s)";
 	}
-	else if(Identifier == "TOWN")
+	else if(Value == "TOWN")
 	{
 		return "File owner/licensee";
 	}
-	else if(Identifier == "TPE1")
+	else if(Value == "TPE1")
 	{
 		return "Lead performer(s)/Soloist(s)";
 	}
-	else if(Identifier == "TPE2")
+	else if(Value == "TPE2")
 	{
 		return "Band/orchestra/accompaniment";
 	}
-	else if(Identifier == "TPE3")
+	else if(Value == "TPE3")
 	{
 		return "Conductor/performer refinement";
 	}
-	else if(Identifier == "TPE4")
+	else if(Value == "TPE4")
 	{
 		return "Interpreted, remixed, or otherwise modified by";
 	}
-	else if(Identifier == "TPOS")
+	else if(Value == "TPOS")
 	{
 		return "Part of a set";
 	}
-	else if(Identifier == "TPRO")
+	else if(Value == "TPRO")
 	{
 		return "Produced notice";
 	}
-	else if(Identifier == "TPUB")
+	else if(Value == "TPUB")
 	{
 		return "Publisher";
 	}
-	else if(Identifier == "TRCK")
+	else if(Value == "TRCK")
 	{
 		return "Track number/Position in set";
 	}
-	else if(Identifier == "TRSN")
+	else if(Value == "TRSN")
 	{
 		return "Internet radio station name";
 	}
-	else if(Identifier == "TRSO")
+	else if(Value == "TRSO")
 	{
 		return "Internet radio station owner";
 	}
-	else if(Identifier == "TSOA")
+	else if(Value == "TSOA")
 	{
 		return "Album sort order";
 	}
-	else if(Identifier == "TSOP")
+	else if(Value == "TSOP")
 	{
 		return "Performer sort order";
 	}
-	else if(Identifier == "TSOT")
+	else if(Value == "TSOT")
 	{
 		return "Title sort order";
 	}
-	else if(Identifier == "TSRC")
+	else if(Value == "TSRC")
 	{
 		return "ISRC (international standard recording code)";
 	}
-	else if(Identifier == "TSSE")
+	else if(Value == "TSSE")
 	{
 		return "Software/Hardware and settings used for encoding";
 	}
-	else if(Identifier == "TSST")
+	else if(Value == "TSST")
 	{
 		return "Set subtitle";
 	}
-	else if(Identifier == "TXXX")
+	else if(Value == "TXXX")
 	{
 		return "User defined text information frame";
 	}
-	else if(Identifier == "UFID")
+	else if(Value == "UFID")
 	{
 		return "Unique file identifier";
 	}
-	else if(Identifier == "USER")
+	else if(Value == "USER")
 	{
 		return "Terms of use";
 	}
-	else if(Identifier == "USLT")
+	else if(Value == "USLT")
 	{
 		return "Unsynchronised lyric/text transcription";
 	}
-	else if(Identifier == "WCOM")
+	else if(Value == "WCOM")
 	{
 		return "Commercial information";
 	}
-	else if(Identifier == "WCOP")
+	else if(Value == "WCOP")
 	{
 		return "Copyright/legal information";
 	}
-	else if(Identifier == "WOAF")
+	else if(Value == "WOAF")
 	{
 		return "Official audio file webpage";
 	}
-	else if(Identifier == "WOAR")
+	else if(Value == "WOAR")
 	{
 		return "Official artist/performer webpage";
 	}
-	else if(Identifier == "WOAS")
+	else if(Value == "WOAS")
 	{
 		return "Official audio source webpage";
 	}
-	else if(Identifier == "WORS")
+	else if(Value == "WORS")
 	{
 		return "Official internet radio station webpage";
 	}
-	else if(Identifier == "WPAY")
+	else if(Value == "WPAY")
 	{
 		return "Payment";
 	}
-	else if(Identifier == "WPUB")
+	else if(Value == "WPUB")
 	{
 		return "Publisher's official webpage";
 	}
-	else if(Identifier == "WXXX")
+	else if(Value == "WXXX")
 	{
 		return "User defined URL link frame";
 	}
 	else
 	{
-		throw Inspection::UnknownValueException(Identifier);
+		throw Inspection::UnknownValueException(Value);
 	}
 }
 
@@ -1872,112 +1965,19 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_PIC_PictureType(Ins
 	if(PictureTypeResult->GetSuccess() == true)
 	{
 		auto PictureType{std::experimental::any_cast< std::uint8_t >(PictureTypeResult->GetAny())};
+		std::string Interpretation;
 		
-		if(PictureType == 0x00)
+		Result->GetValue()->PrependTag("standard", "ID3v2"s);
+		try
 		{
-			Result->GetValue()->PrependTag("interpretation", "Other"s);
+			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
 			Result->SetSuccess(true);
 		}
-		else if(PictureType == 0x01)
+		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->PrependTag("interpretation", "32x32 pixels 'file icon' (PNG only)"s);
-			Result->SetSuccess(true);
+			Interpretation = "unknown";
 		}
-		else if(PictureType == 0x02)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Other file icon"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x03)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Cover (front)"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x04)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Cover (back)"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x05)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Leaflet page"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x06)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Media (e.g. label side of CD"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x07)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Lead artist/lead performer/soloist"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x08)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Artist/performer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x09)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Conductor"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0a)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Band/Orchestra"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0b)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Composer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0c)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Lyricist/text writer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0d)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Recording Location"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0e)
-		{
-			Result->GetValue()->PrependTag("interpretation", "During recording"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0f)
-		{
-			Result->GetValue()->PrependTag("interpretation", "During performance"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x10)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Movie/video screen capture"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x11)
-		{
-			Result->GetValue()->PrependTag("interpretation", "A bright coloured fish"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x12)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Illustration"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x13)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Band/artist logotype"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x14)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Publisher/Studio logotype"s);
-			Result->SetSuccess(true);
-		}
+		Result->GetValue()->PrependTag("interpretation", Interpretation);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -2353,112 +2353,19 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_APIC_PictureType(In
 	if(PictureTypeResult->GetSuccess() == true)
 	{
 		auto PictureType{std::experimental::any_cast< std::uint8_t >(PictureTypeResult->GetAny())};
+		std::string Interpretation;
 		
-		if(PictureType == 0x00)
+		Result->GetValue()->PrependTag("standard", "ID3v3"s);
+		try
 		{
-			Result->GetValue()->PrependTag("interpretation", "Other"s);
+			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
 			Result->SetSuccess(true);
 		}
-		else if(PictureType == 0x01)
+		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->PrependTag("interpretation", "32x32 pixels 'file icon' (PNG only)"s);
-			Result->SetSuccess(true);
+			Interpretation = "unknown";
 		}
-		else if(PictureType == 0x02)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Other file icon"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x03)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Cover (front)"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x04)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Cover (back)"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x05)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Leaflet page"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x06)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Media (e.g. label side of CD"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x07)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Lead artist/lead performer/soloist"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x08)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Artist/performer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x09)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Conductor"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0a)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Band/Orchestra"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0b)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Composer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0c)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Lyricist/text writer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0d)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Recording Location"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0e)
-		{
-			Result->GetValue()->PrependTag("interpretation", "During recording"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0f)
-		{
-			Result->GetValue()->PrependTag("interpretation", "During performance"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x10)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Movie/video screen capture"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x11)
-		{
-			Result->GetValue()->PrependTag("interpretation", "A bright coloured fish"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x12)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Illustration"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x13)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Band/artist logotype"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x14)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Publisher/Studio logotype"s);
-			Result->SetSuccess(true);
-		}
+		Result->GetValue()->PrependTag("interpretation", Interpretation);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -3140,112 +3047,19 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_APIC_PictureType(In
 	if(PictureTypeResult->GetSuccess() == true)
 	{
 		auto PictureType{std::experimental::any_cast< std::uint8_t >(PictureTypeResult->GetAny())};
+		std::string Interpretation;
 		
-		if(PictureType == 0x00)
+		Result->GetValue()->PrependTag("standard", "ID3v4"s);
+		try
 		{
-			Result->GetValue()->PrependTag("interpretation", "Other"s);
+			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
 			Result->SetSuccess(true);
 		}
-		else if(PictureType == 0x01)
+		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->PrependTag("interpretation", "32x32 pixels 'file icon' (PNG only)"s);
-			Result->SetSuccess(true);
+			Interpretation = "unknown";
 		}
-		else if(PictureType == 0x02)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Other file icon"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x03)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Cover (front)"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x04)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Cover (back)"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x05)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Leaflet page"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x06)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Media (e.g. label side of CD"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x07)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Lead artist/lead performer/soloist"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x08)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Artist/performer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x09)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Conductor"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0a)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Band/Orchestra"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0b)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Composer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0c)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Lyricist/text writer"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0d)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Recording Location"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0e)
-		{
-			Result->GetValue()->PrependTag("interpretation", "During recording"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x0f)
-		{
-			Result->GetValue()->PrependTag("interpretation", "During performance"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x10)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Movie/video screen capture"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x11)
-		{
-			Result->GetValue()->PrependTag("interpretation", "A bright coloured fish"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x12)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Illustration"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x13)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Band/artist logotype"s);
-			Result->SetSuccess(true);
-		}
-		else if(PictureType == 0x14)
-		{
-			Result->GetValue()->PrependTag("interpretation", "Publisher/Studio logotype"s);
-			Result->SetSuccess(true);
-		}
+		Result->GetValue()->PrependTag("interpretation", Interpretation);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
