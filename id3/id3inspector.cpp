@@ -1404,6 +1404,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_COMM(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PCNT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_T___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCMP(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -2415,6 +2416,38 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Inspe
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PCNT(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.GetPosition() + Inspection::Length(4ul, 0) > Boundary)
+	{
+		auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+		
+		Result->GetValue()->Append("Counter", CounterResult->GetValue());
+		Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+		Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
+	}
+	else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) == Boundary)
+	{
+		auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		
+		Result->GetValue()->Append("Counter", CounterResult->GetValue());
+		Result->SetSuccess(CounterResult->GetSuccess());
+	}
+	else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
+	{
+		auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+		
+		Result->GetValue()->Append("Counter", CounterResult->GetValue());
+		Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
@@ -2449,10 +2482,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Bu
 				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 				
 				Result->GetValue()->Append("Counter", CounterResult->GetValue());
-				if(CounterResult->GetSuccess() == true)
-				{
-					Result->SetSuccess(true);
-				}
 				Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 				Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
 			}
@@ -2468,10 +2497,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Bu
 				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 				
 				Result->GetValue()->Append("Counter", CounterResult->GetValue());
-				if(CounterResult->GetSuccess() == true)
-				{
-					Result->SetSuccess(true);
-				}
 				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			}
 		}
@@ -3139,10 +3164,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_POPM(Inspection::Bu
 				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 				
 				Result->GetValue()->Append("Counter", CounterResult->GetValue());
-				if(CounterResult->GetSuccess() == true)
-				{
-					Result->SetSuccess(true);
-				}
 				Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 				Result->GetValue("Counter")->PrependTag("standard", "ID3 2.4"s);
 			}
@@ -3158,10 +3179,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_POPM(Inspection::Bu
 				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 				
 				Result->GetValue()->Append("Counter", CounterResult->GetValue());
-				if(CounterResult->GetSuccess() == true)
-				{
-					Result->SetSuccess(true);
-				}
 				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			}
 		}
@@ -4369,28 +4386,14 @@ std::uint64_t Handle23MJCFFrame(const uint8_t * Buffer, std::uint64_t Length)
 	return Index;
 }
 
-std::uint64_t Handle23PCNTFrame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23PCNTFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_Body_PCNT(Buffer, Buffer.GetLength())};
 	
-	if(Length < 4)
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.17], a \"PCNT\" frame MUST contain at least four bytes for the counter." << std::endl;
-	}
-	else if(Length == 4)
-	{
-		auto Counter(Get_UInt32_BE(Buffer + Index, Length - Index));
-		
-		std::cout << "\t\t\t\tCounter: " << std::get<2>(Counter) << std::endl;
-		Index += std::get<1>(Counter);
-	}
-	else
-	{
-		std::cout << "*** ERROR *** The program does not yet support printing the value of numbers with more than four bytes." << std::endl;
-		Index = Length;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23POPMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
