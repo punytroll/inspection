@@ -950,6 +950,51 @@ std::tuple< bool, std::uint64_t, Values > Get_ID3_2_3_Encoding(const std::uint8_
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// 5th generation helpers                                                                        //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value);
+
+std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value)
+{
+	if(Value == "MPG")
+	{
+		return "MPEG Audio";
+	}
+	else if(Value == "MPG/1")
+	{
+		return "MPEG 1/2 layer I";
+	}
+	else if(Value == "MPG/2")
+	{
+		return "MPEG 1/2 layer II";
+	}
+	else if(Value == "MPG/3")
+	{
+		return "MPEG 1/2 layer III";
+	}
+	else if(Value == "MPG/2.5")
+	{
+		return "MPEG 2.5";
+	}
+	else if(Value == "MPG/AAC")
+	{
+		return "Advanced audio compression";
+	}
+	else if(Value == "VQF")
+	{
+		return "Transform-domain Weighted Interleave Vector Quantization";
+	}
+	else if(Value == "PCM")
+	{
+		return "Pulse Code Modulated audio";
+	}
+	else
+	{
+		throw Inspection::UnknownValueException(Value);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents(Inspection::Buffer & Buffer);
@@ -983,6 +1028,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_T___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCON(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TFLT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TLAN(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_UFID(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -2276,6 +2322,44 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCON(Inspection::Bu
 		{
 			Result->GetValue("Information")->PrependTag("interpretation", std::get<1>(Interpretation));
 		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TFLT(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FrameT___BodyResult{Get_ID3_2_3_Frame_Body_T___(Buffer, Length)};
+	
+	Result->SetValue(FrameT___BodyResult->GetValue());
+	if(FrameT___BodyResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto Information{std::experimental::any_cast< const std::string & >(FrameT___BodyResult->GetValue("Information")->GetTagAny("string"))};
+		std::string Interpretation;
+		
+		Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
+		try
+		{
+			Interpretation = Get_ID3_2_3_FileType_Interpretation(Information);
+		}
+		catch(Inspection::UnknownValueException & Exception)
+		{
+			if(Information == "/3")
+			{
+				Interpretation = "MPEG 1/2 layer III";
+				Result->GetValue("Information")->PrependTag("error", "The file type could not be interpreted strictly according to the standard, but this seems plausible."s);
+			}
+			else
+			{
+				Interpretation = "unkown";
+				Result->GetValue("Information")->PrependTag("error", "The file type could not be interpreted."s);
+			}
+		}
+		Result->GetValue("Information")->PrependTag("interpretation", Interpretation);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -4957,149 +5041,14 @@ std::uint64_t Handle23TCONFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle23TFLTFrames(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23TFLTFrames(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_Body_TFLT(Buffer, Buffer.GetLength())};
 	
-	if(std::get<0>(Encoding) == true)
-	{
-		Index += std::get<1>(Encoding);
-		std::cout << "\t\t\t\tText Encoding: " << std::experimental::any_cast< std::string >(std::get<2>(Encoding).Get("Name")) << std::endl;
-		
-		std::tuple< bool, int, std::string > FileTypeString;
-		
-		if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
-		{
-			FileTypeString = Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index);
-			if(std::get<0>(FileTypeString) == true)
-			{
-				Index += std::get<1>(FileTypeString);
-				std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
-			}
-			else
-			{
-				FileTypeString = Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index);
-				if(std::get<0>(FileTypeString) == true)
-				{
-					Index += std::get<1>(FileTypeString);
-					std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
-				}
-			}
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UCS_2)
-		{
-			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ByteOrderMark) == true)
-			{
-				Index += std::get<1>(ByteOrderMark);
-				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
-				{
-					std::cout << "\t\t\t\tByte Order Mark: Big Endian" << std::endl;
-					FileTypeString = Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index);
-					if(std::get<0>(FileTypeString) == true)
-					{
-						Index += std::get<1>(FileTypeString);
-						std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, big endian, ended by termination)" << std::endl;
-					}
-					else
-					{
-						FileTypeString = Get_UCS_2BE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index);
-						if(std::get<0>(FileTypeString) == true)
-						{
-							Index += std::get<1>(FileTypeString);
-							std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, big endian, ended by boundary)" << std::endl;
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in big endian with or without termination." << std::endl;
-						}
-					}
-				}
-				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
-				{
-					std::cout << "\t\t\t\tByte Order Mark: Little Endian" << std::endl;
-					FileTypeString = Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index);
-					if(std::get<0>(FileTypeString) == true)
-					{
-						Index += std::get<1>(FileTypeString);
-						std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
-					}
-					else
-					{
-						FileTypeString = Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index);
-						if(std::get<0>(FileTypeString) == true)
-						{
-							Index += std::get<1>(FileTypeString);
-							std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
-						}
-					}
-				}
-			}
-			else
-			{
-				if(Index == Length)
-				{
-					std::cout << "*** ERROR *** According to ID3 2.3.0 [3.3], all unicode strings encoded using UCS-2 must start with a Byte Order Mark, without explicitly excluding empty strings. The string for this text frame is empty without a Byte Order Mark and terminates at the frame boundary." << std::endl;
-					std::cout << "\t\t\t\tString: \"\" (boundary-terminated, missing endian specification)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark. Trying to interpret as  UCS-2 little endian." << std::endl;
-					FileTypeString = Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index);
-					if(std::get<0>(FileTypeString) == true)
-					{
-						Index += std::get<1>(FileTypeString);
-						std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
-					}
-					else
-					{
-						FileTypeString = Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index);
-						if(std::get<0>(FileTypeString) == true)
-						{
-							Index += std::get<1>(FileTypeString);
-							std::cout << "\t\t\t\tString: \"" << std::get<2>(FileTypeString) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
-						}
-					}
-				}
-			}
-		}
-		if(std::get<0>(FileTypeString) == true)
-		{
-			auto Interpretation(GetFileTypeInterpretation2_3(std::get<2>(FileTypeString)));
-			
-			if(std::get<0>(Interpretation) == true)
-			{
-				if(std::get<1>(Interpretation) == true)
-				{
-					std::cout << "\t\t\t\t\tInterpretation: \"" << std::get<2>(Interpretation) << "\" (as per ID3 2.4)"<< std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tInterpretation: \"" << std::get<2>(Interpretation) << "\" (not-standard but interpreted as per ID3 2.4)"<< std::endl;
-				}
-			}
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.2.1], \"TFLT\" frames MUST contain a \"Text encoding\" field with a valid tag version 2.3 encoding identifier." << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23TLANFrames(const uint8_t * RawBuffer, std::uint64_t Length)

@@ -24,7 +24,7 @@ helper.o: ../common/helper.cpp ../common/helper.h
 guid.o: ../common/guid.cpp ../common/guid.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-id3inspector.o: id3inspector.cpp ../common/any_printing.h ../common/values.h ../common/file_handling.h ../common/5th/getters.h ../common/5th/value_printing.h
+id3inspector.o: id3inspector.cpp ../common/5th/getters.h ../common/5th/unknown_value_exception.h ../common/5th/value_printing.h ../common/any_printing.h ../common/values.h ../common/file_handling.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 string_cast.o: ../common/string_cast.cpp ../common/string_cast.h
