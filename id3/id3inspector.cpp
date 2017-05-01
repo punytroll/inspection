@@ -1411,6 +1411,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCMP(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCON(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TFLT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TLAN(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TSRC(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_UFID(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_USLT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -2641,6 +2642,50 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TLAN(Inspection::Bu
 			Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
 			Result->GetValue("Information")->PrependTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
 			Result->GetValue("Information")->PrependTag("interpretation", "<unkown>"s);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TSRC(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FrameT___BodyResult{Get_ID3_2_3_Frame_Body_T___(Buffer, Length)};
+	
+	Result->SetValue(FrameT___BodyResult->GetValue());
+	if(FrameT___BodyResult->GetSuccess() == true)
+	{
+		auto Information{std::experimental::any_cast< const std::string & >(FrameT___BodyResult->GetValue("Information")->GetTagAny("string"))};
+		
+		if(Information.length() == 12)
+		{
+			Result->GetValue("Information")->PrependTag("standard", "ISRC Bulletin 2015/01"s);
+			Result->GetValue("Information")->PrependTag("DesignationCode", Information.substr(7, 5));
+			Result->GetValue("Information")->PrependTag("YearOfReference", Information.substr(5, 2));
+			Result->GetValue("Information")->PrependTag("RegistrantCode", Information.substr(2, 3));
+			
+			std::string CountryCode{Information.substr(0, 2)};
+			auto CountryCodeValue{Result->GetValue("Information")->PrependTag("CountryCode", CountryCode)};
+			
+			try
+			{
+				CountryCodeValue->PrependTag("standard", "ISO 3166-1 alpha-2"s);
+				CountryCodeValue->PrependTag("interpretation", Inspection::Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(CountryCode));
+				Result->SetSuccess(true);
+			}
+			catch(Inspection::UnknownValueException & Exception)
+			{
+				CountryCodeValue->PrependTag("standard", "ISRC Bulletin 2015/01"s);
+				CountryCodeValue->PrependTag("error", "The ISRC string needs to contain a two letter country code from ISO 3166-1 alpha-2."s);
+				CountryCodeValue->PrependTag("interpretation", "<unkown>"s);
+			}
+		}
+		else
+		{
+			Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
+			Result->GetValue("Information")->PrependTag("error", "The TSRC frame needs to contain a twelve letter ISRC code from ISRC Bulletin 2015/01."s);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -4839,144 +4884,14 @@ std::uint64_t Handle23TCMPFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle23TSRCFrame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23TSRCFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto Encoding(Get_ID3_2_3_Encoding(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_Body_TSRC(Buffer, Buffer.GetLength())};
 	
-	if(std::get<0>(Encoding) == true)
-	{
-		Index += std::get<1>(Encoding);
-		std::cout << "\t\t\t\tText Encoding: " << std::experimental::any_cast< std::string >(std::get<2>(Encoding).Get("Name")) << std::endl;
-		
-		std::string ReadString;
-		
-		if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::ISO_IEC_8859_1_1998)
-		{
-			auto String(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(String) == true)
-			{
-				Index += std::get<1>(String);
-				std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by termination)" << std::endl;
-				ReadString = std::get<2>(String);
-			}
-			else
-			{
-				auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(String) == true)
-				{
-					Index += std::get<1>(String);
-					std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-					ReadString = std::get<2>(String);
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as an ISO/IEC 8859-1:1998 string with or without zero-termination." << std::endl;
-				}
-			}
-		}
-		else if(std::experimental::any_cast< TextEncoding >(std::get<2>(Encoding).Get("Result")) == TextEncoding::UCS_2)
-		{
-			auto ByteOrderMark(Get_UCS_2_ByteOrderMark(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ByteOrderMark) == true)
-			{
-				Index += std::get<1>(ByteOrderMark);
-				if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::BigEndian)
-				{
-					std::cout << "\t\t\t\tString:" << std::endl;
-					std::cout << "\t\t\t\t\tByte order mark: big endian" << std::endl;
-					
-					auto String(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(String) == true)
-					{
-						Index += std::get<1>(String);
-						std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(String) << "\" (ISO/IEC 10646-1:1993, UCS-2, big endian, ended by termination)" << std::endl;
-						ReadString = std::get<2>(String);
-					}
-					else
-					{
-						auto String(Get_UCS_2BE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-						
-						if(std::get<0>(String) == true)
-						{
-							Index += std::get<1>(String);
-							std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(String) << "\" (ISO/IEC 10646-1:1993, UCS-2, big endian, ended by boundary)" << std::endl;
-							ReadString = std::get<2>(String);
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a ISO/IEC 10646-1:1993, UCS-2 string in big endian with or without termination." << std::endl;
-						}
-					}
-				}
-				else if(std::get<2>(ByteOrderMark) == UCS2ByteOrderMark::LittleEndian)
-				{
-					std::cout << "\t\t\t\tContent type:" << std::endl;
-					std::cout << "\t\t\t\t\tByte order mark: little endian" << std::endl;
-					
-					auto String(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-					
-					if(std::get<0>(String) == true)
-					{
-						Index += std::get<1>(String);
-						std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(String) << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian, ended by termination)" << std::endl;
-						ReadString = std::get<2>(String);
-					}
-					else
-					{
-						auto String(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-						
-						if(std::get<0>(String) == true)
-						{
-							Index += std::get<1>(String);
-							std::cout << "\t\t\t\t\tCharacters: \"" << std::get<2>(String) << "\" (ISO/IEC 10646-1:1993, UCS-2, little endian, ended by boundary)" << std::endl;
-							ReadString = std::get<2>(String);
-						}
-						else
-						{
-							std::cout << "*** ERROR *** The string could not be interpreted as a ISO/IEC 10646-1:1993, UCS-2 string in little endian with or without termination." << std::endl;
-						}
-					}
-				}
-			}
-			else
-			{
-				std::cout << "*** ERROR *** Unicode string fails to provide a byte order mark." << std::endl;
-			}
-		}
-		if(ReadString.length() == 12)
-		{
-			std::string ISO_3166_1_Alpha_2_Code(ReadString.substr(0, 2));
-			auto ISO_3166_1_Alpha_2_Iterator(g_ISO_3166_1_Alpha_2_Codes.find(ISO_3166_1_Alpha_2_Code));
-			
-			if(ISO_3166_1_Alpha_2_Iterator != g_ISO_3166_1_Alpha_2_Codes.end())
-			{
-				std::cout << "\t\t\t\t\tCountry: " << ISO_3166_1_Alpha_2_Iterator->second << " (\"" << ISO_3166_1_Alpha_2_Code << "\")" << std::endl;
-			}
-			else
-			{
-				std::cout << "\t\t\t\t\tCountry: <unknown> (\"" << ISO_3166_1_Alpha_2_Code << "\")" << std::endl;
-				std::cout << "*** ERROR *** The country code '" << ISO_3166_1_Alpha_2_Code << "' is not defined by ISO 3166-1 alpha-2." << std::endl;
-			}
-			std::cout << "\t\t\t\t\tRegistrant code: \"" << ReadString.substr(2, 3) << '"' << std::endl;
-			std::cout << "\t\t\t\t\tYear of registration: \"" << ReadString.substr(5, 2) << '"' << std::endl;
-			std::cout << "\t\t\t\t\tRegistration number: \"" << ReadString.substr(7, 5) << '"' << std::endl;
-		}
-		else
-		{
-			std::cout << "*** ERROR *** The international standard recording code defined by ISO 3901 requires the code to be 12 characters long, not " << ReadString.length() << "." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.2.1], a \"TSRC\" frame MUST contain a \"Text encoding\" field with a valid tag version 2.3 encoding identifier." << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23TXXXFrame(const uint8_t * RawBuffer, std::uint64_t Length)
