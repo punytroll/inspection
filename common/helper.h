@@ -95,6 +95,7 @@ namespace Inspection
 	bool Is_ASCII_Character_Space(std::uint8_t Character);
 	bool Is_ISO_IEC_8859_1_1998_Character(std::uint8_t Character);
 	// getters
+	std::string Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(const std::string & ISO_3166_1_Alpha_2_CountryCode);
 	Inspection::DateTime Get_DateTime_FromMicrosoftFileTime(std::uint64_t FileTime);
 	Inspection::GUID Get_GUID_FromString_WithCurlyBraces(const std::string & String);
 	std::string Get_GUID_Interpretation(const Inspection::GUID & GUID);
