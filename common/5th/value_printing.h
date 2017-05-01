@@ -74,9 +74,46 @@ namespace Inspection
 				{
 					std::cout << Tag->GetAny();
 				}
-				if((Tag->GetValues().size() > 0) || (Tag->GetTags().size() > 0))
+				if(Tag->GetValues().size() > 0)
 				{
 					throw std::exception();
+				}
+				if(Tag->GetTags().size() > 0)
+				{
+					std::cout << g_DarkGray << " (";
+					
+					auto FirstSubTag{true};
+					
+					for(auto SubTag : Tag->GetTags())
+					{
+						if(FirstSubTag == false)
+						{
+							std::cout << ", ";
+						}
+						if(SubTag->GetName().empty() == false)
+						{
+							if(SubTag->GetName() == "error")
+							{
+								std::cout << g_LightRed;
+							}
+							std::cout << SubTag->GetName();
+						}
+						std::cout << g_DarkGray;
+						if((SubTag->GetName().empty() == false) && (SubTag->GetAny().empty() == false))
+						{
+							std::cout << '=';
+						}
+						if(SubTag->GetAny().empty() == false)
+						{
+							std::cout << SubTag->GetAny();
+						}
+						if((SubTag->GetValues().size() > 0) || (SubTag->GetTags().size() > 0))
+						{
+							throw std::exception();
+						}
+						FirstSubTag = false;
+					}
+					std::cout << ")";
 				}
 				First = false;
 			}
