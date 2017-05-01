@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 
+#include "5th/unknown_value_exception.h"
 #include "explode.h"
 #include "helper.h"
 
@@ -119,6 +120,26 @@ bool Inspection::Is_ASCII_Character_Space(std::uint8_t Character)
 bool Inspection::Is_ISO_IEC_8859_1_1998_Character(std::uint8_t Character)
 {
 	return ((Character >= 0x20) && (Character < 0x7f)) || (Character >= 0x10);
+}
+
+std::string Inspection::Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(const std::string & ISO_3166_1_Alpha_2_CountryCode)
+{
+	if(ISO_3166_1_Alpha_2_CountryCode == "GB")
+	{
+		return "United Kingdom";
+	}
+	else if(ISO_3166_1_Alpha_2_CountryCode == "US")
+	{
+		return "United States of America";
+	}
+	else if(ISO_3166_1_Alpha_2_CountryCode == "ZA")
+	{
+		return "South Africa";
+	}
+	else
+	{
+		throw Inspection::UnknownValueException(ISO_3166_1_Alpha_2_CountryCode);
+	}
 }
 
 Inspection::DateTime Inspection::Get_DateTime_FromMicrosoftFileTime(std::uint64_t FileTime)
