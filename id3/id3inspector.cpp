@@ -19,13 +19,6 @@
 
 using namespace std::string_literals;
 
-enum class TextEncoding
-{
-	Undefined,
-	ISO_IEC_8859_1_1998,
-	UCS_2
-};
-
 enum class UCS2ByteOrderMark
 {
 	Undefined,
@@ -39,8 +32,6 @@ enum class UCS2ByteOrderMark
 
 std::map< unsigned int, std::string > g_NumericGenresID3_1;
 std::map< unsigned int, std::string > g_NumericGenresWinamp;
-std::map< std::string, std::string > g_ISO_3166_1_Alpha_2_Codes;
-std::map< TextEncoding, std::string > g_EncodingNames;
 std::map< std::string, std::string > g_GUIDDescriptions;
 std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_3;
 std::map< std::string, std::string > g_FrameNames_2_3;
@@ -809,7 +800,6 @@ std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Leng
 //   - If the Success return value is false, the length and return values may contain bogus data //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * Buffer, std::uint64_t Length);
-std::tuple< bool, std::uint64_t, Values > Get_ID3_2_3_Encoding(const std::uint8_t * Buffer, std::uint64_t Length);
 
 std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * Buffer, std::uint64_t Length)
 {
@@ -850,44 +840,6 @@ std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * B
 		if(DescriptionIterator != g_GUIDDescriptions.end())
 		{
 			Result.Add("GUIDDescription", DescriptionIterator->second);
-		}
-	}
-	
-	return std::make_tuple(Success, Index, Result);
-}
-
-std::tuple< bool, std::uint64_t, Values > Get_ID3_2_3_Encoding(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	Values Result;
-	
-	if(Length >= 1)
-	{
-		if(Buffer[0] == 0x00)
-		{
-			Success = true;
-			Index += 1;
-			Result.Add("Result", TextEncoding::ISO_IEC_8859_1_1998);
-		}
-		else if(Buffer[0] == 0x01)
-		{
-			Success = true;
-			Index += 1;
-			Result.Add("Result", TextEncoding::UCS_2);
-		}
-	}
-	if(Result.Has("Result") == true)
-	{
-		auto EncodingIterator{g_EncodingNames.find(std::experimental::any_cast< TextEncoding >(Result.Get("Result")))};
-		
-		if(EncodingIterator != g_EncodingNames.end())
-		{
-			Result.Add("Name", EncodingIterator->second);
-		}
-		else
-		{
-			Result.Add("Name", "<invalid encoding>");
 		}
 	}
 	
@@ -5280,14 +5232,6 @@ int main(int argc, char **argv)
 	g_NumericGenresWinamp.insert(std::make_pair(123, "Acapella"));
 	g_NumericGenresWinamp.insert(std::make_pair(124, "Euro-House"));
 	g_NumericGenresWinamp.insert(std::make_pair(125, "Dance Hall"));
-	
-	// encodings for version 2.2
-	g_EncodingNames.insert(std::make_pair(TextEncoding::ISO_IEC_8859_1_1998, "ISO/IEC 8859-1:1998"));
-	g_EncodingNames.insert(std::make_pair(TextEncoding::UCS_2, "ISO/IEC 10646-1:1993, UCS-2"));
-	
-	// country codes according to ISO 3166-1 alpha-2
-	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("GB", "United Kingdom"));
-	g_ISO_3166_1_Alpha_2_Codes.insert(std::make_pair("ZA", "South Africa"));
 	
 	// ID3v2.3.0
 	FrameHeader::Handle23("APIC", "Attached picture", Handle23APICFrame);
