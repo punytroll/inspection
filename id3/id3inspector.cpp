@@ -19,20 +19,12 @@
 
 using namespace std::string_literals;
 
-enum class UCS2ByteOrderMark
-{
-	Undefined,
-	LittleEndian,
-	BigEndian
-};
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // global variables and configuration                                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::map< unsigned int, std::string > g_NumericGenresID3_1;
 std::map< unsigned int, std::string > g_NumericGenresWinamp;
-std::map< std::string, std::string > g_GUIDDescriptions;
 std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_3;
 std::map< std::string, std::string > g_FrameNames_2_3;
 bool g_PrintBytes(false);
@@ -103,22 +95,6 @@ std::string GetBinaryStringFromUInt8(uint8_t Value)
 std::string GetBinaryStringFromUInt16(uint16_t Value)
 {
 	return GetBinaryStringFromUInt8((Value >> 8) & 0xFF) + " " + GetBinaryStringFromUInt8(Value & 0xFF);
-}
-
-std::vector< std::string > SplitStringByCharacterPreserveEmpty(const std::string & WMUniqueFileIdentifier, char Separator)
-{
-	std::vector< std::string > Result;
-	std::string::size_type Begin(0);
-	std::string::size_type End(0);
-	
-	while(Begin != std::string::npos)
-	{
-		End = WMUniqueFileIdentifier.find(Separator, Begin);
-		Result.push_back(WMUniqueFileIdentifier.substr(Begin, End - Begin));
-		Begin = End + ((End == std::string::npos) ? (0) : (1));
-	}
-	
-	return Result;
 }
 
 bool IsValidIdentifierCharacter(char Character)
@@ -222,51 +198,6 @@ std::pair< bool, std::string > GetContentTypeInterpretation2_3(const std::string
 	return Interpretation;
 }
 
-std::pair< bool, std::string > GetWMUniqueFileIdentifierAsAMGIdentifier(const std::string & WMUniqueFileIdentifier)
-{
-	std::pair< bool, std::string > Result(false, "");
-	std::vector< std::string > Tokens(SplitStringByCharacterPreserveEmpty(WMUniqueFileIdentifier, ';'));
-	
-	if(Tokens.size() == 3)
-	{
-		if((Tokens[0].substr(0, 8) == "AMGa_id=") && (Tokens[1].substr(0, 8) == "AMGp_id=") && (Tokens[2].substr(0, 8) == ("AMGt_id=")))
-		{
-			Result.second += "\t\t\t\t\tAlbum Identifier: \"" + Tokens[0].substr(8) + "\"\n";
-			Result.second += "\t\t\t\t\tArtist Identifier: \"" + Tokens[1].substr(8) + "\"\n";
-			Result.second += "\t\t\t\t\tTitle Identifier: \"" + Tokens[2].substr(8) + "\"";
-			Result.first = true;
-		}
-	}
-	
-	return Result;
-}
-
-std::pair< bool, std::string > GetWMUniqueFileIdentifierInterpretation(const std::string & WMUniqueFileIdentifier)
-{
-	std::pair< bool, std::string > Result(false, "");
-	
-	Result = GetWMUniqueFileIdentifierAsAMGIdentifier(WMUniqueFileIdentifier);
-	
-	return Result;
-}
-
-std::pair< int, std::string > GetHexadecimalStringTerminatedByLength(const uint8_t * Buffer, int Length)
-{
-	std::pair< int, std::string > Result;
-	
-	while(Result.first < Length)
-	{
-		if(Result.first > 0)
-		{
-			Result.second += ' ';
-		}
-		Result.second += GetHexadecimalStringFromUInt8(*(Buffer + Result.first));
-		Result.first += 1;
-	}
-	
-	return Result;
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 2nd generation getters                                                                        //
 //   - These functions validate and extract in one go.                                           //
@@ -276,283 +207,8 @@ std::pair< int, std::string > GetHexadecimalStringTerminatedByLength(const uint8
 //       - if appropriate, the actual result value                                               //
 //   - If the Success return value is false, the length and return values may contain bogus data //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length);
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByLength(const uint8_t * Buffer, int Length);
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination(const uint8_t * Buffer, int Length);
-std::tuple< bool, int > Get_ISO_IEC_8859_1_Termination(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length);
 std::tuple< bool, int, uint16_t > Get_UInt16_BE(const uint8_t * Buffer, int Length);
-std::tuple< bool, int, uint16_t > Get_UInt16_LE(const uint8_t * Buffer, int Length);
-std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Length);
-
-std::tuple< bool, int, char > Get_ISO_IEC_646_1991_CarriageReturnCharacter(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, char > Result(false, 0, '\x00');
-	
-	if((Length >= 1) && (Buffer[0] == 0x0d))
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 1;
-		std::get<2>(Result) = '\x0d';
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, char > Get_ISO_IEC_646_1991_LineFeedCharacter(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, char > Result(false, 0, '\x00');
-	
-	if((Length >= 1) && (Buffer[0] == 0x0a))
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 1;
-		std::get<2>(Result) = '\x0a';
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_Character(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(false, 0, "");
-	
-	if((Length >= 1) && (((Buffer[0] >= 0x20) && (Buffer[0] <= 0x7e)) || (Buffer[0] >= 0xa0)))
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 1;
-		std::get<2>(Result) = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(static_cast< std::uint32_t >(Buffer[0]));
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByLength(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(true, 0, "");
-	
-	while(std::get<1>(Result) < Length)
-	{
-		auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Character) == true)
-		{
-			std::get<1>(Result) += std::get<1>(Character);
-			std::get<2>(Result) += std::get<2>(Character);
-		}
-		else
-		{
-			std::get<0>(Result) = false;
-			
-			break;
-		}
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringWithCarriageReturnsEndedByLength(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(true, 0, "");
-	
-	while(std::get<1>(Result) < Length)
-	{
-		auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Character) == true)
-		{
-			std::get<1>(Result) += std::get<1>(Character);
-			std::get<2>(Result) += std::get<2>(Character);
-		}
-		else
-		{
-			auto CarriageReturnCharacter(Get_ISO_IEC_646_1991_CarriageReturnCharacter(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-			
-			if(std::get<0>(CarriageReturnCharacter) == true)
-			{
-				std::get<1>(Result) += std::get<1>(CarriageReturnCharacter);
-				std::get<2>(Result) += std::get<2>(CarriageReturnCharacter);
-			}
-			else
-			{
-				std::get<0>(Result) = false;
-				
-				break;
-			}
-		}
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringWithLineFeedsEndedByLength(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(true, 0, "");
-	
-	while(std::get<1>(Result) < Length)
-	{
-		auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Character) == true)
-		{
-			std::get<1>(Result) += std::get<1>(Character);
-			std::get<2>(Result) += std::get<2>(Character);
-		}
-		else
-		{
-			auto LineFeedCharacter(Get_ISO_IEC_646_1991_LineFeedCharacter(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-			
-			if(std::get<0>(LineFeedCharacter) == true)
-			{
-				std::get<1>(Result) += std::get<1>(LineFeedCharacter);
-				std::get<2>(Result) += std::get<2>(LineFeedCharacter);
-			}
-			else
-			{
-				std::get<0>(Result) = false;
-				
-				break;
-			}
-		}
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringEndedByTermination(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(false, 0, "");
-	
-	while(std::get<0>(Result) < Length)
-	{
-		auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Termination) == true)
-		{
-			std::get<0>(Result) = true;
-			std::get<1>(Result) += std::get<1>(Termination);
-			
-			break;
-		}
-		else
-		{
-			auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-			
-			if(std::get<0>(Character) == true)
-			{
-				std::get<1>(Result) += std::get<1>(Character);
-				std::get<2>(Result) += std::get<2>(Character);
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringWithCarriageReturnsEndedByTermination(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(false, 0, "");
-	
-	while(std::get<0>(Result) < Length)
-	{
-		auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Termination) == true)
-		{
-			std::get<0>(Result) = true;
-			std::get<1>(Result) += std::get<1>(Termination);
-			
-			break;
-		}
-		else
-		{
-			auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-			
-			if(std::get<0>(Character) == true)
-			{
-				std::get<1>(Result) += std::get<1>(Character);
-				std::get<2>(Result) += std::get<2>(Character);
-			}
-			else
-			{
-				auto CarriageReturnCharacter(Get_ISO_IEC_646_1991_CarriageReturnCharacter(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-				
-				if(std::get<0>(CarriageReturnCharacter) == true)
-				{
-					std::get<1>(Result) += std::get<1>(CarriageReturnCharacter);
-					std::get<2>(Result) += std::get<2>(CarriageReturnCharacter);
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_ISO_IEC_8859_1_StringWithLineFeedsEndedByTermination(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(false, 0, "");
-	
-	while(std::get<0>(Result) < Length)
-	{
-		auto Termination(Get_ISO_IEC_8859_1_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Termination) == true)
-		{
-			std::get<0>(Result) = true;
-			std::get<1>(Result) += std::get<1>(Termination);
-			
-			break;
-		}
-		else
-		{
-			auto Character(Get_ISO_IEC_8859_1_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-			
-			if(std::get<0>(Character) == true)
-			{
-				std::get<1>(Result) += std::get<1>(Character);
-				std::get<2>(Result) += std::get<2>(Character);
-			}
-			else
-			{
-				auto LineFeedCharacter(Get_ISO_IEC_646_1991_LineFeedCharacter(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-				
-				if(std::get<0>(LineFeedCharacter) == true)
-				{
-					std::get<1>(Result) += std::get<1>(LineFeedCharacter);
-					std::get<2>(Result) += std::get<2>(LineFeedCharacter);
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int > Get_ISO_IEC_8859_1_Termination(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int > Result(false, 0);
-	
-	if((Length >= 1) && (Buffer[0] == 0x00))
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 1;
-	}
-	
-	return Result;
-}
 
 std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length)
 {
@@ -563,91 +219,6 @@ std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_
 		std::get<0>(Result) = true;
 		std::get<1>(Result) = 4;
 		std::get<2>(Result) = *(reinterpret_cast< const float * >(Buffer));
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int > Get_UCS_2_Termination(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int > Result(false, 0);
-	
-	if((Length >= 2) && (Buffer[0] == 0x00) && (Buffer[1] == 0x00))
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 2;
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_UCS_2LE_Character(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(false, 0, "");
-	
-	if((Length >= 2) && ((Buffer[1] < 0xd8) || (Buffer[1] > 0xdf)))
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 2;
-		std::get<2>(Result) = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(static_cast< std::uint32_t >((static_cast< std::uint32_t >(Buffer[1]) << 8) | static_cast< std::uint32_t >(Buffer[0])));
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(true, 0, "");
-	
-	while(std::get<1>(Result) < Length)
-	{
-		auto Character(Get_UCS_2LE_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Character) == true)
-		{
-			std::get<1>(Result) += std::get<1>(Character);
-			std::get<2>(Result) += std::get<2>(Character);
-		}
-		else
-		{
-			std::get<0>(Result) = false;
-			
-			break;
-		}
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(false, 0, "");
-	
-	while(std::get<1>(Result) < Length)
-	{
-		auto Termination(Get_UCS_2_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Termination) == true)
-		{
-			std::get<0>(Result) = true;
-			std::get<1>(Result) += std::get<1>(Termination);
-			
-			break;
-		}
-		else
-		{
-			auto Character(Get_UCS_2LE_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-			
-			if(std::get<0>(Character) == true)
-			{
-				std::get<1>(Result) += std::get<1>(Character);
-				std::get<2>(Result) += std::get<2>(Character);
-			}
-			else
-			{
-				break;
-			}
-		}
 	}
 	
 	return Result;
@@ -665,90 +236,6 @@ std::tuple< bool, int, uint16_t > Get_UInt16_BE(const uint8_t * Buffer, int Leng
 	}
 	
 	return Result;
-}
-
-std::tuple< bool, int, uint16_t > Get_UInt16_LE(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, uint16_t > Result(false, 0, 0);
-	
-	if(Length >= 2)
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 2;
-		std::get<2>(Result) = (static_cast< uint32_t >(Buffer[1]) << 8) + Buffer[0];
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, uint32_t > Get_UInt32_BE(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, uint32_t > Result(false, 0, 0);
-	
-	if(Length >= 4)
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 4;
-		std::get<2>(Result) = (static_cast< uint32_t >(Buffer[0]) << 24) + (static_cast< uint32_t >(Buffer[1]) << 16) + (static_cast< uint32_t >(Buffer[2]) << 8) + Buffer[3];
-	}
-	
-	return Result;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// 3rd generation getters                                                                        //
-//   - These functions validate and extract in one go.                                           //
-//   - They have three return values:                                                            //
-//       - a Boolean value indicating success (type bool)                                        //
-//       - an Integer value indicating the length of the processed data (type std::uint64_t)     //
-//       - a Values object with results (type Values)                                            //
-//   - If the Success return value is false, the length and return values may contain bogus data //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * Buffer, std::uint64_t Length);
-
-std::tuple< bool, std::uint64_t, Values > Get_GUID_String(const std::uint8_t * Buffer, std::uint64_t Length)
-{
-	auto Success{false};
-	auto Index{0ull};
-	Values Result;
-	
-	if(Length >= 16)
-	{
-		Success = true;
-		
-		std::stringstream StringStream;
-		
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << '-';
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << '-';
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << '-';
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << '-';
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		StringStream << GetHexadecimalStringFromUInt8(Buffer[Index++]);
-		Result.Add("Result", StringStream.str());
-		
-		auto DescriptionIterator{g_GUIDDescriptions.find(StringStream.str())};
-		
-		if(DescriptionIterator != g_GUIDDescriptions.end())
-		{
-			Result.Add("GUIDDescription", DescriptionIterator->second);
-		}
-	}
-	
-	return std::make_tuple(Success, Index, Result);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4350,66 +3837,6 @@ std::uint64_t Handle23MCDIFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle23MJCFFrame(const uint8_t * Buffer, std::uint64_t Length)
-{
-	std::uint64_t Index(0);
-	
-	if((Length >= 4) && (Buffer[0] == 0x00) && (Buffer[1] == 0x00) && (Buffer[2] == 0x00) && (Buffer[3] == 0x00))
-	{
-		auto Zeroes(GetHexadecimalStringTerminatedByLength(Buffer, 4));
-		
-		std::cout << "\t\t\t\tFour bytes of zeroes: " << Zeroes.second << std::endl;
-		Index += Zeroes.first;
-		
-		auto Caption(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(Caption) == true)
-		{
-			std::string::size_type ColonPosition(std::get<2>(Caption).find(':'));
-			
-			if(ColonPosition != std::string::npos)
-			{
-				std::cout << "\t\t\t\tOne zero-terminated ISO/IEC 8859-1 string:" << std::endl;
-				std::cout << "\t\t\t\t\tIdentifier: \"" << std::get<2>(Caption).substr(0, ColonPosition) << '"' << std::endl;
-				std::cout << "\t\t\t\t\tSeparator: ':'" << std::endl;
-				std::cout << "\t\t\t\t\tField Name: \"" << std::get<2>(Caption).substr(ColonPosition + 1) << '"' << std::endl;
-				std::cout << "\t\t\t\t\tTerminator: 00" << std::endl;
-				Index += std::get<1>(Caption);
-				
-				auto Value(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(Value) == true)
-				{
-					Index += std::get<1>(Value);
-					std::cout << "\t\t\t\t\tValue: \"" << std::get<2>(Value) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** Any data after the caption is expected to be a non-terminated ISO/IEC 8859-1:1998 string for the value." << std::endl;
-					Index = Length;
-				}
-			}
-			else
-			{
-				std::cout << "*** ERROR *** The first field is expected to contain a ':' character." << std::endl;
-				Index = Length;
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** Expected to see a terminated ISO/IEC 8859-1 string for the caption." << std::endl;
-			Index = Length;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** Expected to see 4 zero-filled bytes at the start of the frame content." << std::endl;
-		Index = Length;
-	}
-	
-	return Index;
-}
-
 std::uint64_t Handle23PCNTFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
 	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
@@ -4790,16 +4217,6 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	
-	// GUID descriptions
-	/// WM/MediaClassPrimaryID: audio, no music (bytes swapped to big endian)
-	g_GUIDDescriptions.insert(std::make_pair("290fcd01-4eda-5741-897b-6275d50c4f11", "audio, no music"));
-	/// WM/MediaClassPrimaryID: audio, music (bytes swapped to big endian)
-	g_GUIDDescriptions.insert(std::make_pair("bc7d60d1-23e3-e24b-86a1-48a42a28441e", "audio, music"));
-	/// WM/MediaClassPrimaryID: video (bytes swapped to big endian)
-	g_GUIDDescriptions.insert(std::make_pair("bd3098db-b33a-ab4f-8a37-1a995f7ff74b", "video"));
-	/// WM/MediaClassPrimaryID: neither audio nor video (bytes swapped to big endian)
-	g_GUIDDescriptions.insert(std::make_pair("764af2fc-579a-3640-990d-e35dd8b244e1", "neither audio nor video"));
-	
 	// numeric genres for version ID3v1
 	g_NumericGenresID3_1.insert(std::make_pair(0, "Blues"));
 	g_NumericGenresID3_1.insert(std::make_pair(1, "Classic Rock"));
@@ -4976,8 +4393,6 @@ int main(int argc, char **argv)
 	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23W___Frames);
 	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23WXXXFrame);
 	// forbidden tags
-	FrameHeader::Forbid23("MJCF", "This frame is not defined in tag version 2.3. It is a non-standard frame added by the MediaJukebox.");
-	FrameHeader::Handle23("MJCF", "Mediajukebox", Handle23MJCFFrame);
 	FrameHeader::Forbid23("RGAD", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org.");
 	FrameHeader::Handle23("RGAD", "Replay Gain Adjustment", Handle23RGADFrame);
 	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
