@@ -568,29 +568,6 @@ std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_
 	return Result;
 }
 
-std::tuple< bool, int, UCS2ByteOrderMark > Get_UCS_2_ByteOrderMark(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, UCS2ByteOrderMark > Result(false, 0, UCS2ByteOrderMark::Undefined);
-	
-	if(Length >= 2)
-	{
-		if((Buffer[0] == 0xfe) && (Buffer[1] == 0xff))
-		{
-			std::get<0>(Result) = true;
-			std::get<1>(Result) = 2;
-			std::get<2>(Result) = UCS2ByteOrderMark::BigEndian;
-		}
-		else if((Buffer[0] == 0xff) && (Buffer[1] == 0xfe))
-		{
-			std::get<0>(Result) = true;
-			std::get<1>(Result) = 2;
-			std::get<2>(Result) = UCS2ByteOrderMark::LittleEndian;
-		}
-	}
-	
-	return Result;
-}
-
 std::tuple< bool, int > Get_UCS_2_Termination(const uint8_t * Buffer, int Length)
 {
 	std::tuple< bool, int > Result(false, 0);
@@ -599,78 +576,6 @@ std::tuple< bool, int > Get_UCS_2_Termination(const uint8_t * Buffer, int Length
 	{
 		std::get<0>(Result) = true;
 		std::get<1>(Result) = 2;
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_UCS_2BE_Character(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(false, 0, "");
-	
-	if((Length >= 2) && ((Buffer[0] < 0xd8) || (Buffer[0] > 0xdf)))
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 2;
-		std::get<2>(Result) = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(static_cast< std::uint32_t >((static_cast< std::uint32_t >(Buffer[0]) << 8) | static_cast< std::uint32_t >(Buffer[1])));
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_UCS_2BE_StringWithoutByteOrderMarkEndedByLength(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(true, 0, "");
-	
-	while(std::get<1>(Result) < Length)
-	{
-		auto Character(Get_UCS_2BE_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Character) == true)
-		{
-			std::get<1>(Result) += std::get<1>(Character);
-			std::get<2>(Result) += std::get<2>(Character);
-		}
-		else
-		{
-			std::get<0>(Result) = false;
-			
-			break;
-		}
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, std::string > Get_UCS_2BE_StringWithoutByteOrderMarkEndedByTermination(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, std::string > Result(false, 0, "");
-	
-	while(std::get<1>(Result) < Length)
-	{
-		auto Termination(Get_UCS_2_Termination(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-		
-		if(std::get<0>(Termination) == true)
-		{
-			std::get<0>(Result) = true;
-			std::get<1>(Result) += std::get<1>(Termination);
-			
-			break;
-		}
-		else
-		{
-			auto Character(Get_UCS_2BE_Character(Buffer + std::get<1>(Result), Length - std::get<1>(Result)));
-			
-			if(std::get<0>(Character) == true)
-			{
-				std::get<1>(Result) += std::get<1>(Character);
-				std::get<2>(Result) += std::get<2>(Character);
-			}
-			else
-			{
-				break;
-			}
-		}
 	}
 	
 	return Result;
