@@ -1263,6 +1263,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Inspe
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PCNT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PRIV(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_T___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCMP(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCON(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -1507,6 +1508,33 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Tracks(
 		
 		Result->GetValue()->Append("LeadOutTrack", LeadOutTrackResult->GetValue());
 		Result->SetSuccess(LeadOutTrackResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_GUID(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto GUIDResult{Get_GUID_LittleEndian(Buffer)};
+	
+	Result->SetValue(GUIDResult->GetValue());
+	if(GUIDResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const Inspection::GUID & GUID{std::experimental::any_cast< const Inspection::GUID & >(GUIDResult->GetAny())};
+		
+		try
+		{
+			Result->GetValue()->PrependTag("interpretation", Inspection::Get_GUID_Interpretation(GUID));
+		}
+		catch(Inspection::UnknownValueException & Exception)
+		{
+			Result->GetValue()->PrependTag("interpretation", "<unknown GUID>"s);
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -2358,6 +2386,100 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Bu
 				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			}
 		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PRIV(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto OwnerIdentifierResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+	
+	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
+	if(OwnerIdentifierResult->GetSuccess() == true)
+	{
+		const std::string & OwnerIdentifier{std::experimental::any_cast< const std::string & >(OwnerIdentifierResult->GetAny())};
+		std::string PRIVDataName;
+		std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > PRIVDataHandler;
+		
+		if(OwnerIdentifier == "AverageLevel")
+		{
+			PRIVDataHandler = std::bind(Inspection::Get_UnsignedInteger_32Bit_LittleEndian, std::placeholders::_1);
+			PRIVDataName = "AverageLevel";
+		}
+		else if(OwnerIdentifier == "PeakValue")
+		{
+			PRIVDataHandler = std::bind(Inspection::Get_UnsignedInteger_32Bit_LittleEndian, std::placeholders::_1);
+			PRIVDataName = "PeakValue";
+		}
+		else if(OwnerIdentifier == "WM/MediaClassPrimaryID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "MediaClassPrimaryID";
+		}
+		else if(OwnerIdentifier == "WM/MediaClassSecondaryID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "MediaClassSecondaryID";
+		}
+		else if(OwnerIdentifier == "WM/Provider")
+		{
+			PRIVDataHandler = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
+			PRIVDataName = "Provider";
+		}
+		else if(OwnerIdentifier == "WM/UniqueFileIdentifier")
+		{
+			PRIVDataHandler = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
+			PRIVDataName = "UniqueFileIdentifier";
+		}
+		else if(OwnerIdentifier == "WM/WMCollectionGroupID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "CollectionGroupID";
+		}
+		else if(OwnerIdentifier == "WM/WMCollectionID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "CollectionID";
+		}
+		else if(OwnerIdentifier == "WM/WMContentID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "ContentID";
+		}
+		else if(OwnerIdentifier == "ZuneAlbumArtistMediaID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "ZuneAlbumArtistMediaID";
+		}
+		else if(OwnerIdentifier == "ZuneAlbumMediaID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "ZuneAlbumArtistMediaID";
+		}
+		else if(OwnerIdentifier == "ZuneCollectionID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "ZuneAlbumArtistMediaID";
+		}
+		else if(OwnerIdentifier == "ZuneMediaID")
+		{
+			PRIVDataHandler = Get_ID3_GUID;
+			PRIVDataName = "ZuneMediaID";
+		}
+		else
+		{
+			PRIVDataHandler = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
+			PRIVDataName = "PrivateData";
+		}
+		
+		auto PRIVDataResult{PRIVDataHandler(Buffer, Boundary - Buffer.GetPosition())};
+		
+		Result->GetValue()->Append(PRIVDataName, PRIVDataResult->GetValue());
+		Result->SetSuccess(PRIVDataResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -4308,345 +4430,14 @@ std::uint64_t Handle23POPMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle23PRIVFrame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23PRIVFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto ReadOwnerIdentifier(Get_ISO_IEC_8859_1_StringEndedByTermination(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_Body_PRIV(Buffer, Buffer.GetLength())};
 	
-	if(std::get<0>(ReadOwnerIdentifier) == true)
-	{
-		Index += std::get<1>(ReadOwnerIdentifier);
-		std::cout << "\t\t\t\tOwner Identifier: " << std::get<2>(ReadOwnerIdentifier) << std::endl;
-		if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassPrimaryID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tPrimary Media Class: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "WM/MediaClassSecondaryID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tSecondary Media Class: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMContentID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tContent ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tCollection ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "WM/WMCollectionGroupID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tCollection Group ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "WM/Provider")
-		{
-			auto PrivateData(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(PrivateData) == true)
-			{
-				Index += std::get<1>(PrivateData);
-				std::cout << "\t\t\t\tContent provider: \"" << std::get<2>(PrivateData) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
-			}
-			else
-			{
-				auto PrivateData(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(PrivateData) == true)
-				{
-					Index += std::get<1>(PrivateData);
-					std::cout << "\t\t\t\tContent provider: \"" << std::get<2>(PrivateData) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "WM/UniqueFileIdentifier")
-		{
-			std::string PrivateDataString;
-			auto PrivateData(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(PrivateData) == true)
-			{
-				Index += std::get<1>(PrivateData);
-				std::cout << "\t\t\t\tUnique file identifier: \"" << std::get<2>(PrivateData) << "\" (UCS-2, little endian, ended by termination)" << std::endl;
-				PrivateDataString = std::get<2>(PrivateData);
-			}
-			else
-			{
-				auto PrivateData(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByLength(Buffer + Index, Length - Index));
-				
-				if(std::get<0>(PrivateData) == true)
-				{
-					Index += std::get<1>(PrivateData);
-					std::cout << "\t\t\t\tUnique file identifier: \"" << std::get<2>(PrivateData) << "\" (UCS-2, little endian, ended by boundary)" << std::endl;
-					PrivateDataString = std::get<2>(PrivateData);
-				}
-				else
-				{
-					std::cout << "*** ERROR *** The string could not be interpreted as a UCS-2 string in little endian with or without termination." << std::endl;
-				}
-			}
-			
-			auto Interpretation(GetWMUniqueFileIdentifierInterpretation(PrivateDataString));
-			
-			if(Interpretation.first == true)
-			{
-				std::cout << "\t\t\t\tInterpretation as AllMusicGuide fields (http://www.allmusic.com/):" << std::endl;
-				std::cout << Interpretation.second << std::endl;
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumArtistMediaID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tZune Album Artist Media ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneAlbumMediaID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tZune Album Media ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneCollectionID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tZune Collection ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "ZuneMediaID")
-		{
-			auto ReadGUID(Get_GUID_String(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(ReadGUID) == true)
-			{
-				Index += std::get<1>(ReadGUID);
-				std::cout << "\t\t\t\tZune Media ID: " << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("Result")) << std::endl;
-				if(std::get<2>(ReadGUID).Has("GUIDDescription") == true)
-				{
-					std::cout << "\t\t\t\t\tGUID Description: \"" << std::experimental::any_cast< std::string >(std::get<2>(ReadGUID).Get("GUIDDescription")) << '"' << std::endl;
-				}
-				else
-				{
-					std::cout << "\t\t\t\t\tGUID Description: <unknown value>" << std::endl;
-				}
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "CompID")
-		{
-			auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-			
-			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
-			
-			auto Interpretation(Get_UCS_2LE_StringWithoutByteOrderMarkEndedByTermination(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(Interpretation) == true)
-			{
-				std::cout << "\t\t\t\tString: \"" << std::get<2>(Interpretation) << "\" (interpreted as UCS-2LE without byte order mark with termination)" << std::endl;
-			}
-			Index += ReadHexadecimal.first;
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "MachineCode")
-		{
-			auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-			
-			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
-			
-			auto String(Get_ISO_IEC_8859_1_StringEndedByLength(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(String) == true)
-			{
-				std::cout << "\t\t\t\tString: \"" << std::get<2>(String) << "\" (ISO/IEC 8859-1:1998, ended by boundary)" << std::endl;
-			}
-			Index += ReadHexadecimal.first;
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "PeakValue")
-		{
-			if(Length - Index == 4)
-			{
-				auto ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(ReadUInt16) == true);
-				std::cout << "\t\t\t\tPeak Value: " << std::get<2>(ReadUInt16) << std::endl;
-				Index += std::get<1>(ReadUInt16);
-				if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
-				{
-					auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-					
-					Index += ReadHexadecimal.first;
-					std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
-					std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
-					std::cout << "\t\t\t\tBinary Content of the rest: " << ReadHexadecimal.second << std::endl;
-				}
-				else
-				{
-					Index += 2;
-				}
-			}
-			else
-			{
-				auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-				
-				Index += ReadHexadecimal.first;
-				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
-				std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
-				std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
-			}
-		}
-		else if(std::get<2>(ReadOwnerIdentifier) == "AverageLevel")
-		{
-			if(Length - Index == 4)
-			{
-				auto ReadUInt16(Get_UInt16_LE(Buffer + Index, Length - Index));
-				
-				assert(std::get<0>(ReadUInt16) == true);
-				std::cout << "\t\t\t\tAverage Level: " << std::get<2>(ReadUInt16) << std::endl;
-				Index += std::get<1>(ReadUInt16);
-				if((Buffer[Index] != 0) || (Buffer[Index + 1] != 0))
-				{
-					auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-					
-					Index += ReadHexadecimal.first;
-					std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
-					std::cout << "\t\t\t\tBy definition an unsigned 2 byte value is stored in here. The other two bytes should be zero but they are not." << std::endl;
-					std::cout << "\t\t\t\tBinary Content of the rest: " << ReadHexadecimal.second << std::endl;
-				}
-				else
-				{
-					Index += 2;
-				}
-			}
-			else
-			{
-				auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-				
-				Index += ReadHexadecimal.first;
-				std::cout << "\t\t\t\tThis value is defined by Microsoft to be of type DWORD which requires 4 byte." << std::endl;
-				std::cout << "\t\t\t\tInstead " << (Length - Index) << " bytes are available. Skipped reading." << std::endl;
-				std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
-			}
-		}
-		else
-		{
-			auto ReadHexadecimal(GetHexadecimalStringTerminatedByLength(Buffer + Index, Length - Index));
-			
-			Index += ReadHexadecimal.first;
-			std::cout << "\t\t\t\tBinary Content: " << ReadHexadecimal.second << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to ID3 2.3.0 [4.28], \"PRIV\" frames MUST contain an \"Owner identifier\" field with a valid URL in ISO/IEC 8859-1:1998 encoding." << std::endl;
-		Index = Length;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23RGADFrame(const uint8_t * Buffer, std::uint64_t Length)
