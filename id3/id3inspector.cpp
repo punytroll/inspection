@@ -443,9 +443,9 @@ std::string Get_ID3_2_4_FrameIdentifier_Interpretation(const std::string & Value
 	{
 		return "Album/Movie/Show title";
 	}
-	else if(Value == "TBMP")
+	else if(Value == "TBPM")
 	{
-		return "BMP (beats per minute)";
+		return "BPM (beats per minute)";
 	}
 	else if(Value == "TCOM")
 	{
