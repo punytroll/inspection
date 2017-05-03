@@ -199,46 +199,6 @@ std::pair< bool, std::string > GetContentTypeInterpretation2_3(const std::string
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// 2nd generation getters                                                                        //
-//   - These functions validate and extract in one go.                                           //
-//   - They have two or three return values:                                                     //
-//       - a Boolean value indicating success                                                    //
-//       - an Integer value indicating the length of the processed data                          //
-//       - if appropriate, the actual result value                                               //
-//   - If the Success return value is false, the length and return values may contain bogus data //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length);
-std::tuple< bool, int, uint16_t > Get_UInt16_BE(const uint8_t * Buffer, int Length);
-
-std::tuple< bool, int, float > Get_ISO_IEC_IEEE_60559_2011_binary32(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, float > Result(false, 0, 0.0f);
-	
-	if(Length >= 4)
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 4;
-		std::get<2>(Result) = *(reinterpret_cast< const float * >(Buffer));
-	}
-	
-	return Result;
-}
-
-std::tuple< bool, int, uint16_t > Get_UInt16_BE(const uint8_t * Buffer, int Length)
-{
-	std::tuple< bool, int, uint16_t > Result(false, 0, 0);
-	
-	if(Length >= 2)
-	{
-		std::get<0>(Result) = true;
-		std::get<1>(Result) = 2;
-		std::get<2>(Result) = (static_cast< uint32_t >(Buffer[0]) << 8) + Buffer[1];
-	}
-	
-	return Result;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation helpers                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::string Get_ID3_2_PictureType_Interpretation(std::uint8_t Value);
@@ -751,6 +711,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PCNT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PRIV(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_RGAD(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_T___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCMP(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCON(Inspection::Buffer & Buffer, const Inspection::Length & Length);
@@ -793,6 +754,11 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flags(Inspe
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_NameCode(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_SignBit(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Inspection::Buffer & Buffer);
@@ -1967,6 +1933,30 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PRIV(Inspection::Bu
 		
 		Result->GetValue()->Append(PRIVDataName, PRIVDataResult->GetValue());
 		Result->SetSuccess(PRIVDataResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_RGAD(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto PeakAmplitudeResult{Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer)};
+	
+	Result->GetValue()->Append("PeakAmplitude", PeakAmplitudeResult->GetValue());
+	if(PeakAmplitudeResult->GetSuccess() == true)
+	{
+		auto TrackReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
+		
+		Result->GetValue()->Append("TrackReplayGainAdjustment", TrackReplayGainAdjustmentResult->GetValue());
+		if(TrackReplayGainAdjustmentResult->GetSuccess() == true)
+		{
+			auto AlbumReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
+			
+			Result->GetValue()->Append("AlbumReplayGainAdjustment", AlbumReplayGainAdjustmentResult->GetValue());
+			Result->SetSuccess(AlbumReplayGainAdjustmentResult->GetSuccess());
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -3354,6 +3344,167 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_E
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto NameCodeResult{Get_ID3_2_ReplayGainAdjustment_NameCode(Buffer)};
+	
+	Result->GetValue()->Append("NameCode", NameCodeResult->GetValue());
+	if(NameCodeResult->GetSuccess() == true)
+	{
+		auto OriginatorCodeResult{Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Buffer)};
+		
+		Result->GetValue()->Append("OriginatorCode", OriginatorCodeResult->GetValue());
+		if(OriginatorCodeResult->GetSuccess() == true)
+		{
+			auto SignBitResult{Get_ID3_2_ReplayGainAdjustment_SignBit(Buffer)};
+			
+			Result->GetValue()->Append("SignBit", SignBitResult->GetValue());
+			if(SignBitResult->GetSuccess() == true)
+			{
+				auto ReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Buffer)};
+				
+				Result->GetValue()->Append("ReplayGainAdjustment", ReplayGainAdjustmentResult->GetValue());
+				if(ReplayGainAdjustmentResult->GetSuccess() == true)
+				{
+					auto SignBit{std::experimental::any_cast< std::uint8_t >(SignBitResult->GetAny())};
+					auto ReplayGainAdjustment{std::experimental::any_cast< float >(ReplayGainAdjustmentResult->GetValue()->GetTagAny("Interpretation"))};
+					
+					if(SignBit == 0x01)
+					{
+						ReplayGainAdjustment *= -1.0f;
+					}
+					Result->GetValue()->PrependTag("Standard", "Hydrogenaudio ReplayGain"s);
+					Result->GetValue()->PrependTag("Interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
+					Result->SetSuccess(true);
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_NameCode(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto NameCodeResult{Get_UnsignedInteger_3Bit(Buffer)};
+	
+	Result->SetValue(NameCodeResult->GetValue());
+	if(NameCodeResult->GetSuccess() == true)
+	{
+		auto NameCode{std::experimental::any_cast< std::uint8_t >(NameCodeResult->GetAny())};
+		
+		if(NameCode == 0x00)
+		{
+			Result->GetValue()->PrependTag("Interpretation", "not set"s);
+			Result->SetSuccess(true);
+		}
+		else if(NameCode == 0x01)
+		{
+			Result->GetValue()->PrependTag("Interpretation", "track gain adjustment"s);
+			Result->SetSuccess(true);
+		}
+		else if(NameCode == 0x02)
+		{
+			Result->GetValue()->PrependTag("Interpretation", "album gain adjustment"s);
+			Result->SetSuccess(true);
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("Interpretation", "<unknown>"s);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto OriginatorCodeResult{Get_UnsignedInteger_3Bit(Buffer)};
+	
+	Result->SetValue(OriginatorCodeResult->GetValue());
+	if(OriginatorCodeResult->GetSuccess() == true)
+	{
+		auto OriginatorCode{std::experimental::any_cast< std::uint8_t >(OriginatorCodeResult->GetAny())};
+		
+		if(OriginatorCode == 0x00)
+		{
+			Result->GetValue()->PrependTag("Interpretation", "unspecified"s);
+			Result->SetSuccess(true);
+		}
+		else if(OriginatorCode == 0x01)
+		{
+			Result->GetValue()->PrependTag("Interpretation", "pre-set by artist/producer/mastering engineer"s);
+			Result->SetSuccess(true);
+		}
+		else if(OriginatorCode == 0x02)
+		{
+			Result->GetValue()->PrependTag("Interpretation", "set by user"s);
+			Result->SetSuccess(true);
+		}
+		else if(OriginatorCode == 0x03)
+		{
+			Result->GetValue()->PrependTag("Interpretation", "determined automatically"s);
+			Result->SetSuccess(true);
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("Interpretation", "<unknown>"s);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto ReplayGainAdjustmentResult{Get_UnsignedInteger_9Bit_BigEndian(Buffer)};
+	
+	Result->SetValue(ReplayGainAdjustmentResult->GetValue());
+	if(ReplayGainAdjustmentResult->GetSuccess() == true)
+	{
+		float ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(ReplayGainAdjustmentResult->GetAny()))};
+		
+		Result->GetValue()->PrependTag("Interpretation", ReplayGainAdjustment / 10.0f);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_SignBit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto SignBitResult{Get_UnsignedInteger_1Bit(Buffer)};
+	
+	Result->SetValue(SignBitResult->GetValue());
+	if(SignBitResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto SignBit{std::experimental::any_cast< std::uint8_t >(SignBitResult->GetAny())};
+		
+		if(SignBit == 0x00)
+		{
+			Result->GetValue()->PrependTag("Interpretation", "positive gain (boost)"s);
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("Interpretation", "negative gain (attenuation)"s);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -3867,46 +4018,14 @@ std::uint64_t Handle23PRIVFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 	return FrameResult->GetLength().GetBytes();
 }
 
-std::uint64_t Handle23RGADFrame(const uint8_t * Buffer, std::uint64_t Length)
+std::uint64_t Handle23RGADFrame(const uint8_t * RawBuffer, std::uint64_t Length)
 {
-	std::uint64_t Index(0);
-	auto PeakAmplitude(Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer + Index, Length - Index));
+	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
+	auto FrameResult{Get_ID3_2_3_Frame_Body_RGAD(Buffer, Buffer.GetLength())};
 	
-	if(std::get<0>(PeakAmplitude) == true)
-	{
-		Index += std::get<1>(PeakAmplitude);
-		std::cout << "\t\t\t\tPeak amplitude: " << std::get<2>(PeakAmplitude) << std::endl;
-		
-		auto TrackReplayGainAdjustment(Get_UInt16_BE(Buffer + Index, Length - Index));
-		
-		if(std::get<0>(TrackReplayGainAdjustment) == true)
-		{
-			Index += std::get<1>(TrackReplayGainAdjustment);
-			std::cout << "\t\t\t\tTrack replay gain adjustment: " << GetBinaryStringFromUInt16(std::get<2>(TrackReplayGainAdjustment)) << std::endl;
-			
-			auto AlbumReplayGainAdjustment(Get_UInt16_BE(Buffer + Index, Length - Index));
-			
-			if(std::get<0>(AlbumReplayGainAdjustment) == true)
-			{
-				Index += std::get<1>(AlbumReplayGainAdjustment);
-				std::cout << "\t\t\t\tAlbum replay gain adjustment: " << GetBinaryStringFromUInt16(std::get<2>(AlbumReplayGainAdjustment)) << std::endl;
-			}
-			else
-			{
-				std::cout << "*** ERROR *** According to the unofficial Hydrogenaudio specification, \"RGAD\" frames should contain a 16bit \"Album replay gain adjustment\" field." << std::endl;
-			}
-		}
-		else
-		{
-			std::cout << "*** ERROR *** According to the unofficial Hydrogenaudio specification, \"RGAD\" frames should contain a 16bit \"Track replay gain adjustment\" field." << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "*** ERROR *** According to the unofficial Hydrogenaudio specification, \"RGAD\" frames should contain a 32bit \"Peak amplitude\" field." << std::endl;
-	}
+	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
 	
-	return Index;
+	return FrameResult->GetLength().GetBytes();
 }
 
 std::uint64_t Handle23T___Frames(const uint8_t * RawBuffer, std::uint64_t Length)
