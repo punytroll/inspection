@@ -2851,8 +2851,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Buffe
 	Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
 	if(IdentifierResult->GetSuccess() == true)
 	{
-		Result->SetSuccess(true);
-		
+		auto Continue{true};
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(IdentifierResult->GetAny())};
 		std::string Interpretation;
 		
@@ -2872,10 +2871,11 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Buffe
 			{
 				Result->GetValue()->PrependTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
 				Result->SetSuccess(false);
+				Continue = false;
 			}
 		}
 		Result->GetValue()->PrependTag("interpretation", Interpretation);
-		if(Result->GetSuccess() == true)
+		if(Continue == true)
 		{
 			auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
 			
