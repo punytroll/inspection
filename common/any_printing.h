@@ -26,6 +26,10 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 		
 		return OStream << StringStream.str();
 	}
+	else if(Any.type() == typeid(float))
+	{
+		return OStream << std::experimental::any_cast< float >(Any);
+	}
 	else if(Any.type() == typeid(std::int16_t))
 	{
 		return OStream << std::experimental::any_cast< std::int16_t >(Any);
