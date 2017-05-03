@@ -2235,6 +2235,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto DataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(4ull, 0))};
+	
+	if(DataResult->GetSuccess() == true)
+	{
+		Result->GetValue()->SetAny(*reinterpret_cast< const float * const >(&(std::experimental::any_cast< const std::vector< std::uint8_t > & >(DataResult->GetAny()).front())));
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_FormatTag(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -2517,6 +2532,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspe
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("8bit"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_9Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 9) == true)
+	{
+		std::uint16_t Value{0ul};
+		
+		Value |= static_cast< std::uint16_t >(Buffer.Get1Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("9bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
