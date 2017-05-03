@@ -4164,6 +4164,10 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 		}
 		else if(MajorVersion == 0x03)
 		{
+			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
+			{
+				throw Inspection::NotImplementedException("ID3 2.3 extended header");
+			}
 			PrintValue(TagHeaderResult->GetValue(), "    ");
 			if(TagHeaderResult->GetSuccess() == true)
 			{
