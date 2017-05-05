@@ -2961,6 +2961,11 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & 
 				Result->GetValue()->PrependTag("interpretation", "<unknown>"s);
 				Result->SetSuccess(true);
 			}
+			else
+			{
+				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+				Result->GetValue()->PrependTag("error", "The language code \"" + Code + "\" is unknown."s);
+			}
 		}
 		else
 		{
