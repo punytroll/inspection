@@ -1319,6 +1319,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 						}
 						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 						Result->SetSuccess(true);
+						
+						break;
 					}
 					else
 					{
@@ -1437,6 +1439,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 						}
 						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 						Result->SetSuccess(true);
+						
+						break;
 					}
 					else
 					{
