@@ -337,6 +337,310 @@ std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value)
 	}
 }
 
+std::string Get_ID3_2_3_FrameIdentifier_Interpretation(const std::string & Value)
+{
+	if(Value == "AENC")
+	{
+		return "Audio encryption";
+	}
+	else if(Value == "APIC")
+	{
+		return "Attached Picture";
+	}
+	else if(Value == "COMM")
+	{
+		return "Comments";
+	}
+	else if(Value == "COMR")
+	{
+		return "Commercial frame";
+	}
+	else if(Value == "ENCR")
+	{
+		return "Encryption method registration";
+	}
+	else if(Value == "EQUA")
+	{
+		return "Equalisation";
+	}
+	else if(Value == "ETCO")
+	{
+		return "Event timing codes";
+	}
+	else if(Value == "GEOB")
+	{
+		return "General encapsulated object";
+	}
+	else if(Value == "GRID")
+	{
+		return "Group identification registration";
+	}
+	else if(Value == "IPLS")
+	{
+		return "Involved people list";
+	}
+	else if(Value == "LINK")
+	{
+		return "Linked information";
+	}
+	else if(Value == "MCDI")
+	{
+		return "Music CD identifier";
+	}
+	else if(Value == "MLLT")
+	{
+		return "MPEG location lookup table";
+	}
+	else if(Value == "OWNE")
+	{
+		return "Ownership frame";
+	}
+	else if(Value == "PRIV")
+	{
+		return "Private frame";
+	}
+	else if(Value == "PCNT")
+	{
+		return "Play counter";
+	}
+	else if(Value == "POPM")
+	{
+		return "Popularimeter";
+	}
+	else if(Value == "POSS")
+	{
+		return "Position synchronisation frame";
+	}
+	else if(Value == "RBUF")
+	{
+		return "Recommended buffer size";
+	}
+	else if(Value == "RVAD")
+	{
+		return "Relative volume adjustment";
+	}
+	else if(Value == "RVRB")
+	{
+		return "Reverb";
+	}
+	else if(Value == "SYLT")
+	{
+		return "Synchronised lyric/text";
+	}
+	else if(Value == "SYTC")
+	{
+		return "Synchronised tempo codes";
+	}
+	else if(Value == "TALB")
+	{
+		return "Album/Movie/Show title";
+	}
+	else if(Value == "TBPM")
+	{
+		return "BPM (beats per minute)";
+	}
+	else if(Value == "TCOM")
+	{
+		return "Composer";
+	}
+	else if(Value == "TCON")
+	{
+		return "Content type";
+	}
+	else if(Value == "TCOP")
+	{
+		return "Copyright message";
+	}
+	else if(Value == "TDAT")
+	{
+		return "Date";
+	}
+	else if(Value == "TDLY")
+	{
+		return "Playlist delay";
+	}
+	else if(Value == "TENC")
+	{
+		return "Encoded by";
+	}
+	else if(Value == "TEXT")
+	{
+		return "Lyricist/Text writer";
+	}
+	else if(Value == "TFLT")
+	{
+		return "File type";
+	}
+	else if(Value == "TIME")
+	{
+		return "Time";
+	}
+	else if(Value == "TIT1")
+	{
+		return "Content group description";
+	}
+	else if(Value == "TIT2")
+	{
+		return "Title/songname/content description";
+	}
+	else if(Value == "TIT3")
+	{
+		return "Subtitle/Description refinement";
+	}
+	else if(Value == "TKEY")
+	{
+		return "Initial key";
+	}
+	else if(Value == "TLAN")
+	{
+		return "Language(s)";
+	}
+	else if(Value == "TLEN")
+	{
+		return "Length";
+	}
+	else if(Value == "TMED")
+	{
+		return "Media type";
+	}
+	else if(Value == "TOAL")
+	{
+		return "Original album/movie/show title";
+	}
+	else if(Value == "TOFN")
+	{
+		return "Original filename";
+	}
+	else if(Value == "TOLY")
+	{
+		return "Original lyricist(s)/text writer(s)";
+	}
+	else if(Value == "TOPE")
+	{
+		return "Original artist(s)/performer(s)";
+	}
+	else if(Value == "TORY")
+	{
+		return "Original release year";
+	}
+	else if(Value == "TOWN")
+	{
+		return "File owner/licensee";
+	}
+	else if(Value == "TPE1")
+	{
+		return "Lead performer(s)/Soloist(s)";
+	}
+	else if(Value == "TPE2")
+	{
+		return "Band/orchestra/accompaniment";
+	}
+	else if(Value == "TPE3")
+	{
+		return "Conductor/performer refinement";
+	}
+	else if(Value == "TPE4")
+	{
+		return "Interpreted, remixed, or otherwise modified by";
+	}
+	else if(Value == "TPOS")
+	{
+		return "Part of a set";
+	}
+	else if(Value == "TPUB")
+	{
+		return "Publisher";
+	}
+	else if(Value == "TRCK")
+	{
+		return "Track number/Position in set";
+	}
+	else if(Value == "TRDA")
+	{
+		return "Recording dates";
+	}
+	else if(Value == "TRSN")
+	{
+		return "Internet radio station name";
+	}
+	else if(Value == "TRSO")
+	{
+		return "Internet radio station owner";
+	}
+	else if(Value == "TSIZ")
+	{
+		return "Size";
+	}
+	else if(Value == "TSRC")
+	{
+		return "ISRC (international standard recording code)";
+	}
+	else if(Value == "TSSE")
+	{
+		return "Software/Hardware and settings used for encoding";
+	}
+	else if(Value == "TXXX")
+	{
+		return "User defined text information frame";
+	}
+	else if(Value == "TYER")
+	{
+		return "Year";
+	}
+	else if(Value == "UFID")
+	{
+		return "Unique file identifier";
+	}
+	else if(Value == "USER")
+	{
+		return "Terms of use";
+	}
+	else if(Value == "USLT")
+	{
+		return "Unsynchronised lyric/text transcription";
+	}
+	else if(Value == "WCOM")
+	{
+		return "Commercial information";
+	}
+	else if(Value == "WCOP")
+	{
+		return "Copyright/legal information";
+	}
+	else if(Value == "WOAF")
+	{
+		return "Official audio file webpage";
+	}
+	else if(Value == "WOAR")
+	{
+		return "Official artist/performer webpage";
+	}
+	else if(Value == "WOAS")
+	{
+		return "Official audio source webpage";
+	}
+	else if(Value == "WORS")
+	{
+		return "Official internet radio station webpage";
+	}
+	else if(Value == "WPAY")
+	{
+		return "Payment";
+	}
+	else if(Value == "WPUB")
+	{
+		return "Publisher's official webpage";
+	}
+	else if(Value == "WXXX")
+	{
+		return "User defined URL link frame";
+	}
+	else
+	{
+		throw Inspection::UnknownValueException(Value);
+	}
+}
+
 std::string Get_ID3_2_4_FrameIdentifier_Interpretation(const std::string & Value)
 {
 	if(Value == "AENC")
@@ -701,6 +1005,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Tag_Header_Flags(Inspection::B
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_APIC(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_APIC_MIMEType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_APIC_PictureType(Inspection::Buffer & Buffer);
@@ -723,6 +1028,9 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_UFID(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_USLT(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_WXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header_Identifier(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Tag_Header_Flags(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer);
@@ -1580,6 +1888,136 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_E
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto HeaderResult{Get_ID3_2_3_Frame_Header(Buffer)};
+	
+	Result->SetValue(HeaderResult->GetValue());
+	if(HeaderResult->GetSuccess() == true)
+	{
+		auto Start{Buffer.GetPosition()};
+		const std::string & Identifier{std::experimental::any_cast< const std::string & >(HeaderResult->GetAny("Identifier"))};
+		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(HeaderResult->GetAny("Size")), 0)};
+		std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > BodyHandler;
+		
+		if(Identifier == "APIC")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_APIC;
+		}
+		else if(Identifier == "COMM")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_COMM;
+		}
+		else if(Identifier == "GEOB")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_GEOB;
+		}
+		else if(Identifier == "MCDI")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_MCDI;
+		}
+		else if(Identifier == "PCNT")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_PCNT;
+		}
+		else if(Identifier == "POPM")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_POPM;
+		}
+		else if(Identifier == "PRIV")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_PRIV;
+		}
+		else if(Identifier == "RGAD")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_RGAD;
+		}
+		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCOP") || (Identifier == "TDAT") || (Identifier == "TDRC") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIME") || (Identifier == "TIT1") || (Identifier == "TIT2") || (Identifier == "TIT3") || (Identifier == "TLEN") || (Identifier == "TMED") || (Identifier == "TOAL") || (Identifier == "TOFN") || (Identifier == "TOPE") || (Identifier == "TOWN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPE3") || (Identifier == "TPE4") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TRDA") || (Identifier == "TSIZ") || (Identifier == "TSO2") || (Identifier == "TSOA") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TSST") || (Identifier == "TYER"))
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_T___;
+		}
+		else if(Identifier == "TCMP")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_TCMP;
+		}
+		else if(Identifier == "TCON")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_TCON;
+		}
+		else if(Identifier == "TFLT")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_TFLT;
+		}
+		else if(Identifier == "TLAN")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_TLAN;
+		}
+		else if(Identifier == "TSRC")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_TSRC;
+		}
+		else if(Identifier == "TXXX")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_TXXX;
+		}
+		else if(Identifier == "UFID")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_UFID;
+		}
+		else if(Identifier == "USLT")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_USLT;
+		}
+		else if(Identifier == "WCOM")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_W___;
+		}
+		else if(Identifier == "WOAF")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_W___;
+		}
+		else if(Identifier == "WOAR")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_W___;
+		}
+		else if(Identifier == "WXXX")
+		{
+			BodyHandler = Get_ID3_2_3_Frame_Body_WXXX;
+		}
+		if(BodyHandler != nullptr)
+		{
+			auto BodyResult{BodyHandler(Buffer, Size)};
+			
+			if(Start + Size > Buffer.GetPosition())
+			{
+				Result->GetValue()->PrependTag("handled size", to_string_cast(Buffer.GetPosition() - Start));
+				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the frame size is stated larger than the actually handled size."s);
+			}
+			else if(Start + Size < Buffer.GetPosition())
+			{
+				Result->GetValue()->PrependTag("handled size", to_string_cast(Buffer.GetPosition() - Start));
+				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the acutally handled size is larger than the stated frame size."s);
+			}
+			Result->GetValue()->Append(BodyResult->GetValue()->GetValues());
+			Result->SetSuccess(BodyResult->GetSuccess());
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
+			
+			auto BodyResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size)};
+			
+			Result->GetValue()->Append("Data", BodyResult->GetValue());
+			Result->SetSuccess(BodyResult->GetSuccess());
+		}
+		Buffer.SetPosition(Start + Size);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_APIC(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
@@ -2258,6 +2696,148 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_WXXX(Inspection::Bu
 			
 			Result->GetValue()->Append("URL", URLResult->GetValue());
 			Result->SetSuccess(URLResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto IdentifierResult{Get_ID3_2_3_Frame_Header_Identifier(Buffer)};
+	
+	Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+	if(IdentifierResult->GetSuccess() == true)
+	{
+		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
+		
+		Result->GetValue()->Append("Size", SizeResult->GetValue());
+		if(SizeResult->GetSuccess() == true)
+		{
+			auto FlagsResult{Get_BitSet_16Bit_BigEndian(Buffer)};
+			
+			Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+			Result->SetSuccess(FlagsResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header_Identifier(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto IdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByLength(Buffer, Inspection::Length(4ull, 0))};
+	
+	Result->SetValue(IdentifierResult->GetValue());
+	if(IdentifierResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::string & Identifier{std::experimental::any_cast< const std::string & >(IdentifierResult->GetAny())};
+		
+		Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
+		try
+		{
+			Result->GetValue()->PrependTag("interpretation", Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier));
+		}
+		catch(Inspection::UnknownValueException & Exception)
+		{
+			if(Identifier == "RGAD")
+			{
+				Result->GetValue()->PrependTag("new standard", "Hydrogenaudio ReplayGain"s);
+				Result->GetValue()->PrependTag("interpretation", "Replay gain adjustment"s);
+				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org."s);
+			}
+			else if(Identifier == "TCMP")
+			{
+				Result->GetValue()->PrependTag("new standard", "iTunes"s);
+				Result->GetValue()->PrependTag("interpretation", "Part of a compilation"s);
+				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
+			}
+			else if(Identifier == "TDRC")
+			{
+				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
+				Result->GetValue()->PrependTag("interpretation", "Recording time"s);
+				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			}
+			else if(Identifier == "TDTG")
+			{
+				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
+				Result->GetValue()->PrependTag("interpretation", "Tagging time"s);
+				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			}
+			else if(Identifier == "TSST")
+			{
+				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
+				Result->GetValue()->PrependTag("interpretation", "Set subtitle"s);
+				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			}
+			else if(Identifier == "TSOA")
+			{
+				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
+				Result->GetValue()->PrependTag("interpretation", "Album sort order"s);
+				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			}
+			else if(Identifier == "TSOP")
+			{
+				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
+				Result->GetValue()->PrependTag("interpretation", "Performer sort order"s);
+				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			}
+			else if(Identifier == "TSO2")
+			{
+				Result->GetValue()->PrependTag("new standard", "iTunes"s);
+				Result->GetValue()->PrependTag("interpretation", "Album artist sort order"s);
+				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order."s);
+			}
+			else
+			{
+				Result->GetValue()->PrependTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->SetSuccess(true);
+	while(Buffer.GetPosition() < Boundary)
+	{
+		auto Start{Buffer.GetPosition()};
+		auto FrameResult{Get_ID3_2_3_Frame(Buffer)};
+		
+		if(FrameResult->GetSuccess() == true)
+		{
+			Result->GetValue()->Append("Frame", FrameResult->GetValue());
+		}
+		else
+		{
+			Buffer.SetPosition(Start);
+			
+			auto PaddingResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			
+			if(PaddingResult->GetSuccess() == true)
+			{
+				Result->GetValue()->Append("Padding", PaddingResult->GetValue());
+			}
+			else
+			{
+				Result->GetValue()->Append("Frame", FrameResult->GetValue());
+				Result->SetSuccess(false);
+				Buffer.SetPosition(Boundary);
+			}
+			
+			break;
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -3670,481 +4250,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Tag and Frame header classes                                                                  //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-class FrameHeader
-{
-public:
-	// constructor
-	FrameHeader(std::uint8_t MajorVersion, Inspection::Buffer & Buffer) :
-		_Compression(false),
-		_DataLengthIndicator(false),
-		_Encryption(false),
-		_FileAlterPreservation(false),
-		_Forbidden(false),
-		_GroupingIdentity(false),
-		_HeaderSize(0),
-		_ReadOnly(false),
-		_SupportsCompression(false),
-		_SupportsDataLengthIndicator(false),
-		_SupportsEncryption(false),
-		_SupportsFileAlterPreservation(0),
-		_SupportsFlags(0),
-		_SupportsGroupingIdentity(0),
-		_SupportsReadOnly(0),
-		_SupportsTagAlterPreservation(0),
-		_SupportsUnsynchronisation(0),
-		_TagAlterPreservation(0),
-		_Unsynchronisation(0)
-	{
-		auto RawBuffer{Buffer.GetDataAtPosition()};
-		
-		if(MajorVersion == 0x03)
-		{
-			_HeaderSize = 10;
-			_Identifier = std::string(reinterpret_cast< const char * const >(RawBuffer), 4);
-			_Name = g_FrameNames_2_3[_Identifier];
-			_DataSize = (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[4])) << 24) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[5])) << 16) + (static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[6])) << 8) + static_cast< unsigned int >(static_cast< unsigned char >(RawBuffer[7]));
-			_SupportsFlags = true;
-			_SupportsTagAlterPreservation = true;
-			_TagAlterPreservation = (RawBuffer[8] & 0x80) == 0x80;
-			_SupportsFileAlterPreservation = true;
-			_FileAlterPreservation = (RawBuffer[8] & 0x40) == 0x40;
-			_SupportsReadOnly = true;
-			_ReadOnly = (RawBuffer[8] & 0x20) == 0x20;
-			_SupportsCompression = true;
-			_Compression = (RawBuffer[9] & 0x80) == 0x80;
-			_SupportsEncryption = true;
-			_Encryption = (RawBuffer[9] & 0x40) == 0x40;
-			_SupportsGroupingIdentity = true;
-			_GroupingIdentity = (RawBuffer[9] & 0x20) == 0x20;
-			_SupportsUnsynchronisation = false;
-			_SupportsDataLengthIndicator = false;
-			
-			std::map< std::string, std::string >::iterator ForbiddenIterator(_Forbidden23.find(_Identifier));
-			
-			if(ForbiddenIterator != _Forbidden23.end())
-			{
-				_Forbidden = true;
-				_ForbiddenReason = ForbiddenIterator->second;
-			}
-		}
-		Buffer.SetPosition(Buffer.GetPosition() + Inspection::Length(_HeaderSize, 0));
-	}
-	
-	// getters
-	bool GetCompression(void) const
-	{
-		return _Compression;
-	}
-	
-	bool GetDataLengthIndicator(void) const
-	{
-		return _DataLengthIndicator;
-	}
-	
-	bool GetEncryption(void) const
-	{
-		return _Encryption;
-	}
-	
-	bool GetFileAlterPreservation(void) const
-	{
-		return _FileAlterPreservation;
-	}
-	
-	std::string GetFlagsAsString(void) const
-	{
-		std::string Result;
-		
-		if((SupportsTagAlterPreservation() == true) && (GetTagAlterPreservation() == true))
-		{
-			AppendSeparated(Result, "Tag alter preservation", ", ");
-		}
-		if((SupportsFileAlterPreservation() == true) && (GetFileAlterPreservation() == true))
-		{
-			AppendSeparated(Result, "File alter preservation", ", ");
-		}
-		if((SupportsReadOnly() == true) && (GetReadOnly() == true))
-		{
-			AppendSeparated(Result, "Read only", ", ");
-		}
-		if((SupportsCompression() == true) && (GetCompression() == true))
-		{
-			AppendSeparated(Result, "Compression", ", ");
-		}
-		if((SupportsEncryption() == true) && (GetEncryption() == true))
-		{
-			AppendSeparated(Result, "Encryption", ", ");
-		}
-		if((SupportsGroupingIdentity() == true) && (GetGroupingIdentity() == true))
-		{
-			AppendSeparated(Result, "Grouping identity", ", ");
-		}
-		if((SupportsUnsynchronisation() == true) && (GetUnsynchronisation() == true))
-		{
-			AppendSeparated(Result, "Unsynchronisation", ", ");
-		}
-		if((SupportsDataLengthIndicator() == true) && (GetDataLengthIndicator() == true))
-		{
-			AppendSeparated(Result, "Data length indicator", ", ");
-		}
-		if(Result.empty() == true)
-		{
-			Result = "None";
-		}
-		
-		return Result;
-	}
-	
-	bool GetGroupingIdentity(void) const
-	{
-		return _GroupingIdentity;
-	}
-	
-	unsigned int GetHeaderSize(void) const
-	{
-		return _HeaderSize;
-	}
-	
-	std::string GetIdentifier(void) const
-	{
-		return _Identifier;
-	}
-	
-	std::string GetName(void) const
-	{
-		return _Name;
-	}
-	
-	bool GetReadOnly(void) const
-	{
-		return _ReadOnly;
-	}
-	
-	bool GetForbidden(void)
-	{
-		return _Forbidden;
-	}
-	
-	std::string GetForbiddenReason(void) const
-	{
-		return _ForbiddenReason;
-	}
-	
-	unsigned int GetDataSize(void) const
-	{
-		return _DataSize;
-	}
-	
-	bool GetTagAlterPreservation(void) const
-	{
-		return _TagAlterPreservation;
-	}
-	
-	bool GetUnsynchronisation(void) const
-	{
-		return _Unsynchronisation;
-	}
-	
-	bool IsValid(void) const
-	{
-		for(std::string::size_type Index = 0; Index < _Identifier.length(); ++Index)
-		{
-			if(IsValidIdentifierCharacter(_Identifier[Index]) == false)
-			{
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	bool SupportsCompression(void) const
-	{
-		return _SupportsCompression;
-	}
-	
-	bool SupportsDataLengthIndicator(void) const
-	{
-		return _SupportsDataLengthIndicator;
-	}
-	
-	bool SupportsEncryption(void) const
-	{
-		return _SupportsEncryption;
-	}
-	
-	bool SupportsFileAlterPreservation(void) const
-	{
-		return _SupportsFileAlterPreservation;
-	}
-	
-	bool SupportsFlags(void) const
-	{
-		return _SupportsFlags;
-	}
-	
-	bool SupportsGroupingIdentity(void) const
-	{
-		return _SupportsGroupingIdentity;
-	}
-	
-	bool SupportsReadOnly(void) const
-	{
-		return _SupportsReadOnly;
-	}
-	
-	bool SupportsTagAlterPreservation(void) const
-	{
-		return _SupportsTagAlterPreservation;
-	}
-	
-	bool SupportsUnsynchronisation(void) const
-	{
-		return _SupportsUnsynchronisation;
-	}
-	
-	// static setup
-	static void Forbid23(const std::string & Identifier, const std::string & Reason)
-	{
-		_Forbidden23.insert(std::make_pair(Identifier, Reason));
-	}
-	
-	static void Handle23(const std::string & Identifier, const std::string & Name, std::uint64_t (* Handler) (const uint8_t *, std::uint64_t))
-	{
-		g_FrameHandlers_2_3.insert(std::make_pair(Identifier, Handler));
-		g_FrameNames_2_3.insert(std::make_pair(Identifier, Name));
-	}
-	
-	// static setup
-	static std::map< std::string, std::string > _Forbidden23;
-private:
-	// member variables
-	bool _Compression;
-	bool _DataLengthIndicator;
-	unsigned int _DataSize;
-	bool _Encryption;
-	bool _FileAlterPreservation;
-	bool _Forbidden;
-	std::string _ForbiddenReason;
-	bool _GroupingIdentity;
-	unsigned int _HeaderSize;
-	std::string _Identifier;
-	std::string _Name;
-	bool _ReadOnly;
-	bool _SupportsCompression;
-	bool _SupportsDataLengthIndicator;
-	bool _SupportsEncryption;
-	bool _SupportsFileAlterPreservation;
-	bool _SupportsFlags;
-	bool _SupportsGroupingIdentity;
-	bool _SupportsReadOnly;
-	bool _SupportsTagAlterPreservation;
-	bool _SupportsUnsynchronisation;
-	bool _TagAlterPreservation;
-	bool _Unsynchronisation;
-};
-
-std::map< std::string, std::string > FrameHeader::_Forbidden23;
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// specific to tag version 2.3                                                                   //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::uint64_t Handle23APICFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_APIC(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23COMMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_COMM(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23GEOB_Frame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_GEOB(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23MCDIFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_MCDI(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23PCNTFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_PCNT(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23POPMFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_POPM(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23PRIVFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_PRIV(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23RGADFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_RGAD(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23T___Frames(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_T___(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23TCONFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_TCON(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23TFLTFrames(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_TFLT(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23TLANFrames(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_TLAN(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23TCMPFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_TCMP(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23TSRCFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_TSRC(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23TXXXFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_TXXX(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23UFIDFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_UFID(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23USLTFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_USLT(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23W___Frames(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_W___(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-std::uint64_t Handle23WXXXFrame(const uint8_t * RawBuffer, std::uint64_t Length)
-{
-	Inspection::Buffer Buffer{RawBuffer, Inspection::Length(Length, 0)};
-	auto FrameResult{Get_ID3_2_3_Frame_Body_WXXX(Buffer, Buffer.GetLength())};
-	
-	PrintValue(FrameResult->GetValue(), "\t\t\t\t");
-	
-	return FrameResult->GetLength().GetBytes();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // application                                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4173,90 +4278,14 @@ void ReadID3v2Tag(Inspection::Buffer & Buffer)
 			{
 				throw Inspection::NotImplementedException("ID3 2.3 extended header");
 			}
-			PrintValue(TagHeaderResult->GetValue(), "    ");
 			if(TagHeaderResult->GetSuccess() == true)
 			{
-				auto Boundary{Buffer.GetPosition() + Size};
-				auto SkippingSize{0};
-
-				std::cout << "\tFrames:" << std::endl;
-				while(Buffer.GetPosition() < Boundary)
-				{
-					auto Start{Buffer.GetPosition()};
-					FrameHeader * NewFrameHeader(new FrameHeader(MajorVersion, Buffer));
-					
-					if(NewFrameHeader->IsValid() == true)
-					{
-						if(SkippingSize > 0)
-						{
-							std::cout << "# Skipped " << SkippingSize << " bytes of invalid data." << std::endl;
-							SkippingSize = 0;
-						}
-						std::cout << "\t\tIdentifier: \"" << NewFrameHeader->GetIdentifier() << "\"" << std::endl;
-						if(NewFrameHeader->GetForbidden() == true)
-						{
-							std::cout << "*** ERROR *** This frame is forbidden! " << NewFrameHeader->GetForbiddenReason() << std::endl;
-						}
-						std::cout << "\t\t\tName: " << NewFrameHeader->GetName() << std::endl;
-						std::cout << "\t\t\tSize: " << NewFrameHeader->GetDataSize() << std::endl;
-						if(NewFrameHeader->SupportsFlags() == true)
-						{
-							std::cout << "\t\t\tFlags: " << NewFrameHeader->GetFlagsAsString() << std::endl;
-						}
-						
-						auto RawBuffer{Buffer.GetDataAtPosition()};
-						
-						if(g_PrintBytes == true)
-						{
-							std::cout << "\t\t\tBytes: " << GetHexadecimalStringFromUInt8Buffer(RawBuffer, NewFrameHeader->GetDataSize()) << std::endl;
-						}
-						std::cout << "\t\t\tContent:" << std::endl;
-						
-						auto HandledFrameSize{0ull};
-						std::function< std::uint64_t (const std::uint8_t *, std::uint64_t) > Handler;
-						
-						if(MajorVersion == 0x03)
-						{
-							auto HandlerIterator{g_FrameHandlers_2_3.find(NewFrameHeader->GetIdentifier())};
-							
-							if(HandlerIterator != g_FrameHandlers_2_3.end())
-							{
-								Handler = HandlerIterator->second;
-							}
-						}
-						if(Handler != nullptr)
-						{
-							HandledFrameSize = Handler(RawBuffer, NewFrameHeader->GetDataSize());
-						}
-						else
-						{
-							std::cout << "*** ERROR *** No handler defined for the frame type \"" << NewFrameHeader->GetIdentifier() << "\" in tag version 2." << to_string_cast(MajorVersion) << "." << std::endl;
-							HandledFrameSize = NewFrameHeader->GetDataSize();
-						}
-						if(HandledFrameSize < NewFrameHeader->GetDataSize())
-						{
-							std::cout << "*** ERROR *** Frame size exceeds frame data. (handled=" << HandledFrameSize << " < size=" << NewFrameHeader->GetDataSize() << ')' << std::endl;
-						}
-						else if(HandledFrameSize > NewFrameHeader->GetDataSize())
-						{
-							std::cout << "*** ERROR *** Frame data exceeds frame size. (handled=" << HandledFrameSize << " > size=" << NewFrameHeader->GetDataSize() << ')' << std::endl;
-						}
-						std::cout << std::endl;
-						Buffer.SetPosition(Start + NewFrameHeader->GetHeaderSize() + NewFrameHeader->GetDataSize());
-					}
-					else
-					{
-						SkippingSize += 1;
-						Buffer.SetPosition(Start + 1);
-					}
-					delete NewFrameHeader;
-				}
-				if(SkippingSize > 0)
-				{
-					std::cout << "# Skipped " << SkippingSize << " bytes of padding." << std::endl;
-				}
-				std::cout << std::endl;
+				auto FramesResult{Get_ID3_2_3_Frames(Buffer, Size)};
+				
+				TagHeaderResult->GetValue()->Append(FramesResult->GetValue()->GetValues());
+				TagHeaderResult->SetSuccess(FramesResult->GetSuccess());
 			}
+			PrintValue(TagHeaderResult->GetValue(), "    ");
 		}
 		else if(MajorVersion == 0x04)
 		{
@@ -4473,71 +4502,6 @@ int main(int argc, char **argv)
 	g_NumericGenresWinamp.insert(std::make_pair(123, "Acapella"));
 	g_NumericGenresWinamp.insert(std::make_pair(124, "Euro-House"));
 	g_NumericGenresWinamp.insert(std::make_pair(125, "Dance Hall"));
-	
-	// ID3v2.3.0
-	FrameHeader::Handle23("APIC", "Attached picture", Handle23APICFrame);
-	FrameHeader::Handle23("COMM", "Comments", Handle23COMMFrame);
-	FrameHeader::Handle23("GEOB", "General encapsulated object", Handle23GEOB_Frame);
-	FrameHeader::Handle23("MCDI", "Music CD identifier", Handle23MCDIFrame);
-	FrameHeader::Handle23("PCNT", "Play counter", Handle23PCNTFrame);
-	FrameHeader::Handle23("POPM", "Popularimeter", Handle23POPMFrame);
-	FrameHeader::Handle23("PRIV", "Private frame", Handle23PRIVFrame);
-	FrameHeader::Handle23("TALB", "Album/Movie/Show title", Handle23T___Frames);
-	FrameHeader::Handle23("TBPM", "BPM (beats per minute)", Handle23T___Frames);
-	FrameHeader::Handle23("TCOM", "Composer", Handle23T___Frames);
-	FrameHeader::Handle23("TCON", "Content type", Handle23TCONFrame);
-	FrameHeader::Handle23("TCOP", "Copyright message", Handle23T___Frames);
-	FrameHeader::Handle23("TDAT", "Date", Handle23T___Frames);
-	FrameHeader::Handle23("TENC", "Encoded by", Handle23T___Frames);
-	FrameHeader::Handle23("TFLT", "File type", Handle23TFLTFrames);
-	FrameHeader::Handle23("TIME", "Time", Handle23T___Frames);
-	FrameHeader::Handle23("TIT1", "Content group description", Handle23T___Frames);
-	FrameHeader::Handle23("TIT2", "Title/songname/content description", Handle23T___Frames);
-	FrameHeader::Handle23("TIT3", "Subtitle/Description refinement", Handle23T___Frames);
-	FrameHeader::Handle23("TLAN", "Language(s)", Handle23TLANFrames);
-	FrameHeader::Handle23("TLEN", "Length", Handle23T___Frames);
-	FrameHeader::Handle23("TMED", "Media type", Handle23T___Frames);
-	FrameHeader::Handle23("TOAL", "Original album/movie/show title", Handle23T___Frames);
-	FrameHeader::Handle23("TOFN", "Original filename", Handle23T___Frames);
-	FrameHeader::Handle23("TOPE", "Original artist(s)/performer(s)", Handle23T___Frames);
-	FrameHeader::Handle23("TOWN", "File owner/licensee", Handle23T___Frames);
-	FrameHeader::Handle23("TPE1", "Lead Performer(s) / Solo Artist(s)", Handle23T___Frames);
-	FrameHeader::Handle23("TPE2", "Band / Orchestra / Accompaniment", Handle23T___Frames);
-	FrameHeader::Handle23("TPE3", "Conductor / Performer Refinement", Handle23T___Frames);
-	FrameHeader::Handle23("TPE4", "Interpreted, Remixed, or otherwise modified by", Handle23T___Frames);
-	FrameHeader::Handle23("TPOS", "Part of a set", Handle23T___Frames);
-	FrameHeader::Handle23("TPUB", "Publisher", Handle23T___Frames);
-	FrameHeader::Handle23("TRCK", "Track number/Position in set", Handle23T___Frames);
-	FrameHeader::Handle23("TRDA", "Recording dates", Handle23T___Frames);
-	FrameHeader::Handle23("TSIZ", "Size", Handle23T___Frames);
-	FrameHeader::Handle23("TSRC", "ISRC (international standard recording code)", Handle23TSRCFrame);
-	FrameHeader::Handle23("TSSE", "Software/Hardware and settings used for encoding", Handle23T___Frames);
-	FrameHeader::Handle23("TXXX", "User defined text information frame", Handle23TXXXFrame);
-	FrameHeader::Handle23("TYER", "Year", Handle23T___Frames);
-	FrameHeader::Handle23("USLT", "Unsynchronised lyrics/text transcription", Handle23USLTFrame);
-	FrameHeader::Handle23("UFID", "Unique file identifier", Handle23UFIDFrame);
-	FrameHeader::Handle23("WCOM", "Commercial information", Handle23W___Frames);
-	FrameHeader::Handle23("WOAF", "Official audio file webpage", Handle23W___Frames);
-	FrameHeader::Handle23("WOAR", "Official artist/performer webpage", Handle23W___Frames);
-	FrameHeader::Handle23("WXXX", "User defined URL link frame", Handle23WXXXFrame);
-	// forbidden tags
-	FrameHeader::Forbid23("RGAD", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org.");
-	FrameHeader::Handle23("RGAD", "Replay Gain Adjustment", Handle23RGADFrame);
-	FrameHeader::Forbid23("TCMP", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.");
-	FrameHeader::Handle23("TCMP", "Part of a compilation (by iTunes)", Handle23TCMPFrame);
-	FrameHeader::Forbid23("TDRC", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TDRC", "Recording time (from tag version 2.4)", Handle23T___Frames);
-	FrameHeader::Forbid23("TDTG", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TDTG", "Tagging time (from tag version 2.4)", Handle23T___Frames);
-	FrameHeader::Forbid23("TSST", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TSST", "Set subtitle (from tag version 2.4)", Handle23T___Frames);
-	FrameHeader::Forbid23("TSOA", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TSOA", "Album sort order (from tag version 2.4)", Handle23T___Frames);
-	FrameHeader::Forbid23("TSOP", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.");
-	FrameHeader::Handle23("TSOP", "Performer sort order (from tag version 2.4)", Handle23T___Frames);
-	FrameHeader::Forbid23("TSO2", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the Album Artist sort order.");
-	FrameHeader::Handle23("TSO2", "Album artist sort order (by iTunes)", Handle23T___Frames);
-	
 	// processing
 	while(Paths.begin() != Paths.end())
 	{
