@@ -1,8 +1,7 @@
 #include <deque>
 #include <string>
 
-#include "../common/5th.h"
-#include "../common/file_handling.h"
+#include "../common/common.h"
 
 /// RIFF GUIDs
 Inspection::GUID g_KSDATAFORMAT_SUBTYPE_PCM{"00000001-0000-0010-8000-00aa00389b71"};

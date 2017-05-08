@@ -1,5 +1,5 @@
-#ifndef COMMON_DATE_TIME_H
-#define COMMON_DATE_TIME_H
+#ifndef INSPECTION_COMMON_DATE_TIME_H
+#define INSPECTION_COMMON_DATE_TIME_H
 
 namespace Inspection
 {

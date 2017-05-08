@@ -1,5 +1,5 @@
-#ifndef COMMON_GUID_H
-#define COMMON_GUID_H
+#ifndef INSPECTION_COMMON_GUID_H
+#define INSPECTION_COMMON_GUID_H
 
 #include <cstdint>
 

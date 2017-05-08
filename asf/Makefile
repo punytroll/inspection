@@ -16,10 +16,10 @@ all: ../asfinspector
 ../asfinspector: asfinspector.o getters.o guid.o helper.o string_cast.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-asfinspector.o: asfinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/guid.h ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h ../common/5th/value_printing.h
+asfinspector.o: asfinspector.cpp ../common/any_printing.h ../common/buffer.h ../common/file_handling.h ../common/getters.h ../common/guid.h ../common/length.h ../common/result.h ../common/value.h ../common/value_printing.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-getters.o: ../common/5th/getters.cpp ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h
+getters.o: ../common/getters.cpp ../common/buffer.h ../common/getters.h ../common/length.h ../common/result.h ../common/value.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 guid.o: ../common/guid.cpp ../common/guid.h

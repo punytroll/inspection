@@ -1,12 +1,6 @@
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <unistd.h>
-
 #include <deque>
 
-#include "../common/5th.h"
-#include "../common/5th.h"
-#include "../common/file_handling.h"
+#include "../common/common.h"
 
 using namespace std::string_literals;
 

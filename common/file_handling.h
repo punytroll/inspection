@@ -1,5 +1,5 @@
-#ifndef COMMON_FILE_HANDLING_H
-#define COMMON_FILE_HANDLING_H
+#ifndef INSPECTION_COMMON_FILE_HANDLING_H
+#define INSPECTION_COMMON_FILE_HANDLING_H
 
 #include <dirent.h>
 #include <fcntl.h>
@@ -7,7 +7,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <functional>
 #include <iostream>
+
+#include "result.h"
+#include "value_printing.h"
 
 const std::string g_DarkGray{"\033[90m"};
 const std::string g_LightRed{"\033[91m"};

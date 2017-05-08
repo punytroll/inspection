@@ -1,10 +1,10 @@
-#ifndef COMMON_5TH_VALUE_PRINTING_H
-#define COMMON_5TH_VALUE_PRINTING_H
+#ifndef INSPECTION_COMMON_VALUE_PRINTING_H
+#define INSPECTION_COMMON_VALUE_PRINTING_H
 
 #include <iostream>
 #include <string>
 
-#include "../any_printing.h"
+#include "any_printing.h"
 #include "value.h"
 
 namespace Inspection

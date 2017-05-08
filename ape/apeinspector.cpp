@@ -6,8 +6,7 @@
 #include <sstream>
 #include <string>
 
-#include "../common/5th.h"
-#include "../common/file_handling.h"
+#include "../common/common.h"
 
 using namespace std::string_literals;
 

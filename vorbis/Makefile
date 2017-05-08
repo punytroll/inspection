@@ -16,7 +16,7 @@ all: ../vorbisinspector
 ../vorbisinspector: vorbisinspector.o getters.o guid.o helper.o string_cast.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-getters.o: ../common/5th/getters.cpp ../common/5th/getters.h
+getters.o: ../common/getters.cpp ../common/getters.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 guid.o: ../common/guid.cpp ../common/guid.h
@@ -28,5 +28,5 @@ helper.o: ../common/helper.cpp ../common/helper.h
 string_cast.o: ../common/string_cast.cpp ../common/string_cast.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/5th/buffer.h ../common/5th/getters.h ../common/5th/length.h ../common/5th/result.h ../common/5th/value.h ../common/5th/value_printing.h
+vorbisinspector.o: vorbisinspector.cpp ../common/any_printing.h ../common/buffer.h ../common/file_handling.h ../common/getters.h ../common/length.h ../common/result.h ../common/value.h ../common/value_printing.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@

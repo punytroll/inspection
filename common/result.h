@@ -1,5 +1,5 @@
-#ifndef COMMON_5TH_RESULT_H
-#define COMMON_5TH_RESULT_H
+#ifndef INSPECTION_COMMON_RESULT_H
+#define INSPECTION_COMMON_RESULT_H
 
 #include <iostream>
 

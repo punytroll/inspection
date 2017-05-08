@@ -1,5 +1,5 @@
-#ifndef HELPER_H
-#define HELPER_H
+#ifndef INSPECTION_COMMON_HELPER_H
+#define INSPECTION_COMMON_HELPER_H
 
 #include <cstdint>
 #include <string>

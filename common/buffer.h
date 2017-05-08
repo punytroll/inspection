@@ -1,5 +1,5 @@
-#ifndef COMMON_5TH_BUFFER_H
-#define COMMON_5TH_BUFFER_H
+#ifndef INSPECTION_COMMON_BUFFER_H
+#define INSPECTION_COMMON_BUFFER_H
 
 #include <cassert>
 
