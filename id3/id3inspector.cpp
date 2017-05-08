@@ -1,21 +1,11 @@
-#include <string.h>
-
-#include <algorithm>
-#include <cassert>
 #include <deque>
-#include <iomanip>
-#include <iostream>
-#include <fstream>
 #include <functional>
-#include <list>
 #include <map>
-#include <sstream>
-#include <vector>
+#include <string>
 
 #include "../common/5th.h"
 #include "../common/file_handling.h"
 #include "../common/helper.h"
-#include "../common/values.h"
 
 using namespace std::string_literals;
 
@@ -25,82 +15,7 @@ using namespace std::string_literals;
 
 std::map< unsigned int, std::string > g_NumericGenresID3_1;
 std::map< unsigned int, std::string > g_NumericGenresWinamp;
-std::map< std::string, std::function< std::uint64_t (const uint8_t *, std::uint64_t) > > g_FrameHandlers_2_3;
-std::map< std::string, std::string > g_FrameNames_2_3;
 bool g_PrintBytes(false);
-
-void AppendSeparated(std::string & String, const std::string & Append, const std::string & Separator)
-{
-	if(String.empty() == false)
-	{
-		String += Separator;
-	}
-	String += Append;
-}
-
-std::string GetHexadecimalStringFromUInt8(uint8_t Value)
-{
-	std::stringstream Stream;
-	
-	Stream << std::hex << std::setfill('0') << std::setw(2) << std::right << static_cast< unsigned int >(Value);
-	
-	return Stream.str();
-}
-
-std::string GetHexadecimalStringFromUInt8Buffer(const uint8_t * Buffer, int Length)
-{
-	std::stringstream Result;
-	
-	Result << std::hex << std::setfill('0');
-	for(int Index = 0; Index < Length; ++Index)
-	{
-		if(Index > 0)
-		{
-			Result << ' ';
-		}
-		Result << std::setw(2) << std::right << static_cast< unsigned int >(Buffer[Index]);
-	}
-	
-	return Result.str();
-}
-
-std::string GetBinaryStringFromBoolean(bool Value)
-{
-	if(Value == true)
-	{
-		return "1";
-	}
-	else
-	{
-		return "0";
-	}
-}
-
-std::string GetBinaryStringFromUInt8(uint8_t Value)
-{
-	std::string Result;
-	
-	Result += GetBinaryStringFromBoolean((Value & 0x80) == 0x80);
-	Result += GetBinaryStringFromBoolean((Value & 0x40) == 0x40);
-	Result += GetBinaryStringFromBoolean((Value & 0x20) == 0x20);
-	Result += GetBinaryStringFromBoolean((Value & 0x10) == 0x10);
-	Result += GetBinaryStringFromBoolean((Value & 0x08) == 0x08);
-	Result += GetBinaryStringFromBoolean((Value & 0x04) == 0x04);
-	Result += GetBinaryStringFromBoolean((Value & 0x02) == 0x02);
-	Result += GetBinaryStringFromBoolean((Value & 0x01) == 0x01);
-	
-	return Result;
-}
-
-std::string GetBinaryStringFromUInt16(uint16_t Value)
-{
-	return GetBinaryStringFromUInt8((Value >> 8) & 0xFF) + " " + GetBinaryStringFromUInt8(Value & 0xFF);
-}
-
-bool IsValidIdentifierCharacter(char Character)
-{
-	return ((Character >= 'A') && (Character <= 'Z')) || ((Character >= '0') && (Character <= '9'));
-}
 
 std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIDigit(uint8_t ASCIIDigit)
 {
