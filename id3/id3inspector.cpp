@@ -1067,6 +1067,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_NameCode(In
 std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_SignBit(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Inspection::Buffer & Buffer);
@@ -4090,6 +4091,65 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_SignBit(Ins
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TagHeaderResult{Get_ID3_2_Tag_Header(Buffer)};
+	
+	Result->GetValue()->Append(TagHeaderResult->GetValue()->GetValues());
+	if(TagHeaderResult->GetSuccess() == true)
+	{
+		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(TagHeaderResult->GetAny("MajorVersion"))};
+		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(TagHeaderResult->GetAny("Size")), 0)};
+		
+		if(MajorVersion == 0x02)
+		{
+			auto FramesResult{Get_ID3_2_2_Frames(Buffer, Size)};
+			
+			Result->GetValue()->Append(FramesResult->GetValue()->GetValues());
+			Result->SetSuccess(FramesResult->GetSuccess());
+		}
+		else if(MajorVersion == 0x03)
+		{
+			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
+			{
+				throw Inspection::NotImplementedException("ID3 2.3 extended header");
+			}
+			
+			auto FramesResult{Get_ID3_2_3_Frames(Buffer, Size)};
+			
+			Result->GetValue()->Append(FramesResult->GetValue()->GetValues());
+			Result->SetSuccess(FramesResult->GetSuccess());
+		}
+		else if(MajorVersion == 0x04)
+		{
+			std::unique_ptr< Inspection::Result > ExtendedHeaderResult;
+			
+			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
+			{
+				ExtendedHeaderResult = Get_ID3_2_4_Tag_ExtendedHeader(Buffer);
+				Result->GetValue()->Append("ExtendedHeader", ExtendedHeaderResult->GetValue());
+				Result->SetSuccess(ExtendedHeaderResult->GetSuccess());
+				Size -= ExtendedHeaderResult->GetLength();
+			}
+			if((ExtendedHeaderResult == nullptr) || (ExtendedHeaderResult->GetSuccess() == true))
+			{
+				auto FramesResult{Get_ID3_2_4_Frames(Buffer, Size)};
+				
+				Result->GetValue()->Append(FramesResult->GetValue()->GetValues());
+				Result->SetSuccess(FramesResult->GetSuccess());
+			}
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -4253,81 +4313,18 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_
 // application                                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void ReadID3v2Tag(Inspection::Buffer & Buffer)
-{
-	auto TagHeaderResult{Get_ID3_2_Tag_Header(Buffer)};
-	
-	if(TagHeaderResult->GetSuccess() == true)
-	{
-		TagHeaderResult->GetValue()->SetName("ID3v2");
-		
-		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(TagHeaderResult->GetAny("MajorVersion"))};
-		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(TagHeaderResult->GetAny("Size")), 0)};
-		
-		if(MajorVersion == 0x02)
-		{
-			auto FramesResult{Get_ID3_2_2_Frames(Buffer, Size)};
-			
-			TagHeaderResult->GetValue()->Append(FramesResult->GetValue()->GetValues());
-			TagHeaderResult->SetSuccess(FramesResult->GetSuccess());
-			PrintValue(TagHeaderResult->GetValue(), "    ");
-		}
-		else if(MajorVersion == 0x03)
-		{
-			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
-			{
-				throw Inspection::NotImplementedException("ID3 2.3 extended header");
-			}
-			if(TagHeaderResult->GetSuccess() == true)
-			{
-				auto FramesResult{Get_ID3_2_3_Frames(Buffer, Size)};
-				
-				TagHeaderResult->GetValue()->Append(FramesResult->GetValue()->GetValues());
-				TagHeaderResult->SetSuccess(FramesResult->GetSuccess());
-			}
-			PrintValue(TagHeaderResult->GetValue(), "    ");
-		}
-		else if(MajorVersion == 0x04)
-		{
-			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
-			{
-				auto ExtendedHeaderResult{Get_ID3_2_4_Tag_ExtendedHeader(Buffer)};
-				
-				TagHeaderResult->GetValue()->Append("ExtendedHeader", ExtendedHeaderResult->GetValue());
-				TagHeaderResult->SetSuccess(ExtendedHeaderResult->GetSuccess());
-				Size -= ExtendedHeaderResult->GetLength();
-			}
-			if(TagHeaderResult->GetSuccess() == true)
-			{
-				auto FramesResult{Get_ID3_2_4_Frames(Buffer, Size)};
-				
-				TagHeaderResult->GetValue()->Append(FramesResult->GetValue()->GetValues());
-				TagHeaderResult->SetSuccess(FramesResult->GetSuccess());
-			}
-			PrintValue(TagHeaderResult->GetValue(), "    ");
-		}
-		else
-		{
-			TagHeaderResult->GetValue()->PrependTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
-			PrintValue(TagHeaderResult->GetValue(), "    ");
-		}
-	}
-}
-
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	
-	ReadID3v2Tag(Buffer);
+	Result->GetValue()->SetName("ID3Tags");
 	
-	auto Position{Buffer.GetPosition()};
+	std::unique_ptr< Inspection::Result > ID3v1TagResult;
 	
 	if(Buffer.GetLength() >= Inspection::Length(128ull, 0))
 	{
-		Buffer.SetPosition(Buffer.GetLength() - Inspection::Length(128ull, -0));
-		
-		auto ID3v1TagResult{Get_ID3_1_Tag(Buffer)};
-		
+		Buffer.SetPosition(Buffer.GetLength() - Inspection::Length(128ull, 0));
+		ID3v1TagResult = Get_ID3_1_Tag(Buffer);
 		if(ID3v1TagResult->GetSuccess() == true)
 		{
 			if(ID3v1TagResult->GetValue()->HasValue("AlbumTrack") == true)
@@ -4339,12 +4336,17 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				Result->GetValue()->Append("ID3v1", ID3v1TagResult->GetValue());
 			}
 		}
-		else
-		{
-			Buffer.SetPosition(Position);
-		}
 	}
-	Result->SetSuccess(true);
+	Buffer.SetPosition(Inspection::Length(0ull, 0));
+	
+	auto ID3v2TagResult{Get_ID3_2_Tag(Buffer)};
+	
+	if(ID3v2TagResult->GetSuccess() == true)
+	{
+		Result->GetValue()->Append("ID3v2", ID3v2TagResult->GetValue());
+	}
+	Result->SetSuccess(((ID3v1TagResult != nullptr) && (ID3v1TagResult->GetSuccess() == true)) || ID3v2TagResult->GetSuccess());
+	Buffer.SetPosition(Buffer.GetLength());
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
