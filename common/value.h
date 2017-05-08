@@ -1,5 +1,5 @@
-#ifndef COMMON_5TH_VALUE_H
-#define COMMON_5TH_VALUE_H
+#ifndef INSPECTION_COMMON_VALUE_H
+#define INSPECTION_COMMON_VALUE_H
 
 #include <algorithm>
 #include <experimental/any>

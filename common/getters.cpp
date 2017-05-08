@@ -2,11 +2,11 @@
 #include <sstream>
 #include <vector>
 
-#include "../guid.h"
-#include "../helper.h"
-#include "../string_cast.h"
 #include "buffer.h"
 #include "getters.h"
+#include "guid.h"
+#include "helper.h"
+#include "string_cast.h"
 #include "not_implemented_exception.h"
 
 using namespace std::string_literals;

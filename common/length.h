@@ -1,11 +1,11 @@
-#ifndef COMMON_LENGTH_H
-#define COMMON_LENGTH_H
+#ifndef INSPECTION_COMMON_LENGTH_H
+#define INSPECTION_COMMON_LENGTH_H
 
 #include <cstdint>
 #include <sstream>
 #include <string>
 
-#include "../string_cast.h"
+#include "string_cast.h"
 
 namespace Inspection
 {

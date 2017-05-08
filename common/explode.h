@@ -1,5 +1,5 @@
-#ifndef COMMON_EXPLODE_H
-#define COMMON_EXPLODE_H
+#ifndef INSPECTION_COMMON_EXPLODE_H
+#define INSPECTION_COMMON_EXPLODE_H
 
 #include <sstream>
 #include <string>

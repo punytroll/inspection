@@ -1,5 +1,5 @@
-#ifndef COMMON_5TH_GETTERS_H
-#define COMMON_5TH_GETTERS_H
+#ifndef INSPECTION_COMMON_GETTERS_H
+#define INSPECTION_COMMON_GETTERS_H
 
 #include "result.h"
 
