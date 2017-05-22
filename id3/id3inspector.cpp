@@ -1902,15 +1902,15 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame(Inspection::Buffer & Buf
 		{
 			auto BodyResult{BodyHandler(Buffer, Size)};
 			
-			if(Start + Size > Buffer.GetPosition())
+			if(Size > BodyResult->GetLength())
 			{
-				Result->GetValue()->PrependTag("handled size", to_string_cast(Buffer.GetPosition() - Start));
+				Result->GetValue()->PrependTag("handled size", to_string_cast(BodyResult->GetLength()));
 				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the frame size is stated larger than the actually handled size."s);
 			}
-			else if(Start + Size < Buffer.GetPosition())
+			else if(BodyResult->GetLength() < Size)
 			{
-				Result->GetValue()->PrependTag("handled size", to_string_cast(Buffer.GetPosition() - Start));
-				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the acutally handled size is larger than the stated frame size."s);
+				Result->GetValue()->PrependTag("handled size", to_string_cast(BodyResult->GetLength()));
+				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the frame size is stated smaller than the actually handled size."s);
 			}
 			Result->GetValue()->Append(BodyResult->GetValue()->GetValues());
 			Result->SetSuccess(BodyResult->GetSuccess());
