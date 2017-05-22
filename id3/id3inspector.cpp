@@ -2624,7 +2624,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header(Inspection::Buffe
 	Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
 	if(IdentifierResult->GetSuccess() == true)
 	{
-		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
+		auto SizeResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 		
 		Result->GetValue()->Append("Size", SizeResult->GetValue());
 		if(SizeResult->GetSuccess() == true)
