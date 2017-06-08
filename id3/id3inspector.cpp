@@ -2758,6 +2758,8 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frames(Inspection::Buffer & Bu
 		}
 		else
 		{
+			auto SavePosition{Buffer.GetPosition()};
+			
 			Buffer.SetPosition(Start);
 			
 			auto PaddingResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
@@ -2765,15 +2767,14 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frames(Inspection::Buffer & Bu
 			if(PaddingResult->GetSuccess() == true)
 			{
 				Result->GetValue()->Append("Padding", PaddingResult->GetValue());
+				
+				break;
 			}
 			else
 			{
 				Result->GetValue()->Append("Frame", FrameResult->GetValue());
-				Result->SetSuccess(false);
-				Buffer.SetPosition(Boundary);
+				Buffer.SetPosition(SavePosition);
 			}
-			
-			break;
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
