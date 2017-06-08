@@ -2081,6 +2081,26 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB(Inspection::Bu
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto MIMETypeResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+	
+	/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
+	Result->SetValue(MIMETypeResult->GetValue());
+	if(MIMETypeResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+	}
+	else
+	{
+		Result->GetValue()->PrependTag("error", "This field could not be interpreted as a terminated ASCII string of printable characters."s);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -2104,19 +2124,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Bu
 			Result->SetSuccess(true);
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto MIMETypeResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
-	
-	/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
-	Result->SetValue(MIMETypeResult->GetValue());
-	Result->SetSuccess(MIMETypeResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
