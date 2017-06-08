@@ -2086,8 +2086,24 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TableOfContentsResult{Get_IEC_60908_1999_TableOfContents(Buffer)};
 	
-	Result->SetValue(TableOfContentsResult->GetValue());
-	Result->SetSuccess(TableOfContentsResult->GetSuccess());
+	if(TableOfContentsResult->GetSuccess() == true)
+	{
+		Result->SetValue(TableOfContentsResult->GetValue());
+		Result->SetSuccess(true);
+	}
+	else
+	{
+		Buffer.SetPosition(Result->GetOffset());
+		
+		auto MCDIStringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Buffer, Length)};
+		
+		if(MCDIStringResult->GetSuccess() == true)
+		{
+			Result->GetValue()->Append("String", MCDIStringResult->GetValue());
+			Result->GetValue("String")->PrependTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
+			Result->SetSuccess(true);
+		}
+	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
