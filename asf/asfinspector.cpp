@@ -482,7 +482,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_Content
 			
 			auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
 			
-			Result->GetValue("GUID")->Append("Interpretation", GUIDInterpretation);
+			Result->GetValue("GUID")->AppendTag("interpretation", GUIDInterpretation);
 		}
 	}
 	else if(DataType == "Byte array")
@@ -1113,7 +1113,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord(
 						if(NameResult->GetSuccess() == true)
 						{
 							auto DataLength{std::experimental::any_cast< std::uint32_t >(DataLengthResult->GetAny())};
-							auto DataType{std::experimental::any_cast< const std::string & >(DataTypeResult->GetAny("Interpretation"))};
+							auto DataType{std::experimental::any_cast< const std::string & >(DataTypeResult->GetValue()->GetTagAny("interpretation"))};
 							auto DataResult{Get_ASF_MetadataLibrary_DescriptionRecord_Data(Buffer, DataType, Inspection::Length(DataLength, 0))};
 							
 							Result->GetValue()->Append("Data", DataResult->GetValue());
@@ -1195,7 +1195,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_
 		auto GUID{std::experimental::any_cast< const Inspection::GUID & >(GUIDResult->GetAny())};
 		auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
 		
-		Result->GetValue()->Append("Interpretation", GUIDInterpretation);
+		Result->GetValue()->AppendTag("interpretation", GUIDInterpretation);
 	}
 	else
 	{
@@ -1220,35 +1220,35 @@ std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_
 		
 		if(DataType == 0x0000)
 		{
-			Result->GetValue()->Append("Interpretation", "Unicode string"s);
+			Result->GetValue()->AppendTag("interpretation", "Unicode string"s);
 		}
 		else if(DataType == 0x0001)
 		{
-			Result->GetValue()->Append("Interpretation", "Byte array"s);
+			Result->GetValue()->AppendTag("interpretation", "Byte array"s);
 		}
 		else if(DataType == 0x0002)
 		{
-			Result->GetValue()->Append("Interpretation", "Boolean"s);
+			Result->GetValue()->AppendTag("interpretation", "Boolean"s);
 		}
 		else if(DataType == 0x0003)
 		{
-			Result->GetValue()->Append("Interpretation", "Unsigned integer 32bit"s);
+			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 32bit"s);
 		}
 		else if(DataType == 0x0004)
 		{
-			Result->GetValue()->Append("Interpretation", "Unsigned integer 64bit"s);
+			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 64bit"s);
 		}
 		else if(DataType == 0x0005)
 		{
-			Result->GetValue()->Append("Interpretation", "Unsigned integer 16bit"s);
+			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 16bit"s);
 		}
 		else if(DataType == 0x0006)
 		{
-			Result->GetValue()->Append("Interpretation", "GUID"s);
+			Result->GetValue()->AppendTag("interpretation", "GUID"s);
 		}
 		else
 		{
-			Result->GetValue()->Append("Interpretation", "<no interpretation>"s);
+			Result->GetValue()->AppendTag("interpretation", "<no interpretation>"s);
 			Result->SetSuccess(false);
 		}
 	}
@@ -1704,7 +1704,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_
 							Result->GetValue("CodecSpecificDataSize")->PrependTag("bytes"s);
 							if(CodecSpecificDataSizeResult->GetSuccess() == true)
 							{
-								auto FormatTag{std::experimental::any_cast< const std::string & >(FormatTagResult->GetAny("ConstantName"))};
+								auto FormatTag{std::experimental::any_cast< const std::string & >(FormatTagResult->GetValue()->GetTagAny("constant name"))};
 								auto CodecSpecificDataSize{std::experimental::any_cast< std::uint16_t >(CodecSpecificDataSizeResult->GetAny())};
 								std::unique_ptr< Inspection::Result > CodecSpecificDataResult;
 								
