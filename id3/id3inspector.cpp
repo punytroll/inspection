@@ -10,9 +10,8 @@ using namespace std::string_literals;
 // global variables and configuration                                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::map< unsigned int, std::string > g_NumericGenresID3_1;
-std::map< unsigned int, std::string > g_NumericGenresWinamp;
-bool g_PrintBytes(false);
+std::map< std::uint8_t, std::string > g_NumericGenresID3_1;
+std::map< std::uint8_t, std::string > g_NumericGenresWinamp;
 
 std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIDigit(uint8_t ASCIIDigit)
 {
@@ -61,7 +60,7 @@ std::pair< bool, std::string > GetSimpleID3_1GenreReferenceInterpretation(const 
 		
 		if(GenreNumber.first == true)
 		{
-			std::map< unsigned int, std::string >::iterator NumericGenreID3_1Iterator(g_NumericGenresID3_1.find(GenreNumber.second));
+			auto NumericGenreID3_1Iterator(g_NumericGenresID3_1.find(GenreNumber.second));
 			
 			if(NumericGenreID3_1Iterator != g_NumericGenresID3_1.end())
 			{
@@ -84,7 +83,7 @@ std::pair< bool, std::string > GetSimpleWinampExtensionGenreReferenceInterpretat
 		
 		if(GenreNumber.first == true)
 		{
-			std::map< unsigned int, std::string >::iterator NumericGenreWinampIterator(g_NumericGenresWinamp.find(GenreNumber.second));
+			auto NumericGenreWinampIterator(g_NumericGenresWinamp.find(GenreNumber.second));
 			
 			if(NumericGenreWinampIterator != g_NumericGenresWinamp.end())
 			{
@@ -115,6 +114,7 @@ std::pair< bool, std::string > GetContentTypeInterpretation2_3(const std::string
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::string Get_ID3_2_PictureType_Interpretation(std::uint8_t Value);
 std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value);
+std::string Get_ID3_2_2_FrameIdentifier_Interpretation(const std::string & Value);
 std::string Get_ID3_2_3_FrameIdentifier_Interpretation(const std::string & Value);
 std::string Get_ID3_2_4_FrameIdentifier_Interpretation(const std::string & Value);
 
@@ -243,6 +243,70 @@ std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value)
 	else if(Value == "PCM")
 	{
 		return "Pulse Code Modulated audio";
+	}
+	else
+	{
+		throw Inspection::UnknownValueException(Value);
+	}
+}
+
+std::string Get_ID3_2_2_FrameIdentifier_Interpretation(const std::string & Value)
+{
+	if(Value == "COM")
+	{
+		return "Comment";
+	}
+	else if(Value == "PIC")
+	{
+		return "Attached Picture";
+	}
+	else if(Value == "TAL")
+	{
+		return "Album/Movie/Show title";
+	}
+	else if(Value == "TCM")
+	{
+		return "Composer";
+	}
+	else if(Value == "TCO")
+	{
+		return "Content type";
+	}
+	else if(Value == "TEN")
+	{
+		return "Encoded by";
+	}
+	else if(Value == "TP1")
+	{
+		return "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group";
+	}
+	else if(Value == "TP2")
+	{
+		return "Band/Orchestra/Accompaniment";
+	}
+	else if(Value == "TPA")
+	{
+		return "Part of a set";
+	}
+	else if(Value == "TRK")
+	{
+		return "Track number/Position in set";
+	}
+	else if(Value == "TT1")
+	{
+		return "Content group description";
+	}
+	else if(Value == "TT2")
+	{
+		return "Title/Songname/Content description";
+	}
+	else if(Value == "TYE")
+	{
+		return "Year";
+	}
+	else if(Value == "UFI")
+	{
+		return "Unique file identifier";
 	}
 	else
 	{
@@ -912,6 +976,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_PIC_PictureType(Ins
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_T__(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_UFI(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header_Identifier(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Tag_Header_Flags(Inspection::Buffer & Buffer);
@@ -963,6 +1028,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_USLT(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_WXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header_Identifier(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_Header_Flags(Inspection::Buffer & Buffer);
@@ -1536,94 +1602,51 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_UFI(Inspection::Buf
 std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto IdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
+	auto IdentifierResult{Get_ID3_2_2_Frame_Header_Identifier(Buffer)};
 	
 	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 	if(IdentifierResult->GetSuccess() == true)
 	{
-		const std::string & Identifier{std::experimental::any_cast< const std::string & >(IdentifierResult->GetAny())};
-		
-		if(Identifier == "COM")
-		{
-			Result->GetValue()->AppendTag("name", "Comment"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "PIC")
-		{
-			Result->GetValue()->AppendTag("name", "Attached Picture"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TAL")
-		{
-			Result->GetValue()->AppendTag("name", "Album/Movie/Show title"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TCM")
-		{
-			Result->GetValue()->AppendTag("name", "Composer"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TCO")
-		{
-			Result->GetValue()->AppendTag("name", "Content type"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TCP")
-		{
-			Result->GetValue()->AppendTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
-			Result->GetValue()->AppendTag("name", "Compilation"s);
-			Result->GetValue()->AppendTag("standard", "<from the internet>"s);
-		}
-		else if(Identifier == "TEN")
-		{
-			Result->GetValue()->AppendTag("name", "Encoded by"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TP1")
-		{
-			Result->GetValue()->AppendTag("name", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TP2")
-		{
-			Result->GetValue()->AppendTag("name", "Band/Orchestra/Accompaniment"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TPA")
-		{
-			Result->GetValue()->AppendTag("name", "Part of a set"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TRK")
-		{
-			Result->GetValue()->AppendTag("name", "Track number/Position in set"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TT1")
-		{
-			Result->GetValue()->AppendTag("name", "Content group description"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TT2")
-		{
-			Result->GetValue()->AppendTag("name", "Title/Songname/Content description"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "TYE")
-		{
-			Result->GetValue()->AppendTag("name", "Year"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		else if(Identifier == "UFI")
-		{
-			Result->GetValue()->AppendTag("name", "Unique file identifier"s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-		}
-		
 		auto SizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
 		
 		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 		Result->SetSuccess(SizeResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header_Identifier(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto IdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
+	
+	Result->SetValue(IdentifierResult->GetValue());
+	if(IdentifierResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::string & Identifier{std::experimental::any_cast< const std::string & >(IdentifierResult->GetAny())};
+		
+		try
+		{
+			Result->GetValue()->PrependTag("interpretation", Get_ID3_2_2_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->PrependTag("standard", "ID3 2.2"s);
+		}
+		catch(Inspection::UnknownValueException & Exception)
+		{
+			if(Identifier == "TCP")
+			{
+				Result->GetValue()->PrependTag("interpretation", "Compilation"s);
+				Result->GetValue()->PrependTag("standard", "<from the internet>"s);
+				Result->GetValue()->PrependTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
+			}
+			else
+			{
+				Result->GetValue()->PrependTag("error", "Unknown frame identifier \"" + Identifier + "\".");
+			}
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -2676,59 +2699,59 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header_Identifier(Inspec
 		
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(IdentifierResult->GetAny())};
 		
-		Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
 		try
 		{
 			Result->GetValue()->PrependTag("interpretation", Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Identifier == "RGAD")
 			{
-				Result->GetValue()->PrependTag("new standard", "Hydrogenaudio ReplayGain"s);
 				Result->GetValue()->PrependTag("interpretation", "Replay gain adjustment"s);
+				Result->GetValue()->PrependTag("standard", "Hydrogenaudio ReplayGain"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org."s);
 			}
 			else if(Identifier == "TCMP")
 			{
-				Result->GetValue()->PrependTag("new standard", "iTunes"s);
 				Result->GetValue()->PrependTag("interpretation", "Part of a compilation"s);
+				Result->GetValue()->PrependTag("standard", "iTunes"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
 			}
 			else if(Identifier == "TDRC")
 			{
-				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("interpretation", "Recording time"s);
+				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
 			}
 			else if(Identifier == "TDTG")
 			{
-				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("interpretation", "Tagging time"s);
+				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
 			}
 			else if(Identifier == "TSST")
 			{
-				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("interpretation", "Set subtitle"s);
+				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
 			}
 			else if(Identifier == "TSOA")
 			{
-				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("interpretation", "Album sort order"s);
+				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
 			}
 			else if(Identifier == "TSOP")
 			{
-				Result->GetValue()->PrependTag("new standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("interpretation", "Performer sort order"s);
+				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
 			}
 			else if(Identifier == "TSO2")
 			{
-				Result->GetValue()->PrependTag("new standard", "iTunes"s);
 				Result->GetValue()->PrependTag("interpretation", "Album artist sort order"s);
+				Result->GetValue()->PrependTag("standard", "iTunes"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order."s);
 			}
 			else
@@ -3366,46 +3389,55 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_WXXX(Inspection::Bu
 std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto IdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByLength(Buffer, Inspection::Length(4ull, 0))};
+	auto IdentifierResult{Get_ID3_2_4_Frame_Header_Identifier(Buffer)};
 	
 	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 	if(IdentifierResult->GetSuccess() == true)
 	{
-		auto Continue{true};
-		const std::string & Identifier{std::experimental::any_cast< const std::string & >(IdentifierResult->GetAny())};
-		std::string Interpretation;
+		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
 		
-		Result->GetValue("Identifier")->PrependTag("standard", "ID3 2.4"s);
+		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
+		if(SizeResult->GetSuccess() == true)
+		{
+			auto FlagsResult{Get_BitSet_16Bit_BigEndian(Buffer)};
+			
+			Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
+			Result->SetSuccess(FlagsResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header_Identifier(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto IdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByLength(Buffer, Inspection::Length(4ull, 0))};
+	
+	Result->SetValue(IdentifierResult->GetValue());
+	if(IdentifierResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		const std::string & Identifier{std::experimental::any_cast< const std::string & >(IdentifierResult->GetAny())};
+		
 		try
 		{
-			Interpretation = Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier);
+			Result->GetValue()->PrependTag("interpretation", Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Identifier == "TYER")
 			{
-				Interpretation = "Year";
+				Result->GetValue()->PrependTag("interpretation", "Year"s);
+				Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
 				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3."s);
 			}
 			else
 			{
 				Result->GetValue()->PrependTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
-				Result->SetSuccess(false);
-				Continue = false;
-			}
-		}
-		Result->GetValue("Identifier")->PrependTag("interpretation", Interpretation);
-		if(Continue == true)
-		{
-			auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
-			
-			Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-			if(SizeResult->GetSuccess() == true)
-			{
-				auto FlagsResult{Get_BitSet_16Bit_BigEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
-				Result->SetSuccess(FlagsResult->GetSuccess());
 			}
 		}
 	}
@@ -4296,18 +4328,11 @@ int main(int argc, char **argv)
 
 	while(++Argument < Arguments)
 	{
-		if(std::string(argv[Argument]) == "--print-bytes")
-		{
-			g_PrintBytes = true;
-		}
-		else
-		{
-			Paths.push_back(argv[Argument]);
-		}
+		Paths.push_back(argv[Argument]);
 	}
 	if(Paths.size() == 0)
 	{
-		std::cerr << "Usage: " << argv[0] << " [--print-bytes] <paths> ..." << std::endl;
+		std::cerr << "Usage: " << argv[0] << " <paths> ..." << std::endl;
 
 		return 1;
 	}
