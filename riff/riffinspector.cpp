@@ -3,6 +3,8 @@
 
 #include "../common/common.h"
 
+using namespace std::string_literals;
+
 /// RIFF GUIDs
 Inspection::GUID g_KSDATAFORMAT_SUBTYPE_PCM{"00000001-0000-0010-8000-00aa00389b71"};
 
@@ -102,7 +104,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer 
 	Result->GetValue()->AppendValues(CommonFieldsResult->GetValue()->GetValues());
 	if(CommonFieldsResult->GetSuccess() == true)
 	{
-		const std::string & Format{std::experimental::any_cast< const std::string & >(CommonFieldsResult->GetValue("FormatTag")->GetValueAny("ConstantName"))};
+		const std::string & Format{std::experimental::any_cast< const std::string & >(CommonFieldsResult->GetValue("FormatTag")->GetTagAny("constant name"))};
 		std::unique_ptr< Inspection::Result > FormatSpecificFieldsResult;
 		
 		if(Format == "WAVE_FORMAT_PCM")
@@ -138,75 +140,75 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 		
 		if(ChannelMask[0] == true)
 		{
-			Result->GetValue()->Append("[0]", std::string("SPEAKER_FRONT_LEFT"));
+			Result->GetValue()->Append("[0]", "SPEAKER_FRONT_LEFT"s);
 		}
 		if(ChannelMask[1] == true)
 		{
-			Result->GetValue()->Append("[1]", std::string("SPEAKER_FRONT_RIGHT"));
+			Result->GetValue()->Append("[1]", "SPEAKER_FRONT_RIGHT"s);
 		}
 		if(ChannelMask[2] == true)
 		{
-			Result->GetValue()->Append("[2]", std::string("SPEAKER_FRONT_CENTER"));
+			Result->GetValue()->Append("[2]", "SPEAKER_FRONT_CENTER"s);
 		}
 		if(ChannelMask[3] == true)
 		{
-			Result->GetValue()->Append("[3]", std::string("SPEAKER_LOW_FREQUENCY"));
+			Result->GetValue()->Append("[3]", "SPEAKER_LOW_FREQUENCY"s);
 		}
 		if(ChannelMask[4] == true)
 		{
-			Result->GetValue()->Append("[4]", std::string("SPEAKER_BACK_LEFT"));
+			Result->GetValue()->Append("[4]", "SPEAKER_BACK_LEFT"s);
 		}
 		if(ChannelMask[5] == true)
 		{
-			Result->GetValue()->Append("[5]", std::string("SPEAKER_BACK_RIGHT"));
+			Result->GetValue()->Append("[5]", "SPEAKER_BACK_RIGHT"s);
 		}
 		if(ChannelMask[6] == true)
 		{
-			Result->GetValue()->Append("[6]", std::string("SPEAKER_FRONT_LEFT_OF_CENTER"));
+			Result->GetValue()->Append("[6]", "SPEAKER_FRONT_LEFT_OF_CENTER"s);
 		}
 		if(ChannelMask[7] == true)
 		{
-			Result->GetValue()->Append("[7]", std::string("SPEAKER_FRONT_RIGHT_OF_CENTER"));
+			Result->GetValue()->Append("[7]", "SPEAKER_FRONT_RIGHT_OF_CENTER"s);
 		}
 		if(ChannelMask[8] == true)
 		{
-			Result->GetValue()->Append("[8]", std::string("SPEAKER_BACK_CENTER"));
+			Result->GetValue()->Append("[8]", "SPEAKER_BACK_CENTER"s);
 		}
 		if(ChannelMask[9] == true)
 		{
-			Result->GetValue()->Append("[9]", std::string("SPEAKER_SIDE_LEFT"));
+			Result->GetValue()->Append("[9]", "SPEAKER_SIDE_LEFT"s);
 		}
 		if(ChannelMask[10] == true)
 		{
-			Result->GetValue()->Append("[10]", std::string("SPEAKER_SIDE_RIGHT"));
+			Result->GetValue()->Append("[10]", "SPEAKER_SIDE_RIGHT"s);
 		}
 		if(ChannelMask[11] == true)
 		{
-			Result->GetValue()->Append("[11]", std::string("SPEAKER_TOP_CENTER"));
+			Result->GetValue()->Append("[11]", "SPEAKER_TOP_CENTER"s);
 		}
 		if(ChannelMask[12] == true)
 		{
-			Result->GetValue()->Append("[12]", std::string("SPEAKER_TOP_FRONT_LEFT"));
+			Result->GetValue()->Append("[12]", "SPEAKER_TOP_FRONT_LEFT"s);
 		}
 		if(ChannelMask[13] == true)
 		{
-			Result->GetValue()->Append("[13]", std::string("SPEAKER_TOP_FRONT_CENTER"));
+			Result->GetValue()->Append("[13]", "SPEAKER_TOP_FRONT_CENTER"s);
 		}
 		if(ChannelMask[14] == true)
 		{
-			Result->GetValue()->Append("[14]", std::string("SPEAKER_TOP_FRONT_RIGHT"));
+			Result->GetValue()->Append("[14]", "SPEAKER_TOP_FRONT_RIGHT"s);
 		}
 		if(ChannelMask[15] == true)
 		{
-			Result->GetValue()->Append("[15]", std::string("SPEAKER_TOP_BACK_LEFT"));
+			Result->GetValue()->Append("[15]", "SPEAKER_TOP_BACK_LEFT"s);
 		}
 		if(ChannelMask[16] == true)
 		{
-			Result->GetValue()->Append("[16]", std::string("SPEAKER_TOP_BACK_CENTER"));
+			Result->GetValue()->Append("[16]", "SPEAKER_TOP_BACK_CENTER"s);
 		}
 		if(ChannelMask[17] == true)
 		{
-			Result->GetValue()->Append("[17]", std::string("SPEAKER_TOP_BACK_RIGHT"));
+			Result->GetValue()->Append("[17]", "SPEAKER_TOP_BACK_RIGHT"s);
 		}
 		for(auto BitIndex = 18; BitIndex < 31; ++BitIndex)
 		{
@@ -219,7 +221,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 		}
 		if(ChannelMask[31] == true)
 		{
-			Result->GetValue()->Append("[31]", std::string("SPEAKER_ALL"));
+			Result->GetValue()->Append("[31]", "SPEAKER_ALL"s);
 		}
 		/// @todo there are the following bit combinations which have special names
 		//~ #define SPEAKER_MONO             (SPEAKER_FRONT_CENTER)
@@ -336,7 +338,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspectio
 		
 		if(GUID == g_KSDATAFORMAT_SUBTYPE_PCM)
 		{
-			Result->GetValue()->Append("Interpretation", std::string("KSDATAFORMAT_SUBTYPE_PCM"));
+			Result->GetValue()->AppendTag("interpretation", "KSDATAFORMAT_SUBTYPE_PCM"s);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);

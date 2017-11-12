@@ -2283,85 +2283,85 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_Forma
 		{
 		case 0x0000:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_UNKNOWN"));
-				Result->GetValue()->Append("Description", std::string("Unknown or invalid format tag"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_UNKNOWN"));
+				Result->GetValue()->AppendTag("description", std::string("Unknown or invalid format tag"));
 				
 				break;
 			}
 		case 0x0001:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_PCM"));
-				Result->GetValue()->Append("Description", std::string("Pulse Code Modulation"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_PCM"));
+				Result->GetValue()->AppendTag("description", std::string("Pulse Code Modulation"));
 				
 				break;
 			}
 		case 0x0002:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_ADPCM"));
-				Result->GetValue()->Append("Description", std::string("Microsoft Adaptive Differental PCM"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_ADPCM"));
+				Result->GetValue()->AppendTag("description", std::string("Microsoft Adaptive Differental PCM"));
 				
 				break;
 			}
 		case 0x0003:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_IEEE_FLOAT"));
-				Result->GetValue()->Append("Description", std::string("32-bit floating-point"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_IEEE_FLOAT"));
+				Result->GetValue()->AppendTag("description", std::string("32-bit floating-point"));
 				
 				break;
 			}
 		case 0x0055:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_MPEGLAYER3"));
-				Result->GetValue()->Append("Description", std::string("ISO/MPEG Layer3"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_MPEGLAYER3"));
+				Result->GetValue()->AppendTag("description", std::string("ISO/MPEG Layer3"));
 				
 				break;
 			}
 		case 0x0092:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_DOLBY_AC3_SPDIF"));
-				Result->GetValue()->Append("Description", std::string("Dolby Audio Codec 3 over S/PDIF"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_DOLBY_AC3_SPDIF"));
+				Result->GetValue()->AppendTag("description", std::string("Dolby Audio Codec 3 over S/PDIF"));
 				
 				break;
 			}
 		case 0x0161:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO2"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio Standard (Versions 7, 8, and 9 Series)"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_WMAUDIO2"));
+				Result->GetValue()->AppendTag("description", std::string("Windows Media Audio Standard (Versions 7, 8, and 9 Series)"));
 				
 				break;
 			}
 		case 0x0162:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO3"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio Professional (9 Series)"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_WMAUDIO3"));
+				Result->GetValue()->AppendTag("description", std::string("Windows Media Audio Professional (9 Series)"));
 				
 				break;
 			}
 		case 0x0163:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMAUDIO_LOSSLESS"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio Lossless (9 Series)"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_WMAUDIO_LOSSLESS"));
+				Result->GetValue()->AppendTag("description", std::string("Windows Media Audio Lossless (9 Series)"));
 				
 				break;
 			}
 		case 0x0164:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_WMASPDIF"));
-				Result->GetValue()->Append("Description", std::string("Windows Media Audio over S/PDIF"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_WMASPDIF"));
+				Result->GetValue()->AppendTag("description", std::string("Windows Media Audio over S/PDIF"));
 				
 				break;
 			}
 		case 0xFFFE:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("WAVE_FORMAT_EXTENSIBLE"));
-				Result->GetValue()->Append("Description", std::string("All new audio formats"));
+				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_EXTENSIBLE"));
+				Result->GetValue()->AppendTag("description", std::string("All new audio formats"));
 				
 				break;
 			}
 		default:
 			{
-				Result->GetValue()->Append("ConstantName", std::string("<no interpretation>"));
-				Result->GetValue()->Append("Description", std::string("<no interpretation>"));
+				Result->GetValue()->AppendTag("constant name", std::string("<no interpretation>"));
+				Result->GetValue()->AppendTag("description", std::string("<no interpretation>"));
 				
 				break;
 			}
