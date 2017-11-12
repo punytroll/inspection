@@ -116,36 +116,49 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & TemplateString)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
 	
 	if(Buffer.Has(TemplateString.length(), 0) == true)
 	{
+		std::stringstream Value;
+		auto NumberOfCharacters{0ul};
+		
+		Result->SetSuccess(true);
 		Result->GetValue()->AppendTag("string"s);
 		Result->GetValue()->AppendTag("ASCII"s);
 		Result->GetValue()->AppendTag("alphabetical"s);
-		
-		auto Boundary{Buffer.GetPosition() + TemplateString.length()};
-
 		for(auto TemplateCharacter : TemplateString)
 		{
-			auto BufferCharacter{Buffer.Get8Bits()};
+			auto CharacterResult{Get_ASCII_Character_Alphabetical(Buffer)};
 			
-			Value << BufferCharacter;
-			if((TemplateCharacter != BufferCharacter) || (Is_ASCII_Character_Alphabetical(BufferCharacter) == false))
+			if(CharacterResult->GetSuccess() == true)
 			{
+				auto Character{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny())};
+				
+				NumberOfCharacters += 1;
+				Value << Character;
+				if(TemplateCharacter != Character)
+				{
+					Result->SetSuccess(false);
+					
+					break;
+				}
+			}
+			else
+			{
+				Result->SetSuccess(false);
+				
 				break;
 			}
 		}
-		if(Buffer.GetPosition() == Boundary)
+		if(Result->GetSuccess() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
-			Result->GetValue()->AppendTag(to_string_cast(TemplateString.length()) + " characters"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->AppendTag("ended by template"s);
 		}
 		else
 		{
-			Result->SetSuccess(false);
+			Result->GetValue()->AppendTag("ended by error"s);
 		}
+		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
 		Result->GetValue()->SetAny(Value.str());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -238,6 +251,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 		if(Result->GetSuccess() == true)
 		{
 			Result->GetValue()->AppendTag("ended by template"s);
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("ended by error"s);
 		}
 		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
 		Result->GetValue()->SetAny(Value.str());
