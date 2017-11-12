@@ -28,7 +28,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Buffer & Buff
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FrameHeaderResult{Get_MPEG_1_FrameHeader(Buffer)};
 	
-	Result->GetValue()->Append("Header", FrameHeaderResult->GetValue());
+	Result->GetValue()->AppendValue("Header", FrameHeaderResult->GetValue());
 	if(FrameHeaderResult->GetSuccess() == true)
 	{
 		auto ProtectionBit{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("ProtectionBit"))};
@@ -38,7 +38,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Buffer & Buff
 		{
 			auto ErrorCheckResult{Get_BitSet_16Bit_BigEndian(Buffer)};
 			
-			Result->GetValue()->Append("ErrorCheck", ErrorCheckResult->GetValue());
+			Result->GetValue()->AppendValue("ErrorCheck", ErrorCheckResult->GetValue());
 			Continue = ErrorCheckResult->GetSuccess();
 		}
 		if(Continue == true)
@@ -60,7 +60,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Buffer & Buff
 			
 			auto AudioDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(FrameLength) + Start - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("AudioData", AudioDataResult->GetValue());
+			Result->GetValue()->AppendValue("AudioData", AudioDataResult->GetValue());
 			Result->SetSuccess(AudioDataResult->GetSuccess());
 		}
 	}
@@ -74,69 +74,69 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader(Inspection::Buffer 
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FrameSyncResult{Get_Bits_Set_EndedByLength(Buffer, Inspection::Length(0ull, 12))};
 	
-	Result->GetValue()->Append("FrameSync", FrameSyncResult->GetValue());
+	Result->GetValue()->AppendValue("FrameSync", FrameSyncResult->GetValue());
 	if(FrameSyncResult->GetSuccess() == true)
 	{
 		auto AudioVersionIDResult{Get_MPEG_1_FrameHeader_AudioVersionID(Buffer)};
 		
-		Result->GetValue()->Append("AudioVersionID", AudioVersionIDResult->GetValue());
+		Result->GetValue()->AppendValue("AudioVersionID", AudioVersionIDResult->GetValue());
 		if(AudioVersionIDResult->GetSuccess() == true)
 		{
 			auto LayerDescriptionResult{Get_MPEG_1_FrameHeader_LayerDescription(Buffer)};
 			
-			Result->GetValue()->Append("LayerDescription", LayerDescriptionResult->GetValue());
+			Result->GetValue()->AppendValue("LayerDescription", LayerDescriptionResult->GetValue());
 			if(LayerDescriptionResult->GetSuccess() == true)
 			{
 				auto ProtectionBitResult{Get_MPEG_1_FrameHeader_ProtectionBit(Buffer)};
 				
-				Result->GetValue()->Append("ProtectionBit", ProtectionBitResult->GetValue());
+				Result->GetValue()->AppendValue("ProtectionBit", ProtectionBitResult->GetValue());
 				if(ProtectionBitResult->GetSuccess() == true)
 				{
 					auto LayerDescription{std::experimental::any_cast< std::uint8_t >(LayerDescriptionResult->GetAny())};
 					auto BitRateIndexResult{Get_MPEG_1_FrameHeader_BitRateIndex(Buffer, LayerDescription)};
 					
-					Result->GetValue()->Append("BitRateIndex", BitRateIndexResult->GetValue());
+					Result->GetValue()->AppendValue("BitRateIndex", BitRateIndexResult->GetValue());
 					if(BitRateIndexResult->GetSuccess() == true)
 					{
 						auto SamplingFrequencyResult{Get_MPEG_1_FrameHeader_SamplingFrequency(Buffer)};
 						
-						Result->GetValue()->Append("SamplingFrequency", SamplingFrequencyResult->GetValue());
+						Result->GetValue()->AppendValue("SamplingFrequency", SamplingFrequencyResult->GetValue());
 						if(SamplingFrequencyResult->GetSuccess() == true)
 						{
 							auto PaddingBitResult{Get_MPEG_1_FrameHeader_PaddingBit(Buffer)};
 							
-							Result->GetValue()->Append("PaddingBit", PaddingBitResult->GetValue());
+							Result->GetValue()->AppendValue("PaddingBit", PaddingBitResult->GetValue());
 							if(PaddingBitResult->GetSuccess() == true)
 							{
 								auto PrivateBitResult{Get_UnsignedInteger_1Bit(Buffer)};
 								
-								Result->GetValue()->Append("PrivateBit", PrivateBitResult->GetValue());
+								Result->GetValue()->AppendValue("PrivateBit", PrivateBitResult->GetValue());
 								if(PrivateBitResult->GetSuccess() == true)
 								{
 									auto ModeResult{Get_MPEG_1_FrameHeader_Mode(Buffer, LayerDescription)};
 									
-									Result->GetValue()->Append("Mode", ModeResult->GetValue());
+									Result->GetValue()->AppendValue("Mode", ModeResult->GetValue());
 									if(ModeResult->GetSuccess() == true)
 									{
 										auto Mode{std::experimental::any_cast< std::uint8_t >(ModeResult->GetAny())};
 										auto ModeExtensionResult{Get_MPEG_1_FrameHeader_ModeExtension(Buffer, LayerDescription, Mode)};
 										
-										Result->GetValue()->Append("ModeExtension", ModeExtensionResult->GetValue());
+										Result->GetValue()->AppendValue("ModeExtension", ModeExtensionResult->GetValue());
 										if(ModeExtensionResult->GetSuccess() == true)
 										{
 											auto CopyrightResult{Get_MPEG_1_FrameHeader_Copyright(Buffer)};
 											
-											Result->GetValue()->Append("Copyright", CopyrightResult->GetValue());
+											Result->GetValue()->AppendValue("Copyright", CopyrightResult->GetValue());
 											if(CopyrightResult->GetSuccess() == true)
 											{
 												auto OriginalHomeResult{Get_MPEG_1_FrameHeader_OriginalHome(Buffer)};
 												
-												Result->GetValue()->Append("Original/Home", OriginalHomeResult->GetValue());
+												Result->GetValue()->AppendValue("Original/Home", OriginalHomeResult->GetValue());
 												if(OriginalHomeResult->GetSuccess() == true)
 												{
 													auto EmphasisResult{Get_MPEG_1_FrameHeader_Emphasis(Buffer)};
 													
-													Result->GetValue()->Append("Emphasis", EmphasisResult->GetValue());
+													Result->GetValue()->AppendValue("Emphasis", EmphasisResult->GetValue());
 													Result->SetSuccess(EmphasisResult->GetSuccess());
 												}
 											}
@@ -790,7 +790,7 @@ std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Buffer & Buf
 		
 		if(MPEGFrameResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("MPEGFrame", MPEGFrameResult->GetValue());
+			Result->GetValue()->AppendValue("MPEGFrame", MPEGFrameResult->GetValue());
 		}
 		else
 		{

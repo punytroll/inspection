@@ -832,7 +832,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Charac
 	{
 		auto Character{Buffer.Get8Bits()};
 		
-		Result->GetValue()->Append("byte", Character);
+		Result->GetValue()->AppendValue("byte", Character);
 		if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
 		{
 			Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character));
@@ -1187,7 +1187,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	
 	if(CodePointResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+		Result->GetValue()->AppendValue("CodePoint", CodePointResult->GetValue());
 		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
 		Result->SetSuccess(true);
 	}
@@ -1203,7 +1203,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	
 	if(CodePointResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+		Result->GetValue()->AppendValue("CodePoint", CodePointResult->GetValue());
 		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
 		Result->SetSuccess(true);
 	}
@@ -1496,7 +1496,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	
 	auto ByteOrderMarkResult{Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Buffer)};
 	
-	Result->GetValue()->Append("ByteOrderMark", ByteOrderMarkResult->GetValue());
+	Result->GetValue()->AppendValue("ByteOrderMark", ByteOrderMarkResult->GetValue());
 	if(ByteOrderMarkResult->GetSuccess() == true)
 	{
 		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(ByteOrderMarkResult->GetValue()->GetTagAny("interpretation"))};
@@ -1505,14 +1505,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		{
 			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTermination(Buffer)};
 			
-			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->GetValue()->AppendValue("String", StringResult->GetValue());
 			Result->SetSuccess(StringResult->GetSuccess());
 		}
 		else if(ByteOrderMark == "LittleEndian")
 		{
 			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTermination(Buffer)};
 			
-			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->GetValue()->AppendValue("String", StringResult->GetValue());
 			Result->SetSuccess(StringResult->GetSuccess());
 		}
 	}
@@ -1532,7 +1532,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	
 	auto ByteOrderMarkResult{Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Buffer)};
 	
-	Result->GetValue()->Append("ByteOrderMark", ByteOrderMarkResult->GetValue());
+	Result->GetValue()->AppendValue("ByteOrderMark", ByteOrderMarkResult->GetValue());
 	if(ByteOrderMarkResult->GetSuccess() == true)
 	{
 		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(ByteOrderMarkResult->GetValue()->GetTagAny("interpretation"))};
@@ -1541,14 +1541,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		{
 			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->GetValue()->AppendValue("String", StringResult->GetValue());
 			Result->SetSuccess(StringResult->GetSuccess());
 		}
 		else if(ByteOrderMark == "LittleEndian")
 		{
 			auto StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->GetValue()->AppendValue("String", StringResult->GetValue());
 			Result->SetSuccess(StringResult->GetSuccess());
 		}
 	}
@@ -1562,7 +1562,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto CodePointResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Buffer)};
 	
-	Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+	Result->GetValue()->AppendValue("CodePoint", CodePointResult->GetValue());
 	if(CodePointResult->GetSuccess() == true)
 	{
 		auto CodePoint{std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())};
@@ -1838,7 +1838,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	
 	auto ByteOrderMarkResult{Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(Buffer)};
 	
-	Result->GetValue()->Append("ByteOrderMark", ByteOrderMarkResult->GetValue());
+	Result->GetValue()->AppendValue("ByteOrderMark", ByteOrderMarkResult->GetValue());
 	if(ByteOrderMarkResult->GetSuccess() == true)
 	{
 		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(ByteOrderMarkResult->GetValue()->GetTagAny("interpretation"))};
@@ -1847,14 +1847,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		{
 			auto StringResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->GetValue()->AppendValue("String", StringResult->GetValue());
 			Result->SetSuccess(StringResult->GetSuccess());
 		}
 		else if(ByteOrderMark == "LittleEndian")
 		{
 			auto StringResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("String", StringResult->GetValue());
+			Result->GetValue()->AppendValue("String", StringResult->GetValue());
 			Result->SetSuccess(StringResult->GetSuccess());
 		}
 	}
@@ -1870,7 +1870,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	
 	if(CodePointResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+		Result->GetValue()->AppendValue("CodePoint", CodePointResult->GetValue());
 		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
 		Result->SetSuccess(true);
 	}
@@ -2014,7 +2014,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	
 	if(CodePointResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("CodePoint", CodePointResult->GetValue());
+		Result->GetValue()->AppendValue("CodePoint", CodePointResult->GetValue());
 		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(CodePointResult->GetAny())));
 		Result->SetSuccess(true);
 	}
@@ -2810,7 +2810,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 		
 		auto FramingFlagResult{Get_Boolean_1Bit(Buffer)};
 		
-		Result->GetValue()->Append("FramingFlag", FramingFlagResult->GetValue());
+		Result->GetValue()->AppendValue("FramingFlag", FramingFlagResult->GetValue());
 		if(FramingFlagResult->GetSuccess() == true)
 		{
 			Result->SetSuccess(std::experimental::any_cast< bool >(FramingFlagResult->GetAny()));
@@ -2826,13 +2826,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto UserCommentLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
-	Result->GetValue()->Append("Length", UserCommentLengthResult->GetValue());
+	Result->GetValue()->AppendValue("Length", UserCommentLengthResult->GetValue());
 	if(UserCommentLengthResult->GetSuccess() == true)
 	{
 		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
 		auto UserCommentResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, UserCommentLength)};
 		
-		Result->GetValue()->Append("String", UserCommentResult->GetValue());
+		Result->GetValue()->AppendValue("String", UserCommentResult->GetValue());
 		if(UserCommentResult->GetSuccess() == true)
 		{
 			Result->SetSuccess(true);
@@ -2848,7 +2848,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto UserCommentListLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
-	Result->GetValue()->Append("Length", UserCommentListLengthResult->GetValue());
+	Result->GetValue()->AppendValue("Length", UserCommentListLengthResult->GetValue());
 	if(UserCommentListLengthResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
@@ -2859,7 +2859,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 		{
 			auto UserCommentResult{Get_Vorbis_CommentHeader_UserComment(Buffer)};
 			
-			Result->GetValue()->Append("UserComment", UserCommentResult->GetValue());
+			Result->GetValue()->AppendValue("UserComment", UserCommentResult->GetValue());
 			if(UserCommentResult->GetSuccess() == false)
 			{
 				Result->SetSuccess(false);
@@ -2878,18 +2878,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto VendorLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
-	Result->GetValue()->Append("VendorLength", VendorLengthResult->GetValue());
+	Result->GetValue()->AppendValue("VendorLength", VendorLengthResult->GetValue());
 	if(VendorLengthResult->GetSuccess() == true)
 	{
 		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
 		auto VendorResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, VendorLength)};
 		
-		Result->GetValue()->Append("Vendor", VendorResult->GetValue());
+		Result->GetValue()->AppendValue("Vendor", VendorResult->GetValue());
 		if(VendorResult->GetSuccess() == true)
 		{
 			auto UserCommentListResult{Get_Vorbis_CommentHeader_UserCommentList(Buffer)};
 			
-			Result->GetValue()->Append("UserCommentList", UserCommentListResult->GetValue());
+			Result->GetValue()->AppendValue("UserCommentList", UserCommentListResult->GetValue());
 			Result->SetSuccess(UserCommentListResult->GetSuccess());
 		}
 	}

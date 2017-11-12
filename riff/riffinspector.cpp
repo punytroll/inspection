@@ -56,7 +56,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer
 			else
 			{
 				ChunkDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, ChunkSize);
-				Result->GetValue()->Append("Data", ChunkDataResult->GetValue());
+				Result->GetValue()->AppendValue("Data", ChunkDataResult->GetValue());
 			}
 			Result->SetSuccess(ChunkDataResult->GetSuccess());
 		}
@@ -71,12 +71,12 @@ std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Buffer & 
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto IdentifierResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, 4ull)};
 	
-	Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 	if(IdentifierResult->GetSuccess() == true)
 	{
 		auto SizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 		
-		Result->GetValue()->Append("Size", SizeResult->GetValue());
+		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 		Result->SetSuccess(SizeResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -89,7 +89,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Buffer
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto NumberOfSamplesResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 	
-	Result->GetValue()->Append("NumberOfSamples", NumberOfSamplesResult->GetValue());
+	Result->GetValue()->AppendValue("NumberOfSamples", NumberOfSamplesResult->GetValue());
 	Result->SetSuccess(NumberOfSamplesResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -140,75 +140,75 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 		
 		if(ChannelMask[0] == true)
 		{
-			Result->GetValue()->Append("[0]", "SPEAKER_FRONT_LEFT"s);
+			Result->GetValue()->AppendValue("[0]", "SPEAKER_FRONT_LEFT"s);
 		}
 		if(ChannelMask[1] == true)
 		{
-			Result->GetValue()->Append("[1]", "SPEAKER_FRONT_RIGHT"s);
+			Result->GetValue()->AppendValue("[1]", "SPEAKER_FRONT_RIGHT"s);
 		}
 		if(ChannelMask[2] == true)
 		{
-			Result->GetValue()->Append("[2]", "SPEAKER_FRONT_CENTER"s);
+			Result->GetValue()->AppendValue("[2]", "SPEAKER_FRONT_CENTER"s);
 		}
 		if(ChannelMask[3] == true)
 		{
-			Result->GetValue()->Append("[3]", "SPEAKER_LOW_FREQUENCY"s);
+			Result->GetValue()->AppendValue("[3]", "SPEAKER_LOW_FREQUENCY"s);
 		}
 		if(ChannelMask[4] == true)
 		{
-			Result->GetValue()->Append("[4]", "SPEAKER_BACK_LEFT"s);
+			Result->GetValue()->AppendValue("[4]", "SPEAKER_BACK_LEFT"s);
 		}
 		if(ChannelMask[5] == true)
 		{
-			Result->GetValue()->Append("[5]", "SPEAKER_BACK_RIGHT"s);
+			Result->GetValue()->AppendValue("[5]", "SPEAKER_BACK_RIGHT"s);
 		}
 		if(ChannelMask[6] == true)
 		{
-			Result->GetValue()->Append("[6]", "SPEAKER_FRONT_LEFT_OF_CENTER"s);
+			Result->GetValue()->AppendValue("[6]", "SPEAKER_FRONT_LEFT_OF_CENTER"s);
 		}
 		if(ChannelMask[7] == true)
 		{
-			Result->GetValue()->Append("[7]", "SPEAKER_FRONT_RIGHT_OF_CENTER"s);
+			Result->GetValue()->AppendValue("[7]", "SPEAKER_FRONT_RIGHT_OF_CENTER"s);
 		}
 		if(ChannelMask[8] == true)
 		{
-			Result->GetValue()->Append("[8]", "SPEAKER_BACK_CENTER"s);
+			Result->GetValue()->AppendValue("[8]", "SPEAKER_BACK_CENTER"s);
 		}
 		if(ChannelMask[9] == true)
 		{
-			Result->GetValue()->Append("[9]", "SPEAKER_SIDE_LEFT"s);
+			Result->GetValue()->AppendValue("[9]", "SPEAKER_SIDE_LEFT"s);
 		}
 		if(ChannelMask[10] == true)
 		{
-			Result->GetValue()->Append("[10]", "SPEAKER_SIDE_RIGHT"s);
+			Result->GetValue()->AppendValue("[10]", "SPEAKER_SIDE_RIGHT"s);
 		}
 		if(ChannelMask[11] == true)
 		{
-			Result->GetValue()->Append("[11]", "SPEAKER_TOP_CENTER"s);
+			Result->GetValue()->AppendValue("[11]", "SPEAKER_TOP_CENTER"s);
 		}
 		if(ChannelMask[12] == true)
 		{
-			Result->GetValue()->Append("[12]", "SPEAKER_TOP_FRONT_LEFT"s);
+			Result->GetValue()->AppendValue("[12]", "SPEAKER_TOP_FRONT_LEFT"s);
 		}
 		if(ChannelMask[13] == true)
 		{
-			Result->GetValue()->Append("[13]", "SPEAKER_TOP_FRONT_CENTER"s);
+			Result->GetValue()->AppendValue("[13]", "SPEAKER_TOP_FRONT_CENTER"s);
 		}
 		if(ChannelMask[14] == true)
 		{
-			Result->GetValue()->Append("[14]", "SPEAKER_TOP_FRONT_RIGHT"s);
+			Result->GetValue()->AppendValue("[14]", "SPEAKER_TOP_FRONT_RIGHT"s);
 		}
 		if(ChannelMask[15] == true)
 		{
-			Result->GetValue()->Append("[15]", "SPEAKER_TOP_BACK_LEFT"s);
+			Result->GetValue()->AppendValue("[15]", "SPEAKER_TOP_BACK_LEFT"s);
 		}
 		if(ChannelMask[16] == true)
 		{
-			Result->GetValue()->Append("[16]", "SPEAKER_TOP_BACK_CENTER"s);
+			Result->GetValue()->AppendValue("[16]", "SPEAKER_TOP_BACK_CENTER"s);
 		}
 		if(ChannelMask[17] == true)
 		{
-			Result->GetValue()->Append("[17]", "SPEAKER_TOP_BACK_RIGHT"s);
+			Result->GetValue()->AppendValue("[17]", "SPEAKER_TOP_BACK_RIGHT"s);
 		}
 		for(auto BitIndex = 18; BitIndex < 31; ++BitIndex)
 		{
@@ -221,7 +221,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 		}
 		if(ChannelMask[31] == true)
 		{
-			Result->GetValue()->Append("[31]", "SPEAKER_ALL"s);
+			Result->GetValue()->AppendValue("[31]", "SPEAKER_ALL"s);
 		}
 		/// @todo there are the following bit combinations which have special names
 		//~ #define SPEAKER_MONO             (SPEAKER_FRONT_CENTER)
@@ -245,27 +245,27 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspec
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FormatTagResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
 	
-	Result->GetValue()->Append("FormatTag", FormatTagResult->GetValue());
+	Result->GetValue()->AppendValue("FormatTag", FormatTagResult->GetValue());
 	if(FormatTagResult->GetSuccess() == true)
 	{
 		auto NumberOfChannelsResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 		
-		Result->GetValue()->Append("NumberOfChannels", NumberOfChannelsResult->GetValue());
+		Result->GetValue()->AppendValue("NumberOfChannels", NumberOfChannelsResult->GetValue());
 		if(NumberOfChannelsResult->GetSuccess() == true)
 		{
 			auto SamplesPerSecondResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 			
-			Result->GetValue()->Append("SamplesPerSecond", SamplesPerSecondResult->GetValue());
+			Result->GetValue()->AppendValue("SamplesPerSecond", SamplesPerSecondResult->GetValue());
 			if(SamplesPerSecondResult->GetSuccess() == true)
 			{
 				auto AverageBytesPerSecondResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 				
-				Result->GetValue()->Append("AverageBytesPerSecond", AverageBytesPerSecondResult->GetValue());
+				Result->GetValue()->AppendValue("AverageBytesPerSecond", AverageBytesPerSecondResult->GetValue());
 				if(AverageBytesPerSecondResult->GetSuccess() == true)
 				{
 					auto BlockAlignResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 					
-					Result->GetValue()->Append("BlockAlign", BlockAlignResult->GetValue());
+					Result->GetValue()->AppendValue("BlockAlign", BlockAlignResult->GetValue());
 					Result->SetSuccess(BlockAlignResult->GetSuccess());
 				}
 			}
@@ -281,27 +281,27 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
-	Result->GetValue()->Append("BitsPerSample", BitsPerSampleResult->GetValue());
+	Result->GetValue()->AppendValue("BitsPerSample", BitsPerSampleResult->GetValue());
 	if(BitsPerSampleResult->GetSuccess() == true)
 	{
 		auto ExtensionSizeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 		
-		Result->GetValue()->Append("ExtensionSize", ExtensionSizeResult->GetValue());
+		Result->GetValue()->AppendValue("ExtensionSize", ExtensionSizeResult->GetValue());
 		if(ExtensionSizeResult->GetSuccess() == true)
 		{
 			auto ValidBitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 			
-			Result->GetValue()->Append("ValidBitsPerSample", ValidBitsPerSampleResult->GetValue());
+			Result->GetValue()->AppendValue("ValidBitsPerSample", ValidBitsPerSampleResult->GetValue());
 			if(ValidBitsPerSampleResult->GetSuccess() == true)
 			{
 				auto ChannelMaskResult{Get_RIFF_fmt_ChunkData_ChannelMask(Buffer)};
 				
-				Result->GetValue()->Append("ChannelMask", ChannelMaskResult->GetValue());
+				Result->GetValue()->AppendValue("ChannelMask", ChannelMaskResult->GetValue());
 				if(ChannelMaskResult->GetSuccess() == true)
 				{
 					auto SubFormatResult{Get_RIFF_fmt_ChunkData_SubFormat(Buffer)};
 					
-					Result->GetValue()->Append("SubFormat", SubFormatResult->GetValue());
+					Result->GetValue()->AppendValue("SubFormat", SubFormatResult->GetValue());
 					Result->SetSuccess(SubFormatResult->GetSuccess());
 				}
 			}
@@ -352,7 +352,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FormTypeResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, 4ull)};
 	
-	Result->GetValue()->Append("FormType", FormTypeResult->GetValue());
+	Result->GetValue()->AppendValue("FormType", FormTypeResult->GetValue());
 	if(FormTypeResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
@@ -360,7 +360,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer
 		{
 			auto ChunkResult{Get_RIFF_Chunk(Buffer)};
 			
-			Result->GetValue()->Append("Chunk", ChunkResult->GetValue());
+			Result->GetValue()->AppendValue("Chunk", ChunkResult->GetValue());
 			if(ChunkResult->GetSuccess() == false)
 			{
 				Result->SetSuccess(false);

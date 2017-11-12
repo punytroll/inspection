@@ -32,7 +32,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 		
 		auto PacketResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Length)};
 		
-		Result->GetValue()->Append("Data", PacketResult->GetValue());
+		Result->GetValue()->AppendValue("Data", PacketResult->GetValue());
 		Result->SetSuccess(PacketResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -52,9 +52,9 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer
 		
 		const std::bitset< 8 > & HeaderType{std::experimental::any_cast< const std::bitset< 8 > & >(HeaderTypeResult->GetAny())};
 		
-		Result->GetValue()->Append("Continuation", HeaderType[0]);
-		Result->GetValue()->Append("BeginOfStream", HeaderType[1]);
-		Result->GetValue()->Append("EndOfStream", HeaderType[2]);
+		Result->GetValue()->AppendValue("Continuation", HeaderType[0]);
+		Result->GetValue()->AppendValue("BeginOfStream", HeaderType[1]);
+		Result->GetValue()->AppendValue("EndOfStream", HeaderType[2]);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -70,7 +70,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buff
 	{
 		auto SegmentTableEntryResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
-		Result->GetValue()->Append("", SegmentTableEntryResult->GetValue());
+		Result->GetValue()->AppendValue("", SegmentTableEntryResult->GetValue());
 		if(SegmentTableEntryResult->GetSuccess() == false)
 		{
 			Result->SetSuccess(false);
@@ -90,56 +90,56 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	
 	if(CapturePatternResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("CapturePattern", CapturePatternResult->GetValue());
+		Result->GetValue()->AppendValue("CapturePattern", CapturePatternResult->GetValue());
 		
 		auto StreamStructureVersionResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
 		if(StreamStructureVersionResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("StreamStructureVersion", StreamStructureVersionResult->GetValue());
+			Result->GetValue()->AppendValue("StreamStructureVersion", StreamStructureVersionResult->GetValue());
 			
 			auto HeaderTypeResult{Get_Ogg_Page_HeaderType(Buffer)};
 			
 			if(HeaderTypeResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("HeaderType", HeaderTypeResult->GetValue());
+				Result->GetValue()->AppendValue("HeaderType", HeaderTypeResult->GetValue());
 				
 				auto GranulePositionResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
 				
 				if(GranulePositionResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append("GranulePosition", GranulePositionResult->GetValue());
+					Result->GetValue()->AppendValue("GranulePosition", GranulePositionResult->GetValue());
 					
 					auto BitStreamSerialNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 					
 					if(BitStreamSerialNumberResult->GetSuccess() == true)
 					{
-						Result->GetValue()->Append("BitStreamSerialNumber", BitStreamSerialNumberResult->GetValue());
+						Result->GetValue()->AppendValue("BitStreamSerialNumber", BitStreamSerialNumberResult->GetValue());
 						
 						auto PageSequenceNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 						
 						if(PageSequenceNumberResult->GetSuccess() == true)
 						{
-							Result->GetValue()->Append("PageSequenceNumber", PageSequenceNumberResult->GetValue());
+							Result->GetValue()->AppendValue("PageSequenceNumber", PageSequenceNumberResult->GetValue());
 							
 							auto ChecksumResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 							
 							if(ChecksumResult->GetSuccess() == true)
 							{
-								Result->GetValue()->Append("Checksum", ChecksumResult->GetValue());
+								Result->GetValue()->AppendValue("Checksum", ChecksumResult->GetValue());
 								
 								auto PageSegmentsResult{Get_UnsignedInteger_8Bit(Buffer)};
 								
 								if(PageSegmentsResult->GetSuccess() == true)
 								{
-									Result->GetValue()->Append("PageSegments", PageSegmentsResult->GetValue());
+									Result->GetValue()->AppendValue("PageSegments", PageSegmentsResult->GetValue());
 									
 									auto PageSegments{std::experimental::any_cast< std::uint8_t >(PageSegmentsResult->GetAny())};
 									auto SegmentTableResult{Get_Ogg_Page_SegmentTable(Buffer, PageSegments)};
 									
 									if(SegmentTableResult->GetSuccess() == true)
 									{
-										Result->GetValue()->Append("SegmentTable", SegmentTableResult->GetValue());
+										Result->GetValue()->AppendValue("SegmentTable", SegmentTableResult->GetValue());
 										Result->SetSuccess(true);
 										
 										auto PacketStart{Buffer.GetPosition()};
@@ -157,7 +157,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 												
 												if(PacketResult->GetSuccess() == true)
 												{
-													Result->GetValue()->Append("Packet", PacketResult->GetValue());
+													Result->GetValue()->AppendValue("Packet", PacketResult->GetValue());
 												}
 												// No matter what data gets read before - successfully or ansuccessfully - we heed the values from the segment table!
 												Buffer.SetPosition(PacketStart + PacketLength);
@@ -196,7 +196,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 		
 		if(OggPageResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("OggPage", OggPageResult->GetValue());
+			Result->GetValue()->AppendValue("OggPage", OggPageResult->GetValue());
 			
 			bool BeginOfStream{std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetValueAny("BeginOfStream"))};
 			
@@ -235,13 +235,13 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 	
 	if(PacketTypeResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("PacketType", PacketTypeResult->GetValue());
+		Result->GetValue()->AppendValue("PacketType", PacketTypeResult->GetValue());
 		
 		auto VorbisIdentifierResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "vorbis")};
 		
 		if(VorbisIdentifierResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("VorbisIdentifier", VorbisIdentifierResult->GetValue());
+			Result->GetValue()->AppendValue("VorbisIdentifier", VorbisIdentifierResult->GetValue());
 			
 			auto PacketType{std::experimental::any_cast< std::uint8_t >(PacketTypeResult->GetAny())};
 			
@@ -279,49 +279,49 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	
 	if(VorbisVersionResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("VorbisVersion", VorbisVersionResult->GetValue());
+		Result->GetValue()->AppendValue("VorbisVersion", VorbisVersionResult->GetValue());
 		
 		auto AudioChannelsResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
 		if(AudioChannelsResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("AudioChannels", AudioChannelsResult->GetValue());
+			Result->GetValue()->AppendValue("AudioChannels", AudioChannelsResult->GetValue());
 			
 			auto AudioSampleRateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
 			
 			if(AudioSampleRateResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("AudioSampleRate", AudioSampleRateResult->GetValue());
+				Result->GetValue()->AppendValue("AudioSampleRate", AudioSampleRateResult->GetValue());
 				
 				auto BitrateMaximumResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
 				
 				if(BitrateMaximumResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append("BitrateMaximum", BitrateMaximumResult->GetValue());
+					Result->GetValue()->AppendValue("BitrateMaximum", BitrateMaximumResult->GetValue());
 					
 					auto BitrateNominalResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
 					
 					if(BitrateNominalResult->GetSuccess() == true)
 					{
-						Result->GetValue()->Append("BitrateNominal", BitrateNominalResult->GetValue());
+						Result->GetValue()->AppendValue("BitrateNominal", BitrateNominalResult->GetValue());
 						
 						auto BitrateMinimumResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
 						
 						if(BitrateMinimumResult->GetSuccess() == true)
 						{
-							Result->GetValue()->Append("BitrateMinimum", BitrateMinimumResult->GetValue());
+							Result->GetValue()->AppendValue("BitrateMinimum", BitrateMinimumResult->GetValue());
 							
 							auto BlockSize0Result{Get_UnsignedInteger_4Bit(Buffer)};
 							
 							if(BlockSize0Result->GetSuccess() == true)
 							{
-								Result->GetValue()->Append("BlockSize0", BlockSize0Result->GetValue());
+								Result->GetValue()->AppendValue("BlockSize0", BlockSize0Result->GetValue());
 								
 								auto BlockSize1Result{Get_UnsignedInteger_4Bit(Buffer)};
 								
 								if(BlockSize1Result->GetSuccess() == true)
 								{
-									Result->GetValue()->Append("BlockSize1", BlockSize1Result->GetValue());
+									Result->GetValue()->AppendValue("BlockSize1", BlockSize1Result->GetValue());
 									
 									auto FramingFlagResult{Get_Boolean_1Bit(Buffer)};
 									
@@ -329,7 +329,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 									{
 										auto FramingFlag{std::experimental::any_cast< bool >(FramingFlagResult->GetAny())};
 										
-										Result->GetValue()->Append("FramingFlag", FramingFlagResult->GetValue());
+										Result->GetValue()->AppendValue("FramingFlag", FramingFlagResult->GetValue());
 										Result->SetSuccess(FramingFlag);
 									}
 								}

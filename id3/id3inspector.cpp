@@ -995,7 +995,7 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents(Inspect
 	
 	auto HeaderResult{Get_IEC_60908_1999_TableOfContents_Header(Buffer)};
 	
-	Result->GetValue()->Append(HeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
 	if(HeaderResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
@@ -1004,7 +1004,7 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents(Inspect
 		auto LastTrackNumber{std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("LastTrackNumber"))};
 		auto TracksResult{Get_IEC_60908_1999_TableOfContents_Tracks(Buffer, FirstTrackNumber, LastTrackNumber)};
 		
-		Result->GetValue()->Append(TracksResult->GetValue()->GetValues());
+		Result->GetValue()->AppendValues(TracksResult->GetValue()->GetValues());
 		Result->SetSuccess(TracksResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1017,17 +1017,17 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Header(
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto DataLengthResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 	
-	Result->GetValue()->Append("DataLength", DataLengthResult->GetValue());
+	Result->GetValue()->AppendValue("DataLength", DataLengthResult->GetValue());
 	if(DataLengthResult->GetSuccess() == true)
 	{
 		auto FirstTrackNumberResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
-		Result->GetValue()->Append("FirstTrackNumber", FirstTrackNumberResult->GetValue());
+		Result->GetValue()->AppendValue("FirstTrackNumber", FirstTrackNumberResult->GetValue());
 		if(FirstTrackNumberResult->GetSuccess() == true)
 		{
 			auto LastTrackNumberResult{Get_UnsignedInteger_8Bit(Buffer)};
 			
-			Result->GetValue()->Append("LastTrackNumber", LastTrackNumberResult->GetValue());
+			Result->GetValue()->AppendValue("LastTrackNumber", LastTrackNumberResult->GetValue());
 			Result->SetSuccess(LastTrackNumberResult->GetSuccess());
 		}
 	}
@@ -1053,22 +1053,22 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track(I
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Reserved1Result{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 8))};
 	
-	Result->GetValue()->Append("Reserved", Reserved1Result->GetValue());
+	Result->GetValue()->AppendValue("Reserved", Reserved1Result->GetValue());
 	if(Reserved1Result->GetSuccess() == true)
 	{
 		auto ADRResult{Get_UnsignedInteger_4Bit(Buffer)};
 		
-		Result->GetValue()->Append("ADR", ADRResult->GetValue());
+		Result->GetValue()->AppendValue("ADR", ADRResult->GetValue());
 		if((ADRResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(ADRResult->GetAny())))
 		{
 			auto ControlResult{Get_IEC_60908_1999_TableOfContents_Track_Control(Buffer)};
 			
-			Result->GetValue()->Append("Control", ControlResult->GetValue());
+			Result->GetValue()->AppendValue("Control", ControlResult->GetValue());
 			if(ControlResult->GetSuccess() == true)
 			{
 				auto NumberResult{Get_UnsignedInteger_8Bit(Buffer)};
 				
-				Result->GetValue()->Append("Number", NumberResult->GetValue());
+				Result->GetValue()->AppendValue("Number", NumberResult->GetValue());
 				if(NumberResult->GetSuccess() == true)
 				{
 					auto Number{std::experimental::any_cast< std::uint8_t >(NumberResult->GetAny())};
@@ -1080,12 +1080,12 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track(I
 					
 					auto Reserved2Result{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 8))};
 					
-					Result->GetValue()->Append("Reserved", Reserved2Result->GetValue());
+					Result->GetValue()->AppendValue("Reserved", Reserved2Result->GetValue());
 					if(Reserved2Result->GetSuccess() == true)
 					{
 						auto StartAddressResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 						
-						Result->GetValue()->Append("StartAddress", StartAddressResult->GetValue());
+						Result->GetValue()->AppendValue("StartAddress", StartAddressResult->GetValue());
 						Result->SetSuccess(StartAddressResult->GetSuccess());
 					}
 				}
@@ -1115,38 +1115,38 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track_C
 			{
 				Result->SetSuccess(false);
 				
-				auto Value{Result->GetValue()->Append("Reserved", true)};
+				auto Value{Result->GetValue()->AppendValue("Reserved", true)};
 				
 				Value->AppendTag("error", "The track type is \"Data\" so this bit must be off.");
 			}
 			else
 			{
-				Result->GetValue()->Append("Reserved", false);
+				Result->GetValue()->AppendValue("Reserved", false);
 			}
-			Result->GetValue()->Append("TrackType", "Data"s);
-			Result->GetValue()->Append("DigitalCopyProhibited", !Control[2]);
+			Result->GetValue()->AppendValue("TrackType", "Data"s);
+			Result->GetValue()->AppendValue("DigitalCopyProhibited", !Control[2]);
 			if(Control[3] == true)
 			{
-				Result->GetValue()->Append("DataRecorded", "incrementally"s);
+				Result->GetValue()->AppendValue("DataRecorded", "incrementally"s);
 			}
 			else
 			{
-				Result->GetValue()->Append("DataRecorded", "uninterrupted"s);
+				Result->GetValue()->AppendValue("DataRecorded", "uninterrupted"s);
 			}
 		}
 		else
 		{
 			if(Control[0] == true)
 			{
-				Result->GetValue()->Append("NumberOfChannels", 4);
+				Result->GetValue()->AppendValue("NumberOfChannels", 4);
 			}
 			else
 			{
-				Result->GetValue()->Append("NumberOfChannels", 2);
+				Result->GetValue()->AppendValue("NumberOfChannels", 2);
 			}
-			Result->GetValue()->Append("TrackType", "Audio"s);
-			Result->GetValue()->Append("DigitalCopyProhibited", !Control[2]);
-			Result->GetValue()->Append("PreEmphasis", Control[3]);
+			Result->GetValue()->AppendValue("TrackType", "Audio"s);
+			Result->GetValue()->AppendValue("DigitalCopyProhibited", !Control[2]);
+			Result->GetValue()->AppendValue("PreEmphasis", Control[3]);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1162,7 +1162,7 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Tracks(
 	for(auto TrackNumber = FirstTrackNumber; TrackNumber <= LastTrackNumber; ++TrackNumber)
 	{
 		auto TrackResult{Get_IEC_60908_1999_TableOfContents_Track(Buffer)};
-		auto TrackValue{Result->GetValue()->Append("Track", TrackResult->GetValue())};
+		auto TrackValue{Result->GetValue()->AppendValue("Track", TrackResult->GetValue())};
 		
 		if(TrackResult->GetSuccess() == true)
 		{
@@ -1181,7 +1181,7 @@ std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Tracks(
 	{
 		auto LeadOutTrackResult{Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Buffer)};
 		
-		Result->GetValue()->Append("LeadOutTrack", LeadOutTrackResult->GetValue());
+		Result->GetValue()->AppendValue("LeadOutTrack", LeadOutTrackResult->GetValue());
 		Result->SetSuccess(LeadOutTrackResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1221,27 +1221,27 @@ std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TagIdentifierResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "TAG")};
 	
-	Result->GetValue()->Append("Identifier", TagIdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("Identifier", TagIdentifierResult->GetValue());
 	if(TagIdentifierResult->GetSuccess() == true)
 	{
 		auto TitelResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
 		
-		Result->GetValue()->Append("Title", TitelResult->GetValue());
+		Result->GetValue()->AppendValue("Title", TitelResult->GetValue());
 		if(TitelResult->GetSuccess() == true)
 		{
 			auto ArtistResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
 			
-			Result->GetValue()->Append("Artist", ArtistResult->GetValue());
+			Result->GetValue()->AppendValue("Artist", ArtistResult->GetValue());
 			if(ArtistResult->GetSuccess() == true)
 			{
 				auto AlbumResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
 				
-				Result->GetValue()->Append("Album", AlbumResult->GetValue());
+				Result->GetValue()->AppendValue("Album", AlbumResult->GetValue());
 				if(AlbumResult->GetSuccess() == true)
 				{
 					auto YearResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(4ull, 0))};
 					
-					Result->GetValue()->Append("Year", YearResult->GetValue());
+					Result->GetValue()->AppendValue("Year", YearResult->GetValue());
 					if(YearResult->GetSuccess() == true)
 					{
 						auto StartOfComment{Buffer.GetPosition()};
@@ -1250,19 +1250,19 @@ std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
 						
 						if(CommentResult->GetSuccess() == true)
 						{
-							Result->GetValue()->Append("Comment", CommentResult->GetValue());
+							Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
 							Continue = true;
 						}
 						else
 						{
 							Buffer.SetPosition(StartOfComment);
 							CommentResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Buffer, Inspection::Length(29ull, 0));
-							Result->GetValue()->Append("Comment", CommentResult->GetValue());
+							Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
 							if(CommentResult->GetSuccess() == true)
 							{
 								auto AlbumTrackResult{Get_UnsignedInteger_8Bit(Buffer)};
 								
-								Result->GetValue()->Append("AlbumTrack", AlbumTrackResult->GetValue());
+								Result->GetValue()->AppendValue("AlbumTrack", AlbumTrackResult->GetValue());
 								Continue = AlbumTrackResult->GetSuccess();
 							}
 						}
@@ -1270,7 +1270,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
 						{
 							auto GenreResult{Get_UnsignedInteger_8Bit(Buffer)};
 							
-							Result->GetValue()->Append("Genre", GenreResult->GetValue());
+							Result->GetValue()->AppendValue("Genre", GenreResult->GetValue());
 							if(GenreResult->GetSuccess() == true)
 							{
 								Result->SetSuccess(true);
@@ -1348,7 +1348,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame(Inspection::Buffer & Buf
 			{
 				Result->GetValue()->PrependTag("error", "Handled size is larger than the stated frame size."s);
 			}
-			Result->GetValue()->Append(BodyResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(BodyResult->GetValue()->GetValues());
 			Result->SetSuccess(BodyResult->GetSuccess());
 		}
 		else
@@ -1368,23 +1368,23 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_COM(Inspection::Buf
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_2_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto LanguageResult{Get_ID3_2_2_Language(Buffer)};
 		
-		Result->GetValue()->Append("Language", LanguageResult->GetValue());
+		Result->GetValue()->AppendValue("Language", LanguageResult->GetValue());
 		if(LanguageResult->GetSuccess() == true)
 		{
 			auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 			auto ShortContentDescriptionResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 			
-			Result->GetValue()->Append("ShortContentDescription", ShortContentDescriptionResult->GetValue());
+			Result->GetValue()->AppendValue("ShortContentDescription", ShortContentDescriptionResult->GetValue());
 			if(ShortContentDescriptionResult->GetSuccess() == true)
 			{
 				auto CommentResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Comment", CommentResult->GetValue());
+				Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
 				Result->SetSuccess(CommentResult->GetSuccess());
 			}
 		}
@@ -1400,28 +1400,28 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_PIC(Inspection::Buf
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_2_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto ImageFormatResult{Get_ID3_2_2_Frame_Body_PIC_ImageFormat(Buffer)};
 		
-		Result->GetValue()->Append("ImageFormat", ImageFormatResult->GetValue());
+		Result->GetValue()->AppendValue("ImageFormat", ImageFormatResult->GetValue());
 		if(ImageFormatResult->GetSuccess() == true)
 		{
 			auto PictureTypeResult{Get_ID3_2_2_Frame_Body_PIC_PictureType(Buffer)};
 			
-			Result->GetValue()->Append("PictureType", PictureTypeResult->GetValue());
+			Result->GetValue()->AppendValue("PictureType", PictureTypeResult->GetValue());
 			if(PictureTypeResult->GetSuccess() == true)
 			{
 				auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 				auto DescriptionResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 				
-				Result->GetValue()->Append("Description", DescriptionResult->GetValue());
+				Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
 				if(DescriptionResult->GetSuccess() == true)
 				{
 					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 					
-					Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
+					Result->GetValue()->AppendValue("PictureData", PictureDataResult->GetValue());
 					Result->SetSuccess(PictureDataResult->GetSuccess());
 				}
 			}
@@ -1500,13 +1500,13 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_T__(Inspection::Buf
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_2_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto InformationResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Information", InformationResult->GetValue());
+		Result->GetValue()->AppendValue("Information", InformationResult->GetValue());
 		Result->SetSuccess(InformationResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1520,12 +1520,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_UFI(Inspection::Buf
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
 	
-	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("OwnerIdentifier", OwnerIdentifierResult->GetValue());
 	if(OwnerIdentifierResult->GetSuccess() == true)
 	{
 		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+		Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 		Result->SetSuccess(IdentifierResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1538,7 +1538,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header(Inspection::Buffe
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto IdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
 	
-	Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 	if(IdentifierResult->GetSuccess() == true)
 	{
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(IdentifierResult->GetAny())};
@@ -1622,7 +1622,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header(Inspection::Buffe
 		
 		auto SizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
 		
-		Result->GetValue()->Append("Size", SizeResult->GetValue());
+		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 		Result->SetSuccess(SizeResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -1643,7 +1643,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frames(Inspection::Buffer & Bu
 		
 		if(FrameResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("Frame", FrameResult->GetValue());
+			Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
 		}
 		else
 		{
@@ -1651,7 +1651,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frames(Inspection::Buffer & Bu
 			
 			auto PaddingResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("Padding", PaddingResult->GetValue());
+			Result->GetValue()->AppendValue("Padding", PaddingResult->GetValue());
 			if(PaddingResult->GetSuccess() == false)
 			{
 				Result->SetSuccess(false);
@@ -1706,12 +1706,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Tag_Header_Flags(Inspection::B
 		Result->GetValue()->PrependTag("bit order", "7-0"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
-		auto Flag{Result->GetValue()->Append("Unsynchronization", Flags[7])};
+		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AppendTag("bit index", 7);
-		Flag = Result->GetValue()->Append("Compression", Flags[6]);
+		Flag = Result->GetValue()->AppendValue("Compression", Flags[6]);
 		Flag->AppendTag("bit index", 6);
-		Flag = Result->GetValue()->Append("Reserved", false);
+		Flag = Result->GetValue()->AppendValue("Reserved", false);
 		Flag->AppendTag("bit index", 5);
 		Flag->AppendTag("bit index", 4);
 		Flag->AppendTag("bit index", 3);
@@ -1913,7 +1913,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame(Inspection::Buffer & Buf
 				Result->GetValue()->PrependTag("handled size", to_string_cast(BodyResult->GetLength()));
 				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the frame size is stated smaller than the actually handled size."s);
 			}
-			Result->GetValue()->Append(BodyResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(BodyResult->GetValue()->GetValues());
 			Result->SetSuccess(BodyResult->GetSuccess());
 		}
 		else
@@ -1922,7 +1922,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame(Inspection::Buffer & Buf
 			
 			auto BodyResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size)};
 			
-			Result->GetValue()->Append("Data", BodyResult->GetValue());
+			Result->GetValue()->AppendValue("Data", BodyResult->GetValue());
 			Result->SetSuccess(BodyResult->GetSuccess());
 		}
 		Buffer.SetPosition(Start + Size);
@@ -1938,28 +1938,28 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_APIC(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto MIMETypeResult{Get_ID3_2_3_Frame_Body_APIC_MIMEType(Buffer)};
 		
-		Result->GetValue()->Append("MIMEType", MIMETypeResult->GetValue());
+		Result->GetValue()->AppendValue("MIMEType", MIMETypeResult->GetValue());
 		if(MIMETypeResult->GetSuccess() == true)
 		{
 			auto PictureTypeResult{Get_ID3_2_3_Frame_Body_APIC_PictureType(Buffer)};
 			
-			Result->GetValue()->Append("PictureType", PictureTypeResult->GetValue());
+			Result->GetValue()->AppendValue("PictureType", PictureTypeResult->GetValue());
 			if(PictureTypeResult->GetSuccess() == true)
 			{
 				auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 				auto DescriptionResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 				
-				Result->GetValue()->Append("Description", DescriptionResult->GetValue());
+				Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
 				if(DescriptionResult->GetSuccess() == true)
 				{
 					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 					
-					Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
+					Result->GetValue()->AppendValue("PictureData", PictureDataResult->GetValue());
 					Result->SetSuccess(PictureDataResult->GetSuccess());
 				}
 			}
@@ -2018,23 +2018,23 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_COMM(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto LanguageResult{Get_ID3_2_3_Language(Buffer)};
 		
-		Result->GetValue()->Append("Language", LanguageResult->GetValue());
+		Result->GetValue()->AppendValue("Language", LanguageResult->GetValue());
 		if(LanguageResult->GetSuccess() == true)
 		{
 			auto ShortContentDescriptionResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 			
-			Result->GetValue()->Append("ShortContentDescription", ShortContentDescriptionResult->GetValue());
+			Result->GetValue()->AppendValue("ShortContentDescription", ShortContentDescriptionResult->GetValue());
 			if(ShortContentDescriptionResult->GetSuccess() == true)
 			{
 				auto CommentResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Comment", CommentResult->GetValue());
+				Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
 				Result->SetSuccess(CommentResult->GetSuccess());
 			}
 		}
@@ -2050,28 +2050,28 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_GEOB(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto MIMETypeResult{Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Buffer)};
 		
-		Result->GetValue()->Append("MIMEType", MIMETypeResult->GetValue());
+		Result->GetValue()->AppendValue("MIMEType", MIMETypeResult->GetValue());
 		if(MIMETypeResult->GetSuccess() == true)
 		{
 			auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 			auto FileNameResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 			
-			Result->GetValue()->Append("FileName", FileNameResult->GetValue());
+			Result->GetValue()->AppendValue("FileName", FileNameResult->GetValue());
 			if(FileNameResult->GetSuccess() == true)
 			{
 				auto ContentDescriptionResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 				
-				Result->GetValue()->Append("ContentDescription", ContentDescriptionResult->GetValue());
+				Result->GetValue()->AppendValue("ContentDescription", ContentDescriptionResult->GetValue());
 				if(ContentDescriptionResult->GetSuccess() == true)
 				{
 					auto EncapsulatedObjectResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 					
-					Result->GetValue()->Append("EncapsulatedObject", EncapsulatedObjectResult->GetValue());
+					Result->GetValue()->AppendValue("EncapsulatedObject", EncapsulatedObjectResult->GetValue());
 					Result->SetSuccess(EncapsulatedObjectResult->GetSuccess());
 				}
 			}
@@ -2120,7 +2120,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_MCDI(Inspection::Bu
 		
 		if(MCDIStringResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("String", MCDIStringResult->GetValue());
+			Result->GetValue()->AppendValue("String", MCDIStringResult->GetValue());
 			Result->GetValue("String")->PrependTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
 			Result->SetSuccess(true);
 		}
@@ -2139,7 +2139,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PCNT(Inspection::Bu
 	{
 		auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Counter", CounterResult->GetValue());
+		Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 		Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 		Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
 	}
@@ -2147,14 +2147,14 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PCNT(Inspection::Bu
 	{
 		auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 		
-		Result->GetValue()->Append("Counter", CounterResult->GetValue());
+		Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 		Result->SetSuccess(CounterResult->GetSuccess());
 	}
 	else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
 	{
 		auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Counter", CounterResult->GetValue());
+		Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 		Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -2168,12 +2168,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto EMailToUserResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
 	
-	Result->GetValue()->Append("EMailToUser", EMailToUserResult->GetValue());
+	Result->GetValue()->AppendValue("EMailToUser", EMailToUserResult->GetValue());
 	if(EMailToUserResult->GetSuccess() == true)
 	{
 		auto RatingResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
-		Result->GetValue()->Append("Rating", RatingResult->GetValue());
+		Result->GetValue()->AppendValue("Rating", RatingResult->GetValue());
 		if(RatingResult->GetSuccess() == true)
 		{
 			auto Rating{std::experimental::any_cast< std::uint8_t >(RatingResult->GetAny())};
@@ -2195,7 +2195,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Bu
 			{
 				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 				Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 				Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
 			}
@@ -2203,14 +2203,14 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Bu
 			{
 				auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 				
-				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 				Result->SetSuccess(CounterResult->GetSuccess());
 			}
 			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
 			{
 				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			}
 		}
@@ -2226,7 +2226,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PRIV(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto OwnerIdentifierResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
 	
-	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("OwnerIdentifier", OwnerIdentifierResult->GetValue());
 	if(OwnerIdentifierResult->GetSuccess() == true)
 	{
 		const std::string & OwnerIdentifier{std::experimental::any_cast< const std::string & >(OwnerIdentifierResult->GetAny())};
@@ -2306,7 +2306,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PRIV(Inspection::Bu
 		
 		auto PRIVDataResult{PRIVDataHandler(Buffer, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append(PRIVDataName, PRIVDataResult->GetValue());
+		Result->GetValue()->AppendValue(PRIVDataName, PRIVDataResult->GetValue());
 		Result->SetSuccess(PRIVDataResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -2319,17 +2319,17 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_RGAD(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto PeakAmplitudeResult{Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer)};
 	
-	Result->GetValue()->Append("PeakAmplitude", PeakAmplitudeResult->GetValue());
+	Result->GetValue()->AppendValue("PeakAmplitude", PeakAmplitudeResult->GetValue());
 	if(PeakAmplitudeResult->GetSuccess() == true)
 	{
 		auto TrackReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
 		
-		Result->GetValue()->Append("TrackReplayGainAdjustment", TrackReplayGainAdjustmentResult->GetValue());
+		Result->GetValue()->AppendValue("TrackReplayGainAdjustment", TrackReplayGainAdjustmentResult->GetValue());
 		if(TrackReplayGainAdjustmentResult->GetSuccess() == true)
 		{
 			auto AlbumReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
 			
-			Result->GetValue()->Append("AlbumReplayGainAdjustment", AlbumReplayGainAdjustmentResult->GetValue());
+			Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", AlbumReplayGainAdjustmentResult->GetValue());
 			Result->SetSuccess(AlbumReplayGainAdjustmentResult->GetSuccess());
 		}
 	}
@@ -2344,13 +2344,13 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_T___(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto InformationResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Information", InformationResult->GetValue());
+		Result->GetValue()->AppendValue("Information", InformationResult->GetValue());
 		Result->SetSuccess(InformationResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -2530,18 +2530,18 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TXXX(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto DescriptionResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 		
-		Result->GetValue()->Append("Description", DescriptionResult->GetValue());
+		Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
 		if(DescriptionResult->GetSuccess() == true)
 		{
 			auto ValueResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("Value", ValueResult->GetValue());
+			Result->GetValue()->AppendValue("Value", ValueResult->GetValue());
 			Result->SetSuccess(ValueResult->GetSuccess());
 		}
 	}
@@ -2556,12 +2556,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_UFID(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
 	
-	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("OwnerIdentifier", OwnerIdentifierResult->GetValue());
 	if(OwnerIdentifierResult->GetSuccess() == true)
 	{
 		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+		Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 		Result->SetSuccess(IdentifierResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -2575,23 +2575,23 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_USLT(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto LanguageResult{Get_ID3_2_3_Language(Buffer)};
 		
-		Result->GetValue()->Append("Language", LanguageResult->GetValue());
+		Result->GetValue()->AppendValue("Language", LanguageResult->GetValue());
 		if(LanguageResult->GetSuccess() == true)
 		{
 			auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 			auto ContentDescriptorResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 			
-			Result->GetValue()->Append("ContentDescriptor", ContentDescriptorResult->GetValue());
+			Result->GetValue()->AppendValue("ContentDescriptor", ContentDescriptorResult->GetValue());
 			if(ContentDescriptorResult->GetSuccess() == true)
 			{
 				auto LyricsTextResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Lyrics/Text", LyricsTextResult->GetValue());
+				Result->GetValue()->AppendValue("Lyrics/Text", LyricsTextResult->GetValue());
 				Result->SetSuccess(LyricsTextResult->GetSuccess());
 			}
 		}
@@ -2607,7 +2607,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_W___(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto URLResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
 	
-	Result->GetValue()->Append("URL", URLResult->GetValue());
+	Result->GetValue()->AppendValue("URL", URLResult->GetValue());
 	Result->SetSuccess(URLResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -2620,18 +2620,18 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_WXXX(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto DescriptorResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 		
-		Result->GetValue()->Append("Descriptor", DescriptorResult->GetValue());
+		Result->GetValue()->AppendValue("Descriptor", DescriptorResult->GetValue());
 		if(DescriptorResult->GetSuccess() == true)
 		{
 			auto URLResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("URL", URLResult->GetValue());
+			Result->GetValue()->AppendValue("URL", URLResult->GetValue());
 			Result->SetSuccess(URLResult->GetSuccess());
 		}
 	}
@@ -2645,17 +2645,17 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header(Inspection::Buffe
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto IdentifierResult{Get_ID3_2_3_Frame_Header_Identifier(Buffer)};
 	
-	Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 	if(IdentifierResult->GetSuccess() == true)
 	{
 		auto SizeResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 		
-		Result->GetValue()->Append("Size", SizeResult->GetValue());
+		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 		if(SizeResult->GetSuccess() == true)
 		{
 			auto FlagsResult{Get_BitSet_16Bit_BigEndian(Buffer)};
 			
-			Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+			Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
 			Result->SetSuccess(FlagsResult->GetSuccess());
 		}
 	}
@@ -2755,7 +2755,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frames(Inspection::Buffer & Bu
 		
 		if(FrameResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("Frame", FrameResult->GetValue());
+			Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
 		}
 		else
 		{
@@ -2767,13 +2767,13 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frames(Inspection::Buffer & Bu
 			
 			if(PaddingResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Padding", PaddingResult->GetValue());
+				Result->GetValue()->AppendValue("Padding", PaddingResult->GetValue());
 				
 				break;
 			}
 			else
 			{
-				Result->GetValue()->Append("Frame", FrameResult->GetValue());
+				Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
 				Buffer.SetPosition(SavePosition);
 			}
 		}
@@ -2823,17 +2823,17 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Tag_Header_Flags(Inspection::B
 		Result->GetValue()->PrependTag("bit order", "7-0"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
-		auto Flag{Result->GetValue()->Append("Unsynchronization", Flags[7])};
+		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AppendTag("bit index", 7);
 		Flag->AppendTag("bit name", "a"s);
-		Flag = Result->GetValue()->Append("ExtendedHeader", Flags[6]);
+		Flag = Result->GetValue()->AppendValue("ExtendedHeader", Flags[6]);
 		Flag->AppendTag("bit index", 6);
 		Flag->AppendTag("bit name", "b"s);
-		Flag = Result->GetValue()->Append("ExperimentalIndicator", Flags[5]);
+		Flag = Result->GetValue()->AppendValue("ExperimentalIndicator", Flags[5]);
 		Flag->AppendTag("bit index", 5);
 		Flag->AppendTag("bit name", "c"s);
-		Flag = Result->GetValue()->Append("Reserved", false);
+		Flag = Result->GetValue()->AppendValue("Reserved", false);
 		Flag->AppendTag("bit index", 4);
 		Flag->AppendTag("bit index", 3);
 		Flag->AppendTag("bit index", 2);
@@ -3008,7 +3008,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame(Inspection::Buffer & Buf
 			{
 				Result->GetValue()->PrependTag("error", "For the frame \"" + Identifier + "\", the acutal handled size is larger than the stated frame size."s);
 			}
-			Result->GetValue()->Append(BodyResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(BodyResult->GetValue()->GetValues());
 			Result->SetSuccess(BodyResult->GetSuccess());
 		}
 		else
@@ -3017,7 +3017,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame(Inspection::Buffer & Buf
 			
 			auto BodyResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size)};
 			
-			Result->GetValue()->Append("Data", BodyResult->GetValue());
+			Result->GetValue()->AppendValue("Data", BodyResult->GetValue());
 			Result->SetSuccess(BodyResult->GetSuccess());
 		}
 		Buffer.SetPosition(Start + Size);
@@ -3033,28 +3033,28 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_APIC(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto MIMETypeResult{Get_ID3_2_4_Frame_Body_APIC_MIMEType(Buffer)};
 		
-		Result->GetValue()->Append("MIMEType", MIMETypeResult->GetValue());
+		Result->GetValue()->AppendValue("MIMEType", MIMETypeResult->GetValue());
 		if(MIMETypeResult->GetSuccess() == true)
 		{
 			auto PictureTypeResult{Get_ID3_2_4_Frame_Body_APIC_PictureType(Buffer)};
 			
-			Result->GetValue()->Append("PictureType", PictureTypeResult->GetValue());
+			Result->GetValue()->AppendValue("PictureType", PictureTypeResult->GetValue());
 			if(PictureTypeResult->GetSuccess() == true)
 			{
 				auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 				auto DescriptionResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 				
-				Result->GetValue()->Append("Description", DescriptionResult->GetValue());
+				Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
 				if(DescriptionResult->GetSuccess() == true)
 				{
 					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 					
-					Result->GetValue()->Append("PictureData", PictureDataResult->GetValue());
+					Result->GetValue()->AppendValue("PictureData", PictureDataResult->GetValue());
 					Result->SetSuccess(PictureDataResult->GetSuccess());
 				}
 			}
@@ -3113,23 +3113,23 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_COMM(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto LanguageResult{Get_ID3_2_4_Language(Buffer)};
 		
-		Result->GetValue()->Append("Language", LanguageResult->GetValue());
+		Result->GetValue()->AppendValue("Language", LanguageResult->GetValue());
 		if(LanguageResult->GetSuccess() == true)
 		{
 			auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 			auto ShortContentDescriptionResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 			
-			Result->GetValue()->Append("ShortContentDescription", ShortContentDescriptionResult->GetValue());
+			Result->GetValue()->AppendValue("ShortContentDescription", ShortContentDescriptionResult->GetValue());
 			if(ShortContentDescriptionResult->GetSuccess() == true)
 			{
 				auto CommentResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Comment", CommentResult->GetValue());
+				Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
 				Result->SetSuccess(CommentResult->GetSuccess());
 			}
 		}
@@ -3157,12 +3157,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_POPM(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto EMailToUserResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
 	
-	Result->GetValue()->Append("EMailToUser", EMailToUserResult->GetValue());
+	Result->GetValue()->AppendValue("EMailToUser", EMailToUserResult->GetValue());
 	if(EMailToUserResult->GetSuccess() == true)
 	{
 		auto RatingResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
-		Result->GetValue()->Append("Rating", RatingResult->GetValue());
+		Result->GetValue()->AppendValue("Rating", RatingResult->GetValue());
 		if(RatingResult->GetSuccess() == true)
 		{
 			auto Rating{std::experimental::any_cast< std::uint8_t >(RatingResult->GetAny())};
@@ -3184,7 +3184,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_POPM(Inspection::Bu
 			{
 				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 				Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 				Result->GetValue("Counter")->PrependTag("standard", "ID3 2.4"s);
 			}
@@ -3192,14 +3192,14 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_POPM(Inspection::Bu
 			{
 				auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 				
-				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 				Result->SetSuccess(CounterResult->GetSuccess());
 			}
 			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
 			{
 				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Counter", CounterResult->GetValue());
+				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			}
 		}
@@ -3215,13 +3215,13 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_T___(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto InformationResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Information[0]", InformationResult->GetValue());
+		Result->GetValue()->AppendValue("Information[0]", InformationResult->GetValue());
 		if(InformationResult->GetSuccess() == true)
 		{
 			Result->SetSuccess(true);
@@ -3231,7 +3231,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_T___(Inspection::Bu
 			while(Buffer.GetPosition() < Boundary)
 			{
 				InformationResult = Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition());
-				Result->GetValue()->Append("Information[" + to_string_cast(InformationIndex) + "]", InformationResult->GetValue());
+				Result->GetValue()->AppendValue("Information[" + to_string_cast(InformationIndex) + "]", InformationResult->GetValue());
 				if(InformationResult->GetSuccess() == false)
 				{
 					Result->SetSuccess(false);
@@ -3253,18 +3253,18 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_TXXX(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto DescriptionResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 		
-		Result->GetValue()->Append("Description", DescriptionResult->GetValue());
+		Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
 		if(DescriptionResult->GetSuccess() == true)
 		{
 			auto ValueResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("Value", ValueResult->GetValue());
+			Result->GetValue()->AppendValue("Value", ValueResult->GetValue());
 			Result->SetSuccess(ValueResult->GetSuccess());
 		}
 	}
@@ -3279,12 +3279,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_UFID(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
 	
-	Result->GetValue()->Append("OwnerIdentifier", OwnerIdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("OwnerIdentifier", OwnerIdentifierResult->GetValue());
 	if(OwnerIdentifierResult->GetSuccess() == true)
 	{
 		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
-		Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+		Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 		Result->SetSuccess(IdentifierResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -3298,23 +3298,23 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_USLT(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto LanguageResult{Get_ID3_2_4_Language(Buffer)};
 		
-		Result->GetValue()->Append("Language", LanguageResult->GetValue());
+		Result->GetValue()->AppendValue("Language", LanguageResult->GetValue());
 		if(LanguageResult->GetSuccess() == true)
 		{
 			auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 			auto ContentDescriptorResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 			
-			Result->GetValue()->Append("ContentDescriptor", ContentDescriptorResult->GetValue());
+			Result->GetValue()->AppendValue("ContentDescriptor", ContentDescriptorResult->GetValue());
 			if(ContentDescriptorResult->GetSuccess() == true)
 			{
 				auto LyricsTextResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
 				
-				Result->GetValue()->Append("Lyrics/Text", LyricsTextResult->GetValue());
+				Result->GetValue()->AppendValue("Lyrics/Text", LyricsTextResult->GetValue());
 				Result->SetSuccess(LyricsTextResult->GetSuccess());
 			}
 		}
@@ -3330,7 +3330,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_W___(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto URLResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
 	
-	Result->GetValue()->Append("URL", URLResult->GetValue());
+	Result->GetValue()->AppendValue("URL", URLResult->GetValue());
 	Result->SetSuccess(URLResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -3343,18 +3343,18 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_WXXX(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
 	
-	Result->GetValue()->Append("TextEncoding", TextEncodingResult->GetValue());
+	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
 	if(TextEncodingResult->GetSuccess() == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
 		auto DescriptorResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
 		
-		Result->GetValue()->Append("Descriptor", DescriptorResult->GetValue());
+		Result->GetValue()->AppendValue("Descriptor", DescriptorResult->GetValue());
 		if(DescriptorResult->GetSuccess() == true)
 		{
 			auto URLResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
 			
-			Result->GetValue()->Append("URL", URLResult->GetValue());
+			Result->GetValue()->AppendValue("URL", URLResult->GetValue());
 			Result->SetSuccess(URLResult->GetSuccess());
 		}
 	}
@@ -3368,7 +3368,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Buffe
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto IdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByLength(Buffer, Inspection::Length(4ull, 0))};
 	
-	Result->GetValue()->Append("Identifier", IdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
 	if(IdentifierResult->GetSuccess() == true)
 	{
 		auto Continue{true};
@@ -3399,12 +3399,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Buffe
 		{
 			auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
 			
-			Result->GetValue()->Append("Size", SizeResult->GetValue());
+			Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 			if(SizeResult->GetSuccess() == true)
 			{
 				auto FlagsResult{Get_BitSet_16Bit_BigEndian(Buffer)};
 				
-				Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+				Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
 				Result->SetSuccess(FlagsResult->GetSuccess());
 			}
 		}
@@ -3427,7 +3427,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frames(Inspection::Buffer & Bu
 		
 		if(FrameResult->GetSuccess() == true)
 		{
-			Result->GetValue()->Append("Frame", FrameResult->GetValue());
+			Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
 		}
 		else
 		{
@@ -3437,11 +3437,11 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frames(Inspection::Buffer & Bu
 			
 			if(PaddingResult->GetSuccess() == true)
 			{
-				Result->GetValue()->Append("Padding", PaddingResult->GetValue());
+				Result->GetValue()->AppendValue("Padding", PaddingResult->GetValue());
 			}
 			else
 			{
-				Result->GetValue()->Append("Frame", FrameResult->GetValue());
+				Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
 				Result->SetSuccess(false);
 				Buffer.SetPosition(Boundary);
 			}
@@ -3510,12 +3510,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader(Inspection:
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
 	
-	Result->GetValue()->Append("Size", SizeResult->GetValue());
+	Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 	if(SizeResult->GetSuccess() == true)
 	{
 		auto NumberOfFlagBytesResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
-		Result->GetValue()->Append("NumberOfFlagBytes", NumberOfFlagBytesResult->GetValue());
+		Result->GetValue()->AppendValue("NumberOfFlagBytes", NumberOfFlagBytesResult->GetValue());
 		if(NumberOfFlagBytesResult->GetSuccess() == true)
 		{
 			auto NumberOfFlagBytes{std::experimental::any_cast< std::uint8_t >(NumberOfFlagBytesResult->GetAny())};
@@ -3524,7 +3524,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader(Inspection:
 			{
 				auto ExtendedHeaderFlagsResult{Get_ID3_2_4_Tag_ExtendedHeader_Flags(Buffer)};
 				
-				Result->GetValue()->Append("ExtendedFlags", ExtendedHeaderFlagsResult->GetValue());
+				Result->GetValue()->AppendValue("ExtendedFlags", ExtendedHeaderFlagsResult->GetValue());
 				if(ExtendedHeaderFlagsResult->GetSuccess() == true)
 				{
 					Result->SetSuccess(true);
@@ -3536,7 +3536,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader(Inspection:
 						{
 							auto TagIsAnUpdateDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Buffer)};
 							
-							Result->GetValue()->Append("TagIsAnUpdateData", TagIsAnUpdateDataResult->GetValue());
+							Result->GetValue()->AppendValue("TagIsAnUpdateData", TagIsAnUpdateDataResult->GetValue());
 							Result->SetSuccess(TagIsAnUpdateDataResult->GetSuccess());
 						}
 					}
@@ -3548,7 +3548,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader(Inspection:
 						{
 							auto CRCDataPresentDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Buffer)};
 							
-							Result->GetValue()->Append("CRCDataPresentData", CRCDataPresentDataResult->GetValue());
+							Result->GetValue()->AppendValue("CRCDataPresentData", CRCDataPresentDataResult->GetValue());
 							Result->SetSuccess(CRCDataPresentDataResult->GetSuccess());
 						}
 					}
@@ -3560,7 +3560,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader(Inspection:
 						{
 							auto TagRestrictionsDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Buffer)};
 							
-							Result->GetValue()->Append("TagRestrictionsData", TagRestrictionsDataResult->GetValue());
+							Result->GetValue()->AppendValue("TagRestrictionsData", TagRestrictionsDataResult->GetValue());
 							Result->SetSuccess(TagRestrictionsDataResult->GetSuccess());
 						}
 					}
@@ -3582,12 +3582,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_C
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
 	
-	Result->GetValue()->Append(HeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
 	if((HeaderResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("Size")) == 0x05))
 	{
 		auto TotalFrameCRCResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(Buffer)};
 		
-		Result->GetValue()->Append("TotalFrameCRC", TotalFrameCRCResult->GetValue());
+		Result->GetValue()->AppendValue("TotalFrameCRC", TotalFrameCRCResult->GetValue());
 		Result->SetSuccess(TotalFrameCRCResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -3600,7 +3600,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_T
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
 	
-	Result->GetValue()->Append(HeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
 	Result->SetSuccess((HeaderResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("Size")) == 0x00));
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -3612,11 +3612,11 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_T
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
 	
-	Result->GetValue()->Append(HeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
 	if((HeaderResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("Size")) == 0x01))
 	{
 		auto RestrictionResult{Get_BitSet_8Bit(Buffer)};
-		auto Value{Result->GetValue()->Append("Restrictions", RestrictionResult->GetValue())};
+		auto Value{Result->GetValue()->AppendValue("Restrictions", RestrictionResult->GetValue())};
 		
 		Value->AppendTag("error", "This program is missing the interpretation of the restriction flags."s); 
 		Result->SetSuccess(RestrictionResult->GetSuccess());
@@ -3631,7 +3631,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto SizeResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
 	
-	Result->GetValue()->Append("Size", SizeResult->GetValue());
+	Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 	Result->SetSuccess(SizeResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -3651,19 +3651,19 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flags(Inspe
 		Result->GetValue()->AppendTag("synchsafe"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
-		auto Flag{Result->GetValue()->Append("Reserved", Flags[7])};
+		auto Flag{Result->GetValue()->AppendValue("Reserved", Flags[7])};
 		
 		Flag->AppendTag("bit index", 7);
-		Flag = Result->GetValue()->Append("TagIsAnUpdate", Flags[6]);
+		Flag = Result->GetValue()->AppendValue("TagIsAnUpdate", Flags[6]);
 		Flag->AppendTag("bit index", 6);
 		Flag->AppendTag("bit name", "b"s);
-		Flag = Result->GetValue()->Append("CRCDataPresent", Flags[5]);
+		Flag = Result->GetValue()->AppendValue("CRCDataPresent", Flags[5]);
 		Flag->AppendTag("bit index", 5);
 		Flag->AppendTag("bit name", "c"s);
-		Flag = Result->GetValue()->Append("TagRestrictions", Flags[4]);
+		Flag = Result->GetValue()->AppendValue("TagRestrictions", Flags[4]);
 		Flag->AppendTag("bit index", 4);
 		Flag->AppendTag("bit name", "d"s);
-		Flag = Result->GetValue()->Append("Reserved", false);
+		Flag = Result->GetValue()->AppendValue("Reserved", false);
 		Flag->AppendTag("bit index", 3);
 		Flag->AppendTag("bit index", 2);
 		Flag->AppendTag("bit index", 1);
@@ -3690,20 +3690,20 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_Header_Flags(Inspection::B
 		Result->GetValue()->PrependTag("bit order", "7-0"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
-		auto Flag{Result->GetValue()->Append("Unsynchronization", Flags[7])};
+		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AppendTag("bit index", 7);
 		Flag->AppendTag("bit name", "a"s);
-		Flag = Result->GetValue()->Append("ExtendedHeader", Flags[6]);
+		Flag = Result->GetValue()->AppendValue("ExtendedHeader", Flags[6]);
 		Flag->AppendTag("bit index", 6);
 		Flag->AppendTag("bit name", "b"s);
-		Flag = Result->GetValue()->Append("ExperimentalIndicator", Flags[5]);
+		Flag = Result->GetValue()->AppendValue("ExperimentalIndicator", Flags[5]);
 		Flag->AppendTag("bit index", 5);
 		Flag->AppendTag("bit name", "c"s);
-		Flag = Result->GetValue()->Append("FooterPresent", Flags[4]);
+		Flag = Result->GetValue()->AppendValue("FooterPresent", Flags[4]);
 		Flag->AppendTag("bit index", 4);
 		Flag->AppendTag("bit name", "d"s);
-		Flag = Result->GetValue()->Append("Reserved", false);
+		Flag = Result->GetValue()->AppendValue("Reserved", false);
 		Flag->AppendTag("bit index", 3);
 		Flag->AppendTag("bit index", 2);
 		Flag->AppendTag("bit index", 1);
@@ -3874,22 +3874,22 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment(Inspection:
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto NameCodeResult{Get_ID3_2_ReplayGainAdjustment_NameCode(Buffer)};
 	
-	Result->GetValue()->Append("NameCode", NameCodeResult->GetValue());
+	Result->GetValue()->AppendValue("NameCode", NameCodeResult->GetValue());
 	if(NameCodeResult->GetSuccess() == true)
 	{
 		auto OriginatorCodeResult{Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Buffer)};
 		
-		Result->GetValue()->Append("OriginatorCode", OriginatorCodeResult->GetValue());
+		Result->GetValue()->AppendValue("OriginatorCode", OriginatorCodeResult->GetValue());
 		if(OriginatorCodeResult->GetSuccess() == true)
 		{
 			auto SignBitResult{Get_ID3_2_ReplayGainAdjustment_SignBit(Buffer)};
 			
-			Result->GetValue()->Append("SignBit", SignBitResult->GetValue());
+			Result->GetValue()->AppendValue("SignBit", SignBitResult->GetValue());
 			if(SignBitResult->GetSuccess() == true)
 			{
 				auto ReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Buffer)};
 				
-				Result->GetValue()->Append("ReplayGainAdjustment", ReplayGainAdjustmentResult->GetValue());
+				Result->GetValue()->AppendValue("ReplayGainAdjustment", ReplayGainAdjustmentResult->GetValue());
 				if(ReplayGainAdjustmentResult->GetSuccess() == true)
 				{
 					auto SignBit{std::experimental::any_cast< std::uint8_t >(SignBitResult->GetAny())};
@@ -4035,7 +4035,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Buffer & Buffer)
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto TagHeaderResult{Get_ID3_2_Tag_Header(Buffer)};
 	
-	Result->GetValue()->Append(TagHeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(TagHeaderResult->GetValue()->GetValues());
 	if(TagHeaderResult->GetSuccess() == true)
 	{
 		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(TagHeaderResult->GetAny("MajorVersion"))};
@@ -4045,7 +4045,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Buffer & Buffer)
 		{
 			auto FramesResult{Get_ID3_2_2_Frames(Buffer, Size)};
 			
-			Result->GetValue()->Append(FramesResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(FramesResult->GetValue()->GetValues());
 			Result->SetSuccess(FramesResult->GetSuccess());
 		}
 		else if(MajorVersion == 0x03)
@@ -4057,7 +4057,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Buffer & Buffer)
 			
 			auto FramesResult{Get_ID3_2_3_Frames(Buffer, Size)};
 			
-			Result->GetValue()->Append(FramesResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(FramesResult->GetValue()->GetValues());
 			Result->SetSuccess(FramesResult->GetSuccess());
 		}
 		else if(MajorVersion == 0x04)
@@ -4067,7 +4067,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Buffer & Buffer)
 			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
 			{
 				ExtendedHeaderResult = Get_ID3_2_4_Tag_ExtendedHeader(Buffer);
-				Result->GetValue()->Append("ExtendedHeader", ExtendedHeaderResult->GetValue());
+				Result->GetValue()->AppendValue("ExtendedHeader", ExtendedHeaderResult->GetValue());
 				Result->SetSuccess(ExtendedHeaderResult->GetSuccess());
 				Size -= ExtendedHeaderResult->GetLength();
 			}
@@ -4075,7 +4075,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Buffer & Buffer)
 			{
 				auto FramesResult{Get_ID3_2_4_Frames(Buffer, Size)};
 				
-				Result->GetValue()->Append(FramesResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValues(FramesResult->GetValue()->GetValues());
 				Result->SetSuccess(FramesResult->GetSuccess());
 			}
 		}
@@ -4094,17 +4094,17 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Buffer & 
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto FileIdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Buffer, "ID3")};
 	
-	Result->GetValue()->Append("FileIdentifier", FileIdentifierResult->GetValue());
+	Result->GetValue()->AppendValue("FileIdentifier", FileIdentifierResult->GetValue());
 	if(FileIdentifierResult->GetSuccess() == true)
 	{
 		auto MajorVersionResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
 		
-		Result->GetValue()->Append("MajorVersion", MajorVersionResult->GetValue());
+		Result->GetValue()->AppendValue("MajorVersion", MajorVersionResult->GetValue());
 		if(MajorVersionResult->GetSuccess() == true)
 		{
 			auto RevisionNumberResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
 			
-			Result->GetValue()->Append("RevisionNumber", RevisionNumberResult->GetValue());
+			Result->GetValue()->AppendValue("RevisionNumber", RevisionNumberResult->GetValue());
 			if(RevisionNumberResult->GetSuccess() == true)
 			{
 				auto MajorVersion{std::experimental::any_cast< std::uint8_t >(MajorVersionResult->GetAny())};
@@ -4124,12 +4124,12 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Buffer & 
 				}
 				if(FlagsResult)
 				{
-					Result->GetValue()->Append("Flags", FlagsResult->GetValue());
+					Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
 					if(FlagsResult->GetSuccess() == true)
 					{
 						auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
 						
-						Result->GetValue()->Append("Size", SizeResult->GetValue());
+						Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 						Result->SetSuccess(SizeResult->GetSuccess());
 					}
 				}
@@ -4268,11 +4268,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		{
 			if(ID3v1TagResult->GetValue()->HasValue("AlbumTrack") == true)
 			{
-				Result->GetValue()->Append("ID3v1.1", ID3v1TagResult->GetValue());
+				Result->GetValue()->AppendValue("ID3v1.1", ID3v1TagResult->GetValue());
 			}
 			else
 			{
-				Result->GetValue()->Append("ID3v1", ID3v1TagResult->GetValue());
+				Result->GetValue()->AppendValue("ID3v1", ID3v1TagResult->GetValue());
 			}
 		}
 	}
@@ -4280,10 +4280,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	
 	auto ID3v2TagResult{Get_ID3_2_Tag(Buffer)};
 	
-	if(ID3v2TagResult->GetSuccess() == true)
-	{
-		Result->GetValue()->Append("ID3v2", ID3v2TagResult->GetValue());
-	}
+	Result->GetValue()->AppendValue("ID3v2", ID3v2TagResult->GetValue());
 	Result->SetSuccess(((ID3v1TagResult != nullptr) && (ID3v1TagResult->GetSuccess() == true)) || ID3v2TagResult->GetSuccess());
 	Buffer.SetPosition(Buffer.GetLength());
 	Inspection::FinalizeResult(Result, Buffer);

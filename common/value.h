@@ -21,7 +21,7 @@ namespace Inspection
 		}
 		
 		template< typename AnyType >
-		std::shared_ptr< Value > Append(const std::string & Name, const AnyType & Any)
+		std::shared_ptr< Value > AppendValue(const std::string & Name, const AnyType & Any)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
@@ -32,7 +32,7 @@ namespace Inspection
 			return Result;
 		}
 		
-		std::shared_ptr< Value > Append(const std::string & Name, std::shared_ptr< Inspection::Value > Value)
+		std::shared_ptr< Value > AppendValue(const std::string & Name, std::shared_ptr< Inspection::Value > Value)
 		{
 			Value->SetName(Name);
 			_Values.push_back(Value);
