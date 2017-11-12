@@ -2189,7 +2189,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Bu
 				
 				CounterValue->SetName("Counter");
 				CounterValue->AppendTag("omitted"s);
-				Result->GetValue()->Append(CounterValue);
+				Result->GetValue()->AppendValue(CounterValue);
 			}
 			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) > Boundary)
 			{
@@ -3178,7 +3178,7 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_POPM(Inspection::Bu
 				
 				CounterValue->SetName("Counter");
 				CounterValue->AppendTag("omitted"s);
-				Result->GetValue()->Append(CounterValue);
+				Result->GetValue()->AppendValue(CounterValue);
 			}
 			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) > Boundary)
 			{

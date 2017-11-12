@@ -229,7 +229,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Bu
 			{
 				auto CodecEntryResult{Get_ASF_CodecEntry(Buffer)};
 				
-				CodecEntries->Append(CodecEntryResult->GetValue());
+				CodecEntries->AppendValue(CodecEntryResult->GetValue());
 				if(CodecEntryResult->GetSuccess() == false)
 				{
 					Result->SetSuccess(false);
