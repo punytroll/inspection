@@ -315,7 +315,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
 	
-	Result->GetValue()->Append(BitsPerSampleResult->GetValue());
+	Result->GetValue()->AppendValue(BitsPerSampleResult->GetValue());
 	Result->SetSuccess(BitsPerSampleResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	

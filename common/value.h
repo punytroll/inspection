@@ -15,7 +15,7 @@ namespace Inspection
 		{
 		}
 		
-		void Append(std::shared_ptr< Value > Value)
+		void AppendValue(std::shared_ptr< Value > Value)
 		{
 			_Values.push_back(Value);
 		}
