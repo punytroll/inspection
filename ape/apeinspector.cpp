@@ -142,7 +142,7 @@ std::unique_ptr< Inspection::Result > Get_APE_Identifier(Inspection::Buffer & Bu
 			{
 				if(Byte == 'X')
 				{
-					Result->GetValue()->Append("Found", "APETAGEX"s);
+					Result->GetValue()->AppendValue("Found", "APETAGEX"s);
 					Result->SetSuccess(true);
 					Buffer.SetPosition(Buffer.GetLength());
 				}
