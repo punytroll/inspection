@@ -26,7 +26,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ChunkHeaderResult{Get_RIFF_ChunkHeader(Buffer)};
 	
-	Result->GetValue()->Append(ChunkHeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(ChunkHeaderResult->GetValue()->GetValues());
 	if(ChunkHeaderResult->GetSuccess() == true)
 	{
 		auto ChunkSize{std::experimental::any_cast< std::uint32_t >(ChunkHeaderResult->GetAny("Size"))};
@@ -39,17 +39,17 @@ std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer
 			if(ChunkIdentifier == "RIFF")
 			{
 				ChunkDataResult = Get_RIFF_RIFF_ChunkData(Buffer, ChunkSize);
-				Result->GetValue()->Append(ChunkDataResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValues(ChunkDataResult->GetValue()->GetValues());
 			}
 			else if(ChunkIdentifier == "fact")
 			{
 				ChunkDataResult = Get_RIFF_fact_ChunkData(Buffer);
-				Result->GetValue()->Append(ChunkDataResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValues(ChunkDataResult->GetValue()->GetValues());
 			}
 			else if(ChunkIdentifier == "fmt ")
 			{
 				ChunkDataResult = Get_RIFF_fmt_ChunkData(Buffer);
-				Result->GetValue()->Append(ChunkDataResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValues(ChunkDataResult->GetValue()->GetValues());
 			}
 			else
 			{
@@ -99,7 +99,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer 
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto CommonFieldsResult{Get_RIFF_fmt_ChunkData_CommonFields(Buffer)};
 	
-	Result->GetValue()->Append(CommonFieldsResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(CommonFieldsResult->GetValue()->GetValues());
 	if(CommonFieldsResult->GetSuccess() == true)
 	{
 		const std::string & Format{std::experimental::any_cast< const std::string & >(CommonFieldsResult->GetValue("FormatTag")->GetValueAny("ConstantName"))};
@@ -115,7 +115,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer 
 		}
 		if(FormatSpecificFieldsResult)
 		{
-			Result->GetValue()->Append(FormatSpecificFieldsResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(FormatSpecificFieldsResult->GetValue()->GetValues());
 			Result->SetSuccess(FormatSpecificFieldsResult->GetSuccess());
 		}
 	}

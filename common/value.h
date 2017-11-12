@@ -40,7 +40,7 @@ namespace Inspection
 			return Value;
 		}
 		
-		void Append(const std::list< std::shared_ptr< Inspection::Value > > & Values)
+		void AppendValues(const std::list< std::shared_ptr< Inspection::Value > > & Values)
 		{
 			for(auto Value : Values)
 			{

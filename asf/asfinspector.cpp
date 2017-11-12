@@ -351,7 +351,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
-	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(ObjectHeaderResult->GetValue()->GetValues());
 	if(ObjectHeaderResult->GetSuccess() == true)
 	{
 		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
@@ -943,7 +943,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & 
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
-	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(ObjectHeaderResult->GetValue()->GetValues());
 	if(ObjectHeaderResult->GetSuccess() == true)
 	{
 		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
@@ -952,7 +952,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & 
 		{
 			auto HeaderObjectDataResult{Get_ASF_HeaderObjectData(Buffer)};
 			
-			Result->GetValue()->Append(HeaderObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(HeaderObjectDataResult->GetValue()->GetValues());
 			if(HeaderObjectDataResult->GetSuccess() ==true)
 			{
 				Result->SetSuccess(true);
@@ -1446,52 +1446,52 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 		if(GUID == Inspection::g_ASF_HeaderObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_HeaderObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_FilePropertiesObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_FilePropertiesObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_StreamPropertiesObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_StreamPropertiesObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_CodecListObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_CodecListObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_HeaderExtensionObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_HeaderExtensionObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_LanguageListObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_LanguageListObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_ExtendedStreamPropertiesObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_ExtendedStreamPropertiesObjectData(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_MetadataObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_MetadataObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_CompatibilityObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_CompatibilityObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_IndexPlaceholderObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_IndexPlaceholderObjectData(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_PaddingObjectGUID)
 		{
@@ -1503,22 +1503,22 @@ std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Buffer & Buffer
 		else if(GUID == Inspection::g_ASF_ExtendedContentDescriptionObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_ExtendedContentDescriptionObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_StreamBitratePropertiesObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_StreamBitratePropertiesObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_ContentDescriptionObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_ContentDescriptionObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_MetadataLibraryObjectGUID)
 		{
 			ObjectDataResult = Get_ASF_MetadataLibraryObjectData(Buffer);
-			Result->GetValue()->Append(ObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else
 		{
@@ -1765,7 +1765,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection:
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
 	
-	Result->GetValue()->Append(ObjectHeaderResult->GetValue()->GetValues());
+	Result->GetValue()->AppendValues(ObjectHeaderResult->GetValue()->GetValues());
 	if(ObjectHeaderResult->GetSuccess() == true)
 	{
 		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
@@ -1774,7 +1774,7 @@ std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection:
 		{
 			auto HeaderObjectDataResult{Get_ASF_StreamPropertiesObjectData(Buffer)};
 			
-			Result->GetValue()->Append(HeaderObjectDataResult->GetValue()->GetValues());
+			Result->GetValue()->AppendValues(HeaderObjectDataResult->GetValue()->GetValues());
 			if(HeaderObjectDataResult->GetSuccess() ==true)
 			{
 				Result->SetSuccess(true);
