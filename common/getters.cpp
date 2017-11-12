@@ -2806,7 +2806,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 	
 	if(CommentHeaderWithoutFramingFlag->GetSuccess() == true)
 	{
-		Result->GetValue()->Append(CommentHeaderWithoutFramingFlag->GetValue()->GetValues());
+		Result->GetValue()->AppendValues(CommentHeaderWithoutFramingFlag->GetValue()->GetValues());
 		
 		auto FramingFlagResult{Get_Boolean_1Bit(Buffer)};
 		

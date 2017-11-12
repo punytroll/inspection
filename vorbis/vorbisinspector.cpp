@@ -251,7 +251,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 				
 				if(IdentificationHeaderResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append(IdentificationHeaderResult->GetValue()->GetValues());
+					Result->GetValue()->AppendValues(IdentificationHeaderResult->GetValue()->GetValues());
 					Result->SetSuccess(true);
 				}
 			}
@@ -261,7 +261,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 				
 				if(CommentHeaderResult->GetSuccess() == true)
 				{
-					Result->GetValue()->Append(CommentHeaderResult->GetValue()->GetValues());
+					Result->GetValue()->AppendValues(CommentHeaderResult->GetValue()->GetValues());
 					Result->SetSuccess(true);
 				}
 			}
