@@ -2825,8 +2825,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto UserCommentLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto UserCommentLengthValue{Result->GetValue()->AppendValue("Length", UserCommentLengthResult->GetValue())};
 	
-	Result->GetValue()->AppendValue("Length", UserCommentLengthResult->GetValue());
+	UserCommentLengthValue->AppendTag("unit", "bytes"s);
 	if(UserCommentLengthResult->GetSuccess() == true)
 	{
 		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
@@ -2847,8 +2848,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto UserCommentListLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto UserCommentListLengthValue{Result->GetValue()->AppendValue("Length", UserCommentListLengthResult->GetValue())};
 	
-	Result->GetValue()->AppendValue("Length", UserCommentListLengthResult->GetValue());
+	UserCommentListLengthValue->AppendTag("unit", "items"s);
 	if(UserCommentListLengthResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
@@ -2877,8 +2879,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto VendorLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto VendorLengthValue{Result->GetValue()->AppendValue("VendorLength", VendorLengthResult->GetValue())};
 	
-	Result->GetValue()->AppendValue("VendorLength", VendorLengthResult->GetValue());
+	VendorLengthValue->AppendTag("unit", "bytes"s);
 	if(VendorLengthResult->GetSuccess() == true)
 	{
 		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
