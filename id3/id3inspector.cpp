@@ -115,6 +115,7 @@ std::pair< bool, std::string > GetContentTypeInterpretation2_3(const std::string
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::string Get_ID3_2_PictureType_Interpretation(std::uint8_t Value);
 std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value);
+std::string Get_ID3_2_3_FrameIdentifier_Interpretation(const std::string & Value);
 std::string Get_ID3_2_4_FrameIdentifier_Interpretation(const std::string & Value);
 
 std::string Get_ID3_2_PictureType_Interpretation(std::uint8_t Value)
