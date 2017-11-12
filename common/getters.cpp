@@ -120,7 +120,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 	
 	if(Buffer.Has(TemplateString.length(), 0) == true)
 	{
-		Result->SetSuccess(true);
+		Result->GetValue()->AppendTag("string"s);
+		Result->GetValue()->AppendTag("ASCII"s);
+		Result->GetValue()->AppendTag("alphabetical"s);
+		
+		auto Boundary{Buffer.GetPosition() + TemplateString.length()};
+
 		for(auto TemplateCharacter : TemplateString)
 		{
 			auto BufferCharacter{Buffer.Get8Bits()};
@@ -128,10 +133,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 			Value << BufferCharacter;
 			if((TemplateCharacter != BufferCharacter) || (Is_ASCII_Character_Alphabetical(BufferCharacter) == false))
 			{
-				Result->SetSuccess(false);
-				
 				break;
 			}
+		}
+		if(Buffer.GetPosition() == Boundary)
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AppendTag(to_string_cast(TemplateString.length()) + " characters"s);
+			Result->SetSuccess(true);
+		}
+		else
+		{
+			Result->SetSuccess(false);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
