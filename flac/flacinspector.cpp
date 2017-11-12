@@ -52,7 +52,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer 
 	Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
 	if(MetaDataBlockHeaderResult->GetSuccess() == true)
 	{
-		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetValueAny("Interpretation"))};
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetTagAny("interpretation"))};
 		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(MetaDataBlockHeaderResult->GetAny("Length"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
@@ -147,39 +147,39 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Bu
 		
 		if(NumericValue == 0x00)
 		{
-			Result->GetValue()->Append("Interpretation", "StreamInfo"s);
+			Result->GetValue()->AppendTag("interpretation", "StreamInfo"s);
 		}
 		else if(NumericValue == 0x01)
 		{
-			Result->GetValue()->Append("Interpretation", "Padding"s);
+			Result->GetValue()->AppendTag("interpretation", "Padding"s);
 		}
 		else if(NumericValue == 0x02)
 		{
-			Result->GetValue()->Append("Interpretation", "Application"s);
+			Result->GetValue()->AppendTag("interpretation", "Application"s);
 		}
 		else if(NumericValue == 0x03)
 		{
-			Result->GetValue()->Append("Interpretation", "SeekTable"s);
+			Result->GetValue()->AppendTag("interpretation", "SeekTable"s);
 		}
 		else if(NumericValue == 0x04)
 		{
-			Result->GetValue()->Append("Interpretation", "VorbisComment"s);
+			Result->GetValue()->AppendTag("interpretation", "VorbisComment"s);
 		}
 		else if(NumericValue == 0x05)
 		{
-			Result->GetValue()->Append("Interpretation", "CueSheet"s);
+			Result->GetValue()->AppendTag("interpretation", "CueSheet"s);
 		}
 		else if(NumericValue == 0x06)
 		{
-			Result->GetValue()->Append("Interpretation", "Picture"s);
+			Result->GetValue()->AppendTag("interpretation", "Picture"s);
 		}
 		else if(NumericValue == 0xff)
 		{
-			Result->GetValue()->Append("Interpretation", "Invalid"s);
+			Result->GetValue()->AppendTag("interpretation", "Invalid"s);
 		}
 		else
 		{
-			Result->GetValue()->Append("Interpretation", "Reserved"s);
+			Result->GetValue()->AppendTag("interpretation", "Reserved"s);
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -201,87 +201,87 @@ std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspecti
 		
 		if(PictureType == 0)
 		{
-			Result->GetValue()->Append("Interpretation", "Other"s);
+			Result->GetValue()->AppendTag("interpretation", "Other"s);
 		}
 		else if(PictureType == 1)
 		{
-			Result->GetValue()->Append("Interpretation", "32x32 pixels 'file icon' (PNG only)"s);
+			Result->GetValue()->AppendTag("interpretation", "32x32 pixels 'file icon' (PNG only)"s);
 		}
 		else if(PictureType == 2)
 		{
-			Result->GetValue()->Append("Interpretation", "Other file icon"s);
+			Result->GetValue()->AppendTag("interpretation", "Other file icon"s);
 		}
 		else if(PictureType == 3)
 		{
-			Result->GetValue()->Append("Interpretation", "Cover (front)"s);
+			Result->GetValue()->AppendTag("interpretation", "Cover (front)"s);
 		}
 		else if(PictureType == 4)
 		{
-			Result->GetValue()->Append("Interpretation", "Cover (back)"s);
+			Result->GetValue()->AppendTag("interpretation", "Cover (back)"s);
 		}
 		else if(PictureType == 5)
 		{
-			Result->GetValue()->Append("Interpretation", "Leaflet page"s);
+			Result->GetValue()->AppendTag("interpretation", "Leaflet page"s);
 		}
 		else if(PictureType == 6)
 		{
-			Result->GetValue()->Append("Interpretation", "Media (e.g. label side of CD"s);
+			Result->GetValue()->AppendTag("interpretation", "Media (e.g. label side of CD"s);
 		}
 		else if(PictureType == 7)
 		{
-			Result->GetValue()->Append("Interpretation", "Lead artist/lead performer/soloist"s);
+			Result->GetValue()->AppendTag("interpretation", "Lead artist/lead performer/soloist"s);
 		}
 		else if(PictureType == 8)
 		{
-			Result->GetValue()->Append("Interpretation", "Artist/performer"s);
+			Result->GetValue()->AppendTag("interpretation", "Artist/performer"s);
 		}
 		else if(PictureType == 9)
 		{
-			Result->GetValue()->Append("Interpretation", "Conductor"s);
+			Result->GetValue()->AppendTag("interpretation", "Conductor"s);
 		}
 		else if(PictureType == 10)
 		{
-			Result->GetValue()->Append("Interpretation", "Band/Orchestra"s);
+			Result->GetValue()->AppendTag("interpretation", "Band/Orchestra"s);
 		}
 		else if(PictureType == 11)
 		{
-			Result->GetValue()->Append("Interpretation", "Composer"s);
+			Result->GetValue()->AppendTag("interpretation", "Composer"s);
 		}
 		else if(PictureType == 12)
 		{
-			Result->GetValue()->Append("Interpretation", "Lyricist/text writer"s);
+			Result->GetValue()->AppendTag("interpretation", "Lyricist/text writer"s);
 		}
 		else if(PictureType == 13)
 		{
-			Result->GetValue()->Append("Interpretation", "Recording Location"s);
+			Result->GetValue()->AppendTag("interpretation", "Recording Location"s);
 		}
 		else if(PictureType == 14)
 		{
-			Result->GetValue()->Append("Interpretation", "During recording"s);
+			Result->GetValue()->AppendTag("interpretation", "During recording"s);
 		}
 		else if(PictureType == 15)
 		{
-			Result->GetValue()->Append("Interpretation", "During performance"s);
+			Result->GetValue()->AppendTag("interpretation", "During performance"s);
 		}
 		else if(PictureType == 16)
 		{
-			Result->GetValue()->Append("Interpretation", "Movie/video screen capture"s);
+			Result->GetValue()->AppendTag("interpretation", "Movie/video screen capture"s);
 		}
 		else if(PictureType == 17)
 		{
-			Result->GetValue()->Append("Interpretation", "A bright coloured fish"s);
+			Result->GetValue()->AppendTag("interpretation", "A bright coloured fish"s);
 		}
 		else if(PictureType == 18)
 		{
-			Result->GetValue()->Append("Interpretation", "Illustration"s);
+			Result->GetValue()->AppendTag("interpretation", "Illustration"s);
 		}
 		else if(PictureType == 19)
 		{
-			Result->GetValue()->Append("Interpretation", "Band/artist logotype"s);
+			Result->GetValue()->AppendTag("interpretation", "Band/artist logotype"s);
 		}
 		else if(PictureType == 20)
 		{
-			Result->GetValue()->Append("Interpretation", "Publisher/Studio logotype"s);
+			Result->GetValue()->AppendTag("interpretation", "Publisher/Studio logotype"s);
 		}
 		else
 		{
@@ -468,7 +468,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffe
 	Result->GetValue()->Append("Header", MetaDataBlockHeaderResult->GetValue());
 	if(MetaDataBlockHeaderResult->GetSuccess() == true)
 	{
-		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetValueAny("Interpretation"))};
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetTagAny("interpretation"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
@@ -491,7 +491,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_BitsPerSample(Ins
 	Result->SetValue(BitsPerSampleResult->GetValue());
 	if(BitsPerSampleResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1));
+		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1));
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
@@ -567,7 +567,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(
 	Result->SetValue(NumberOfChannelsResult->GetValue());
 	if(NumberOfChannelsResult->GetSuccess() == true)
 	{
-		Result->GetValue()->Append("Interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
+		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
 		Result->SetSuccess(true);
 	}
 	Inspection::FinalizeResult(Result, Buffer);
