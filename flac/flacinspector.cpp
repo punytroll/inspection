@@ -138,7 +138,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto MetaDataBlockTypeResult{Get_UnsignedInteger_7Bit(Buffer)};
 	
-	Result->GetValue()->SetAny(MetaDataBlockTypeResult->GetAny());
+	Result->SetValue(MetaDataBlockTypeResult->GetValue());
 	if(MetaDataBlockTypeResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
