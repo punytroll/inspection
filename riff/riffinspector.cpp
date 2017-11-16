@@ -55,7 +55,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer
 			}
 			else
 			{
-				ChunkDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, ChunkSize);
+				ChunkDataResult = Get_Bits_SetOrUnset_EndedByLength(Buffer, ChunkSize);
 				Result->GetValue()->AppendValue("Data", ChunkDataResult->GetValue());
 			}
 			Result->SetSuccess(ChunkDataResult->GetSuccess());
@@ -316,8 +316,9 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto BitsPerSampleValue{Result->GetValue()->AppendValue("BitsPerSample", BitsPerSampleResult->GetValue())};
 	
-	Result->GetValue()->AppendValue(BitsPerSampleResult->GetValue());
+	BitsPerSampleValue->AppendTag("units", "bits per sample"s);
 	Result->SetSuccess(BitsPerSampleResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
