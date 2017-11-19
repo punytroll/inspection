@@ -12,30 +12,54 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries);
 std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Buffer & Buffer);
-
 
 std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto VorbisHeaderPacketResult{Get_Vorbis_HeaderPacket(Buffer, Length)};
 	
-	Result->SetValue(VorbisHeaderPacketResult->GetValue());
-	if(VorbisHeaderPacketResult->GetSuccess() == true)
+	if(Length == Inspection::Length(0ul, 0))
 	{
+		Result->GetValue()->AppendTag("interpretation", "OGG nil"s);
 		Result->SetSuccess(true);
 	}
 	else
 	{
-		// reset buffer position, so we can try something else
-		Buffer.SetPosition(Start);
+		auto VorbisHeaderPacketResult{Get_Vorbis_HeaderPacket(Buffer, Length)};
 		
-		auto PacketResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Length)};
-		
-		Result->GetValue()->AppendValue("Data", PacketResult->GetValue());
-		Result->SetSuccess(PacketResult->GetSuccess());
+		Result->SetValue(VorbisHeaderPacketResult->GetValue());
+		if(VorbisHeaderPacketResult->GetSuccess() == true)
+		{
+			Result->SetSuccess(true);
+		}
+		else
+		{
+			// reset buffer position, so we can try something else
+			Buffer.SetPosition(Start);
+			
+			auto VorbisAudioPacketResult{Get_Vorbis_AudioPacket(Buffer, Length)};
+			
+			Result->SetValue(VorbisAudioPacketResult->GetValue());
+			if(VorbisAudioPacketResult->GetSuccess() == true)
+			{
+				Result->SetSuccess(true);
+			}
+			else
+			{
+				// reset buffer position, so we can try something else
+				Buffer.SetPosition(Start);
+				
+				auto PacketResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Length)};
+				
+				Result->GetValue()->AppendTag("interpretation", "OGG unknown"s);
+				Result->GetValue()->AppendValue("Data", PacketResult->GetValue());
+				Result->SetSuccess(PacketResult->GetSuccess());
+			}
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -223,10 +247,37 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto PacketTypeResult{Get_UnsignedInteger_1Bit(Buffer)};
+	
+	Result->GetValue()->AppendValue("PacketType", PacketTypeResult->GetValue());
+	if(PacketTypeResult->GetSuccess() == true)
+	{
+		auto PacketType{std::experimental::any_cast< std::uint8_t >(PacketTypeResult->GetAny())};
+		
+		if(PacketType == 0x00)
+		{
+			Result->GetValue()->AppendTag("interpretation", "Vorbis Audio"s);
+			
+			auto DataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			
+			Result->GetValue()->AppendValue("Data", DataResult->GetValue());
+			Result->SetSuccess(DataResult->GetSuccess());
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto PacketTypeResult{Get_UnsignedInteger_8Bit(Buffer)};
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto PacketTypeResult{Get_Vorbis_HeaderPacket_Type(Buffer)};
 	
 	Result->GetValue()->AppendValue("PacketType", PacketTypeResult->GetValue());
 	if(PacketTypeResult->GetSuccess() == true)
@@ -258,6 +309,48 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 					Result->SetSuccess(true);
 				}
 			}
+			else if(PacketType == 0x05)
+			{
+				auto SetupHeaderResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+				
+				Result->GetValue()->AppendValue("Data", SetupHeaderResult->GetValue());
+				Result->SetSuccess(SetupHeaderResult->GetSuccess());
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TypeResult{Get_UnsignedInteger_8Bit(Buffer)};
+	
+	Result->SetValue(TypeResult->GetValue());
+	if(TypeResult->GetSuccess() == true)
+	{
+		auto Type{std::experimental::any_cast< std::uint8_t >(TypeResult->GetAny())};
+		
+		if(Type == 0x01)
+		{
+			Result->GetValue()->AppendTag("interpretation", "Vorbis Identification Header"s);
+			Result->SetSuccess(true);
+		}
+		else if(Type == 0x03)
+		{
+			Result->GetValue()->AppendTag("interpretation", "Vorbis Comment Header"s);
+			Result->SetSuccess(true);
+		}
+		else if(Type == 0x05)
+		{
+			Result->GetValue()->AppendTag("interpretation", "Vorbis Setup Header"s);
+			Result->SetSuccess(true);
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "Unknown packet type " + to_string_cast(Type) + ".");
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
