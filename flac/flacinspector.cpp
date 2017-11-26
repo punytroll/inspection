@@ -7,7 +7,7 @@ using namespace std::string_literals;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Buffer & Buffer, std::uint64_t Length);
+std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::Buffer & Buffer);
 std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Buffer & Buffer);
@@ -23,15 +23,16 @@ std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(
 std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlock_Data(Inspection::Buffer & Buffer);
 
 
-std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Buffer & Buffer, std::uint64_t Length)
+std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Boundary{Buffer.GetPosition() + Length};
 	auto RegisteredApplicationIdentifierResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
 	
 	Result->GetValue()->AppendValue("RegisteredApplicationIdentifier", RegisteredApplicationIdentifierResult->GetValue());
 	if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
 	{
-		auto ApplicationDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length - 4)};
+		auto ApplicationDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
 		Result->GetValue()->AppendValue("ApplicationData", ApplicationDataResult->GetValue());
 		if(ApplicationDataResult->GetSuccess() == true)
