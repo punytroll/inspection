@@ -35,10 +35,7 @@ std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection:
 		auto ApplicationDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
 		Result->GetValue()->AppendValue("ApplicationData", ApplicationDataResult->GetValue());
-		if(ApplicationDataResult->GetSuccess() == true)
-		{
-			Result->SetSuccess(true);
-		}
+		Result->SetSuccess(ApplicationDataResult->GetSuccess());
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
