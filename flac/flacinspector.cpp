@@ -27,11 +27,28 @@ std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection:
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Boundary{Buffer.GetPosition() + Length};
+	auto RegisteredApplicationIdentifierStart{Buffer.GetPosition()};
 	auto RegisteredApplicationIdentifierResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+	auto RegisteredApplicationIdentifierValue{Result->GetValue()->AppendValue("RegisteredApplicationIdentifier", RegisteredApplicationIdentifierResult->GetValue())};
 	
-	Result->GetValue()->AppendValue("RegisteredApplicationIdentifier", RegisteredApplicationIdentifierResult->GetValue());
 	if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
 	{
+		auto ApplicationDataStart{Buffer.GetPosition()};
+		
+		Buffer.SetPosition(RegisteredApplicationIdentifierStart);
+		RegisteredApplicationIdentifierResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(4ul, 0));
+		if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
+		{
+			RegisteredApplicationIdentifierValue->AppendTag("bytes", RegisteredApplicationIdentifierResult->GetAny());
+		}
+		Buffer.SetPosition(RegisteredApplicationIdentifierStart);
+		RegisteredApplicationIdentifierResult = Get_ASCII_String_Printable_EndedByLength(Buffer, Inspection::Length(4ul, 0));
+		if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
+		{
+			RegisteredApplicationIdentifierValue->AppendTag("string interpretation", RegisteredApplicationIdentifierResult->GetAny());
+		}
+		Buffer.SetPosition(ApplicationDataStart);
+		
 		auto ApplicationDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
 		
 		Result->GetValue()->AppendValue("ApplicationData", ApplicationDataResult->GetValue());
