@@ -335,6 +335,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 				if(Buffer.GetPosition() == Boundary)
 				{
 					Result->GetValue()->AppendTag("ended by length"s);
+					
+					break;
 				}
 			}
 			else
