@@ -11,19 +11,18 @@
 using namespace std::string_literals;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// 5th generation getters                                                                        //
+// helper function to find the position of an embedded APETAG                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Inspection::Result > Get_APE_Identifier(Inspection::Buffer & Buffer);
-
-
-std::unique_ptr< Inspection::Result > Get_APE_Identifier(Inspection::Buffer & Buffer)
+std::int64_t GetAPETAGOffset(const std::uint8_t * Buffer, std::uint64_t Length, std::uint64_t Offset)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	std::int64_t Result{-1};
+	auto Start{0ul};
+	auto Position{Offset};
 	auto State{0ul};
 	
-	while(Buffer.GetPosition() < Buffer.GetLength())
+	while((Result == -1) && (Position < Length))
 	{
-		auto Byte{Buffer.Get8Bits()};
+		auto Byte{Buffer[Position]};
 		
 		switch(State)
 		{
@@ -31,6 +30,7 @@ std::unique_ptr< Inspection::Result > Get_APE_Identifier(Inspection::Buffer & Bu
 			{
 				if(Byte == 'A')
 				{
+					Start = Position;
 					State = 1;
 				}
 				else
@@ -142,9 +142,7 @@ std::unique_ptr< Inspection::Result > Get_APE_Identifier(Inspection::Buffer & Bu
 			{
 				if(Byte == 'X')
 				{
-					Result->GetValue()->AppendValue("Found", "APETAGEX"s);
-					Result->SetSuccess(true);
-					Buffer.SetPosition(Buffer.GetLength());
+					Result = Start;
 				}
 				else if(Byte == 'A')
 				{
@@ -158,7 +156,25 @@ std::unique_ptr< Inspection::Result > Get_APE_Identifier(Inspection::Buffer & Bu
 				break;
 			}
 		}
+		Position += 1;
 	}
+	
+	return Result;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// 5th generation getters                                                                        //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & Buffer);
+
+
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto PreambleResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "APETAGEX")};
+	
+	Result->GetValue()->AppendValue("Preamble", PreambleResult->GetValue());
+	Result->SetSuccess(PreambleResult->GetSuccess());
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -166,11 +182,22 @@ std::unique_ptr< Inspection::Result > Get_APE_Identifier(Inspection::Buffer & Bu
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
-	auto APETagResult(Get_APE_Identifier(Buffer));
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Position{GetAPETAGOffset(Buffer.GetData(), Buffer.GetLength().GetBytes(), 0ul)};
 	
-	APETagResult->GetValue()->SetName("APE Tag");
+	if(Position >= 0)
+	{
+		Buffer.SetPosition(Inspection::Length(Position, 0));
+		
+		auto APETagsHeaderResult{Get_APE_Tags_Header(Buffer)};
+		
+		Result->GetValue()->AppendValue("APETagsHeader", APETagsHeaderResult->GetValue());
+		Result->SetSuccess(APETagsHeaderResult->GetSuccess());
+		Result->GetValue()->SetName("APEv2 Tag");
+	}
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return APETagResult;
+	return Result;
 }
 
 int main(int argc, char ** argv)
