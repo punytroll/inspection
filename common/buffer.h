@@ -24,6 +24,11 @@ namespace Inspection
 			{
 			}
 			
+			const std::uint8_t * GetData(void) const
+			{
+				return _Data;
+			}
+			
 			const Inspection::Length & GetLength(void) const
 			{
 				return _Length;
@@ -462,6 +467,13 @@ namespace Inspection
 			assert(_BitstreamReader != nullptr);
 			
 			return _BitstreamType;
+		}
+		
+		const std::uint8_t * GetData(void) const
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			return _BitstreamReader->GetData();
 		}
 		
 		const Inspection::Length & GetLength(void) const
