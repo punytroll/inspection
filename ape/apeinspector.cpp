@@ -166,6 +166,8 @@ std::int64_t GetAPETAGOffset(const std::uint8_t * Buffer, std::uint64_t Length, 
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_TagsFlags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_VersionNumber(Inspection::Buffer & Buffer);
 
 
 std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & Buffer)
@@ -174,7 +176,79 @@ std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & B
 	auto PreambleResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "APETAGEX")};
 	
 	Result->GetValue()->AppendValue("Preamble", PreambleResult->GetValue());
-	Result->SetSuccess(PreambleResult->GetSuccess());
+	if(PreambleResult->GetSuccess() == true)
+	{
+		auto VersionNumberResult{Get_APE_Tags_Header_VersionNumber(Buffer)};
+		
+		Result->GetValue()->AppendValue("VersionNumber", VersionNumberResult->GetValue());
+		if(VersionNumberResult->GetSuccess() == true)
+		{
+			auto TagSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			
+			Result->GetValue()->AppendValue("TagSize", TagSizeResult->GetValue());
+			if(TagSizeResult->GetSuccess() == true)
+			{
+				auto ItemCountResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				
+				Result->GetValue()->AppendValue("ItemCount", ItemCountResult->GetValue());
+				if(ItemCountResult->GetSuccess() == true)
+				{
+					auto TagsFlagsResult{Get_APE_Tags_Header_TagsFlags(Buffer)};
+					
+					Result->GetValue()->AppendValue("TagsFlags", TagsFlagsResult->GetValue());
+					Result->SetSuccess(TagsFlagsResult->GetSuccess());
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_TagsFlags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Start{Buffer.GetPosition()};
+	auto TagsFlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
+	
+	Result->SetValue(TagsFlagsResult->GetValue());
+	if(TagsFlagsResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(TagsFlagsResult->GetSuccess());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_VersionNumber(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto VersionNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	
+	Result->SetValue(VersionNumberResult->GetValue());
+	if(VersionNumberResult->GetSuccess() == true)
+	{
+		auto VersionNumber{std::experimental::any_cast< std::uint32_t >(VersionNumberResult->GetAny())};
+		
+		if(VersionNumber == 1000)
+		{
+			Result->GetValue()->AppendTag("interpretation", "1.000 (old)"s);
+			Result->SetSuccess(true);
+		}
+		else if(VersionNumber == 2000)
+		{
+			Result->GetValue()->AppendTag("interpretation", "2.000 (new)"s);
+			Result->SetSuccess(true);
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("interpretation", "<unknown>"s);
+			Result->GetValue()->AppendTag("error", "Unknown version number " + to_string_cast(VersionNumber) + ".");
+			Result->SetSuccess(false);
+		}
+	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
