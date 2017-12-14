@@ -165,12 +165,124 @@ std::int64_t GetAPETAGOffset(const std::uint8_t * Buffer, std::uint64_t Length, 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_TagsFlags(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_VersionNumber(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_APE_Tags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Flags(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Item(Inspection::Buffer & Buffer);
 
 
-std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_APE_Tags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto APETagsHeaderResult{Get_APE_Tags_HeaderOrFooter(Buffer)};
+	
+	Result->GetValue()->AppendValue("APETagsHeader", APETagsHeaderResult->GetValue());
+	if(APETagsHeaderResult->GetSuccess() == true)
+	{
+		Result->SetSuccess(true);
+		
+		auto ItemCount{std::experimental::any_cast< std::uint32_t >(APETagsHeaderResult->GetAny("ItemCount"))};
+		
+		for(auto ItemIndex = 0ul; ItemIndex < ItemCount; ++ItemIndex)
+		{
+			auto APETagsItemResult{Get_APE_Tags_Item(Buffer)};
+			
+			Result->GetValue()->AppendValue("APETagsItem", APETagsItemResult->GetValue());
+			if(APETagsItemResult->GetSuccess() == false)
+			{
+				Result->SetSuccess(false);
+				
+				break;
+			}
+		}
+		
+		auto APETagsFooterResult{Get_APE_Tags_HeaderOrFooter(Buffer)};
+		
+		Result->GetValue()->AppendValue("APETagsFooter", APETagsFooterResult->GetValue());
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Flags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Start{Buffer.GetPosition()};
+	auto TagsFlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
+	
+	Result->SetValue(TagsFlagsResult->GetValue());
+	if(TagsFlagsResult->GetSuccess() == true)
+	{
+		const std::bitset<32> & TagsFlags{std::experimental::any_cast< const std::bitset<32> & >(TagsFlagsResult->GetAny())};
+		auto FlagValue{Result->GetValue()->AppendValue("TagOrItemIsReadOnly", TagsFlags[0])};
+		
+		FlagValue->AppendTag("bit index", "0"s);
+		if((TagsFlags[1] == false) && (TagsFlags[2] == false))
+		{
+			FlagValue = Result->GetValue()->AppendValue("ItemValueType", static_cast< std::uint8_t >(0));
+			FlagValue->AppendTag("interpretation", "Item contains text information coded in UTF-8"s);
+		}
+		else if((TagsFlags[1] == true) && (TagsFlags[2] == false))
+		{
+			FlagValue = Result->GetValue()->AppendValue("ItemValueType", static_cast< std::uint8_t >(1));
+			FlagValue->AppendTag("interpretation", "Item contains binary information"s);
+		}
+		else if((TagsFlags[1] == false) && (TagsFlags[2] == true))
+		{
+			FlagValue = Result->GetValue()->AppendValue("ItemValueType", static_cast< std::uint8_t >(2));
+			FlagValue->AppendTag("interpretation", "Item is a locator of external stored information"s);
+		}
+		else if((TagsFlags[1] == true) && (TagsFlags[2] == true))
+		{
+			FlagValue = Result->GetValue()->AppendValue("ItemValueType", static_cast< std::uint8_t >(3));
+			FlagValue->AppendTag("interpretation", "<reserved>"s);
+		}
+		FlagValue->AppendTag("bit indices", "1 to 2"s);
+		
+		auto AllFalse{true};
+		
+		for(auto BitIndex = 3; BitIndex < 29; ++BitIndex)
+		{
+			if(TagsFlags[BitIndex] == true)
+			{
+				AllFalse = false;
+				
+				break;
+			}
+		}
+		if(AllFalse == true)
+		{
+			FlagValue = Result->GetValue()->AppendValue("Undefined", false);
+			FlagValue->AppendTag("bit indices", "3 to 28"s);
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "All bits 3 to 28 must be unset.");
+		}
+		FlagValue = Result->GetValue()->AppendValue("Type", TagsFlags[29]);
+		if(TagsFlags[29] == true)
+		{
+			FlagValue->AppendTag("interpretation", "This is the header, not the footer"s);
+		}
+		else
+		{
+			FlagValue->AppendTag("interpretation", "This is the footer, not the header"s);
+		}
+		FlagValue->AppendTag("bit index", 29);
+		FlagValue = Result->GetValue()->AppendValue("TagContainsAFooter", TagsFlags[30]);
+		FlagValue->AppendTag("bit index", 30);
+		FlagValue = Result->GetValue()->AppendValue("TagContainsAHeader", TagsFlags[31]);
+		FlagValue->AppendTag("bit index", 31);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto PreambleResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "APETAGEX")};
@@ -178,7 +290,7 @@ std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & B
 	Result->GetValue()->AppendValue("Preamble", PreambleResult->GetValue());
 	if(PreambleResult->GetSuccess() == true)
 	{
-		auto VersionNumberResult{Get_APE_Tags_Header_VersionNumber(Buffer)};
+		auto VersionNumberResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(Buffer)};
 		
 		Result->GetValue()->AppendValue("VersionNumber", VersionNumberResult->GetValue());
 		if(VersionNumberResult->GetSuccess() == true)
@@ -193,10 +305,16 @@ std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & B
 				Result->GetValue()->AppendValue("ItemCount", ItemCountResult->GetValue());
 				if(ItemCountResult->GetSuccess() == true)
 				{
-					auto TagsFlagsResult{Get_APE_Tags_Header_TagsFlags(Buffer)};
+					auto TagsFlagsResult{Get_APE_Tags_Flags(Buffer)};
 					
 					Result->GetValue()->AppendValue("TagsFlags", TagsFlagsResult->GetValue());
-					Result->SetSuccess(TagsFlagsResult->GetSuccess());
+					if(TagsFlagsResult->GetSuccess() == true)
+					{
+						auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(8, 0))};
+						
+						Result->GetValue()->AppendValue("Reserved", ReservedResult->GetValue());
+						Result->SetSuccess(ReservedResult->GetSuccess());
+					}
 				}
 			}
 		}
@@ -206,23 +324,7 @@ std::unique_ptr< Inspection::Result > Get_APE_Tags_Header(Inspection::Buffer & B
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_TagsFlags(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Start{Buffer.GetPosition()};
-	auto TagsFlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
-	
-	Result->SetValue(TagsFlagsResult->GetValue());
-	if(TagsFlagsResult->GetSuccess() == true)
-	{
-		Result->SetSuccess(TagsFlagsResult->GetSuccess());
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_VersionNumber(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto VersionNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
@@ -254,6 +356,46 @@ std::unique_ptr< Inspection::Result > Get_APE_Tags_Header_VersionNumber(Inspecti
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Get_APE_Tags_Item(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto ItemValueSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	
+	Result->GetValue()->AppendValue("ItemValueSize", ItemValueSizeResult->GetValue());
+	if(ItemValueSizeResult->GetSuccess() == true)
+	{
+		auto ItemFlagsResult{Get_APE_Tags_Flags(Buffer)};
+		
+		Result->GetValue()->AppendValue("ItemFlags", ItemFlagsResult->GetValue());
+		if(ItemFlagsResult->GetSuccess() == true)
+		{
+			auto ItemKeyResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+			
+			Result->GetValue()->AppendValue("ItemKey", ItemKeyResult->GetValue());
+			if(ItemKeyResult->GetSuccess() == true)
+			{
+				auto ItemValueType{std::experimental::any_cast< std::uint8_t >(ItemFlagsResult->GetAny("ItemValueType"))};
+				
+				if(ItemValueType == 0)
+				{
+					auto ItemValueSize{std::experimental::any_cast< std::uint32_t >(ItemValueSizeResult->GetAny())};
+					auto ItemValueResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length(ItemValueSize, 0))};
+					
+					Result->GetValue()->AppendValue("ItemValue", ItemValueResult->GetValue());
+					Result->SetSuccess(ItemValueResult->GetSuccess());
+				}
+				else
+				{
+					throw Inspection::NotImplementedException("Can only interpret UTF-8 item values.");
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -263,10 +405,10 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	{
 		Buffer.SetPosition(Inspection::Length(Position, 0));
 		
-		auto APETagsHeaderResult{Get_APE_Tags_Header(Buffer)};
+		auto APETagsResult{Get_APE_Tags(Buffer)};
 		
-		Result->GetValue()->AppendValue("APETagsHeader", APETagsHeaderResult->GetValue());
-		Result->SetSuccess(APETagsHeaderResult->GetSuccess());
+		Result->SetValue(APETagsResult->GetValue());
+		Result->SetSuccess(APETagsResult->GetSuccess());
 		Result->GetValue()->SetName("APEv2 Tag");
 	}
 	Inspection::FinalizeResult(Result, Buffer);
