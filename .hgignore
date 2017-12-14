@@ -16,3 +16,5 @@ syntax: regexp
 ^ape/.*\.o$
 ^common/test$
 ^common/.*\.o$
+^general/.*\.o$
+^generalinspector$
