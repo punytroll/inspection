@@ -145,7 +145,14 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				PrintValue(ParseResult->GetValue());
 				if(ParseResult->GetSuccess() == false)
 				{
-					std::cout << g_LightRed << "Parsing does not give valid " << ParseResult->GetValue()->GetName() << '.' << g_White << std::endl;
+					if(ParseResult->GetValue()->GetName() == "")
+					{
+						std::cout << g_LightRed << "Parsing does not give valid and complete result." << g_White << std::endl;
+					}
+					else
+					{
+						std::cout << g_LightRed << "Parsing does not give valid " << ParseResult->GetValue()->GetName() << '.' << g_White << std::endl;
+					}
 				}
 				
 				auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
