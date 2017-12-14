@@ -64,19 +64,47 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 	}
 	else if(Any.type() == typeid(std::bitset<4>))
 	{
-		return OStream << std::experimental::any_cast< std::bitset<4> >(Any);
+		auto BitSet{std::experimental::any_cast< const std::bitset<4> >(Any)};
+		
+		for(auto BitIndex = 0; BitIndex < 4; ++BitIndex)
+		{
+			OStream << static_cast< uint32_t >(BitSet[BitIndex]);
+		}
+		
+		return OStream;
 	}
 	else if(Any.type() == typeid(std::bitset<8>))
 	{
-		return OStream << std::experimental::any_cast< std::bitset<8> >(Any);
+		auto BitSet{std::experimental::any_cast< const std::bitset<8> >(Any)};
+		
+		for(auto BitIndex = 0; BitIndex < 8; ++BitIndex)
+		{
+			OStream << static_cast< uint32_t >(BitSet[BitIndex]);
+		}
+		
+		return OStream;
 	}
 	else if(Any.type() == typeid(std::bitset<16>))
 	{
-		return OStream << std::experimental::any_cast< std::bitset<16> >(Any);
+		auto BitSet{std::experimental::any_cast< const std::bitset<16> >(Any)};
+		
+		for(auto BitIndex = 0; BitIndex < 16; ++BitIndex)
+		{
+			OStream << static_cast< uint32_t >(BitSet[BitIndex]);
+		}
+		
+		return OStream;
 	}
 	else if(Any.type() == typeid(std::bitset<32>))
 	{
-		return OStream << std::experimental::any_cast< std::bitset<32> >(Any);
+		auto BitSet{std::experimental::any_cast< const std::bitset<32> >(Any)};
+		
+		for(auto BitIndex = 0; BitIndex < 32; ++BitIndex)
+		{
+			OStream << static_cast< uint32_t >(BitSet[BitIndex]);
+		}
+		
+		return OStream;
 	}
 	else if(Any.type() == typeid(Inspection::GUID))
 	{
