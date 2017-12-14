@@ -10,9 +10,6 @@ using namespace std::string_literals;
 // global variables and configuration                                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::map< std::uint8_t, std::string > g_NumericGenresID3_1;
-std::map< std::uint8_t, std::string > g_NumericGenresWinamp;
-
 std::pair< bool, unsigned int > GetUnsignedIntegerFromDecimalASCIIDigit(uint8_t ASCIIDigit)
 {
 	std::pair< bool, unsigned int > Result(false, 0);
@@ -60,12 +57,15 @@ std::pair< bool, std::string > GetSimpleID3_1GenreReferenceInterpretation(const 
 		
 		if(GenreNumber.first == true)
 		{
-			auto NumericGenreID3_1Iterator(g_NumericGenresID3_1.find(GenreNumber.second));
-			
-			if(NumericGenreID3_1Iterator != g_NumericGenresID3_1.end())
+			try
 			{
+				auto Genre{Inspection::Get_ID3_1_Genre(GenreNumber.second)};
+				
 				Result.first = true;
-				Result.second = '"' + NumericGenreID3_1Iterator->second + "\" (reference to numeric genre from ID3v1)";
+				Result.second = '"' + Genre + "\" (reference to numeric genre from ID3v1)";
+			}
+			catch(Inspection::UnknownValueException & Exception)
+			{
 			}
 		}
 	}
@@ -83,12 +83,15 @@ std::pair< bool, std::string > GetSimpleWinampExtensionGenreReferenceInterpretat
 		
 		if(GenreNumber.first == true)
 		{
-			auto NumericGenreWinampIterator(g_NumericGenresWinamp.find(GenreNumber.second));
-			
-			if(NumericGenreWinampIterator != g_NumericGenresWinamp.end())
+			try
 			{
+				auto Genre{Inspection::Get_ID3_1_Winamp_Genre(GenreNumber.second)};
+				
 				Result.first = true;
-				Result.second = '"' + NumericGenreWinampIterator->second + "\" (reference to numeric genre from Winamp extension)";
+				Result.second = '"' + Genre + "\" (reference to numeric genre from ID3v1)";
+			}
+			catch(Inspection::UnknownValueException & Exception)
+			{
 			}
 		}
 	}
@@ -1341,23 +1344,25 @@ std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer)
 							{
 								Result->SetSuccess(true);
 								
-								auto Genre{std::experimental::any_cast< std::uint8_t >(GenreResult->GetAny())};
-								auto NumericGenreIterator(g_NumericGenresID3_1.find(Genre));
+								auto GenreNumber{std::experimental::any_cast< std::uint8_t >(GenreResult->GetAny())};
 								
-								if(NumericGenreIterator != g_NumericGenresID3_1.end())
+								try
 								{
-									Result->GetValue("Genre")->PrependTag("interpretation", NumericGenreIterator->second);
+									auto Genre{Inspection::Get_ID3_1_Genre(GenreNumber)};
+									
+									Result->GetValue("Genre")->PrependTag("interpretation", Genre);
 									Result->GetValue("Genre")->PrependTag("standard", "ID3v1"s);
 								}
-								else
+								catch(Inspection::UnknownValueException & Exception)
 								{
-									NumericGenreIterator = g_NumericGenresWinamp.find(Genre);
-									if(NumericGenreIterator != g_NumericGenresWinamp.end())
+									try
 									{
-										Result->GetValue("Genre")->PrependTag("interpretation", NumericGenreIterator->second);
+										auto Genre{Inspection::Get_ID3_1_Winamp_Genre(GenreNumber)};
+										
+										Result->GetValue("Genre")->PrependTag("interpretation", Genre);
 										Result->GetValue("Genre")->PrependTag("standard", "Winamp extension"s);
 									}
-									else
+									catch(Inspection::UnknownValueException & Exception)
 									{
 										Result->GetValue("Genre")->PrependTag("interpretation", "<unrecognized>"s);
 									}
@@ -4332,135 +4337,6 @@ int main(int argc, char **argv)
 
 		return 1;
 	}
-	
-	// numeric genres for version ID3v1
-	g_NumericGenresID3_1.insert(std::make_pair(0, "Blues"));
-	g_NumericGenresID3_1.insert(std::make_pair(1, "Classic Rock"));
-	g_NumericGenresID3_1.insert(std::make_pair(2, "Country"));
-	g_NumericGenresID3_1.insert(std::make_pair(3, "Dance"));
-	g_NumericGenresID3_1.insert(std::make_pair(4, "Disco"));
-	g_NumericGenresID3_1.insert(std::make_pair(5, "Funk"));
-	g_NumericGenresID3_1.insert(std::make_pair(6, "Grunge"));
-	g_NumericGenresID3_1.insert(std::make_pair(7, "Hip-Hop"));
-	g_NumericGenresID3_1.insert(std::make_pair(8, "Jazz"));
-	g_NumericGenresID3_1.insert(std::make_pair(9, "Metal"));
-	g_NumericGenresID3_1.insert(std::make_pair(10, "New Age"));
-	g_NumericGenresID3_1.insert(std::make_pair(11, "Oldies"));
-	g_NumericGenresID3_1.insert(std::make_pair(12, "Other"));
-	g_NumericGenresID3_1.insert(std::make_pair(13, "Pop"));
-	g_NumericGenresID3_1.insert(std::make_pair(14, "R&B"));
-	g_NumericGenresID3_1.insert(std::make_pair(15, "Rap"));
-	g_NumericGenresID3_1.insert(std::make_pair(16, "Reggae"));
-	g_NumericGenresID3_1.insert(std::make_pair(17, "Rock"));
-	g_NumericGenresID3_1.insert(std::make_pair(18, "Techno"));
-	g_NumericGenresID3_1.insert(std::make_pair(19, "Industrial"));
-	g_NumericGenresID3_1.insert(std::make_pair(20, "Alternative"));
-	g_NumericGenresID3_1.insert(std::make_pair(21, "Ska"));
-	g_NumericGenresID3_1.insert(std::make_pair(22, "Death Metal"));
-	g_NumericGenresID3_1.insert(std::make_pair(23, "Pranks"));
-	g_NumericGenresID3_1.insert(std::make_pair(24, "Soundtrack"));
-	g_NumericGenresID3_1.insert(std::make_pair(25, "Euro-Techno"));
-	g_NumericGenresID3_1.insert(std::make_pair(26, "Ambient"));
-	g_NumericGenresID3_1.insert(std::make_pair(27, "Trip-Hop"));
-	g_NumericGenresID3_1.insert(std::make_pair(28, "Vocal"));
-	g_NumericGenresID3_1.insert(std::make_pair(29, "Jazz+Funk"));
-	g_NumericGenresID3_1.insert(std::make_pair(30, "Fusion"));
-	g_NumericGenresID3_1.insert(std::make_pair(31, "Trance"));
-	g_NumericGenresID3_1.insert(std::make_pair(32, "Classical"));
-	g_NumericGenresID3_1.insert(std::make_pair(33, "Instrumental"));
-	g_NumericGenresID3_1.insert(std::make_pair(34, "Acid"));
-	g_NumericGenresID3_1.insert(std::make_pair(35, "House"));
-	g_NumericGenresID3_1.insert(std::make_pair(36, "Game"));
-	g_NumericGenresID3_1.insert(std::make_pair(37, "Sound Clip"));
-	g_NumericGenresID3_1.insert(std::make_pair(38, "Gospel"));
-	g_NumericGenresID3_1.insert(std::make_pair(39, "Noise"));
-	g_NumericGenresID3_1.insert(std::make_pair(40, "AlternRock"));
-	g_NumericGenresID3_1.insert(std::make_pair(41, "Bass"));
-	g_NumericGenresID3_1.insert(std::make_pair(42, "Soul"));
-	g_NumericGenresID3_1.insert(std::make_pair(43, "Punk"));
-	g_NumericGenresID3_1.insert(std::make_pair(44, "Space"));
-	g_NumericGenresID3_1.insert(std::make_pair(45, "Meditative"));
-	g_NumericGenresID3_1.insert(std::make_pair(46, "Instrumental Pop"));
-	g_NumericGenresID3_1.insert(std::make_pair(47, "Instrumental Rock"));
-	g_NumericGenresID3_1.insert(std::make_pair(48, "Ethnic"));
-	g_NumericGenresID3_1.insert(std::make_pair(49, "Gothic"));
-	g_NumericGenresID3_1.insert(std::make_pair(50, "Darkwave"));
-	g_NumericGenresID3_1.insert(std::make_pair(51, "Techno-Industrial"));
-	g_NumericGenresID3_1.insert(std::make_pair(52, "Electronic"));
-	g_NumericGenresID3_1.insert(std::make_pair(53, "Pop-Folk"));
-	g_NumericGenresID3_1.insert(std::make_pair(54, "Eurodance"));
-	g_NumericGenresID3_1.insert(std::make_pair(55, "Dream"));
-	g_NumericGenresID3_1.insert(std::make_pair(56, "Southern Rock"));
-	g_NumericGenresID3_1.insert(std::make_pair(57, "Comedy"));
-	g_NumericGenresID3_1.insert(std::make_pair(58, "Cult"));
-	g_NumericGenresID3_1.insert(std::make_pair(59, "Gangsta"));
-	g_NumericGenresID3_1.insert(std::make_pair(60, "Top 40"));
-	g_NumericGenresID3_1.insert(std::make_pair(61, "Christian Rap"));
-	g_NumericGenresID3_1.insert(std::make_pair(62, "Pop/Funk"));
-	g_NumericGenresID3_1.insert(std::make_pair(63, "Jungle"));
-	g_NumericGenresID3_1.insert(std::make_pair(64, "Native American"));
-	g_NumericGenresID3_1.insert(std::make_pair(65, "Cabaret"));
-	g_NumericGenresID3_1.insert(std::make_pair(66, "New Wave"));
-	g_NumericGenresID3_1.insert(std::make_pair(67, "Psychadelic"));
-	g_NumericGenresID3_1.insert(std::make_pair(68, "Rave"));
-	g_NumericGenresID3_1.insert(std::make_pair(69, "Showtunes"));
-	g_NumericGenresID3_1.insert(std::make_pair(70, "Trailer"));
-	g_NumericGenresID3_1.insert(std::make_pair(71, "Lo-Fi"));
-	g_NumericGenresID3_1.insert(std::make_pair(72, "Tribal"));
-	g_NumericGenresID3_1.insert(std::make_pair(73, "Acid Punk"));
-	g_NumericGenresID3_1.insert(std::make_pair(74, "Acid Jazz"));
-	g_NumericGenresID3_1.insert(std::make_pair(75, "Polka"));
-	g_NumericGenresID3_1.insert(std::make_pair(76, "Retro"));
-	g_NumericGenresID3_1.insert(std::make_pair(77, "Musical"));
-	g_NumericGenresID3_1.insert(std::make_pair(78, "Rock & Roll"));
-	g_NumericGenresID3_1.insert(std::make_pair(79, "Hard Rock"));
-	// numeric genres for Winamp extension
-	g_NumericGenresWinamp.insert(std::make_pair(80, "Folk"));
-	g_NumericGenresWinamp.insert(std::make_pair(81, "Folk-Rock"));
-	g_NumericGenresWinamp.insert(std::make_pair(82, "National Folk"));
-	g_NumericGenresWinamp.insert(std::make_pair(83, "Swing"));
-	g_NumericGenresWinamp.insert(std::make_pair(84, "Fast Fusion"));
-	g_NumericGenresWinamp.insert(std::make_pair(85, "Bebob"));
-	g_NumericGenresWinamp.insert(std::make_pair(86, "Latin"));
-	g_NumericGenresWinamp.insert(std::make_pair(87, "Revival"));
-	g_NumericGenresWinamp.insert(std::make_pair(88, "Celtic"));
-	g_NumericGenresWinamp.insert(std::make_pair(89, "Bluegrass"));
-	g_NumericGenresWinamp.insert(std::make_pair(90, "Avantgarde"));
-	g_NumericGenresWinamp.insert(std::make_pair(91, "Gothic Rock"));
-	g_NumericGenresWinamp.insert(std::make_pair(92, "Progressive Rock"));
-	g_NumericGenresWinamp.insert(std::make_pair(93, "Psychedelic Rock"));
-	g_NumericGenresWinamp.insert(std::make_pair(94, "Symphonic Rock"));
-	g_NumericGenresWinamp.insert(std::make_pair(95, "Slow Rock"));
-	g_NumericGenresWinamp.insert(std::make_pair(96, "Big Band"));
-	g_NumericGenresWinamp.insert(std::make_pair(97, "Chorus"));
-	g_NumericGenresWinamp.insert(std::make_pair(98, "Easy Listening"));
-	g_NumericGenresWinamp.insert(std::make_pair(99, "Acoustic"));
-	g_NumericGenresWinamp.insert(std::make_pair(100, "Humour"));
-	g_NumericGenresWinamp.insert(std::make_pair(101, "Speech"));
-	g_NumericGenresWinamp.insert(std::make_pair(102, "Chanson"));
-	g_NumericGenresWinamp.insert(std::make_pair(103, "Opera"));
-	g_NumericGenresWinamp.insert(std::make_pair(104, "Chamber Music"));
-	g_NumericGenresWinamp.insert(std::make_pair(105, "Sonata"));
-	g_NumericGenresWinamp.insert(std::make_pair(106, "Symphony"));
-	g_NumericGenresWinamp.insert(std::make_pair(107, "Booty Bass"));
-	g_NumericGenresWinamp.insert(std::make_pair(108, "Primus"));
-	g_NumericGenresWinamp.insert(std::make_pair(109, "Porn Groove"));
-	g_NumericGenresWinamp.insert(std::make_pair(110, "Satire"));
-	g_NumericGenresWinamp.insert(std::make_pair(111, "Slow Jam"));
-	g_NumericGenresWinamp.insert(std::make_pair(112, "Club"));
-	g_NumericGenresWinamp.insert(std::make_pair(113, "Tango"));
-	g_NumericGenresWinamp.insert(std::make_pair(114, "Samba"));
-	g_NumericGenresWinamp.insert(std::make_pair(115, "Folklore"));
-	g_NumericGenresWinamp.insert(std::make_pair(116, "Ballad"));
-	g_NumericGenresWinamp.insert(std::make_pair(117, "Power Ballad"));
-	g_NumericGenresWinamp.insert(std::make_pair(118, "Rhythmic Soul"));
-	g_NumericGenresWinamp.insert(std::make_pair(119, "Freestyle"));
-	g_NumericGenresWinamp.insert(std::make_pair(120, "Duet"));
-	g_NumericGenresWinamp.insert(std::make_pair(121, "Punk Rock"));
-	g_NumericGenresWinamp.insert(std::make_pair(122, "Drum Solo"));
-	g_NumericGenresWinamp.insert(std::make_pair(123, "Acapella"));
-	g_NumericGenresWinamp.insert(std::make_pair(124, "Euro-House"));
-	g_NumericGenresWinamp.insert(std::make_pair(125, "Dance Hall"));
 	// processing
 	while(Paths.begin() != Paths.end())
 	{
