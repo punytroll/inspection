@@ -99,6 +99,8 @@ namespace Inspection
 	Inspection::DateTime Get_DateTime_FromMicrosoftFileTime(std::uint64_t FileTime);
 	Inspection::GUID Get_GUID_FromString_WithCurlyBraces(const std::string & String);
 	std::string Get_GUID_Interpretation(const Inspection::GUID & GUID);
+	std::string Get_ID3_1_Genre(std::uint8_t GenreNumber);
+	std::string Get_ID3_1_Winamp_Genre(std::uint8_t GenreNumber);
 	std::string Get_LanguageName_From_ISO_639_2_1998_Code(const std::string & ISO_639_2_1998_Code);
 	std::uint32_t Get_Unix_TimeStamp_FromWindowsFileTime(std::uint64_t FileTime);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalDigit(char HexadecimalDigit);
