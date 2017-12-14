@@ -1726,7 +1726,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_2_Tag_Header_Flags(Inspection::B
 	if(FlagsResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
-		Result->GetValue()->PrependTag("bit order", "7-0"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
@@ -2843,7 +2842,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_3_Tag_Header_Flags(Inspection::B
 	if(FlagsResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
-		Result->GetValue()->PrependTag("bit order", "7-0"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
@@ -3679,7 +3677,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flags(Inspe
 	if(FlagsResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
-		Result->GetValue()->PrependTag("bit order", "7-0"s);
 		Result->GetValue()->AppendTag("synchsafe"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
@@ -3719,7 +3716,6 @@ std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_Header_Flags(Inspection::B
 	if(FlagsResult->GetSuccess() == true)
 	{
 		Result->SetSuccess(true);
-		Result->GetValue()->PrependTag("bit order", "7-0"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
