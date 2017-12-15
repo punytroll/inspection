@@ -38,7 +38,14 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					PartialResult = Get_ID3_1_Tag(Buffer);
 					if(PartialResult->GetSuccess() == true)
 					{
-						Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+						{
+							Result->GetValue()->AppendValue("ID3v1.1", PartialResult->GetValue());
+						}
+						else
+						{
+							Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+						}
 						if(Buffer.GetPosition() == Buffer.GetLength())
 						{
 							Result->SetSuccess(true);
@@ -59,7 +66,14 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				PartialResult = Get_ID3_1_Tag(Buffer);
 				if(PartialResult->GetSuccess() == true)
 				{
-					Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+					if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+					{
+						Result->GetValue()->AppendValue("ID3v1.1", PartialResult->GetValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+					}
 					if(Buffer.GetPosition() == Buffer.GetLength())
 					{
 						Result->SetSuccess(true);
@@ -74,6 +88,34 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					throw Inspection::NotImplementedException("Unknown continuation.");
 				}
 			}
+		}
+	}
+	else
+	{
+		Buffer.SetPosition(Start);
+		PartialResult = Get_ID3_1_Tag(Buffer);
+		if(PartialResult->GetSuccess() == true)
+		{
+			if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+			{
+				Result->GetValue()->AppendValue("ID3v1.1", PartialResult->GetValue());
+			}
+			else
+			{
+				Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+			}
+			if(Buffer.GetPosition() == Buffer.GetLength())
+			{
+				Result->SetSuccess(true);
+			}
+			else
+			{
+				throw Inspection::NotImplementedException("Unknown continuation.");
+			}
+		}
+		else
+		{
+			throw Inspection::NotImplementedException("Unknown continuation.");
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
