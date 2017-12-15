@@ -35,12 +35,44 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				}
 				else
 				{
-					throw Inspection::NotImplementedException("Get ID3v1 tag.");
+					PartialResult = Get_ID3_1_Tag(Buffer);
+					if(PartialResult->GetSuccess() == true)
+					{
+						Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+						if(Buffer.GetPosition() == Buffer.GetLength())
+						{
+							Result->SetSuccess(true);
+						}
+						else
+						{
+							throw Inspection::NotImplementedException("Unknown continuation.");
+						}
+					}
+					else
+					{
+						throw Inspection::NotImplementedException("Unknown continuation.");
+					}
 				}
 			}
 			else
 			{
-				throw Inspection::NotImplementedException("Get ID3v1 tag.");
+				PartialResult = Get_ID3_1_Tag(Buffer);
+				if(PartialResult->GetSuccess() == true)
+				{
+					Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+					if(Buffer.GetPosition() == Buffer.GetLength())
+					{
+						Result->SetSuccess(true);
+					}
+					else
+					{
+						throw Inspection::NotImplementedException("Unknown continuation.");
+					}
+				}
+				else
+				{
+					throw Inspection::NotImplementedException("Unknown continuation.");
+				}
 			}
 		}
 	}

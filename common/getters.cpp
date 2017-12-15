@@ -6,8 +6,9 @@
 #include "getters.h"
 #include "guid.h"
 #include "helper.h"
-#include "string_cast.h"
 #include "not_implemented_exception.h"
+#include "string_cast.h"
+#include "unknown_value_exception.h"
 
 using namespace std::string_literals;
 
@@ -1034,6 +1035,101 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 		Value.Data4[7] = Buffer.Get8Bits();
 		Result->GetValue()->SetAny(Value);
 		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto TagIdentifierResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "TAG")};
+	
+	Result->GetValue()->AppendValue("Identifier", TagIdentifierResult->GetValue());
+	if(TagIdentifierResult->GetSuccess() == true)
+	{
+		auto TitelResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+		
+		Result->GetValue()->AppendValue("Title", TitelResult->GetValue());
+		if(TitelResult->GetSuccess() == true)
+		{
+			auto ArtistResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+			
+			Result->GetValue()->AppendValue("Artist", ArtistResult->GetValue());
+			if(ArtistResult->GetSuccess() == true)
+			{
+				auto AlbumResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+				
+				Result->GetValue()->AppendValue("Album", AlbumResult->GetValue());
+				if(AlbumResult->GetSuccess() == true)
+				{
+					auto YearResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(4ull, 0))};
+					
+					Result->GetValue()->AppendValue("Year", YearResult->GetValue());
+					if(YearResult->GetSuccess() == true)
+					{
+						auto StartOfComment{Buffer.GetPosition()};
+						auto CommentResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+						auto Continue{false};
+						
+						if(CommentResult->GetSuccess() == true)
+						{
+							Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
+							Continue = true;
+						}
+						else
+						{
+							Buffer.SetPosition(StartOfComment);
+							CommentResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Buffer, Inspection::Length(29ull, 0));
+							Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
+							if(CommentResult->GetSuccess() == true)
+							{
+								auto AlbumTrackResult{Get_UnsignedInteger_8Bit(Buffer)};
+								
+								Result->GetValue()->AppendValue("AlbumTrack", AlbumTrackResult->GetValue());
+								Continue = AlbumTrackResult->GetSuccess();
+							}
+						}
+						if(Continue == true)
+						{
+							auto GenreResult{Get_UnsignedInteger_8Bit(Buffer)};
+							
+							Result->GetValue()->AppendValue("Genre", GenreResult->GetValue());
+							if(GenreResult->GetSuccess() == true)
+							{
+								Result->SetSuccess(true);
+								
+								auto GenreNumber{std::experimental::any_cast< std::uint8_t >(GenreResult->GetAny())};
+								
+								try
+								{
+									auto Genre{Inspection::Get_ID3_1_Genre(GenreNumber)};
+									
+									Result->GetValue("Genre")->PrependTag("interpretation", Genre);
+									Result->GetValue("Genre")->PrependTag("standard", "ID3v1"s);
+								}
+								catch(Inspection::UnknownValueException & Exception)
+								{
+									try
+									{
+										auto Genre{Inspection::Get_ID3_1_Winamp_Genre(GenreNumber)};
+										
+										Result->GetValue("Genre")->PrependTag("interpretation", Genre);
+										Result->GetValue("Genre")->PrependTag("standard", "Winamp extension"s);
+									}
+									catch(Inspection::UnknownValueException & Exception)
+									{
+										Result->GetValue("Genre")->PrependTag("interpretation", "<unrecognized>"s);
+									}
+								}
+							}
+						}
+						Result->SetSuccess(true);
+					}
+				}
+			}
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
