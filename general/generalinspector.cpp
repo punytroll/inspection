@@ -50,11 +50,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							{
 								if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 								{
-									Result->GetValue()->AppendValue("ID3v1.1", PartialResult->GetValue());
+									Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 								}
 								else
 								{
-									Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+									Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
 								}
 								if(Buffer.GetPosition() == Buffer.GetLength())
 								{
@@ -159,11 +159,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						{
 							if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 							{
-								Result->GetValue()->AppendValue("ID3v1.1", PartialResult->GetValue());
+								Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 							}
 							else
 							{
-								Result->GetValue()->AppendValue("ID3v1", PartialResult->GetValue());
+								Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
 							}
 							if(Buffer.GetPosition() == Buffer.GetLength())
 							{
