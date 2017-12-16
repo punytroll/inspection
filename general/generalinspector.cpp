@@ -62,12 +62,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 								}
 								else
 								{
-									throw Inspection::NotImplementedException("Unknown continuation.");
+									Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 								}
 							}
 							else
 							{
-								throw Inspection::NotImplementedException("Unknown continuation.");
+								Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 							}
 						}
 					}
@@ -91,12 +91,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							}
 							else
 							{
-								throw Inspection::NotImplementedException("Unknown continuation.");
+								Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 							}
 						}
 						else
 						{
-							throw Inspection::NotImplementedException("Unknown continuation.");
+							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 						}
 					}
 				}
@@ -121,12 +121,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					}
 					else
 					{
-						throw Inspection::NotImplementedException("Unknown continuation.");
+						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 					}
 				}
 				else
 				{
-					throw Inspection::NotImplementedException("Unknown continuation.");
+					Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 				}
 			}
 		}
@@ -171,12 +171,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							}
 							else
 							{
-								throw Inspection::NotImplementedException("Unknown continuation.");
+								Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 							}
 						}
 						else
 						{
-							throw Inspection::NotImplementedException("Unknown continuation.");
+							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 						}
 					}
 				}
@@ -200,12 +200,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
-							throw Inspection::NotImplementedException("Unknown continuation.");
+						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 						}
 					}
 					else
 					{
-						throw Inspection::NotImplementedException("Unknown continuation.");
+						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 					}
 				}
 			}
@@ -230,12 +230,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				}
 				else
 				{
-					throw Inspection::NotImplementedException("Unknown continuation.");
+					Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 				}
 			}
 			else
 			{
-				throw Inspection::NotImplementedException("Unknown continuation.");
+				Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 			}
 		}
 	}

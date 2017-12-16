@@ -32,7 +32,15 @@ namespace Inspection
 		}
 		if(Value->GetName().empty() == false)
 		{
-			std::cout << g_White << Value->GetName();
+			if(Value->GetName() == "error")
+			{
+				std::cout << g_LightRed;
+			}
+			else
+			{
+				std::cout << g_White;
+			}
+			std::cout << Value->GetName();
 		}
 		if((Value->GetName().empty() == false) && (Value->GetAny().empty() == false))
 		{
@@ -40,7 +48,15 @@ namespace Inspection
 		}
 		if(Value->GetAny().empty() == false)
 		{
-			std::cout << g_LightCyan << Value->GetAny() << g_White;
+			if((Value->GetName().empty() == false) && (Value->GetName() == "error"))
+			{
+				std::cout << g_White;
+			}
+			else
+			{
+				std::cout << g_LightCyan;
+			}
+			std::cout << Value->GetAny();
 		}
 		if(Value->GetTags().empty() == false)
 		{
