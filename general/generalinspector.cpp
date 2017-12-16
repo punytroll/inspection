@@ -5,9 +5,19 @@
 using namespace std::string_literals;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// 5th generation getters                                                                        //
+// the following functions parses these forms:                                                   //
+// - ID3v2Tag                                                                                    //
+// - ID3v2Tag MPEG1Stream                                                                        //
+// - ID3v2Tag MPEG1Stream APEv2Tag                                                               //
+// - ID3v2Tag MPEG1Stream APEv2Tag ID3v1Tag                                                      //
+// - ID3v2Tag MPEG1Stream ID3v1Tag                                                               //
+// - ID3v2Tag ID3v1Tag                                                                           //
+// - MPEG1Stream                                                                                 //
+// - MPEG1Stream APEv2Tag                                                                        //
+// - MPEG1Stream APEv2Tag ID3v1Tag                                                               //
+// - MPEG1Stream ID3v1Tag                                                                        //
+// - ID3v1Tag                                                                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
