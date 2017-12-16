@@ -17,6 +17,8 @@ using namespace std::string_literals;
 // - MPEG1Stream APEv2Tag ID3v1Tag                                                               //
 // - MPEG1Stream ID3v1Tag                                                                        //
 // - ID3v1Tag                                                                                    //
+// - APEv2Tag                                                                                    //
+// - APEv2Tag ID3v1Tag                                                                           //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
@@ -28,6 +30,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	PartialResult = Get_ID3_2_Tag(Buffer);
 	if(PartialResult->GetSuccess() == true)
 	{
+		Start = Buffer.GetPosition();
 		Result->GetValue()->AppendValue("ID3v2Tag", PartialResult->GetValue());
 		if(Buffer.GetPosition() == Buffer.GetLength())
 		{
@@ -38,6 +41,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			PartialResult = Get_MPEG_1_Stream(Buffer);
 			if(PartialResult->GetSuccess() == true)
 			{
+				Start = Buffer.GetPosition();
 				Result->GetValue()->AppendValue("MPEG1Stream", PartialResult->GetValue());
 				if(Buffer.GetPosition() == Buffer.GetLength())
 				{
@@ -48,6 +52,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					PartialResult = Get_APE_Tags(Buffer);
 					if(PartialResult->GetSuccess() == true)
 					{
+						Start = Buffer.GetPosition();
 						Result->GetValue()->AppendValue("APEv2Tag", PartialResult->GetValue());
 						if(Buffer.GetPosition() == Buffer.GetLength())
 						{
@@ -58,6 +63,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							PartialResult = Get_ID3_1_Tag(Buffer);
 							if(PartialResult->GetSuccess() == true)
 							{
+								Start = Buffer.GetPosition();
 								if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 								{
 									Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
@@ -77,6 +83,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							}
 							else
 							{
+								Buffer.SetPosition(Start);
 								Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 							}
 						}
@@ -87,6 +94,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						PartialResult = Get_ID3_1_Tag(Buffer);
 						if(PartialResult->GetSuccess() == true)
 						{
+							Start = Buffer.GetPosition();
 							if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 							{
 								Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
@@ -106,6 +114,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
+							Buffer.SetPosition(Start);
 							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 						}
 					}
@@ -117,6 +126,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				PartialResult = Get_ID3_1_Tag(Buffer);
 				if(PartialResult->GetSuccess() == true)
 				{
+					Start = Buffer.GetPosition();
 					if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 					{
 						Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
@@ -136,6 +146,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				}
 				else
 				{
+					Buffer.SetPosition(Start);
 					Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 				}
 			}
@@ -147,6 +158,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		PartialResult = Get_MPEG_1_Stream(Buffer);
 		if(PartialResult->GetSuccess() == true)
 		{
+			Start = Buffer.GetPosition();
 			Result->GetValue()->AppendValue("MPEG1Stream", PartialResult->GetValue());
 			if(Buffer.GetPosition() == Buffer.GetLength())
 			{
@@ -157,6 +169,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				PartialResult = Get_APE_Tags(Buffer);
 				if(PartialResult->GetSuccess() == true)
 				{
+					Start = Buffer.GetPosition();
 					Result->GetValue()->AppendValue("APEv2Tag", PartialResult->GetValue());
 					if(Buffer.GetPosition() == Buffer.GetLength())
 					{
@@ -167,6 +180,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						PartialResult = Get_ID3_1_Tag(Buffer);
 						if(PartialResult->GetSuccess() == true)
 						{
+							Start = Buffer.GetPosition();
 							if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 							{
 								Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
@@ -186,6 +200,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
+							Buffer.SetPosition(Start);
 							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 						}
 					}
@@ -196,6 +211,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					PartialResult = Get_ID3_1_Tag(Buffer);
 					if(PartialResult->GetSuccess() == true)
 					{
+						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 						{
 							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
@@ -215,6 +231,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					}
 					else
 					{
+						Buffer.SetPosition(Start);
 						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
 					}
 				}
@@ -223,29 +240,74 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		else
 		{
 			Buffer.SetPosition(Start);
-			PartialResult = Get_ID3_1_Tag(Buffer);
+			PartialResult = Get_APE_Tags(Buffer);
 			if(PartialResult->GetSuccess() == true)
 			{
-				if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
-				{
-					Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
-				}
-				else
-				{
-					Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
-				}
+				Start = Buffer.GetPosition();
+				Result->GetValue()->AppendValue("APEv2Tag", PartialResult->GetValue());
 				if(Buffer.GetPosition() == Buffer.GetLength())
 				{
 					Result->SetSuccess(true);
 				}
 				else
 				{
-					Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+					PartialResult = Get_ID3_1_Tag(Buffer);
+					if(PartialResult->GetSuccess() == true)
+					{
+						Start = Buffer.GetPosition();
+						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+						{
+							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+						}
+						else
+						{
+							Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+						}
+						if(Buffer.GetPosition() == Buffer.GetLength())
+						{
+							Result->SetSuccess(true);
+						}
+						else
+						{
+							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+						}
+					}
+					else
+					{
+						Buffer.SetPosition(Start);
+						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+					}
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+				Buffer.SetPosition(Start);
+				PartialResult = Get_ID3_1_Tag(Buffer);
+				if(PartialResult->GetSuccess() == true)
+				{
+					Start = Buffer.GetPosition();
+					if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+					{
+						Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+					}
+					if(Buffer.GetPosition() == Buffer.GetLength())
+					{
+						Result->SetSuccess(true);
+					}
+					else
+					{
+						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+					}
+				}
+				else
+				{
+					Buffer.SetPosition(Start);
+					Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+				}
 			}
 		}
 	}
