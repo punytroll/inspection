@@ -124,9 +124,9 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 		
 		return OStream << StringStream.str();
 	}
-	else if(Any.type() == typeid(std::vector< uint8_t >))
+	else if(Any.type() == typeid(std::vector< std::uint8_t >))
 	{
-		auto Value{std::experimental::any_cast< std::vector< uint8_t > >(Any)};
+		auto Value{std::experimental::any_cast< const std::vector< std::uint8_t > & >(Any)};
 		auto Index{0ul};
 		std::stringstream StringStream;
 		
