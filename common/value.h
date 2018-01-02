@@ -15,9 +15,11 @@ namespace Inspection
 		{
 		}
 		
-		void AppendValue(std::shared_ptr< Value > Value)
+		std::shared_ptr< Value > AppendValue(std::shared_ptr< Value > Value)
 		{
 			_Values.push_back(Value);
+			
+			return Value;
 		}
 		
 		template< typename AnyType >
