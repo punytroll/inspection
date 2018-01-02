@@ -237,6 +237,123 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Buffer & Buffer, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Getter, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Boundary{Buffer.GetPosition() + Length};
+	auto ElementIndex{0ull};
+	
+	while(true)
+	{
+		auto Start{Buffer.GetPosition()};
+		
+		if(Start < Boundary)
+		{
+			auto ElementResult{Getter(Buffer)};
+			
+			if(ElementResult->GetSuccess() == true)
+			{
+				auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+				
+				ElementValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
+				ElementIndex++;
+			}
+			else
+			{
+				Result->GetValue()->AppendValue(ElementResult->GetValue());
+				Result->GetValue()->PrependTag("ended by failure"s);
+				Buffer.SetPosition(Start);
+				
+				break;
+			}
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("ended by length"s);
+			
+			break;
+		}
+	}
+	Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (ElementIndex));
+	Result->GetValue()->PrependTag("array"s);
+	Result->SetSuccess(true);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements(Inspection::Buffer & Buffer, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Getter, std::uint64_t NumberOfElements)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto ElementIndex{0ull};
+	
+	while(true)
+	{
+		if(ElementIndex < NumberOfElements)
+		{
+			auto ElementResult{Getter(Buffer)};
+			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+			
+			ElementValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
+			ElementIndex++;
+			if(ElementResult->GetSuccess() == false)
+			{
+				Result->GetValue()->PrependTag("ended by failure"s);
+				
+				break;
+			}
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("ended by number of elements"s);
+			Result->SetSuccess(true);
+			
+			break;
+		}
+	}
+	Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (NumberOfElements));
+	Result->GetValue()->PrependTag("array"s);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements_PassArrayIndex(Inspection::Buffer & Buffer, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, std::uint64_t) > Getter, std::uint64_t NumberOfElements)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto ElementIndex{0ull};
+	
+	while(true)
+	{
+		if(ElementIndex < NumberOfElements)
+		{
+			auto ElementResult{Getter(Buffer, ElementIndex)};
+			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+			
+			ElementValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
+			ElementIndex++;
+			if(ElementResult->GetSuccess() == false)
+			{
+				Result->GetValue()->PrependTag("ended by failure"s);
+				
+				break;
+			}
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("ended by number of elements"s);
+			Result->SetSuccess(true);
+			
+			break;
+		}
+	}
+	Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (NumberOfElements));
+	Result->GetValue()->PrependTag("array"s);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetical(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -700,6 +817,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_UntilByteAlignment(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Bits{Buffer.GetPosition().GetBits()};
+	
+	if(Bits == 0)
+	{
+		Result = Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 0));
+	}
+	else
+	{
+		Result = Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 8 - Bits));
+	}
+	if(Result->GetSuccess() == true)
+	{
+		Result->GetValue()->AppendTag("until byte alignment"s);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	assert(Length.GetBits() == 0);
@@ -1042,6 +1181,429 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 		Result->GetValue()->AppendValue("ApplicationData", ApplicationDataResult->GetValue());
 		Result->SetSuccess(ApplicationDataResult->GetSuccess());
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buffer & Buffer, std::uint8_t NumberOfChannelsByStream)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto FrameHeaderResult{Get_FLAC_Frame_Header(Buffer)};
+		auto FrameHeaderValue{Result->GetValue()->AppendValue("Header", FrameHeaderResult->GetValue())};
+		
+		Continue = FrameHeaderResult->GetSuccess();
+		if(FrameHeaderResult->GetSuccess() == true)
+		{
+			auto NumberOfChannelsByFrame{std::experimental::any_cast< std::uint8_t >(FrameHeaderValue->GetValue("ChannelAssignment")->GetTagAny("value"))};
+			
+			if(NumberOfChannelsByStream != NumberOfChannelsByFrame)
+			{
+				Result->GetValue()->AppendTag("error", "The number of channels from the stream (" + to_string_cast(NumberOfChannelsByStream) + ") does not match the number of channels from the frame (" + to_string_cast(NumberOfChannelsByFrame) + ").");
+				Continue = false;
+			}
+		}
+	}
+	if(Continue == true)
+	{
+		auto BlockSize{std::experimental::any_cast< std::uint16_t >(Result->GetValue("Header")->GetValue("BlockSize")->GetTagAny("value"))};
+		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("SampleSize")->GetTagAny("value"))};
+		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("ChannelAssignment"))};
+		
+		for(auto SubFrameIndex = 0; (Continue == true) && (SubFrameIndex < NumberOfChannelsByStream); ++SubFrameIndex)
+		{
+			std::unique_ptr< Inspection::Result > SubframeResult;
+			
+			if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
+			{
+				SubframeResult = Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample + 1);
+			}
+			else
+			{
+				SubframeResult = Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample);
+			}
+			Result->GetValue()->AppendValue("Subframe", SubframeResult->GetValue());
+			Continue = SubframeResult->GetSuccess();
+		}
+	}
+	if(Continue == true)
+	{
+		auto PaddingResult{Get_Bits_Unset_UntilByteAlignment(Buffer)};
+		
+		Result->GetValue()->AppendValue("Padding", PaddingResult->GetValue());
+		Continue = PaddingResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto FrameFooterResult{Get_FLAC_Frame_Footer(Buffer)};
+		
+		Result->GetValue()->AppendValue("Footer", FrameFooterResult->GetValue());
+		Continue = FrameFooterResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Footer(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto CRC16Result{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("CRC-16", CRC16Result->GetValue());
+		Continue = CRC16Result->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto SyncCodeResult{Get_UnsignedInteger_14Bit_BigEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("SyncCode", SyncCodeResult->GetValue());
+		Continue = (SyncCodeResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint16_t >(SyncCodeResult->GetAny()) == 0x3ffe);
+	}
+	if(Continue == true)
+	{
+		auto ReservedResult{Get_UnsignedInteger_1Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("Reserved", ReservedResult->GetValue());
+		Continue = ReservedResult->GetSuccess();
+	}
+	
+	std::uint8_t BlockingStrategy;
+	
+	if(Continue == true)
+	{
+		auto BlockingStrategyResult{Get_UnsignedInteger_1Bit(Buffer)};
+		auto BlockingStrategyValue{Result->GetValue()->AppendValue("BlockingStrategy", BlockingStrategyResult->GetValue())};
+		
+		Continue = BlockingStrategyResult->GetSuccess();
+		if(BlockingStrategyResult->GetSuccess() == true)
+		{
+			BlockingStrategy = std::experimental::any_cast< std::uint8_t >(BlockingStrategyResult->GetAny());
+			if(BlockingStrategy == 0x00)
+			{
+				BlockingStrategyValue->AppendTag("interpretation", "fixed-blocksize stream; frame header encodes the frame number"s);
+			}
+			else if(BlockingStrategy == 0x01)
+			{
+				BlockingStrategyValue->AppendTag("interpretation", "variable-blocksize stream; frame header encodes the sample number"s);
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+	}
+	
+	std::uint8_t BlockSize;
+	
+	if(Continue == true)
+	{
+		auto BlockSizeResult{Get_UnsignedInteger_4Bit(Buffer)};
+		auto BlockSizeValue{Result->GetValue()->AppendValue("BlockSize", BlockSizeResult->GetValue())};
+		
+		Continue = BlockSizeResult->GetSuccess();
+		if(BlockSizeResult->GetSuccess() == true)
+		{
+			BlockSize = std::experimental::any_cast< std::uint8_t >(BlockSizeResult->GetAny());
+			if(BlockSize == 0x00)
+			{
+				BlockSizeValue->AppendTag("reserved"s);
+				BlockSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
+				Continue = false;
+			}
+			else if(BlockSize == 0x01)
+			{
+				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(192));
+				BlockSizeValue->AppendTag("unit", "samples"s);
+			}
+			else if((BlockSize > 0x01) && (BlockSize <= 0x05))
+			{
+				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(576 * (1 << (BlockSize - 2))));
+				BlockSizeValue->AppendTag("unit", "samples"s);
+			}
+			else if(BlockSize == 0x06)
+			{
+				BlockSizeValue->AppendTag("interpretation", "get 8bit (blocksize - 1) from end of header"s);
+			}
+			else if(BlockSize == 0x07)
+			{
+				BlockSizeValue->AppendTag("interpretation", "get 16bit (blocksize - 1) from end of header"s);
+			}
+			else if((BlockSize > 0x07) && (BlockSize < 0x10))
+			{
+				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(256 * (1 << (BlockSize - 8))));
+				BlockSizeValue->AppendTag("unit", "samples"s);
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+	}
+	
+	std::uint8_t SampleRate;
+	
+	if(Continue == true)
+	{
+		auto SampleRateResult{Get_UnsignedInteger_4Bit(Buffer)};
+		auto SampleRateValue{Result->GetValue()->AppendValue("SampleRate", SampleRateResult->GetValue())};
+		
+		Continue = SampleRateResult->GetSuccess();
+		if(SampleRateResult->GetSuccess() == true)
+		{
+			SampleRate = std::experimental::any_cast< std::uint8_t >(SampleRateResult->GetAny());
+		}
+	}
+	if(Continue == true)
+	{
+		auto ChannelAssignmentResult{Get_UnsignedInteger_4Bit(Buffer)};
+		auto ChannelAssignmentValue{Result->GetValue()->AppendValue("ChannelAssignment", ChannelAssignmentResult->GetValue())};
+		
+		Continue = ChannelAssignmentResult->GetSuccess();
+		if(ChannelAssignmentResult->GetSuccess() == true)
+		{
+			auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(ChannelAssignmentResult->GetAny())};
+			
+			if(ChannelAssignment < 0x08)
+			{
+				ChannelAssignmentValue->AppendTag("value", static_cast< std::uint8_t >(ChannelAssignment + 1));
+				ChannelAssignmentValue->AppendTag("interpretation", "independent channels"s);
+				switch(ChannelAssignment)
+				{
+				case 0:
+					{
+						ChannelAssignmentValue->AppendTag("assignment", "mono"s);
+						
+						break;
+					}
+				case 1:
+					{
+						ChannelAssignmentValue->AppendTag("assignment", "left, right"s);
+						
+						break;
+					}
+				case 2:
+					{
+						ChannelAssignmentValue->AppendTag("assignment", "left, right, center"s);
+						
+						break;
+					}
+				case 3:
+					{
+						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, back left, back right"s);
+						
+						break;
+					}
+				case 4:
+					{
+						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, front center, back/surround left, back/surround right"s);
+						
+						break;
+					}
+				case 5:
+					{
+						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, front center, LFE, back/surround left, back/surround right"s);
+						
+						break;
+					}
+				case 6:
+					{
+						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, front center, LFE, back center, side left, side right"s);
+						
+						break;
+					}
+				case 7:
+					{
+						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, front center, LFE, back left, back right, side left, side right"s);
+						
+						break;
+					}
+				default:
+					{
+						assert(false);
+					}
+				}
+			}
+			else if(ChannelAssignment == 0x08)
+			{
+				ChannelAssignmentValue->AppendTag("value", static_cast< std::uint8_t >(2));
+				ChannelAssignmentValue->AppendTag("interpretation", "left/side stereo"s);
+				ChannelAssignmentValue->AppendTag("assignment", "channel 0 is the left channel, channel 1 is the side (difference) channel"s);
+			}
+			else if(ChannelAssignment == 0x09)
+			{
+				ChannelAssignmentValue->AppendTag("value", static_cast< std::uint8_t >(2));
+				ChannelAssignmentValue->AppendTag("interpretation", "right/side stereo"s);
+				ChannelAssignmentValue->AppendTag("assignment", "channel 0 is the side (difference) channel, channel 1 is the right channel"s);
+			}
+			else if(ChannelAssignment == 0x0a)
+			{
+				ChannelAssignmentValue->AppendTag("value", static_cast< std::uint8_t >(2));
+				ChannelAssignmentValue->AppendTag("interpretation", "mid/side stereo"s);
+				ChannelAssignmentValue->AppendTag("assignment", "channel 0 is the mid (average) channel, channel 1 is the side (difference) channel"s);
+			}
+			else
+			{
+				ChannelAssignmentValue->AppendTag("reserved"s);
+				ChannelAssignmentValue->AppendTag("error", "The channel assignment " + to_string_cast(ChannelAssignment) + " MUST NOT be used.");
+			}
+		}
+	}
+	if(Continue == true)
+	{
+		auto SampleSizeResult{Get_UnsignedInteger_3Bit(Buffer)};
+		auto SampleSizeValue{Result->GetValue()->AppendValue("SampleSize", SampleSizeResult->GetValue())};
+		
+		Continue = SampleSizeResult->GetSuccess();
+		if(SampleSizeResult->GetSuccess() == true)
+		{
+			auto SampleSize{std::experimental::any_cast< std::uint8_t >(SampleSizeValue->GetAny())};
+			
+			if(SampleSize == 0x00)
+			{
+				SampleSizeValue->AppendTag("interpretation", "get from STREAMINFO metadata block"s);
+			}
+			else if(SampleSize == 0x01)
+			{
+				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(8));
+				SampleSizeValue->AppendTag("unit", "bits"s);
+			}
+			else if(SampleSize == 0x02)
+			{
+				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(12));
+				SampleSizeValue->AppendTag("unit", "bits"s);
+			}
+			else if(SampleSize == 0x03)
+			{
+				SampleSizeValue->AppendTag("reserved"s);
+				SampleSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
+				Continue = false;
+			}
+			else if(SampleSize == 0x04)
+			{
+				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(16));
+				SampleSizeValue->AppendTag("unit", "bits"s);
+			}
+			else if(SampleSize == 0x05)
+			{
+				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(24));
+				SampleSizeValue->AppendTag("unit", "bits"s);
+			}
+			else if(SampleSize == 0x06)
+			{
+				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(32));
+				SampleSizeValue->AppendTag("unit", "bits"s);
+			}
+			else if(SampleSize == 0x07)
+			{
+				SampleSizeValue->AppendTag("reserved"s);
+				SampleSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
+				Continue = false;
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+	}
+	if(Continue == true)
+	{
+		auto ReservedResult{Get_UnsignedInteger_1Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("Reserved", ReservedResult->GetValue());
+		Continue = ReservedResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		std::unique_ptr< Inspection::Result > CodedNumberResult;
+		
+		if(BlockingStrategy == 0x00)
+		{
+			CodedNumberResult = Get_UnsignedInteger_31Bit_UTF_8_Coded(Buffer);
+			CodedNumberResult->GetValue()->SetName("FrameNumber");
+		}
+		else if(BlockingStrategy == 0x01)
+		{
+			CodedNumberResult = Get_UnsignedInteger_36Bit_UTF_8_Coded(Buffer);
+			CodedNumberResult->GetValue()->SetName("SampleNumber");
+		}
+		Result->GetValue()->AppendValue(CodedNumberResult->GetValue());
+		Continue = CodedNumberResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		if(BlockSize == 0x06)
+		{
+			auto BlockSizeResult{Get_UnsignedInteger_8Bit(Buffer)};
+			
+			Result->GetValue()->AppendValue("BlockSizeExplicit", BlockSizeResult->GetValue());
+			Continue = BlockSizeResult->GetSuccess();
+			if(BlockSizeResult->GetSuccess() == true)
+			{
+				auto BlockSizeValue{Result->GetValue("BlockSize")};
+				
+				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint8_t >(BlockSizeResult->GetAny())));
+				BlockSizeValue->AppendTag("unit", "samples"s);
+			}
+		}
+		else if(BlockSize == 0x07)
+		{
+			auto BlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+			
+			Result->GetValue()->AppendValue("BlockSizeExplicit", BlockSizeResult->GetValue());
+			Continue = BlockSizeResult->GetSuccess();
+			if(BlockSizeResult->GetSuccess() == true)
+			{
+				auto BlockSizeValue{Result->GetValue("BlockSize")};
+				
+				BlockSizeValue->AppendTag("value", std::experimental::any_cast< std::uint16_t >(BlockSizeResult->GetAny()));
+				BlockSizeValue->AppendTag("unit", "samples"s);
+			}
+		}
+	}
+	if(Continue == true)
+	{
+		if(SampleRate == 0xc0)
+		{
+			throw NotImplementedException("get 8bit sample rate in Hz");
+		}
+		else if(SampleRate == 0xd0)
+		{
+			throw NotImplementedException("get 16bit sample rate in Hz");
+		}
+		else if(SampleRate == 0xe0)
+		{
+			throw NotImplementedException("get 8bit sample rate in tens of Hz");
+		}
+	}
+	if(Continue == true)
+	{
+		auto CRC8Result{Get_UnsignedInteger_8Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("CRC-8", CRC8Result->GetValue());
+		Continue = CRC8Result->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1417,47 +1979,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_SeekPo
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Buffer & Buffer, bool OnlyStreamHeader)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FLACStreamMarkerResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "fLaC")};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("FLAC stream marker", FLACStreamMarkerResult->GetValue());
-	if(FLACStreamMarkerResult->GetSuccess() == true)
+	if(Continue == true)
+	{
+		auto FLACStreamMarkerResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "fLaC")};
+		
+		Result->GetValue()->AppendValue("FLAC stream marker", FLACStreamMarkerResult->GetValue());
+		Continue = FLACStreamMarkerResult->GetSuccess();
+	}
+	if(Continue == true)
 	{
 		auto FLACStreamInfoBlockResult{Get_FLAC_StreamInfoBlock(Buffer)};
 		
 		Result->GetValue()->AppendValue("StreamInfoBlock", FLACStreamInfoBlockResult->GetValue());
-		if(FLACStreamInfoBlockResult->GetSuccess() == true)
+		Continue = FLACStreamInfoBlockResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto LastMetaDataBlock{std::experimental::any_cast< bool >(Result->GetValue("StreamInfoBlock")->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
+		
+		while((LastMetaDataBlock == false) && (Continue == true))
 		{
-			auto LastMetaDataBlock{std::experimental::any_cast< bool >(FLACStreamInfoBlockResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
-			auto Continue{true};
+			auto MetaDataBlockResult{Get_FLAC_MetaDataBlock(Buffer)};
 			
-			while(LastMetaDataBlock == false)
+			Result->GetValue()->AppendValue("MetaDataBlock", MetaDataBlockResult->GetValue());
+			Continue = MetaDataBlockResult->GetSuccess();
+			if(MetaDataBlockResult->GetSuccess() == true)
 			{
-				auto MetaDataBlockResult{Get_FLAC_MetaDataBlock(Buffer)};
-				
-				Result->GetValue()->AppendValue("MetaDataBlock", MetaDataBlockResult->GetValue());
-				if(MetaDataBlockResult->GetSuccess() == true)
-				{
-					LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlockResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"));
-				}
-				else
-				{
-					Continue = false;
-					
-					break;
-				}
-			}
-			if(Continue == true)
-			{
-				auto FramesResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Buffer.GetLength() - Buffer.GetPosition())};
-				
-				Result->GetValue()->AppendValue("Frames", FramesResult->GetValue());
-				Result->SetSuccess(FramesResult->GetSuccess());
+				LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlockResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"));
 			}
 		}
 	}
+	if((Continue == true) && (OnlyStreamHeader == false))
+	{
+		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValueAny("NumberOfChannels")) + 1};
+		auto FramesResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Buffer, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels), Buffer.GetLength() - Buffer.GetPosition())};
+		auto FramesValue{Result->GetValue()->AppendValue("Frames", FramesResult->GetValue())};
+		
+		Continue = FramesResult->GetSuccess();
+		for(auto FrameValue : FramesValue->GetValues())
+		{
+			FrameValue->SetName("Frame");
+		}
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1573,6 +2142,421 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Numbe
 		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
 		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	std::shared_ptr< Inspection::Value > SubframeHeaderValue;
+	
+	if(Continue == true)
+	{
+		auto SubframeHeaderResult{Get_FLAC_Subframe_Header(Buffer)};
+		
+		SubframeHeaderValue = Result->GetValue()->AppendValue("Header", SubframeHeaderResult->GetValue());
+		Continue = SubframeHeaderResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		try
+		{
+			auto SubframeType{std::experimental::any_cast< const std::string & >(SubframeHeaderValue->GetValue("Type")->GetTagAny("interpretation"))};
+			
+			std::unique_ptr< Inspection::Result > SubframeDataResult;
+			
+			if(SubframeType == "SUBFRAME_CONSTANT")
+			{
+				SubframeDataResult = Get_FLAC_Subframe_Data_Constant(Buffer, BitsPerSample);
+			}
+			else if(SubframeType == "SUBFRAME_FIXED")
+			{
+				auto Order{static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(SubframeHeaderValue->GetValue("Type")->GetValueAny("Order")))};
+				
+				SubframeDataResult = Get_FLAC_Subframe_Data_Fixed(Buffer, FrameBlockSize, BitsPerSample, Order);
+			}
+			else if(SubframeType == "SUBFRAME_LPC")
+			{
+				auto Order{static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(SubframeHeaderValue->GetValue("Type")->GetValueAny("Order")) + 1)};
+				
+				SubframeDataResult = Get_FLAC_Subframe_Data_LPC(Buffer, FrameBlockSize, BitsPerSample, Order);
+			}
+			else
+			{
+				throw Inspection::NotImplementedException(SubframeType);
+			}
+			Result->GetValue()->AppendValue("Data", SubframeDataResult->GetValue());
+			Continue = SubframeDataResult->GetSuccess();
+		}
+		catch(std::invalid_argument & Exception)
+		{
+			Continue = false;
+		}
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Constant(Inspection::Buffer & Buffer, std::uint8_t BitsPerSample)
+{
+	return Get_UnsignedInteger_BigEndian(Buffer, BitsPerSample);
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto WarmUpSamplesResult{Get_UnsignedIntegers_BigEndian(Buffer, BitsPerSample, PredictorOrder)};
+		
+		Result->GetValue()->AppendValue("WarmUpSamples", WarmUpSamplesResult->GetValue());
+		Continue = WarmUpSamplesResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto ResidualResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
+		
+		Result->GetValue()->AppendValue("Residual", ResidualResult->GetValue());
+		Continue = ResidualResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto WarmUpSamplesResult{Get_UnsignedIntegers_BigEndian(Buffer, BitsPerSample, PredictorOrder)};
+		
+		Result->GetValue()->AppendValue("WarmUpSamples", WarmUpSamplesResult->GetValue());
+		Continue = WarmUpSamplesResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto QuantizedLinearPredictorCoefficientsPrecisionResult{Get_UnsignedInteger_4Bit(Buffer)};
+		auto QuantizedLinearPredictorCoefficientsPrecisionValue{Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientsPrecision", QuantizedLinearPredictorCoefficientsPrecisionResult->GetValue())};
+		
+		Continue = QuantizedLinearPredictorCoefficientsPrecisionResult->GetSuccess();
+		if(QuantizedLinearPredictorCoefficientsPrecisionResult->GetSuccess() == true)
+		{
+			auto QuantizedLinearPredictorCoefficientsPrecision{std::experimental::any_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecisionResult->GetAny())};
+			
+			if(QuantizedLinearPredictorCoefficientsPrecision < 15)
+			{
+				QuantizedLinearPredictorCoefficientsPrecisionValue->AppendTag("value", static_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecision + 1));
+			}
+			else
+			{
+				QuantizedLinearPredictorCoefficientsPrecisionValue->AppendTag("error", "The percision MUST NOT be 15."s);
+				Continue = false;
+			}
+		}
+	}
+	if(Continue == true)
+	{
+		auto QuantizedLinearPredictorCoefficientShiftResult{Get_SignedInteger_5Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientShift", QuantizedLinearPredictorCoefficientShiftResult->GetValue());
+		Continue = QuantizedLinearPredictorCoefficientShiftResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto PredictorCoefficientsResult{Get_SignedIntegers_BigEndian(Buffer, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
+		
+		Result->GetValue()->AppendValue("PredictorCoefficients", PredictorCoefficientsResult->GetValue());
+		Continue = PredictorCoefficientsResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto ResidualResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
+		
+		Result->GetValue()->AppendValue("Residual", ResidualResult->GetValue());
+		Continue = ResidualResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Header(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto PaddingBitResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 1))};
+		
+		Result->GetValue()->AppendValue("PaddingBit", PaddingBitResult->GetValue());
+		Continue = PaddingBitResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto TypeResult{Get_FLAC_Subframe_Type(Buffer)};
+		
+		Result->GetValue()->AppendValue("Type", TypeResult->GetValue());
+		Continue = TypeResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto WastedBitsPerSampleFlagResult{Get_Boolean_1Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("WastedBitsPerSampleFlag", WastedBitsPerSampleFlagResult->GetValue());
+		
+		auto WastedBitsPerSampleFlag{std::experimental::any_cast< bool >(WastedBitsPerSampleFlagResult->GetAny())};
+		
+		if(WastedBitsPerSampleFlag == true)
+		{
+			throw Inspection::NotImplementedException("Wasted bits are not implemented yet!");
+		}
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto CodingMethodResult{Get_FLAC_Subframe_Residual_CodingMethod(Buffer)};
+		
+		Result->GetValue()->AppendValue("CodingMethod", CodingMethodResult->GetValue());
+		Continue = CodingMethodResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto CodingMethod{std::experimental::any_cast< std::uint8_t >(Result->GetAny("CodingMethod"))};
+		std::unique_ptr< Inspection::Result > CodedResidualResult;
+		
+		if(CodingMethod == 0x00)
+		{
+			CodedResidualResult = Get_FLAC_Subframe_Residual_Rice(Buffer, FrameBlockSize, PredictorOrder);
+			CodedResidualResult->GetValue()->AppendTag("Rice"s);
+		}
+		else if(CodingMethod == 0x01)
+		{
+			CodedResidualResult = Get_FLAC_Subframe_Residual_Rice2(Buffer, FrameBlockSize, PredictorOrder);
+			CodedResidualResult->GetValue()->AppendTag("Rice2"s);
+		}
+		Result->GetValue()->AppendValue("CodedResidual", CodedResidualResult->GetValue());
+		Continue = CodedResidualResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_CodingMethod(Inspection::Buffer & Buffer)
+{
+	auto Result{Get_UnsignedInteger_2Bit(Buffer)};
+	
+	if(Result->GetSuccess() == true)
+	{
+		auto CodingMethod{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		
+		if(CodingMethod == 0x00)
+		{
+			Result->GetValue()->AppendTag("interpretation", "partitioned Rice coding with 4-bit Rice parameter"s);
+		}
+		else if(CodingMethod == 0x01)
+		{
+			Result->GetValue()->AppendTag("interpretation", "partitioned Rice coding with 5-bit Rice parameter"s);
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("interpretation", "<reserved>"s);
+			Result->GetValue()->AppendTag("error", "This coding method MUST NOT be used for the residual."s);
+			Result->SetSuccess(false);
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto PartitionOrderResult{Get_UnsignedInteger_4Bit(Buffer)};
+		auto PartitionOrderValue{Result->GetValue()->AppendValue("PartitionOrder", PartitionOrderResult->GetValue())};
+		
+		Continue = PartitionOrderResult->GetSuccess();
+		if(PartitionOrderResult->GetSuccess() == true)
+		{
+			auto NumberOfPartitions{static_cast< std::uint16_t >(1 << std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValueAny("PartitionOrder")))};
+			
+			PartitionOrderValue->AppendTag("number of partitions", NumberOfPartitions);
+		}
+	}
+	if(Continue == true)
+	{
+		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue("PartitionOrder")->GetTagAny("number of partitions"))};
+		auto PartitionsResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(Buffer, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
+		auto PartitionsValue{Result->GetValue()->AppendValue("Partitions", PartitionsResult->GetValue())};
+		
+		for(auto PartitionValue : PartitionsValue->GetValues())
+		{
+			PartitionValue->SetName("Partition");
+		}
+		Continue = PartitionsResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice_Partition(Inspection::Buffer & Buffer, std::uint64_t ArrayIndex, std::uint32_t NumberOfSamples, std::uint8_t PredictorOrder)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto RiceParameterResult{Get_UnsignedInteger_4Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("RiceParameter", RiceParameterResult->GetValue());
+		Continue = RiceParameterResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto RiceParameter{std::experimental::any_cast< std::uint8_t >(Result->GetAny("RiceParameter"))};
+		std::unique_ptr< Inspection::Result > SamplesResult;
+		
+		if(ArrayIndex == 0)
+		{
+			SamplesResult = Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder);
+		}
+		else
+		{
+			SamplesResult = Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples);
+		}
+		// Result->GetValue()->AppendValues(SamplesResult->GetValue()->GetValues());
+		Continue = SamplesResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice2(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
+{
+	throw Inspection::NotImplementedException("Get_FLAC_Subframe_Residual_Rice2");
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto SubframeTypeResult{Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Buffer, Inspection::Length(0, 6))};
+		
+		Result->SetValue(SubframeTypeResult->GetValue());
+		Continue = SubframeTypeResult->GetSuccess();
+		if(SubframeTypeResult->GetSuccess() == true)
+		{
+			auto SubframeType{std::experimental::any_cast< std::uint8_t >(SubframeTypeResult->GetAny())};
+			
+			switch(SubframeType)
+			{
+			case 0:
+				{
+					Result->GetValue()->AppendTag("interpretation", "SUBFRAME_LPC"s);
+					
+					auto OrderResult{Get_UnsignedInteger_5Bit(Buffer)};
+					auto OrderValue{Result->GetValue()->AppendValue("Order", OrderResult->GetValue())};
+					
+					Continue = OrderResult->GetSuccess();
+					if(OrderResult->GetSuccess() == true)
+					{
+						auto Order{std::experimental::any_cast< std::uint8_t >(OrderResult->GetAny())};
+						
+						OrderValue->AppendTag("value", static_cast< std::uint8_t >(Order + 1));
+					}
+					
+					break;
+				}
+			case 2:
+				{
+					auto OrderResult{Get_UnsignedInteger_3Bit(Buffer)};
+					auto OrderValue{Result->GetValue()->AppendValue("Order", OrderResult->GetValue())};
+					
+					Continue = OrderResult->GetSuccess();
+					if(OrderResult->GetSuccess() == true)
+					{
+						auto Order{std::experimental::any_cast< std::uint8_t >(OrderResult->GetAny())};
+						
+						OrderValue->AppendTag("value", static_cast< std::uint8_t >(Order));
+						if(Order < 5)
+						{
+							Result->GetValue()->AppendTag("interpretation", "SUBFRAME_FIXED"s);
+							Continue = true;
+						}
+						else
+						{
+							Result->GetValue()->AppendTag("reserved");
+							Result->GetValue()->AppendTag("error", "The subframe type is SUBFRAME_FIXED, and the order " + to_string_cast(Order) + " MUST NOT be used.");
+							Continue = false;
+						}
+					}
+					
+					break;
+				}
+			case 1:
+			case 3:
+			case 4:
+				{
+					Result->GetValue()->AppendTag("reserved"s);
+					Result->GetValue()->AppendTag("error", "This subframe type MUST NOT be used."s);
+					Continue = false;
+					
+					break;
+				}
+			case 5:
+				{
+					throw Inspection::NotImplementedException("SUBFRAME_VERBATIM");
+				}
+			case 6:
+				{
+					Result->GetValue()->AppendTag("interpretation", "SUBFRAME_CONSTANT"s);
+					
+					break;
+				}
+			default:
+				{
+					assert(false);
+				}
+			}
+		}
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7198,6 +8182,84 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits)
+{
+	switch(Bits)
+	{
+	case 1:
+		{
+			return Get_SignedInteger_1Bit(Buffer);
+		}
+	case 12:
+		{
+			return Get_SignedInteger_12Bit_BigEndian(Buffer);
+		}
+	default:
+		{
+			throw NotImplementedException("Reading " + to_string_cast(Bits) + " bits as a signed integer is not yet implemented in the generic function.");
+		}
+	}
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 1) == true)
+	{
+		std::int8_t Value{static_cast< std::int8_t >(static_cast< std::int8_t >(Buffer.Get1Bits() << 7) >> 7)};
+		
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("signed"s);
+		Result->GetValue()->AppendTag("1bit"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 5) == true)
+	{
+		std::int8_t Value{static_cast< std::int8_t >(static_cast< std::int8_t >(Buffer.Get5Bits() << 3) >> 3)};
+		
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("signed"s);
+		Result->GetValue()->AppendTag("5bit"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 12) == true)
+	{
+		std::int16_t Value{0};
+		
+		Value |= static_cast< std::int16_t >(static_cast< std::int16_t >(Buffer.Get4Bits() << 12) >> 4);
+		Value |= static_cast< std::int16_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("signed"s);
+		Result->GetValue()->AppendTag("12bit"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -7241,6 +8303,158 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_Little
 		Result->GetValue()->AppendTag("little endian"s);
 		Result->SetSuccess(true);
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEncoded(Inspection::Buffer & Buffer, std::uint8_t RiceParameter)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto MostSignificantBitsResult{Get_UnsignedInteger_32Bit_AlternativeUnary(Buffer)};
+		
+		Result->GetValue()->AppendValue("MostSignificantBits", MostSignificantBitsResult->GetValue());
+		Continue = MostSignificantBitsResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto LeastSignificantBitsResult{Get_UnsignedInteger_BigEndian(Buffer, RiceParameter)};
+		
+		Result->GetValue()->AppendValue("LeastSignificantBits", LeastSignificantBitsResult->GetValue());
+		Continue = LeastSignificantBitsResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto MostSignificantBits{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MostSignificantBits"))};
+		std::uint32_t LeastSignificantBits;
+		
+		if(Result->GetAny("LeastSignificantBits").type() == typeid(std::uint8_t))
+		{
+			LeastSignificantBits = std::experimental::any_cast< std::uint8_t >(Result->GetAny("LeastSignificantBits"));
+		}
+		else if(Result->GetAny("LeastSignificantBits").type() == typeid(std::uint16_t))
+		{
+			LeastSignificantBits = std::experimental::any_cast< std::uint16_t >(Result->GetAny("LeastSignificantBits"));
+		}
+		
+		auto Value{MostSignificantBits << RiceParameter | LeastSignificantBits};
+		
+		if((Value & 0x00000001) == 0x00000001)
+		{
+			Result->GetValue()->SetAny(static_cast< std::int32_t >(-(Value >> 1)- 1));
+		}
+		else
+		{
+			Result->GetValue()->SetAny(static_cast< std::int32_t >(Value >> 1));
+		}
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedIntegers_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits, std::uint64_t NumberOfElements)
+{
+	return Get_Array_EndedByNumberOfElements(Buffer, std::bind(Inspection::Get_SignedInteger_BigEndian, std::placeholders::_1, Bits), NumberOfElements);
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits)
+{
+	switch(Bits)
+	{
+	case 0:
+		{
+			return Get_UnsignedInteger_0Bit(Buffer);
+		}
+	case 1:
+		{
+			return Get_UnsignedInteger_1Bit(Buffer);
+		}
+	case 2:
+		{
+			return Get_UnsignedInteger_2Bit(Buffer);
+		}
+	case 3:
+		{
+			return Get_UnsignedInteger_3Bit(Buffer);
+		}
+	case 4:
+		{
+			return Get_UnsignedInteger_4Bit(Buffer);
+		}
+	case 5:
+		{
+			return Get_UnsignedInteger_5Bit(Buffer);
+		}
+	case 6:
+		{
+			return Get_UnsignedInteger_6Bit(Buffer);
+		}
+	case 7:
+		{
+			return Get_UnsignedInteger_7Bit(Buffer);
+		}
+	case 8:
+		{
+			return Get_UnsignedInteger_8Bit(Buffer);
+		}
+	case 9:
+		{
+			return Get_UnsignedInteger_9Bit_BigEndian(Buffer);
+		}
+	case 10:
+		{
+			return Get_UnsignedInteger_10Bit_BigEndian(Buffer);
+		}
+	case 11:
+		{
+			return Get_UnsignedInteger_11Bit_BigEndian(Buffer);
+		}
+	case 12:
+		{
+			return Get_UnsignedInteger_12Bit_BigEndian(Buffer);
+		}
+	case 13:
+		{
+			return Get_UnsignedInteger_13Bit_BigEndian(Buffer);
+		}
+	case 14:
+		{
+			return Get_UnsignedInteger_14Bit_BigEndian(Buffer);
+		}
+	case 15:
+		{
+			return Get_UnsignedInteger_15Bit_BigEndian(Buffer);
+		}
+	case 16:
+		{
+			return Get_UnsignedInteger_16Bit_BigEndian(Buffer);
+		}
+	case 17:
+		{
+			return Get_UnsignedInteger_17Bit_BigEndian(Buffer);
+		}
+	default:
+		{
+			throw NotImplementedException("Reading " + to_string_cast(Bits) + " bits as an unsigned integer is not yet implemented in the generic function.");
+		}
+	}
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_0Bit(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	Result->GetValue()->SetAny(static_cast< std::uint8_t >(0));
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("unsigned"s);
+	Result->GetValue()->AppendTag("0bit"s);
+	Result->SetSuccess(true);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7382,6 +8596,60 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspe
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Boundary{Buffer.GetPosition() + Length};
+	std::uint8_t Value{0ul};
+	
+	while(true)
+	{
+		if(Buffer.GetPosition() < Boundary)
+		{
+			if(Buffer.Has(Inspection::Length(0, 1)) == true)
+			{
+				auto Bit{Buffer.Get1Bits()};
+				
+				if(Bit == 0x00)
+				{
+					Value += 1;
+				}
+				else
+				{
+					Result->SetSuccess(true);
+					Result->GetValue()->AppendTag(to_string_cast(Value + 1) + "bit"s);
+					
+					break;
+				}
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The unary coded unsigned integer could not be completed before the boundary because the buffer ran out."s);
+				
+				break;
+			}
+		}
+		else
+		{
+			Result->SetSuccess(true);
+			Result->GetValue()->AppendTag(to_string_cast(Value) + "bit"s);
+			Result->GetValue()->AppendTag("ended by boundary"s);
+			
+			break;
+		}
+	}
+	if(Result->GetSuccess() == true)
+	{
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("alternative unary"s);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_9Bit_BigEndian(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -7396,6 +8664,138 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_9Bit_BigEn
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("9bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_10Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 10) == true)
+	{
+		std::uint16_t Value{0ul};
+		
+		Value |= static_cast< std::uint16_t >(Buffer.Get2Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("10bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_11Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 11) == true)
+	{
+		std::uint16_t Value{0ul};
+		
+		Value |= static_cast< std::uint16_t >(Buffer.Get3Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("11bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_12Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 12) == true)
+	{
+		std::uint16_t Value{0ul};
+		
+		Value |= static_cast< std::uint16_t >(Buffer.Get4Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("12bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_13Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 13) == true)
+	{
+		std::uint16_t Value{0ul};
+		
+		Value |= static_cast< std::uint16_t >(Buffer.Get5Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("13bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_14Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 14) == true)
+	{
+		std::uint16_t Value{0ul};
+		
+		Value |= static_cast< std::uint16_t >(Buffer.Get6Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("14bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_15Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 15) == true)
+	{
+		std::uint16_t Value{0ul};
+		
+		Value |= static_cast< std::uint16_t >(Buffer.Get7Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("15bit"s);
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
@@ -7448,6 +8848,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_Litt
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_17Bit_BigEndian(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(0ull, 17) == true)
+	{
+		std::uint32_t Value{0ul};
+		
+		Value |= static_cast< std::uint32_t >(Buffer.Get1Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Result->GetValue()->SetAny(Value);
+		Result->GetValue()->AppendTag("integer"s);
+		Result->GetValue()->AppendTag("unsigned"s);
+		Result->GetValue()->AppendTag("17bit"s);
+		Result->GetValue()->AppendTag("big endian"s);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -7488,6 +8911,137 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 		Result->GetValue()->AppendTag("24bit"s);
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(1ull, 0) == true)
+	{
+		auto First{Buffer.Get8Bits()};
+		
+		if((First & 0x80) == 0x00)
+		{
+			Result->GetValue()->SetAny(static_cast< std::uint32_t >(First));
+			Result->SetSuccess(true);
+		}
+		else if((First & 0xe0) == 0xc0)
+		{
+			if(Buffer.Has(1ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				
+				if((Second & 0xc0) == 0x80)
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x1f) << 6) | static_cast< std::uint32_t >(Second & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xf0) == 0xe0)
+		{
+			if(Buffer.Has(2ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x0f) << 12)| static_cast< std::uint32_t >((Second & 0x3f) << 6) | static_cast< std::uint32_t >(Third & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xf8) == 0xf0)
+		{
+			if(Buffer.Has(3ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x07) << 18)| static_cast< std::uint32_t >((Second & 0x3f) << 12) | static_cast< std::uint32_t >((Third & 0x3f) << 6) | static_cast< std::uint32_t >(Fourth & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xfc) == 0xf8)
+		{
+			if(Buffer.Has(4ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				auto Fifth{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x03) << 24)| static_cast< std::uint32_t >((Second & 0x3f) << 18) | static_cast< std::uint32_t >((Third & 0x3f) << 12) | static_cast< std::uint32_t >((Fourth & 0x3f) << 6) | static_cast< std::uint32_t >(Fifth & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xfe) == 0xfc)
+		{
+			if(Buffer.Has(5ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				auto Fifth{Buffer.Get8Bits()};
+				auto Sixth{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x01) << 30)| static_cast< std::uint32_t >((Second & 0x3f) << 24) | static_cast< std::uint32_t >((Third & 0x3f) << 18) | static_cast< std::uint32_t >((Fourth & 0x3f) << 12) | static_cast< std::uint32_t >((Fifth & 0x3f) << 6) | static_cast< std::uint32_t >(Sixth & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_AlternativeUnary(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	std::uint32_t Value{0ul};
+	
+	while(true)
+	{
+		if(Buffer.Has(Inspection::Length(0, 1)) == true)
+		{
+			auto Bit{Buffer.Get1Bits()};
+			
+			if(Bit == 0x00)
+			{
+				Value += 1;
+			}
+			else
+			{
+				Result->GetValue()->SetAny(Value);
+				Result->GetValue()->AppendTag("integer"s);
+				Result->GetValue()->AppendTag("unsigned"s);
+				Result->GetValue()->AppendTag(to_string_cast(Value + 1) + "bit"s);
+				Result->GetValue()->AppendTag("alternative unary"s);
+				Result->SetSuccess(true);
+				
+				break;
+			}
+		}
+		else
+		{
+			break;
+		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -7567,6 +9121,118 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	
+	if(Buffer.Has(1ull, 0) == true)
+	{
+		auto First{Buffer.Get8Bits()};
+		
+		if((First & 0x80) == 0x00)
+		{
+			Result->GetValue()->SetAny(static_cast< std::uint32_t >(First));
+			Result->SetSuccess(true);
+		}
+		else if((First & 0xe0) == 0xc0)
+		{
+			if(Buffer.Has(1ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				
+				if((Second & 0xc0) == 0x80)
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x1f) << 6) | static_cast< std::uint32_t >(Second & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xf0) == 0xe0)
+		{
+			if(Buffer.Has(2ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x0f) << 12)| static_cast< std::uint32_t >((Second & 0x3f) << 6) | static_cast< std::uint32_t >(Third & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xf8) == 0xf0)
+		{
+			if(Buffer.Has(3ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x07) << 18)| static_cast< std::uint32_t >((Second & 0x3f) << 12) | static_cast< std::uint32_t >((Third & 0x3f) << 6) | static_cast< std::uint32_t >(Fourth & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xfc) == 0xf8)
+		{
+			if(Buffer.Has(4ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				auto Fifth{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x03) << 24)| static_cast< std::uint32_t >((Second & 0x3f) << 18) | static_cast< std::uint32_t >((Third & 0x3f) << 12) | static_cast< std::uint32_t >((Fourth & 0x3f) << 6) | static_cast< std::uint32_t >(Fifth & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xfe) == 0xfc)
+		{
+			if(Buffer.Has(5ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				auto Fifth{Buffer.Get8Bits()};
+				auto Sixth{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x01) << 30)| static_cast< std::uint32_t >((Second & 0x3f) << 24) | static_cast< std::uint32_t >((Third & 0x3f) << 18) | static_cast< std::uint32_t >((Fourth & 0x3f) << 12) | static_cast< std::uint32_t >((Fifth & 0x3f) << 6) | static_cast< std::uint32_t >(Sixth & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+		else if((First & 0xff) == 0xfe)
+		{
+			if(Buffer.Has(6ull, 0) == true)
+			{
+				auto Second{Buffer.Get8Bits()};
+				auto Third{Buffer.Get8Bits()};
+				auto Fourth{Buffer.Get8Bits()};
+				auto Fifth{Buffer.Get8Bits()};
+				auto Sixth{Buffer.Get8Bits()};
+				auto Seventh{Buffer.Get8Bits()};
+				
+				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80) && ((Seventh & 0xc0) == 0x80))
+				{
+					Result->GetValue()->SetAny(static_cast< std::uint32_t >((Second & 0x3f) << 30) | static_cast< std::uint32_t >((Third & 0x3f) << 24) | static_cast< std::uint32_t >((Fourth & 0x3f) << 18) | static_cast< std::uint32_t >((Fifth & 0x3f) << 12) | static_cast< std::uint32_t >((Sixth & 0x3f) << 6) | static_cast< std::uint32_t >(Seventh & 0x3f));
+					Result->SetSuccess(true);
+				}
+			}
+		}
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigEndian(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -7621,6 +9287,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedIntegers_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits, std::uint64_t NumberOfElements)
+{
+	return Get_Array_EndedByNumberOfElements(Buffer, std::bind(Inspection::Get_UnsignedInteger_BigEndian, std::placeholders::_1, Bits), NumberOfElements);
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedIntegers_16Bit_BigEndian(Inspection::Buffer & Buffer, std::uint64_t NumberOfElements)
+{
+	return Get_Array_EndedByNumberOfElements(Buffer, Get_UnsignedInteger_16Bit_BigEndian, NumberOfElements);
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer)

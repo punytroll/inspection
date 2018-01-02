@@ -7,6 +7,8 @@ using namespace std::string_literals;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // the following functions parses these forms:                                                   //
 // - ID3v2Tag                                                                                    //
+// - ID3v2Tag FLACStream                                                                         //
+// - ID3v2Tag FLACStream ID3v1Tag                                                                //
 // - ID3v2Tag MPEG1Stream                                                                        //
 // - ID3v2Tag MPEG1Stream APEv2Tag                                                               //
 // - ID3v2Tag MPEG1Stream APEv2Tag ID3v1Tag                                                      //
@@ -16,9 +18,10 @@ using namespace std::string_literals;
 // - MPEG1Stream APEv2Tag                                                                        //
 // - MPEG1Stream APEv2Tag ID3v1Tag                                                               //
 // - MPEG1Stream ID3v1Tag                                                                        //
-// - ID3v1Tag                                                                                    //
 // - APEv2Tag                                                                                    //
 // - APEv2Tag ID3v1Tag                                                                           //
+// - ID3v1Tag                                                                                    //
+// - FLACStream                                                                                  //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
@@ -38,7 +41,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		}
 		else
 		{
-			PartialResult = Get_FLAC_Stream(Buffer);
+			PartialResult = Get_FLAC_Stream(Buffer, false);
 			if(PartialResult->GetSuccess() == true)
 			{
 				Start = Buffer.GetPosition();
@@ -349,7 +352,25 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				else
 				{
 					Buffer.SetPosition(Start);
-					Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+					PartialResult = Get_FLAC_Stream(Buffer, false);
+					if(PartialResult->GetSuccess() == true)
+					{
+						Start = Buffer.GetPosition();
+						Result->GetValue()->AppendValue("FLACStream", PartialResult->GetValue());
+						if(Buffer.GetPosition() == Buffer.GetLength())
+						{
+							Result->SetSuccess(true);
+						}
+						else
+						{
+							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+						}
+					}
+					else
+					{
+						Buffer.SetPosition(Start);
+						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+					}
 				}
 			}
 		}

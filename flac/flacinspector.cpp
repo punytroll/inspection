@@ -4,7 +4,7 @@
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
-	auto FLACStreamResult{Get_FLAC_Stream(Buffer)};
+	auto FLACStreamResult{Get_FLAC_Stream(Buffer, true)};
 	
 	FLACStreamResult->GetValue()->SetName("FLACStream");
 	
