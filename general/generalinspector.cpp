@@ -4,6 +4,14 @@
 
 using namespace std::string_literals;
 
+void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspection::Buffer & Buffer)
+{
+	auto ErrorValue{Value->AppendValue("error", "Unknown continuation."s)};
+	
+	ErrorValue->AppendTag("position", to_string_cast(Buffer.GetPosition()));
+	ErrorValue->AppendTag("length", to_string_cast(Buffer.GetLength()));
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // the following functions parses these forms:                                                   //
 // - ID3v2Tag                                                                                    //
@@ -22,6 +30,7 @@ using namespace std::string_literals;
 // - APEv2Tag ID3v1Tag                                                                           //
 // - ID3v1Tag                                                                                    //
 // - FLACStream                                                                                  //
+// - ASFFile                                                                                     //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
@@ -70,13 +79,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
-							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+							AppendUnkownContinuation(Result->GetValue(), Buffer);
 						}
 					}
 					else
 					{
 						Buffer.SetPosition(Start);
-						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+						AppendUnkownContinuation(Result->GetValue(), Buffer);
 					}
 				}
 			}
@@ -123,13 +132,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 									}
 									else
 									{
-										Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+										AppendUnkownContinuation(Result->GetValue(), Buffer);
 									}
 								}
 								else
 								{
 									Buffer.SetPosition(Start);
-									Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+									AppendUnkownContinuation(Result->GetValue(), Buffer);
 								}
 							}
 						}
@@ -154,13 +163,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 								}
 								else
 								{
-									Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+									AppendUnkownContinuation(Result->GetValue(), Buffer);
 								}
 							}
 							else
 							{
 								Buffer.SetPosition(Start);
-								Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+								AppendUnkownContinuation(Result->GetValue(), Buffer);
 							}
 						}
 					}
@@ -186,13 +195,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
-							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+							AppendUnkownContinuation(Result->GetValue(), Buffer);
 						}
 					}
 					else
 					{
 						Buffer.SetPosition(Start);
-						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+						AppendUnkownContinuation(Result->GetValue(), Buffer);
 					}
 				}
 			}
@@ -241,13 +250,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							}
 							else
 							{
-								Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+								AppendUnkownContinuation(Result->GetValue(), Buffer);
 							}
 						}
 						else
 						{
 							Buffer.SetPosition(Start);
-							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+							AppendUnkownContinuation(Result->GetValue(), Buffer);
 						}
 					}
 				}
@@ -272,13 +281,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
-						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+							AppendUnkownContinuation(Result->GetValue(), Buffer);
 						}
 					}
 					else
 					{
 						Buffer.SetPosition(Start);
-						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+						AppendUnkownContinuation(Result->GetValue(), Buffer);
 					}
 				}
 			}
@@ -315,13 +324,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
-							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+							AppendUnkownContinuation(Result->GetValue(), Buffer);
 						}
 					}
 					else
 					{
 						Buffer.SetPosition(Start);
-						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+						AppendUnkownContinuation(Result->GetValue(), Buffer);
 					}
 				}
 			}
@@ -346,7 +355,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					}
 					else
 					{
-						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+						AppendUnkownContinuation(Result->GetValue(), Buffer);
 					}
 				}
 				else
@@ -363,13 +372,31 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
-							Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+							AppendUnkownContinuation(Result->GetValue(), Buffer);
 						}
 					}
 					else
 					{
 						Buffer.SetPosition(Start);
-						Result->GetValue()->AppendValue("error", "Unknown continuation."s);
+						PartialResult = Get_ASF_File(Buffer);
+						if(PartialResult->GetSuccess() == true)
+						{
+							Start = Buffer.GetPosition();
+							Result->GetValue()->AppendValue("ASFFile", PartialResult->GetValue());
+							if(Buffer.GetPosition() == Buffer.GetLength())
+							{
+								Result->SetSuccess(true);
+							}
+							else
+							{
+								AppendUnkownContinuation(Result->GetValue(), Buffer);
+							}
+						}
+						else
+						{
+							Buffer.SetPosition(Start);
+							AppendUnkownContinuation(Result->GetValue(), Buffer);
+						}
 					}
 				}
 			}
