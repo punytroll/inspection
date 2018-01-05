@@ -1,6 +1,7 @@
 #ifndef INSPECTION_COMMON_LENGTH_H
 #define INSPECTION_COMMON_LENGTH_H
 
+#include <cassert>
 #include <cstdint>
 #include <sstream>
 #include <string>
