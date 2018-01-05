@@ -78,9 +78,11 @@ namespace Inspection
 			_Success = Success;
 		}
 		
-		void SetValue(std::shared_ptr< Value > Value)
+		std::shared_ptr< Value > SetValue(std::shared_ptr< Value > Value)
 		{
 			_Value = Value;
+			
+			return _Value;
 		}
 	private:
 		Inspection::Length _Offset;
