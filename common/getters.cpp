@@ -14,9 +14,14 @@
 
 using namespace std::string_literals;
 
-void UpdateState(bool & Continue, Inspection::Buffer & Buffer, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader)
+void UpdateState(bool & Continue, std::unique_ptr< Inspection::Result > & FieldResult)
 {
 	Continue = FieldResult->GetSuccess();
+}
+
+void UpdateState(bool & Continue, Inspection::Buffer & Buffer, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader)
+{
+	UpdateState(Continue, FieldResult);
 	if(Continue == true)
 	{
 		Buffer.SetPosition(FieldReader);
@@ -3869,25 +3874,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 5))};
-		auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_5Bit(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 		if(FieldResult->GetSuccess() == true)
 		{
 			Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny()) + 1));
 		}
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3941,10 +3945,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	}
 	if(Continue == true)
 	{
-		auto BitsPerSampleResult{Get_FLAC_StreamInfoBlock_BitsPerSample(Buffer)};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 5))};
+		auto FieldResult{Get_FLAC_StreamInfoBlock_BitsPerSample(FieldReader)};
 		
-		Result->GetValue()->AppendValue("BitsPerSample", BitsPerSampleResult->GetValue());
-		Continue = BitsPerSampleResult->GetSuccess();
+		Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue());
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
