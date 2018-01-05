@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "length.h"
+#include "reader.h"
 #include "value.h"
 
 namespace Inspection
@@ -93,10 +94,21 @@ namespace Inspection
 		return std::make_unique< Inspection::Result >(Buffer.GetPosition());
 	}
 	
+	inline std::unique_ptr< Inspection::Result > InitializeResult(const Inspection::Reader & Reader)
+	{
+		return std::make_unique< Inspection::Result >(Reader.GetPositionInBuffer());
+	}
+	
 	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Buffer & Buffer)
 	{
 		Result->GetValue()->SetOffset(Result->GetOffset());
 		Result->GetValue()->SetLength(Buffer.GetPosition() - Result->GetValue()->GetOffset());
+	}
+	
+	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Reader & Reader)
+	{
+		Result->GetValue()->SetOffset(Result->GetOffset());
+		Result->GetValue()->SetLength(Reader.GetPositionInBuffer() - Result->GetValue()->GetOffset());
 	}
 }
 

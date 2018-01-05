@@ -8,10 +8,20 @@
 #include "helper.h"
 #include "id3_helper.h"
 #include "not_implemented_exception.h"
+#include "reader.h"
 #include "string_cast.h"
 #include "unknown_value_exception.h"
 
 using namespace std::string_literals;
+
+void UpdateState(bool & Continue, Inspection::Buffer & Buffer, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader)
+{
+	Continue = FieldResult->GetSuccess();
+	if(Continue == true)
+	{
+		Buffer.SetPosition(FieldReader);
+	}
+}
 
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Buffer & Buffer)
 {
@@ -3931,10 +3941,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	}
 	if(Continue == true)
 	{
-		auto TotalSamplesPerChannelResult{Get_UnsignedInteger_36Bit_BigEndian(Buffer)};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 36))};
+		auto FieldResult{Get_UnsignedInteger_36Bit_BigEndian(FieldReader)};
 		
-		Result->GetValue()->AppendValue("TotalSamplesPerChannel", TotalSamplesPerChannelResult->GetValue());
-		Continue = TotalSamplesPerChannelResult->GetSuccess();
+		Result->GetValue()->AppendValue("TotalSamplesPerChannel", FieldResult->GetValue());
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -10916,19 +10927,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Litt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 36) == true)
+	if(Reader.Has(Inspection::Length(0ull, 36)) == true)
 	{
 		std::uint64_t Value{0ull};
 		
-		Value |= static_cast< std::uint64_t >(Buffer.Get4Bits()) << 32;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint64_t >(Reader.Get4Bits()) << 32;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 24;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 16;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -10936,7 +10947,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
