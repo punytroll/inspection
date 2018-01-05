@@ -8,12 +8,13 @@ clean:
 	$(RM) getters.o
 	$(RM) guid.o
 	$(RM) helper.o
+	$(RM) reader.o
 	$(RM) string_cast.o
 	$(RM) vorbisinspector.o
 
 all: ../vorbisinspector
 
-../vorbisinspector: vorbisinspector.o getters.o guid.o helper.o string_cast.o
+../vorbisinspector: vorbisinspector.o getters.o guid.o helper.o reader.o string_cast.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 getters.o: ../common/getters.cpp ../common/getters.h
@@ -23,6 +24,9 @@ guid.o: ../common/guid.cpp ../common/guid.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 helper.o: ../common/helper.cpp ../common/helper.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+reader.o: ../common/reader.cpp ../common/buffer.h ../common/length.h ../common/reader.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 string_cast.o: ../common/string_cast.cpp ../common/string_cast.h
