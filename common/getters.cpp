@@ -3872,14 +3872,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto BitsPerSampleResult{Get_UnsignedInteger_5Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(BitsPerSampleResult->GetValue());
-	if(BitsPerSampleResult->GetSuccess() == true)
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(BitsPerSampleResult->GetAny()) + 1));
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 5))};
+		auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		if(FieldResult->GetSuccess() == true)
+		{
+			Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny()) + 1));
+		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -4319,15 +4326,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 				{
 					Result->GetValue()->AppendTag("interpretation", "SUBFRAME_LPC"s);
 					
-					auto OrderResult{Get_UnsignedInteger_5Bit(Buffer)};
-					auto OrderValue{Result->GetValue()->AppendValue("Order", OrderResult->GetValue())};
+					auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 5))};
+					auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
+					auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
 					
-					Continue = OrderResult->GetSuccess();
-					if(OrderResult->GetSuccess() == true)
+					UpdateState(Continue, Buffer, FieldResult, FieldReader);
+					if(FieldResult->GetSuccess() == true)
 					{
-						auto Order{std::experimental::any_cast< std::uint8_t >(OrderResult->GetAny())};
+						auto Order{std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny())};
 						
-						OrderValue->AppendTag("value", static_cast< std::uint8_t >(Order + 1));
+						FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order + 1));
 					}
 					
 					break;
@@ -10220,7 +10228,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 5:
 		{
-			return Get_UnsignedInteger_5Bit(Buffer);
+			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 5))};
+			auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 6:
 		{
@@ -10359,19 +10372,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 5) == true)
+	if(Reader.Has(Inspection::Length(0ull, 5)) == true)
 	{
-		Result->GetValue()->SetAny(Buffer.Get5Bits());
+		Result->GetValue()->SetAny(Reader.Get5Bits());
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("5bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
