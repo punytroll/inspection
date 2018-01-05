@@ -3878,58 +3878,72 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsP
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto MinimumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("MinimumBlockSize", MinimumBlockSizeResult->GetValue());
-	if(MinimumBlockSizeResult->GetSuccess() == true)
+	if(Continue == true)
+	{
+		auto MinimumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("MinimumBlockSize", MinimumBlockSizeResult->GetValue());
+		Continue = MinimumBlockSizeResult->GetSuccess();
+	}
+	if(Continue == true)
 	{
 		auto MaximumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
 		
 		Result->GetValue()->AppendValue("MaximumBlockSize", MaximumBlockSizeResult->GetValue());
-		if(MaximumBlockSizeResult->GetSuccess() == true)
-		{
-			auto MinimumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("MinimumFrameSize", MinimumFrameSizeResult->GetValue());
-			if(MinimumFrameSizeResult->GetSuccess() == true)
-			{
-				auto MaximumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("MaximumFrameSize", MaximumFrameSizeResult->GetValue());
-				if(MaximumFrameSizeResult->GetSuccess() == true)
-				{
-					auto SampleRateResult{Get_UnsignedInteger_20Bit_BigEndian(Buffer)};
-					
-					Result->GetValue()->AppendValue("SampleRate", SampleRateResult->GetValue());
-					if(SampleRateResult->GetSuccess() == true)
-					{
-						auto NumberOfChannelsResult{Get_FLAC_StreamInfoBlock_NumberOfChannels(Buffer)};
-						
-						Result->GetValue()->AppendValue("NumberOfChannels", NumberOfChannelsResult->GetValue());
-						if(NumberOfChannelsResult->GetSuccess() == true)
-						{
-							auto BitsPerSampleResult{Get_FLAC_StreamInfoBlock_BitsPerSample(Buffer)};
-							
-							Result->GetValue()->AppendValue("BitsPerSample", BitsPerSampleResult->GetValue());
-							if(BitsPerSampleResult->GetSuccess() == true)
-							{
-								auto TotalSamplesPerChannelResult{Get_UnsignedInteger_36Bit_BigEndian(Buffer)};
-								
-								Result->GetValue()->AppendValue("TotalSamplesPerChannel", TotalSamplesPerChannelResult->GetValue());
-								if(TotalSamplesPerChannelResult->GetSuccess() == true)
-								{
-									auto MD5SignatureOfUnencodedAudioDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 16)};
-									
-									Result->GetValue()->AppendValue("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioDataResult->GetValue());
-									Result->SetSuccess(MD5SignatureOfUnencodedAudioDataResult->GetSuccess());
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		Continue = MaximumBlockSizeResult->GetSuccess();
 	}
+	if(Continue == true)
+	{
+		auto MinimumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("MinimumFrameSize", MinimumFrameSizeResult->GetValue());
+		Continue = MinimumFrameSizeResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto MaximumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("MaximumFrameSize", MaximumFrameSizeResult->GetValue());
+		Continue = MaximumFrameSizeResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto SampleRateResult{Get_UnsignedInteger_20Bit_BigEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("SampleRate", SampleRateResult->GetValue());
+		Continue = SampleRateResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto NumberOfChannelsResult{Get_FLAC_StreamInfoBlock_NumberOfChannels(Buffer)};
+		
+		Result->GetValue()->AppendValue("NumberOfChannels", NumberOfChannelsResult->GetValue());
+		Continue = NumberOfChannelsResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto BitsPerSampleResult{Get_FLAC_StreamInfoBlock_BitsPerSample(Buffer)};
+		
+		Result->GetValue()->AppendValue("BitsPerSample", BitsPerSampleResult->GetValue());
+		Continue = BitsPerSampleResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto TotalSamplesPerChannelResult{Get_UnsignedInteger_36Bit_BigEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("TotalSamplesPerChannel", TotalSamplesPerChannelResult->GetValue());
+		Continue = TotalSamplesPerChannelResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto MD5SignatureOfUnencodedAudioDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 16)};
+		
+		Result->GetValue()->AppendValue("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioDataResult->GetValue());
+		Continue = MD5SignatureOfUnencodedAudioDataResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
