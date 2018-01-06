@@ -7135,40 +7135,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto NameCodeResult{Get_ID3_2_ReplayGainAdjustment_NameCode(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("NameCode", NameCodeResult->GetValue());
-	if(NameCodeResult->GetSuccess() == true)
+	Result->GetValue()->AppendTag("standard", "Hydrogenaudio ReplayGain"s);
+	// reading
+	if(Continue == true)
 	{
-		auto OriginatorCodeResult{Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Buffer)};
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment_NameCode(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("NameCode", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("OriginatorCode", OriginatorCodeResult->GetValue());
-		if(OriginatorCodeResult->GetSuccess() == true)
-		{
-			auto SignBitResult{Get_ID3_2_ReplayGainAdjustment_SignBit(Buffer)};
-			
-			Result->GetValue()->AppendValue("SignBit", SignBitResult->GetValue());
-			if(SignBitResult->GetSuccess() == true)
-			{
-				auto ReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Buffer)};
-				
-				Result->GetValue()->AppendValue("ReplayGainAdjustment", ReplayGainAdjustmentResult->GetValue());
-				if(ReplayGainAdjustmentResult->GetSuccess() == true)
-				{
-					auto SignBit{std::experimental::any_cast< std::uint8_t >(SignBitResult->GetAny())};
-					auto ReplayGainAdjustment{std::experimental::any_cast< float >(ReplayGainAdjustmentResult->GetValue()->GetTagAny("Interpretation"))};
-					
-					if(SignBit == 0x01)
-					{
-						ReplayGainAdjustment *= -1.0f;
-					}
-					Result->GetValue()->PrependTag("Standard", "Hydrogenaudio ReplayGain"s);
-					Result->GetValue()->PrependTag("Interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
-					Result->SetSuccess(true);
-				}
-			}
-		}
+		Continue = FieldResult->GetSuccess();
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("OriginatorCode", FieldResult->GetValue())};
+		
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment_SignBit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("SignBit", FieldResult->GetValue())};
+		
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ReplayGainAdjustment", FieldResult->GetValue())};
+		
+		Continue = FieldResult->GetSuccess();
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetAny("SignBit"))};
+		auto ReplayGainAdjustment{std::experimental::any_cast< float >(Result->GetValue("ReplayGainAdjustment")->GetTagAny("interpretation"))};
+		
+		if(SignBit == 0x01)
+		{
+			ReplayGainAdjustment *= -1.0f;
+		}
+		Result->GetValue()->PrependTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7177,33 +7191,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_NameCode(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto NameCodeResult{Get_UnsignedInteger_3Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(NameCodeResult->GetValue());
-	if(NameCodeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto NameCode{std::experimental::any_cast< std::uint8_t >(NameCodeResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_3Bit(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		Continue = FieldResult->GetSuccess();
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto NameCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(NameCode == 0x00)
 		{
-			Result->GetValue()->PrependTag("Interpretation", "not set"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->PrependTag("interpretation", "not set"s);
 		}
 		else if(NameCode == 0x01)
 		{
-			Result->GetValue()->PrependTag("Interpretation", "track gain adjustment"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->PrependTag("interpretation", "track gain adjustment"s);
 		}
 		else if(NameCode == 0x02)
 		{
-			Result->GetValue()->PrependTag("Interpretation", "album gain adjustment"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->PrependTag("interpretation", "album gain adjustment"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("Interpretation", "<unknown>"s);
+			Result->GetValue()->PrependTag("error", "This value is unknown and MUST NOT be used."s);
+			Continue = false;
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7212,38 +7233,44 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto OriginatorCodeResult{Get_UnsignedInteger_3Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(OriginatorCodeResult->GetValue());
-	if(OriginatorCodeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto OriginatorCode{std::experimental::any_cast< std::uint8_t >(OriginatorCodeResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_3Bit(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		Continue = FieldResult->GetSuccess();
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto OriginatorCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(OriginatorCode == 0x00)
 		{
-			Result->GetValue()->PrependTag("Interpretation", "unspecified"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->PrependTag("interpretation", "unspecified"s);
 		}
 		else if(OriginatorCode == 0x01)
 		{
-			Result->GetValue()->PrependTag("Interpretation", "pre-set by artist/producer/mastering engineer"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->PrependTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
 		}
 		else if(OriginatorCode == 0x02)
 		{
-			Result->GetValue()->PrependTag("Interpretation", "set by user"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->PrependTag("interpretation", "set by user"s);
 		}
 		else if(OriginatorCode == 0x03)
 		{
-			Result->GetValue()->PrependTag("Interpretation", "determined automatically"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->PrependTag("interpretation", "determined automatically"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("Interpretation", "<unknown>"s);
+			Result->GetValue()->PrependTag("error", "This value is unknown and MUST NOT be used."s);
+			Continue = false;
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7252,16 +7279,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ReplayGainAdjustmentResult{Get_UnsignedInteger_9Bit_BigEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(ReplayGainAdjustmentResult->GetValue());
-	if(ReplayGainAdjustmentResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		float ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(ReplayGainAdjustmentResult->GetAny()))};
+		auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->GetValue()->PrependTag("Interpretation", ReplayGainAdjustment / 10.0f);
-		Result->SetSuccess(true);
+		Continue = FieldResult->GetSuccess();
 	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetAny()))};
+		
+		Result->GetValue()->PrependTag("interpretation", ReplayGainAdjustment / 10.0f);
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7270,24 +7305,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_SignBit(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto SignBitResult{Get_UnsignedInteger_1Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(SignBitResult->GetValue());
-	if(SignBitResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldResult{Get_UnsignedInteger_1Bit(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		auto SignBit{std::experimental::any_cast< std::uint8_t >(SignBitResult->GetAny())};
+		Continue = FieldResult->GetSuccess();
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(SignBit == 0x00)
 		{
-			Result->GetValue()->PrependTag("Interpretation", "positive gain (boost)"s);
+			Result->GetValue()->PrependTag("interpretation", "positive gain (boost)"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("Interpretation", "negative gain (attenuation)"s);
+			Result->GetValue()->PrependTag("interpretation", "negative gain (attenuation)"s);
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
