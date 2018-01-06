@@ -5813,12 +5813,109 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header(Inspe
 		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
 		if(SizeResult->GetSuccess() == true)
 		{
-			auto FlagsResult{Get_BitSet_16Bit_BigEndian(Buffer)};
+			auto FlagsResult{Get_ID3_2_3_Frame_Header_Flags(Buffer)};
 			
 			Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
 			Result->SetSuccess(FlagsResult->GetSuccess());
 		}
 	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags(Inspection::Buffer & Buffer)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
+	
+	if(Continue == true)
+	{
+		auto FieldResult{Get_BitSet_16Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		Continue = FieldResult->GetSuccess();
+		if(FieldResult->GetSuccess() == true)
+		{
+			const std::bitset< 16 > & Flags{std::experimental::any_cast< const std::bitset< 16 > & >(FieldValue->GetAny())};
+			std::shared_ptr< Inspection::Value > FlagValue;
+			
+			FlagValue = Result->GetValue()->AppendValue("TagAlterPreservation", Flags[15]);
+			FlagValue->AppendTag("bit index", 15);
+			FlagValue->AppendTag("bit name", "a"s);
+			if(Flags[15] == true)
+			{
+				FlagValue->AppendTag("interpretation", "Frame should be discarded."s);
+			}
+			else
+			{
+				FlagValue->AppendTag("interpretation", "Frame should be preserved."s);
+			}
+			FlagValue = Result->GetValue()->AppendValue("FileAlterPreservation", Flags[14]);
+			FlagValue->AppendTag("bit index", 14);
+			FlagValue->AppendTag("bit name", "b"s);
+			if(Flags[14] == true)
+			{
+				FlagValue->AppendTag("interpretation", "Frame should be discarded."s);
+			}
+			else
+			{
+				FlagValue->AppendTag("interpretation", "Frame should be preserved."s);
+			}
+			FlagValue = Result->GetValue()->AppendValue("ReadOnly", Flags[13]);
+			FlagValue->AppendTag("bit index", 13);
+			FlagValue->AppendTag("bit name", "c"s);
+			FlagValue = Result->GetValue()->AppendValue("Reserved", false);
+			for(auto FlagIndex = 8; FlagIndex <= 12; ++FlagIndex)
+			{
+				FlagValue->AppendTag("bit index", FlagIndex);
+				Continue = Continue && ~Flags[FlagIndex];
+			}
+			FlagValue = Result->GetValue()->AppendValue("Compression", Flags[7]);
+			FlagValue->AppendTag("bit index", 7);
+			FlagValue->AppendTag("bit name", "i"s);
+			if(Flags[7] == true)
+			{
+				FlagValue->AppendTag("interpretation", "Frame is compressed using ZLIB with 4 bytes for 'decompressed size' appended to the frame header."s);
+				FlagValue->AppendTag("error", "Frame compression is not yet implemented!");
+			}
+			else
+			{
+				FlagValue->AppendTag("interpretation", "Frame is not compressed."s);
+			}
+			FlagValue = Result->GetValue()->AppendValue("Encryption", Flags[6]);
+			FlagValue->AppendTag("bit index", 6);
+			FlagValue->AppendTag("bit name", "j"s);
+			if(Flags[6] == true)
+			{
+				FlagValue->AppendTag("interpretation", "Frame is encrypted."s);
+				FlagValue->AppendTag("error", "Frame encryption is not yet implemented!");
+			}
+			else
+			{
+				FlagValue->AppendTag("interpretation", "Frame is not encrypted."s);
+			}
+			FlagValue = Result->GetValue()->AppendValue("GroupingIdentity", Flags[5]);
+			FlagValue->AppendTag("bit index", 5);
+			FlagValue->AppendTag("bit name", "k"s);
+			if(Flags[5] == true)
+			{
+				FlagValue->AppendTag("interpretation", "Frame contains group information."s);
+				FlagValue->AppendTag("error", "Frame grouping is not yet implemented!");
+			}
+			else
+			{
+				FlagValue->AppendTag("interpretation", "Frame does not contain group information."s);
+			}
+			FlagValue = Result->GetValue()->AppendValue("Reserved", false);
+			for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
+			{
+				FlagValue->AppendTag("bit index", FlagIndex);
+				Continue = Continue && ~Flags[FlagIndex];
+			}
+		}
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
