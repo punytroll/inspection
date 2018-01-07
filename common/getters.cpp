@@ -9408,84 +9408,117 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FrameSyncResult{Get_Bits_Set_EndedByLength(Buffer, Inspection::Length(0ull, 12))};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("FrameSync", FrameSyncResult->GetValue());
-	if(FrameSyncResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto AudioVersionIDResult{Get_MPEG_1_FrameHeader_AudioVersionID(Buffer)};
+		auto FieldResult{Get_Bits_Set_EndedByLength(Buffer, Inspection::Length(0ull, 12))};
 		
-		Result->GetValue()->AppendValue("AudioVersionID", AudioVersionIDResult->GetValue());
-		if(AudioVersionIDResult->GetSuccess() == true)
-		{
-			auto LayerDescriptionResult{Get_MPEG_1_FrameHeader_LayerDescription(Buffer)};
-			
-			Result->GetValue()->AppendValue("LayerDescription", LayerDescriptionResult->GetValue());
-			if(LayerDescriptionResult->GetSuccess() == true)
-			{
-				auto ProtectionBitResult{Get_MPEG_1_FrameHeader_ProtectionBit(Buffer)};
-				
-				Result->GetValue()->AppendValue("ProtectionBit", ProtectionBitResult->GetValue());
-				if(ProtectionBitResult->GetSuccess() == true)
-				{
-					auto LayerDescription{std::experimental::any_cast< std::uint8_t >(LayerDescriptionResult->GetAny())};
-					auto BitRateIndexResult{Get_MPEG_1_FrameHeader_BitRateIndex(Buffer, LayerDescription)};
-					
-					Result->GetValue()->AppendValue("BitRateIndex", BitRateIndexResult->GetValue());
-					if(BitRateIndexResult->GetSuccess() == true)
-					{
-						auto SamplingFrequencyResult{Get_MPEG_1_FrameHeader_SamplingFrequency(Buffer)};
-						
-						Result->GetValue()->AppendValue("SamplingFrequency", SamplingFrequencyResult->GetValue());
-						if(SamplingFrequencyResult->GetSuccess() == true)
-						{
-							auto PaddingBitResult{Get_MPEG_1_FrameHeader_PaddingBit(Buffer)};
-							
-							Result->GetValue()->AppendValue("PaddingBit", PaddingBitResult->GetValue());
-							if(PaddingBitResult->GetSuccess() == true)
-							{
-								auto PrivateBitResult{Get_UnsignedInteger_1Bit(Buffer)};
-								
-								Result->GetValue()->AppendValue("PrivateBit", PrivateBitResult->GetValue());
-								if(PrivateBitResult->GetSuccess() == true)
-								{
-									auto ModeResult{Get_MPEG_1_FrameHeader_Mode(Buffer, LayerDescription)};
-									
-									Result->GetValue()->AppendValue("Mode", ModeResult->GetValue());
-									if(ModeResult->GetSuccess() == true)
-									{
-										auto Mode{std::experimental::any_cast< std::uint8_t >(ModeResult->GetAny())};
-										auto ModeExtensionResult{Get_MPEG_1_FrameHeader_ModeExtension(Buffer, LayerDescription, Mode)};
-										
-										Result->GetValue()->AppendValue("ModeExtension", ModeExtensionResult->GetValue());
-										if(ModeExtensionResult->GetSuccess() == true)
-										{
-											auto CopyrightResult{Get_MPEG_1_FrameHeader_Copyright(Buffer)};
-											
-											Result->GetValue()->AppendValue("Copyright", CopyrightResult->GetValue());
-											if(CopyrightResult->GetSuccess() == true)
-											{
-												auto OriginalHomeResult{Get_MPEG_1_FrameHeader_OriginalHome(Buffer)};
-												
-												Result->GetValue()->AppendValue("Original/Home", OriginalHomeResult->GetValue());
-												if(OriginalHomeResult->GetSuccess() == true)
-												{
-													auto EmphasisResult{Get_MPEG_1_FrameHeader_Emphasis(Buffer)};
-													
-													Result->GetValue()->AppendValue("Emphasis", EmphasisResult->GetValue());
-													Result->SetSuccess(EmphasisResult->GetSuccess());
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		Result->GetValue()->AppendValue("FrameSync", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_MPEG_1_FrameHeader_AudioVersionID(Buffer)};
+		
+		Result->GetValue()->AppendValue("AudioVersionID", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_MPEG_1_FrameHeader_LayerDescription(Buffer)};
+		
+		Result->GetValue()->AppendValue("LayerDescription", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_MPEG_1_FrameHeader_ProtectionBit(Buffer)};
+		
+		Result->GetValue()->AppendValue("ProtectionBit", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LayerDescription"))};
+		auto FieldResult{Get_MPEG_1_FrameHeader_BitRateIndex(Buffer, LayerDescription)};
+		
+		Result->GetValue()->AppendValue("BitRateIndex", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_MPEG_1_FrameHeader_SamplingFrequency(Buffer)};
+		
+		Result->GetValue()->AppendValue("SamplingFrequency", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_MPEG_1_FrameHeader_PaddingBit(Buffer)};
+		
+		Result->GetValue()->AppendValue("PaddingBit", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_1Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("PrivateBit", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LayerDescription"))};
+		auto FieldResult{Get_MPEG_1_FrameHeader_Mode(Buffer, LayerDescription)};
+		
+		Result->GetValue()->AppendValue("Mode", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LayerDescription"))};
+		auto Mode{std::experimental::any_cast< std::uint8_t >(Result->GetAny("Mode"))};
+		auto FieldResult{Get_MPEG_1_FrameHeader_ModeExtension(Buffer, LayerDescription, Mode)};
+		
+		Result->GetValue()->AppendValue("ModeExtension", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_MPEG_1_FrameHeader_Copyright(Buffer)};
+		
+		Result->GetValue()->AppendValue("Copyright", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_MPEG_1_FrameHeader_OriginalHome(Buffer)};
+		
+		Result->GetValue()->AppendValue("Original/Home", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_MPEG_1_FrameHeader_Emphasis(Buffer)};
+		
+		Result->GetValue()->AppendValue("Emphasis", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
