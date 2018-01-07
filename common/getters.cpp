@@ -3879,16 +3879,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsP
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
 		auto FieldResult{Get_UnsignedInteger_5Bit(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		if(FieldResult->GetSuccess() == true)
-		{
-			Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny()) + 1));
-		}
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
