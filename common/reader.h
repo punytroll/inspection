@@ -2,6 +2,7 @@
 #define INSPECTION_COMMON_READER_H
 
 #include <cstdint>
+#include <iostream>
 
 #include "length.h"
 
@@ -17,6 +18,7 @@ namespace Inspection
 		Reader(Inspection::Buffer & Buffer);
 		Reader(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 		Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
+		Reader(Inspection::Reader & Reader, const Inspection::Length & Length);
 		std::uint8_t Get0Bits(void);
 		std::uint8_t Get1Bits(void);
 		std::uint8_t Get2Bits(void);
@@ -27,9 +29,26 @@ namespace Inspection
 		std::uint8_t Get7Bits(void);
 		std::uint8_t Get8Bits(void);
 		
+		void AdvancePosition(const Inspection::Length & Offset)
+		{
+			if(_PositionInBuffer + Offset <= _BoundaryInBuffer)
+			{
+				_PositionInBuffer += Offset;
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+		
 		const Inspection::Length & GetPositionInBuffer(void) const
 		{
 			return _PositionInBuffer;
+		}
+		
+		Inspection::Length GetConsumedLength(void) const
+		{
+			return _PositionInBuffer - _OffsetInBuffer;
 		}
 		
 		Inspection::Length GetRemainingLength(void) const
