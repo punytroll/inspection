@@ -2,12 +2,12 @@
 #include "reader.h"
 
 Inspection::Reader::Reader(Inspection::Buffer & Buffer) :
-	Reader(Buffer, Buffer.GetPosition(), Buffer.GetLength() - Buffer.GetPosition())
+	Inspection::Reader(Buffer, Buffer.GetPosition(), Buffer.GetLength() - Buffer.GetPosition())
 {
 }
 
 Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length & Length) :
-	Reader(Buffer, Buffer.GetPosition(), Length)
+	Inspection::Reader(Buffer, Buffer.GetPosition(), Length)
 {
 }
 
@@ -17,6 +17,13 @@ Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length
 	_OffsetInBuffer(OffsetInBuffer),
 	_PositionInBuffer(OffsetInBuffer)
 {
+}
+
+Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length & Length) :
+	Inspection::Reader(Reader._Buffer, Reader._PositionInBuffer, Length)
+{
+	assert(Reader._PositionInBuffer + Length <= Reader._BoundaryInBuffer);
+	assert(_BoundaryInBuffer <= Reader._BoundaryInBuffer);
 }
 
 std::uint8_t Inspection::Reader::Get0Bits(void)

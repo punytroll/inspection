@@ -28,6 +28,15 @@ void Inspection::UpdateState(bool & Continue, Inspection::Buffer & Buffer, std::
 	}
 }
 
+void Inspection::UpdateState(bool & Continue, Inspection::Reader & Reader, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader)
+{
+	UpdateState(Continue, FieldResult);
+	if(Continue == true)
+	{
+		Reader.AdvancePosition(FieldReader.GetConsumedLength());
+	}
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -5533,17 +5542,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(In
 	}
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 16))};
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(FieldReader)};
 		
 		Result->GetValue()->AppendValue("TrackReplayGainAdjustment", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 16))};
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(FieldReader)};
 		
 		Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
@@ -7185,47 +7196,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("standard", "Hydrogenaudio ReplayGain"s);
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+		auto FieldReader{Inspection::Reader(Reader, Inspection::Length(0, 3))};
 		auto FieldResult{Get_ID3_2_ReplayGainAdjustment_NameCode(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NameCode", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+		auto FieldReader{Inspection::Reader(Reader, Inspection::Length(0, 3))};
 		auto FieldResult{Get_ID3_2_ReplayGainAdjustment_OriginatorCode(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("OriginatorCode", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
+		auto FieldReader{Inspection::Reader(Reader, Inspection::Length(0, 1))};
 		auto FieldResult{Get_ID3_2_ReplayGainAdjustment_SignBit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SignBit", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 9))};
+		auto FieldReader{Inspection::Reader(Reader, Inspection::Length(0, 9))};
 		auto FieldResult{Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ReplayGainAdjustment", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -7240,7 +7251,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		Result->GetValue()->PrependTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

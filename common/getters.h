@@ -10,6 +10,7 @@ namespace Inspection
 	
 	void UpdateState(bool & Continue, std::unique_ptr< Inspection::Result > & FieldResult);
 	void UpdateState(bool & Continue, Inspection::Buffer & Buffer, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader);
+	void UpdateState(bool & Continue, Inspection::Reader & Reader, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader);
 	
 	std::unique_ptr< Inspection::Result > Get_APE_Tags(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_Flags(Inspection::Buffer & Buffer);
@@ -188,7 +189,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_NameCode(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader);
