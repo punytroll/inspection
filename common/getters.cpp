@@ -5477,22 +5477,30 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto PeakAmplitudeResult{Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("PeakAmplitude", PeakAmplitudeResult->GetValue());
-	if(PeakAmplitudeResult->GetSuccess() == true)
+	if(Continue == true)
 	{
-		auto TrackReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
+		auto FieldResult{Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer)};
 		
-		Result->GetValue()->AppendValue("TrackReplayGainAdjustment", TrackReplayGainAdjustmentResult->GetValue());
-		if(TrackReplayGainAdjustmentResult->GetSuccess() == true)
-		{
-			auto AlbumReplayGainAdjustmentResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
-			
-			Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", AlbumReplayGainAdjustmentResult->GetValue());
-			Result->SetSuccess(AlbumReplayGainAdjustmentResult->GetSuccess());
-		}
+		Result->GetValue()->AppendValue("PeakAmplitude", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
 	}
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
+		
+		Result->GetValue()->AppendValue("TrackReplayGainAdjustment", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(Buffer)};
+		
+		Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
