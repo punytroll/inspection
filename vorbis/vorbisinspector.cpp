@@ -251,23 +251,40 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Boundary{Buffer.GetPosition() + Length};
-	auto PacketTypeResult{Get_UnsignedInteger_1Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("PacketType", PacketTypeResult->GetValue());
-	if(PacketTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto PacketType{std::experimental::any_cast< std::uint8_t >(PacketTypeResult->GetAny())};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
+		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		
+		Result->GetValue()->AppendValue("PacketType", FieldResult->GetValue());
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto PacketType{std::experimental::any_cast< std::uint8_t >(Result->GetAny("PacketType"))};
 		
 		if(PacketType == 0x00)
 		{
 			Result->GetValue()->AppendTag("interpretation", "Vorbis Audio"s);
-			
-			auto DataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-			
-			Result->GetValue()->AppendValue("Data", DataResult->GetValue());
-			Result->SetSuccess(DataResult->GetSuccess());
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+		
+		Result->GetValue()->AppendValue("Data", FieldResult->GetValue());
+		Continue = FieldResult->GetSuccess();
+	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
