@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include "length.h"
+#include "reader.h"
 
 namespace Inspection
 {
@@ -509,6 +510,13 @@ namespace Inspection
 			assert(_BitstreamReader != nullptr);
 			
 			_BitstreamReader->SetPosition(Position);
+		}
+		
+		void SetPosition(const Inspection::Reader & Reader)
+		{
+			assert(_BitstreamReader != nullptr);
+			
+			_BitstreamReader->SetPosition(Reader.GetPositionInBuffer());
 		}
 	private:
 		BitstreamReader * _BitstreamReader;

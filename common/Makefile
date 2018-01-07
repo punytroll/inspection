@@ -7,13 +7,14 @@ clean:
 	$(RM) getters.o
 	$(RM) guid.o
 	$(RM) helper.o
+	$(RM) reader.o
 	$(RM) string_cast.o
 	$(RM) test
 	$(RM) test.o
 
 all: test
 
-getters.o: getters.cpp getters.h guid.h result.h buffer.h
+getters.o: getters.cpp buffer.h getters.h guid.h reader.h result.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 guid.o: guid.cpp guid.h
@@ -22,10 +23,13 @@ guid.o: guid.cpp guid.h
 helper.o: helper.cpp helper.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+reader.o: reader.cpp buffer.h length.h reader.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 string_cast.o: string_cast.cpp string_cast.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-test: getters.o guid.o helper.o string_cast.o test.o
+test: getters.o guid.o helper.o reader.o string_cast.o test.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 test.o: test.cpp buffer.h length.h result.h value.h
