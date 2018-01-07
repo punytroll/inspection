@@ -3288,61 +3288,65 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			}
 		}
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto SampleSizeResult{Get_UnsignedInteger_3Bit(Buffer)};
-		auto SampleSizeValue{Result->GetValue()->AppendValue("SampleSize", SampleSizeResult->GetValue())};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+		auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("SampleSize", FieldResult->GetValue())};
 		
-		Continue = SampleSizeResult->GetSuccess();
-		if(SampleSizeResult->GetSuccess() == true)
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto SampleSizeValue{Result->GetValue("SampleSize")};
+		auto SampleSize{std::experimental::any_cast< std::uint8_t >(SampleSizeValue->GetAny())};
+		
+		if(SampleSize == 0x00)
 		{
-			auto SampleSize{std::experimental::any_cast< std::uint8_t >(SampleSizeValue->GetAny())};
-			
-			if(SampleSize == 0x00)
-			{
-				SampleSizeValue->AppendTag("interpretation", "get from STREAMINFO metadata block"s);
-			}
-			else if(SampleSize == 0x01)
-			{
-				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(8));
-				SampleSizeValue->AppendTag("unit", "bits"s);
-			}
-			else if(SampleSize == 0x02)
-			{
-				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(12));
-				SampleSizeValue->AppendTag("unit", "bits"s);
-			}
-			else if(SampleSize == 0x03)
-			{
-				SampleSizeValue->AppendTag("reserved"s);
-				SampleSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
-				Continue = false;
-			}
-			else if(SampleSize == 0x04)
-			{
-				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(16));
-				SampleSizeValue->AppendTag("unit", "bits"s);
-			}
-			else if(SampleSize == 0x05)
-			{
-				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(24));
-				SampleSizeValue->AppendTag("unit", "bits"s);
-			}
-			else if(SampleSize == 0x06)
-			{
-				SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(32));
-				SampleSizeValue->AppendTag("unit", "bits"s);
-			}
-			else if(SampleSize == 0x07)
-			{
-				SampleSizeValue->AppendTag("reserved"s);
-				SampleSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
-				Continue = false;
-			}
-			else
-			{
-				assert(false);
-			}
+			SampleSizeValue->AppendTag("interpretation", "get from STREAMINFO metadata block"s);
+		}
+		else if(SampleSize == 0x01)
+		{
+			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(8));
+			SampleSizeValue->AppendTag("unit", "bits"s);
+		}
+		else if(SampleSize == 0x02)
+		{
+			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(12));
+			SampleSizeValue->AppendTag("unit", "bits"s);
+		}
+		else if(SampleSize == 0x03)
+		{
+			SampleSizeValue->AppendTag("reserved"s);
+			SampleSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
+			Continue = false;
+		}
+		else if(SampleSize == 0x04)
+		{
+			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(16));
+			SampleSizeValue->AppendTag("unit", "bits"s);
+		}
+		else if(SampleSize == 0x05)
+		{
+			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(24));
+			SampleSizeValue->AppendTag("unit", "bits"s);
+		}
+		else if(SampleSize == 0x06)
+		{
+			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(32));
+			SampleSizeValue->AppendTag("unit", "bits"s);
+		}
+		else if(SampleSize == 0x07)
+		{
+			SampleSizeValue->AppendTag("reserved"s);
+			SampleSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
+			Continue = false;
+		}
+		else
+		{
+			assert(false);
 		}
 	}
 	if(Continue == true)
@@ -3940,25 +3944,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	}
 	if(Continue == true)
 	{
-		auto NumberOfChannelsResult{Get_FLAC_StreamInfoBlock_NumberOfChannels(Buffer)};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+		auto FieldResult{Get_FLAC_StreamInfoBlock_NumberOfChannels(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("NumberOfChannels", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("NumberOfChannels", NumberOfChannelsResult->GetValue());
-		Continue = NumberOfChannelsResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
 		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 5))};
 		auto FieldResult{Get_FLAC_StreamInfoBlock_BitsPerSample(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue());
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
 		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 36))};
 		auto FieldResult{Get_UnsignedInteger_36Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("TotalSamplesPerChannel", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("TotalSamplesPerChannel", FieldResult->GetValue());
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
@@ -3974,18 +3979,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto NumberOfChannelsResult{Get_UnsignedInteger_3Bit(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	Result->SetValue(NumberOfChannelsResult->GetValue());
-	if(NumberOfChannelsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(NumberOfChannelsResult->GetAny()) + 1));
-		Result->SetSuccess(true);
+		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// interpretation
+	if(Continue == true)
+	{
+		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
+	}
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -4349,19 +4362,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 				}
 			case 2:
 				{
-					auto OrderResult{Get_UnsignedInteger_3Bit(Buffer)};
-					auto OrderValue{Result->GetValue()->AppendValue("Order", OrderResult->GetValue())};
+					auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+					auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
+					auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
 					
-					Continue = OrderResult->GetSuccess();
-					if(OrderResult->GetSuccess() == true)
+					UpdateState(Continue, Buffer, FieldResult, FieldReader);
+					if(FieldResult->GetSuccess() == true)
 					{
-						auto Order{std::experimental::any_cast< std::uint8_t >(OrderResult->GetAny())};
+						auto Order{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny())};
 						
-						OrderValue->AppendTag("value", static_cast< std::uint8_t >(Order));
+						FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order));
 						if(Order < 5)
 						{
 							Result->GetValue()->AppendTag("interpretation", "SUBFRAME_FIXED"s);
-							Continue = true;
 						}
 						else
 						{
@@ -7222,10 +7235,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Buffer)};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+		auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -7264,10 +7278,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Buffer)};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+		auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10366,7 +10381,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 3:
 		{
-			return Get_UnsignedInteger_3Bit(Buffer);
+			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+			auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 4:
 		{
@@ -10484,19 +10504,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 3) == true)
+	if(Reader.Has(Inspection::Length(0, 3)) == true)
 	{
-		Result->GetValue()->SetAny(Buffer.Get3Bits());
+		Result->GetValue()->SetAny(Reader.Get3Bits());
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("3bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -10522,7 +10542,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspe
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Reader.Has(Inspection::Length(0ull, 5)) == true)
+	if(Reader.Has(Inspection::Length(0, 5)) == true)
 	{
 		Result->GetValue()->SetAny(Reader.Get5Bits());
 		Result->GetValue()->AppendTag("integer"s);
