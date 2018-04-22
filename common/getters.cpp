@@ -4239,9 +4239,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_CodingMethod(Inspection::Buffer & Buffer)
 {
-	auto Result{Get_UnsignedInteger_2Bit(Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(Result->GetSuccess() == true)
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
 	{
 		auto CodingMethod{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
@@ -4257,9 +4268,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Cod
 		{
 			Result->GetValue()->AppendTag("interpretation", "<reserved>"s);
 			Result->GetValue()->AppendTag("error", "This coding method MUST NOT be used for the residual."s);
-			Result->SetSuccess(false);
+			Continue = false;
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9940,33 +9952,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyrig
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Emphasis(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto EmphasisResult{Get_UnsignedInteger_2Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(EmphasisResult->GetValue());
-	if(EmphasisResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto Emphasis{std::experimental::any_cast< std::uint8_t >(EmphasisResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto Emphasis{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(Emphasis == 0x00)
 		{
 			Result->GetValue()->PrependTag("no emphasis"s);
-			Result->SetSuccess(true);
 		}
 		else if(Emphasis == 0x01)
 		{
 			Result->GetValue()->PrependTag("50/15 microsec. emphasis"s);
-			Result->SetSuccess(true);
 		}
 		else if(Emphasis == 0x02)
 		{
 			Result->GetValue()->PrependTag("<reserved>"s);
+			Continue = false;
 		}
 		else if(Emphasis == 0x03)
 		{
 			Result->GetValue()->PrependTag("CCITT J.17"s);
-			Result->SetSuccess(true);
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9975,33 +9995,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Emphasi
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_LayerDescription(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto LayerDescriptionResult{Get_UnsignedInteger_2Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(LayerDescriptionResult->GetValue());
-	if(LayerDescriptionResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(LayerDescriptionResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(LayerDescription == 0x00)
 		{
 			Result->GetValue()->PrependTag("<reserved>"s);
+			Continue = false;
 		}
 		else if(LayerDescription == 0x01)
 		{
 			Result->GetValue()->PrependTag("Layer III"s);
-			Result->SetSuccess(true);
 		}
 		else if(LayerDescription == 0x02)
 		{
 			Result->GetValue()->PrependTag("Layer II"s);
-			Result->SetSuccess(true);
 		}
 		else if(LayerDescription == 0x03)
 		{
 			Result->GetValue()->PrependTag("Layer I"s);
-			Result->SetSuccess(true);
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -10010,42 +10038,51 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_LayerDe
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(Inspection::Buffer & Buffer, std::uint8_t LayerDescription)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ModeResult{Get_UnsignedInteger_2Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(ModeResult->GetValue());
-	if(ModeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto Mode{std::experimental::any_cast< std::uint8_t >(ModeResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto Mode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(Mode == 0x00)
 		{
 			Result->GetValue()->PrependTag("stereo"s);
-			Result->SetSuccess(true);
 		}
 		else if(Mode == 0x01)
 		{
 			if((LayerDescription == 0x03) || (LayerDescription == 0x02))
 			{
 				Result->GetValue()->PrependTag("joint stereo (intensity_stereo)"s);
-				Result->SetSuccess(true);
 			}
 			else if(LayerDescription == 0x01)
 			{
 				Result->GetValue()->PrependTag("joint stereo (intensity_stereo and/or ms_stereo)"s);
-				Result->SetSuccess(true);
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if(Mode == 0x02)
 		{
 			Result->GetValue()->PrependTag("dual_channel"s);
-			Result->SetSuccess(true);
 		}
 		else if(Mode == 0x03)
 		{
 			Result->GetValue()->PrependTag("single_channel"s);
-			Result->SetSuccess(true);
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -10054,12 +10091,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(In
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Buffer & Buffer, std::uint8_t LayerDescription, std::uint8_t Mode)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ModeExtensionResult{Get_UnsignedInteger_2Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(ModeExtensionResult->GetValue());
-	if(ModeExtensionResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ModeExtension{std::experimental::any_cast< std::uint8_t >(ModeExtensionResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto ModeExtension{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(Mode == 0x01)
 		{
@@ -10068,22 +10114,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 				if(ModeExtension == 0x00)
 				{
 					Result->GetValue()->PrependTag("subbands 4-31 in intensity_stereo, bound==4"s);
-					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x01)
 				{
 					Result->GetValue()->PrependTag("subbands 8-31 in intensity_stereo, bound==8"s);
-					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x02)
 				{
 					Result->GetValue()->PrependTag("subbands 12-31 in intensity_stereo, bound==12"s);
-					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x03)
 				{
 					Result->GetValue()->PrependTag("subbands 16-31 in intensity_stereo, bound==16"s);
-					Result->SetSuccess(true);
 				}
 			}
 			else if(LayerDescription == 0x01)
@@ -10092,34 +10134,30 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 				{
 					Result->GetValue()->PrependTag("ms_stereo", "off"s);
 					Result->GetValue()->PrependTag("intensity_stereo", "off"s);
-					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x01)
 				{
 					Result->GetValue()->PrependTag("ms_stereo", "off"s);
 					Result->GetValue()->PrependTag("intensity_stereo", "on"s);
-					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x02)
 				{
 					Result->GetValue()->PrependTag("ms_stereo", "on"s);
 					Result->GetValue()->PrependTag("intensity_stereo", "off"s);
-					Result->SetSuccess(true);
 				}
 				else if(ModeExtension == 0x03)
 				{
 					Result->GetValue()->PrependTag("ms_stereo", "on"s);
 					Result->GetValue()->PrependTag("intensity_stereo", "on"s);
-					Result->SetSuccess(true);
 				}
 			}
 		}
 		else
 		{
 			Result->GetValue()->PrependTag("<ignored>"s);
-			Result->SetSuccess(true);
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -10230,36 +10268,44 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Protect
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_SamplingFrequency(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto SamplingFrequencyResult{Get_UnsignedInteger_2Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(SamplingFrequencyResult->GetValue());
-	if(SamplingFrequencyResult->GetSuccess() == true)
+	//reading
+	if(Continue == true)
 	{
-		auto SamplingFrequency{std::experimental::any_cast< std::uint8_t >(SamplingFrequencyResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto SamplingFrequency{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(SamplingFrequency == 0x00)
 		{
 			Result->GetValue()->PrependTag("numeric", 44100u);
 			Result->GetValue()->PrependTag("44.1 kHz"s);
-			Result->SetSuccess(true);
 		}
 		else if(SamplingFrequency == 0x01)
 		{
 			Result->GetValue()->PrependTag("numeric", 48000u);
 			Result->GetValue()->PrependTag("48 kHz"s);
-			Result->SetSuccess(true);
 		}
 		else if(SamplingFrequency == 0x02)
 		{
 			Result->GetValue()->PrependTag("numeric", 32000u);
 			Result->GetValue()->PrependTag("32 kHz"s);
-			Result->SetSuccess(true);
 		}
 		else if(SamplingFrequency == 0x03)
 		{
 			Result->GetValue()->PrependTag("<reserved>"s);
+			Continue = false;
 		}
 	}
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -10497,7 +10543,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 2:
 		{
-			return Get_UnsignedInteger_2Bit(Buffer);
+			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 2))};
+			auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 3:
 		{
@@ -10599,7 +10650,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspe
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Reader.Has(Inspection::Length(0, 1)) == true)
+	if(Reader.Has(Inspection::Length{0, 1}) == true)
 	{
 		Result->GetValue()->SetAny(Reader.Get1Bits());
 		Result->GetValue()->AppendTag("integer"s);
@@ -10612,19 +10663,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 2) == true)
+	if(Reader.Has(Inspection::Length{0, 2}) == true)
 	{
-		Result->GetValue()->SetAny(Buffer.Get2Bits());
+		Result->GetValue()->SetAny(Reader.Get2Bits());
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("2bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -10633,7 +10684,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspe
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Reader.Has(Inspection::Length(0, 3)) == true)
+	if(Reader.Has(Inspection::Length{0, 3}) == true)
 	{
 		Result->GetValue()->SetAny(Reader.Get3Bits());
 		Result->GetValue()->AppendTag("integer"s);
@@ -10667,7 +10718,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspe
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Reader.Has(Inspection::Length(0, 5)) == true)
+	if(Reader.Has(Inspection::Length{0, 5}) == true)
 	{
 		Result->GetValue()->SetAny(Reader.Get5Bits());
 		Result->GetValue()->AppendTag("integer"s);
@@ -10789,7 +10840,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_9Bit_BigEn
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Reader.Has(Inspection::Length(0, 9)) == true)
+	if(Reader.Has(Inspection::Length{0, 9}) == true)
 	{
 		std::uint16_t Value{0ul};
 		

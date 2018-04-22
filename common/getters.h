@@ -270,7 +270,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_0Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_1Bit(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_2Bit(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_2Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_3Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_4Bit(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_5Bit(Inspection::Reader & Reader);
