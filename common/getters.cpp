@@ -9607,10 +9607,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -9909,10 +9910,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyrig
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10131,10 +10133,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Origina
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10164,10 +10167,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Padding
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10197,10 +10201,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Protect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
