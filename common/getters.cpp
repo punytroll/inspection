@@ -9489,10 +9489,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_AudioVersionID(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_MPEG_1_FrameHeader_AudioVersionID(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("AudioVersionID", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("AudioVersionID", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -9505,10 +9506,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_ProtectionBit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_MPEG_1_FrameHeader_ProtectionBit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("ProtectionBit", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ProtectionBit", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -9530,18 +9532,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_PaddingBit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_MPEG_1_FrameHeader_PaddingBit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("PaddingBit", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("PaddingBit", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
 		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("PrivateBit", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("PrivateBit", FieldResult->GetValue());
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
@@ -9566,18 +9569,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_Copyright(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_MPEG_1_FrameHeader_Copyright(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Copyright", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Copyright", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_OriginalHome(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_MPEG_1_FrameHeader_OriginalHome(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Original/Home", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Original/Home", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -9593,19 +9598,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVersionID(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVersionID(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->SetValue(FieldResult->GetValue());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -9623,7 +9627,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVe
 		}
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -9896,19 +9900,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyright(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyright(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->SetValue(FieldResult->GetValue());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -9926,7 +9929,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyrig
 		}
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -10119,19 +10122,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_OriginalHome(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_OriginalHome(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->SetValue(FieldResult->GetValue());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10148,24 +10150,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Origina
 		}
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_PaddingBit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_PaddingBit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->SetValue(FieldResult->GetValue());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10182,24 +10183,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Padding
 		}
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ProtectionBit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ProtectionBit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->SetValue(FieldResult->GetValue());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10216,7 +10216,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Protect
 		}
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
