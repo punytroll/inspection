@@ -10473,7 +10473,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	{
 	case 0:
 		{
-			return Get_UnsignedInteger_0Bit(Buffer);
+			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 0))};
+			auto FieldResult{Get_UnsignedInteger_0Bit(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 1:
 		{
@@ -10570,16 +10575,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	}
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_0Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_0Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	Result->GetValue()->SetAny(static_cast< std::uint8_t >(0));
+	Result->GetValue()->SetAny(Reader.Get0Bits());
 	Result->GetValue()->AppendTag("integer"s);
 	Result->GetValue()->AppendTag("unsigned"s);
 	Result->GetValue()->AppendTag("0bit"s);
 	Result->SetSuccess(true);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
