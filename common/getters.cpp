@@ -2611,32 +2611,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(Length) == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
-		
-		auto Boundary{Buffer.GetPosition() + Length};
-		
-		while(Buffer.GetPosition() < Boundary)
+		while(Reader.Has(Inspection::Length{0, 1}) == true)
 		{
-			if(Buffer.Get1Bits() == 0x00)
+			if(Reader.Get1Bits() == 0x00)
 			{
-				Result->SetSuccess(false);
+				Continue = false;
 				
 				break;
 			}
 		}
 	}
-	if(Result->GetSuccess() == true)
+	// interpretation
+	if(Continue == true)
 	{
 		Result->GetValue()->AppendTag("set data"s);
-		Result->GetValue()->AppendTag(to_string_cast(Length) + " bytes and bits"s);
+		Result->GetValue()->AppendTag(to_string_cast(Reader.GetConsumedLength()) + " bytes and bits"s);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -9481,10 +9481,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Bits_Set_EndedByLength(Buffer, Inspection::Length(0ull, 12))};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 12}}};
+		auto FieldResult{Get_Bits_Set_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("FrameSync", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("FrameSync", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
