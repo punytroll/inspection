@@ -4206,13 +4206,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto CodingMethodResult{Get_FLAC_Subframe_Residual_CodingMethod(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldResult{Get_FLAC_Subframe_Residual_CodingMethod(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodingMethod", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("CodingMethod", CodingMethodResult->GetValue());
-		Continue = CodingMethodResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// interpretation
 	if(Continue == true)
 	{
 		auto CodingMethod{std::experimental::any_cast< std::uint8_t >(Result->GetAny("CodingMethod"))};
@@ -4237,19 +4240,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_CodingMethod(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_CodingMethod(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 2}}};
 		auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -4272,7 +4275,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Cod
 		}
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
