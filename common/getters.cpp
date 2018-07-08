@@ -6854,70 +6854,73 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-	if(SizeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
+	{
+		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
+		Continue = SizeResult->GetSuccess();
+	}
+	if(Continue == true)
 	{
 		auto NumberOfFlagBytesResult{Get_UnsignedInteger_8Bit(Buffer)};
 		
 		Result->GetValue()->AppendValue("NumberOfFlagBytes", NumberOfFlagBytesResult->GetValue());
-		if(NumberOfFlagBytesResult->GetSuccess() == true)
+		Continue = NumberOfFlagBytesResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto NumberOfFlagBytes{std::experimental::any_cast< std::uint8_t >(Result->GetAny("NumberOfFlagBytes"))};
+		
+		if(NumberOfFlagBytes != 0x01)
 		{
-			auto NumberOfFlagBytes{std::experimental::any_cast< std::uint8_t >(NumberOfFlagBytesResult->GetAny())};
-			
-			if(NumberOfFlagBytes == 0x01)
-			{
-				auto ExtendedHeaderFlagsResult{Get_ID3_2_4_Tag_ExtendedHeader_Flags(Buffer)};
-				
-				Result->GetValue()->AppendValue("ExtendedFlags", ExtendedHeaderFlagsResult->GetValue());
-				if(ExtendedHeaderFlagsResult->GetSuccess() == true)
-				{
-					Result->SetSuccess(true);
-					if(Result->GetSuccess() == true)
-					{
-						auto TagIsAnUpdate{std::experimental::any_cast< bool >(ExtendedHeaderFlagsResult->GetAny("TagIsAnUpdate"))};
-						
-						if(TagIsAnUpdate == true)
-						{
-							auto TagIsAnUpdateDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Buffer)};
-							
-							Result->GetValue()->AppendValue("TagIsAnUpdateData", TagIsAnUpdateDataResult->GetValue());
-							Result->SetSuccess(TagIsAnUpdateDataResult->GetSuccess());
-						}
-					}
-					if(Result->GetSuccess() == true)
-					{
-						auto CRCDataPresent{std::experimental::any_cast< bool >(ExtendedHeaderFlagsResult->GetAny("CRCDataPresent"))};
-						
-						if(CRCDataPresent == true)
-						{
-							auto CRCDataPresentDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Buffer)};
-							
-							Result->GetValue()->AppendValue("CRCDataPresentData", CRCDataPresentDataResult->GetValue());
-							Result->SetSuccess(CRCDataPresentDataResult->GetSuccess());
-						}
-					}
-					if(Result->GetSuccess() == true)
-					{
-						auto TagRestrictions{std::experimental::any_cast< bool >(ExtendedHeaderFlagsResult->GetAny("TagRestrictions"))};
-						
-						if(TagRestrictions == true)
-						{
-							auto TagRestrictionsDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Buffer)};
-							
-							Result->GetValue()->AppendValue("TagRestrictionsData", TagRestrictionsDataResult->GetValue());
-							Result->SetSuccess(TagRestrictionsDataResult->GetSuccess());
-						}
-					}
-				}
-			}
-			else
-			{
-				Result->SetSuccess(false);
-			}
+			Result->GetValue()->AppendTag("error", "According to the standard, the number of flag bytes must be equal to 1."s);
+			Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+			Continue = false;
 		}
 	}
+	if(Continue == true)
+	{
+		auto ExtendedHeaderFlagsResult{Get_ID3_2_4_Tag_ExtendedHeader_Flags(Buffer)};
+		
+		Result->GetValue()->AppendValue("ExtendedFlags", ExtendedHeaderFlagsResult->GetValue());
+		Continue = ExtendedHeaderFlagsResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("TagIsAnUpdate")) == true)
+		{
+			auto TagIsAnUpdateDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Buffer)};
+			
+			Result->GetValue()->AppendValue("TagIsAnUpdateData", TagIsAnUpdateDataResult->GetValue());
+			Continue = TagIsAnUpdateDataResult->GetSuccess();
+		}
+	}
+	if(Continue == true)
+	{
+		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("CRCDataPresent")) == true)
+		{
+			auto CRCDataPresentDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Buffer)};
+			
+			Result->GetValue()->AppendValue("CRCDataPresentData", CRCDataPresentDataResult->GetValue());
+			Continue = CRCDataPresentDataResult->GetSuccess();
+		}
+	}
+	if(Continue == true)
+	{
+		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("TagRestrictions")) == true)
+		{
+			auto TagRestrictionsDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Buffer)};
+			
+			Result->GetValue()->AppendValue("TagRestrictionsData", TagRestrictionsDataResult->GetValue());
+			Continue = TagRestrictionsDataResult->GetSuccess();
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
