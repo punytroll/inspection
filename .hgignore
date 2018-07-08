@@ -8,6 +8,8 @@ syntax: regexp
 ^mpeg/.*\.o$
 ^riffinspector$
 ^riff/.*\.o$
+^test/test$
+^test/.*\.o$
 ^vorbisinspector$
 ^vorbis/.*\.o$
 ^asfinspector$
