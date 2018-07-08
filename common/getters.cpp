@@ -604,7 +604,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 				if(TemplateCharacter != Character)
 				{
 					Result->SetSuccess(false);
-					Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character was alpha numeric but did not match the template.");
+					Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters) + "th character was alpha numeric but did not match the template.");
 					
 					break;
 				}
