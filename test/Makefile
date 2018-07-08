@@ -1,26 +1,26 @@
-CXXFLAGS = -std=c++14 -Wall -Werror -g -O0
+CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
 LDFLAGS = -g
 
 default: all
 
 clean:
-	$(RM) ../asfinspector
-	$(RM) asfinspector.o
+	$(RM) ../test
+	$(RM) test.o
 	$(RM) getters.o
 	$(RM) guid.o
 	$(RM) helper.o
 	$(RM) reader.o
 	$(RM) string_cast.o
 
-all: ../asfinspector
+all: test
 
-../asfinspector: asfinspector.o getters.o guid.o helper.o reader.o string_cast.o
+test: test.o getters.o guid.o helper.o reader.o string_cast.o
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-asfinspector.o: asfinspector.cpp ../common/any_printing.h ../common/buffer.h ../common/file_handling.h ../common/getters.h ../common/guid.h ../common/length.h ../common/result.h ../common/value.h ../common/value_printing.h
+test.o: test.cpp ../common/any_printing.h ../common/buffer.h ../common/file_handling.h ../common/getters.h ../common/length.h ../common/result.h ../common/value.h ../common/value_printing.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-getters.o: ../common/getters.cpp ../common/buffer.h ../common/getters.h ../common/length.h ../common/result.h ../common/value.h
+getters.o: ../common/getters.cpp ../common/getters.h ../common/result.h ../common/value.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 guid.o: ../common/guid.cpp ../common/guid.h

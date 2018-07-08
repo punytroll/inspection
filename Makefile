@@ -9,6 +9,7 @@ all:
 	$(MAKE) -C id3
 	$(MAKE) -C mpeg
 	$(MAKE) -C riff
+	$(MAKE) -C test
 	$(MAKE) -C vorbis
 
 clean:
@@ -20,4 +21,5 @@ clean:
 	$(MAKE) $@ -C id3
 	$(MAKE) $@ -C mpeg
 	$(MAKE) $@ -C riff
+	$(MAKE) $@ -C test
 	$(MAKE) $@ -C vorbis
