@@ -6975,10 +6975,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto SizeResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-	Result->SetSuccess(SizeResult->GetSuccess());
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{1, 0}}};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7493,17 +7502,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	}
 	if(Continue == true)
 	{
-		auto MajorVersionResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{1, 0}}};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("MajorVersion", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MajorVersion", MajorVersionResult->GetValue());
-		Continue = MajorVersionResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
-		auto RevisionNumberResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{1, 0}}};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("RevisionNumber", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("RevisionNumber", RevisionNumberResult->GetValue());
-		Continue = RevisionNumberResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -7546,26 +7557,38 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(Inspection::Length(1ull, 0)) == true)
+	if(Continue == true)
 	{
-		if(Buffer.Get1Bits() == 0x00)
+		if(Reader.Has(Inspection::Length{1, 0}) == true)
 		{
-			std::uint8_t First{Buffer.Get7Bits()};
-			
-			Result->GetValue()->SetAny(First);
-			Result->GetValue()->AppendTag("integer"s);
-			Result->GetValue()->AppendTag("unsigned"s);
-			Result->GetValue()->AppendTag("7bit value"s);
-			Result->GetValue()->AppendTag("8bit field"s);
-			Result->GetValue()->AppendTag("synchsafe"s);
-			Result->SetSuccess(true);
+			if(Reader.Get1Bits() == 0x00)
+			{
+				std::uint8_t First{Reader.Get7Bits()};
+				
+				Result->GetValue()->SetAny(First);
+				Result->GetValue()->AppendTag("integer"s);
+				Result->GetValue()->AppendTag("unsigned"s);
+				Result->GetValue()->AppendTag("7bit value"s);
+				Result->GetValue()->AppendTag("8bit field"s);
+				Result->GetValue()->AppendTag("synchsafe"s);
+			}
+			else
+			{
+				Continue = false;
+			}
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
