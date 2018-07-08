@@ -7405,50 +7405,65 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FileIdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Buffer, "ID3")};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("FileIdentifier", FileIdentifierResult->GetValue());
-	if(FileIdentifierResult->GetSuccess() == true)
+	if(Continue == true)
+	{
+		auto FileIdentifierResult{Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Buffer, "ID3")};
+		
+		Result->GetValue()->AppendValue("FileIdentifier", FileIdentifierResult->GetValue());
+		Continue = FileIdentifierResult->GetSuccess();
+	}
+	if(Continue == true)
 	{
 		auto MajorVersionResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
 		
 		Result->GetValue()->AppendValue("MajorVersion", MajorVersionResult->GetValue());
-		if(MajorVersionResult->GetSuccess() == true)
+		Continue = MajorVersionResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto RevisionNumberResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("RevisionNumber", RevisionNumberResult->GetValue());
+		Continue = RevisionNumberResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(Result->GetAny("MajorVersion"))};
+		std::unique_ptr< Inspection::Result > FlagsResult;
+		
+		if(MajorVersion == 0x02)
 		{
-			auto RevisionNumberResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Buffer)};
-			
-			Result->GetValue()->AppendValue("RevisionNumber", RevisionNumberResult->GetValue());
-			if(RevisionNumberResult->GetSuccess() == true)
-			{
-				auto MajorVersion{std::experimental::any_cast< std::uint8_t >(MajorVersionResult->GetAny())};
-				std::unique_ptr< Inspection::Result > FlagsResult;
-				
-				if(MajorVersion == 0x02)
-				{
-					FlagsResult = Get_ID3_2_2_Tag_Header_Flags(Buffer);
-				}
-				else if(MajorVersion == 0x03)
-				{
-					FlagsResult = Get_ID3_2_3_Tag_Header_Flags(Buffer);
-				}
-				else if(MajorVersion == 0x04)
-				{
-					FlagsResult = Get_ID3_2_4_Tag_Header_Flags(Buffer);
-				}
-				if(FlagsResult)
-				{
-					Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
-					if(FlagsResult->GetSuccess() == true)
-					{
-						auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
-						
-						Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-						Result->SetSuccess(SizeResult->GetSuccess());
-					}
-				}
-			}
+			FlagsResult = Get_ID3_2_2_Tag_Header_Flags(Buffer);
+		}
+		else if(MajorVersion == 0x03)
+		{
+			FlagsResult = Get_ID3_2_3_Tag_Header_Flags(Buffer);
+		}
+		else if(MajorVersion == 0x04)
+		{
+			FlagsResult = Get_ID3_2_4_Tag_Header_Flags(Buffer);
+		}
+		if(FlagsResult)
+		{
+			Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
+			Continue = FlagsResult->GetSuccess();
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
+	if(Continue == true)
+	{
+		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
+		Continue = SizeResult->GetSuccess();
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
