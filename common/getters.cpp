@@ -2739,16 +2739,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignifican
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 8) == true)
+	if(Reader.Has(Inspection::Length{0, 8}) == true)
 	{
 		Result->SetSuccess(true);
 		
 		std::bitset< 8 > Value;
-		auto Byte1{Buffer.Get8Bits()};
+		auto Byte1{Reader.Get8Bits()};
 		
 		Value[0] = (Byte1 & 0x01) == 0x01;
 		Value[1] = (Byte1 & 0x02) == 0x02;
@@ -2762,7 +2762,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Bu
 		Result->GetValue()->AppendTag("bitset"s);
 		Result->GetValue()->AppendTag("8bit"s);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -4927,14 +4927,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspectio
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AppendTag("bit index", 7);
@@ -4949,9 +4956,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(I
 		Flag->AppendTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 5; ++FlagIndex)
 		{
-			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
+			Continue ^= ~Flags[FlagIndex];
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6152,14 +6161,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AppendTag("bit index", 7);
@@ -6178,9 +6194,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 		Flag->AppendTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
 		{
-			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
+			Continue ^= ~Flags[FlagIndex];
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6959,17 +6977,35 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
-	if((HeaderResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("Size")) == 0x01))
+	// reading
+	if(Continue == true)
 	{
-		auto RestrictionResult{Get_BitSet_8Bit(Buffer)};
-		auto Value{Result->GetValue()->AppendValue("Restrictions", RestrictionResult->GetValue())};
+		auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
 		
-		Value->AppendTag("error", "This program is missing the interpretation of the restriction flags."s); 
-		Result->SetSuccess(RestrictionResult->GetSuccess());
+		Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
+		Continue = HeaderResult->GetSuccess();
 	}
+	if(Continue == true)
+	{
+		if(std::experimental::any_cast< std::uint8_t >(Result->GetAny("Size")) == 0x01)
+		{
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+			auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("Restrictions", FieldResult->GetValue())};
+			
+			FieldValue->AppendTag("error", "This program is missing the interpretation of the tag restriction flags."s); 
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The size of the tag restriction flags is not equal to 1."s); 
+			Continue = false;
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6999,15 +7035,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
 		Result->GetValue()->AppendTag("synchsafe"s);
 		
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Reserved", Flags[7])};
 		
 		Flag->AppendTag("bit index", 7);
@@ -7027,9 +7071,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 		Flag->AppendTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 3; ++FlagIndex)
 		{
-			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
+			Continue ^= ~Flags[FlagIndex];
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7038,14 +7084,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FlagsResult{Get_BitSet_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(FlagsResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	if(Continue == true)
+	{
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AppendTag("bit index", 7);
@@ -7066,9 +7118,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(I
 		Flag->AppendTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 3; ++FlagIndex)
 		{
-			Result->SetSuccess(Result->GetSuccess() ^ ~Flags[FlagIndex]);
+			Continue ^= ~Flags[FlagIndex];
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;

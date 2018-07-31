@@ -77,7 +77,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_Bits_Unset_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_Bits_Unset_UntilByteAlignment(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_BitSet_8Bit(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_BitSet_8Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_BitSet_16Bit_BigEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_BitSet_16Bit_LittleEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_BitSet_32Bit_LittleEndian(Inspection::Buffer & Buffer);
