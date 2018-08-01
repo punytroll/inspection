@@ -69,19 +69,28 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto HeaderTypeResult{Get_BitSet_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(HeaderTypeResult->GetValue());
-	if(HeaderTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		const std::bitset< 8 > & HeaderType{std::experimental::any_cast< const std::bitset< 8 > & >(HeaderTypeResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::bitset< 8 > & HeaderType{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		
 		Result->GetValue()->AppendValue("Continuation", HeaderType[0]);
 		Result->GetValue()->AppendValue("BeginOfStream", HeaderType[1]);
 		Result->GetValue()->AppendValue("EndOfStream", HeaderType[2]);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;

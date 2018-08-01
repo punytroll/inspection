@@ -129,14 +129,19 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer 
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ChannelMaskResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(ChannelMaskResult->GetValue());
-	if(ChannelMaskResult->GetSuccess() == true)
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		const std::bitset< 32 > & ChannelMask{std::experimental::any_cast< const std::bitset< 32 > & >(ChannelMaskResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	if(Continue == true)
+	{
+		const std::bitset< 32 > & ChannelMask{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
 		
 		if(ChannelMask[0] == true)
 		{
@@ -212,12 +217,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 		}
 		for(auto BitIndex = 18; BitIndex < 31; ++BitIndex)
 		{
-			if(ChannelMask[BitIndex] == true)
-			{
-				Result->SetSuccess(false);
-				
-				break;
-			}
+			Continue &= ~ChannelMask[BitIndex];
 		}
 		if(ChannelMask[31] == true)
 		{
@@ -235,6 +235,8 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 		//~ #define SPEAKER_5POINT1_SURROUND (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_SIDE_LEFT | SPEAKER_SIDE_RIGHT)
 		//~ #define SPEAKER_7POINT1_SURROUND (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT | SPEAKER_SIDE_LEFT  | SPEAKER_SIDE_RIGHT)
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;

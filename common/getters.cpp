@@ -74,13 +74,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Buffe
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Start{Buffer.GetPosition()};
-	auto TagsFlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(TagsFlagsResult->GetValue());
-	if(TagsFlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		const std::bitset<32> & TagsFlags{std::experimental::any_cast< const std::bitset<32> & >(TagsFlagsResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::bitset<32> & TagsFlags{std::experimental::any_cast< const std::bitset<32> & >(Result->GetAny())};
 		auto FlagValue{Result->GetValue()->AppendValue("TagOrItemIsReadOnly", TagsFlags[0])};
 		
 		FlagValue->AppendTag("bit index", "0"s);
@@ -140,8 +148,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 		FlagValue->AppendTag("bit index", 30);
 		FlagValue = Result->GetValue()->AppendValue("TagContainsAHeader", TagsFlags[31]);
 		FlagValue->AppendTag("bit index", 31);
-		Result->SetSuccess(true);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1333,24 +1342,34 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(FlagsResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
 		
 		Result->GetValue()->AppendValue("[0] Reliable", Flags[0]);
 		Result->GetValue()->AppendValue("[1] Seekable", Flags[1]);
 		Result->GetValue()->AppendValue("[2] No Cleanpoints", Flags[2]);
 		Result->GetValue()->AppendValue("[3] Resend Live Cleanpoints", Flags[3]);
 		Result->GetValue()->AppendValue("[4-31] Reserved", false);
-		Result->SetSuccess(true);
 		for(auto Index = 4; Index < 32; ++Index)
 		{
-			Result->SetSuccess(Result->GetSuccess() & ~Flags[Index]);
+			Continue &= ~Flags[Index];
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1590,22 +1609,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Buffe
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FlagsResult{Get_BitSet_32Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(FlagsResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
 		
 		Result->GetValue()->AppendValue("[0] Broadcast", Flags[0]);
 		Result->GetValue()->AppendValue("[1] Seekable", Flags[1]);
 		Result->GetValue()->AppendValue("[2-31] Reserved", false);
-		Result->SetSuccess(true);
 		for(auto Index = 2; Index < 32; ++Index)
 		{
-			Result->SetSuccess(Result->GetSuccess() & ~Flags[Index]);
+			Continue &= ~Flags[Index];
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2332,26 +2361,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Position{Buffer.GetPosition()};
-	auto FlagsResult{Get_BitSet_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Buffer.SetPosition(Position);
-		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 16}}};
+		auto FieldResult{Get_BitSet_16Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	Buffer.SetPosition(Position);
+	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
+	if(Continue == true)
+	{
 		
 		auto StreamNumberResult{Get_UnsignedInteger_7Bit(Buffer)};
 		
 		Result->GetValue()->AppendValue("[0-6] StreamNumber", StreamNumberResult->GetValue());
-		if(StreamNumberResult->GetSuccess() == true)
-		{
-			auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0ull, 9))};
-			
-			Result->GetValue()->AppendValue("[7-15] Reserved", ReservedResult->GetValue());
-			Result->SetSuccess(ReservedResult->GetSuccess());
-		}
-		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+		Continue = StreamNumberResult->GetSuccess();
 	}
+	if(Continue == true)
+	{
+		auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0ull, 9))};
+		
+		Result->GetValue()->AppendValue("[7-15] Reserved", ReservedResult->GetValue());
+		Continue = ReservedResult->GetSuccess();
+	}
+	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2384,35 +2424,49 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_Flags
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Position{Buffer.GetPosition()};
-	auto FlagsResult{Get_BitSet_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Buffer.SetPosition(Position);
-		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 16}}};
+		auto FieldResult{Get_BitSet_16Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	Buffer.SetPosition(Position);
+	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
+	if(Continue == true)
+	{
 		auto StreamNumberResult{Get_UnsignedInteger_7Bit(Buffer)};
 		
 		Result->GetValue()->AppendValue("[0-6] StreamNumber", StreamNumberResult->GetValue());
-		if(StreamNumberResult->GetSuccess() == true)
-		{
-			auto ReservedResult{Get_UnsignedInteger_8Bit(Buffer)};
-			
-			Result->GetValue()->AppendValue("[7-14] Reserved", ReservedResult->GetValue());
-			if((ReservedResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(ReservedResult->GetAny()) == 0x00))
-			{
-				auto EncryptedContentFlagResult{Get_Boolean_1Bit(Buffer)};
-				
-				Result->GetValue()->AppendValue("[15] EncryptedContentFlag", EncryptedContentFlagResult->GetValue());
-				if(EncryptedContentFlagResult->GetSuccess() == true)
-				{
-					Result->SetSuccess(true);
-				}
-			}
-		}
-		Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+		Continue = StreamNumberResult->GetSuccess();
 	}
+	if(Continue == true)
+	{
+		auto ReservedResult{Get_UnsignedInteger_8Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("[7-14] Reserved", ReservedResult->GetValue());
+		Continue = ReservedResult->GetSuccess();
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetAny("[7-14] Reserved")) == 0x00;
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto EncryptedContentFlagResult{Get_Boolean_1Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("[15] EncryptedContentFlag", EncryptedContentFlagResult->GetValue());
+		Continue = EncryptedContentFlagResult->GetSuccess();
+	}
+	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2767,16 +2821,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Re
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 16) == true)
+	if(Reader.Has(Inspection::Length{0, 16}) == true)
 	{
 		Result->SetSuccess(true);
 		
 		std::bitset< 16 > Value;
-		auto Byte1{Buffer.Get8Bits()};
+		auto Byte1{Reader.Get8Bits()};
 		
 		Value[8] = (Byte1 & 0x01) == 0x01;
 		Value[9] = (Byte1 & 0x02) == 0x02;
@@ -2787,7 +2841,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Ins
 		Value[14] = (Byte1 & 0x40) == 0x40;
 		Value[15] = (Byte1 & 0x80) == 0x80;
 		
-		auto Byte2{Buffer.Get8Bits()};
+		auto Byte2{Reader.Get8Bits()};
 		
 		Value[0] = (Byte2 & 0x01) == 0x01;
 		Value[1] = (Byte2 & 0x02) == 0x02;
@@ -2802,21 +2856,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Ins
 		Result->GetValue()->AppendTag("16bit"s);
 		Result->GetValue()->AppendTag("little endian"s);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 16) == true)
+	if(Reader.Has(Inspection::Length{0, 16}) == true)
 	{
 		Result->SetSuccess(true);
 		
 		std::bitset< 16 > Value;
-		auto Byte1{Buffer.Get8Bits()};
+		auto Byte1{Reader.Get8Bits()};
 		
 		Value[0] = (Byte1 & 0x01) == 0x01;
 		Value[1] = (Byte1 & 0x02) == 0x02;
@@ -2827,7 +2881,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(
 		Value[6] = (Byte1 & 0x40) == 0x40;
 		Value[7] = (Byte1 & 0x80) == 0x80;
 		
-		auto Byte2{Buffer.Get8Bits()};
+		auto Byte2{Reader.Get8Bits()};
 		
 		Value[8] = (Byte2 & 0x01) == 0x01;
 		Value[9] = (Byte2 & 0x02) == 0x02;
@@ -2842,21 +2896,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(
 		Result->GetValue()->AppendTag("16bit"s);
 		Result->GetValue()->AppendTag("little endian"s);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 32) == true)
+	if(Reader.Has(Inspection::Length{0, 32}) == true)
 	{
 		Result->SetSuccess(true);
 		
 		std::bitset< 32 > Value;
-		auto Byte1{Buffer.Get8Bits()};
+		auto Byte1{Reader.Get8Bits()};
 		
 		Value[0] = (Byte1 & 0x01) == 0x01;
 		Value[1] = (Byte1 & 0x02) == 0x02;
@@ -2867,7 +2921,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 		Value[6] = (Byte1 & 0x40) == 0x40;
 		Value[7] = (Byte1 & 0x80) == 0x80;
 		
-		auto Byte2{Buffer.Get8Bits()};
+		auto Byte2{Reader.Get8Bits()};
 		
 		Value[8] = (Byte2 & 0x01) == 0x01;
 		Value[9] = (Byte2 & 0x02) == 0x02;
@@ -2878,7 +2932,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 		Value[14] = (Byte2 & 0x40) == 0x40;
 		Value[15] = (Byte2 & 0x80) == 0x80;
 		
-		auto Byte3{Buffer.Get8Bits()};
+		auto Byte3{Reader.Get8Bits()};
 		
 		Value[16] = (Byte3 & 0x01) == 0x01;
 		Value[17] = (Byte3 & 0x02) == 0x02;
@@ -2889,7 +2943,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 		Value[22] = (Byte3 & 0x40) == 0x40;
 		Value[23] = (Byte3 & 0x80) == 0x80;
 		
-		auto Byte4{Buffer.Get8Bits()};
+		auto Byte4{Reader.Get8Bits()};
 		
 		Value[24] = (Byte4 & 0x01) == 0x01;
 		Value[25] = (Byte4 & 0x02) == 0x02;
@@ -2904,7 +2958,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 		Result->GetValue()->AppendTag("32bit"s);
 		Result->GetValue()->AppendTag("little endian"s);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -5919,92 +5973,96 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_BitSet_16Bit_BigEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 16}}};
+		auto FieldResult{Get_BitSet_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Continue = FieldResult->GetSuccess();
-		if(FieldResult->GetSuccess() == true)
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::bitset< 16 > & Flags{std::experimental::any_cast< const std::bitset< 16 > & >(Result->GetAny())};
+		std::shared_ptr< Inspection::Value > FlagValue;
+		
+		FlagValue = Result->GetValue()->AppendValue("TagAlterPreservation", Flags[15]);
+		FlagValue->AppendTag("bit index", 15);
+		FlagValue->AppendTag("bit name", "a"s);
+		if(Flags[15] == true)
 		{
-			const std::bitset< 16 > & Flags{std::experimental::any_cast< const std::bitset< 16 > & >(FieldValue->GetAny())};
-			std::shared_ptr< Inspection::Value > FlagValue;
-			
-			FlagValue = Result->GetValue()->AppendValue("TagAlterPreservation", Flags[15]);
-			FlagValue->AppendTag("bit index", 15);
-			FlagValue->AppendTag("bit name", "a"s);
-			if(Flags[15] == true)
-			{
-				FlagValue->AppendTag("interpretation", "Frame should be discarded."s);
-			}
-			else
-			{
-				FlagValue->AppendTag("interpretation", "Frame should be preserved."s);
-			}
-			FlagValue = Result->GetValue()->AppendValue("FileAlterPreservation", Flags[14]);
-			FlagValue->AppendTag("bit index", 14);
-			FlagValue->AppendTag("bit name", "b"s);
-			if(Flags[14] == true)
-			{
-				FlagValue->AppendTag("interpretation", "Frame should be discarded."s);
-			}
-			else
-			{
-				FlagValue->AppendTag("interpretation", "Frame should be preserved."s);
-			}
-			FlagValue = Result->GetValue()->AppendValue("ReadOnly", Flags[13]);
-			FlagValue->AppendTag("bit index", 13);
-			FlagValue->AppendTag("bit name", "c"s);
-			FlagValue = Result->GetValue()->AppendValue("Reserved", false);
-			for(auto FlagIndex = 8; FlagIndex <= 12; ++FlagIndex)
-			{
-				FlagValue->AppendTag("bit index", FlagIndex);
-				Continue = Continue && ~Flags[FlagIndex];
-			}
-			FlagValue = Result->GetValue()->AppendValue("Compression", Flags[7]);
-			FlagValue->AppendTag("bit index", 7);
-			FlagValue->AppendTag("bit name", "i"s);
-			if(Flags[7] == true)
-			{
-				FlagValue->AppendTag("interpretation", "Frame is compressed using ZLIB with 4 bytes for 'decompressed size' appended to the frame header."s);
-				FlagValue->AppendTag("error", "Frame compression is not yet implemented!");
-			}
-			else
-			{
-				FlagValue->AppendTag("interpretation", "Frame is not compressed."s);
-			}
-			FlagValue = Result->GetValue()->AppendValue("Encryption", Flags[6]);
-			FlagValue->AppendTag("bit index", 6);
-			FlagValue->AppendTag("bit name", "j"s);
-			if(Flags[6] == true)
-			{
-				FlagValue->AppendTag("interpretation", "Frame is encrypted."s);
-				FlagValue->AppendTag("error", "Frame encryption is not yet implemented!");
-			}
-			else
-			{
-				FlagValue->AppendTag("interpretation", "Frame is not encrypted."s);
-			}
-			FlagValue = Result->GetValue()->AppendValue("GroupingIdentity", Flags[5]);
-			FlagValue->AppendTag("bit index", 5);
-			FlagValue->AppendTag("bit name", "k"s);
-			if(Flags[5] == true)
-			{
-				FlagValue->AppendTag("interpretation", "Frame contains group information."s);
-				FlagValue->AppendTag("error", "Frame grouping is not yet implemented!");
-			}
-			else
-			{
-				FlagValue->AppendTag("interpretation", "Frame does not contain group information."s);
-			}
-			FlagValue = Result->GetValue()->AppendValue("Reserved", false);
-			for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
-			{
-				FlagValue->AppendTag("bit index", FlagIndex);
-				Continue = Continue && ~Flags[FlagIndex];
-			}
+			FlagValue->AppendTag("interpretation", "Frame should be discarded."s);
+		}
+		else
+		{
+			FlagValue->AppendTag("interpretation", "Frame should be preserved."s);
+		}
+		FlagValue = Result->GetValue()->AppendValue("FileAlterPreservation", Flags[14]);
+		FlagValue->AppendTag("bit index", 14);
+		FlagValue->AppendTag("bit name", "b"s);
+		if(Flags[14] == true)
+		{
+			FlagValue->AppendTag("interpretation", "Frame should be discarded."s);
+		}
+		else
+		{
+			FlagValue->AppendTag("interpretation", "Frame should be preserved."s);
+		}
+		FlagValue = Result->GetValue()->AppendValue("ReadOnly", Flags[13]);
+		FlagValue->AppendTag("bit index", 13);
+		FlagValue->AppendTag("bit name", "c"s);
+		FlagValue = Result->GetValue()->AppendValue("Reserved", false);
+		for(auto FlagIndex = 8; FlagIndex <= 12; ++FlagIndex)
+		{
+			FlagValue->AppendTag("bit index", FlagIndex);
+			Continue = Continue && ~Flags[FlagIndex];
+		}
+		FlagValue = Result->GetValue()->AppendValue("Compression", Flags[7]);
+		FlagValue->AppendTag("bit index", 7);
+		FlagValue->AppendTag("bit name", "i"s);
+		if(Flags[7] == true)
+		{
+			FlagValue->AppendTag("interpretation", "Frame is compressed using ZLIB with 4 bytes for 'decompressed size' appended to the frame header."s);
+			FlagValue->AppendTag("error", "Frame compression is not yet implemented!");
+		}
+		else
+		{
+			FlagValue->AppendTag("interpretation", "Frame is not compressed."s);
+		}
+		FlagValue = Result->GetValue()->AppendValue("Encryption", Flags[6]);
+		FlagValue->AppendTag("bit index", 6);
+		FlagValue->AppendTag("bit name", "j"s);
+		if(Flags[6] == true)
+		{
+			FlagValue->AppendTag("interpretation", "Frame is encrypted."s);
+			FlagValue->AppendTag("error", "Frame encryption is not yet implemented!");
+		}
+		else
+		{
+			FlagValue->AppendTag("interpretation", "Frame is not encrypted."s);
+		}
+		FlagValue = Result->GetValue()->AppendValue("GroupingIdentity", Flags[5]);
+		FlagValue->AppendTag("bit index", 5);
+		FlagValue->AppendTag("bit name", "k"s);
+		if(Flags[5] == true)
+		{
+			FlagValue->AppendTag("interpretation", "Frame contains group information."s);
+			FlagValue->AppendTag("error", "Frame grouping is not yet implemented!");
+		}
+		else
+		{
+			FlagValue->AppendTag("interpretation", "Frame does not contain group information."s);
+		}
+		FlagValue = Result->GetValue()->AppendValue("Reserved", false);
+		for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
+		{
+			FlagValue->AppendTag("bit index", FlagIndex);
+			Continue = Continue && ~Flags[FlagIndex];
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -6721,22 +6779,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_WXXX(In
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto IdentifierResult{Get_ID3_2_4_Frame_Header_Identifier(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
-	if(IdentifierResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
+	{
+		auto IdentifierResult{Get_ID3_2_4_Frame_Header_Identifier(Buffer)};
+		
+		Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
+		Continue = IdentifierResult->GetSuccess();
+	}
+	if(Continue == true)
 	{
 		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
 		
 		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-		if(SizeResult->GetSuccess() == true)
-		{
-			auto FlagsResult{Get_BitSet_16Bit_BigEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
-			Result->SetSuccess(FlagsResult->GetSuccess());
-		}
+		Continue = SizeResult->GetSuccess();
 	}
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 16}}};
+		auto FieldResult{Get_BitSet_16Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9550,44 +9619,53 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 {
 	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FrameHeaderResult{Get_MPEG_1_FrameHeader(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Header", FrameHeaderResult->GetValue());
-	if(FrameHeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ProtectionBit{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("ProtectionBit"))};
-		auto Continue{true};
+		auto FrameHeaderResult{Get_MPEG_1_FrameHeader(Buffer)};
+		
+		Result->GetValue()->AppendValue("Header", FrameHeaderResult->GetValue());
+		Continue = FrameHeaderResult->GetSuccess();
+	}
+	if(Continue == true)
+	{
+		auto ProtectionBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("ProtectionBit"))};
 		
 		if(ProtectionBit == 0x00)
 		{
-			auto ErrorCheckResult{Get_BitSet_16Bit_BigEndian(Buffer)};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 16}}};
+			auto FieldResult{Get_BitSet_16Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("ErrorCheck", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("ErrorCheck", ErrorCheckResult->GetValue());
-			Continue = ErrorCheckResult->GetSuccess();
-		}
-		if(Continue == true)
-		{
-			auto LayerDescription{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("LayerDescription"))};
-			auto BitRate{std::experimental::any_cast< std::uint32_t >(FrameHeaderResult->GetValue("BitRateIndex")->GetTagAny("numeric"))};
-			auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(FrameHeaderResult->GetValue("SamplingFrequency")->GetTagAny("numeric"))};
-			auto PaddingBit{std::experimental::any_cast< std::uint8_t >(FrameHeaderResult->GetAny("PaddingBit"))};
-			auto FrameLength{0ul};
-			
-			if(LayerDescription == 0x03)
-			{
-				FrameLength = (12 * BitRate / SamplingFrequency + PaddingBit) * 4;
-			}
-			else if((LayerDescription == 0x01) || (LayerDescription == 0x02))
-			{
-				FrameLength = 144 * BitRate / SamplingFrequency + PaddingBit;
-			}
-			
-			auto AudioDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(FrameLength) + Start - Buffer.GetPosition())};
-			
-			Result->GetValue()->AppendValue("AudioData", AudioDataResult->GetValue());
-			Result->SetSuccess(AudioDataResult->GetSuccess());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 	}
+	if(Continue == true)
+	{
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("LayerDescription"))};
+		auto BitRate{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValue("BitRateIndex")->GetTagAny("numeric"))};
+		auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValue("SamplingFrequency")->GetTagAny("numeric"))};
+		auto PaddingBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("PaddingBit"))};
+		auto FrameLength{0ul};
+		
+		if(LayerDescription == 0x03)
+		{
+			FrameLength = (12 * BitRate / SamplingFrequency + PaddingBit) * 4;
+		}
+		else if((LayerDescription == 0x01) || (LayerDescription == 0x02))
+		{
+			FrameLength = 144 * BitRate / SamplingFrequency + PaddingBit;
+		}
+		
+		auto AudioDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(FrameLength) + Start - Buffer.GetPosition())};
+		
+		Result->GetValue()->AppendValue("AudioData", AudioDataResult->GetValue());
+		Continue = AudioDataResult->GetSuccess();
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
