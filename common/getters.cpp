@@ -159,40 +159,53 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto PreambleResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "APETAGEX")};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Preamble", PreambleResult->GetValue());
-	if(PreambleResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
+	{
+		auto PreambleResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "APETAGEX")};
+		
+		Result->GetValue()->AppendValue("Preamble", PreambleResult->GetValue());
+		UpdateState(Continue, PreambleResult);
+	}
+	if(Continue == true)
 	{
 		auto VersionNumberResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(Buffer)};
 		
 		Result->GetValue()->AppendValue("VersionNumber", VersionNumberResult->GetValue());
-		if(VersionNumberResult->GetSuccess() == true)
-		{
-			auto TagSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("TagSize", TagSizeResult->GetValue());
-			if(TagSizeResult->GetSuccess() == true)
-			{
-				auto ItemCountResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("ItemCount", ItemCountResult->GetValue());
-				if(ItemCountResult->GetSuccess() == true)
-				{
-					auto TagsFlagsResult{Get_APE_Tags_Flags(Buffer)};
-					
-					Result->GetValue()->AppendValue("TagsFlags", TagsFlagsResult->GetValue());
-					if(TagsFlagsResult->GetSuccess() == true)
-					{
-						auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(8, 0))};
-						
-						Result->GetValue()->AppendValue("Reserved", ReservedResult->GetValue());
-						Result->SetSuccess(ReservedResult->GetSuccess());
-					}
-				}
-			}
-		}
+		UpdateState(Continue, VersionNumberResult);
 	}
+	if(Continue == true)
+	{
+		auto TagSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("TagSize", TagSizeResult->GetValue());
+		UpdateState(Continue, TagSizeResult);
+	}
+	if(Continue == true)
+	{
+		auto ItemCountResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("ItemCount", ItemCountResult->GetValue());
+		UpdateState(Continue, ItemCountResult);
+	}
+	if(Continue == true)
+	{
+		auto TagsFlagsResult{Get_APE_Tags_Flags(Buffer)};
+		
+		Result->GetValue()->AppendValue("TagsFlags", TagsFlagsResult->GetValue());
+		UpdateState(Continue, TagsFlagsResult);
+	}
+	if(Continue == true)
+	{
+		auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(8, 0))};
+		
+		Result->GetValue()->AppendValue("Reserved", ReservedResult->GetValue());
+		UpdateState(Continue, ReservedResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -201,30 +214,38 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto VersionNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(VersionNumberResult->GetValue());
-	if(VersionNumberResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto VersionNumber{std::experimental::any_cast< std::uint32_t >(VersionNumberResult->GetAny())};
+		auto VersionNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		
+		Result->SetValue(VersionNumberResult->GetValue());
+		UpdateState(Continue, VersionNumberResult);
+	}
+	// interpreation
+	if(Continue == true)
+	{
+		auto VersionNumber{std::experimental::any_cast< std::uint32_t >(Result->GetAny())};
 		
 		if(VersionNumber == 1000)
 		{
 			Result->GetValue()->AppendTag("interpretation", "1.000 (old)"s);
-			Result->SetSuccess(true);
 		}
 		else if(VersionNumber == 2000)
 		{
 			Result->GetValue()->AppendTag("interpretation", "2.000 (new)"s);
-			Result->SetSuccess(true);
 		}
 		else
 		{
 			Result->GetValue()->AppendTag("interpretation", "<unknown>"s);
 			Result->GetValue()->AppendTag("error", "Unknown version number " + to_string_cast(VersionNumber) + ".");
-			Result->SetSuccess(false);
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -233,38 +254,48 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_Ve
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ItemValueSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("ItemValueSize", ItemValueSizeResult->GetValue());
-	if(ItemValueSizeResult->GetSuccess() == true)
+	if(Continue == true)
+	{
+		auto ItemValueSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		
+		Result->GetValue()->AppendValue("ItemValueSize", ItemValueSizeResult->GetValue());
+		UpdateState(Continue, ItemValueSizeResult);
+	}
+	if(Continue == true)
 	{
 		auto ItemFlagsResult{Get_APE_Tags_Flags(Buffer)};
 		
 		Result->GetValue()->AppendValue("ItemFlags", ItemFlagsResult->GetValue());
-		if(ItemFlagsResult->GetSuccess() == true)
+		UpdateState(Continue, ItemFlagsResult);
+	}
+	if(Continue == true)
+	{
+		auto ItemKeyResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+		
+		Result->GetValue()->AppendValue("ItemKey", ItemKeyResult->GetValue());
+		UpdateState(Continue, ItemKeyResult);
+	}
+	if(Continue == true)
+	{
+		auto ItemValueType{std::experimental::any_cast< std::uint8_t >(Result->GetValue("ItemFlags")->GetValueAny("ItemValueType"))};
+		
+		if(ItemValueType == 0)
 		{
-			auto ItemKeyResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+			auto ItemValueSize{std::experimental::any_cast< std::uint32_t >(Result->GetAny("ItemValueSize"))};
+			auto ItemValueResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{ItemValueSize, 0})};
 			
-			Result->GetValue()->AppendValue("ItemKey", ItemKeyResult->GetValue());
-			if(ItemKeyResult->GetSuccess() == true)
-			{
-				auto ItemValueType{std::experimental::any_cast< std::uint8_t >(ItemFlagsResult->GetAny("ItemValueType"))};
-				
-				if(ItemValueType == 0)
-				{
-					auto ItemValueSize{std::experimental::any_cast< std::uint32_t >(ItemValueSizeResult->GetAny())};
-					auto ItemValueResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length(ItemValueSize, 0))};
-					
-					Result->GetValue()->AppendValue("ItemValue", ItemValueResult->GetValue());
-					Result->SetSuccess(ItemValueResult->GetSuccess());
-				}
-				else
-				{
-					throw Inspection::NotImplementedException("Can only interpret UTF-8 item values.");
-				}
-			}
+			Result->GetValue()->AppendValue("ItemValue", ItemValueResult->GetValue());
+			UpdateState(Continue, ItemValueResult);
+		}
+		else
+		{
+			throw Inspection::NotImplementedException("Can only interpret UTF-8 item values.");
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
