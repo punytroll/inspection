@@ -6791,10 +6791,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header(Inspe
 	}
 	if(Continue == true)
 	{
-		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-		Continue = SizeResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -6946,10 +6947,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-		Continue = SizeResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -7679,10 +7681,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	}
 	if(Continue == true)
 	{
-		auto SizeResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-		Continue = SizeResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -7727,27 +7730,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(Inspection::Length(4ull, 0)) == true)
+	if(Reader.Has(Inspection::Length(0, 32)) == true)
 	{
-		if(Buffer.Get1Bits() == 0x00)
+		if(Reader.Get1Bits() == 0x00)
 		{
-			std::uint32_t First{Buffer.Get7Bits()};
+			std::uint32_t First{Reader.Get7Bits()};
 			
-			if(Buffer.Get1Bits() == 0x00)
+			if(Reader.Get1Bits() == 0x00)
 			{
-				std::uint32_t Second{Buffer.Get7Bits()};
+				std::uint32_t Second{Reader.Get7Bits()};
 				
-				if(Buffer.Get1Bits() == 0x00)
+				if(Reader.Get1Bits() == 0x00)
 				{
-					std::uint32_t Third{Buffer.Get7Bits()};
+					std::uint32_t Third{Reader.Get7Bits()};
 					
-					if(Buffer.Get1Bits() == 0x00)
+					if(Reader.Get1Bits() == 0x00)
 					{
-						std::uint32_t Fourth{Buffer.Get7Bits()};
+						std::uint32_t Fourth{Reader.Get7Bits()};
 						
 						Result->GetValue()->SetAny((First << 21) | (Second << 14) | (Third << 7) | (Fourth));
 						Result->GetValue()->AppendTag("integer"s);
@@ -7761,7 +7764,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bi
 			}
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
