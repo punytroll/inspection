@@ -4046,10 +4046,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	}
 	if(Continue == true)
 	{
-		auto SampleRateResult{Get_UnsignedInteger_20Bit_BigEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 20}}};
+		auto FieldResult{Get_UnsignedInteger_20Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("SampleRate", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("SampleRate", SampleRateResult->GetValue());
-		Continue = SampleRateResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -10768,7 +10769,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	{
 	case 0:
 		{
-			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 0))};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 0}}};
 			auto FieldResult{Get_UnsignedInteger_0Bit(FieldReader)};
 			
 			Buffer.SetPosition(FieldReader);
@@ -10777,7 +10778,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 1:
 		{
-			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
 			auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
 			
 			Buffer.SetPosition(FieldReader);
@@ -10786,7 +10787,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 2:
 		{
-			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 2))};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
 			auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
 			
 			Buffer.SetPosition(FieldReader);
@@ -10795,7 +10796,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 3:
 		{
-			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 3}}};
 			auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
 			
 			Buffer.SetPosition(FieldReader);
@@ -10808,7 +10809,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 5:
 		{
-			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 5))};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 5}}};
 			auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
 			
 			Buffer.SetPosition(FieldReader);
@@ -10829,7 +10830,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 9:
 		{
-			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 9))};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 9}}};
 			auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(FieldReader)};
 			
 			Buffer.SetPosition(FieldReader);
@@ -10838,19 +10839,34 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 10:
 		{
-			return Get_UnsignedInteger_10Bit_BigEndian(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 10}}};
+			auto FieldResult{Get_UnsignedInteger_10Bit_BigEndian(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 11:
 		{
-			return Get_UnsignedInteger_11Bit_BigEndian(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 11}}};
+			auto FieldResult{Get_UnsignedInteger_11Bit_BigEndian(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 12:
 		{
-			return Get_UnsignedInteger_12Bit_BigEndian(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 12}}};
+			auto FieldResult{Get_UnsignedInteger_12Bit_BigEndian(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 13:
 		{
-			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 13))};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 13}}};
 			auto FieldResult{Get_UnsignedInteger_13Bit_BigEndian(FieldReader)};
 			
 			Buffer.SetPosition(FieldReader);
@@ -10859,7 +10875,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 14:
 		{
-			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 14))};
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 14}}};
 			auto FieldResult{Get_UnsignedInteger_14Bit_BigEndian(FieldReader)};
 			
 			Buffer.SetPosition(FieldReader);
@@ -10868,7 +10884,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 15:
 		{
-			return Get_UnsignedInteger_15Bit_BigEndian(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 15}}};
+			auto FieldResult{Get_UnsignedInteger_15Bit_BigEndian(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 16:
 		{
@@ -10876,7 +10897,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 17:
 		{
-			return Get_UnsignedInteger_17Bit_BigEndian(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 17}}};
+			auto FieldResult{Get_UnsignedInteger_17Bit_BigEndian(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	default:
 		{
@@ -11111,16 +11137,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_9Bit_BigEn
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_10Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_10Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 10) == true)
+	if(Reader.Has(Inspection::Length{0, 10}) == true)
 	{
 		std::uint16_t Value{0ul};
 		
-		Value |= static_cast< std::uint16_t >(Buffer.Get2Bits()) << 8;
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Reader.Get2Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11128,21 +11154,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_10Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_11Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_11Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 11) == true)
+	if(Reader.Has(Inspection::Length{0, 11}) == true)
 	{
 		std::uint16_t Value{0ul};
 		
-		Value |= static_cast< std::uint16_t >(Buffer.Get3Bits()) << 8;
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Reader.Get3Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11150,21 +11176,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_11Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_12Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_12Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 12) == true)
+	if(Reader.Has(Inspection::Length{0, 12}) == true)
 	{
 		std::uint16_t Value{0ul};
 		
-		Value |= static_cast< std::uint16_t >(Buffer.Get4Bits()) << 8;
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Reader.Get4Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11172,7 +11198,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_12Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -11221,16 +11247,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_14Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_15Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_15Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 15) == true)
+	if(Reader.Has(Inspection::Length{0, 15}) == true)
 	{
 		std::uint16_t Value{0ul};
 		
-		Value |= static_cast< std::uint16_t >(Buffer.Get7Bits()) << 8;
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Reader.Get7Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11238,7 +11264,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_15Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -11287,17 +11313,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_Litt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_17Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_17Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 17) == true)
+	if(Reader.Has(Inspection::Length{0, 17}) == true)
 	{
 		std::uint32_t Value{0ul};
 		
-		Value |= static_cast< std::uint32_t >(Buffer.Get1Bits()) << 16;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Reader.Get1Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11305,22 +11331,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_17Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 20) == true)
+	if(Reader.Has(Inspection::Length{0, 20}) == true)
 	{
 		std::uint32_t Value{0ul};
 		
-		Value |= static_cast< std::uint32_t >(Buffer.Get4Bits()) << 16;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Reader.Get4Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11328,7 +11354,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
