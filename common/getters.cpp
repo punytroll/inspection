@@ -7019,16 +7019,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
-	if((HeaderResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("Size")) == 0x05))
+	// reading
+	if(Continue == true)
 	{
-		auto TotalFrameCRCResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(Buffer)};
+		auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
 		
-		Result->GetValue()->AppendValue("TotalFrameCRC", TotalFrameCRCResult->GetValue());
-		Result->SetSuccess(TotalFrameCRCResult->GetSuccess());
+		Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
+		Continue = HeaderResult->GetSuccess();
 	}
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetAny("Size")) == 0x05;
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 40}}};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("TotalFrameCRC", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7701,7 +7717,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit
 	
 	if(Continue == true)
 	{
-		if(Reader.Has(Inspection::Length{1, 0}) == true)
+		if(Reader.Has(Inspection::Length{0, 8}) == true)
 		{
 			if(Reader.Get1Bits() == 0x00)
 			{
@@ -7734,7 +7750,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bi
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Reader.Has(Inspection::Length(0, 32)) == true)
+	if(Reader.Has(Inspection::Length{0, 32}) == true)
 	{
 		if(Reader.Get1Bits() == 0x00)
 		{
@@ -7769,31 +7785,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(Inspection::Length(5ull, 0)) == true)
+	if(Reader.Has(Inspection::Length{0, 40}) == true)
 	{
-		if(Buffer.Get4Bits() == 0x00)
+		if(Reader.Get4Bits() == 0x00)
 		{
-			std::uint32_t First{Buffer.Get4Bits()};
+			std::uint32_t First{Reader.Get4Bits()};
 			
-			if(Buffer.Get1Bits() == 0x00)
+			if(Reader.Get1Bits() == 0x00)
 			{
-				std::uint32_t Second{Buffer.Get7Bits()};
+				std::uint32_t Second{Reader.Get7Bits()};
 				
-				if(Buffer.Get1Bits() == 0x00)
+				if(Reader.Get1Bits() == 0x00)
 				{
-					std::uint32_t Third{Buffer.Get7Bits()};
+					std::uint32_t Third{Reader.Get7Bits()};
 					
-					if(Buffer.Get1Bits() == 0x00)
+					if(Reader.Get1Bits() == 0x00)
 					{
-						std::uint32_t Fourth{Buffer.Get7Bits()};
+						std::uint32_t Fourth{Reader.Get7Bits()};
 						
-						if(Buffer.Get1Bits() == 0x00)
+						if(Reader.Get1Bits() == 0x00)
 						{
-							std::uint32_t Fifth{Buffer.Get7Bits()};
+							std::uint32_t Fifth{Reader.Get7Bits()};
 							
 							Result->GetValue()->SetAny((First << 28) | (Second << 21) | (Third << 14) | (Fourth << 7) | Fifth);
 							Result->GetValue()->AppendTag("integer"s);
@@ -7808,7 +7824,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bi
 			}
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
