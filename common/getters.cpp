@@ -3188,12 +3188,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto SyncCodeResult{Get_UnsignedInteger_14Bit_BigEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 14}}};
+		auto FieldResult{Get_UnsignedInteger_14Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("SyncCode", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("SyncCode", SyncCodeResult->GetValue());
-		Continue = (SyncCodeResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint16_t >(SyncCodeResult->GetAny()) == 0x3ffe);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< std::uint16_t >(Result->GetAny("SyncCode")) == 0x3ffe;
 	}
 	// reading
 	if(Continue == true)
@@ -10843,11 +10850,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 13:
 		{
-			return Get_UnsignedInteger_13Bit_BigEndian(Buffer);
+			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 13))};
+			auto FieldResult{Get_UnsignedInteger_13Bit_BigEndian(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 14:
 		{
-			return Get_UnsignedInteger_14Bit_BigEndian(Buffer);
+			auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 14))};
+			auto FieldResult{Get_UnsignedInteger_14Bit_BigEndian(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 15:
 		{
@@ -11160,16 +11177,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_12Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_13Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_13Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 13) == true)
+	if(Reader.Has(Inspection::Length{0, 13}) == true)
 	{
 		std::uint16_t Value{0ul};
 		
-		Value |= static_cast< std::uint16_t >(Buffer.Get5Bits()) << 8;
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Reader.Get5Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11177,21 +11194,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_13Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_14Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_14Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 14) == true)
+	if(Reader.Has(Inspection::Length{0, 14}) == true)
 	{
 		std::uint16_t Value{0ul};
 		
-		Value |= static_cast< std::uint16_t >(Buffer.Get6Bits()) << 8;
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Reader.Get6Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11199,7 +11216,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_14Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
