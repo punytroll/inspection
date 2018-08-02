@@ -2407,11 +2407,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 	if(Continue == true)
 	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
+		auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("[0-6] StreamNumber", FieldResult->GetValue())};
 		
-		auto StreamNumberResult{Get_UnsignedInteger_7Bit(Buffer)};
-		
-		Result->GetValue()->AppendValue("[0-6] StreamNumber", StreamNumberResult->GetValue());
-		Continue = StreamNumberResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -2470,10 +2470,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_Flags
 	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 	if(Continue == true)
 	{
-		auto StreamNumberResult{Get_UnsignedInteger_7Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
+		auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("[0-6] StreamNumber", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("[0-6] StreamNumber", StreamNumberResult->GetValue());
-		Continue = StreamNumberResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -3239,160 +3240,157 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			assert(false);
 		}
 	}
-	
-	std::uint8_t BlockSize;
-	
 	if(Continue == true)
 	{
-		auto BlockSizeResult{Get_UnsignedInteger_4Bit(Buffer)};
-		auto BlockSizeValue{Result->GetValue()->AppendValue("BlockSize", BlockSizeResult->GetValue())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("BlockSize", FieldResult->GetValue())};
 		
-		Continue = BlockSizeResult->GetSuccess();
-		if(BlockSizeResult->GetSuccess() == true)
-		{
-			BlockSize = std::experimental::any_cast< std::uint8_t >(BlockSizeResult->GetAny());
-			if(BlockSize == 0x00)
-			{
-				BlockSizeValue->AppendTag("reserved"s);
-				BlockSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
-				Continue = false;
-			}
-			else if(BlockSize == 0x01)
-			{
-				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(192));
-				BlockSizeValue->AppendTag("unit", "samples"s);
-			}
-			else if((BlockSize > 0x01) && (BlockSize <= 0x05))
-			{
-				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(576 * (1 << (BlockSize - 2))));
-				BlockSizeValue->AppendTag("unit", "samples"s);
-			}
-			else if(BlockSize == 0x06)
-			{
-				BlockSizeValue->AppendTag("interpretation", "get 8bit (blocksize - 1) from end of header"s);
-			}
-			else if(BlockSize == 0x07)
-			{
-				BlockSizeValue->AppendTag("interpretation", "get 16bit (blocksize - 1) from end of header"s);
-			}
-			else if((BlockSize > 0x07) && (BlockSize < 0x10))
-			{
-				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(256 * (1 << (BlockSize - 8))));
-				BlockSizeValue->AppendTag("unit", "samples"s);
-			}
-			else
-			{
-				assert(false);
-			}
-		}
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
-	
-	std::uint8_t SampleRate;
-	
+	// interpretation
 	if(Continue == true)
 	{
-		auto SampleRateResult{Get_UnsignedInteger_4Bit(Buffer)};
-		auto SampleRateValue{Result->GetValue()->AppendValue("SampleRate", SampleRateResult->GetValue())};
+		auto BlockSize{std::experimental::any_cast< std::uint8_t >(Result->GetAny("BlockSize"))};
 		
-		Continue = SampleRateResult->GetSuccess();
-		if(SampleRateResult->GetSuccess() == true)
+		if(BlockSize == 0x00)
 		{
-			SampleRate = std::experimental::any_cast< std::uint8_t >(SampleRateResult->GetAny());
+			Result->GetValue("BlockSize")->AppendTag("reserved"s);
+			Result->GetValue("BlockSize")->AppendTag("error", "The block size 0 MUST NOT be used."s);
+			Continue = false;
+		}
+		else if(BlockSize == 0x01)
+		{
+			Result->GetValue("BlockSize")->AppendTag("value", static_cast< std::uint16_t >(192));
+			Result->GetValue("BlockSize")->AppendTag("unit", "samples"s);
+		}
+		else if((BlockSize > 0x01) && (BlockSize <= 0x05))
+		{
+			Result->GetValue("BlockSize")->AppendTag("value", static_cast< std::uint16_t >(576 * (1 << (BlockSize - 2))));
+			Result->GetValue("BlockSize")->AppendTag("unit", "samples"s);
+		}
+		else if(BlockSize == 0x06)
+		{
+			Result->GetValue("BlockSize")->AppendTag("interpretation", "get 8bit (blocksize - 1) from end of header"s);
+		}
+		else if(BlockSize == 0x07)
+		{
+			Result->GetValue("BlockSize")->AppendTag("interpretation", "get 16bit (blocksize - 1) from end of header"s);
+		}
+		else if((BlockSize > 0x07) && (BlockSize < 0x10))
+		{
+			Result->GetValue("BlockSize")->AppendTag("value", static_cast< std::uint16_t >(256 * (1 << (BlockSize - 8))));
+			Result->GetValue("BlockSize")->AppendTag("unit", "samples"s);
+		}
+		else
+		{
+			assert(false);
 		}
 	}
 	if(Continue == true)
 	{
-		auto ChannelAssignmentResult{Get_UnsignedInteger_4Bit(Buffer)};
-		auto ChannelAssignmentValue{Result->GetValue()->AppendValue("ChannelAssignment", ChannelAssignmentResult->GetValue())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("SampleRate", FieldResult->GetValue())};
 		
-		Continue = ChannelAssignmentResult->GetSuccess();
-		if(ChannelAssignmentResult->GetSuccess() == true)
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("ChannelAssignment", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetAny("ChannelAssignment"))};
+		
+		if(ChannelAssignment < 0x08)
 		{
-			auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(ChannelAssignmentResult->GetAny())};
-			
-			if(ChannelAssignment < 0x08)
+			Result->GetValue("ChannelAssignment")->AppendTag("value", static_cast< std::uint8_t >(ChannelAssignment + 1));
+			Result->GetValue("ChannelAssignment")->AppendTag("interpretation", "independent channels"s);
+			switch(ChannelAssignment)
 			{
-				ChannelAssignmentValue->AppendTag("value", static_cast< std::uint8_t >(ChannelAssignment + 1));
-				ChannelAssignmentValue->AppendTag("interpretation", "independent channels"s);
-				switch(ChannelAssignment)
+			case 0:
 				{
-				case 0:
-					{
-						ChannelAssignmentValue->AppendTag("assignment", "mono"s);
-						
-						break;
-					}
-				case 1:
-					{
-						ChannelAssignmentValue->AppendTag("assignment", "left, right"s);
-						
-						break;
-					}
-				case 2:
-					{
-						ChannelAssignmentValue->AppendTag("assignment", "left, right, center"s);
-						
-						break;
-					}
-				case 3:
-					{
-						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, back left, back right"s);
-						
-						break;
-					}
-				case 4:
-					{
-						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, front center, back/surround left, back/surround right"s);
-						
-						break;
-					}
-				case 5:
-					{
-						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, front center, LFE, back/surround left, back/surround right"s);
-						
-						break;
-					}
-				case 6:
-					{
-						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, front center, LFE, back center, side left, side right"s);
-						
-						break;
-					}
-				case 7:
-					{
-						ChannelAssignmentValue->AppendTag("assignment", "front left, front right, front center, LFE, back left, back right, side left, side right"s);
-						
-						break;
-					}
-				default:
-					{
-						assert(false);
-					}
+					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "mono"s);
+					
+					break;
+				}
+			case 1:
+				{
+					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "left, right"s);
+					
+					break;
+				}
+			case 2:
+				{
+					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "left, right, center"s);
+					
+					break;
+				}
+			case 3:
+				{
+					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, back left, back right"s);
+					
+					break;
+				}
+			case 4:
+				{
+					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, front center, back/surround left, back/surround right"s);
+					
+					break;
+				}
+			case 5:
+				{
+					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, front center, LFE, back/surround left, back/surround right"s);
+					
+					break;
+				}
+			case 6:
+				{
+					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, front center, LFE, back center, side left, side right"s);
+					
+					break;
+				}
+			case 7:
+				{
+					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, front center, LFE, back left, back right, side left, side right"s);
+					
+					break;
+				}
+			default:
+				{
+					assert(false);
 				}
 			}
-			else if(ChannelAssignment == 0x08)
-			{
-				ChannelAssignmentValue->AppendTag("value", static_cast< std::uint8_t >(2));
-				ChannelAssignmentValue->AppendTag("interpretation", "left/side stereo"s);
-				ChannelAssignmentValue->AppendTag("assignment", "channel 0 is the left channel, channel 1 is the side (difference) channel"s);
-			}
-			else if(ChannelAssignment == 0x09)
-			{
-				ChannelAssignmentValue->AppendTag("value", static_cast< std::uint8_t >(2));
-				ChannelAssignmentValue->AppendTag("interpretation", "right/side stereo"s);
-				ChannelAssignmentValue->AppendTag("assignment", "channel 0 is the side (difference) channel, channel 1 is the right channel"s);
-			}
-			else if(ChannelAssignment == 0x0a)
-			{
-				ChannelAssignmentValue->AppendTag("value", static_cast< std::uint8_t >(2));
-				ChannelAssignmentValue->AppendTag("interpretation", "mid/side stereo"s);
-				ChannelAssignmentValue->AppendTag("assignment", "channel 0 is the mid (average) channel, channel 1 is the side (difference) channel"s);
-			}
-			else
-			{
-				ChannelAssignmentValue->AppendTag("reserved"s);
-				ChannelAssignmentValue->AppendTag("error", "The channel assignment " + to_string_cast(ChannelAssignment) + " MUST NOT be used.");
-			}
+		}
+		else if(ChannelAssignment == 0x08)
+		{
+			Result->GetValue("ChannelAssignment")->AppendTag("value", static_cast< std::uint8_t >(2));
+			Result->GetValue("ChannelAssignment")->AppendTag("interpretation", "left/side stereo"s);
+			Result->GetValue("ChannelAssignment")->AppendTag("assignment", "channel 0 is the left channel, channel 1 is the side (difference) channel"s);
+		}
+		else if(ChannelAssignment == 0x09)
+		{
+			Result->GetValue("ChannelAssignment")->AppendTag("value", static_cast< std::uint8_t >(2));
+			Result->GetValue("ChannelAssignment")->AppendTag("interpretation", "right/side stereo"s);
+			Result->GetValue("ChannelAssignment")->AppendTag("assignment", "channel 0 is the side (difference) channel, channel 1 is the right channel"s);
+		}
+		else if(ChannelAssignment == 0x0a)
+		{
+			Result->GetValue("ChannelAssignment")->AppendTag("value", static_cast< std::uint8_t >(2));
+			Result->GetValue("ChannelAssignment")->AppendTag("interpretation", "mid/side stereo"s);
+			Result->GetValue("ChannelAssignment")->AppendTag("assignment", "channel 0 is the mid (average) channel, channel 1 is the side (difference) channel"s);
+		}
+		else
+		{
+			Result->GetValue("ChannelAssignment")->AppendTag("reserved"s);
+			Result->GetValue("ChannelAssignment")->AppendTag("error", "The channel assignment " + to_string_cast(ChannelAssignment) + " MUST NOT be used.");
+			Continue = false;
 		}
 	}
 	// reading
@@ -3484,6 +3482,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	}
 	if(Continue == true)
 	{
+		auto BlockSize{std::experimental::any_cast< std::uint8_t >(Result->GetAny("BlockSize"))};
+		
 		if(BlockSize == 0x06)
 		{
 			auto BlockSizeResult{Get_UnsignedInteger_8Bit(Buffer)};
@@ -3515,6 +3515,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	}
 	if(Continue == true)
 	{
+		auto SampleRate{std::experimental::any_cast< std::uint8_t >(Result->GetAny("SampleRate"))};
+		
 		if(SampleRate == 0xc0)
 		{
 			throw NotImplementedException("get 8bit sample rate in Hz");
@@ -3641,14 +3643,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Header(
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto MetaDataBlockTypeResult{Get_UnsignedInteger_7Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(MetaDataBlockTypeResult->GetValue());
-	if(MetaDataBlockTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
+		auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
+		auto FieldVaule{Result->SetValue(FieldResult->GetValue())};
 		
-		auto NumericValue{std::experimental::any_cast< std::uint8_t >(MetaDataBlockTypeResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto NumericValue{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(NumericValue == 0x00)
 		{
@@ -3687,6 +3696,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(In
 			Result->GetValue()->AppendTag("interpretation", "Reserved"s);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -4215,6 +4226,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
 		auto WarmUpSamplesResult{Get_UnsignedIntegers_BigEndian(Buffer, BitsPerSample, PredictorOrder)};
@@ -4222,27 +4234,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 		Result->GetValue()->AppendValue("WarmUpSamples", WarmUpSamplesResult->GetValue());
 		Continue = WarmUpSamplesResult->GetSuccess();
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto QuantizedLinearPredictorCoefficientsPrecisionResult{Get_UnsignedInteger_4Bit(Buffer)};
-		auto QuantizedLinearPredictorCoefficientsPrecisionValue{Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientsPrecision", QuantizedLinearPredictorCoefficientsPrecisionResult->GetValue())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientsPrecision", FieldResult->GetValue())};
 		
-		Continue = QuantizedLinearPredictorCoefficientsPrecisionResult->GetSuccess();
-		if(QuantizedLinearPredictorCoefficientsPrecisionResult->GetSuccess() == true)
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto QuantizedLinearPredictorCoefficientsPrecision{std::experimental::any_cast< std::uint8_t >(Result->GetAny("QuantizedLinearPredictorCoefficientsPrecision"))};
+		
+		if(QuantizedLinearPredictorCoefficientsPrecision < 15)
 		{
-			auto QuantizedLinearPredictorCoefficientsPrecision{std::experimental::any_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecisionResult->GetAny())};
-			
-			if(QuantizedLinearPredictorCoefficientsPrecision < 15)
-			{
-				QuantizedLinearPredictorCoefficientsPrecisionValue->AppendTag("value", static_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecision + 1));
-			}
-			else
-			{
-				QuantizedLinearPredictorCoefficientsPrecisionValue->AppendTag("error", "The percision MUST NOT be 15."s);
-				Continue = false;
-			}
+			Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AppendTag("value", static_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecision + 1));
+		}
+		else
+		{
+			Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AppendTag("error", "The percision MUST NOT be 15."s);
+			Continue = false;
 		}
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto QuantizedLinearPredictorCoefficientShiftResult{Get_SignedInteger_5Bit(Buffer)};
@@ -4250,6 +4266,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 		Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientShift", QuantizedLinearPredictorCoefficientShiftResult->GetValue());
 		Continue = QuantizedLinearPredictorCoefficientShiftResult->GetSuccess();
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto PredictorCoefficientsResult{Get_SignedIntegers_BigEndian(Buffer, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
@@ -4257,6 +4274,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 		Result->GetValue()->AppendValue("PredictorCoefficients", PredictorCoefficientsResult->GetValue());
 		Continue = PredictorCoefficientsResult->GetSuccess();
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto ResidualResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
@@ -4264,6 +4282,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 		Result->GetValue()->AppendValue("Residual", ResidualResult->GetValue());
 		Continue = ResidualResult->GetSuccess();
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -4392,19 +4411,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto PartitionOrderResult{Get_UnsignedInteger_4Bit(Buffer)};
-		auto PartitionOrderValue{Result->GetValue()->AppendValue("PartitionOrder", PartitionOrderResult->GetValue())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("PartitionOrder", FieldResult->GetValue())};
 		
-		Continue = PartitionOrderResult->GetSuccess();
-		if(PartitionOrderResult->GetSuccess() == true)
-		{
-			auto NumberOfPartitions{static_cast< std::uint16_t >(1 << std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValueAny("PartitionOrder")))};
-			
-			PartitionOrderValue->AppendTag("number of partitions", NumberOfPartitions);
-		}
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto NumberOfPartitions{static_cast< std::uint16_t >(1 << std::experimental::any_cast< std::uint8_t >(Result->GetAny("PartitionOrder")))};
+		
+		Result->GetValue("PartitionOrder")->AppendTag("number of partitions", NumberOfPartitions);
+	}
+	// reading
 	if(Continue == true)
 	{
 		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue("PartitionOrder")->GetTagAny("number of partitions"))};
@@ -4417,6 +4440,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		}
 		Continue = PartitionsResult->GetSuccess();
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -4428,12 +4452,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto RiceParameterResult{Get_UnsignedInteger_4Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("RiceParameter", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("RiceParameter", RiceParameterResult->GetValue());
-		Continue = RiceParameterResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -4448,7 +4474,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		{
 			SamplesResult = Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples);
 		}
-		// Result->GetValue()->AppendValues(SamplesResult->GetValue()->GetValues());
+		Result->GetValue()->AppendValues(SamplesResult->GetValue()->GetValues());
 		Continue = SamplesResult->GetSuccess();
 	}
 	Result->SetSuccess(Continue);
@@ -7982,47 +8008,74 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Track(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Reserved1Result{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 8))};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Reserved", Reserved1Result->GetValue());
-	if(Reserved1Result->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ADRResult{Get_UnsignedInteger_4Bit(Buffer)};
+		auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length{0, 8})};
+		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ADR", ADRResult->GetValue());
-		if((ADRResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(ADRResult->GetAny())))
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("ADR", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetAny("ADR"));
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track_Control(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Control", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Number", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto Number{std::experimental::any_cast< std::uint8_t >(Result->GetAny("Number"))};
+		
+		if(Number == 0xaa)
 		{
-			auto ControlResult{Get_IEC_60908_1999_TableOfContents_Track_Control(Buffer)};
-			
-			Result->GetValue()->AppendValue("Control", ControlResult->GetValue());
-			if(ControlResult->GetSuccess() == true)
-			{
-				auto NumberResult{Get_UnsignedInteger_8Bit(Buffer)};
-				
-				Result->GetValue()->AppendValue("Number", NumberResult->GetValue());
-				if(NumberResult->GetSuccess() == true)
-				{
-					auto Number{std::experimental::any_cast< std::uint8_t >(NumberResult->GetAny())};
-					
-					if(Number == 0xaa)
-					{
-						Result->GetValue("Number")->PrependTag("interpretation", "Lead-Out"s);
-					}
-					
-					auto Reserved2Result{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 8))};
-					
-					Result->GetValue()->AppendValue("Reserved", Reserved2Result->GetValue());
-					if(Reserved2Result->GetSuccess() == true)
-					{
-						auto StartAddressResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-						
-						Result->GetValue()->AppendValue("StartAddress", StartAddressResult->GetValue());
-						Result->SetSuccess(StartAddressResult->GetSuccess());
-					}
-				}
-			}
+			Result->GetValue("Number")->PrependTag("interpretation", "Lead-Out"s);
 		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length{0, 8})};
+		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("StartAddress", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9915,14 +9968,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVe
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRateIndex(Inspection::Buffer & Buffer, std::uint8_t LayerDescription)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto BitRateIndexResult{Get_UnsignedInteger_4Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(BitRateIndexResult->GetValue());
-	if(BitRateIndexResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		auto BitRateIndex{std::experimental::any_cast< std::uint8_t >(BitRateIndexResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto BitRateIndex{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(LayerDescription == 0x03)
 		{
@@ -10003,7 +10063,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 			else if(BitRateIndex == 0x0f)
 			{
 				Result->GetValue()->PrependTag("<reserved>"s);
-				Result->SetSuccess(false);
+				Continue = false;
 			}
 		}
 		else if(LayerDescription == 0x02)
@@ -10085,7 +10145,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 			else if(BitRateIndex == 0x0f)
 			{
 				Result->GetValue()->PrependTag("<reserved>"s);
-				Result->SetSuccess(false);
+				Continue = false;
 			}
 		}
 		else if(LayerDescription == 0x01)
@@ -10167,14 +10227,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 			else if(BitRateIndex == 0x0f)
 			{
 				Result->GetValue()->PrependTag("<reserved>"s);
-				Result->SetSuccess(false);
+				Continue = false;
 			}
 		}
 		else
 		{
-			Result->SetSuccess(false);
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -10827,7 +10889,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 4:
 		{
-			return Get_UnsignedInteger_4Bit(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+			auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 5:
 		{
@@ -10840,11 +10907,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 		}
 	case 6:
 		{
-			return Get_UnsignedInteger_6Bit(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 6}}};
+			auto FieldResult{Get_UnsignedInteger_6Bit(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 7:
 		{
-			return Get_UnsignedInteger_7Bit(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
+			auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 8:
 		{
@@ -10998,19 +11075,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 4) == true)
+	if(Reader.Has(Inspection::Length{0, 4}) == true)
 	{
-		Result->GetValue()->SetAny(Buffer.Get4Bits());
+		Result->GetValue()->SetAny(Reader.Get4Bits());
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("4bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -11032,36 +11109,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_6Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_6Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 6) == true)
+	if(Reader.Has(Inspection::Length{0, 6}) == true)
 	{
-		Result->GetValue()->SetAny(Buffer.Get6Bits());
+		Result->GetValue()->SetAny(Reader.Get6Bits());
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("6bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 7) == true)
+	if(Reader.Has(Inspection::Length{0, 7}) == true)
 	{
-		Result->GetValue()->SetAny(Buffer.Get7Bits());
+		Result->GetValue()->SetAny(Reader.Get7Bits());
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("7bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

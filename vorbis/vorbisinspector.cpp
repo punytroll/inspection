@@ -387,61 +387,89 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::B
 std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto VorbisVersionResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("VorbisVersion", VorbisVersionResult->GetValue());
-	if(VorbisVersionResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto AudioChannelsResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("VorbisVersion", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("AudioChannels", AudioChannelsResult->GetValue());
-		if(AudioChannelsResult->GetSuccess() == true)
-		{
-			auto AudioSampleRateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("AudioSampleRate", AudioSampleRateResult->GetValue());
-			if(AudioSampleRateResult->GetSuccess() == true)
-			{
-				auto BitrateMaximumResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("BitrateMaximum", BitrateMaximumResult->GetValue());
-				if(BitrateMaximumResult->GetSuccess() == true)
-				{
-					auto BitrateNominalResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
-					
-					Result->GetValue()->AppendValue("BitrateNominal", BitrateNominalResult->GetValue());
-					if(BitrateNominalResult->GetSuccess() == true)
-					{
-						auto BitrateMinimumResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
-						
-						Result->GetValue()->AppendValue("BitrateMinimum", BitrateMinimumResult->GetValue());
-						if(BitrateMinimumResult->GetSuccess() == true)
-						{
-							auto BlockSize0Result{Get_UnsignedInteger_4Bit(Buffer)};
-							
-							Result->GetValue()->AppendValue("BlockSize0", BlockSize0Result->GetValue());
-							if(BlockSize0Result->GetSuccess() == true)
-							{
-								auto BlockSize1Result{Get_UnsignedInteger_4Bit(Buffer)};
-								
-								Result->GetValue()->AppendValue("BlockSize1", BlockSize1Result->GetValue());
-								if(BlockSize1Result->GetSuccess() == true)
-								{
-									auto FramingFlagResult{Get_Boolean_1Bit(Buffer)};
-									
-									Result->GetValue()->AppendValue("FramingFlag", FramingFlagResult->GetValue());
-									if(FramingFlagResult->GetSuccess() == true)
-									{
-										Result->SetSuccess(std::experimental::any_cast< bool >(FramingFlagResult->GetAny()));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AudioChannels", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AudioSampleRate", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitrateMaximum", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitrateNominal", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitrateMinimum", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("BlockSize0", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("BlockSize1", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_Boolean_1Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("FramingFlag", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< bool >(Result->GetAny("FramingFlag"));
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
