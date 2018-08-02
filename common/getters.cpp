@@ -3606,25 +3606,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto LastMetaDataBlockResult{Get_Boolean_1Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("LastMetaDataBlock", LastMetaDataBlockResult->GetValue());
-	if(LastMetaDataBlockResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
+	{
+		auto LastMetaDataBlockResult{Get_Boolean_1Bit(Buffer)};
+		
+		Result->GetValue()->AppendValue("LastMetaDataBlock", LastMetaDataBlockResult->GetValue());
+		UpdateState(Continue, LastMetaDataBlockResult);
+	}
+	if(Continue == true)
 	{
 		auto MetaDataBlockTypeResult{Get_FLAC_MetaDataBlock_Type(Buffer)};
 		
 		Result->GetValue()->AppendValue("BlockType", MetaDataBlockTypeResult->GetValue());
-		if(MetaDataBlockTypeResult->GetSuccess() == true)
-		{
-			auto LengthResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("Length", LengthResult->GetValue());
-			if(LengthResult->GetSuccess() == true)
-			{
-				Result->SetSuccess(true);
-			}
-		}
+		UpdateState(Continue, MetaDataBlockTypeResult);
 	}
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 24}}};
+		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -4016,6 +4024,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
 		auto MinimumBlockSizeResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
@@ -4032,17 +4041,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	}
 	if(Continue == true)
 	{
-		auto MinimumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 24}}};
+		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("MinimumFrameSize", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MinimumFrameSize", MinimumFrameSizeResult->GetValue());
-		Continue = MinimumFrameSizeResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
-		auto MaximumFrameSizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 24}}};
+		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("MaximumFrameSize", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MaximumFrameSize", MaximumFrameSizeResult->GetValue());
-		Continue = MaximumFrameSizeResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -4083,6 +4094,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 		Result->GetValue()->AppendValue("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioDataResult->GetValue());
 		Continue = MD5SignatureOfUnencodedAudioDataResult->GetSuccess();
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -4902,16 +4914,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_UFI(Ins
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto IdentifierResult{Get_ID3_2_2_Frame_Header_Identifier(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
-	if(IdentifierResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto SizeResult{Get_UnsignedInteger_24Bit_BigEndian(Buffer)};
+		auto IdentifierResult{Get_ID3_2_2_Frame_Header_Identifier(Buffer)};
 		
-		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-		Result->SetSuccess(SizeResult->GetSuccess());
+		Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
+		UpdateState(Continue, IdentifierResult);
 	}
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 24}}};
+		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -11359,17 +11381,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 24) == true)
+	if(Reader.Has(Inspection::Length{0, 24}) == true)
 	{
 		std::uint32_t Value{0ul};
 		
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11377,7 +11399,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
