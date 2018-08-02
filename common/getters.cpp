@@ -2491,10 +2491,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_Flags
 	// reading
 	if(Continue == true)
 	{
-		auto EncryptedContentFlagResult{Get_Boolean_1Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("[15] EncryptedContentFlag", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("[15] EncryptedContentFlag", EncryptedContentFlagResult->GetValue());
-		Continue = EncryptedContentFlagResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
 	// finalization
@@ -2995,18 +2996,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_1Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_1Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 1) == true)
+	if(Reader.Has(Inspection::Length{0, 1}) == true)
 	{
-		Result->GetValue()->SetAny((0x01 & Buffer.Get1Bits()) == 0x01);
+		Result->GetValue()->SetAny((0x01 & Reader.Get1Bits()) == 0x01);
 		Result->GetValue()->AppendTag("boolean"s);
 		Result->GetValue()->AppendTag("1bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3613,17 +3614,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Header(
 	// reading
 	if(Continue == true)
 	{
-		auto LastMetaDataBlockResult{Get_Boolean_1Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("LastMetaDataBlock", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("LastMetaDataBlock", LastMetaDataBlockResult->GetValue());
-		UpdateState(Continue, LastMetaDataBlockResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
-		auto MetaDataBlockTypeResult{Get_FLAC_MetaDataBlock_Type(Buffer)};
+		auto FieldResult{Get_FLAC_MetaDataBlock_Type(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BlockType", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("BlockType", MetaDataBlockTypeResult->GetValue());
-		UpdateState(Continue, MetaDataBlockTypeResult);
+		UpdateState(Continue, FieldResult);
 	}
 	if(Continue == true)
 	{
@@ -4294,33 +4296,42 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Header(Inspe
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto PaddingBitResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 1))};
+		auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0, 1))};
+		auto FieldValue{Result->GetValue()->AppendValue("PaddingBit", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("PaddingBit", PaddingBitResult->GetValue());
-		Continue = PaddingBitResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto TypeResult{Get_FLAC_Subframe_Type(Buffer)};
+		auto FieldResult{Get_FLAC_Subframe_Type(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Type", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Type", TypeResult->GetValue());
-		Continue = TypeResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto WastedBitsPerSampleFlagResult{Get_Boolean_1Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("WastedBitsPerSampleFlag", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("WastedBitsPerSampleFlag", WastedBitsPerSampleFlagResult->GetValue());
-		
-		auto WastedBitsPerSampleFlag{std::experimental::any_cast< bool >(WastedBitsPerSampleFlagResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto WastedBitsPerSampleFlag{std::experimental::any_cast< bool >(Result->GetAny("WastedBitsPerSampleFlag"))};
 		
 		if(WastedBitsPerSampleFlag == true)
 		{
 			throw Inspection::NotImplementedException("Wasted bits are not implemented yet!");
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -11868,20 +11879,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 	assert(Buffer.GetBitstreamType() == Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 	
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto CommentHeaderWithoutFramingFlag{Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer)};
+	auto Continue{true};
 	
-	if(CommentHeaderWithoutFramingFlag->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendValues(CommentHeaderWithoutFramingFlag->GetValue()->GetValues());
+		auto FieldResult{Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer)};
 		
-		auto FramingFlagResult{Get_Boolean_1Bit(Buffer)};
-		
-		Result->GetValue()->AppendValue("FramingFlag", FramingFlagResult->GetValue());
-		if(FramingFlagResult->GetSuccess() == true)
-		{
-			Result->SetSuccess(std::experimental::any_cast< bool >(FramingFlagResult->GetAny()));
-		}
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("FramingFlag", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< bool >(Result->GetAny("FramingFlag"));
+	}
+	//finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;

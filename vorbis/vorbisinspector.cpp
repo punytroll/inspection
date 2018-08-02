@@ -458,10 +458,11 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Boolean_1Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("FramingFlag", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// verification
 	if(Continue == true)
