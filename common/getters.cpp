@@ -4485,7 +4485,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		{
 			SamplesResult = Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples);
 		}
-		Result->GetValue()->AppendValues(SamplesResult->GetValue()->GetValues());
+		//~ Result->GetValue()->AppendValues(SamplesResult->GetValue()->GetValues());
 		Continue = SamplesResult->GetSuccess();
 	}
 	Result->SetSuccess(Continue);
