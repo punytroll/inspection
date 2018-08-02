@@ -272,10 +272,10 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_1Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_2Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_3Bit(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_4Bit(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_4Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_5Bit(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_6Bit(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_7Bit(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_6Bit(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_7Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_8Bit(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_9Bit_BigEndian(Inspection::Reader & Reader);
