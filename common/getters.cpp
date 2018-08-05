@@ -9768,10 +9768,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 	// reading
 	if(Continue == true)
 	{
-		auto FrameHeaderResult{Get_MPEG_1_FrameHeader(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{4, 0}}};
+		auto FieldResult{Get_MPEG_1_FrameHeader(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Header", FrameHeaderResult->GetValue());
-		Continue = FrameHeaderResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -9815,135 +9816,135 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 12}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 12}}};
 		auto FieldResult{Get_Bits_Set_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("FrameSync", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_AudioVersionID(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AudioVersionID", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 2}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_LayerDescription(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("LayerDescription", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_ProtectionBit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ProtectionBit", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LayerDescription"))};
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 4}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_BitRateIndex(FieldReader, LayerDescription)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitRateIndex", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 2}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_SamplingFrequency(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SamplingFrequency", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_PaddingBit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PaddingBit", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
 		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PrivateBit", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LayerDescription"))};
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 2}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_Mode(FieldReader, LayerDescription)};
 		auto FieldValue{Result->GetValue()->AppendValue("Mode", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LayerDescription"))};
 		auto Mode{std::experimental::any_cast< std::uint8_t >(Result->GetAny("Mode"))};
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 2}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_ModeExtension(FieldReader, LayerDescription, Mode)};
 		auto FieldValue{Result->GetValue()->AppendValue("ModeExtension", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_Copyright(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Copyright", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_OriginalHome(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Original/Home", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 2}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 2}}};
 		auto FieldResult{Get_MPEG_1_FrameHeader_Emphasis(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Emphasis", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
