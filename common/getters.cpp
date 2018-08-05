@@ -2801,16 +2801,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_UntilByteAlignm
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 4) == true)
+	if(Reader.Has(Inspection::Length{0, 8}) == true)
 	{
 		Result->SetSuccess(true);
 		
 		std::bitset< 4 > Value;
-		auto Byte1{Buffer.Get4Bits()};
+		auto Byte1{Reader.Get4Bits()};
 		
 		Value[0] = (Byte1 & 0x08) == 0x08;
 		Value[1] = (Byte1 & 0x04) == 0x04;
@@ -2821,7 +2821,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignifican
 		Result->GetValue()->AppendTag("4bit"s);
 		Result->GetValue()->AppendTag("most significant bit first"s);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -8046,10 +8046,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track_Control(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track_Control(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Control", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -8092,23 +8093,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Track_Control(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Track_Control(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ControlResult{Get_BitSet_4Bit_MostSignificantBitFirst(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	Result->SetValue(ControlResult->GetValue());
-	if(ControlResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 4}}};
+		auto FieldResult{Get_BitSet_4Bit_MostSignificantBitFirst(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		const std::bitset< 4 > & Control{std::experimental::any_cast< const std::bitset< 4 > & >(ControlResult->GetAny())};
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
+	}
+	if(Continue == true)
+	{
+		const std::bitset< 4 > & Control{std::experimental::any_cast< const std::bitset< 4 > & >(Result->GetAny())};
 		
 		if(Control[1] == true)
 		{
 			if(Control[0] == true)
 			{
-				Result->SetSuccess(false);
+				Continue = false;
 				
 				auto Value{Result->GetValue()->AppendValue("Reserved", true)};
 				
@@ -8144,7 +8151,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 			Result->GetValue()->AppendValue("PreEmphasis", Control[3]);
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
