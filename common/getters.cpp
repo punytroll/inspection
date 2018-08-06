@@ -7983,22 +7983,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto DataLengthResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("DataLength", DataLengthResult->GetValue());
-	if(DataLengthResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto FirstTrackNumberResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("DataLength", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("FirstTrackNumber", FirstTrackNumberResult->GetValue());
-		if(FirstTrackNumberResult->GetSuccess() == true)
-		{
-			auto LastTrackNumberResult{Get_UnsignedInteger_8Bit(Buffer)};
-			
-			Result->GetValue()->AppendValue("LastTrackNumber", LastTrackNumberResult->GetValue());
-			Result->SetSuccess(LastTrackNumberResult->GetSuccess());
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("FirstTrackNumber", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("LastTrackNumber", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -8007,10 +8017,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TrackResult{Get_IEC_60908_1999_TableOfContents_Track(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(TrackResult->GetValue());
-	Result->SetSuccess((TrackResult->GetSuccess() == true) && (TrackResult->GetValue("Number")->HasTag("interpretation") == true) && (std::experimental::any_cast< const std::string & >(TrackResult->GetValue("Number")->GetTagAny("interpretation")) == "Lead-Out"));
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = (Result->GetValue("Number")->HasTag("interpretation") == true) && (std::experimental::any_cast< const std::string & >(Result->GetValue("Number")->GetTagAny("interpretation")) == "Lead-Out");
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -8107,6 +8130,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
+	// interpretation
 	if(Continue == true)
 	{
 		const std::bitset< 4 > & Control{std::experimental::any_cast< const std::bitset< 4 > & >(Result->GetAny())};
