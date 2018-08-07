@@ -3949,22 +3949,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(I
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto SampleNumberOfFirstSampleInTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("SampleNumberOfFirstSampleInTargetFrame", SampleNumberOfFirstSampleInTargetFrameResult->GetValue());
-	if(SampleNumberOfFirstSampleInTargetFrameResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ByteOffsetOfTargetFrameResult{Get_UnsignedInteger_64Bit_BigEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 64}}};
+		auto FieldResult{Get_UnsignedInteger_64Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("SampleNumberOfFirstSampleInTargetFrame", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ByteOffsetOfTargetFrame", ByteOffsetOfTargetFrameResult->GetValue());
-		if(ByteOffsetOfTargetFrameResult->GetSuccess() == true)
-		{
-			auto NumberOfSamplesInTargetFrameResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("NumberOfSamplesInTargetFrame", NumberOfSamplesInTargetFrameResult->GetValue());
-			Result->SetSuccess(NumberOfSamplesInTargetFrameResult->GetSuccess());
-		}
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 64}}};
+		auto FieldResult{Get_UnsignedInteger_64Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("ByteOffsetOfTargetFrame", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("NumberOfSamplesInTargetFrame", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -11965,22 +11979,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_UTF_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 64) == true)
+	if(Reader.Has(Inspection::Length{0, 64}) == true)
 	{
 		std::uint64_t Value{0ull};
 		
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 56;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 48;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 40;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 32;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 24;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 16;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint64_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 56;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 48;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 40;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 32;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 24;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 16;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint64_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
@@ -11988,7 +12002,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigE
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
