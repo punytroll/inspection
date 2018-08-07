@@ -26,41 +26,58 @@ std::unique_ptr< Inspection::Result > Get_RIFF_File(Inspection::Buffer & Buffer)
 std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ChunkHeaderResult{Get_RIFF_ChunkHeader(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValues(ChunkHeaderResult->GetValue()->GetValues());
-	if(ChunkHeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ChunkSize{std::experimental::any_cast< std::uint32_t >(ChunkHeaderResult->GetAny("Size"))};
+		auto FieldResult{Get_RIFF_ChunkHeader(Buffer)};
+		
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto ChunkSize{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size"))};
 		
 		if(Buffer.Has(ChunkSize, 0) == true)
 		{
-			auto ChunkIdentifier{std::experimental::any_cast< std::string >(ChunkHeaderResult->GetAny("Identifier"))};
-			std::unique_ptr< Inspection::Result > ChunkDataResult;
+			auto ChunkIdentifier{std::experimental::any_cast< std::string >(Result->GetAny("Identifier"))};
 			
 			if(ChunkIdentifier == "RIFF")
 			{
-				ChunkDataResult = Get_RIFF_RIFF_ChunkData(Buffer, ChunkSize);
-				Result->GetValue()->AppendValues(ChunkDataResult->GetValue()->GetValues());
+				auto FieldResult{Get_RIFF_RIFF_ChunkData(Buffer, ChunkSize)};
+				
+				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				UpdateState(Continue, FieldResult);
 			}
 			else if(ChunkIdentifier == "fact")
 			{
-				ChunkDataResult = Get_RIFF_fact_ChunkData(Buffer);
-				Result->GetValue()->AppendValues(ChunkDataResult->GetValue()->GetValues());
+				auto FieldResult{Get_RIFF_fact_ChunkData(Buffer)};
+				
+				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				UpdateState(Continue, FieldResult);
 			}
 			else if(ChunkIdentifier == "fmt ")
 			{
-				ChunkDataResult = Get_RIFF_fmt_ChunkData(Buffer);
-				Result->GetValue()->AppendValues(ChunkDataResult->GetValue()->GetValues());
+				auto FieldResult{Get_RIFF_fmt_ChunkData(Buffer)};
+				
+				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				UpdateState(Continue, FieldResult);
 			}
 			else
 			{
-				ChunkDataResult = Get_Bits_SetOrUnset_EndedByLength(Buffer, ChunkSize);
-				Result->GetValue()->AppendValue("Data", ChunkDataResult->GetValue());
+				auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{ChunkSize, 0}}};
+				auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+				
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
-			Result->SetSuccess(ChunkDataResult->GetSuccess());
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;

@@ -1143,22 +1143,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
+	auto Start{Buffer.GetPosition()};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValues(ObjectHeaderResult->GetValue()->GetValues());
-	if(ObjectHeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
-		auto Size{std::experimental::any_cast< std::uint64_t >(ObjectHeaderResult->GetAny("Size"))};
+		auto FieldResult{Get_ASF_ObjectHeader(Buffer)};
 		
-		if(GUID == Inspection::g_ASF_DataObjectGUID)
-		{
-			auto DataObjectDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(Size, 0) - ObjectHeaderResult->GetLength())};
-			
-			Result->GetValue()->AppendValue("Data", DataObjectDataResult->GetValue());
-			Result->SetSuccess(DataObjectDataResult->GetSuccess());
-		}
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
 	}
+	// verification
+	if(Continue == true)
+	{
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(Result->GetAny("GUID"))};
+		
+		Continue = GUID == Inspection::g_ASF_DataObjectGUID;
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto Size{std::experimental::any_cast< std::uint64_t >(Result->GetAny("Size"))};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{Size, 0} - (Buffer.GetPosition() - Start)}};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2730,21 +2744,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_EndedByLength(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(Length) == true)
-	{
-		Result->SetSuccess(true);
-		Buffer.SetPosition(Buffer.GetPosition() + Length);
-	}
-	if(Result->GetSuccess() == true)
-	{
-		Result->GetValue()->AppendTag("any data"s);
-		Result->GetValue()->AppendTag(to_string_cast(Length) + " bytes and bits"s);
-	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Reader.AdvancePosition(Reader.GetRemainingLength());
+	Result->GetValue()->AppendTag("any data"s);
+	Result->GetValue()->AppendTag(to_string_cast(Reader.GetConsumedLength()) + " bytes and bits"s);
+	// finalization
+	Result->SetSuccess(true);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3814,73 +3823,102 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_PictureT
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto PictureTypeResult{Get_FLAC_PictureBlock_PictureType(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("PictureType", PictureTypeResult->GetValue());
-	if(PictureTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto MIMETypeLengthResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldResult{Get_FLAC_PictureBlock_PictureType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MIMETypeLength", MIMETypeLengthResult->GetValue());
-		if(MIMETypeLengthResult->GetSuccess() == true)
-		{
-			auto MIMETypeLength{std::experimental::any_cast< std::uint32_t >(MIMETypeLengthResult->GetAny())};
-			auto MIMETypeResult{Get_ASCII_String_Printable_EndedByLength(Buffer, Inspection::Length(MIMETypeLength, 0))};
-			
-			Result->GetValue()->AppendValue("MIMType", MIMETypeResult->GetValue());
-			if(MIMETypeResult->GetSuccess() == true)
-			{
-				auto DescriptionLengthResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("DescriptionLength", DescriptionLengthResult->GetValue());
-				if(DescriptionLengthResult->GetSuccess() == true)
-				{
-					auto DescriptionLength{std::experimental::any_cast< std::uint32_t >(DescriptionLengthResult->GetAny())};
-					auto DescriptionResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, DescriptionLength)};
-					
-					Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
-					if(DescriptionResult->GetSuccess() == true)
-					{
-						auto PictureWidthInPixelsResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-						
-						Result->GetValue()->AppendValue("PictureWidthInPixels", PictureWidthInPixelsResult->GetValue());
-						if(PictureWidthInPixelsResult->GetSuccess() == true)
-						{
-							auto PictureHeightInPixelsResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-							
-							Result->GetValue()->AppendValue("PictureHeightInPixels", PictureHeightInPixelsResult->GetValue());
-							if(PictureHeightInPixelsResult->GetSuccess() == true)
-							{
-								auto BitsPerPixelResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-								
-								Result->GetValue()->AppendValue("BitsPerPixel", BitsPerPixelResult->GetValue());
-								if(BitsPerPixelResult->GetSuccess() == true)
-								{
-									auto NumberOfColorsResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-									
-									Result->GetValue()->AppendValue("NumberOfColors", NumberOfColorsResult->GetValue());
-									if(NumberOfColorsResult->GetSuccess() == true)
-									{
-										auto PictureDataLengthResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-										
-										Result->GetValue()->AppendValue("PictureDataLength", PictureDataLengthResult->GetValue());
-										if(PictureDataLengthResult->GetSuccess() == true)
-										{
-											auto PictureDataLength{std::experimental::any_cast< std::uint32_t >(PictureDataLengthResult->GetAny())};
-											auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(PictureDataLength, 0))};
-											
-											Result->GetValue()->AppendValue("PictureData", PictureDataResult->GetValue());
-											Result->SetSuccess(PictureDataResult->GetSuccess());
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("MIMETypeLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto MIMETypeLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MIMETypeLength"))};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(Buffer, Inspection::Length{MIMETypeLength, 0})};
+		auto FieldValue{Result->GetValue()->AppendValue("MIMType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("DescriptionLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto DescriptionLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("DescriptionLength"))};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{DescriptionLength, 0})};
+		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureWidthInPixels", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureHeightInPixels", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitsPerPixel", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("NumberOfColors", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureDataLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto PictureDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("PictureDataLength"))};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{PictureDataLength, 0}}};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -4813,35 +4851,52 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC(Ins
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_ID3_2_2_TextEncoding(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ImageFormatResult{Get_ID3_2_2_Frame_Body_PIC_ImageFormat(Buffer)};
+		auto FieldResult{Get_ID3_2_2_TextEncoding(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ImageFormat", ImageFormatResult->GetValue());
-		if(ImageFormatResult->GetSuccess() == true)
-		{
-			auto PictureTypeResult{Get_ID3_2_2_Frame_Body_PIC_PictureType(Buffer)};
-			
-			Result->GetValue()->AppendValue("PictureType", PictureTypeResult->GetValue());
-			if(PictureTypeResult->GetSuccess() == true)
-			{
-				auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-				auto DescriptionResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
-				
-				Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
-				if(DescriptionResult->GetSuccess() == true)
-				{
-					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-					
-					Result->GetValue()->AppendValue("PictureData", PictureDataResult->GetValue());
-					Result->SetSuccess(PictureDataResult->GetSuccess());
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_2_Frame_Body_PIC_ImageFormat(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ImageFormat", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_2_Frame_Body_PIC_PictureType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Boundary - Buffer.GetPosition()}};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -5328,35 +5383,52 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto MIMETypeResult{Get_ID3_2_3_Frame_Body_APIC_MIMEType(Buffer)};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MIMEType", MIMETypeResult->GetValue());
-		if(MIMETypeResult->GetSuccess() == true)
-		{
-			auto PictureTypeResult{Get_ID3_2_3_Frame_Body_APIC_PictureType(Buffer)};
-			
-			Result->GetValue()->AppendValue("PictureType", PictureTypeResult->GetValue());
-			if(PictureTypeResult->GetSuccess() == true)
-			{
-				auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-				auto DescriptionResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
-				
-				Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
-				if(DescriptionResult->GetSuccess() == true)
-				{
-					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-					
-					Result->GetValue()->AppendValue("PictureData", PictureDataResult->GetValue());
-					Result->SetSuccess(PictureDataResult->GetSuccess());
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_3_Frame_Body_APIC_MIMEType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_3_Frame_Body_APIC_PictureType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Boundary - Buffer.GetPosition()}};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -5440,35 +5512,53 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto MIMETypeResult{Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Buffer)};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MIMEType", MIMETypeResult->GetValue());
-		if(MIMETypeResult->GetSuccess() == true)
-		{
-			auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-			auto FileNameResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
-			
-			Result->GetValue()->AppendValue("FileName", FileNameResult->GetValue());
-			if(FileNameResult->GetSuccess() == true)
-			{
-				auto ContentDescriptionResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
-				
-				Result->GetValue()->AppendValue("ContentDescription", ContentDescriptionResult->GetValue());
-				if(ContentDescriptionResult->GetSuccess() == true)
-				{
-					auto EncapsulatedObjectResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-					
-					Result->GetValue()->AppendValue("EncapsulatedObject", EncapsulatedObjectResult->GetValue());
-					Result->SetSuccess(EncapsulatedObjectResult->GetSuccess());
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		auto FieldValue{Result->GetValue()->AppendValue("FileName", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		auto FieldValue{Result->GetValue()->AppendValue("ContentDescription", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Boundary - Buffer.GetPosition()}};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("EncapsulatedObject", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6542,35 +6632,52 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_ID3_2_4_TextEncoding(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto MIMETypeResult{Get_ID3_2_4_Frame_Body_APIC_MIMEType(Buffer)};
+		auto FieldResult{Get_ID3_2_4_TextEncoding(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MIMEType", MIMETypeResult->GetValue());
-		if(MIMETypeResult->GetSuccess() == true)
-		{
-			auto PictureTypeResult{Get_ID3_2_4_Frame_Body_APIC_PictureType(Buffer)};
-			
-			Result->GetValue()->AppendValue("PictureType", PictureTypeResult->GetValue());
-			if(PictureTypeResult->GetSuccess() == true)
-			{
-				auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-				auto DescriptionResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
-				
-				Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
-				if(DescriptionResult->GetSuccess() == true)
-				{
-					auto PictureDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-					
-					Result->GetValue()->AppendValue("PictureData", PictureDataResult->GetValue());
-					Result->SetSuccess(PictureDataResult->GetSuccess());
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_4_Frame_Body_APIC_MIMEType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_4_Frame_Body_APIC_PictureType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Buffer, Boundary - Buffer.GetPosition()}};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9807,6 +9914,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto ProtectionBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("ProtectionBit"))};
@@ -9820,6 +9928,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("LayerDescription"))};
@@ -9837,10 +9946,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 			FrameLength = 144 * BitRate / SamplingFrequency + PaddingBit;
 		}
 		
-		auto AudioDataResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Inspection::Length(FrameLength) + Start - Buffer.GetPosition())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{FrameLength, 0} + Start - Buffer.GetPosition()}};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("AudioData", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("AudioData", AudioDataResult->GetValue());
-		Continue = AudioDataResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
