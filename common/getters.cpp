@@ -3556,93 +3556,68 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlock_Header(Buffer)};
-	
-	Result->GetValue()->AppendValue("Header", MetaDataBlockHeaderResult->GetValue());
-	if(MetaDataBlockHeaderResult->GetSuccess() == true)
-	{
-		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetTagAny("interpretation"))};
-		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(MetaDataBlockHeaderResult->GetAny("Length"))};
-		
-		if(MetaDataBlockType == "StreamInfo")
-		{
-			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
-			
-			Result->GetValue()->AppendValue("Data", StreamInfoBlockDataResult->GetValue());
-			Result->SetSuccess(StreamInfoBlockDataResult->GetSuccess());
-		}
-		else if(MetaDataBlockType == "Padding")
-		{
-			auto PaddingBlockDataResult{Get_Bits_Unset_EndedByLength(Buffer, MetaDataBlockDataLength)};
-			
-			Result->GetValue()->AppendValue("Data", PaddingBlockDataResult->GetValue());
-			Result->SetSuccess(PaddingBlockDataResult->GetSuccess());
-		}
-		else if(MetaDataBlockType == "Application")
-		{
-			auto ApplicationBlockDataResult{Get_FLAC_ApplicationBlock_Data(Buffer, MetaDataBlockDataLength)};
-			
-			Result->GetValue()->AppendValue("Data", ApplicationBlockDataResult->GetValue());
-			Result->SetSuccess(ApplicationBlockDataResult->GetSuccess());
-		}
-		else if(MetaDataBlockType == "SeekTable")
-		{
-			if(MetaDataBlockDataLength % 18 == 0)
-			{
-				auto SeekTableBlockDataResult{Get_FLAC_SeekTableBlock_Data(Buffer, MetaDataBlockDataLength / 18)};
-				
-				Result->GetValue()->AppendValue("Data", SeekTableBlockDataResult->GetValue());
-				Result->SetSuccess(SeekTableBlockDataResult->GetSuccess());
-			}
-		}
-		else if(MetaDataBlockType == "VorbisComment")
-		{
-			auto VorbisCommentBlockDataResult{Get_FLAC_VorbisCommentBlock_Data(Buffer)};
-			
-			Result->GetValue()->AppendValue("Data", VorbisCommentBlockDataResult->GetValue());
-			Result->SetSuccess(VorbisCommentBlockDataResult->GetSuccess());
-		}
-		else if(MetaDataBlockType == "Picture")
-		{
-			auto PictureBlockDataResult{Get_FLAC_PictureBlock_Data(Buffer)};
-			
-			Result->GetValue()->AppendValue("Data", PictureBlockDataResult->GetValue());
-			Result->SetSuccess(PictureBlockDataResult->GetSuccess());
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Header(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
-		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("LastMetaDataBlock", FieldResult->GetValue())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{4, 0}}};
+		auto FieldResult{Get_FLAC_MetaDataBlock_Header(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_MetaDataBlock_Type(Buffer)};
-		auto FieldValue{Result->GetValue()->AppendValue("BlockType", FieldResult->GetValue())};
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(Result->GetValue("Header")->GetValue("BlockType")->GetTagAny("interpretation"))};
+		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length"))};
 		
-		UpdateState(Continue, FieldResult);
-	}
-	if(Continue == true)
-	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 24}}};
-		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		if(MetaDataBlockType == "StreamInfo")
+		{
+			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(MetaDataBlockType == "Padding")
+		{
+			auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, MetaDataBlockDataLength)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(MetaDataBlockType == "Application")
+		{
+			auto FieldResult{Get_FLAC_ApplicationBlock_Data(Buffer, MetaDataBlockDataLength)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(MetaDataBlockType == "SeekTable")
+		{
+			if(MetaDataBlockDataLength % 18 == 0)
+			{
+				auto FieldResult{Get_FLAC_SeekTableBlock_Data(Buffer, MetaDataBlockDataLength / 18)};
+				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+		}
+		else if(MetaDataBlockType == "VorbisComment")
+		{
+			auto FieldResult{Get_FLAC_VorbisCommentBlock_Data(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(MetaDataBlockType == "Picture")
+		{
+			auto FieldResult{Get_FLAC_PictureBlock_Data(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3651,19 +3626,58 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Header(
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Header(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 1}}};
+		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("LastMetaDataBlock", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 7}}};
+		auto FieldResult{Get_FLAC_MetaDataBlock_Type(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("BlockType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 24}}};
+		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldReader{Inspection::Reader{Reader, Inspection::Length{0, 7}}};
 		auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
 		auto FieldVaule{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -3709,7 +3723,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(In
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -4040,21 +4054,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto MetaDataBlockHeaderResult{Get_FLAC_MetaDataBlock_Header(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Header", MetaDataBlockHeaderResult->GetValue());
-	if(MetaDataBlockHeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(MetaDataBlockHeaderResult->GetValue("BlockType")->GetTagAny("interpretation"))};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{4, 0}}};
+		auto FieldResult{Get_FLAC_MetaDataBlock_Header(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(Result->GetValue("Header")->GetValue("BlockType")->GetTagAny("interpretation"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
-			auto StreamInfoBlockDataResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
+			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("Data", StreamInfoBlockDataResult->GetValue());
-			Result->SetSuccess(StreamInfoBlockDataResult->GetSuccess());
+			UpdateState(Continue, FieldResult);
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The BlockType of the meta data block is not \"StreamInfo\"."s);
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;

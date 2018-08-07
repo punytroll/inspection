@@ -89,8 +89,8 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame_Footer(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame_Header(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints);
