@@ -5845,29 +5845,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(In
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
 		auto FieldResult{Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PeakAmplitude", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("PeakAmplitude", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 16))};
 		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("TrackReplayGainAdjustment", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("TrackReplayGainAdjustment", FieldResult->GetValue());
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 16))};
 		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", FieldResult->GetValue());
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
