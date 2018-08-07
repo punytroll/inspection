@@ -21,22 +21,19 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 {
 	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(Length == Inspection::Length(0ul, 0))
+	// interpretation
+	if(Length == Inspection::Length{0, 0})
 	{
 		Result->GetValue()->AppendTag("interpretation", "OGG nil"s);
-		Result->SetSuccess(true);
 	}
 	else
 	{
 		auto VorbisHeaderPacketResult{Get_Vorbis_HeaderPacket(Buffer, Length)};
 		
 		Result->SetValue(VorbisHeaderPacketResult->GetValue());
-		if(VorbisHeaderPacketResult->GetSuccess() == true)
-		{
-			Result->SetSuccess(true);
-		}
-		else
+		if(VorbisHeaderPacketResult->GetSuccess() == false)
 		{
 			// reset buffer position, so we can try something else
 			Buffer.SetPosition(Start);
@@ -44,23 +41,22 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 			auto VorbisAudioPacketResult{Get_Vorbis_AudioPacket(Buffer, Length)};
 			
 			Result->SetValue(VorbisAudioPacketResult->GetValue());
-			if(VorbisAudioPacketResult->GetSuccess() == true)
-			{
-				Result->SetSuccess(true);
-			}
-			else
+			if(VorbisAudioPacketResult->GetSuccess() == false)
 			{
 				// reset buffer position, so we can try something else
 				Buffer.SetPosition(Start);
 				
-				auto PacketResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Length)};
+				auto FieldReader{Inspection::Reader{Buffer, Length}};
+				auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 				
 				Result->GetValue()->AppendTag("interpretation", "OGG unknown"s);
-				Result->GetValue()->AppendValue("Data", PacketResult->GetValue());
-				Result->SetSuccess(PacketResult->GetSuccess());
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -121,93 +117,120 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buff
 std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto CapturePatternResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "OggS")};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("CapturePattern", CapturePatternResult->GetValue());
-	if(CapturePatternResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto StreamStructureVersionResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "OggS")};
+		auto FieldValue{Result->GetValue()->AppendValue("CapturePattern", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("StreamStructureVersion", StreamStructureVersionResult->GetValue());
-		if(StreamStructureVersionResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("StreamStructureVersion", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_Ogg_Page_HeaderType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("HeaderType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("GranulePosition", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitStreamSerialNumber", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PageSequenceNumber", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Checksum", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PageSegments", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto PageSegments{std::experimental::any_cast< std::uint8_t >(Result->GetAny("PageSegments"))};
+		auto FieldResult{Get_Ogg_Page_SegmentTable(Buffer, PageSegments)};
+		auto FieldValue{Result->GetValue()->AppendValue("SegmentTable", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto PacketStart{Buffer.GetPosition()};
+		auto PacketLength{0ull};
+		
+		for(auto SegmentTableEntryValue : Result->GetValue("SegmentTable")->GetValues())
 		{
-			auto HeaderTypeResult{Get_Ogg_Page_HeaderType(Buffer)};
+			auto SegmentTableEntry{std::experimental::any_cast< std::uint8_t >(SegmentTableEntryValue->GetAny())};
 			
-			Result->GetValue()->AppendValue("HeaderType", HeaderTypeResult->GetValue());
-			if(HeaderTypeResult->GetSuccess() == true)
+			PacketLength += SegmentTableEntry;
+			if(SegmentTableEntry != 0xff)
 			{
-				auto GranulePositionResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+				// the packet ends here, read its content and try interpretation
+				auto PacketResult{Get_Ogg_Packet(Buffer, PacketLength)};
 				
-				Result->GetValue()->AppendValue("GranulePosition", GranulePositionResult->GetValue());
-				if(GranulePositionResult->GetSuccess() == true)
+				if(PacketResult->GetSuccess() == true)
 				{
-					auto BitStreamSerialNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-					
-					Result->GetValue()->AppendValue("BitStreamSerialNumber", BitStreamSerialNumberResult->GetValue());
-					if(BitStreamSerialNumberResult->GetSuccess() == true)
-					{
-						auto PageSequenceNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-						
-						Result->GetValue()->AppendValue("PageSequenceNumber", PageSequenceNumberResult->GetValue());
-						if(PageSequenceNumberResult->GetSuccess() == true)
-						{
-							auto ChecksumResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-							
-							Result->GetValue()->AppendValue("Checksum", ChecksumResult->GetValue());
-							if(ChecksumResult->GetSuccess() == true)
-							{
-								auto PageSegmentsResult{Get_UnsignedInteger_8Bit(Buffer)};
-								
-								Result->GetValue()->AppendValue("PageSegments", PageSegmentsResult->GetValue());
-								if(PageSegmentsResult->GetSuccess() == true)
-								{
-									auto PageSegments{std::experimental::any_cast< std::uint8_t >(PageSegmentsResult->GetAny())};
-									auto SegmentTableResult{Get_Ogg_Page_SegmentTable(Buffer, PageSegments)};
-									
-									Result->GetValue()->AppendValue("SegmentTable", SegmentTableResult->GetValue());
-									if(SegmentTableResult->GetSuccess() == true)
-									{
-										Result->SetSuccess(true);
-										
-										auto PacketStart{Buffer.GetPosition()};
-										auto PacketLength{0ull};
-										
-										for(auto SegmentTableEntryValue : SegmentTableResult->GetValue()->GetValues())
-										{
-											auto SegmentTableEntry{std::experimental::any_cast< std::uint8_t >(SegmentTableEntryValue->GetAny())};
-											
-											PacketLength += SegmentTableEntry;
-											if(SegmentTableEntry != 0xff)
-											{
-												// the packet ends here, read its content and try interpretation
-												auto PacketResult{Get_Ogg_Packet(Buffer, PacketLength)};
-												
-												if(PacketResult->GetSuccess() == true)
-												{
-													Result->GetValue()->AppendValue("Packet", PacketResult->GetValue());
-												}
-												// No matter what data gets read before - successfully or ansuccessfully - we heed the values from the segment table!
-												Buffer.SetPosition(PacketStart + PacketLength);
-												PacketStart = Buffer.GetPosition();
-												PacketLength = 0ull;
-											}
-										}
-										if(PacketLength > 0ull)
-										{
-											auto PacketResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, PacketLength)};
-											auto PacketValue{Result->GetValue()->AppendValue("Packet", PacketResult->GetValue())};
-											
-											PacketValue->AppendTag("error", "The packet spans multiple pages, which is not yet supported."s);
-										}
-									}
-								}
-							}
-						}
-					}
+					Result->GetValue()->AppendValue("Packet", PacketResult->GetValue());
 				}
+				// No matter what data gets read before - successfully or ansuccessfully - we heed the values from the segment table!
+				Buffer.SetPosition(PacketStart + PacketLength);
+				PacketStart = Buffer.GetPosition();
+				PacketLength = 0ull;
 			}
 		}
+		if(PacketLength > 0ull)
+		{
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{PacketLength}}};
+			auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("Packet", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			FieldValue->AppendTag("error", "The packet spans multiple pages, which is not yet supported."s);
+			Continue = false;
+		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -265,7 +288,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 	// reading
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 1))};
+		auto FieldReader{Inspection::Reader(Buffer, Inspection::Length{0, 1})};
 		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
 		
 		Result->GetValue()->AppendValue("PacketType", FieldResult->GetValue());
@@ -288,11 +311,13 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+		auto FieldReader{Inspection::Reader{Buffer, Boundary - Buffer.GetPosition()}};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Data", FieldResult->GetValue());
-		Continue = FieldResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -303,47 +328,54 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Boundary{Buffer.GetPosition() + Length};
-	auto PacketTypeResult{Get_Vorbis_HeaderPacket_Type(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("PacketType", PacketTypeResult->GetValue());
-	if(PacketTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto VorbisIdentifierResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "vorbis")};
+		auto FieldResult{Get_Vorbis_HeaderPacket_Type(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PacketType", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("VorbisIdentifier", VorbisIdentifierResult->GetValue());
-		if(VorbisIdentifierResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "vorbis")};
+		auto FieldValue{Result->GetValue()->AppendValue("VorbisIdentifier", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto PacketType{std::experimental::any_cast< std::uint8_t >(Result->GetAny("PacketType"))};
+		
+		if(PacketType == 0x01)
 		{
-			auto PacketType{std::experimental::any_cast< std::uint8_t >(PacketTypeResult->GetAny())};
+			auto FieldResult{Get_Vorbis_IdentificationHeader(Buffer)};
 			
-			if(PacketType == 0x01)
-			{
-				auto IdentificationHeaderResult{Get_Vorbis_IdentificationHeader(Buffer)};
-				
-				if(IdentificationHeaderResult->GetSuccess() == true)
-				{
-					Result->GetValue()->AppendValues(IdentificationHeaderResult->GetValue()->GetValues());
-					Result->SetSuccess(true);
-				}
-			}
-			else if(PacketType == 0x03)
-			{
-				auto CommentHeaderResult{Get_Vorbis_CommentHeader(Buffer)};
-				
-				if(CommentHeaderResult->GetSuccess() == true)
-				{
-					Result->GetValue()->AppendValues(CommentHeaderResult->GetValue()->GetValues());
-					Result->SetSuccess(true);
-				}
-			}
-			else if(PacketType == 0x05)
-			{
-				auto SetupHeaderResult{Get_Bits_SetOrUnset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-				
-				Result->GetValue()->AppendValue("Data", SetupHeaderResult->GetValue());
-				Result->SetSuccess(SetupHeaderResult->GetSuccess());
-			}
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, FieldResult);
+		}
+		else if(PacketType == 0x03)
+		{
+			auto FieldResult{Get_Vorbis_CommentHeader(Buffer)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, FieldResult);
+		}
+		else if(PacketType == 0x05)
+		{
+			auto FieldReader{Inspection::Reader{Buffer, Boundary - Buffer.GetPosition()}};
+			auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
