@@ -448,26 +448,29 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitrateMaximum", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitrateNominal", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitrateMinimum", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
