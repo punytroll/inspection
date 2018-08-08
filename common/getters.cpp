@@ -4315,26 +4315,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto QuantizedLinearPredictorCoefficientShiftResult{Get_SignedInteger_5Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 5}}};
+		auto FieldResult{Get_SignedInteger_5Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientShift", Result->GetValue())};
 		
-		Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientShift", QuantizedLinearPredictorCoefficientShiftResult->GetValue());
-		Continue = QuantizedLinearPredictorCoefficientShiftResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto PredictorCoefficientsResult{Get_SignedIntegers_BigEndian(Buffer, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
+		auto FieldResult{Get_SignedIntegers_BigEndian(Buffer, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
+		auto FieldValue{Result->GetValue()->AppendValue("PredictorCoefficients", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("PredictorCoefficients", PredictorCoefficientsResult->GetValue());
-		Continue = PredictorCoefficientsResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto ResidualResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
+		auto FieldResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
+		auto FieldValue{Result->GetValue()->AppendValue("Residual", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Residual", ResidualResult->GetValue());
-		Continue = ResidualResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10854,11 +10855,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(In
 	{
 	case 1:
 		{
-			return Get_SignedInteger_1Bit(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+			auto FieldResult{Get_SignedInteger_1Bit(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	case 12:
 		{
-			return Get_SignedInteger_12Bit_BigEndian(Buffer);
+			auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 12}}};
+			auto FieldResult{Get_SignedInteger_12Bit_BigEndian(FieldReader)};
+			
+			Buffer.SetPosition(FieldReader);
+			
+			return FieldResult;
 		}
 	default:
 		{
@@ -10867,13 +10878,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(In
 	}
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 1) == true)
+	if(Reader.Has(Inspection::Length{0, 1}) == true)
 	{
-		std::int8_t Value{static_cast< std::int8_t >(static_cast< std::int8_t >(Buffer.Get1Bits() << 7) >> 7)};
+		std::int8_t Value{static_cast< std::int8_t >(static_cast< std::int8_t >(Reader.Get1Bits() << 7) >> 7)};
 		
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
@@ -10881,18 +10892,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspect
 		Result->GetValue()->AppendTag("1bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 5) == true)
+	if(Reader.Has(Inspection::Length{0, 5}) == true)
 	{
-		std::int8_t Value{static_cast< std::int8_t >(static_cast< std::int8_t >(Buffer.Get5Bits() << 3) >> 3)};
+		std::int8_t Value{static_cast< std::int8_t >(static_cast< std::int8_t >(Reader.Get5Bits() << 3) >> 3)};
 		
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
@@ -10900,44 +10911,44 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspect
 		Result->GetValue()->AppendTag("5bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 12) == true)
+	if(Reader.Has(Inspection::Length{0, 12}) == true)
 	{
 		std::int16_t Value{0};
 		
-		Value |= static_cast< std::int16_t >(static_cast< std::int16_t >(Buffer.Get4Bits() << 12) >> 4);
-		Value |= static_cast< std::int16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::int16_t >(static_cast< std::int16_t >(Reader.Get4Bits() << 12) >> 4);
+		Value |= static_cast< std::int16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("signed"s);
 		Result->GetValue()->AppendTag("12bit"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 32) == true)
+	if(Reader.Has(Inspection::Length{0, 32}) == true)
 	{
 		std::int32_t Value{0l};
 		
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 24;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("signed"s);
@@ -10945,23 +10956,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEnd
 		Result->GetValue()->AppendTag("big endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
-	if(Buffer.Has(0ull, 32) == true)
+	if(Reader.Has(Inspection::Length{0, 32}) == true)
 	{
 		std::int32_t Value{0l};
 		
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 24;
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("signed"s);
@@ -10969,7 +10980,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_Little
 		Result->GetValue()->AppendTag("little endian"s);
 		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
