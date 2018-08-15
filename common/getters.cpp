@@ -164,45 +164,50 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 	// reading
 	if(Continue == true)
 	{
-		auto PreambleResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "APETAGEX")};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "APETAGEX")};
+		auto FieldValue{Result->GetValue()->AppendValue("Preamble", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Preamble", PreambleResult->GetValue());
-		UpdateState(Continue, PreambleResult);
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto VersionNumberResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(Buffer)};
+		auto FieldResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("VersionNumber", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("VersionNumber", VersionNumberResult->GetValue());
-		UpdateState(Continue, VersionNumberResult);
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto TagSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TagSize", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("TagSize", TagSizeResult->GetValue());
-		UpdateState(Continue, TagSizeResult);
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto ItemCountResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ItemCount", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ItemCount", ItemCountResult->GetValue());
-		UpdateState(Continue, ItemCountResult);
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto TagsFlagsResult{Get_APE_Tags_Flags(Buffer)};
+		auto FieldResult{Get_APE_Tags_Flags(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TagsFlags", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("TagsFlags", TagsFlagsResult->GetValue());
-		UpdateState(Continue, TagsFlagsResult);
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(8, 0))};
+		auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length{8, 0})};
+		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Reserved", ReservedResult->GetValue());
-		UpdateState(Continue, ReservedResult);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -883,29 +888,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEn
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto UnsignedInteger32BitResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(UnsignedInteger32BitResult->GetValue());
-	if(UnsignedInteger32BitResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto UnsignedInteger32Bit{std::experimental::any_cast< std::uint32_t >(UnsignedInteger32BitResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto UnsignedInteger32Bit{std::experimental::any_cast< std::uint32_t >(Result->GetAny())};
 		
 		if(UnsignedInteger32Bit == 0x00000000)
 		{
 			Result->GetValue()->PrependTag("value", false);
-			Result->SetSuccess(true);
 		}
 		else if(UnsignedInteger32Bit == 0x00000001)
 		{
 			Result->GetValue()->PrependTag("value", true);
-			Result->SetSuccess(true);
 		}
 		else
 		{
 			Result->GetValue()->PrependTag("value", "<no interpretation>"s);
-			Result->SetSuccess(false);
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1001,38 +1014,48 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ReservedGUIDResult{Get_ASF_GUID(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Reserved", ReservedGUIDResult->GetValue());
-	if((ReservedGUIDResult->GetSuccess() == true) && (std::experimental::any_cast< Inspection::GUID >(ReservedGUIDResult->GetAny()) == Inspection::g_ASF_Reserved2GUID))
+	// reading
+	if(Continue == true)
 	{
-		auto CodecEntriesCountResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_ASF_GUID(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("CodecEntriesCount", CodecEntriesCountResult->GetValue());
-		if(CodecEntriesCountResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< Inspection::GUID >(Result->GetAny("Reserved")) == Inspection::g_ASF_Reserved2GUID;
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodecEntriesCount", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto CodecEntries(std::make_shared< Inspection::Value >());
+		
+		Result->GetValue()->AppendValue("CodecEntries", CodecEntries);
+		
+		auto CodecEntriesCount{std::experimental::any_cast< std::uint32_t >(Result->GetAny("CodecEntriesCount"))};
+		
+		for(auto CodecEntryIndex = 0ul; (Continue == true) && (CodecEntryIndex < CodecEntriesCount); ++CodecEntryIndex)
 		{
-			Result->SetSuccess(true);
+			auto FieldResult{Get_ASF_CodecEntry(Buffer)};
+			auto FieldValue{CodecEntries->AppendValue(FieldResult->GetValue())};
 			
-			auto CodecEntries(std::make_shared< Inspection::Value >());
-			
-			Result->GetValue()->AppendValue("CodecEntries", CodecEntries);
-			
-			auto CodecEntriesCount{std::experimental::any_cast< std::uint32_t >(CodecEntriesCountResult->GetAny())};
-			
-			for(auto CodecEntryIndex = 0ul; CodecEntryIndex < CodecEntriesCount; ++CodecEntryIndex)
-			{
-				auto CodecEntryResult{Get_ASF_CodecEntry(Buffer)};
-				
-				CodecEntries->AppendValue(CodecEntryResult->GetValue());
-				if(CodecEntryResult->GetSuccess() == false)
-				{
-					Result->SetSuccess(false);
-					
-					break;
-				}
-			}
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
