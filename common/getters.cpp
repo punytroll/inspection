@@ -4688,93 +4688,115 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TagIdentifierResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "TAG")};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Identifier", TagIdentifierResult->GetValue());
-	if(TagIdentifierResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto TitelResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "TAG")};
+		auto FieldValue{Result->GetValue()->AppendValue("Identifier", Result->GetValue())};
 		
-		Result->GetValue()->AppendValue("Title", TitelResult->GetValue());
-		if(TitelResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{30, 0})};
+		auto FieldValue{Result->GetValue()->AppendValue("Title", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{30, 0})};
+		auto FieldValue{Result->GetValue()->AppendValue("Artist", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{30, 0})};
+		auto FieldValue{Result->GetValue()->AppendValue("Album", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{4, 0})};
+		auto FieldValue{Result->GetValue()->AppendValue("Year", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto AlternativeStart{Buffer.GetPosition()};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{30, 0})};
+		
+		if(FieldResult->GetSuccess() == true)
 		{
-			auto ArtistResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+			auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("Artist", ArtistResult->GetValue());
-			if(ArtistResult->GetSuccess() == true)
+			UpdateState(Continue, FieldResult);
+		}
+		else
+		{
+			Buffer.SetPosition(AlternativeStart);
+			FieldResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Buffer, Inspection::Length{29, 0});
+			
+			auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// reading
+			if(Continue == true)
 			{
-				auto AlbumResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
+				auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+				auto FieldValue{Result->GetValue()->AppendValue("AlbumTrack", FieldResult->GetValue())};
 				
-				Result->GetValue()->AppendValue("Album", AlbumResult->GetValue());
-				if(AlbumResult->GetSuccess() == true)
-				{
-					auto YearResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(4ull, 0))};
-					
-					Result->GetValue()->AppendValue("Year", YearResult->GetValue());
-					if(YearResult->GetSuccess() == true)
-					{
-						auto StartOfComment{Buffer.GetPosition()};
-						auto CommentResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length(30ull, 0))};
-						auto Continue{false};
-						
-						if(CommentResult->GetSuccess() == true)
-						{
-							Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
-							Continue = true;
-						}
-						else
-						{
-							Buffer.SetPosition(StartOfComment);
-							CommentResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Buffer, Inspection::Length(29ull, 0));
-							Result->GetValue()->AppendValue("Comment", CommentResult->GetValue());
-							if(CommentResult->GetSuccess() == true)
-							{
-								auto AlbumTrackResult{Get_UnsignedInteger_8Bit(Buffer)};
-								
-								Result->GetValue()->AppendValue("AlbumTrack", AlbumTrackResult->GetValue());
-								Continue = AlbumTrackResult->GetSuccess();
-							}
-						}
-						if(Continue == true)
-						{
-							auto GenreResult{Get_UnsignedInteger_8Bit(Buffer)};
-							
-							Result->GetValue()->AppendValue("Genre", GenreResult->GetValue());
-							if(GenreResult->GetSuccess() == true)
-							{
-								Result->SetSuccess(true);
-								
-								auto GenreNumber{std::experimental::any_cast< std::uint8_t >(GenreResult->GetAny())};
-								
-								try
-								{
-									auto Genre{Inspection::Get_ID3_1_Genre(GenreNumber)};
-									
-									Result->GetValue("Genre")->PrependTag("interpretation", Genre);
-									Result->GetValue("Genre")->PrependTag("standard", "ID3v1"s);
-								}
-								catch(Inspection::UnknownValueException & Exception)
-								{
-									try
-									{
-										auto Genre{Inspection::Get_ID3_1_Winamp_Genre(GenreNumber)};
-										
-										Result->GetValue("Genre")->PrependTag("interpretation", Genre);
-										Result->GetValue("Genre")->PrependTag("standard", "Winamp extension"s);
-									}
-									catch(Inspection::UnknownValueException & Exception)
-									{
-										Result->GetValue("Genre")->PrependTag("interpretation", "<unrecognized>"s);
-									}
-								}
-							}
-						}
-						Result->SetSuccess(true);
-					}
-				}
+				UpdateState(Continue, FieldResult);
 			}
 		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Genre", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto GenreNumber{std::experimental::any_cast< std::uint8_t >(Result->GetAny("Genre"))};
+		
+		try
+		{
+			auto Genre{Inspection::Get_ID3_1_Genre(GenreNumber)};
+			
+			Result->GetValue("Genre")->PrependTag("interpretation", Genre);
+			Result->GetValue("Genre")->PrependTag("standard", "ID3v1"s);
+		}
+		catch(Inspection::UnknownValueException & Exception)
+		{
+			try
+			{
+				auto Genre{Inspection::Get_ID3_1_Winamp_Genre(GenreNumber)};
+				
+				Result->GetValue("Genre")->PrependTag("interpretation", Genre);
+				Result->GetValue("Genre")->PrependTag("standard", "Winamp extension"s);
+			}
+			catch(Inspection::UnknownValueException & Exception)
+			{
+				Result->GetValue("Genre")->PrependTag("interpretation", "<unrecognized>"s);
+			}
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
