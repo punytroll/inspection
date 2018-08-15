@@ -17,8 +17,8 @@ Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length
 	_OffsetInBuffer(OffsetInBuffer),
 	_PositionInBuffer(OffsetInBuffer)
 {
-	assert(_OffsetInBuffer < Buffer.GetLength());
-	assert(_BoundaryInBuffer < Buffer.GetLength());
+	assert(_OffsetInBuffer <= Buffer.GetLength());
+	assert(_BoundaryInBuffer <= Buffer.GetLength());
 }
 
 Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length & Length) :
