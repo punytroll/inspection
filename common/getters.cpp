@@ -4557,86 +4557,89 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto SubframeTypeResult{Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Buffer, Inspection::Length(0, 6))};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 6}}};
+		auto FieldResult{Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->SetValue(SubframeTypeResult->GetValue());
-		Continue = SubframeTypeResult->GetSuccess();
-		if(SubframeTypeResult->GetSuccess() == true)
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto SubframeType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		
+		switch(SubframeType)
 		{
-			auto SubframeType{std::experimental::any_cast< std::uint8_t >(SubframeTypeResult->GetAny())};
-			
-			switch(SubframeType)
+		case 0:
 			{
-			case 0:
+				Result->GetValue()->AppendTag("interpretation", "SUBFRAME_LPC"s);
+				
+				auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 5}}};
+				auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
+				auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
+				
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				if(FieldResult->GetSuccess() == true)
 				{
-					Result->GetValue()->AppendTag("interpretation", "SUBFRAME_LPC"s);
+					auto Order{std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny())};
 					
-					auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 5))};
-					auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
-					auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
+					FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order + 1));
+				}
+				
+				break;
+			}
+		case 2:
+			{
+				auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 3}}};
+				auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
+				auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
+				
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				if(FieldResult->GetSuccess() == true)
+				{
+					auto Order{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny())};
 					
-					UpdateState(Continue, Buffer, FieldResult, FieldReader);
-					if(FieldResult->GetSuccess() == true)
+					FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order));
+					if(Order < 5)
 					{
-						auto Order{std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny())};
-						
-						FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order + 1));
+						Result->GetValue()->AppendTag("interpretation", "SUBFRAME_FIXED"s);
 					}
-					
-					break;
-				}
-			case 2:
-				{
-					auto FieldReader{Inspection::Reader(Buffer, Inspection::Length(0, 3))};
-					auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
-					auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
-					
-					UpdateState(Continue, Buffer, FieldResult, FieldReader);
-					if(FieldResult->GetSuccess() == true)
+					else
 					{
-						auto Order{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny())};
-						
-						FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order));
-						if(Order < 5)
-						{
-							Result->GetValue()->AppendTag("interpretation", "SUBFRAME_FIXED"s);
-						}
-						else
-						{
-							Result->GetValue()->AppendTag("reserved");
-							Result->GetValue()->AppendTag("error", "The subframe type is SUBFRAME_FIXED, and the order " + to_string_cast(Order) + " MUST NOT be used.");
-							Continue = false;
-						}
+						Result->GetValue()->AppendTag("reserved");
+						Result->GetValue()->AppendTag("error", "The subframe type is SUBFRAME_FIXED, and the order " + to_string_cast(Order) + " MUST NOT be used.");
+						Continue = false;
 					}
-					
-					break;
 				}
-			case 1:
-			case 3:
-			case 4:
-				{
-					Result->GetValue()->AppendTag("reserved"s);
-					Result->GetValue()->AppendTag("error", "This subframe type MUST NOT be used."s);
-					Continue = false;
-					
-					break;
-				}
-			case 5:
-				{
-					throw Inspection::NotImplementedException("SUBFRAME_VERBATIM");
-				}
-			case 6:
-				{
-					Result->GetValue()->AppendTag("interpretation", "SUBFRAME_CONSTANT"s);
-					
-					break;
-				}
-			default:
-				{
-					assert(false);
-				}
+				
+				break;
+			}
+		case 1:
+		case 3:
+		case 4:
+			{
+				Result->GetValue()->AppendTag("reserved"s);
+				Result->GetValue()->AppendTag("error", "This subframe type MUST NOT be used."s);
+				Continue = false;
+				
+				break;
+			}
+		case 5:
+			{
+				throw Inspection::NotImplementedException("SUBFRAME_VERBATIM");
+			}
+		case 6:
+			{
+				Result->GetValue()->AppendTag("interpretation", "SUBFRAME_CONSTANT"s);
+				
+				break;
+			}
+		default:
+			{
+				assert(false);
 			}
 		}
 	}
@@ -11353,35 +11356,25 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Reader)};
 	std::uint8_t Value{0ul};
 	
 	while(true)
 	{
-		if(Buffer.GetPosition() < Boundary)
+		if(Reader.Has(Inspection::Length{0, 1}) == true)
 		{
-			if(Buffer.Has(Inspection::Length(0, 1)) == true)
+			auto Bit{Reader.Get1Bits()};
+			
+			if(Bit == 0x00)
 			{
-				auto Bit{Buffer.Get1Bits()};
-				
-				if(Bit == 0x00)
-				{
-					Value += 1;
-				}
-				else
-				{
-					Result->SetSuccess(true);
-					Result->GetValue()->AppendTag(to_string_cast(Value + 1) + "bit"s);
-					
-					break;
-				}
+				Value += 1;
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The unary coded unsigned integer could not be completed before the boundary because the buffer ran out."s);
+				Result->SetSuccess(true);
+				Result->GetValue()->AppendTag(to_string_cast(Value + 1) + "bit"s);
 				
 				break;
 			}
@@ -11402,7 +11395,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit_Alter
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("alternative unary"s);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
