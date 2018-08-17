@@ -5132,26 +5132,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_Ima
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_PictureType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto PictureTypeResult{Get_UnsignedInteger_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(PictureTypeResult->GetValue());
-	if(PictureTypeResult->GetSuccess() == true)
+	//reading
+	if(Continue == true)
 	{
-		auto PictureType{std::experimental::any_cast< std::uint8_t >(PictureTypeResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		std::string Interpretation;
 		
-		Result->GetValue()->PrependTag("standard", "ID3v2"s);
+		Result->GetValue()->PrependTag("standard", "ID3 2.2"s);
 		try
 		{
 			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
-			Result->SetSuccess(true);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
+			Continue = false;
 			Interpretation = "unknown";
 		}
 		Result->GetValue()->PrependTag("interpretation", Interpretation);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -5369,26 +5379,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(I
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_UnsignedInteger_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
+		
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(TextEncoding == 0x00)
 		{
 			Result->GetValue()->PrependTag("name", "Latin alphabet No. 1"s);
 			Result->GetValue()->PrependTag("standard", "ISO/IEC 8859-1:1998"s);
-			Result->SetSuccess(true);
 		}
 		else if(TextEncoding == 0x01)
 		{
 			Result->GetValue()->PrependTag("name", "UCS-2"s);
 			Result->GetValue()->PrependTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->SetSuccess(true);
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is unknown.");
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -5644,26 +5669,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC_MI
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC_PictureType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto PictureTypeResult{Get_UnsignedInteger_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(PictureTypeResult->GetValue());
-	if(PictureTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto PictureType{std::experimental::any_cast< std::uint8_t >(PictureTypeResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
+		
+		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		std::string Interpretation;
 		
-		Result->GetValue()->PrependTag("standard", "ID3v3"s);
 		try
 		{
 			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
-			Result->SetSuccess(true);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			Interpretation = "unknown";
+			Continue = false;
 		}
 		Result->GetValue()->PrependTag("interpretation", Interpretation);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -5841,55 +5877,75 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto EMailToUserResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("EMailToUser", EMailToUserResult->GetValue());
-	if(EMailToUserResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto RatingResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("EMailToUser", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Rating", RatingResult->GetValue());
-		if(RatingResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
+		
+		FieldValue->PrependTag("standard", "ID3 2.3"s);
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto Rating{std::experimental::any_cast< std::uint8_t >(Result->GetAny("Rating"))};
+		
+		if(Rating > 0)
 		{
-			auto Rating{std::experimental::any_cast< std::uint8_t >(RatingResult->GetAny())};
-			
-			if(Rating == 0)
-			{
-				Result->GetValue("Rating")->PrependTag("standard", "ID3 2.3"s);
-				Result->GetValue("Rating")->PrependTag("interpretation", "unknown"s);
-			}
-			if(Buffer.GetPosition() == Boundary)
-			{
-				auto CounterValue{std::make_shared< Inspection::Value >()};
-				
-				CounterValue->SetName("Counter");
-				CounterValue->AppendTag("omitted"s);
-				Result->GetValue()->AppendValue(CounterValue);
-			}
-			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) > Boundary)
-			{
-				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-				
-				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-				Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
-				Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
-			}
-			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) == Boundary)
-			{
-				auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-				Result->SetSuccess(CounterResult->GetSuccess());
-			}
-			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
-			{
-				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-				
-				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
-			}
+			Result->GetValue("Rating")->PrependTag("interpretation", to_string_cast(Rating) + " / 255");
+		}
+		else
+		{
+			Result->GetValue("Rating")->PrependTag("interpretation", "unknown"s);
 		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		if(Buffer.GetPosition() == Boundary)
+		{
+			auto CounterValue{std::make_shared< Inspection::Value >()};
+			
+			CounterValue->SetName("Counter");
+			CounterValue->AppendTag("omitted"s);
+			Result->GetValue()->AppendValue(CounterValue);
+		}
+		else if(Buffer.GetPosition() + Inspection::Length{4, 0} > Boundary)
+		{
+			auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			
+			Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
+			Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+			Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
+		}
+		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
+		{
+			auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+			
+			Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
+			Result->SetSuccess(CounterResult->GetSuccess());
+		}
+		else if(Buffer.GetPosition() + Inspection::Length{4, 0} < Boundary)
+		{
+			auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			
+			Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
+			Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6646,26 +6702,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_UnsignedInteger_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
+		
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(TextEncoding == 0x00)
 		{
 			Result->GetValue()->PrependTag("name", "Latin alphabet No. 1"s);
 			Result->GetValue()->PrependTag("standard", "ISO/IEC 8859-1:1998"s);
-			Result->SetSuccess(true);
 		}
 		else if(TextEncoding == 0x01)
 		{
 			Result->GetValue()->PrependTag("name", "UCS-2"s);
 			Result->GetValue()->PrependTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->SetSuccess(true);
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is not known.");
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6893,19 +6964,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC_MI
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC_PictureType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto PictureTypeResult{Get_UnsignedInteger_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(PictureTypeResult->GetValue());
-	if(PictureTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto PictureType{std::experimental::any_cast< std::uint8_t >(PictureTypeResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
+		
+		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		std::string Interpretation;
 		
-		Result->GetValue()->PrependTag("standard", "ID3v4"s);
 		try
 		{
 			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
-			Result->SetSuccess(true);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
@@ -6913,6 +6992,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC_Pi
 		}
 		Result->GetValue()->PrependTag("interpretation", Interpretation);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6966,55 +7047,77 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto EMailToUserResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("EMailToUser", EMailToUserResult->GetValue());
-	if(EMailToUserResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto RatingResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("EMailToUser", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Rating", RatingResult->GetValue());
-		if(RatingResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
+		
+		FieldValue->PrependTag("standard", "ID3 2.3"s);
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto Rating{std::experimental::any_cast< std::uint8_t >(Result->GetAny("Rating"))};
+		
+		if(Rating > 0)
 		{
-			auto Rating{std::experimental::any_cast< std::uint8_t >(RatingResult->GetAny())};
-			
-			if(Rating == 0)
-			{
-				Result->GetValue("Rating")->PrependTag("standard", "ID3 2.3"s);
-				Result->GetValue("Rating")->PrependTag("interpretation", "unknown"s);
-			}
-			if(Buffer.GetPosition() == Boundary)
-			{
-				auto CounterValue{std::make_shared< Inspection::Value >()};
-				
-				CounterValue->SetName("Counter");
-				CounterValue->AppendTag("omitted"s);
-				Result->GetValue()->AppendValue(CounterValue);
-			}
-			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) > Boundary)
-			{
-				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-				
-				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-				Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
-				Result->GetValue("Counter")->PrependTag("standard", "ID3 2.4"s);
-			}
-			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) == Boundary)
-			{
-				auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-				Result->SetSuccess(CounterResult->GetSuccess());
-			}
-			else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
-			{
-				auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-				
-				Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-				Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
-			}
+			Result->GetValue("Rating")->PrependTag("interpretation", to_string_cast(Rating) + " / 255");
+		}
+		else
+		{
+			Result->GetValue("Rating")->PrependTag("interpretation", "unknown"s);
 		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		if(Buffer.GetPosition() == Boundary)
+		{
+			auto CounterValue{std::make_shared< Inspection::Value >()};
+			
+			CounterValue->SetName("Counter");
+			CounterValue->AppendTag("omitted"s);
+			Result->GetValue()->AppendValue(CounterValue);
+		}
+		else if(Buffer.GetPosition() + Inspection::Length{4, 0} > Boundary)
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
+			
+			FieldValue->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+			FieldValue->PrependTag("standard", "ID3 2.4"s);
+			Continue = false;
+		}
+		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
+		{
+			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
+			
+			FieldValue->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Continue = false;
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
