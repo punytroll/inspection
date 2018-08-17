@@ -95,20 +95,19 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer
 std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	Result->SetSuccess(true);
-	for(auto SegmentTableEntryIndex = 0; SegmentTableEntryIndex < NumberOfEntries; ++SegmentTableEntryIndex)
+	// reading
+	for(auto SegmentTableEntryIndex = 0; (Continue == true) && (SegmentTableEntryIndex < NumberOfEntries); ++SegmentTableEntryIndex)
 	{
-		auto SegmentTableEntryResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("", SegmentTableEntryResult->GetValue());
-		if(SegmentTableEntryResult->GetSuccess() == false)
-		{
-			Result->SetSuccess(false);
-			
-			break;
-		}
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -130,10 +129,11 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StreamStructureVersion", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -178,10 +178,11 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PageSegments", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -384,33 +385,42 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TypeResult{Get_UnsignedInteger_8Bit(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(TypeResult->GetValue());
-	if(TypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto Type{std::experimental::any_cast< std::uint8_t >(TypeResult->GetAny())};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto Type{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(Type == 0x01)
 		{
 			Result->GetValue()->AppendTag("interpretation", "Vorbis Identification Header"s);
-			Result->SetSuccess(true);
 		}
 		else if(Type == 0x03)
 		{
 			Result->GetValue()->AppendTag("interpretation", "Vorbis Comment Header"s);
-			Result->SetSuccess(true);
 		}
 		else if(Type == 0x05)
 		{
 			Result->GetValue()->AppendTag("interpretation", "Vorbis Setup Header"s);
-			Result->SetSuccess(true);
 		}
 		else
 		{
 			Result->GetValue()->AppendTag("error", "Unknown packet type " + to_string_cast(Type) + ".");
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -432,10 +442,11 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Buffer)};
+		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AudioChannels", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
