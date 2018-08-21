@@ -5299,7 +5299,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Buff
 	if(Continue == true)
 	{
 		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "TAG")};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", Result->GetValue())};
+		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
 	}
