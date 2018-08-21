@@ -56,7 +56,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_LanguageIDRecord(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_LanguageListObjectData(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Buffer & Buffer, const std::string & Type, const Inspection::Length & Length);
+	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Buffer & Buffer, const std::string & DataType, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibraryObjectData(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataObject_DescriptionRecord(Inspection::Buffer & Buffer);
