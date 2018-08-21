@@ -68,7 +68,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer
 			}
 			else
 			{
-				auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{ChunkSize, 0}}};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{ChunkSize, 0}};
 				auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
 				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 				
@@ -150,7 +150,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 	
 	if(Continue == true)
 	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 32}}};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
 		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
