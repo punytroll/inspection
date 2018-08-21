@@ -109,7 +109,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_CodingMethod(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice_Partition(Inspection::Buffer & Buffer, std::uint64_t PartitionIndex, std::uint32_t NumberOfSamples, std::uint8_t PredictorOrder);
-	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice2(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder);
+	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice2(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice2_Partition(Inspection::Buffer & Buffer, std::uint32_t NumberOfSamples);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Type(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlock_Data(Inspection::Buffer & Buffer);
