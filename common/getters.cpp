@@ -4516,20 +4516,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(I
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto WarmUpSamplesResult{Get_UnsignedIntegers_BigEndian(Buffer, BitsPerSample, PredictorOrder)};
+		auto FieldResult{Get_UnsignedIntegers_BigEndian(Buffer, BitsPerSample, PredictorOrder)};
+		auto FieldValue{Result->GetValue()->AppendValue("WarmUpSamples", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("WarmUpSamples", WarmUpSamplesResult->GetValue());
-		Continue = WarmUpSamplesResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto ResidualResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
+		auto FieldResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
+		auto FieldValue{Result->GetValue()->AppendValue("Residual", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Residual", ResidualResult->GetValue());
-		Continue = ResidualResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -4670,21 +4673,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 	if(Continue == true)
 	{
 		auto CodingMethod{std::experimental::any_cast< std::uint8_t >(Result->GetAny("CodingMethod"))};
-		std::unique_ptr< Inspection::Result > CodedResidualResult;
 		
 		if(CodingMethod == 0x00)
 		{
-			CodedResidualResult = Get_FLAC_Subframe_Residual_Rice(Buffer, FrameBlockSize, PredictorOrder);
-			CodedResidualResult->GetValue()->AppendTag("Rice"s);
+			auto FieldResult{Get_FLAC_Subframe_Residual_Rice(Buffer, FrameBlockSize, PredictorOrder)};
+			auto FieldValue{Result->GetValue()->AppendValue("CodedResidual", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
+			{
+				FieldValue->AppendTag("Rice"s);
+			}
 		}
 		else if(CodingMethod == 0x01)
 		{
-			CodedResidualResult = Get_FLAC_Subframe_Residual_Rice2(Buffer, FrameBlockSize, PredictorOrder);
-			CodedResidualResult->GetValue()->AppendTag("Rice2"s);
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_FLAC_Subframe_Residual_Rice2(FieldReader, FrameBlockSize, PredictorOrder)};
+			auto FieldValue{Result->GetValue()->AppendValue("CodedResidual", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
+			{
+				FieldValue->AppendTag("Rice2"s);
+			}
 		}
-		Result->GetValue()->AppendValue("CodedResidual", CodedResidualResult->GetValue());
-		Continue = CodedResidualResult->GetSuccess();
+		else
+		{
+			Continue = false;
+		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -4810,7 +4828,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice2(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice2(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
 {
 	throw Inspection::NotImplementedException("Get_FLAC_Subframe_Residual_Rice2");
 }
@@ -11468,20 +11486,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEn
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto MostSignificantBitsResult{Get_UnsignedInteger_32Bit_AlternativeUnary(Buffer)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_AlternativeUnary(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("MostSignificantBits", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MostSignificantBits", MostSignificantBitsResult->GetValue());
-		Continue = MostSignificantBitsResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto LeastSignificantBitsResult{Get_UnsignedInteger_BigEndian(Buffer, RiceParameter)};
+		auto FieldResult{Get_UnsignedInteger_BigEndian(Buffer, RiceParameter)};
+		auto FieldValue{Result->GetValue()->AppendValue("LeastSignificantBits", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("LeastSignificantBits", LeastSignificantBitsResult->GetValue());
-		Continue = LeastSignificantBitsResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// interpretation
 	if(Continue == true)
 	{
 		auto MostSignificantBits{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MostSignificantBits"))};
@@ -11507,6 +11528,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEn
 			Result->GetValue()->SetAny(static_cast< std::int32_t >(Value >> 1));
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
