@@ -291,7 +291,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_20Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_24Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_32Bit_AlternativeUnary(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_32Bit_AlternativeUnary(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_32Bit_BigEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_36Bit_BigEndian(Inspection::Reader & Reader);
