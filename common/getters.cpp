@@ -4774,14 +4774,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	if(Continue == true)
 	{
 		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue("PartitionOrder")->GetTagAny("number of partitions"))};
-		auto PartitionsResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(Buffer, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
-		auto PartitionsValue{Result->GetValue()->AppendValue("Partitions", PartitionsResult->GetValue())};
+		auto FieldResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(Buffer, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
+		auto FieldValue{Result->GetValue()->AppendValue("Partitions", FieldResult->GetValue())};
 		
-		for(auto PartitionValue : PartitionsValue->GetValues())
+		UpdateState(Continue, FieldResult);
+		if(Continue == true)
 		{
-			PartitionValue->SetName("Partition");
+			for(auto PartitionValue : FieldValue->GetValues())
+			{
+				PartitionValue->SetName("Partition");
+			}
 		}
-		Continue = PartitionsResult->GetSuccess();
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11489,7 +11492,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEn
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_AlternativeUnary(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_UnsignedInteger_32Bit_AlternativeUnary(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MostSignificantBits", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -12263,16 +12267,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_31Bit_UTF_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_AlternativeUnary(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_AlternativeUnary(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::uint32_t Value{0ul};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	std::uint32_t Value{0};
 	
 	while(true)
 	{
-		if(Buffer.Has(Inspection::Length(0, 1)) == true)
+		if(Reader.Has(Inspection::Length{0, 1}) == true)
 		{
-			auto Bit{Buffer.Get1Bits()};
+			auto Bit{Reader.Get1Bits()};
 			
 			if(Bit == 0x00)
 			{
@@ -12283,19 +12288,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Alte
 				Result->GetValue()->SetAny(Value);
 				Result->GetValue()->AppendTag("integer"s);
 				Result->GetValue()->AppendTag("unsigned"s);
-				Result->GetValue()->AppendTag(to_string_cast(Value + 1) + "bit"s);
+				Result->GetValue()->AppendTag("length", Reader.GetConsumedLength());
 				Result->GetValue()->AppendTag("alternative unary"s);
-				Result->SetSuccess(true);
 				
 				break;
 			}
 		}
 		else
 		{
+			Continue = false;
+			
 			break;
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
