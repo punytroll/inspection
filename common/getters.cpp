@@ -1724,18 +1724,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesFlags(In
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
-	if(Continue == true)
-	{
-		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
+	//~ if(Continue == true)
+	//~ {
+		//~ const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
 		
-		Result->GetValue()->AppendValue("[0] Broadcast", Flags[0]);
-		Result->GetValue()->AppendValue("[1] Seekable", Flags[1]);
-		Result->GetValue()->AppendValue("[2-31] Reserved", false);
-		for(auto Index = 2; Index < 32; ++Index)
-		{
-			Continue &= ~Flags[Index];
-		}
-	}
+		//~ Result->GetValue()->AppendValue("[0] Broadcast", Flags[0]);
+		//~ Result->GetValue()->AppendValue("[1] Seekable", Flags[1]);
+		//~ Result->GetValue()->AppendValue("[2-31] Reserved", false);
+		//~ for(auto Index = 2; Index < 32; ++Index)
+		//~ {
+			//~ Continue &= ~Flags[Index];
+		//~ }
+	//~ }
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
@@ -2559,24 +2559,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
-	Buffer.SetPosition(Position);
-	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
-	if(Continue == true)
-	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
-		auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("[0-6] StreamNumber", FieldResult->GetValue())};
+	//~ Buffer.SetPosition(Position);
+	//~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
+	//~ if(Continue == true)
+	//~ {
+		//~ auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
+		//~ auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
+		//~ auto FieldValue{Result->GetValue()->AppendValue("[0-6] StreamNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
-	}
-	if(Continue == true)
-	{
-		auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0ull, 9))};
+		//~ UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	//~ }
+	//~ if(Continue == true)
+	//~ {
+		//~ auto ReservedResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length(0ull, 9))};
 		
-		Result->GetValue()->AppendValue("[7-15] Reserved", ReservedResult->GetValue());
-		Continue = ReservedResult->GetSuccess();
-	}
-	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+		//~ Result->GetValue()->AppendValue("[7-15] Reserved", ReservedResult->GetValue());
+		//~ Continue = ReservedResult->GetSuccess();
+	//~ }
+	//~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
@@ -2610,7 +2610,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_Flags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Position{Buffer.GetPosition()};
+	auto Start{Buffer.GetPosition()};
 	auto Continue{true};
 	
 	// reading
@@ -2622,41 +2622,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_Flags
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
-	Buffer.SetPosition(Position);
-	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
-	// reading
-	if(Continue == true)
-	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
-		auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("[0-6] StreamNumber", FieldResult->GetValue())};
+	//~ Buffer.SetPosition(Start);
+	//~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
+	//~ // reading
+	//~ if(Continue == true)
+	//~ {
+		//~ auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 7}}};
+		//~ auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
+		//~ auto FieldValue{Result->GetValue()->AppendValue("[0-6] StreamNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("[7-14] Reserved", FieldResult->GetValue())};
+		//~ UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	//~ }
+	//~ // reading
+	//~ if(Continue == true)
+	//~ {
+		//~ auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 8}}};
+		//~ auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		//~ auto FieldValue{Result->GetValue()->AppendValue("[7-14] Reserved", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetAny("[7-14] Reserved")) == 0x00;
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
-		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("[15] EncryptedContentFlag", FieldResult->GetValue())};
+		//~ UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	//~ }
+	//~ // interpretation
+	//~ if(Continue == true)
+	//~ {
+		//~ Continue = std::experimental::any_cast< std::uint8_t >(Result->GetAny("[7-14] Reserved")) == 0x00;
+	//~ }
+	//~ // reading
+	//~ if(Continue == true)
+	//~ {
+		//~ auto FieldReader{Inspection::Reader{Buffer, Inspection::Length{0, 1}}};
+		//~ auto FieldResult{Get_Boolean_1Bit(FieldReader)};
+		//~ auto FieldValue{Result->GetValue()->AppendValue("[15] EncryptedContentFlag", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
-	}
-	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
+		//~ UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	//~ }
+	//~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
