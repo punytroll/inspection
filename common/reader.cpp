@@ -6,6 +6,13 @@ Inspection::Reader::Reader(Inspection::Buffer & Buffer) :
 {
 }
 
+Inspection::Reader::Reader(Inspection::Reader & Reader) :
+	Inspection::Reader(Reader._Buffer, Reader._PositionInBuffer, Reader._BoundaryInBuffer - Reader._PositionInBuffer)
+{
+	assert(Reader._PositionInBuffer <= Reader._BoundaryInBuffer);
+	assert(_BoundaryInBuffer <= Reader._BoundaryInBuffer);
+}
+
 Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length & Length) :
 	Inspection::Reader(Buffer, Buffer.GetPosition(), Length)
 {
