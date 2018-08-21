@@ -17,7 +17,6 @@ namespace Inspection
 		
 		Reader(Inspection::Buffer & Buffer);
 		Reader(Inspection::Buffer & Buffer, const Inspection::Length & Length);
-		Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
 		Reader(Inspection::Reader & Reader, const Inspection::Length & Length);
 		std::uint8_t Get0Bits(void);
 		std::uint8_t Get1Bits(void);
@@ -61,6 +60,7 @@ namespace Inspection
 			return _PositionInBuffer + Length <= _BoundaryInBuffer;
 		}
 	private:
+		Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
 		Inspection::Length _BoundaryInBuffer;
 		Inspection::Buffer & _Buffer;
 		Inspection::Length _OffsetInBuffer;
