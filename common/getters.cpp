@@ -4061,7 +4061,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			{
 				auto BlockSizeValue{Result->GetValue("BlockSize")};
 				
-				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny("BlockSizeExplicit"))));
+				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny("BlockSizeExplicit")) + 1));
 				BlockSizeValue->AppendTag("unit", "samples"s);
 			}
 		}
@@ -4077,7 +4077,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			{
 				auto BlockSizeValue{Result->GetValue("BlockSize")};
 				
-				BlockSizeValue->AppendTag("value", std::experimental::any_cast< std::uint16_t >(Result->GetAny("BlockSizeExplicit")));
+				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint16_t >(Result->GetAny("BlockSizeExplicit")) + 1));
 				BlockSizeValue->AppendTag("unit", "samples"s);
 			}
 		}
@@ -4894,7 +4894,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	{
 		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 5}};
 		auto FieldResult{Get_SignedInteger_5Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientShift", Result->GetValue())};
+		auto FieldValue{Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientShift", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
@@ -5131,16 +5131,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		{
 			Inspection::Reader FieldReader{Buffer};
 			auto FieldResult{Get_Array_EndedByNumberOfElements(FieldReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
-			//~ auto FieldValue{Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues())};
 			
+			//~ Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
 			Inspection::Reader FieldReader{Buffer};
 			auto FieldResult{Get_Array_EndedByNumberOfElements(FieldReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
-			//~ auto FieldValue{Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues())};
 			
+			//~ Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 	}
@@ -11692,6 +11692,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(In
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 12:
 		{
@@ -11700,6 +11702,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(In
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	default:
 		{
@@ -11896,6 +11900,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 1:
 		{
@@ -11904,6 +11910,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 2:
 		{
@@ -11912,6 +11920,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 3:
 		{
@@ -11920,6 +11930,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 4:
 		{
@@ -11928,6 +11940,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 5:
 		{
@@ -11936,6 +11950,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 6:
 		{
@@ -11944,6 +11960,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 7:
 		{
@@ -11952,6 +11970,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 8:
 		{
@@ -11960,6 +11980,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 9:
 		{
@@ -11968,6 +11990,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 10:
 		{
@@ -11976,6 +12000,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 11:
 		{
@@ -11984,6 +12010,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 12:
 		{
@@ -11992,6 +12020,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 13:
 		{
@@ -12000,6 +12030,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 14:
 		{
@@ -12008,6 +12040,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 15:
 		{
@@ -12016,6 +12050,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 16:
 		{
@@ -12024,6 +12060,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	case 17:
 		{
@@ -12032,6 +12070,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			
+			break;
 		}
 	default:
 		{
