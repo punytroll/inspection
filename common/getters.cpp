@@ -351,21 +351,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements(Inspection::Buffer & Buffer, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Getter, std::uint64_t NumberOfElements)
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::uint64_t NumberOfElements)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto ElementIndex{0ull};
+	auto Continue{true};
 	
 	while(true)
 	{
 		if(ElementIndex < NumberOfElements)
 		{
-			auto ElementResult{Getter(Buffer)};
+			Inspection::Reader ElementReader{Reader};
+			auto ElementResult{Getter(ElementReader)};
 			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
 			
 			ElementValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
 			ElementIndex++;
-			if(ElementResult->GetSuccess() == false)
+			UpdateState(Continue, Reader, ElementResult, ElementReader);
+			if(Continue == false)
 			{
 				Result->GetValue()->PrependTag("ended by failure"s);
 				
@@ -375,14 +378,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 		else
 		{
 			Result->GetValue()->PrependTag("ended by number of elements"s);
-			Result->SetSuccess(true);
 			
 			break;
 		}
 	}
 	Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (NumberOfElements));
 	Result->GetValue()->PrependTag("array"s);
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3422,7 +3426,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Footer(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CRC-16", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -3758,7 +3763,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		}
 		else if(BlockSize == 0x07)
 		{
-			auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+			auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("BlockSizeExplicit", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -4225,7 +4231,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_SeekPo
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfSamplesInTargetFrame", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -4345,7 +4352,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MinimumBlockSize", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -4353,7 +4361,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MaximumBlockSize", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -4455,60 +4464,58 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
-	std::shared_ptr< Inspection::Value > SubframeHeaderValue;
 	
+	// reading
 	if(Continue == true)
 	{
-		auto SubframeHeaderResult{Get_FLAC_Subframe_Header(Buffer)};
+		auto FieldResult{Get_FLAC_Subframe_Header(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		SubframeHeaderValue = Result->GetValue()->AppendValue("Header", SubframeHeaderResult->GetValue());
-		Continue = SubframeHeaderResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
 	if(Continue == true)
 	{
-		try
+		auto SubframeType{std::experimental::any_cast< const std::string & >(Result->GetValue("Header")->GetValue("Type")->GetTagAny("interpretation"))};
+		
+		if(SubframeType == "SUBFRAME_CONSTANT")
 		{
-			auto SubframeType{std::experimental::any_cast< const std::string & >(SubframeHeaderValue->GetValue("Type")->GetTagAny("interpretation"))};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_FLAC_Subframe_Data_Constant(FieldReader, BitsPerSample)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			std::unique_ptr< Inspection::Result > SubframeDataResult;
-			
-			if(SubframeType == "SUBFRAME_CONSTANT")
-			{
-				SubframeDataResult = Get_FLAC_Subframe_Data_Constant(Buffer, BitsPerSample);
-			}
-			else if(SubframeType == "SUBFRAME_FIXED")
-			{
-				auto Order{static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(SubframeHeaderValue->GetValue("Type")->GetValueAny("Order")))};
-				
-				SubframeDataResult = Get_FLAC_Subframe_Data_Fixed(Buffer, FrameBlockSize, BitsPerSample, Order);
-			}
-			else if(SubframeType == "SUBFRAME_LPC")
-			{
-				auto Order{static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(SubframeHeaderValue->GetValue("Type")->GetValueAny("Order")) + 1)};
-				
-				SubframeDataResult = Get_FLAC_Subframe_Data_LPC(Buffer, FrameBlockSize, BitsPerSample, Order);
-			}
-			else
-			{
-				throw Inspection::NotImplementedException(SubframeType);
-			}
-			Result->GetValue()->AppendValue("Data", SubframeDataResult->GetValue());
-			Continue = SubframeDataResult->GetSuccess();
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
-		catch(std::invalid_argument & Exception)
+		else if(SubframeType == "SUBFRAME_FIXED")
+		{
+			auto Order{static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("Type")->GetValueAny("Order")))};
+			auto FieldResult{Get_FLAC_Subframe_Data_Fixed(Buffer, FrameBlockSize, BitsPerSample, Order)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(SubframeType == "SUBFRAME_LPC")
+		{
+			auto Order{static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("Type")->GetValueAny("Order")) + 1)};
+			auto FieldResult{Get_FLAC_Subframe_Data_LPC(Buffer, FrameBlockSize, BitsPerSample, Order)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else
 		{
 			Continue = false;
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Constant(Inspection::Buffer & Buffer, std::uint8_t BitsPerSample)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Constant(Inspection::Reader & Reader, std::uint8_t BitsPerSample)
 {
-	return Get_UnsignedInteger_BigEndian(Buffer, BitsPerSample);
+	return Get_UnsignedInteger_BigEndian(Reader, BitsPerSample);
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
@@ -4519,10 +4526,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(I
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedIntegers_BigEndian(Buffer, BitsPerSample, PredictorOrder)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_UnsignedIntegers_BigEndian(FieldReader, BitsPerSample, PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("WarmUpSamples", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -4547,10 +4555,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto WarmUpSamplesResult{Get_UnsignedIntegers_BigEndian(Buffer, BitsPerSample, PredictorOrder)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_UnsignedIntegers_BigEndian(FieldReader, BitsPerSample, PredictorOrder)};
+		auto FieldValue{Result->GetValue()->AppendValue("WarmUpSamples", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("WarmUpSamples", WarmUpSamplesResult->GetValue());
-		Continue = WarmUpSamplesResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -4588,10 +4597,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_SignedIntegers_BigEndian(Buffer, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_SignedIntegers_BigEndian(FieldReader, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("PredictorCoefficients", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -4815,17 +4825,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		
 		if(ArrayIndex == 0)
 		{
-			auto FieldResult{Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_Array_EndedByNumberOfElements(FieldReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
 			//~ auto FieldValue{Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
-			auto FieldResult{Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_Array_EndedByNumberOfElements(FieldReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
 			//~ auto FieldValue{Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 	}
 	// finalization
@@ -8608,7 +8620,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataLength", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -11352,33 +11365,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits)
 {
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
 	switch(Bits)
 	{
 	case 1:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 1}};
 			auto FieldResult{Get_SignedInteger_1Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 12:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 12}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 12}};
 			auto FieldResult{Get_SignedInteger_12Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	default:
 		{
 			throw NotImplementedException("Reading " + to_string_cast(Bits) + " bits as a signed integer is not yet implemented in the generic function.");
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspection::Reader & Reader)
@@ -11488,27 +11508,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_Little
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEncoded(Inspection::Buffer & Buffer, std::uint8_t RiceParameter)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEncoded(Inspection::Reader & Reader, std::uint8_t RiceParameter)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
+		Inspection::Reader FieldReader{Reader};
 		auto FieldResult{Get_UnsignedInteger_32Bit_AlternativeUnary(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MostSignificantBits", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_BigEndian(Buffer, RiceParameter)};
+		Inspection::Reader FieldReader{Reader};
+		auto FieldResult{Get_UnsignedInteger_BigEndian(FieldReader, RiceParameter)};
 		auto FieldValue{Result->GetValue()->AppendValue("LeastSignificantBits", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -11538,182 +11559,178 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEn
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedIntegers_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits, std::uint64_t NumberOfElements)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedIntegers_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits, std::uint64_t NumberOfElements)
 {
-	return Get_Array_EndedByNumberOfElements(Buffer, std::bind(Inspection::Get_SignedInteger_BigEndian, std::placeholders::_1, Bits), NumberOfElements);
+	return Get_Array_EndedByNumberOfElements(Reader, std::bind(Inspection::Get_SignedInteger_BigEndian, std::placeholders::_1, Bits), NumberOfElements);
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits)
 {
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
 	switch(Bits)
 	{
 	case 0:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 0}};
 			auto FieldResult{Get_UnsignedInteger_0Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 1:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 1}};
 			auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 2:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 2}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 2}};
 			auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 3:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 3}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 3}};
 			auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 4:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 4}};
 			auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 5:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 5}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 5}};
 			auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 6:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 6}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 6}};
 			auto FieldResult{Get_UnsignedInteger_6Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 7:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 7}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 7}};
 			auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 8:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
 			auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 9:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 9}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 9}};
 			auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 10:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 10}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 10}};
 			auto FieldResult{Get_UnsignedInteger_10Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 11:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 11}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 11}};
 			auto FieldResult{Get_UnsignedInteger_11Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 12:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 12}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 12}};
 			auto FieldResult{Get_UnsignedInteger_12Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 13:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 13}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 13}};
 			auto FieldResult{Get_UnsignedInteger_13Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 14:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 14}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 14}};
 			auto FieldResult{Get_UnsignedInteger_14Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 15:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 15}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 15}};
 			auto FieldResult{Get_UnsignedInteger_15Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 16:
 		{
-			return Get_UnsignedInteger_16Bit_BigEndian(Buffer);
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
+			auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	case 17:
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 17}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 17}};
 			auto FieldResult{Get_UnsignedInteger_17Bit_BigEndian(FieldReader)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Buffer.SetPosition(FieldReader);
-			
-			return FieldResult;
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	default:
 		{
 			throw NotImplementedException("Reading " + to_string_cast(Bits) + " bits as an unsigned integer is not yet implemented in the generic function.");
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_0Bit(Inspection::Reader & Reader)
@@ -12064,24 +12081,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_15Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(0ull, 16) == true)
+	// reading
+	if(Reader.Has(Inspection::Length{0, 16}) == true)
 	{
 		std::uint16_t Value{0ul};
 		
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("16bit"s);
 		Result->GetValue()->AppendTag("big endian"s);
-		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	else
+	{
+		Continue = false;
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -12553,14 +12577,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedIntegers_BigEndian(Inspection::Buffer & Buffer, std::uint8_t Bits, std::uint64_t NumberOfElements)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedIntegers_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits, std::uint64_t NumberOfElements)
 {
-	return Get_Array_EndedByNumberOfElements(Buffer, std::bind(Inspection::Get_UnsignedInteger_BigEndian, std::placeholders::_1, Bits), NumberOfElements);
+	return Get_Array_EndedByNumberOfElements(Reader, std::bind(Inspection::Get_UnsignedInteger_BigEndian, std::placeholders::_1, Bits), NumberOfElements);
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedIntegers_16Bit_BigEndian(Inspection::Buffer & Buffer, std::uint64_t NumberOfElements)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedIntegers_16Bit_BigEndian(Inspection::Reader & Reader, std::uint64_t NumberOfElements)
 {
-	return Get_Array_EndedByNumberOfElements(Buffer, Get_UnsignedInteger_16Bit_BigEndian, NumberOfElements);
+	return Get_Array_EndedByNumberOfElements(Reader, Get_UnsignedInteger_16Bit_BigEndian, NumberOfElements);
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer)
