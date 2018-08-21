@@ -861,29 +861,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEndian(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto UnsignedInteger16BitResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(UnsignedInteger16BitResult->GetValue());
-	if(UnsignedInteger16BitResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto UnsignedInteger16Bit{std::experimental::any_cast< std::uint16_t >(UnsignedInteger16BitResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto UnsignedInteger16Bit{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
 		
 		if(UnsignedInteger16Bit == 0x0000)
 		{
 			Result->GetValue()->PrependTag("value", false);
-			Result->SetSuccess(true);
 		}
 		else if(UnsignedInteger16Bit == 0x0001)
 		{
 			Result->GetValue()->PrependTag("value", true);
-			Result->SetSuccess(true);
 		}
 		else
 		{
 			Result->GetValue()->PrependTag("value", "<no interpretation>"s);
-			Result->SetSuccess(false);
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -931,52 +939,69 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEn
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TypeResult{Get_ASF_CodecEntryType(Buffer)};
+	auto Continue{true};
 	
-	TypeResult->GetValue()->AppendValue("Type", TypeResult->GetValue());
-	if(TypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto CodecNameLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_ASF_CodecEntryType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Type", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("CodecNameLength", CodecNameLengthResult->GetValue());
-		if(CodecNameLengthResult->GetSuccess() == true)
-		{
-			auto CodecNameLength{std::experimental::any_cast< std::uint16_t >(CodecNameLengthResult->GetAny())};
-			auto CodecNameResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecNameLength)};
-			
-			Result->GetValue()->AppendValue("CodecName", CodecNameResult->GetValue());
-			if(CodecNameResult->GetSuccess() == true)
-			{
-				auto CodecDescriptionLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("CodecDescriptionLength", CodecDescriptionLengthResult->GetValue());
-				if(CodecDescriptionLengthResult->GetSuccess() == true)
-				{
-					auto CodecDescriptionLength{std::experimental::any_cast< std::uint16_t >(CodecDescriptionLengthResult->GetAny())};
-					auto CodecDescriptionResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecDescriptionLength)};
-					
-					Result->GetValue()->AppendValue("CodecDescription", CodecDescriptionResult->GetValue());
-					if(CodecDescriptionResult->GetSuccess() == true)
-					{
-						auto CodecInformationLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-						
-						Result->GetValue()->AppendValue("CodecInformation Length", CodecInformationLengthResult->GetValue());
-						if(CodecInformationLengthResult->GetSuccess() == true)
-						{
-							auto CodecInformationLength{std::experimental::any_cast< std::uint16_t >(CodecInformationLengthResult->GetAny())};
-							auto CodecInformationResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, CodecInformationLength)};
-							
-							Result->GetValue()->AppendValue("CodecInformation", CodecInformationResult->GetValue());
-							if(CodecInformationResult->GetSuccess() == true)
-							{
-								Result->SetSuccess(true);
-							}
-						}
-					}
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodecNameLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto CodecNameLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CodecNameLength"))};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecNameLength)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodecName", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodecDescriptionLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto CodecDescriptionLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CodecDescriptionLength"))};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Buffer, CodecDescriptionLength)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodecDescription", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodecInformationLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto CodecInformationLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CodecInformationLength"))};
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, CodecInformationLength)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodecInformation", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -985,12 +1010,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TypeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(TypeResult->GetValue());
-	if(TypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto Type{std::experimental::any_cast< std::uint16_t >(TypeResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto Type{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
 		
 		if(Type == 0x0001)
 		{
@@ -1008,8 +1041,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 		{
 			Result->GetValue()->PrependTag("interpretation", "<no interpretation>"s);
 		}
-		Result->SetSuccess(true);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1243,49 +1277,53 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto DataTypeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(DataTypeResult->GetValue());
-	if(DataTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto DataType{std::experimental::any_cast< std::uint16_t >(DataTypeResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto DataType{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
 		
 		if(DataType == 0x0000)
 		{
 			Result->GetValue()->PrependTag("interpretation", "Unicode string"s);
-			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0001)
 		{
 			Result->GetValue()->PrependTag("interpretation", "Byte array"s);
-			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0002)
 		{
 			Result->GetValue()->PrependTag("interpretation", "Boolean"s);
-			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0003)
 		{
 			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 32bit"s);
-			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0004)
 		{
 			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 64bit"s);
-			Result->SetSuccess(true);
 		}
 		else if(DataType == 0x0005)
 		{
 			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 16bit"s);
-			Result->SetSuccess(true);
 		}
 		else
 		{
 			Result->GetValue()->PrependTag("interpretation", "<no interpretation>"s);
-			Result->SetSuccess(false);
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1294,38 +1332,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::B
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto NameLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("NameLength", NameLengthResult->GetValue());
-	if(NameLengthResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto NameLength{std::experimental::any_cast< std::uint16_t >(NameLengthResult->GetAny())};
-		auto NameResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, NameLength)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("NameLength", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Name", NameResult->GetValue());
-		if(NameResult->GetSuccess() == true)
-		{
-			auto ValueDataTypeResult{Get_ASF_DataType(Buffer)};
-			
-			Result->GetValue()->AppendValue("ValueDataType", ValueDataTypeResult->GetValue());
-			if(ValueDataTypeResult->GetSuccess() == true)
-			{
-				auto ValueLengthResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("ValueLength", ValueLengthResult->GetValue());
-				if(ValueLengthResult->GetSuccess() == true)
-				{
-					auto ValueLength{std::experimental::any_cast< std::uint16_t >(ValueLengthResult->GetAny())};
-					auto ValueDataType{std::experimental::any_cast< const std::string & >(ValueDataTypeResult->GetValue()->GetTagAny("interpretation"))};
-					auto Name{std::experimental::any_cast< const std::string & >(NameResult->GetAny())};
-					auto DataValueResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Buffer, ValueLength, ValueDataType, Name)};
-					
-					Result->GetValue()->AppendValue("Value", DataValueResult->GetValue());
-					Result->SetSuccess(DataValueResult->GetSuccess());
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto NameLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("NameLength"))};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, NameLength)};
+		auto FieldValue{Result->GetValue()->AppendValue("Name", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ASF_DataType(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ValueDataType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ValueLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto ValueLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("ValueLength"))};
+		auto ValueDataType{std::experimental::any_cast< const std::string & >(Result->GetValue("ValueDataType")->GetTagAny("interpretation"))};
+		auto Name{std::experimental::any_cast< const std::string & >(Result->GetAny("Name"))};
+		auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Buffer, ValueLength, ValueDataType, Name)};
+		auto FieldValue{Result->GetValue()->AppendValue("Value", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1334,83 +1388,123 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Buffer & Buffer, const Inspection::Length & Length, const std::string & DataType, const std::string & Name)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(DataType == "Unicode string")
+	// reading
+	if(Continue == true)
 	{
-		auto UnicodeStringResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
-		
-		Result->SetValue(UnicodeStringResult->GetValue());
-		Result->SetSuccess(UnicodeStringResult->GetSuccess());
-		if(Name == "WM/MediaPrimaryClassID")
+		if(DataType == "Unicode string")
 		{
-			auto String{std::experimental::any_cast< const std::string & >(Result->GetAny())};
-			auto GUID{Inspection::Get_GUID_FromString_WithCurlyBraces(String)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("GUID", GUID);
-			Result->GetValue("GUID")->AppendTag("guid"s);
-			Result->GetValue("GUID")->AppendTag("string"s);
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				if(Name == "WM/MediaPrimaryClassID")
+				{
+					auto String{std::experimental::any_cast< const std::string & >(Result->GetAny())};
+					auto GUID{Inspection::Get_GUID_FromString_WithCurlyBraces(String)};
+					
+					Result->GetValue()->AppendValue("GUID", GUID);
+					Result->GetValue("GUID")->AppendTag("guid"s);
+					Result->GetValue("GUID")->AppendTag("string"s);
+					
+					auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
+					
+					Result->GetValue("GUID")->AppendTag("interpretation", GUIDInterpretation);
+				}
+			}
+		}
+		else if(DataType == "Byte array")
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
-			
-			Result->GetValue("GUID")->AppendTag("interpretation", GUIDInterpretation);
+			UpdateState(Continue, FieldResult);
+		}
+		else if(DataType == "Boolean")
+		{
+			if(Length == Inspection::Length{4, 0})
+			{
+				auto FieldResult{Get_ASF_Boolean_32Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 32bit")
+		{
+			if(Length == Inspection::Length{4, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 64bit")
+		{
+			if(Length == Inspection::Length{8, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+				// interpretation
+				if(Continue == true)
+				{
+					if(Name == "WM/EncodingTime")
+					{
+						auto UnsignedInteger64Bit{std::experimental::any_cast< std::uint64_t >(Result->GetAny())};
+						auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
+						
+						Result->GetValue()->AppendValue("DateTime", DateTime);
+						Result->GetValue("DateTime")->AppendTag("date and time"s);
+						Result->GetValue("DateTime")->AppendTag("from Microsoft filetime"s);
+					}
+				}
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 16bit")
+		{
+			if(Length == Inspection::Length{2, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The type \"" + DataType + "\" is unknown.");
+			Continue = false;
 		}
 	}
-	else if(DataType == "Byte array")
-	{
-		auto ByteArrayResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
-		
-		Result->SetValue(ByteArrayResult->GetValue());
-		Result->SetSuccess(ByteArrayResult->GetSuccess());
-	}
-	else if(DataType == "Boolean")
-	{
-		assert(Length == Inspection::Length(4ull, 0));
-		
-		auto BooleanResult{Get_ASF_Boolean_32Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(BooleanResult->GetValue());
-		Result->SetSuccess(BooleanResult->GetSuccess());
-	}
-	else if(DataType == "Unsigned integer 32bit")
-	{
-		assert(Length == Inspection::Length(4ull, 0));
-		
-		auto UnsignedInteger32BitResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger32BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger32BitResult->GetSuccess());
-	}
-	else if(DataType == "Unsigned integer 64bit")
-	{
-		assert(Length == Inspection::Length(8ull, 0));
-		
-		auto UnsignedInteger64BitResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger64BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger64BitResult->GetSuccess());
-		if(Name == "WM/EncodingTime")
-		{
-			auto UnsignedInteger64Bit{std::experimental::any_cast< std::uint64_t >(Result->GetAny())};
-			auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
-			
-			Result->GetValue()->AppendValue("DateTime", DateTime);
-			Result->GetValue("DateTime")->AppendTag("date and time"s);
-			Result->GetValue("DateTime")->AppendTag("from Microsoft filetime"s);
-		}
-	}
-	else if(DataType == "Unsigned integer 16bit")
-	{
-		assert(Length == Inspection::Length(2ull, 0));
-		
-		auto UnsignedInteger16BitResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger16BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger16BitResult->GetSuccess());
-	}
-	else
-	{
-		Result->GetValue()->SetAny("<unknown type>"s);
-	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1419,28 +1513,30 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescriptionObjectData(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ContentDescriptorsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("ContentDescriptorsCount", ContentDescriptorsCountResult->GetValue());
-	if(ContentDescriptorsCountResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ContentDescriptorsCount", FieldResult->GetValue())};
 		
-		auto ContentDescriptorsCount{std::experimental::any_cast< std::uint16_t >(ContentDescriptorsCountResult->GetAny())};
+		UpdateState(Continue, FieldResult);
+	}
+	if(Continue == true)
+	{
+		auto ContentDescriptorsCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("ContentDescriptorsCount"))};
 		
-		for(auto ContentDescriptorsIndex = 0; ContentDescriptorsIndex < ContentDescriptorsCount; ++ContentDescriptorsIndex)
+		for(auto ContentDescriptorsIndex = 0; (Continue == true) && (ContentDescriptorsIndex < ContentDescriptorsCount); ++ContentDescriptorsIndex)
 		{
-			auto ContentDescriptorResult{Get_ASF_ExtendedContentDescription_ContentDescriptor(Buffer)};
+			auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("ContentDescriptor", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("ContentDescriptor", ContentDescriptorResult->GetValue());
-			if(ContentDescriptorResult->GetSuccess() == false)
-			{
-				Result->SetSuccess(false);
-				
-				break;
-			}
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1486,125 +1582,160 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto StartTimeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("StartTime", StartTimeResult->GetValue());
-	Result->GetValue("StartTime")->PrependTag("milliseconds"s);
-	if(StartTimeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto EndTimeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("StartTime", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("EndTime", EndTimeResult->GetValue());
-		Result->GetValue("EndTime")->PrependTag("milliseconds"s);
-		if(EndTimeResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+		FieldValue->PrependTag("unit", "milliseconds"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("EndTime", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+		FieldValue->PrependTag("unit", "milliseconds"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("DataBitrate", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+		FieldValue->PrependTag("unit", "bits per second"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BufferSize", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+		FieldValue->PrependTag("unit", "milliseconds"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("InitialBufferFullness", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+		FieldValue->PrependTag("unit", "milliseconds"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AlternateDataBitrate", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+		FieldValue->PrependTag("unit", "bits per second"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AlternateBufferSize", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+		FieldValue->PrependTag("unit", "milliseconds"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AlternateInitialBufferFullness", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+		FieldValue->PrependTag("unit", "milliseconds"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("MaximumObjectSize", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ASF_ExtendedStreamPropertiesObject_Flags(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("StreamNumber", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("StreamLanguageIndex", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AverageTimePerFrame", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("StreamNameCount", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("PayloadExtensionSystemCount", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// verification
+	if(Continue == true)
+	{
+		auto StreamNameCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("StreamNameCount"))};
+		auto PayloadExtensionSystemCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("PayloadExtensionSystemCount"))};
+		
+		if((StreamNameCount != 0) || (PayloadExtensionSystemCount != 0))
 		{
-			auto DataBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("DataBitrate", DataBitrateResult->GetValue());
-			Result->GetValue("DataBitrate")->PrependTag("bits per second"s);
-			if(DataBitrateResult->GetSuccess() == true)
-			{
-				auto BufferSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("BufferSize", BufferSizeResult->GetValue());
-				Result->GetValue("BufferSize")->PrependTag("milliseconds"s);
-				if(BufferSizeResult->GetSuccess() == true)
-				{
-					auto InitialBufferFullnessResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-					
-					Result->GetValue()->AppendValue("InitialBufferFullness", InitialBufferFullnessResult->GetValue());
-					Result->GetValue("InitialBufferFullness")->PrependTag("milliseconds"s);
-					if(InitialBufferFullnessResult->GetSuccess() == true)
-					{
-						auto AlternateDataBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-						
-						Result->GetValue()->AppendValue("AlternateDataBitrate", AlternateDataBitrateResult->GetValue());
-						Result->GetValue("AlternateDataBitrate")->PrependTag("bits per second"s);
-						if(AlternateDataBitrateResult->GetSuccess() == true)
-						{
-							auto AlternateBufferSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-							
-							Result->GetValue()->AppendValue("AlternateBufferSize", AlternateBufferSizeResult->GetValue());
-							Result->GetValue("AlternateBufferSize")->PrependTag("milliseconds"s);
-							if(AlternateBufferSizeResult->GetSuccess() == true)
-							{
-								auto AlternateInitialBufferFullnessResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-								
-								Result->GetValue()->AppendValue("AlternateInitialBufferFullness", AlternateInitialBufferFullnessResult->GetValue());
-								Result->GetValue("AlternateInitialBufferFullness")->PrependTag("milliseconds"s);
-								if(AlternateInitialBufferFullnessResult->GetSuccess() == true)
-								{
-									auto MaximumObjectSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-									
-									Result->GetValue()->AppendValue("MaximumObjectSize", MaximumObjectSizeResult->GetValue());
-									if(MaximumObjectSizeResult->GetSuccess() == true)
-									{
-										auto FlagsResult{Get_ASF_ExtendedStreamPropertiesObject_Flags(Buffer)};
-										
-										Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
-										if(FlagsResult->GetSuccess() == true)
-										{
-											auto StreamNumberResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-											
-											Result->GetValue()->AppendValue("StreamNumber", StreamNumberResult->GetValue());
-											if(StreamNumberResult->GetSuccess() == true)
-											{
-												auto StreamLanguageIndexResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-												
-												Result->GetValue()->AppendValue("StreamLanguageIndex", StreamLanguageIndexResult->GetValue());
-												if(StreamLanguageIndexResult->GetSuccess() == true)
-												{
-													auto AverageTimePerFrameResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
-													
-													Result->GetValue()->AppendValue("AverageTimePerFrame", AverageTimePerFrameResult->GetValue());
-													if(AverageTimePerFrameResult->GetSuccess() == true)
-													{
-														auto StreamNameCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-														
-														Result->GetValue()->AppendValue("StreamNameCount", StreamNameCountResult->GetValue());
-														if(StreamNameCountResult->GetSuccess() == true)
-														{
-															auto PayloadExtensionSystemCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-															
-															Result->GetValue()->AppendValue("PayloadExtensionSystemCount", PayloadExtensionSystemCountResult->GetValue());
-															if(PayloadExtensionSystemCountResult->GetSuccess() == true)
-															{
-																auto StreamNameCount{std::experimental::any_cast< std::uint16_t >(StreamNameCountResult->GetAny())};
-																auto PayloadExtensionSystemCount{std::experimental::any_cast< std::uint16_t >(PayloadExtensionSystemCountResult->GetAny())};
-																
-																if((StreamNameCount == 0) && (PayloadExtensionSystemCount == 0))
-																{
-																	if(Buffer.GetPosition() < Boundary)
-																	{
-																		auto StreamPropertiesObjectResult{Get_ASF_StreamPropertiesObject(Buffer)};
-																		
-																		Result->GetValue()->AppendValue("StreamPropertiesObject", StreamPropertiesObjectResult->GetValue());
-																		Result->SetSuccess(StreamPropertiesObjectResult->GetSuccess());
-																	}
-																	else
-																	{
-																		Result->SetSuccess(true);
-																	}
-																}
-																else
-																{
-																	throw std::runtime_error("Not implemented.");
-																}
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			throw Inspection::NotImplementedException("StreamNameCount != 0 || PayloadExtensionSystemCount != 0");
 		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		if(Buffer.GetPosition() < Boundary)
+		{
+			auto FieldResult{Get_ASF_StreamPropertiesObject(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("StreamPropertiesObject", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -1631,50 +1762,58 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_GUID(Inspection::Buffe
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectData(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ReservedField1Result{Get_ASF_GUID(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("ReservedField1", ReservedField1Result->GetValue());
-	if(ReservedField1Result->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto Reserved1Field{std::experimental::any_cast< Inspection::GUID >(ReservedField1Result->GetAny())};
+		auto FieldResult{Get_ASF_GUID(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ReservedField1", FieldResult->GetValue())};
 		
-		if(Reserved1Field == Inspection::g_ASF_Reserved1GUID)
+		UpdateState(Continue, FieldResult);
+	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< Inspection::GUID >(Result->GetAny("ReservedField1")) == Inspection::g_ASF_Reserved1GUID;
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ReservedField2", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< std::uint16_t >(Result->GetAny("ReservedField2")) == 0x0006;
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("HeaderExtensionDataSize", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto HeaderExtensionDataSize{std::experimental::any_cast< std::uint32_t >(Result->GetAny("HeaderExtensionDataSize"))};
+		auto Boundary{Buffer.GetPosition() + Inspection::Length{HeaderExtensionDataSize, 0}};
+		
+		while((Continue == true) && (Buffer.GetPosition() < Boundary))
 		{
-			auto ReservedField2Result{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+			auto FieldResult{Get_ASF_Object(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("AdditionalExtendedHeader", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("ReservedField2", ReservedField2Result->GetValue());
-			if(ReservedField2Result->GetSuccess() == true)
-			{
-				auto ReservedField2{std::experimental::any_cast< std::uint16_t >(ReservedField2Result->GetAny())};
-				
-				if(ReservedField2 == 0x0006)
-				{
-					auto HeaderExtensionDataSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-					
-					Result->GetValue()->AppendValue("HeaderExtensionDataSize", HeaderExtensionDataSizeResult->GetValue());
-					if(HeaderExtensionDataSizeResult->GetSuccess() == true)
-					{
-						auto HeaderExtensionDataSize{std::experimental::any_cast< std::uint32_t >(HeaderExtensionDataSizeResult->GetAny())};
-						Inspection::Length Boundary{Buffer.GetPosition() + HeaderExtensionDataSize};
-						
-						Result->SetSuccess(true);
-						while(Buffer.GetPosition() < Boundary)
-						{
-							auto AdditionalExtendedHeaderObjectResult{Get_ASF_Object(Buffer)};
-							
-							Result->GetValue()->AppendValue("AdditionalExtendedHeader", AdditionalExtendedHeaderObjectResult->GetValue());
-							if(AdditionalExtendedHeaderObjectResult->GetSuccess() == false)
-							{
-								Result->SetSuccess(false);
-								
-								break;
-							}
-						}
-					}
-				}
-			}
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2111,78 +2250,119 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Buffer & Buffer, const std::string & Type, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Buffer & Buffer, const std::string & DataType, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(Type == "Unicode string")
+	// reading
+	if(Continue == true)
 	{
-		auto UnicodeStringResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
-		
-		Result->SetValue(UnicodeStringResult->GetValue());
-		Result->SetSuccess(UnicodeStringResult->GetSuccess());
+		if(DataType == "Unicode string")
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(DataType == "Byte array")
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(DataType == "Boolean")
+		{
+			if(Length == Inspection::Length{2, 0})
+			{
+				auto FieldResult{Get_ASF_Boolean_16Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 32bit")
+		{
+			if(Length == Inspection::Length{4, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 64bit")
+		{
+			if(Length == Inspection::Length{8, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 16bit")
+		{
+			if(Length == Inspection::Length{2, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "GUID")
+		{
+			if(Length == Inspection::Length{16, 0})
+			{
+				auto FieldResult{Get_GUID_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+				// interpretation
+				if(Continue == true)
+				{
+					auto GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetAny())};
+					auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
+					
+					Result->GetValue()->AppendTag("interpretation", GUIDInterpretation);
+				}
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{16, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The type \"" + DataType + "\" is unknown.");
+			Continue = false;
+		}
 	}
-	else if(Type == "Byte array")
-	{
-		auto ByteArrayResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
-		
-		Result->SetValue(ByteArrayResult->GetValue());
-		Result->SetSuccess(ByteArrayResult->GetSuccess());
-	}
-	else if(Type == "Boolean")
-	{
-		assert(Length == Inspection::Length(2ull, 0));
-		
-		auto BooleanResult{Get_ASF_Boolean_16Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(BooleanResult->GetValue());
-		Result->SetSuccess(BooleanResult->GetSuccess());
-	}
-	else if(Type == "Unsigned integer 32bit")
-	{
-		assert(Length == Inspection::Length(4ull, 0));
-		
-		auto UnsignedInteger32BitResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger32BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger32BitResult->GetSuccess());
-	}
-	else if(Type == "Unsigned integer 64bit")
-	{
-		assert(Length == Inspection::Length(8ull, 0));
-		
-		auto UnsignedInteger64BitResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger64BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger64BitResult->GetSuccess());
-	}
-	else if(Type == "Unsigned integer 16bit")
-	{
-		assert(Length == Inspection::Length(2ull, 0));
-		
-		auto UnsignedInteger16BitResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger16BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger16BitResult->GetSuccess());
-	}
-	else if(Type == "GUID")
-	{
-		assert(Length == Inspection::Length(16ull, 0));
-		
-		auto GUIDResult{Get_GUID_LittleEndian(Buffer)};
-		
-		Result->SetValue(GUIDResult->GetValue());
-		Result->SetSuccess(GUIDResult->GetSuccess());
-		
-		auto GUID{std::experimental::any_cast< const Inspection::GUID & >(GUIDResult->GetAny())};
-		auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
-		
-		Result->GetValue()->AppendTag("interpretation", GUIDInterpretation);
-	}
-	else
-	{
-		Result->GetValue()->SetAny("<unknown type>"s);
-	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2354,61 +2534,93 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_DescriptionRecord_Data(Inspection::Buffer & Buffer, const Inspection::Length & Length, const std::string & DataType)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(DataType == "Unicode string")
+	// reading
+	if(Continue == true)
 	{
-		auto UnicodeStringResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
-		
-		Result->SetValue(UnicodeStringResult->GetValue());
-		Result->SetSuccess(UnicodeStringResult->GetSuccess());
+		if(DataType == "Unicode string")
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(DataType == "Byte array")
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(DataType == "Boolean")
+		{
+			if(Length == Inspection::Length{2, 0})
+			{
+				auto FieldResult{Get_ASF_Boolean_16Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 32bit")
+		{
+			if(Length == Inspection::Length{4, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 64bit")
+		{
+			if(Length == Inspection::Length{8, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else if(DataType == "Unsigned integer 16bit")
+		{
+			if(Length == Inspection::Length{2, 0})
+			{
+				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Length) + ".");
+				Continue = false;
+			}
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The type \"" + DataType + "\" is unknown.");
+			Continue = false;
+		}
 	}
-	else if(DataType == "Byte array")
-	{
-		auto ByteArrayResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Length)};
-		
-		Result->SetValue(ByteArrayResult->GetValue());
-		Result->SetSuccess(ByteArrayResult->GetSuccess());
-	}
-	else if(DataType == "Boolean")
-	{
-		assert(Length == Inspection::Length(2ull, 0));
-		
-		auto BooleanResult{Get_ASF_Boolean_16Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(BooleanResult->GetValue());
-		Result->SetSuccess(BooleanResult->GetSuccess());
-	}
-	else if(DataType == "Unsigned integer 32bit")
-	{
-		assert(Length == Inspection::Length(4ull, 0));
-		
-		auto UnsignedInteger32BitResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger32BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger32BitResult->GetSuccess());
-	}
-	else if(DataType == "Unsigned integer 64bit")
-	{
-		assert(Length == Inspection::Length(8ull, 0));
-		
-		auto UnsignedInteger64BitResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger64BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger64BitResult->GetSuccess());
-	}
-	else if(DataType == "Unsigned integer 16bit")
-	{
-		assert(Length == Inspection::Length(2ull, 0));
-		
-		auto UnsignedInteger16BitResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-		
-		Result->SetValue(UnsignedInteger16BitResult->GetValue());
-		Result->SetSuccess(UnsignedInteger16BitResult->GetSuccess());
-	}
-	else
-	{
-		Result->GetValue()->SetAny("<unknown type>"s);
-	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2417,28 +2629,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObjectData(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto DescriptionRecordsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("DescriptionRecordsCount", DescriptionRecordsCountResult->GetValue());
-	if(DescriptionRecordsCountResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("DescriptionRecordsCount", FieldResult->GetValue())};
 		
-		auto DescriptionRecordsCount{std::experimental::any_cast< std::uint16_t >(DescriptionRecordsCountResult->GetAny())};
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto DescriptionRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("DescriptionRecordsCount"))};
 		
-		for(auto DescriptionRecordsIndex = 0; DescriptionRecordsIndex < DescriptionRecordsCount; ++DescriptionRecordsIndex)
+		for(auto DescriptionRecordsIndex = 0; (Continue == true) && (DescriptionRecordsIndex < DescriptionRecordsCount); ++DescriptionRecordsIndex)
 		{
-			auto DescriptionRecordResult{Get_ASF_MetadataObject_DescriptionRecord(Buffer)};
+			auto FieldResult{Get_ASF_MetadataObject_DescriptionRecord(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("DescriptionRecord", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("DescriptionRecord", DescriptionRecordResult->GetValue());
-			if(DescriptionRecordResult->GetSuccess() == false)
-			{
-				Result->SetSuccess(false);
-				
-				break;
-			}
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2630,21 +2845,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertiesObjectData(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto BitrateRecordsCountResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("BitrateRecordsCount", BitrateRecordsCountResult->GetValue());
-	if(BitrateRecordsCountResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto BitrateRecordsCount{std::experimental::any_cast< std::uint16_t >(BitrateRecordsCountResult->GetAny())};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitrateRecordsCount", FieldResult->GetValue())};
 		
-		for(auto BitrateRecordsIndex = 0; BitrateRecordsIndex < BitrateRecordsCount; ++BitrateRecordsIndex)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto BitrateRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("BitrateRecordsCount"))};
+		
+		for(auto BitrateRecordsIndex = 0; (Continue == true) && (BitrateRecordsIndex < BitrateRecordsCount); ++BitrateRecordsIndex)
 		{
-			auto BitrateRecordResult{Get_ASF_StreamBitrateProperties_BitrateRecord(Buffer)};
+			auto FieldResult{Get_ASF_StreamBitrateProperties_BitrateRecord(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("BitrateRecord", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("BitrateRecord", BitrateRecordResult->GetValue());
-			Result->SetSuccess(BitrateRecordResult->GetSuccess());
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2710,66 +2935,91 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_Flags
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FormatTagResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("FormatTag", FormatTagResult->GetValue());
-	if(FormatTagResult->GetSuccess() == true)
+	Result->GetValue()->AppendTag("AudioMedia"s);
+	Result->GetValue()->AppendTag("WAVEFORMATEX"s);
+	// reading
+	if(Continue == true)
 	{
-		auto NumberOfChannelsResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("FormatTag", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("NumberOfChannels", NumberOfChannelsResult->GetValue());
-		if(NumberOfChannelsResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("NumberOfChannels", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerSecond", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AverageNumberOfBytesPerSecond", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("BlockAlignment", FieldResult->GetValue())};
+		
+		FieldValue->PrependTag("unit", "bytes"s);
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FliedValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificDataSize", FieldResult->GetValue())};
+		
+		FieldValue->PrependTag("unit", "bytes"s);
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FormatTag{std::experimental::any_cast< const std::string & >(Result->GetValue("FormatTag")->GetTagAny("constant name"))};
+		auto CodecSpecificDataSize{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CodecSpecificDataSize"))};
+		
+		if(FormatTag == "WAVE_FORMAT_WMAUDIO2")
 		{
-			auto SamplesPerSecondResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Buffer, CodecSpecificDataSize)};
+			auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificData", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("SamplesPerSecond", SamplesPerSecondResult->GetValue());
-			if(SamplesPerSecondResult->GetSuccess() == true)
-			{
-				auto AverageNumberOfBytesPerSecondResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("AverageNumberOfBytesPerSecond", AverageNumberOfBytesPerSecondResult->GetValue());
-				if(AverageNumberOfBytesPerSecondResult->GetSuccess() == true)
-				{
-					auto BlockAlignmentResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-					
-					Result->GetValue()->AppendValue("BlockAlignment", BlockAlignmentResult->GetValue());
-					Result->GetValue("BlockAlignment")->PrependTag("block size in bytes"s);
-					if(BlockAlignmentResult->GetSuccess() == true)
-					{
-						auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-						
-						Result->GetValue()->AppendValue("BitsPerSample", BitsPerSampleResult->GetValue());
-						if(BitsPerSampleResult->GetSuccess() == true)
-						{
-							auto CodecSpecificDataSizeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-							
-							Result->GetValue()->AppendValue("CodecSpecificDataSize", CodecSpecificDataSizeResult->GetValue());
-							Result->GetValue("CodecSpecificDataSize")->PrependTag("bytes"s);
-							if(CodecSpecificDataSizeResult->GetSuccess() == true)
-							{
-								auto FormatTag{std::experimental::any_cast< const std::string & >(FormatTagResult->GetValue()->GetTagAny("constant name"))};
-								auto CodecSpecificDataSize{std::experimental::any_cast< std::uint16_t >(CodecSpecificDataSizeResult->GetAny())};
-								std::unique_ptr< Inspection::Result > CodecSpecificDataResult;
-								
-								if(FormatTag == "WAVE_FORMAT_WMAUDIO2")
-								{
-									CodecSpecificDataResult = Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Buffer, CodecSpecificDataSize);
-								}
-								else
-								{
-									CodecSpecificDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(CodecSpecificDataSize));
-								}
-								Result->GetValue()->AppendValue("CodecSpecificData", CodecSpecificDataResult->GetValue());
-								Result->SetSuccess(CodecSpecificDataResult->GetSuccess());
-								Result->GetValue()->AppendTag("AudioMedia"s);
-								Result->GetValue()->AppendTag("WAVEFORMATEX"s);
-							}
-						}
-					}
-				}
-			}
+			UpdateState(Continue, FieldResult);
+		}
+		else
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(CodecSpecificDataSize))};
+			auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificData", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -2778,26 +3028,43 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(Length == Inspection::Length(10ull, 0))
+	// verification
+	if(Continue == true)
 	{
-		auto SamplesPerBlockResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-		
-		Result->GetValue()->AppendValue("SamplesPerBlock", SamplesPerBlockResult->GetValue());
-		if(SamplesPerBlockResult->GetSuccess() == true)
+		if(Length != Inspection::Length{10, 0})
 		{
-			auto EncodeOptionsResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("EncodeOptions", EncodeOptionsResult->GetValue());
-			if(EncodeOptionsResult->GetSuccess() == true)
-			{
-				auto SuperBlockAlignResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("SuperBlockAlign", SuperBlockAlignResult->GetValue());
-				Result->SetSuccess(SuperBlockAlignResult->GetSuccess());
-			}
+			Result->GetValue()->AppendTag("error", "The length must be " + to_string_cast(Inspection::Length{10, 0}) + ", not " + to_string_cast(Length) + ".");
+			Continue = false;
 		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerBlock", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("EncodeOptions", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("SuperBlockAlign", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -10328,103 +10595,110 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_bi
 std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_FormatTag(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FormatTagResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(FormatTagResult->GetValue());
-	if(FormatTagResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		auto FormatTag{std::experimental::any_cast< std::uint16_t >(FormatTagResult->GetAny())};
+		UpdateState(Continue, FieldResult);
+	}
+	if(Continue == true)
+	{
+		auto FormatTag{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
 		
 		switch(FormatTag)
 		{
 		case 0x0000:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_UNKNOWN"));
-				Result->GetValue()->AppendTag("description", std::string("Unknown or invalid format tag"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_UNKNOWN"s);
+				Result->GetValue()->AppendTag("description", "Unknown or invalid format tag"s);
 				
 				break;
 			}
 		case 0x0001:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_PCM"));
-				Result->GetValue()->AppendTag("description", std::string("Pulse Code Modulation"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_PCM"s);
+				Result->GetValue()->AppendTag("description", "Pulse Code Modulation"s);
 				
 				break;
 			}
 		case 0x0002:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_ADPCM"));
-				Result->GetValue()->AppendTag("description", std::string("Microsoft Adaptive Differental PCM"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_ADPCM"s);
+				Result->GetValue()->AppendTag("description", "Microsoft Adaptive Differental PCM"s);
 				
 				break;
 			}
 		case 0x0003:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_IEEE_FLOAT"));
-				Result->GetValue()->AppendTag("description", std::string("32-bit floating-point"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_IEEE_FLOAT"s);
+				Result->GetValue()->AppendTag("description", "32-bit floating-point"s);
 				
 				break;
 			}
 		case 0x0055:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_MPEGLAYER3"));
-				Result->GetValue()->AppendTag("description", std::string("ISO/MPEG Layer3"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_MPEGLAYER3"s);
+				Result->GetValue()->AppendTag("description", "ISO/MPEG Layer3"s);
 				
 				break;
 			}
 		case 0x0092:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_DOLBY_AC3_SPDIF"));
-				Result->GetValue()->AppendTag("description", std::string("Dolby Audio Codec 3 over S/PDIF"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_DOLBY_AC3_SPDIF"s);
+				Result->GetValue()->AppendTag("description", "Dolby Audio Codec 3 over S/PDIF"s);
 				
 				break;
 			}
 		case 0x0161:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_WMAUDIO2"));
-				Result->GetValue()->AppendTag("description", std::string("Windows Media Audio Standard (Versions 7, 8, and 9 Series)"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_WMAUDIO2"s);
+				Result->GetValue()->AppendTag("description", "Windows Media Audio Standard (Versions 7, 8, and 9 Series)"s);
 				
 				break;
 			}
 		case 0x0162:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_WMAUDIO3"));
-				Result->GetValue()->AppendTag("description", std::string("Windows Media Audio Professional (9 Series)"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_WMAUDIO3"s);
+				Result->GetValue()->AppendTag("description", "Windows Media Audio Professional (9 Series)"s);
 				
 				break;
 			}
 		case 0x0163:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_WMAUDIO_LOSSLESS"));
-				Result->GetValue()->AppendTag("description", std::string("Windows Media Audio Lossless (9 Series)"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_WMAUDIO_LOSSLESS"s);
+				Result->GetValue()->AppendTag("description", "Windows Media Audio Lossless (9 Series)"s);
 				
 				break;
 			}
 		case 0x0164:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_WMASPDIF"));
-				Result->GetValue()->AppendTag("description", std::string("Windows Media Audio over S/PDIF"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_WMASPDIF"s);
+				Result->GetValue()->AppendTag("description", "Windows Media Audio over S/PDIF"s);
 				
 				break;
 			}
 		case 0xFFFE:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("WAVE_FORMAT_EXTENSIBLE"));
-				Result->GetValue()->AppendTag("description", std::string("All new audio formats"));
+				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_EXTENSIBLE"s);
+				Result->GetValue()->AppendTag("description", "All new audio formats"s);
 				
 				break;
 			}
 		default:
 			{
-				Result->GetValue()->AppendTag("constant name", std::string("<no interpretation>"));
-				Result->GetValue()->AppendTag("description", std::string("<no interpretation>"));
+				Result->GetValue()->AppendTag("constant name", "<no interpretation>"s);
+				Result->GetValue()->AppendTag("description", "<no interpretation>"s);
 				
 				break;
 			}
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
