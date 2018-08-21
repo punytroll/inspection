@@ -4815,14 +4815,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		
 		if(ArrayIndex == 0)
 		{
-			SamplesResult = Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder);
+			auto FieldResult{Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
+			//~ auto FieldValue{Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues())};
+			
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
-			SamplesResult = Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples);
+			auto FieldResult{Get_Array_EndedByNumberOfElements(Buffer, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
+			//~ auto FieldValue{Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues())};
+			
+			UpdateState(Continue, FieldResult);
 		}
-		//~ Result->GetValue()->AppendValues(SamplesResult->GetValue()->GetValues());
-		Continue = SamplesResult->GetSuccess();
 	}
 	// finalization
 	Result->SetSuccess(Continue);
