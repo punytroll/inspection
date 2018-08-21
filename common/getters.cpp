@@ -2958,23 +2958,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_UntilByteAlignm
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 8}) == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
-		
-		std::bitset< 4 > Value;
-		auto Byte1{Reader.Get4Bits()};
-		
-		Value[0] = (Byte1 & 0x08) == 0x08;
-		Value[1] = (Byte1 & 0x04) == 0x04;
-		Value[2] = (Byte1 & 0x02) == 0x02;
-		Value[3] = (Byte1 & 0x01) == 0x01;
-		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("bitset"s);
-		Result->GetValue()->AppendTag("4bit"s);
-		Result->GetValue()->AppendTag("most significant bit first"s);
+		if(Reader.Has(Inspection::Length{0, 4}) == true)
+		{
+			std::bitset< 4 > Value;
+			auto Byte1{Reader.Get4Bits()};
+			
+			Value[0] = (Byte1 & 0x08) == 0x08;
+			Value[1] = (Byte1 & 0x04) == 0x04;
+			Value[2] = (Byte1 & 0x02) == 0x02;
+			Value[3] = (Byte1 & 0x01) == 0x01;
+			Result->GetValue()->SetAny(Value);
+			Result->GetValue()->AppendTag("bitset"s);
+			Result->GetValue()->AppendTag("4bit"s);
+			Result->GetValue()->AppendTag("most significant bit first"s);
+			Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1});
+		}
+		else
+		{
+			Continue = false;
+		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -2983,26 +2993,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignifican
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 8}) == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
-		
-		std::bitset< 8 > Value;
-		auto Byte1{Reader.Get8Bits()};
-		
-		Value[0] = (Byte1 & 0x01) == 0x01;
-		Value[1] = (Byte1 & 0x02) == 0x02;
-		Value[2] = (Byte1 & 0x04) == 0x04;
-		Value[3] = (Byte1 & 0x08) == 0x08;
-		Value[4] = (Byte1 & 0x10) == 0x10;
-		Value[5] = (Byte1 & 0x20) == 0x20;
-		Value[6] = (Byte1 & 0x40) == 0x40;
-		Value[7] = (Byte1 & 0x80) == 0x80;
-		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("bitset"s);
-		Result->GetValue()->AppendTag("8bit"s);
+		if(Reader.Has(Inspection::Length{0, 8}) == true)
+		{
+			std::bitset< 8 > Value;
+			auto Byte1{Reader.Get8Bits()};
+			
+			Value[0] = (Byte1 & 0x01) == 0x01;
+			Value[1] = (Byte1 & 0x02) == 0x02;
+			Value[2] = (Byte1 & 0x04) == 0x04;
+			Value[3] = (Byte1 & 0x08) == 0x08;
+			Value[4] = (Byte1 & 0x10) == 0x10;
+			Value[5] = (Byte1 & 0x20) == 0x20;
+			Value[6] = (Byte1 & 0x40) == 0x40;
+			Value[7] = (Byte1 & 0x80) == 0x80;
+			Result->GetValue()->SetAny(Value);
+			Result->GetValue()->AppendTag("bitset"s);
+			Result->GetValue()->AppendTag("8bit"s);
+			Result->GetValue()->AppendTag("least significant bit first"s);
+			Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1});
+		}
+		else
+		{
+			Continue = false;
+		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -3011,38 +3032,49 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Re
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 16}) == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
-		
-		std::bitset< 16 > Value;
-		auto Byte1{Reader.Get8Bits()};
-		
-		Value[8] = (Byte1 & 0x01) == 0x01;
-		Value[9] = (Byte1 & 0x02) == 0x02;
-		Value[10] = (Byte1 & 0x04) == 0x04;
-		Value[11] = (Byte1 & 0x08) == 0x08;
-		Value[12] = (Byte1 & 0x10) == 0x10;
-		Value[13] = (Byte1 & 0x20) == 0x20;
-		Value[14] = (Byte1 & 0x40) == 0x40;
-		Value[15] = (Byte1 & 0x80) == 0x80;
-		
-		auto Byte2{Reader.Get8Bits()};
-		
-		Value[0] = (Byte2 & 0x01) == 0x01;
-		Value[1] = (Byte2 & 0x02) == 0x02;
-		Value[2] = (Byte2 & 0x04) == 0x04;
-		Value[3] = (Byte2 & 0x08) == 0x08;
-		Value[4] = (Byte2 & 0x10) == 0x10;
-		Value[5] = (Byte2 & 0x20) == 0x20;
-		Value[6] = (Byte2 & 0x40) == 0x40;
-		Value[7] = (Byte2 & 0x80) == 0x80;
-		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("bitset"s);
-		Result->GetValue()->AppendTag("16bit"s);
-		Result->GetValue()->AppendTag("little endian"s);
+		if(Reader.Has(Inspection::Length{0, 16}) == true)
+		{
+			std::bitset< 16 > Value;
+			auto Byte1{Reader.Get8Bits()};
+			
+			Value[8] = (Byte1 & 0x01) == 0x01;
+			Value[9] = (Byte1 & 0x02) == 0x02;
+			Value[10] = (Byte1 & 0x04) == 0x04;
+			Value[11] = (Byte1 & 0x08) == 0x08;
+			Value[12] = (Byte1 & 0x10) == 0x10;
+			Value[13] = (Byte1 & 0x20) == 0x20;
+			Value[14] = (Byte1 & 0x40) == 0x40;
+			Value[15] = (Byte1 & 0x80) == 0x80;
+			
+			auto Byte2{Reader.Get8Bits()};
+			
+			Value[0] = (Byte2 & 0x01) == 0x01;
+			Value[1] = (Byte2 & 0x02) == 0x02;
+			Value[2] = (Byte2 & 0x04) == 0x04;
+			Value[3] = (Byte2 & 0x08) == 0x08;
+			Value[4] = (Byte2 & 0x10) == 0x10;
+			Value[5] = (Byte2 & 0x20) == 0x20;
+			Value[6] = (Byte2 & 0x40) == 0x40;
+			Value[7] = (Byte2 & 0x80) == 0x80;
+			Result->GetValue()->SetAny(Value);
+			Result->GetValue()->AppendTag("bitset"s);
+			Result->GetValue()->AppendTag("16bit"s);
+			Result->GetValue()->AppendTag("big endian"s);
+			Result->GetValue()->AppendTag("least significant bit first per byte"s);
+			Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1, Byte2});
+		}
+		else
+		{
+			Continue = false;
+		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -3051,38 +3083,49 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Ins
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 16}) == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
-		
-		std::bitset< 16 > Value;
-		auto Byte1{Reader.Get8Bits()};
-		
-		Value[0] = (Byte1 & 0x01) == 0x01;
-		Value[1] = (Byte1 & 0x02) == 0x02;
-		Value[2] = (Byte1 & 0x04) == 0x04;
-		Value[3] = (Byte1 & 0x08) == 0x08;
-		Value[4] = (Byte1 & 0x10) == 0x10;
-		Value[5] = (Byte1 & 0x20) == 0x20;
-		Value[6] = (Byte1 & 0x40) == 0x40;
-		Value[7] = (Byte1 & 0x80) == 0x80;
-		
-		auto Byte2{Reader.Get8Bits()};
-		
-		Value[8] = (Byte2 & 0x01) == 0x01;
-		Value[9] = (Byte2 & 0x02) == 0x02;
-		Value[10] = (Byte2 & 0x04) == 0x04;
-		Value[11] = (Byte2 & 0x08) == 0x08;
-		Value[12] = (Byte2 & 0x10) == 0x10;
-		Value[13] = (Byte2 & 0x20) == 0x20;
-		Value[14] = (Byte2 & 0x40) == 0x40;
-		Value[15] = (Byte2 & 0x80) == 0x80;
-		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("bitset"s);
-		Result->GetValue()->AppendTag("16bit"s);
-		Result->GetValue()->AppendTag("little endian"s);
+		if(Reader.Has(Inspection::Length{0, 16}) == true)
+		{
+			std::bitset< 16 > Value;
+			auto Byte1{Reader.Get8Bits()};
+			
+			Value[0] = (Byte1 & 0x01) == 0x01;
+			Value[1] = (Byte1 & 0x02) == 0x02;
+			Value[2] = (Byte1 & 0x04) == 0x04;
+			Value[3] = (Byte1 & 0x08) == 0x08;
+			Value[4] = (Byte1 & 0x10) == 0x10;
+			Value[5] = (Byte1 & 0x20) == 0x20;
+			Value[6] = (Byte1 & 0x40) == 0x40;
+			Value[7] = (Byte1 & 0x80) == 0x80;
+			
+			auto Byte2{Reader.Get8Bits()};
+			
+			Value[8] = (Byte2 & 0x01) == 0x01;
+			Value[9] = (Byte2 & 0x02) == 0x02;
+			Value[10] = (Byte2 & 0x04) == 0x04;
+			Value[11] = (Byte2 & 0x08) == 0x08;
+			Value[12] = (Byte2 & 0x10) == 0x10;
+			Value[13] = (Byte2 & 0x20) == 0x20;
+			Value[14] = (Byte2 & 0x40) == 0x40;
+			Value[15] = (Byte2 & 0x80) == 0x80;
+			Result->GetValue()->SetAny(Value);
+			Result->GetValue()->AppendTag("bitset"s);
+			Result->GetValue()->AppendTag("16bit"s);
+			Result->GetValue()->AppendTag("little endian"s);
+			Result->GetValue()->AppendTag("least significant bit first per byte"s);
+			Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1, Byte2});
+		}
+		else
+		{
+			Continue = false;
+		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -3091,60 +3134,71 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(
 std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 32}) == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
-		
-		std::bitset< 32 > Value;
-		auto Byte1{Reader.Get8Bits()};
-		
-		Value[0] = (Byte1 & 0x01) == 0x01;
-		Value[1] = (Byte1 & 0x02) == 0x02;
-		Value[2] = (Byte1 & 0x04) == 0x04;
-		Value[3] = (Byte1 & 0x08) == 0x08;
-		Value[4] = (Byte1 & 0x10) == 0x10;
-		Value[5] = (Byte1 & 0x20) == 0x20;
-		Value[6] = (Byte1 & 0x40) == 0x40;
-		Value[7] = (Byte1 & 0x80) == 0x80;
-		
-		auto Byte2{Reader.Get8Bits()};
-		
-		Value[8] = (Byte2 & 0x01) == 0x01;
-		Value[9] = (Byte2 & 0x02) == 0x02;
-		Value[10] = (Byte2 & 0x04) == 0x04;
-		Value[11] = (Byte2 & 0x08) == 0x08;
-		Value[12] = (Byte2 & 0x10) == 0x10;
-		Value[13] = (Byte2 & 0x20) == 0x20;
-		Value[14] = (Byte2 & 0x40) == 0x40;
-		Value[15] = (Byte2 & 0x80) == 0x80;
-		
-		auto Byte3{Reader.Get8Bits()};
-		
-		Value[16] = (Byte3 & 0x01) == 0x01;
-		Value[17] = (Byte3 & 0x02) == 0x02;
-		Value[18] = (Byte3 & 0x04) == 0x04;
-		Value[19] = (Byte3 & 0x08) == 0x08;
-		Value[20] = (Byte3 & 0x10) == 0x10;
-		Value[21] = (Byte3 & 0x20) == 0x20;
-		Value[22] = (Byte3 & 0x40) == 0x40;
-		Value[23] = (Byte3 & 0x80) == 0x80;
-		
-		auto Byte4{Reader.Get8Bits()};
-		
-		Value[24] = (Byte4 & 0x01) == 0x01;
-		Value[25] = (Byte4 & 0x02) == 0x02;
-		Value[26] = (Byte4 & 0x04) == 0x04;
-		Value[27] = (Byte4 & 0x08) == 0x08;
-		Value[28] = (Byte4 & 0x10) == 0x10;
-		Value[29] = (Byte4 & 0x20) == 0x20;
-		Value[30] = (Byte4 & 0x40) == 0x40;
-		Value[31] = (Byte4 & 0x80) == 0x80;
-		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("bitset"s);
-		Result->GetValue()->AppendTag("32bit"s);
-		Result->GetValue()->AppendTag("little endian"s);
+		if(Reader.Has(Inspection::Length{0, 32}) == true)
+		{
+			std::bitset< 32 > Value;
+			auto Byte1{Reader.Get8Bits()};
+			
+			Value[0] = (Byte1 & 0x01) == 0x01;
+			Value[1] = (Byte1 & 0x02) == 0x02;
+			Value[2] = (Byte1 & 0x04) == 0x04;
+			Value[3] = (Byte1 & 0x08) == 0x08;
+			Value[4] = (Byte1 & 0x10) == 0x10;
+			Value[5] = (Byte1 & 0x20) == 0x20;
+			Value[6] = (Byte1 & 0x40) == 0x40;
+			Value[7] = (Byte1 & 0x80) == 0x80;
+			
+			auto Byte2{Reader.Get8Bits()};
+			
+			Value[8] = (Byte2 & 0x01) == 0x01;
+			Value[9] = (Byte2 & 0x02) == 0x02;
+			Value[10] = (Byte2 & 0x04) == 0x04;
+			Value[11] = (Byte2 & 0x08) == 0x08;
+			Value[12] = (Byte2 & 0x10) == 0x10;
+			Value[13] = (Byte2 & 0x20) == 0x20;
+			Value[14] = (Byte2 & 0x40) == 0x40;
+			Value[15] = (Byte2 & 0x80) == 0x80;
+			
+			auto Byte3{Reader.Get8Bits()};
+			
+			Value[16] = (Byte3 & 0x01) == 0x01;
+			Value[17] = (Byte3 & 0x02) == 0x02;
+			Value[18] = (Byte3 & 0x04) == 0x04;
+			Value[19] = (Byte3 & 0x08) == 0x08;
+			Value[20] = (Byte3 & 0x10) == 0x10;
+			Value[21] = (Byte3 & 0x20) == 0x20;
+			Value[22] = (Byte3 & 0x40) == 0x40;
+			Value[23] = (Byte3 & 0x80) == 0x80;
+			
+			auto Byte4{Reader.Get8Bits()};
+			
+			Value[24] = (Byte4 & 0x01) == 0x01;
+			Value[25] = (Byte4 & 0x02) == 0x02;
+			Value[26] = (Byte4 & 0x04) == 0x04;
+			Value[27] = (Byte4 & 0x08) == 0x08;
+			Value[28] = (Byte4 & 0x10) == 0x10;
+			Value[29] = (Byte4 & 0x20) == 0x20;
+			Value[30] = (Byte4 & 0x40) == 0x40;
+			Value[31] = (Byte4 & 0x80) == 0x80;
+			Result->GetValue()->SetAny(Value);
+			Result->GetValue()->AppendTag("bitset"s);
+			Result->GetValue()->AppendTag("32bit"s);
+			Result->GetValue()->AppendTag("little endian"s);
+			Result->GetValue()->AppendTag("least significant bit first per byte"s);
+			Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1, Byte2, Byte3, Byte4});
+		}
+		else
+		{
+			Continue = false;
+		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
