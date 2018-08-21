@@ -262,34 +262,52 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FormatTagResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("FormatTag", FormatTagResult->GetValue());
-	if(FormatTagResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto NumberOfChannelsResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("FormatTag", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("NumberOfChannels", NumberOfChannelsResult->GetValue());
-		if(NumberOfChannelsResult->GetSuccess() == true)
-		{
-			auto SamplesPerSecondResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("SamplesPerSecond", SamplesPerSecondResult->GetValue());
-			if(SamplesPerSecondResult->GetSuccess() == true)
-			{
-				auto AverageBytesPerSecondResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("AverageBytesPerSecond", AverageBytesPerSecondResult->GetValue());
-				if(AverageBytesPerSecondResult->GetSuccess() == true)
-				{
-					auto BlockAlignResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-					
-					Result->GetValue()->AppendValue("BlockAlign", BlockAlignResult->GetValue());
-					Result->SetSuccess(BlockAlignResult->GetSuccess());
-				}
-			}
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("NumberOfChannels", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerSecond", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AverageBytesPerSecond", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("BlockAlign", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -298,34 +316,53 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspec
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("BitsPerSample", BitsPerSampleResult->GetValue());
-	if(BitsPerSampleResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ExtensionSizeResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ExtensionSize", ExtensionSizeResult->GetValue());
-		if(ExtensionSizeResult->GetSuccess() == true)
-		{
-			auto ValidBitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-			
-			Result->GetValue()->AppendValue("ValidBitsPerSample", ValidBitsPerSampleResult->GetValue());
-			if(ValidBitsPerSampleResult->GetSuccess() == true)
-			{
-				auto ChannelMaskResult{Get_RIFF_fmt_ChunkData_ChannelMask(Buffer)};
-				
-				Result->GetValue()->AppendValue("ChannelMask", ChannelMaskResult->GetValue());
-				if(ChannelMaskResult->GetSuccess() == true)
-				{
-					auto SubFormatResult{Get_RIFF_fmt_ChunkData_SubFormat(Buffer)};
-					
-					Result->GetValue()->AppendValue("SubFormat", SubFormatResult->GetValue());
-					Result->SetSuccess(SubFormatResult->GetSuccess());
-				}
-			}
-		}
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("ExtensionSize", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("ValidBitsPerSample", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_RIFF_fmt_ChunkData_ChannelMask(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ChannelMask", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_RIFF_fmt_ChunkData_SubFormat(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("SubFormat", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -334,11 +371,20 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto BitsPerSampleResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
-	auto BitsPerSampleValue{Result->GetValue()->AppendValue("BitsPerSample", BitsPerSampleResult->GetValue())};
+	auto Continue{true};
 	
-	BitsPerSampleValue->AppendTag("units", "bits per sample"s);
-	Result->SetSuccess(BitsPerSampleResult->GetSuccess());
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
+		
+		FieldValue->AppendTag("units", "bits per sample"s);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;

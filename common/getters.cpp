@@ -866,10 +866,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEn
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -952,10 +953,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecNameLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -969,10 +971,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecDescriptionLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -986,10 +989,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecInformationLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1015,10 +1019,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1147,42 +1152,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TitleLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AuthorLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CopyrightLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DescriptionLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("RatingLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1282,10 +1292,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::B
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1337,10 +1348,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NameLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1362,10 +1374,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ValueLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1486,10 +1499,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		{
 			if(Length == Inspection::Length{2, 0})
 			{
-				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -1518,10 +1532,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ContentDescriptorsCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -1675,18 +1690,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StreamNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StreamLanguageIndex", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1699,18 +1716,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StreamNameCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PayloadExtensionSystemCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// verification
 	if(Continue == true)
@@ -1780,10 +1799,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ReservedField2", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// verification
 	if(Continue == true)
@@ -2154,10 +2174,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_LanguageListObjectData
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("LanguageIDRecordsCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2187,26 +2208,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("LanguageListIndex", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StreamNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NameLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2321,10 +2345,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		{
 			if(Length == Inspection::Length{2, 0})
 			{
-				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -2376,10 +2401,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -2435,10 +2461,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibraryObjectD
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DescriptionRecordsCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2476,18 +2503,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StreamNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NameLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2602,10 +2631,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 		{
 			if(Length == Inspection::Length{2, 0})
 			{
-				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -2634,10 +2664,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObjectData(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DescriptionRecordsCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2850,10 +2881,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitrateRecordsCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2950,10 +2982,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfChannels", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2974,28 +3007,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BlockAlignment", FieldResult->GetValue())};
 		
 		FieldValue->PrependTag("unit", "bytes"s);
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FliedValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificDataSize", FieldResult->GetValue())};
 		
 		FieldValue->PrependTag("unit", "bytes"s);
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -3050,10 +3086,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("EncodeOptions", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -10600,10 +10637,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_Forma
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	if(Continue == true)
 	{
@@ -12360,10 +12398,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// reading
-	if(Reader.Has(Inspection::Length{0, 16}) == true)
+	// verification
+	if(Continue == true)
 	{
-		std::uint16_t Value{0ul};
+		if(Reader.Has(Inspection::Length{0, 16}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::uint16_t Value{0};
 		
 		Value |= static_cast< std::uint16_t >(Reader.Get8Bits()) << 8;
 		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
@@ -12373,10 +12420,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigE
 		Result->GetValue()->AppendTag("16bit"s);
 		Result->GetValue()->AppendTag("big endian"s);
 	}
-	else
-	{
-		Continue = false;
-	}
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -12384,24 +12427,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(0ull, 16) == true)
+	// verification
+	if(Continue == true)
 	{
-		std::uint16_t Value{0ul};
+		if(Reader.Has(Inspection::Length{0, 16}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::uint16_t Value{0};
 		
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits());
-		Value |= static_cast< std::uint16_t >(Buffer.Get8Bits()) << 8;
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
+		Value |= static_cast< std::uint16_t >(Reader.Get8Bits()) << 8;
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("16bit"s);
 		Result->GetValue()->AppendTag("little endian"s);
-		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
