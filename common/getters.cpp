@@ -3734,7 +3734,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Footer(Inspecti
 		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CRC-16", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -4071,7 +4071,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("BlockSizeExplicit", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// interpretation
 			if(Continue == true)
 			{
@@ -4539,7 +4539,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_SeekPo
 		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfSamplesInTargetFrame", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -4660,7 +4660,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MinimumBlockSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -4669,7 +4669,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MaximumBlockSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -8928,7 +8928,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
