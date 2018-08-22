@@ -99,10 +99,11 @@ std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Buffer & 
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -119,10 +120,11 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Buffer
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfSamples", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -302,18 +304,20 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspec
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerSecond", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AverageBytesPerSecond", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)

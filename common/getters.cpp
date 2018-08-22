@@ -180,18 +180,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TagSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ItemCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -224,10 +226,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_Ve
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -264,10 +267,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ItemValueSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -910,10 +914,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEn
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1079,10 +1084,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecEntriesCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1460,10 +1466,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		{
 			if(Length == Inspection::Length{4, 0})
 			{
-				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -1624,64 +1631,71 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataBitrate", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->PrependTag("unit", "bits per second"s);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BufferSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->PrependTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("InitialBufferFullness", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->PrependTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateDataBitrate", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->PrependTag("unit", "bits per second"s);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateBufferSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->PrependTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateInitialBufferFullness", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->PrependTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MaximumObjectSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1817,10 +1831,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("HeaderExtensionDataSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1991,26 +2006,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesObjectDa
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MinimumDataPacketSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MaximumDataPacketSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MaximumBitrate", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2064,10 +2082,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObjectData(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfHeaderObjects", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2247,10 +2266,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2319,10 +2339,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		{
 			if(Length == Inspection::Length{4, 0})
 			{
-				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -2533,10 +2554,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2605,10 +2627,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 		{
 			if(Length == Inspection::Length{4, 0})
 			{
-				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -2835,10 +2858,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AverageBitrate", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3005,18 +3029,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerSecond", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AverageNumberOfBytesPerSecond", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -3092,10 +3118,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerBlock", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -3109,10 +3136,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SuperBlockAlign", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3179,18 +3207,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TypeSpecificDataLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ErrorCorrectionDataLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -3203,10 +3233,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -6513,17 +6544,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 		
 		if(OwnerIdentifier == "AverageLevel")
 		{
-			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("AverageLevel", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(OwnerIdentifier == "PeakValue")
 		{
-			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("PeakValue", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
@@ -12785,26 +12818,38 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(0ull, 32) == true)
+	// verification
+	if(Continue == true)
 	{
-		std::uint32_t Value{0ul};
+		if(Reader.Has(Inspection::Length{0, 32}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::uint32_t Value{0};
 		
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 24;
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("32bit"s);
 		Result->GetValue()->AppendTag("little endian"s);
-		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -13056,10 +13101,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->AppendTag("unit", "bytes"s);
 	}
 	// reading
@@ -13086,10 +13132,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->AppendTag("unit", "items"s);
 	}
 	// reading
@@ -13120,10 +13167,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("VendorLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		FieldValue->AppendTag("unit", "bytes"s);
 	}
 	// reading
