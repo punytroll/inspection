@@ -224,10 +224,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_Ve
 	// reading
 	if(Continue == true)
 	{
-		auto VersionNumberResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->SetValue(VersionNumberResult->GetValue());
-		UpdateState(Continue, VersionNumberResult);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -261,27 +261,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto ItemValueSizeResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ItemValueSize", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ItemValueSize", ItemValueSizeResult->GetValue());
-		UpdateState(Continue, ItemValueSizeResult);
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto ItemFlagsResult{Get_APE_Tags_Flags(Buffer)};
+		auto FieldResult{Get_APE_Tags_Flags(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ItemFlags", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ItemFlags", ItemFlagsResult->GetValue());
-		UpdateState(Continue, ItemFlagsResult);
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto ItemKeyResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ItemKey", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ItemKey", ItemKeyResult->GetValue());
-		UpdateState(Continue, ItemKeyResult);
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto ItemValueType{std::experimental::any_cast< std::uint8_t >(Result->GetValue("ItemFlags")->GetValueAny("ItemValueType"))};
@@ -289,10 +293,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 		if(ItemValueType == 0)
 		{
 			auto ItemValueSize{std::experimental::any_cast< std::uint32_t >(Result->GetAny("ItemValueSize"))};
-			auto ItemValueResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{ItemValueSize, 0})};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{ItemValueSize, 0})};
+			auto FieldValue{Result->GetValue()->AppendValue("ItemValue", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("ItemValue", ItemValueResult->GetValue());
-			UpdateState(Continue, ItemValueResult);
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
@@ -2818,16 +2822,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ObjectHeader(Inspectio
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FlagsResult{Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
-	if(FlagsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto AverageBitrateResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("AverageBitrate", AverageBitrateResult->GetValue());
-		Result->SetSuccess(AverageBitrateResult->GetSuccess());
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("AverageBitrate", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -3136,71 +3150,95 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObjectData(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto StreamTypeResult{Get_ASF_GUID(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("StreamType", StreamTypeResult->GetValue());
-	if(StreamTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ErrorCorrectionTypeResult{Get_ASF_GUID(Buffer)};
+		auto FieldResult{Get_ASF_GUID(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("StreamType", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ErrorCorrectionType", ErrorCorrectionTypeResult->GetValue());
-		if(ErrorCorrectionTypeResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ASF_GUID(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ErrorCorrectionType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TimeOffset", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TypeSpecificDataLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("ErrorCorrectionDataLength", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ASF_StreamProperties_Flags(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TypeSpecificDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("TypeSpecificDataLength"))};
+		auto StreamType{std::experimental::any_cast< Inspection::GUID >(Result->GetAny("StreamType"))};
+		
+		if(StreamType == Inspection::g_ASF_AudioMediaGUID)
 		{
-			auto TimeOffsetResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Buffer, TypeSpecificDataLength)};
+			auto FieldValue{Result->GetValue()->AppendValue("TypeSpecificData", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("TimeOffset", TimeOffsetResult->GetValue());
-			if(TimeOffsetResult->GetSuccess() == true)
-			{
-				auto TypeSpecificDataLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-				
-				Result->GetValue()->AppendValue("TypeSpecificDataLength", TypeSpecificDataLengthResult->GetValue());
-				if(TypeSpecificDataLengthResult->GetSuccess() == true)
-				{
-					auto ErrorCorrectionDataLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-					
-					Result->GetValue()->AppendValue("ErrorCorrectionDataLength", ErrorCorrectionDataLengthResult->GetValue());
-					if(ErrorCorrectionDataLengthResult->GetSuccess() == true)
-					{
-						auto FlagsResult{Get_ASF_StreamProperties_Flags(Buffer)};
-						
-						Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
-						if(FlagsResult->GetSuccess() == true)
-						{
-							auto ReservedResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-							
-							Result->GetValue()->AppendValue("Reserved", ReservedResult->GetValue());
-							if(ReservedResult->GetSuccess() == true)
-							{
-								auto TypeSpecificDataLength{std::experimental::any_cast< std::uint32_t >(TypeSpecificDataLengthResult->GetAny())};
-								auto StreamType{std::experimental::any_cast< Inspection::GUID >(StreamTypeResult->GetAny())};
-								std::unique_ptr< Inspection::Result > TypeSpecificDataResult;
-								
-								if(StreamType == Inspection::g_ASF_AudioMediaGUID)
-								{
-									TypeSpecificDataResult = Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Buffer, TypeSpecificDataLength);
-								}
-								else
-								{
-									TypeSpecificDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, TypeSpecificDataLength);
-								}
-								Result->GetValue()->AppendValue("TypeSpecificData", TypeSpecificDataResult->GetValue());
-								if(TypeSpecificDataResult->GetSuccess() == true)
-								{
-									auto ErrorCorrectionDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, std::experimental::any_cast< std::uint32_t >(ErrorCorrectionDataLengthResult->GetAny()))};
-									
-									Result->GetValue()->AppendValue("ErrorCorrectionData", ErrorCorrectionDataResult->GetValue());
-									if(ErrorCorrectionDataResult->GetSuccess() == true)
-									{
-										Result->SetSuccess(true);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			UpdateState(Continue, FieldResult);
+		}
+		else
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, TypeSpecificDataLength)};
+			auto FieldValue{Result->GetValue()->AppendValue("TypeSpecificData", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, std::experimental::any_cast< std::uint32_t >(Result->GetAny("ErrorCorrectionDataLength")))};
+		auto FieldValue{Result->GetValue()->AppendValue("ErrorCorrectionData", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6458,91 +6496,109 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto OwnerIdentifierResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("OwnerIdentifier", OwnerIdentifierResult->GetValue());
-	if(OwnerIdentifierResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		const std::string & OwnerIdentifier{std::experimental::any_cast< const std::string & >(OwnerIdentifierResult->GetAny())};
-		std::string PRIVDataName;
-		std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > PRIVDataHandler;
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		const std::string & OwnerIdentifier{std::experimental::any_cast< const std::string & >(Result->GetAny("OwnerIdentifier"))};
 		
 		if(OwnerIdentifier == "AverageLevel")
 		{
-			PRIVDataHandler = std::bind(Inspection::Get_UnsignedInteger_32Bit_LittleEndian, std::placeholders::_1);
-			PRIVDataName = "AverageLevel";
+			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("AverageLevel", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "PeakValue")
 		{
-			PRIVDataHandler = std::bind(Inspection::Get_UnsignedInteger_32Bit_LittleEndian, std::placeholders::_1);
-			PRIVDataName = "PeakValue";
-		}
-		else if(OwnerIdentifier == "WM/MediaClassPrimaryID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "MediaClassPrimaryID";
-		}
-		else if(OwnerIdentifier == "WM/MediaClassSecondaryID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "MediaClassSecondaryID";
-		}
-		else if(OwnerIdentifier == "WM/Provider")
-		{
-			PRIVDataHandler = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
-			PRIVDataName = "Provider";
-		}
-		else if(OwnerIdentifier == "WM/UniqueFileIdentifier")
-		{
-			PRIVDataHandler = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
-			PRIVDataName = "UniqueFileIdentifier";
-		}
-		else if(OwnerIdentifier == "WM/WMCollectionGroupID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "CollectionGroupID";
-		}
-		else if(OwnerIdentifier == "WM/WMCollectionID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "CollectionID";
-		}
-		else if(OwnerIdentifier == "WM/WMContentID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "ContentID";
-		}
-		else if(OwnerIdentifier == "ZuneAlbumArtistMediaID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "ZuneAlbumArtistMediaID";
-		}
-		else if(OwnerIdentifier == "ZuneAlbumMediaID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "ZuneAlbumArtistMediaID";
-		}
-		else if(OwnerIdentifier == "ZuneCollectionID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "ZuneAlbumArtistMediaID";
-		}
-		else if(OwnerIdentifier == "ZuneMediaID")
-		{
-			PRIVDataHandler = Get_ID3_GUID;
-			PRIVDataName = "ZuneMediaID";
+			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("PeakValue", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
-			PRIVDataHandler = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
-			PRIVDataName = "PrivateData";
+			std::string PRIVDataName;
+			std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > PRIVDataHandler;
+			
+			if(OwnerIdentifier == "WM/MediaClassPrimaryID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "MediaClassPrimaryID";
+			}
+			else if(OwnerIdentifier == "WM/MediaClassSecondaryID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "MediaClassSecondaryID";
+			}
+			else if(OwnerIdentifier == "WM/Provider")
+			{
+				PRIVDataHandler = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
+				PRIVDataName = "Provider";
+			}
+			else if(OwnerIdentifier == "WM/UniqueFileIdentifier")
+			{
+				PRIVDataHandler = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
+				PRIVDataName = "UniqueFileIdentifier";
+			}
+			else if(OwnerIdentifier == "WM/WMCollectionGroupID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "CollectionGroupID";
+			}
+			else if(OwnerIdentifier == "WM/WMCollectionID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "CollectionID";
+			}
+			else if(OwnerIdentifier == "WM/WMContentID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "ContentID";
+			}
+			else if(OwnerIdentifier == "ZuneAlbumArtistMediaID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "ZuneAlbumArtistMediaID";
+			}
+			else if(OwnerIdentifier == "ZuneAlbumMediaID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "ZuneAlbumArtistMediaID";
+			}
+			else if(OwnerIdentifier == "ZuneCollectionID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "ZuneAlbumArtistMediaID";
+			}
+			else if(OwnerIdentifier == "ZuneMediaID")
+			{
+				PRIVDataHandler = Get_ID3_GUID;
+				PRIVDataName = "ZuneMediaID";
+			}
+			else
+			{
+				PRIVDataHandler = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
+				PRIVDataName = "PrivateData";
+			}
+			
+			auto FieldResult{PRIVDataHandler(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldValue{Result->GetValue()->AppendValue(PRIVDataName, FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
 		}
-		
-		auto PRIVDataResult{PRIVDataHandler(Buffer, Boundary - Buffer.GetPosition())};
-		
-		Result->GetValue()->AppendValue(PRIVDataName, PRIVDataResult->GetValue());
-		Result->SetSuccess(PRIVDataResult->GetSuccess());
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -12995,21 +13051,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto UserCommentLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-	auto UserCommentLengthValue{Result->GetValue()->AppendValue("Length", UserCommentLengthResult->GetValue())};
+	auto Continue{true};
 	
-	UserCommentLengthValue->AppendTag("unit", "bytes"s);
-	if(UserCommentLengthResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto UserCommentLength{std::experimental::any_cast< std::uint32_t >(UserCommentLengthResult->GetAny())};
-		auto UserCommentResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, UserCommentLength)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("String", UserCommentResult->GetValue());
-		if(UserCommentResult->GetSuccess() == true)
-		{
-			Result->SetSuccess(true);
-		}
+		UpdateState(Continue, FieldResult);
+		FieldValue->AppendTag("unit", "bytes"s);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Length"))};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Length)};
+		auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -13018,29 +13081,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserCommentList(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto UserCommentListLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-	auto UserCommentListLengthValue{Result->GetValue()->AppendValue("Length", UserCommentListLengthResult->GetValue())};
+	auto Continue{true};
 	
-	UserCommentListLengthValue->AppendTag("unit", "items"s);
-	if(UserCommentListLengthResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
 		
-		auto UserCommentListLength{std::experimental::any_cast< std::uint32_t >(UserCommentListLengthResult->GetAny())};
+		UpdateState(Continue, FieldResult);
+		FieldValue->AppendTag("unit", "items"s);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Length"))};
 		
-		for(auto Index = 0ul; Index < UserCommentListLength; ++Index)
+		for(auto Index = 0ul; (Continue == true) && (Index < Length); ++Index)
 		{
-			auto UserCommentResult{Get_Vorbis_CommentHeader_UserComment(Buffer)};
+			auto FieldResult{Get_Vorbis_CommentHeader_UserComment(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("UserComment", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("UserComment", UserCommentResult->GetValue());
-			if(UserCommentResult->GetSuccess() == false)
-			{
-				Result->SetSuccess(false);
-				
-				break;
-			}
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -13049,24 +13115,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto VendorLengthResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
-	auto VendorLengthValue{Result->GetValue()->AppendValue("VendorLength", VendorLengthResult->GetValue())};
+	auto Continue{true};
 	
-	VendorLengthValue->AppendTag("unit", "bytes"s);
-	if(VendorLengthResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto VendorLength{std::experimental::any_cast< std::uint32_t >(VendorLengthResult->GetAny())};
-		auto VendorResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, VendorLength)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("VendorLength", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Vendor", VendorResult->GetValue());
-		if(VendorResult->GetSuccess() == true)
-		{
-			auto UserCommentListResult{Get_Vorbis_CommentHeader_UserCommentList(Buffer)};
-			
-			Result->GetValue()->AppendValue("UserCommentList", UserCommentListResult->GetValue());
-			Result->SetSuccess(UserCommentListResult->GetSuccess());
-		}
+		UpdateState(Continue, FieldResult);
+		FieldValue->AppendTag("unit", "bytes"s);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto VendorLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("VendorLength"))};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, VendorLength)};
+		auto FieldValue{Result->GetValue()->AppendValue("Vendor", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_Vorbis_CommentHeader_UserCommentList(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("UserCommentList", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
