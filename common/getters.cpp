@@ -3701,10 +3701,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("RegisteredApplicationIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	
 	auto ApplicationDataStart{Buffer.GetPosition()};
@@ -4389,10 +4390,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_PictureT
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -4511,10 +4513,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MIMETypeLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -4528,7 +4531,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DescriptionLength", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -4545,42 +4549,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureWidthInPixels", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureHeightInPixels", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitsPerPixel", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfColors", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureDataLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -6492,10 +6501,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 		}
 		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
 		{
-			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(Buffer.GetPosition() + Inspection::Length{4, 0} < Boundary)
 		{
@@ -6574,10 +6584,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		}
 		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
 		{
-			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(Buffer.GetPosition() + Inspection::Length{4, 0} < Boundary)
 		{
@@ -7065,10 +7076,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -7785,10 +7797,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		}
 		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
 		{
-			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
 		{
@@ -9219,10 +9232,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StartAddress", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -12878,26 +12892,38 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Alte
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(0ull, 32) == true)
+	// verification
+	if(Continue == true)
 	{
-		std::uint32_t Value{0ul};
+		if(Reader.Has(Inspection::Length{0, 32}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::uint32_t Value{0};
 		
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8;
-		Value |= static_cast< std::uint32_t >(Buffer.Get8Bits());
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 24;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 16;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
+		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
 		Result->GetValue()->AppendTag("integer"s);
 		Result->GetValue()->AppendTag("unsigned"s);
 		Result->GetValue()->AppendTag("32bit"s);
 		Result->GetValue()->AppendTag("big endian"s);
-		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
