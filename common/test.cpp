@@ -257,20 +257,22 @@ void Test_Get_SignedInteger_32Bit_BigEndian(void)
 {
 	SetupDataAndBufferDEADBEEF();
 	
-	auto Result{Get_SignedInteger_32Bit_BigEndian(*g_Buffer)};
+	Inspection::Reader FieldReader{*g_Buffer, Inspection::Length{0, 32}};
+	auto FieldResult{Get_SignedInteger_32Bit_BigEndian(FieldReader)};
 	
-	assert(Result->GetSuccess() == true);
-	assert(std::experimental::any_cast< std::int32_t >(Result->GetAny()) == -559038737);
+	assert(FieldResult->GetSuccess() == true);
+	assert(std::experimental::any_cast< std::int32_t >(FieldResult->GetAny()) == -559038737);
 }
 
 void Test_Get_SignedInteger_32Bit_LittleEndian(void)
 {
 	SetupDataAndBufferDEADBEEF();
 	
-	auto Result{Get_SignedInteger_32Bit_LittleEndian(*g_Buffer)};
+	Inspection::Reader FieldReader{*g_Buffer, Inspection::Length{0, 32}};
+	auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(FieldReader)};
 	
-	assert(Result->GetSuccess() == true);
-	assert(std::experimental::any_cast< std::int32_t >(Result->GetAny()) == -272716322);
+	assert(FieldResult->GetSuccess() == true);
+	assert(std::experimental::any_cast< std::int32_t >(FieldResult->GetAny()) == -272716322);
 }
 
 void Test_Vorbis_Buffer(void)
