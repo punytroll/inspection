@@ -31,8 +31,8 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_Printable_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_Printable_EndedByTermination(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_ASF_Boolean_16Bit_LittleEndian(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_ASF_Boolean_32Bit_LittleEndian(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_ASF_Boolean_16Bit_LittleEndian(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ASF_Boolean_32Bit_LittleEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer);

@@ -866,19 +866,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
 		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -901,24 +901,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEn
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 32}};
 		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -941,7 +941,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEn
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1451,10 +1451,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		{
 			if(Length == Inspection::Length{4, 0})
 			{
-				auto FieldResult{Get_ASF_Boolean_32Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+				auto FieldResult{Get_ASF_Boolean_32Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -2324,10 +2325,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		{
 			if(Length == Inspection::Length{2, 0})
 			{
-				auto FieldResult{Get_ASF_Boolean_16Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+				auto FieldResult{Get_ASF_Boolean_16Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -2612,10 +2614,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 		{
 			if(Length == Inspection::Length{2, 0})
 			{
-				auto FieldResult{Get_ASF_Boolean_16Bit_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+				auto FieldResult{Get_ASF_Boolean_16Bit_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
