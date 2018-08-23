@@ -11,6 +11,7 @@
 
 #include "date_time.h"
 #include "guid.h"
+#include "length.h"
 
 inline std::ostream & operator<<(std::ostream & OStream, const std::experimental::any & Any)
 {
@@ -140,6 +141,15 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 			StringStream << std::setw(2) << std::right << static_cast< std::uint32_t >(Value[Index]);
 			Index += 1;
 		}
+		
+		return OStream << StringStream.str();
+	}
+	else if(Any.type() == typeid(Inspection::Length))
+	{
+		auto Value{std::experimental::any_cast< Inspection::Length >(Any)};
+		std::stringstream StringStream;
+		
+		StringStream << to_string_cast(Value);
 		
 		return OStream << StringStream.str();
 	}
