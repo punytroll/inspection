@@ -3696,32 +3696,53 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto RegisteredApplicationIdentifierStart{Buffer.GetPosition()};
-	auto RegisteredApplicationIdentifierResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-	auto RegisteredApplicationIdentifierValue{Result->GetValue()->AppendValue("RegisteredApplicationIdentifier", RegisteredApplicationIdentifierResult->GetValue())};
+	auto Continue{true};
 	
-	if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto ApplicationDataStart{Buffer.GetPosition()};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("RegisteredApplicationIdentifier", FieldResult->GetValue())};
 		
+		UpdateState(Continue, FieldResult);
+	}
+	
+	auto ApplicationDataStart{Buffer.GetPosition()};
+	
+	// reading
+	if(Continue == true)
+	{
 		Buffer.SetPosition(RegisteredApplicationIdentifierStart);
-		RegisteredApplicationIdentifierResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(4ul, 0));
-		if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
-		{
-			RegisteredApplicationIdentifierValue->AppendTag("bytes", RegisteredApplicationIdentifierResult->GetAny());
-		}
+		
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{4, 0})};
+		
+		Result->GetValue("RegisteredApplicationIdentifier")->AppendTag("bytes", FieldResult->GetAny());
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
 		Buffer.SetPosition(RegisteredApplicationIdentifierStart);
-		RegisteredApplicationIdentifierResult = Get_ASCII_String_Printable_EndedByLength(Buffer, Inspection::Length(4ul, 0));
-		if(RegisteredApplicationIdentifierResult->GetSuccess() == true)
+		
+		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(Buffer, Inspection::Length{4, 0})};
+		
+		if(FieldResult->GetSuccess() == true)
 		{
-			RegisteredApplicationIdentifierValue->AppendTag("string interpretation", RegisteredApplicationIdentifierResult->GetAny());
+			Result->GetValue("RegisteredApplicationIdentifier")->AppendTag("string interpretation", FieldResult->GetAny());
 		}
+	}
+	// reading
+	if(Continue == true)
+	{
 		Buffer.SetPosition(ApplicationDataStart);
 		
-		auto ApplicationDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+		auto FieldValue{Result->GetValue()->AppendValue("ApplicationData", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("ApplicationData", ApplicationDataResult->GetValue());
-		Result->SetSuccess(ApplicationDataResult->GetSuccess());
+		UpdateState(Continue, FieldResult);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -4363,14 +4384,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(In
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_PictureType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto PictureTypeResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(PictureTypeResult->GetValue());
-	if(PictureTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		auto PictureType{std::experimental::any_cast< std::uint32_t >(PictureTypeResult->GetAny())};
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto PictureType{std::experimental::any_cast< std::uint32_t >(Result->GetAny())};
 		
 		if(PictureType == 0)
 		{
@@ -4458,9 +4485,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_PictureT
 		}
 		else
 		{
-			Result->SetSuccess(false);
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6446,29 +6475,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(Buffer.GetPosition() + Inspection::Length(4ul, 0) > Boundary)
+	// reading
+	if(Continue == true)
 	{
-		auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-		
-		Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-		Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
-		Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
+		if(Buffer.GetPosition() + Inspection::Length{4, 0} > Boundary)
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+			Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
+			Continue = false;
+		}
+		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
+		{
+			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else if(Buffer.GetPosition() + Inspection::Length{4, 0} < Boundary)
+		{
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Continue = false;
+		}
 	}
-	else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) == Boundary)
-	{
-		auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
-		
-		Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-		Result->SetSuccess(CounterResult->GetSuccess());
-	}
-	else if(Buffer.GetPosition() + Inspection::Length(4ul, 0) < Boundary)
-	{
-		auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-		
-		Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-		Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
-	}
+	// reading
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6517,33 +6557,35 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 	{
 		if(Buffer.GetPosition() == Boundary)
 		{
-			auto CounterValue{std::make_shared< Inspection::Value >()};
+			auto FieldValue{std::make_shared< Inspection::Value >()};
 			
-			CounterValue->SetName("Counter");
-			CounterValue->AppendTag("omitted"s);
-			Result->GetValue()->AppendValue(CounterValue);
+			FieldValue->SetName("Counter");
+			FieldValue->AppendTag("omitted"s);
+			Result->GetValue()->AppendValue(FieldValue);
 		}
 		else if(Buffer.GetPosition() + Inspection::Length{4, 0} > Boundary)
 		{
-			auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 			Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
+			Continue = false;
 		}
 		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
 		{
-			auto CounterResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
-			Result->SetSuccess(CounterResult->GetSuccess());
+			UpdateState(Continue, FieldResult);
 		}
 		else if(Buffer.GetPosition() + Inspection::Length{4, 0} < Boundary)
 		{
-			auto CounterResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("Counter", CounterResult->GetValue());
 			Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Continue = false;
 		}
 	}
 	// finalization
@@ -7010,22 +7052,34 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(In
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto IdentifierResult{Get_ID3_2_3_Frame_Header_Identifier(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
-	if(IdentifierResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto SizeResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldResult{Get_ID3_2_3_Frame_Header_Identifier(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-		if(SizeResult->GetSuccess() == true)
-		{
-			auto FlagsResult{Get_ID3_2_3_Frame_Header_Flags(Buffer)};
-			
-			Result->GetValue()->AppendValue("Flags", FlagsResult->GetValue());
-			Result->SetSuccess(FlagsResult->GetSuccess());
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_3_Frame_Header_Flags(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
