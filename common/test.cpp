@@ -25,7 +25,7 @@ void SetupDataAndBufferDEADBEEF(void)
 	g_Data[14] = 0xbe;
 	g_Data[15] = 0xef;
 	delete g_Buffer;
-	g_Buffer = new Inspection::Buffer(g_Data, 16);
+	g_Buffer = new Inspection::Buffer(g_Data, Inspection::Length{16, 0});
 }
 
 void SetupDataAndBufferVorbis(void)
@@ -47,7 +47,7 @@ void SetupDataAndBufferVorbis(void)
 	g_Data[14] = 0x00;
 	g_Data[15] = 0x00;
 	delete g_Buffer;
-	g_Buffer = new Inspection::Buffer(g_Data, Inspection::Length(0ull, 27));
+	g_Buffer = new Inspection::Buffer(g_Data, Inspection::Length{0, 27});
 	g_Buffer->SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 }
 
@@ -278,17 +278,17 @@ void Test_Get_SignedInteger_32Bit_LittleEndian(void)
 void Test_Vorbis_Buffer(void)
 {
 	SetupDataAndBufferVorbis();
-	assert(g_Buffer->GetPosition() == Inspection::Length(0ull, 0));
+	assert((g_Buffer->GetPosition() == Inspection::Length{0, 0}));
 	assert(g_Buffer->Get4Bits() == 0x0c);
-	assert(g_Buffer->GetPosition() == Inspection::Length(0ull, 4));
+	assert((g_Buffer->GetPosition() == Inspection::Length{0, 4}));
 	assert(g_Buffer->Get3Bits() == 0x07);
-	assert(g_Buffer->GetPosition() == Inspection::Length(0ull, 7));
+	assert((g_Buffer->GetPosition() == Inspection::Length{0, 7}));
 	assert(g_Buffer->Get7Bits() == 0x11);
-	assert(g_Buffer->GetPosition() == Inspection::Length(0ull, 14));
+	assert((g_Buffer->GetPosition() == Inspection::Length{0, 14}));
 	assert(g_Buffer->Get8Bits() == 0x39);
-	assert(g_Buffer->GetPosition() == Inspection::Length(0ull, 22));
+	assert((g_Buffer->GetPosition() == Inspection::Length{0, 22}));
 	assert(g_Buffer->Get5Bits() == 0x1b);
-	assert(g_Buffer->GetPosition() == Inspection::Length(0ull, 27));
+	assert((g_Buffer->GetPosition() == Inspection::Length{0, 27}));
 }
 
 int main(int argc, char ** argv)

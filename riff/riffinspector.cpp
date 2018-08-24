@@ -47,7 +47,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer
 			
 			if(ChunkIdentifier == "RIFF")
 			{
-				auto FieldResult{Get_RIFF_RIFF_ChunkData(Buffer, ChunkSize)};
+				auto FieldResult{Get_RIFF_RIFF_ChunkData(Buffer, Inspection::Length{ChunkSize, 0})};
 				
 				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 				UpdateState(Continue, FieldResult);
@@ -91,7 +91,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Buffer & 
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, 4)};
+		auto FieldResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, Inspection::Length{4, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -438,7 +438,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer
 {
 	auto EndPosition{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FormTypeResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, 4ull)};
+	auto FormTypeResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, Inspection::Length{4, 0})};
 	
 	Result->GetValue()->AppendValue("FormType", FormTypeResult->GetValue());
 	if(FormTypeResult->GetSuccess() == true)
