@@ -3756,23 +3756,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buf
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto FrameHeaderResult{Get_FLAC_Frame_Header(Buffer)};
-		auto FrameHeaderValue{Result->GetValue()->AppendValue("Header", FrameHeaderResult->GetValue())};
+		auto FieldResult{Get_FLAC_Frame_Header(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		Continue = FrameHeaderResult->GetSuccess();
-		if(FrameHeaderResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// inspect
+	if(Continue == true)
+	{
+		auto NumberOfChannelsByFrame{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("ChannelAssignment")->GetTagAny("value"))};
+		
+		if(NumberOfChannelsByStream != NumberOfChannelsByFrame)
 		{
-			auto NumberOfChannelsByFrame{std::experimental::any_cast< std::uint8_t >(FrameHeaderValue->GetValue("ChannelAssignment")->GetTagAny("value"))};
-			
-			if(NumberOfChannelsByStream != NumberOfChannelsByFrame)
-			{
-				Result->GetValue()->AppendTag("error", "The number of channels from the stream (" + to_string_cast(NumberOfChannelsByStream) + ") does not match the number of channels from the frame (" + to_string_cast(NumberOfChannelsByFrame) + ").");
-				Continue = false;
-			}
+			Result->GetValue()->AppendTag("error", "The number of channels from the stream (" + to_string_cast(NumberOfChannelsByStream) + ") does not match the number of channels from the frame (" + to_string_cast(NumberOfChannelsByFrame) + ").");
+			Continue = false;
 		}
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto BlockSize{std::experimental::any_cast< std::uint16_t >(Result->GetValue("Header")->GetValue("BlockSize")->GetTagAny("value"))};
@@ -3781,57 +3784,63 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buf
 		
 		for(auto SubFrameIndex = 0; (Continue == true) && (SubFrameIndex < NumberOfChannelsByStream); ++SubFrameIndex)
 		{
-			std::unique_ptr< Inspection::Result > SubframeResult;
-			
 			if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
 			{
-				SubframeResult = Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample + 1);
+				auto FieldResult{Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample + 1)};
+				auto FieldValue{Result->GetValue()->AppendValue("Subframe", FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
 			}
 			else
 			{
-				SubframeResult = Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample);
+				auto FieldResult{Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample)};
+				auto FieldValue{Result->GetValue()->AppendValue("Subframe", FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
 			}
-			Result->GetValue()->AppendValue("Subframe", SubframeResult->GetValue());
-			Continue = SubframeResult->GetSuccess();
 		}
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto PaddingResult{Get_Bits_Unset_UntilByteAlignment(Buffer)};
+		auto FieldResult{Get_Bits_Unset_UntilByteAlignment(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Padding", PaddingResult->GetValue());
-		Continue = PaddingResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto FrameFooterResult{Get_FLAC_Frame_Footer(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_FLAC_Frame_Footer(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Footer", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Footer", FrameFooterResult->GetValue());
-		Continue = FrameFooterResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Footer(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Footer(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
 		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CRC-16", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -4122,20 +4131,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	if(Continue == true)
 	{
 		auto BlockingStrategy{std::experimental::any_cast< std::uint8_t >(Result->GetAny("BlockingStrategy"))};
-		std::unique_ptr< Inspection::Result > CodedNumberResult;
 		
 		if(BlockingStrategy == 0x00)
 		{
-			CodedNumberResult = Get_UnsignedInteger_31Bit_UTF_8_Coded(Buffer);
-			CodedNumberResult->GetValue()->SetName("FrameNumber");
+			auto FieldResult{Get_UnsignedInteger_31Bit_UTF_8_Coded(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("FrameNumber", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
 		}
 		else if(BlockingStrategy == 0x01)
 		{
-			CodedNumberResult = Get_UnsignedInteger_36Bit_UTF_8_Coded(Buffer);
-			CodedNumberResult->GetValue()->SetName("SampleNumber");
+			auto FieldResult{Get_UnsignedInteger_36Bit_UTF_8_Coded(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("SampleNumber", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
 		}
-		Result->GetValue()->AppendValue(CodedNumberResult->GetValue());
-		Continue = CodedNumberResult->GetSuccess();
+		else
+		{
+			Result->GetValue()->AppendTag("error", "Unknown blocking strategy value " + to_string_cast(BlockingStrategy) + ".");
+			Continue = false;
+		}
 	}
 	// reading
 	if(Continue == true)
@@ -4257,10 +4272,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 			
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
-				auto FieldResult{Get_FLAC_SeekTableBlock_Data(Buffer, MetaDataBlockDataLength / 18)};
+				Inspection::Reader FieldReader{Buffer, Inspection::Length{MetaDataBlockDataLength, 0}};
+				auto FieldResult{Get_FLAC_SeekTableBlock_Data(FieldReader, MetaDataBlockDataLength / 18)};
 				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -4338,7 +4354,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(In
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 7}};
 		auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
-		auto FieldVaule{Result->SetValue(FieldResult->GetValue())};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
@@ -4617,63 +4633,65 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(Inspection::Buffer & Buffer, std::uint32_t NumberOfSeekPoints)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader, std::uint32_t NumberOfSeekPoints)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	Result->SetSuccess(true);
-	for(auto SeekPointIndex = 0ul; SeekPointIndex < NumberOfSeekPoints; ++SeekPointIndex)
-	{
-		auto SeekPointResult{Get_FLAC_SeekTableBlock_SeekPoint(Buffer)};
-		
-		Result->GetValue()->AppendValue("SeekPoint", SeekPointResult->GetValue());
-		if(SeekPointResult->GetSuccess() == false)
-		{
-			Result->SetSuccess(false);
-			
-			break;
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 64}};
-		auto FieldResult{Get_UnsignedInteger_64Bit_BigEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("SampleNumberOfFirstSampleInTargetFrame", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 64}};
-		auto FieldResult{Get_UnsignedInteger_64Bit_BigEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ByteOffsetOfTargetFrame", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("NumberOfSamplesInTargetFrame", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		for(auto SeekPointIndex = 0ul; ((Continue == true) && (SeekPointIndex < NumberOfSeekPoints)); ++SeekPointIndex)
+		{
+			Inspection::Reader FieldReader{Reader, Inspection::Length{18, 0}};
+			auto FieldResult{Get_FLAC_SeekTableBlock_SeekPoint(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("SeekPoint", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 64}};
+		auto FieldResult{Get_UnsignedInteger_64Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("SampleNumberOfFirstSampleInTargetFrame", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 64}};
+		auto FieldResult{Get_UnsignedInteger_64Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("ByteOffsetOfTargetFrame", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("NumberOfSamplesInTargetFrame", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
