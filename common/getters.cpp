@@ -6737,10 +6737,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_IEEE_60559_2011_binary32(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		auto FieldResult{Get_ISO_IEC_IEEE_60559_2011_binary32(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PeakAmplitude", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -10810,17 +10811,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto DataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(4ull, 0))};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(DataResult->GetSuccess() == true)
+	// verification
+	if(Continue == true)
 	{
-		Result->GetValue()->SetAny(*reinterpret_cast< const float * const >(&(std::experimental::any_cast< const std::vector< std::uint8_t > & >(DataResult->GetAny()).front())));
-		Result->SetSuccess(true);
+		if(Reader.GetRemainingLength() != Inspection::Length{4, 0})
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{4, 0}) + ".");
+			Continue = false;
+		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// reading
+	if(Continue == true)
+	{
+		std::vector< std::uint8_t > Data;
+		
+		Data.push_back(Reader.Get8Bits());
+		Data.push_back(Reader.Get8Bits());
+		Data.push_back(Reader.Get8Bits());
+		Data.push_back(Reader.Get8Bits());
+		Result->GetValue()->SetAny(*reinterpret_cast< const float * const >(&(Data.front())));
+		Result->GetValue()->AppendTag("floating point"s);
+		Result->GetValue()->AppendTag("32bit"s);
+		Result->GetValue()->AppendTag("standard", "ISO/IEC/IEEE-60559:2011 binary32"s);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
