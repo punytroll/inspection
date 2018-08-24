@@ -758,7 +758,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 			else
 			{
 				Result->GetValue()->AppendTag("ended by invalid character '" + to_string_cast(Character) + '\'');
-				Buffer.SetPosition(Buffer.GetPosition() - 1ull);
+				Buffer.SetPosition(Buffer.GetPosition() - Inspection::Length{1, 0});
 				
 				break;
 			}
@@ -1008,7 +1008,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 	if(Continue == true)
 	{
 		auto CodecInformationLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CodecInformationLength"))};
-		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, CodecInformationLength)};
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{CodecInformationLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecInformation", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -1208,7 +1208,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		auto TitleLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("TitleLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, TitleLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Inspection::Length{TitleLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Title", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -1217,7 +1217,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		auto AuthorLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("AuthorLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, AuthorLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Inspection::Length{AuthorLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Author", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -1226,7 +1226,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		auto CopyrightLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CopyrightLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, CopyrightLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Inspection::Length{CopyrightLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Copyright", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -1235,7 +1235,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		auto DescriptionLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("DescriptionLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, DescriptionLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Inspection::Length{DescriptionLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -1244,7 +1244,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		auto RatingLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("RatingLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, RatingLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Inspection::Length{RatingLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -1368,7 +1368,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	if(Continue == true)
 	{
 		auto NameLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("NameLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, NameLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Inspection::Length{NameLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Name", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -1396,7 +1396,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		auto ValueLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("ValueLength"))};
 		auto ValueDataType{std::experimental::any_cast< const std::string & >(Result->GetValue("ValueDataType")->GetTagAny("interpretation"))};
 		auto Name{std::experimental::any_cast< const std::string & >(Result->GetAny("Name"))};
-		auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Buffer, ValueLength, ValueDataType, Name)};
+		auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Buffer, Inspection::Length{ValueLength, 0}, ValueDataType, Name)};
 		auto FieldValue{Result->GetValue()->AppendValue("Value", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -2178,7 +2178,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_LanguageIDRecord(Inspe
 	if(Continue == true)
 	{
 		auto LanguageIDLength{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LanguageIDLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, LanguageIDLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Inspection::Length{LanguageIDLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("LanguageID", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -2566,7 +2566,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 	if(Continue == true)
 	{
 		auto NameLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("NameLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, NameLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Buffer, Inspection::Length{NameLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Name", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -2576,7 +2576,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 	{
 		auto DataLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("DataLength"))};
 		auto DataType{std::experimental::any_cast< std::string >(Result->GetValue("DataType")->GetTagAny("interpretation"))};
-		auto FieldResult{Get_ASF_MetadataObject_DescriptionRecord_Data(Buffer, DataLength, DataType)};
+		auto FieldResult{Get_ASF_MetadataObject_DescriptionRecord_Data(Buffer, Inspection::Length{DataLength, 0}, DataType)};
 		auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -2764,7 +2764,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Buf
 		}
 		else if(GUID == Inspection::g_ASF_ExtendedStreamPropertiesObjectGUID)
 		{
-			ObjectDataResult = Get_ASF_ExtendedStreamPropertiesObjectData(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
+			ObjectDataResult = Get_ASF_ExtendedStreamPropertiesObjectData(Buffer, Inspection::Length{Size, 0} - ObjectHeaderResult->GetLength());
 			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_MetadataObjectGUID)
@@ -2779,14 +2779,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Buf
 		}
 		else if(GUID == Inspection::g_ASF_IndexPlaceholderObjectGUID)
 		{
-			ObjectDataResult = Get_ASF_IndexPlaceholderObjectData(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
+			ObjectDataResult = Get_ASF_IndexPlaceholderObjectData(Buffer, Inspection::Length{Size, 0} - ObjectHeaderResult->GetLength());
 			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
 		}
 		else if(GUID == Inspection::g_ASF_PaddingObjectGUID)
 		{
-			auto Length{Inspection::Length(Size) - ObjectHeaderResult->GetValue()->GetLength()};
-			
-			ObjectDataResult = Get_Bits_Unset_EndedByLength(Buffer, Length);
+			ObjectDataResult = Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length{Size, 0} - ObjectHeaderResult->GetLength());
 			Result->GetValue()->AppendValue("Data", ObjectDataResult->GetValue());
 		}
 		else if(GUID == Inspection::g_ASF_ExtendedContentDescriptionObjectGUID)
@@ -2811,7 +2809,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Buf
 		}
 		else
 		{
-			ObjectDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(Size) - ObjectHeaderResult->GetLength());
+			ObjectDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{Size, 0} - ObjectHeaderResult->GetLength());
 			Result->GetValue()->AppendValue("Data", ObjectDataResult->GetValue());
 		}
 		if(ObjectDataResult->GetSuccess() == true)
@@ -3084,14 +3082,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 		
 		if(FormatTag == "WAVE_FORMAT_WMAUDIO2")
 		{
-			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Buffer, CodecSpecificDataSize)};
+			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Buffer, Inspection::Length{CodecSpecificDataSize, 0})};
 			auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificData", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length(CodecSpecificDataSize))};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{CodecSpecificDataSize, 0})};
 			auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificData", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -3250,14 +3248,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 		
 		if(StreamType == Inspection::g_ASF_AudioMediaGUID)
 		{
-			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Buffer, TypeSpecificDataLength)};
+			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Buffer, Inspection::Length{TypeSpecificDataLength, 0})};
 			auto FieldValue{Result->GetValue()->AppendValue("TypeSpecificData", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, TypeSpecificDataLength)};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{TypeSpecificDataLength, 0})};
 			auto FieldValue{Result->GetValue()->AppendValue("TypeSpecificData", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -3266,7 +3264,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, std::experimental::any_cast< std::uint32_t >(Result->GetAny("ErrorCorrectionDataLength")))};
+		auto ErrorCorrectionDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("ErrorCorrectionDataLength"))};
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{ErrorCorrectionDataLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("ErrorCorrectionData", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -4228,7 +4227,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 	if(Continue == true)
 	{
 		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(Result->GetValue("Header")->GetValue("BlockType")->GetTagAny("interpretation"))};
-		auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
@@ -4239,26 +4237,34 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "Padding")
 		{
-			auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, MetaDataBlockDataLength)};
+			auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length"))};
+			auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length{MetaDataBlockDataLength, 0})};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
 		else if(MetaDataBlockType == "Application")
 		{
-			auto FieldResult{Get_FLAC_ApplicationBlock_Data(Buffer, MetaDataBlockDataLength)};
+			auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length"))};
+			auto FieldResult{Get_FLAC_ApplicationBlock_Data(Buffer, Inspection::Length{MetaDataBlockDataLength, 0})};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
 		else if(MetaDataBlockType == "SeekTable")
 		{
+			auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length"))};
+			
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
 				auto FieldResult{Get_FLAC_SeekTableBlock_Data(Buffer, MetaDataBlockDataLength / 18)};
 				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 				
 				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if(MetaDataBlockType == "VorbisComment")
@@ -4868,10 +4874,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(
 	// reading
 	if(Continue == true)
 	{
-		auto MD5SignatureOfUnencodedAudioDataResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 16)};
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{16, 0})};
+		auto FieldValue{Result->GetValue()->AppendValue("MD5SignatureOfUnencodedAudioData", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("MD5SignatureOfUnencodedAudioData", MD5SignatureOfUnencodedAudioDataResult->GetValue());
-		Continue = MD5SignatureOfUnencodedAudioDataResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -9708,7 +9714,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	
 	if(Buffer.Has(2ull, 0) == true)
 	{
-		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 2ull)};
+		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{2, 0})};
 		
 		Result->SetValue(BytesResult->GetValue());
 		if(BytesResult->GetSuccess() == true)
@@ -10350,7 +10356,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	
 	if(Buffer.Has(2ull, 0) == true)
 	{
-		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, 2ull)};
+		auto BytesResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{2, 0})};
 		
 		Result->SetValue(BytesResult->GetValue());
 		if(BytesResult->GetSuccess() == true)
@@ -13225,7 +13231,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	if(Continue == true)
 	{
 		auto Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Length"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Length)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{Length, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -13291,7 +13297,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	if(Continue == true)
 	{
 		auto VendorLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("VendorLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, VendorLength)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{VendorLength, 0})};
 		auto FieldValue{Result->GetValue()->AppendValue("Vendor", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);

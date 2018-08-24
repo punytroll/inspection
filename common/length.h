@@ -14,18 +14,13 @@ namespace Inspection
 	{
 	public:
 		Length(void) :
-			Length(0ull, 0)
+			Length(0, 0)
 		{
 		}
 		
 		Length(const Length & Length) :
 			_Bits(Length._Bits),
 			_Bytes(Length._Bytes)
-		{
-		}
-		
-		Length(std::uint64_t Bytes) :
-			Length(Bytes, 0)
 		{
 		}
 		
@@ -48,7 +43,7 @@ namespace Inspection
 		
 		void Reset(void)
 		{
-			_Bytes = 0ull;
+			_Bytes = 0;
 			_Bits = 0;
 		}
 		
@@ -72,7 +67,7 @@ namespace Inspection
 			else
 			{
 				Bits = (_Bits + 8) - Length._Bits;
-				Bytes -= 1ull;
+				Bytes -= 1;
 			}
 			
 			return Inspection::Length(Bytes, Bits);
@@ -89,7 +84,7 @@ namespace Inspection
 			else
 			{
 				_Bits += 8 - Length._Bits;
-				_Bytes -= Length._Bytes + 1ull;
+				_Bytes -= Length._Bytes + 1;
 			}
 			return *this;
 		}

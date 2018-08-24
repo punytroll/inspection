@@ -210,21 +210,21 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 			if(SegmentTableEntry != 0xff)
 			{
 				// the packet ends here, read its content and try interpretation
-				auto PacketResult{Get_Ogg_Packet(Buffer, PacketLength)};
+				auto PacketResult{Get_Ogg_Packet(Buffer, Inspection::Length{PacketLength, 0})};
 				
 				if(PacketResult->GetSuccess() == true)
 				{
 					Result->GetValue()->AppendValue("Packet", PacketResult->GetValue());
 				}
 				// No matter what data gets read before - successfully or ansuccessfully - we heed the values from the segment table!
-				Buffer.SetPosition(PacketStart + PacketLength);
+				Buffer.SetPosition(PacketStart + Inspection::Length{PacketLength, 0});
 				PacketStart = Buffer.GetPosition();
 				PacketLength = 0ull;
 			}
 		}
 		if(PacketLength > 0ull)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{PacketLength}};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{PacketLength, 0}};
 			auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Packet", FieldResult->GetValue())};
 			

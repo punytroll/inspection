@@ -153,7 +153,7 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				
 				auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
 				
-				if(Rest > 0ull)
+				if(Rest > Inspection::Length{0, 0})
 				{
 					std::cout << g_DarkGray << "There are " << g_DarkYellow << to_string_cast(Rest) << g_DarkGray << " bytes and bits after the data." << std::endl;
 				}
