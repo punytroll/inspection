@@ -954,10 +954,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_CodecEntryType(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_ASF_CodecEntryType(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Type", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1020,19 +1021,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
 		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1058,7 +1059,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -2837,19 +2838,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Buf
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ObjectHeader(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto GUIDResult{Get_ASF_GUID(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("GUID", GUIDResult->GetValue());
-	if(GUIDResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto SizeResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		auto FieldResult{Get_ASF_GUID(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("GUID", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Size", SizeResult->GetValue());
-		if(SizeResult->GetSuccess() == true)
-		{
-			Result->SetSuccess(true);
-		}
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -5757,14 +5765,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC(Ins
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_ImageFormat(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ImageFormatResult{Get_ISO_IEC_8859_1_1998_String_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
+	auto Continue{true};
 	
-	Result->SetValue(ImageFormatResult->GetValue());
-	if(ImageFormatResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByLength(Buffer, Inspection::Length{3, 0})};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		const std::string & ImageFormat{std::experimental::any_cast< const std::string & >(ImageFormatResult->GetAny())};
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::string & ImageFormat{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
 		if(ImageFormat == "-->")
 		{
@@ -5783,6 +5797,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_Ima
 			Result->GetValue()->PrependTag("mime-type", "<unrecognized>"s);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6001,25 +6017,39 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspectio
 {
 	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+	auto Continue{true};
 	
-	if(FieldResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetValue(FieldResult->GetValue());
-		Result->SetSuccess(true);
-	}
-	else
-	{
-		Buffer.SetPosition(Start);
-		FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length(3ull, 0));
-		Result->SetValue(FieldResult->GetValue());
+		auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+		
 		if(FieldResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-			Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
-			Result->SetSuccess(true);
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+		}
+		else
+		{
+			Buffer.SetPosition(Start);
+			FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length{3, 0});
+			
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			if(FieldResult->GetSuccess() == true)
+			{
+				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+				Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+			}
+			else
+			{
+				Continue = false;
+			}
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9665,12 +9695,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto CodeResult{Get_ASCII_String_Alphabetical_EndedByLength(Buffer, Inspection::Length(3ull, 0))};
+	auto Continue{true};
 	
-	Result->SetValue(CodeResult->GetValue());
-	if(CodeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		const std::string & Code{std::experimental::any_cast< const std::string & >(CodeResult->GetAny())};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByLength(Buffer, Inspection::Length{3, 0})};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
 		try
 		{
@@ -9678,12 +9716,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 			
 			Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
 			Result->GetValue()->PrependTag("interpretation", Interpretation);
-			Result->SetSuccess(true);
 		}
 		catch(...)
 		{
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
