@@ -6319,10 +6319,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -6428,10 +6429,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -6475,10 +6477,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -6885,10 +6888,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_T___(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -7092,23 +7096,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TXXX(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-		auto DescriptionResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Description", DescriptionResult->GetValue());
-		if(DescriptionResult->GetSuccess() == true)
-		{
-			auto ValueResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
-			
-			Result->GetValue()->AppendValue("Value", ValueResult->GetValue());
-			Result->SetSuccess(ValueResult->GetSuccess());
-		}
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
+		auto FieldValue{Result->GetValue()->AppendValue("Value", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7137,29 +7155,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_USLT(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto LanguageResult{Get_ID3_2_3_Language(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Language", LanguageResult->GetValue());
-		if(LanguageResult->GetSuccess() == true)
-		{
-			auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-			auto ContentDescriptorResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
-			
-			Result->GetValue()->AppendValue("ContentDescriptor", ContentDescriptorResult->GetValue());
-			if(ContentDescriptorResult->GetSuccess() == true)
-			{
-				auto LyricsTextResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
-				
-				Result->GetValue()->AppendValue("Lyrics/Text", LyricsTextResult->GetValue());
-				Result->SetSuccess(LyricsTextResult->GetSuccess());
-			}
-		}
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_3_Language(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("Language", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		auto FieldValue{Result->GetValue()->AppendValue("ContentDescriptor", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Buffer, TextEncoding, Boundary - Buffer.GetPosition())};
+		auto FieldValue{Result->GetValue()->AppendValue("Lyrics/Text", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7182,23 +7216,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TextEncodingResult{Get_ID3_2_3_TextEncoding(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("TextEncoding", TextEncodingResult->GetValue());
-	if(TextEncodingResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(TextEncodingResult->GetAny())};
-		auto DescriptorResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Descriptor", DescriptorResult->GetValue());
-		if(DescriptorResult->GetSuccess() == true)
-		{
-			auto URLResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
-			
-			Result->GetValue()->AppendValue("URL", URLResult->GetValue());
-			Result->SetSuccess(URLResult->GetSuccess());
-		}
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Buffer, TextEncoding)};
+		auto FieldValue{Result->GetValue()->AppendValue("Descriptor", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
+		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7543,19 +7590,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
 		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -7582,7 +7629,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
