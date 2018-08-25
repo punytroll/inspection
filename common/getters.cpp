@@ -9564,51 +9564,59 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
-	if(Buffer.GetPosition() == Boundary)
+	// reading
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("ended by length"s);
-		Result->GetValue()->AppendTag("empty"s);
-		Result->SetSuccess(true);
-	}
-	else
-	{
-		auto NumberOfCharacters{0ul};
+		std::stringstream Value;
 		
-		while(true)
+		if(Buffer.GetPosition() == Boundary)
 		{
-			auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AppendTag("empty"s);
+		}
+		else
+		{
+			auto NumberOfCharacters{0ul};
 			
-			if(Buffer.GetPosition() <= Boundary)
+			while(true)
 			{
-				if(CharacterResult->GetSuccess() == true)
+				auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+				
+				if(Buffer.GetPosition() <= Boundary)
 				{
-					NumberOfCharacters += 1;
-					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-					if(Buffer.GetPosition() == Boundary)
+					if(FieldResult->GetSuccess() == true)
 					{
-						Result->GetValue()->AppendTag("ended by length"s);
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-						Result->SetSuccess(true);
+						NumberOfCharacters += 1;
+						Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
+						if(Buffer.GetPosition() == Boundary)
+						{
+							Result->GetValue()->AppendTag("ended by length"s);
+							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+							
+							break;
+						}
+					}
+					else
+					{
+						Continue = false;
 						
 						break;
 					}
 				}
 				else
 				{
-					break;
+					Continue = false;
 				}
 			}
-			else
-			{
-				break;
-			}
 		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9617,37 +9625,46 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
-	
-	auto NumberOfCharacters{0ul};
-	
-	while(true)
+	// reading
+	if(Continue == true)
 	{
-		auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+		std::stringstream Value;
+		auto NumberOfCharacters{0ul};
 		
-		if(CharacterResult->GetSuccess() == true)
+		while(true)
 		{
-			NumberOfCharacters += 1;
-			Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-		}
-		else
-		{
-			auto Byte{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny("byte"))};
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
 			
-			if(Byte == 0x00)
+			if(FieldResult->GetSuccess() == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination"s);
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-				Result->SetSuccess(true);
+				NumberOfCharacters += 1;
+				Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
 			}
-			
-			break;
+			else
+			{
+				auto Byte{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("byte"))};
+				
+				if(Byte == 0x00)
+				{
+					Result->GetValue()->AppendTag("ended by termination"s);
+					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				}
+				else
+				{
+					Continue = false;
+				}
+				
+				break;
+			}
 		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9657,67 +9674,78 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
-	if(Buffer.GetPosition() == Boundary)
+	// reading
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("ended by length"s);
-		Result->GetValue()->AppendTag("empty"s);
-		Result->SetSuccess(true);
-	}
-	else
-	{
-		auto NumberOfCharacters{0ul};
+		std::stringstream Value;
 		
-		while(true)
+		if(Buffer.GetPosition() == Boundary)
 		{
-			auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AppendTag("empty"s);
+		}
+		else
+		{
+			auto NumberOfCharacters{0ul};
 			
-			if(Buffer.GetPosition() <= Boundary)
+			while(true)
 			{
-				if(CharacterResult->GetSuccess() == true)
+				auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+				
+				if(Buffer.GetPosition() <= Boundary)
 				{
-					NumberOfCharacters += 1;
-					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-					if(Buffer.GetPosition() == Boundary)
+					if(FieldResult->GetSuccess() == true)
 					{
-						Result->GetValue()->AppendTag("ended by length"s);
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-						Result->SetSuccess(true);
+						NumberOfCharacters += 1;
+						Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
+						if(Buffer.GetPosition() == Boundary)
+						{
+							Result->GetValue()->AppendTag("ended by length"s);
+							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+							
+							break;
+						}
+					}
+					else
+					{
+						auto Byte{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("byte"))};
+						
+						if(Byte == 0x00)
+						{
+							if(Buffer.GetPosition() == Boundary)
+							{
+								Result->GetValue()->AppendTag("ended by termination and length"s);
+							}
+							else
+							{
+								Result->GetValue()->AppendTag("ended by termination"s);
+							}
+							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+						}
+						else
+						{
+							Continue = false;
+						}
 						
 						break;
 					}
 				}
 				else
 				{
-					auto Byte{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny("byte"))};
-					
-					if(Byte == 0x00)
-					{
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by termination and length"s);
-						}
-						else
-						{
-							Result->GetValue()->AppendTag("ended by termination"s);
-						}
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-						Result->SetSuccess(true);
-					}
+					Continue = false;
 					
 					break;
 				}
 			}
-			else
-			{
-				break;
-			}
 		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9727,67 +9755,78 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
-	if(Buffer.GetPosition() < Boundary)
+	// reading
+	if(Continue == true)
 	{
-		auto NumberOfCharacters{0ul};
-		auto NumberOfTerminations{0ul};
+		std::stringstream Value;
 		
-		while(true)
+		if(Buffer.GetPosition() < Boundary)
 		{
-			auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+			auto NumberOfCharacters{0ul};
+			auto NumberOfTerminations{0ul};
 			
-			if(Buffer.GetPosition() <= Boundary)
+			while(true)
 			{
-				if(CharacterResult->GetSuccess() == true)
+				auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+				
+				if(Buffer.GetPosition() <= Boundary)
 				{
-					NumberOfCharacters += 1;
-					Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-				}
-				else
-				{
-					auto Byte{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny("byte"))};
-					
-					if(Byte == 0x00)
+					if(FieldResult->GetSuccess() == true)
 					{
-						if(NumberOfTerminations == 0)
+						NumberOfCharacters += 1;
+						Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
+					}
+					else
+					{
+						auto Byte{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("byte"))};
+						
+						if(Byte == 0x00)
 						{
-							Result->GetValue()->AppendTag("ended by termination"s);
-							if(NumberOfCharacters > 0)
+							if(NumberOfTerminations == 0)
 							{
-								Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+								Result->GetValue()->AppendTag("ended by termination"s);
+								if(NumberOfCharacters > 0)
+								{
+									Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+								}
+								else
+								{
+									Result->GetValue()->AppendTag("empty"s);
+								}
 							}
-							else
+							NumberOfTerminations += 1;
+							if(Buffer.GetPosition() == Boundary)
 							{
-								Result->GetValue()->AppendTag("empty"s);
+								Result->GetValue()->AppendTag("until length"s);
+								Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
+								
+								break;
 							}
 						}
-						NumberOfTerminations += 1;
-						if(Buffer.GetPosition() == Boundary)
+						else
 						{
-							Result->GetValue()->AppendTag("until length"s);
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
-							Result->SetSuccess(true);
+							Continue = false;
 							
 							break;
 						}
 					}
-					else
-					{
-						break;
-					}
+				}
+				else
+				{
+					Continue = false;
+					
+					break;
 				}
 			}
-			else
-			{
-				break;
-			}
 		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9797,70 +9836,79 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
-	if(Buffer.GetPosition() == Boundary)
+	// reading
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("ended by length"s);
-		Result->GetValue()->AppendTag("empty"s);
-	}
-	else
-	{
-		auto NumberOfCharacters{0ul};
-		auto NumberOfTerminations{0ul};
+		std::stringstream Value;
 		
-		while(true)
+		if(Buffer.GetPosition() == Boundary)
 		{
-			auto Position{Buffer.GetPosition()};
-			auto CharacterResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AppendTag("empty"s);
+		}
+		else
+		{
+			auto NumberOfCharacters{0ul};
+			auto NumberOfTerminations{0ul};
 			
-			if((Buffer.GetPosition() <= Boundary) && (CharacterResult->GetSuccess() == true))
+			while(true)
 			{
-				NumberOfCharacters += 1;
-				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-				if(Buffer.GetPosition() == Boundary)
-				{
-					Result->GetValue()->AppendTag("ended by length"s);
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-					Result->SetSuccess(true);
-					
-					break;
-				}
-			}
-			else
-			{
-				Buffer.SetPosition(Position);
+				auto Position{Buffer.GetPosition()};
+				auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
 				
-				break;
-			}
-		}
-		while(Buffer.GetPosition() < Boundary)
-		{
-			auto Position{Buffer.GetPosition()};
-			auto Byte{Buffer.Get8Bits()};
-			
-			if(Byte == 0x00)
-			{
-				if(NumberOfTerminations == 0)
+				if((Buffer.GetPosition() <= Boundary) && (FieldResult->GetSuccess() == true))
 				{
-					Result->GetValue()->AppendTag("ended by termination"s);
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+					NumberOfCharacters += 1;
+					Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
+					if(Buffer.GetPosition() == Boundary)
+					{
+						Result->GetValue()->AppendTag("ended by length"s);
+						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+						
+						break;
+					}
 				}
-				NumberOfTerminations += 1;
-				if(Buffer.GetPosition() == Boundary)
+				else
 				{
-					Result->GetValue()->AppendTag("ended by length"s);
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
-					Result->SetSuccess(true);
+					Buffer.SetPosition(Position);
 					
 					break;
 				}
 			}
+			while(Buffer.GetPosition() < Boundary)
+			{
+				auto Byte{Buffer.Get8Bits()};
+				
+				if(Byte == 0x00)
+				{
+					if(NumberOfTerminations == 0)
+					{
+						Result->GetValue()->AppendTag("ended by termination"s);
+						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+					}
+					NumberOfTerminations += 1;
+					if(Buffer.GetPosition() == Boundary)
+					{
+						Result->GetValue()->AppendTag("ended by length"s);
+						Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
+						
+						break;
+					}
+				}
+				else
+				{
+					Continue = false;
+				}
+			}
 		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
