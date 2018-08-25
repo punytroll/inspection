@@ -1787,10 +1787,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_GUID(Inspection::Buffe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_GUID_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+		auto FieldResult{Get_GUID_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -1943,10 +1944,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesObjectDa
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_GUID_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+		auto FieldResult{Get_GUID_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("FileID", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2397,10 +2399,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		{
 			if(Length == Inspection::Length{16, 0})
 			{
-				auto FieldResult{Get_GUID_LittleEndian(Buffer)};
+				Inspection::Reader FieldReader{Buffer, Length};
+				auto FieldResult{Get_GUID_LittleEndian(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 				// interpretation
 				if(Continue == true)
 				{
@@ -5432,11 +5435,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_VorbisCommentBlock_Da
 	return Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer);
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(16ull, 0) == true)
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.GetRemainingLength() == Inspection::Length{16, 0})
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{16, 0}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		Result->GetValue()->AppendTag("guid"s);
 		Result->GetValue()->AppendTag("binary"s);
@@ -5444,21 +5458,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 		
 		GUID Value;
 		
-		Value.Data1 = static_cast< std::uint32_t >(Buffer.Get8Bits()) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 16) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 24);
-		Value.Data2 = static_cast< std::uint32_t >(Buffer.Get8Bits()) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8);
-		Value.Data3 = static_cast< std::uint32_t >(Buffer.Get8Bits()) + (static_cast< std::uint32_t >(Buffer.Get8Bits()) << 8);
-		Value.Data4[0] = Buffer.Get8Bits();
-		Value.Data4[1] = Buffer.Get8Bits();
-		Value.Data4[2] = Buffer.Get8Bits();
-		Value.Data4[3] = Buffer.Get8Bits();
-		Value.Data4[4] = Buffer.Get8Bits();
-		Value.Data4[5] = Buffer.Get8Bits();
-		Value.Data4[6] = Buffer.Get8Bits();
-		Value.Data4[7] = Buffer.Get8Bits();
+		Value.Data1 = static_cast< std::uint32_t >(Reader.Get8Bits()) + (static_cast< std::uint32_t >(Reader.Get8Bits()) << 8) + (static_cast< std::uint32_t >(Reader.Get8Bits()) << 16) + (static_cast< std::uint32_t >(Reader.Get8Bits()) << 24);
+		Value.Data2 = static_cast< std::uint32_t >(Reader.Get8Bits()) + (static_cast< std::uint32_t >(Reader.Get8Bits()) << 8);
+		Value.Data3 = static_cast< std::uint32_t >(Reader.Get8Bits()) + (static_cast< std::uint32_t >(Reader.Get8Bits()) << 8);
+		Value.Data4[0] = Reader.Get8Bits();
+		Value.Data4[1] = Reader.Get8Bits();
+		Value.Data4[2] = Reader.Get8Bits();
+		Value.Data4[3] = Reader.Get8Bits();
+		Value.Data4[4] = Reader.Get8Bits();
+		Value.Data4[5] = Reader.Get8Bits();
+		Value.Data4[6] = Reader.Get8Bits();
+		Value.Data4[7] = Reader.Get8Bits();
 		Result->GetValue()->SetAny(Value);
-		Result->SetSuccess(true);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -9167,10 +9182,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Buffe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_GUID_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+		auto FieldResult{Get_GUID_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
