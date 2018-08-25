@@ -29,7 +29,7 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front(), ProcessBuffer);
+		ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
 		Paths.pop_front();
 	}
 	
