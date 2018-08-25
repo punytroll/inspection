@@ -19,9 +19,9 @@ const std::string g_LightGreen{"\033[92m"};
 const std::string g_White{"\033[97m"};
 const std::string g_DarkYellow{"\033[33m"};
 
-void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor);
-void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor);
-void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor);
+void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer);
+void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer);
+void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer);
 
 inline std::int64_t GetFileSize(const std::string & Path)
 {
@@ -64,7 +64,7 @@ inline bool IsRegularFile(const std::string & Path)
 	return S_ISREG(Stat.st_mode);
 }
 
-inline void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor)
+inline void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer)
 {
 	auto Directory(opendir(Path.c_str()));
 	
@@ -80,24 +80,24 @@ inline void ReadDirectory(const std::string & Path, std::function< std::unique_p
 			}
 			else if((std::string(DirectoryEntry->d_name) != ".") && (std::string(DirectoryEntry->d_name) != ".."))
 			{
-				ReadItem(Path + '/' + DirectoryEntry->d_name, Processor);
+				ReadItem(Path + '/' + DirectoryEntry->d_name, Processor, Writer);
 			}
 		}
 		closedir(Directory);
 	}
 }
 
-inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor)
+inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer)
 {
 	if(FileExists(Path) == true)
 	{
 		if(IsDirectory(Path) == true)
 		{
-			ReadDirectory(Path, Processor);
+			ReadDirectory(Path, Processor, Writer);
 		}
 		else if(IsRegularFile(Path) == true)
 		{
-			ReadFile(Path, Processor);
+			ReadFile(Path, Processor, Writer);
 		}
 		else
 		{
@@ -112,7 +112,7 @@ inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< I
 	}
 }
 
-inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor)
+inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer)
 {
 	auto FileDescriptor{open(Path.c_str(), O_RDONLY)};
 	
@@ -138,29 +138,34 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				auto ParseResult{Processor(Buffer)};
 				
 				ParseResult->GetValue()->SetAny(g_LightGreen + Path + g_White);
-				PrintValue(ParseResult->GetValue());
-				if(ParseResult->GetSuccess() == false)
-				{
-					if(ParseResult->GetValue()->GetName() == "")
-					{
-						std::cout << g_LightRed << "Parsing does not give valid and complete result." << g_White << std::endl;
-					}
-					else
-					{
-						std::cout << g_LightRed << "Parsing does not give valid " << ParseResult->GetValue()->GetName() << '.' << g_White << std::endl;
-					}
-				}
-				
-				auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
-				
-				if(Rest > Inspection::Length{0, 0})
-				{
-					std::cout << g_DarkGray << "There are " << g_DarkYellow << to_string_cast(Rest) << g_DarkGray << " bytes and bits after the data." << std::endl;
-				}
+				Writer(ParseResult, Buffer);
 				munmap(Address, FileSize);
 			}
 		}
 		close(FileDescriptor);
+	}
+}
+
+inline void DefaultWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Buffer & Buffer)
+{
+	PrintValue(Result->GetValue());
+	if(Result->GetSuccess() == false)
+	{
+		if(Result->GetValue()->GetName() == "")
+		{
+			std::cout << g_LightRed << "Parsing does not give valid and complete result." << g_White << std::endl;
+		}
+		else
+		{
+			std::cout << g_LightRed << "Parsing does not give valid " << Result->GetValue()->GetName() << '.' << g_White << std::endl;
+		}
+	}
+	
+	auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
+	
+	if(Rest > Inspection::Length{0, 0})
+	{
+		std::cout << g_DarkGray << "There are " << g_DarkYellow << to_string_cast(Rest) << g_DarkGray << " bytes and bits after the data." << std::endl;
 	}
 }
 
