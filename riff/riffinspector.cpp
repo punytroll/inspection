@@ -415,20 +415,29 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto GUIDResult{Get_GUID_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(GUIDResult->GetValue());
-	if(GUIDResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+		auto FieldResult{Get_GUID_LittleEndian(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		auto GUID{std::experimental::any_cast< Inspection::GUID >(GUIDResult->GetAny())};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(Result->GetAny())};
 		
 		if(GUID == g_KSDATAFORMAT_SUBTYPE_PCM)
 		{
 			Result->GetValue()->AppendTag("interpretation", "KSDATAFORMAT_SUBTYPE_PCM"s);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
