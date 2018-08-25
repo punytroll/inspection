@@ -113,7 +113,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice2_Partition(Inspection::Buffer & Buffer, std::uint32_t NumberOfSamples);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Type(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlock_Data(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_GUID_LittleEndian(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_GUID_LittleEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_COM(Inspection::Buffer & Buffer, const Inspection::Length & Length);
