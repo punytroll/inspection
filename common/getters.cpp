@@ -6731,22 +6731,84 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 			
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
+		else if(OwnerIdentifier == "WM/MediaClassPrimaryID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("MediaClassPrimaryID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(OwnerIdentifier == "WM/MediaClassSecondaryID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("MediaClassSecondaryID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(OwnerIdentifier == "WM/WMCollectionGroupID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("CollectionGroupID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(OwnerIdentifier == "WM/WMCollectionID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("CollectionID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(OwnerIdentifier == "WM/WMContentID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("ContentID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(OwnerIdentifier == "ZuneAlbumArtistMediaID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("ZuneAlbumArtistMediaID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(OwnerIdentifier == "ZuneAlbumMediaID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("ZuneAlbumMediaID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(OwnerIdentifier == "ZuneCollectionID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("ZuneCollectionID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(OwnerIdentifier == "ZuneMediaID")
+		{
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("ZuneMediaID", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
 		else
 		{
 			std::string PRIVDataName;
 			std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > PRIVDataHandler;
 			
-			if(OwnerIdentifier == "WM/MediaClassPrimaryID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "MediaClassPrimaryID";
-			}
-			else if(OwnerIdentifier == "WM/MediaClassSecondaryID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "MediaClassSecondaryID";
-			}
-			else if(OwnerIdentifier == "WM/Provider")
+			if(OwnerIdentifier == "WM/Provider")
 			{
 				PRIVDataHandler = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
 				PRIVDataName = "Provider";
@@ -6755,41 +6817,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 			{
 				PRIVDataHandler = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
 				PRIVDataName = "UniqueFileIdentifier";
-			}
-			else if(OwnerIdentifier == "WM/WMCollectionGroupID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "CollectionGroupID";
-			}
-			else if(OwnerIdentifier == "WM/WMCollectionID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "CollectionID";
-			}
-			else if(OwnerIdentifier == "WM/WMContentID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "ContentID";
-			}
-			else if(OwnerIdentifier == "ZuneAlbumArtistMediaID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "ZuneAlbumArtistMediaID";
-			}
-			else if(OwnerIdentifier == "ZuneAlbumMediaID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "ZuneAlbumArtistMediaID";
-			}
-			else if(OwnerIdentifier == "ZuneCollectionID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "ZuneAlbumArtistMediaID";
-			}
-			else if(OwnerIdentifier == "ZuneMediaID")
-			{
-				PRIVDataHandler = Get_ID3_GUID;
-				PRIVDataName = "ZuneMediaID";
 			}
 			else
 			{
@@ -9174,19 +9201,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{16, 0}};
 		auto FieldResult{Get_GUID_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -9204,7 +9231,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Buffe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
