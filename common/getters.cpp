@@ -5659,10 +5659,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_COM(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_TextEncoding(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_2_TextEncoding(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -5706,10 +5707,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_TextEncoding(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_2_TextEncoding(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -5834,10 +5836,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_T__(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_TextEncoding(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		auto FieldResult{Get_ID3_2_2_TextEncoding(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -6064,19 +6067,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextEncoding(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
 		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -6103,7 +6106,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextEncoding(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

@@ -127,7 +127,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Tag_Header_Flags(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame(Inspection::Buffer & Buffer);
