@@ -1782,16 +1782,25 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_GUID(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto GUIDResult{Get_GUID_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(GUIDResult->GetValue());
-	if(GUIDResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto GUIDInterpretation{Get_GUID_Interpretation(std::experimental::any_cast< Inspection::GUID >(GUIDResult->GetAny()))};
+		auto FieldResult{Get_GUID_LittleEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto GUIDInterpretation{Get_GUID_Interpretation(std::experimental::any_cast< Inspection::GUID >(Result->GetAny()))};
 		
 		Result->GetValue()->PrependTag("interpretation", GUIDInterpretation);
-		Result->SetSuccess(true);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9152,16 +9161,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bi
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto GUIDResult{Get_GUID_LittleEndian(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(GUIDResult->GetValue());
-	if(GUIDResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		auto FieldResult{Get_GUID_LittleEndian(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		const Inspection::GUID & GUID{std::experimental::any_cast< const Inspection::GUID & >(GUIDResult->GetAny())};
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		const Inspection::GUID & GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetAny())};
 		
 		try
 		{
@@ -9172,6 +9186,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Buffe
 			Result->GetValue()->PrependTag("interpretation", "<unknown GUID>"s);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
