@@ -9239,64 +9239,71 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("standard", "IEC 60908:1999"s);
 	Result->GetValue()->AppendTag("name", "Compact Disc Digital Audio"s);
-	
-	auto HeaderResult{Get_IEC_60908_1999_TableOfContents_Header(Buffer)};
-	
-	Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
-	if(HeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Header(FieldReader)};
 		
-		auto FirstTrackNumber{std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("FirstTrackNumber"))};
-		auto LastTrackNumber{std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("LastTrackNumber"))};
-		auto TracksResult{Get_IEC_60908_1999_TableOfContents_Tracks(Buffer, FirstTrackNumber, LastTrackNumber)};
-		
-		Result->GetValue()->AppendValues(TracksResult->GetValue()->GetValues());
-		Result->SetSuccess(TracksResult->GetSuccess());
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FirstTrackNumber{std::experimental::any_cast< std::uint8_t >(Result->GetAny("FirstTrackNumber"))};
+		auto LastTrackNumber{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LastTrackNumber"))};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Tracks(Buffer, FirstTrackNumber, LastTrackNumber)};
+		
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Header(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Header(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
 		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
 		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("FirstTrackNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
 		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("LastTrackNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
