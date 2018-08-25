@@ -22,7 +22,7 @@ namespace Inspection
 	const std::string g_White{"\033[97m"};
 	const std::string g_Reset{"\033[0m"};
 	
-	void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
+	inline void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 	{
 		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false) || (Value->GetTags().empty() == false)};
 		

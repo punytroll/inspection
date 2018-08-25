@@ -6154,14 +6154,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 		if(TextEncoding == 0x00)
 		{
 			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
-			auto FieldValue{Result->SetValue(Result->GetValue())};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
 		else if(TextEncoding == 0x01)
 		{
 			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
-			auto FieldValue{Result->SetValue(Result->GetValue())};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
