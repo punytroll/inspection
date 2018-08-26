@@ -287,10 +287,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ItemKey", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -876,43 +877,46 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByTermination(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByTermination(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ASCII"s);
 	Result->GetValue()->AppendTag("printables only"s);
-	Result->SetSuccess(true);
-	
-	auto NumberOfCharacters{0ul};
-	std::stringstream Value;
-	
-	while(Buffer.Has(1ull, 0) == true)
+	//reading
+	if(Continue == true)
 	{
-		auto Character{Buffer.Get8Bits()};
+		auto NumberOfCharacters{0ul};
+		std::stringstream Value;
 		
-		if(Character == 0x00)
+		while((Continue == true) && (Reader.Has(Inspection::Length{1, 0}) == true))
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
-			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+			auto Character{Reader.Get8Bits()};
 			
-			break;
+			if(Character == 0x00)
+			{
+				Result->GetValue()->AppendTag("ended by termination"s);
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				
+				break;
+			}
+			else if(Is_ASCII_Character_Printable(Character) == true)
+			{
+				NumberOfCharacters += 1;
+				Value << Character;
+			}
+			else
+			{
+				Continue = false;
+			}
 		}
-		else if(Is_ASCII_Character_Printable(Character) == true)
-		{
-			NumberOfCharacters += 1;
-			Value << Character;
-		}
-		else
-		{
-			Result->SetSuccess(false);
-			
-			break;
-		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
+	//finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -5950,10 +5954,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_UFI(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -6469,12 +6474,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC_MIMEType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto MIMETypeResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+	auto Continue{true};
 	
-	/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
-	/// @todo As per [ID3 2.3.0], the value '-->' is also permitted to signal a URL [RFC 1738] in the picture data.
-	Result->SetValue(MIMETypeResult->GetValue());
-	Result->SetSuccess(MIMETypeResult->GetSuccess());
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
+		/// @todo As per [ID3 2.3.0], the value '-->' is also permitted to signal a URL [RFC 1738] in the picture data.
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6628,18 +6642,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB(In
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto MIMETypeResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+	auto Continue{true};
 	
-	/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
-	Result->SetValue(MIMETypeResult->GetValue());
-	if(MIMETypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
+		if(Continue == false)
+		{
+			Result->GetValue()->PrependTag("error", "This field could not be interpreted as a terminated ASCII string of printable characters."s);
+		}
 	}
-	else
-	{
-		Result->GetValue()->PrependTag("error", "This field could not be interpreted as a terminated ASCII string of printable characters."s);
-	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7236,16 +7256,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_UFID(In
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto OwnerIdentifierResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("OwnerIdentifier", OwnerIdentifierResult->GetValue());
-	if(OwnerIdentifierResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto IdentifierResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("Identifier", IdentifierResult->GetValue());
-		Result->SetSuccess(IdentifierResult->GetSuccess());
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7957,10 +7988,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC_MI
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
 		/// @todo As per [ID3 2.4.0], the value '-->' is also permitted to signal a URL [RFC 1738] in the picture data.
 	}
@@ -8246,10 +8278,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_UFID(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
