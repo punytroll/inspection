@@ -146,10 +146,11 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("GranulePosition", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
