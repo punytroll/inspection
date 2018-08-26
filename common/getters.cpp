@@ -4168,17 +4168,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(BlockingStrategy == 0x00)
 		{
-			auto FieldResult{Get_UnsignedInteger_31Bit_UTF_8_Coded(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_UnsignedInteger_31Bit_UTF_8_Coded(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("FrameNumber", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(BlockingStrategy == 0x01)
 		{
-			auto FieldResult{Get_UnsignedInteger_36Bit_UTF_8_Coded(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_UnsignedInteger_36Bit_UTF_8_Coded(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("SampleNumber", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
@@ -13195,96 +13197,134 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(1ull, 0) == true)
+	// reading
+	if(Reader.Has(Inspection::Length{1, 0}) == true)
 	{
-		auto First{Buffer.Get8Bits()};
+		auto First{Reader.Get8Bits()};
 		
 		if((First & 0x80) == 0x00)
 		{
 			Result->GetValue()->SetAny(static_cast< std::uint32_t >(First));
-			Result->SetSuccess(true);
 		}
 		else if((First & 0xe0) == 0xc0)
 		{
-			if(Buffer.Has(1ull, 0) == true)
+			if(Reader.Has(Inspection::Length{1, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
 				
 				if((Second & 0xc0) == 0x80)
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x1f) << 6) | static_cast< std::uint32_t >(Second & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xf0) == 0xe0)
 		{
-			if(Buffer.Has(2ull, 0) == true)
+			if(Reader.Has(Inspection::Length{2, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x0f) << 12)| static_cast< std::uint32_t >((Second & 0x3f) << 6) | static_cast< std::uint32_t >(Third & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xf8) == 0xf0)
 		{
-			if(Buffer.Has(3ull, 0) == true)
+			if(Reader.Has(Inspection::Length{3, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				auto Fourth{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
+				auto Fourth{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x07) << 18)| static_cast< std::uint32_t >((Second & 0x3f) << 12) | static_cast< std::uint32_t >((Third & 0x3f) << 6) | static_cast< std::uint32_t >(Fourth & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xfc) == 0xf8)
 		{
-			if(Buffer.Has(4ull, 0) == true)
+			if(Reader.Has(Inspection::Length{4, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				auto Fourth{Buffer.Get8Bits()};
-				auto Fifth{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
+				auto Fourth{Reader.Get8Bits()};
+				auto Fifth{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x03) << 24)| static_cast< std::uint32_t >((Second & 0x3f) << 18) | static_cast< std::uint32_t >((Third & 0x3f) << 12) | static_cast< std::uint32_t >((Fourth & 0x3f) << 6) | static_cast< std::uint32_t >(Fifth & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xfe) == 0xfc)
 		{
-			if(Buffer.Has(5ull, 0) == true)
+			if(Reader.Has(Inspection::Length{5, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				auto Fourth{Buffer.Get8Bits()};
-				auto Fifth{Buffer.Get8Bits()};
-				auto Sixth{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
+				auto Fourth{Reader.Get8Bits()};
+				auto Fifth{Reader.Get8Bits()};
+				auto Sixth{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x01) << 30)| static_cast< std::uint32_t >((Second & 0x3f) << 24) | static_cast< std::uint32_t >((Third & 0x3f) << 18) | static_cast< std::uint32_t >((Fourth & 0x3f) << 12) | static_cast< std::uint32_t >((Fifth & 0x3f) << 6) | static_cast< std::uint32_t >(Sixth & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -13427,114 +13467,159 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(1ull, 0) == true)
+	// reading
+	if(Reader.Has(Inspection::Length{1, 0}) == true)
 	{
-		auto First{Buffer.Get8Bits()};
+		auto First{Reader.Get8Bits()};
 		
 		if((First & 0x80) == 0x00)
 		{
 			Result->GetValue()->SetAny(static_cast< std::uint32_t >(First));
-			Result->SetSuccess(true);
 		}
 		else if((First & 0xe0) == 0xc0)
 		{
-			if(Buffer.Has(1ull, 0) == true)
+			if(Reader.Has(Inspection::Length{1, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
 				
 				if((Second & 0xc0) == 0x80)
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x1f) << 6) | static_cast< std::uint32_t >(Second & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xf0) == 0xe0)
 		{
-			if(Buffer.Has(2ull, 0) == true)
+			if(Reader.Has(Inspection::Length{2, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x0f) << 12)| static_cast< std::uint32_t >((Second & 0x3f) << 6) | static_cast< std::uint32_t >(Third & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xf8) == 0xf0)
 		{
-			if(Buffer.Has(3ull, 0) == true)
+			if(Reader.Has(Inspection::Length{3, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				auto Fourth{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
+				auto Fourth{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x07) << 18)| static_cast< std::uint32_t >((Second & 0x3f) << 12) | static_cast< std::uint32_t >((Third & 0x3f) << 6) | static_cast< std::uint32_t >(Fourth & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xfc) == 0xf8)
 		{
-			if(Buffer.Has(4ull, 0) == true)
+			if(Reader.Has(Inspection::Length{4, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				auto Fourth{Buffer.Get8Bits()};
-				auto Fifth{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
+				auto Fourth{Reader.Get8Bits()};
+				auto Fifth{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x03) << 24)| static_cast< std::uint32_t >((Second & 0x3f) << 18) | static_cast< std::uint32_t >((Third & 0x3f) << 12) | static_cast< std::uint32_t >((Fourth & 0x3f) << 6) | static_cast< std::uint32_t >(Fifth & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xfe) == 0xfc)
 		{
-			if(Buffer.Has(5ull, 0) == true)
+			if(Reader.Has(Inspection::Length{5, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				auto Fourth{Buffer.Get8Bits()};
-				auto Fifth{Buffer.Get8Bits()};
-				auto Sixth{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
+				auto Fourth{Reader.Get8Bits()};
+				auto Fifth{Reader.Get8Bits()};
+				auto Sixth{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((First & 0x01) << 30)| static_cast< std::uint32_t >((Second & 0x3f) << 24) | static_cast< std::uint32_t >((Third & 0x3f) << 18) | static_cast< std::uint32_t >((Fourth & 0x3f) << 12) | static_cast< std::uint32_t >((Fifth & 0x3f) << 6) | static_cast< std::uint32_t >(Sixth & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 		else if((First & 0xff) == 0xfe)
 		{
-			if(Buffer.Has(6ull, 0) == true)
+			if(Reader.Has(Inspection::Length{6, 0}) == true)
 			{
-				auto Second{Buffer.Get8Bits()};
-				auto Third{Buffer.Get8Bits()};
-				auto Fourth{Buffer.Get8Bits()};
-				auto Fifth{Buffer.Get8Bits()};
-				auto Sixth{Buffer.Get8Bits()};
-				auto Seventh{Buffer.Get8Bits()};
+				auto Second{Reader.Get8Bits()};
+				auto Third{Reader.Get8Bits()};
+				auto Fourth{Reader.Get8Bits()};
+				auto Fifth{Reader.Get8Bits()};
+				auto Sixth{Reader.Get8Bits()};
+				auto Seventh{Reader.Get8Bits()};
 				
 				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80) && ((Seventh & 0xc0) == 0x80))
 				{
 					Result->GetValue()->SetAny(static_cast< std::uint32_t >((Second & 0x3f) << 30) | static_cast< std::uint32_t >((Third & 0x3f) << 24) | static_cast< std::uint32_t >((Fourth & 0x3f) << 18) | static_cast< std::uint32_t >((Fifth & 0x3f) << 12) | static_cast< std::uint32_t >((Sixth & 0x3f) << 6) | static_cast< std::uint32_t >(Seventh & 0x3f));
-					Result->SetSuccess(true);
 				}
+				else
+				{
+					Continue = false;
+				}
+			}
+			else
+			{
+				Continue = false;
 			}
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
