@@ -71,19 +71,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Buffe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 32}};
 		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -151,7 +151,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -172,10 +172,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("VersionNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -198,10 +199,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_APE_Tags_Flags(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_APE_Tags_Flags(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TagsFlags", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -218,19 +220,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 32}};
 		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -254,7 +256,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_Ve
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -276,10 +278,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_APE_Tags_Flags(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_APE_Tags_Flags(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ItemFlags", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)

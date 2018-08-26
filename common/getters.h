@@ -13,9 +13,9 @@ namespace Inspection
 	void UpdateState(bool & Continue, Inspection::Reader & Reader, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader);
 	
 	std::unique_ptr< Inspection::Result > Get_APE_Tags(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_APE_Tags_Flags(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_APE_Tags_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_Item(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Buffer & Buffer, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Getter, const Inspection::Length & Length);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByNumberOfElements(Inspection::Reader & REader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::uint64_t NumberOfElements);
