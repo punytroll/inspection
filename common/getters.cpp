@@ -511,17 +511,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(Buffer.Has(1ull, 0) == true)
+	// verification
+	if(Continue == true)
+	{
+		if(Buffer.Has(Inspection::Length{1, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		auto Character{Buffer.Get8Bits()};
 		
 		if((Is_ASCII_Character_Alphabetical(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true) || (Is_ASCII_Character_Space(Character) == true))
 		{
 			Result->GetValue()->SetAny(Character);
-			Result->SetSuccess(true);
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
