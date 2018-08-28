@@ -7779,30 +7779,43 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspe
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(TextEncoding == 0x00)
+	// reading
+	if(Continue == true)
 	{
-		auto ISO_IEC_8859_1_1998_StringResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
-		
-		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
-		if(ISO_IEC_8859_1_1998_StringResult->GetSuccess() == true)
+		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->PrependTag("string", Result->GetAny());
-			Result->SetSuccess(true);
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+			}
+		}
+		else if(TextEncoding == 0x01)
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Buffer)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->ClearTags();
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
+			}
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
-	else if(TextEncoding == 0x01)
-	{
-		auto ISO_IEC_10646_1_1993_UCS_2_StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Buffer)};
-		
-		Result->SetValue(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetValue());
-		if(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetSuccess() == true)
-		{
-			Result->GetValue()->ClearTags();
-			Result->GetValue()->PrependTag("string", Result->GetAny("String"));
-			Result->SetSuccess(true);
-		}
-	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -7811,30 +7824,43 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(TextEncoding == 0x00)
+	// reading
+	if(Continue == true)
 	{
-		auto ISO_IEC_8859_1_1998_StringResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
-		
-		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
-		if(ISO_IEC_8859_1_1998_StringResult->GetSuccess() == true)
+		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->PrependTag("string", Result->GetAny());
-			Result->SetSuccess(true);
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+			}
+		}
+		else if(TextEncoding == 0x01)
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->ClearTags();
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
+			}
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
-	else if(TextEncoding == 0x01)
-	{
-		auto ISO_IEC_10646_1_1993_UCS_2_StringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
-		
-		Result->SetValue(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetValue());
-		if(ISO_IEC_10646_1_1993_UCS_2_StringResult->GetSuccess() == true)
-		{
-			Result->GetValue()->ClearTags();
-			Result->GetValue()->PrependTag("string", Result->GetAny("String"));
-			Result->SetSuccess(true);
-		}
-	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -8918,52 +8944,67 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextEncoding(Inspe
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Buffer & Buffer, std::uint8_t TextEncoding)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(TextEncoding == 0x00)
+	// reading
+	if(Continue == true)
 	{
-		auto ISO_IEC_8859_1_1998_StringResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
-		
-		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
-		if(ISO_IEC_8859_1_1998_StringResult->GetSuccess() == true)
+		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->PrependTag("string", ISO_IEC_8859_1_1998_StringResult->GetAny());
-			Result->SetSuccess(true);
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+			}
+		}
+		else if(TextEncoding == 0x01)
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTermination(Buffer)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->ClearTags();
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
+			}
+		}
+		else if(TextEncoding == 0x02)
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Buffer)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+			}
+		}
+		else if(TextEncoding == 0x03)
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Buffer)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+			}
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
-	else if(TextEncoding == 0x01)
-	{
-		auto UTF_16_StringResult{Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTermination(Buffer)};
-		
-		Result->SetValue(UTF_16_StringResult->GetValue());
-		if(UTF_16_StringResult->GetSuccess() == true)
-		{
-			Result->GetValue()->ClearTags();
-			Result->GetValue()->PrependTag("string", UTF_16_StringResult->GetAny("String"));
-			Result->SetSuccess(true);
-		}
-	}
-	else if(TextEncoding == 0x02)
-	{
-		auto UTF_16_BE_StringResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Buffer)};
-		
-		Result->SetValue(UTF_16_BE_StringResult->GetValue());
-		if(UTF_16_BE_StringResult->GetSuccess() == true)
-		{
-			Result->GetValue()->PrependTag("string", UTF_16_BE_StringResult->GetAny());
-			Result->SetSuccess(true);
-		}
-	}
-	else if(TextEncoding == 0x03)
-	{
-		auto UTF_8_StringResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Buffer)};
-		
-		Result->SetValue(UTF_8_StringResult->GetValue());
-		if(UTF_8_StringResult->GetSuccess() == true)
-		{
-			Result->GetValue()->PrependTag("string", UTF_8_StringResult->GetAny());
-			Result->SetSuccess(true);
-		}
-	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -8972,52 +9013,67 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Buffer & Buffer, std::uint8_t TextEncoding, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	if(TextEncoding == 0x00)
+	// reading
+	if(Continue == true)
 	{
-		auto ISO_IEC_8859_1_1998_StringResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
-		
-		Result->SetValue(ISO_IEC_8859_1_1998_StringResult->GetValue());
-		if(ISO_IEC_8859_1_1998_StringResult->GetSuccess() == true)
+		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->PrependTag("string", ISO_IEC_8859_1_1998_StringResult->GetAny());
-			Result->SetSuccess(true);
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+			}
+		}
+		else if(TextEncoding == 0x01)
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->ClearTags();
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
+			}
+		}
+		else if(TextEncoding == 0x02)
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+			}
+		}
+		else if(TextEncoding == 0x03)
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Buffer, Length)};
+			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+			}
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
-	else if(TextEncoding == 0x01)
-	{
-		auto UTF_16_StringResult{Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
-		
-		Result->SetValue(UTF_16_StringResult->GetValue());
-		if(UTF_16_StringResult->GetSuccess() == true)
-		{
-			Result->GetValue()->ClearTags();
-			Result->GetValue()->PrependTag("string", UTF_16_StringResult->GetAny("String"));
-			Result->SetSuccess(true);
-		}
-	}
-	else if(TextEncoding == 0x02)
-	{
-		auto UTF_16_BE_StringResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
-		
-		Result->SetValue(UTF_16_BE_StringResult->GetValue());
-		if(UTF_16_BE_StringResult->GetSuccess() == true)
-		{
-			Result->GetValue()->PrependTag("string", UTF_16_BE_StringResult->GetAny());
-			Result->SetSuccess(true);
-		}
-	}
-	else if(TextEncoding == 0x03)
-	{
-		auto UTF_8_StringResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Buffer, Length)};
-		
-		Result->SetValue(UTF_8_StringResult->GetValue());
-		if(UTF_8_StringResult->GetSuccess() == true)
-		{
-			Result->GetValue()->PrependTag("string", UTF_8_StringResult->GetAny());
-			Result->SetSuccess(true);
-		}
-	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
