@@ -4,6 +4,46 @@
 
 using namespace std::string_literals;
 
+std::vector< std::string > SplitString(const std::string & String, char Delimiter)
+{
+	std::vector< std::string > Result;
+	size_t Begin{0};
+	size_t End{String.find(Delimiter, Begin)};
+	
+	while(End != std::string::npos)
+	{
+		Result.push_back(String.substr(Begin, End - Begin));
+		Begin = End + 1;
+		End = String.find(Delimiter, Begin);
+	}
+	if(Begin != String.size())
+	{
+		Result.push_back(String.substr(Begin));
+	}
+	
+	return Result;
+}
+
+std::vector< std::string > SplitString(const std::string & String, const std::string & Delimiter)
+{
+	std::vector< std::string > Result;
+	size_t Begin{0};
+	size_t End{String.find(Delimiter, Begin)};
+	
+	while(End != std::string::npos)
+	{
+		Result.push_back(String.substr(Begin, End - Begin));
+		Begin = End + Delimiter.size();
+		End = String.find(Delimiter, Begin);
+	}
+	if(Begin != String.size())
+	{
+		Result.push_back(String.substr(Begin));
+	}
+	
+	return Result;
+}
+
 void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspection::Buffer & Buffer)
 {
 	auto ErrorValue{Value->AppendValue("error", "Unknown continuation."s)};
@@ -407,15 +447,64 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	return Result;
 }
 
+void FilterWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Buffer & Buffer, const std::string & FilterPath)
+{
+	auto FilterParts{SplitString(FilterPath.substr(1), '/')};
+	auto Value{Result->GetValue()};
+	
+	for(auto Index = 0ul; Index < FilterParts.size(); ++Index)
+	{
+		auto FilterPart{FilterParts[Index]};
+		auto FilterPartSpecifications{SplitString(FilterPart, "::")};
+		
+		if(FilterPartSpecifications[0] == "sub")
+		{
+			Value = Value->GetValue(FilterPartSpecifications[1]);
+			if(Index + 1 == FilterParts.size())
+			{
+				PrintValue(Value);
+			}
+		}
+		else if(FilterPartSpecifications[0] == "value")
+		{
+			std::cout << Value->GetAny() << std::endl;
+		}
+		else if(FilterPartSpecifications[0] == "tag")
+		{
+			Value = Value->GetTag(FilterPartSpecifications[1]);
+			if(Index + 1 == FilterParts.size())
+			{
+				PrintValue(Value);
+			}
+		}
+	}
+}
+
 int main(int argc, char ** argv)
 {
+	std::string ValuePrefix{"--value="};
+	std::string ValuePath;
 	std::deque< std::string > Paths;
 	auto Arguments{argc};
-	auto Argument{0};
+	auto ArgumentIndex{0};
 	
-	while(++Argument < Arguments)
+	while(++ArgumentIndex < Arguments)
 	{
-		Paths.push_back(argv[Argument]);
+		std::string Argument{argv[ArgumentIndex]};
+		if(Argument.compare(0, ValuePrefix.size(), ValuePrefix) == 0)
+		{
+			ValuePath = Argument.substr(ValuePrefix.size());
+			if((ValuePath.size() > 0) && (ValuePath[0] != '/'))
+			{
+				std::cerr << "A --value has to be given as an absolute path." << std::endl;
+				
+				return 1;
+			}
+		}
+		else
+		{
+			Paths.push_back(Argument);
+		}
 	}
 	if(Paths.size() == 0)
 	{
@@ -425,7 +514,14 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
+		if(ValuePath != "")
+		{
+			ReadItem(Paths.front(), ProcessBuffer, std::bind(FilterWriter, std::placeholders::_1, std::placeholders::_2, ValuePath));
+		}
+		else
+		{
+			ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
+		}
 		Paths.pop_front();
 	}
 	
