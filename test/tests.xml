@@ -1,8 +1,8 @@
 <tests>
 	<test>
 		<execute>
-			<command>generalinspector</command>
-			<argument>examples/id3/017_2.3_COMM_bul_UCS-2_bom_be.mp3</argument>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/017_2.3_COMM_bul_UCS-2_bom_be.mp3</argument>
 			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
 		</execute>
 		<expected-output>bul</expected-output>

@@ -3,6 +3,9 @@ LDFLAGS = -g
 
 default: all
 
+check:
+	python3 test.py --in=tests.xml
+
 clean:
 	$(RM) ../test
 	$(RM) test.o
