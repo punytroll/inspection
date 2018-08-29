@@ -60,6 +60,16 @@ namespace Inspection
 		{
 			return _PositionInBuffer + Length <= _BoundaryInBuffer;
 		}
+		
+		bool HasRemaining(void) const
+		{
+			return _PositionInBuffer < _BoundaryInBuffer;
+		}
+		
+		bool IsAtEnd(void) const
+		{
+			return _PositionInBuffer == _BoundaryInBuffer;
+		}
 	private:
 		Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
 		Inspection::Length _BoundaryInBuffer;
