@@ -12,6 +12,9 @@ all:
 	$(MAKE) -C test
 	$(MAKE) -C vorbis
 
+check: all
+	$(MAKE) $@ -C test
+
 clean:
 	$(MAKE) $@ -C common
 	$(MAKE) $@ -C ape
@@ -23,3 +26,5 @@ clean:
 	$(MAKE) $@ -C riff
 	$(MAKE) $@ -C test
 	$(MAKE) $@ -C vorbis
+
+.PHONY: all check clean default

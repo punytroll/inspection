@@ -53,7 +53,7 @@ for node in tests_element.childNodes:
 		tests.append(test)
 
 for test in tests:
-	result = subprocess.run(["./" + test.execute.command] + test.execute.arguments, stdout=subprocess.PIPE)
+	result = subprocess.run([test.execute.command] + test.execute.arguments, stdout=subprocess.PIPE)
 	if result.stdout.decode("utf-8") != test.expected_output:
 		print("Failed with test.")
 		exit(1)
