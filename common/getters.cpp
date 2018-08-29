@@ -6093,36 +6093,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frames(Inspection:
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspection::Buffer & Buffer)
 {
-	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// verification
+	if(Continue == true)
+	{
+		if(Buffer.Has(Inspection::Length{3, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+		auto AlternativeStart{Buffer.GetPosition()};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+		auto FieldResult{Get_ISO_639_2_1998_Code(FieldReader)};
 		
-		if(FieldResult->GetSuccess() == true)
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		if(Continue == true)
 		{
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			Result->SetValue(FieldResult->GetValue());
 		}
 		else
 		{
-			Buffer.SetPosition(Start);
+			Buffer.SetPosition(AlternativeStart);
 			FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length{3, 0});
-			
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-			
-			if(FieldResult->GetSuccess() == true)
+			UpdateState(Continue, FieldResult);
+			Result->SetValue(FieldResult->GetValue());
+			if(Continue == true)
 			{
 				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
 				Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
-			}
-			else
-			{
-				Continue = false;
 			}
 		}
 	}
@@ -7690,32 +7694,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// verification
+	if(Continue == true)
+	{
+		if(Buffer.Has(Inspection::Length{3, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
 		auto AlternativeStart{Buffer.GetPosition()};
-		auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+		auto FieldResult{Get_ISO_639_2_1998_Code(FieldReader)};
 		
-		if(FieldResult->GetSuccess() == true)
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		if(Continue == true)
 		{
 			Result->SetValue(FieldResult->GetValue());
-			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
 			Buffer.SetPosition(AlternativeStart);
 			FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length{3, 0});
-			if(FieldResult->GetSuccess() == true)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
 				Result->SetValue(FieldResult->GetValue());
 				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
 				Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
-				UpdateState(Continue, FieldResult);
 			}
 			else
 			{
 				Result->GetValue()->PrependTag("error", "Could not read a language for ID3v2.3."s);
-				Continue = false;
 			}
 		}
 	}
@@ -8599,16 +8612,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// verification
+	if(Continue == true)
+	{
+		if(Buffer.Has(Inspection::Length{3, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
+			Continue = false;
+		}
+	}
 	// reader
 	if(Continue == true)
 	{
 		auto AlternativeStart{Buffer.GetPosition()};
-		auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+		auto FieldResult{Get_ISO_639_2_1998_Code(FieldReader)};
 		
-		if(FieldResult->GetSuccess() == true)
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		if(Continue == true)
 		{
 			Result->SetValue(FieldResult->GetValue());
-			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
@@ -9913,19 +9936,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{3, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
 		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByLength(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -9946,7 +9978,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
