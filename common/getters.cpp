@@ -7660,27 +7660,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frames(Inspection:
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspection::Buffer & Buffer)
 {
-	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+	auto Continue{true};
 	
-	if(FieldResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetValue(FieldResult->GetValue());
-		Result->SetSuccess(true);
-	}
-	else
-	{
-		Buffer.SetPosition(Start);
-		FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length(3ull, 0));
-		Result->SetValue(FieldResult->GetValue());
+		auto AlternativeStart{Buffer.GetPosition()};
+		auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+		
 		if(FieldResult->GetSuccess() == true)
 		{
-			Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-			Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
-			Result->SetSuccess(true);
+			Result->SetValue(FieldResult->GetValue());
+			UpdateState(Continue, FieldResult);
+		}
+		else
+		{
+			Buffer.SetPosition(AlternativeStart);
+			FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length{3, 0});
+			if(FieldResult->GetSuccess() == true)
+			{
+				Result->SetValue(FieldResult->GetValue());
+				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+				Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->PrependTag("error", "Could not read a language for ID3v2.3."s);
+				Continue = false;
+			}
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
