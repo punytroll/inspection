@@ -6286,130 +6286,151 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto HeaderResult{Get_ID3_2_3_Frame_Header(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(HeaderResult->GetValue());
-	if(HeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_3_Frame_Header(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
 	{
 		auto Start{Buffer.GetPosition()};
-		const std::string & Identifier{std::experimental::any_cast< const std::string & >(HeaderResult->GetAny("Identifier"))};
-		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(HeaderResult->GetAny("Size")), 0)};
-		std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > BodyHandler;
+		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny("Identifier"))};
+		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0)};
 		
-		if(Identifier == "APIC")
+		if(Identifier == "RGAD")
 		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_APIC;
-		}
-		else if(Identifier == "COMM")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_COMM;
-		}
-		else if(Identifier == "GEOB")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_GEOB;
-		}
-		else if(Identifier == "MCDI")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_MCDI;
-		}
-		else if(Identifier == "PCNT")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_PCNT;
-		}
-		else if(Identifier == "POPM")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_POPM;
-		}
-		else if(Identifier == "PRIV")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_PRIV;
-		}
-		else if(Identifier == "RGAD")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_RGAD;
-		}
-		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCOP") || (Identifier == "TDAT") || (Identifier == "TDRC") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIME") || (Identifier == "TIT1") || (Identifier == "TIT2") || (Identifier == "TIT3") || (Identifier == "TLEN") || (Identifier == "TMED") || (Identifier == "TOAL") || (Identifier == "TOFN") || (Identifier == "TOPE") || (Identifier == "TOWN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPE3") || (Identifier == "TPE4") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TRDA") || (Identifier == "TSIZ") || (Identifier == "TSO2") || (Identifier == "TSOA") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TSST") || (Identifier == "TYER"))
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_T___;
-		}
-		else if(Identifier == "TCMP")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_TCMP;
-		}
-		else if(Identifier == "TCON")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_TCON;
-		}
-		else if(Identifier == "TFLT")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_TFLT;
-		}
-		else if(Identifier == "TLAN")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_TLAN;
-		}
-		else if(Identifier == "TSRC")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_TSRC;
-		}
-		else if(Identifier == "TXXX")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_TXXX;
-		}
-		else if(Identifier == "UFID")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_UFID;
-		}
-		else if(Identifier == "USLT")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_USLT;
-		}
-		else if(Identifier == "WCOM")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_W___;
-		}
-		else if(Identifier == "WOAF")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_W___;
-		}
-		else if(Identifier == "WOAR")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_W___;
-		}
-		else if(Identifier == "WXXX")
-		{
-			BodyHandler = Get_ID3_2_3_Frame_Body_WXXX;
-		}
-		if(BodyHandler != nullptr)
-		{
-			auto BodyResult{BodyHandler(Buffer, Size)};
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_RGAD(FieldReader)};
 			
-			if(Size > BodyResult->GetLength())
-			{
-				Result->GetValue()->PrependTag("claimed size", to_string_cast(Size));
-				Result->GetValue()->PrependTag("handled size", to_string_cast(BodyResult->GetLength()));
-				Result->GetValue()->PrependTag("error", "The frame size is claimed larger than the actually handled size."s);
-			}
-			else if(BodyResult->GetLength() < Size)
-			{
-				Result->GetValue()->PrependTag("claimed size", to_string_cast(Size));
-				Result->GetValue()->PrependTag("handled size", to_string_cast(BodyResult->GetLength()));
-				Result->GetValue()->PrependTag("error", "The frame size is claimed smaller than the actually handled size."s);
-			}
-			Result->GetValue()->AppendValues(BodyResult->GetValue()->GetValues());
-			Result->SetSuccess(BodyResult->GetSuccess());
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
+			std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > BodyHandler;
 			
-			auto BodyResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size)};
-			
-			Result->GetValue()->AppendValue("Data", BodyResult->GetValue());
-			Result->SetSuccess(BodyResult->GetSuccess());
+			if(Identifier == "APIC")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_APIC;
+			}
+			else if(Identifier == "COMM")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_COMM;
+			}
+			else if(Identifier == "GEOB")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_GEOB;
+			}
+			else if(Identifier == "MCDI")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_MCDI;
+			}
+			else if(Identifier == "PCNT")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_PCNT;
+			}
+			else if(Identifier == "POPM")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_POPM;
+			}
+			else if(Identifier == "PRIV")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_PRIV;
+			}
+			else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCOP") || (Identifier == "TDAT") || (Identifier == "TDRC") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIME") || (Identifier == "TIT1") || (Identifier == "TIT2") || (Identifier == "TIT3") || (Identifier == "TLEN") || (Identifier == "TMED") || (Identifier == "TOAL") || (Identifier == "TOFN") || (Identifier == "TOPE") || (Identifier == "TOWN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPE3") || (Identifier == "TPE4") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TRDA") || (Identifier == "TSIZ") || (Identifier == "TSO2") || (Identifier == "TSOA") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TSST") || (Identifier == "TYER"))
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_T___;
+			}
+			else if(Identifier == "TCMP")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_TCMP;
+			}
+			else if(Identifier == "TCON")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_TCON;
+			}
+			else if(Identifier == "TFLT")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_TFLT;
+			}
+			else if(Identifier == "TLAN")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_TLAN;
+			}
+			else if(Identifier == "TSRC")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_TSRC;
+			}
+			else if(Identifier == "TXXX")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_TXXX;
+			}
+			else if(Identifier == "UFID")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_UFID;
+			}
+			else if(Identifier == "USLT")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_USLT;
+			}
+			else if(Identifier == "WCOM")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_W___;
+			}
+			else if(Identifier == "WOAF")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_W___;
+			}
+			else if(Identifier == "WOAR")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_W___;
+			}
+			else if(Identifier == "WXXX")
+			{
+				BodyHandler = Get_ID3_2_3_Frame_Body_WXXX;
+			}
+			if(BodyHandler != nullptr)
+			{
+				auto FieldResult{BodyHandler(Buffer, Size)};
+				
+				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				UpdateState(Continue, FieldResult);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
+				
+				auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size)};
+				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
+		}
+		
+		auto HandledSize{Buffer.GetPosition() - Start};
+		
+		if(HandledSize > Size)
+		{
+			Result->GetValue()->PrependTag("claimed size", to_string_cast(Size));
+			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->PrependTag("error", "The frame size is claimed larger than the actually handled size."s);
+		}
+		else if(HandledSize < Size)
+		{
+			Result->GetValue()->PrependTag("claimed size", to_string_cast(Size));
+			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->PrependTag("error", "The frame size is claimed smaller than the actually handled size."s);
 		}
 		Buffer.SetPosition(Start + Size);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -6963,41 +6984,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 32}};
 		auto FieldResult{Get_ISO_IEC_IEEE_60559_2011_binary32(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PeakAmplitude", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
 		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TrackReplayGainAdjustment", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
 		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
