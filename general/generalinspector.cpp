@@ -467,7 +467,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Bu
 		}
 		else if(FilterPartSpecifications[0] == "value")
 		{
-			std::cout << Value->GetAny() << std::endl;
+			std::cout << Value->GetAny();
 		}
 		else if(FilterPartSpecifications[0] == "tag")
 		{
