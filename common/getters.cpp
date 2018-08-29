@@ -544,47 +544,53 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByLength(Inspection::Reader & Reader)
 {
-	assert(Length.GetBits() == 0);
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
-	
-	if(Buffer.Has(Length) == true)
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ASCII"s);
+	Result->GetValue()->AppendTag("alphabetical"s);
+	// verification
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("string"s);
-		Result->GetValue()->AppendTag("ASCII"s);
-		Result->GetValue()->AppendTag("alphabetical"s);
-		
-		auto Boundary{Buffer.GetPosition() + Length};
+		if(Reader.GetRemainingLength().GetBits() != 0)
+		{
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
 		
-		while(true)
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto  CharacterResult{Get_ASCII_Character_Alphabetical(Buffer)};
+			auto Character{Reader.Get8Bits()};
 			
-			if(CharacterResult->GetSuccess() == false)
+			if(Is_ASCII_Character_Alphabetical(Character) == true)
 			{
-				break;
+				NumberOfCharacters += 1;
+				Value << Character;
 			}
 			else
 			{
-				NumberOfCharacters += 1;
-				Value << std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny());
-				if(Buffer.GetPosition() == Boundary)
-				{
-					Result->GetValue()->AppendTag("ended by length"s);
-					Result->SetSuccess(true);
-					
-					break;
-				}
+				Continue = false;
 			}
 		}
+		if(Reader.IsAtEnd() == true)
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
+		}
 		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -8590,50 +8596,64 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frames(Inspection:
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspection::Buffer & Buffer)
 {
-	auto Start{Buffer.GetPosition()};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+	auto Continue{true};
 	
-	if(FieldResult->GetSuccess() == true)
+	// reader
+	if(Continue == true)
 	{
-		Result->SetValue(FieldResult->GetValue());
-		Result->SetSuccess(true);
-	}
-	else
-	{
-		Buffer.SetPosition(Start);
-		FieldResult = Get_ASCII_String_Alphabetical_EndedByLength(Buffer, Inspection::Length(3ull, 0));
+		auto AlternativeStart{Buffer.GetPosition()};
+		auto FieldResult{Get_ISO_639_2_1998_Code(Buffer)};
+		
 		if(FieldResult->GetSuccess() == true)
 		{
 			Result->SetValue(FieldResult->GetValue());
-			
-			const std::string & Code{std::experimental::any_cast< const std::string & >(FieldResult->GetAny())};
-			
-			if(Code == "XXX")
-			{
-				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
-				Result->GetValue()->PrependTag("interpretation", "<unknown>"s);
-				Result->SetSuccess(true);
-			}
-			else
-			{
-				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-				Result->GetValue()->PrependTag("error", "The language code \"" + Code + "\" is unknown."s);
-			}
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
-			Buffer.SetPosition(Start);
-			FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length(3ull, 0));
-			Result->SetValue(FieldResult->GetValue());
-			if(FieldResult->GetSuccess() == true)
+			Buffer.SetPosition(AlternativeStart);
+			
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+			
+			FieldResult = Get_ASCII_String_Alphabetical_EndedByLength(FieldReader);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			// interpretation
+			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-				Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
-				Result->SetSuccess(true);
+				Result->SetValue(FieldResult->GetValue());
+				
+				const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetAny())};
+				
+				if(Code == "XXX")
+				{
+					Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
+					Result->GetValue()->PrependTag("interpretation", "<unknown>"s);
+				}
+				else
+				{
+					Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+					Result->GetValue()->PrependTag("error", "The language code \"" + Code + "\" is unknown."s);
+					Continue = false;
+				}
+			}
+			else
+			{
+				Buffer.SetPosition(AlternativeStart);
+				FieldResult = Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Buffer, Inspection::Length{3, 0});
+				Result->SetValue(FieldResult->GetValue());
+				UpdateState(Continue, FieldResult);
+				// interpretation
+				if(Continue == true)
+				{
+					Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+					Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+				}
 			}
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9901,10 +9921,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByLength(Buffer, Inspection::Length{3, 0})};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByLength(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
