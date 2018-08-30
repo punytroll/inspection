@@ -75,6 +75,10 @@ namespace Inspection
 					{
 						std::cout << g_LightRed;
 					}
+					else if(Tag->GetAny().empty() == true)
+					{
+						std::cout << g_DarkGray;
+					}
 					else
 					{
 						std::cout << g_DarkYellow;
@@ -85,10 +89,9 @@ namespace Inspection
 				{
 					std::cout << g_LightGray << '=';
 				}
-				std::cout << g_DarkGray;
 				if(Tag->GetAny().empty() == false)
 				{
-					std::cout << Tag->GetAny();
+					std::cout << g_DarkGray << Tag->GetAny();
 				}
 				if(Tag->GetValues().size() > 0)
 				{
