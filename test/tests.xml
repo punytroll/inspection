@@ -95,4 +95,36 @@
 		</execute>
 		<expected-output>English</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Identifier/value::</argument>
+		</execute>
+		<expected-output>TAG</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Identifier/value::</argument>
+		</execute>
+		<expected-output>TAG</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Identifier/has-tag::3 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Identifier/has-tag::ended by template</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
 </tests>
