@@ -121,10 +121,11 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "OggS")};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(FieldReader, "OggS")};
 		auto FieldValue{Result->GetValue()->AppendValue("CapturePattern", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -346,10 +347,11 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "vorbis")};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{6, 0}};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(FieldReader, "vorbis")};
 		auto FieldValue{Result->GetValue()->AppendValue("VorbisIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)

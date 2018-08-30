@@ -164,10 +164,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "APETAGEX")};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{8, 0}};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(FieldReader, "APETAGEX")};
 		auto FieldValue{Result->GetValue()->AppendValue("Preamble", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -596,55 +597,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByTemplateLength(Inspection::Buffer & Buffer, const std::string & TemplateString)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_EndedByTemplateLength(Inspection::Reader & Reader, const std::string & TemplateString)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(TemplateString.length(), 0) == true)
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ASCII"s);
+	Result->GetValue()->AppendTag("alphabetical"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{TemplateString.size(), 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length must be at least " + to_string_cast(Inspection::Length{TemplateString.size(), 0}) + ", the length of the template string.");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
 		
-		Result->SetSuccess(true);
-		Result->GetValue()->AppendTag("string"s);
-		Result->GetValue()->AppendTag("ASCII"s);
-		Result->GetValue()->AppendTag("alphabetical"s);
 		for(auto TemplateCharacter : TemplateString)
 		{
-			auto CharacterResult{Get_ASCII_Character_Alphabetical(Buffer)};
+			auto Character{Reader.Get8Bits()};
 			
-			if(CharacterResult->GetSuccess() == true)
+			if((Is_ASCII_Character_Alphabetical(Character) == true) && (TemplateCharacter == Character))
 			{
-				auto Character{std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny())};
-				
 				NumberOfCharacters += 1;
 				Value << Character;
-				if(TemplateCharacter != Character)
-				{
-					Result->SetSuccess(false);
-					
-					break;
-				}
 			}
 			else
 			{
-				Result->SetSuccess(false);
-				
-				break;
+				Result->GetValue()->AppendTag("ended by error"s);
+				Continue = false;
 			}
 		}
-		if(Result->GetSuccess() == true)
+		if(Continue == true)
 		{
 			Result->GetValue()->AppendTag("ended by template"s);
-		}
-		else
-		{
-			Result->GetValue()->AppendTag("ended by error"s);
 		}
 		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
 		Result->GetValue()->SetAny(Value.str());
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -4799,48 +4799,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		auto FLACStreamMarkerResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "fLaC")};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(FieldReader, "fLaC")};
+		auto FieldValue{Result->GetValue()->AppendValue("FLAC stream marker", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("FLAC stream marker", FLACStreamMarkerResult->GetValue());
-		Continue = FLACStreamMarkerResult->GetSuccess();
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// reading
 	if(Continue == true)
 	{
-		auto FLACStreamInfoBlockResult{Get_FLAC_StreamInfoBlock(Buffer)};
+		auto FieldResult{Get_FLAC_StreamInfoBlock(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("StreamInfoBlock", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("StreamInfoBlock", FLACStreamInfoBlockResult->GetValue());
-		Continue = FLACStreamInfoBlockResult->GetSuccess();
+		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto LastMetaDataBlock{std::experimental::any_cast< bool >(Result->GetValue("StreamInfoBlock")->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
 		
-		while((LastMetaDataBlock == false) && (Continue == true))
+		while((Continue == true) && (LastMetaDataBlock == false))
 		{
-			auto MetaDataBlockResult{Get_FLAC_MetaDataBlock(Buffer)};
+			auto FieldResult{Get_FLAC_MetaDataBlock(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("MetaDataBlock", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("MetaDataBlock", MetaDataBlockResult->GetValue());
-			Continue = MetaDataBlockResult->GetSuccess();
-			if(MetaDataBlockResult->GetSuccess() == true)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
-				LastMetaDataBlock = std::experimental::any_cast< bool >(MetaDataBlockResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"));
+				LastMetaDataBlock = std::experimental::any_cast< bool >(FieldResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"));
 			}
 		}
 	}
+	// reading
 	if((Continue == true) && (OnlyStreamHeader == false))
 	{
 		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValueAny("NumberOfChannels")) + 1};
-		auto FramesResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Buffer, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels), Buffer.GetLength() - Buffer.GetPosition())};
-		auto FramesValue{Result->GetValue()->AppendValue("Frames", FramesResult->GetValue())};
+		auto FieldResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Buffer, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels), Buffer.GetLength() - Buffer.GetPosition())};
+		auto FieldValue{Result->GetValue()->AppendValue("Frames", FieldResult->GetValue())};
 		
-		Continue = FramesResult->GetSuccess();
-		for(auto FrameValue : FramesValue->GetValues())
+		UpdateState(Continue, FieldResult);
+		for(auto FrameValue : FieldValue->GetValues())
 		{
 			FrameValue->SetName("Frame");
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
@@ -5572,10 +5578,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Buff
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(Buffer, "TAG")};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+		auto FieldResult{Get_ASCII_String_Alphabetical_EndedByTemplateLength(FieldReader, "TAG")};
 		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
