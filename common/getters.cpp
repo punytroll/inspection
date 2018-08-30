@@ -578,6 +578,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetical_
 			}
 			else
 			{
+				Result->GetValue()->AppendTag("ended by error"s);
 				Continue = false;
 			}
 		}

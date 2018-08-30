@@ -477,6 +477,17 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Bu
 				PrintValue(Value);
 			}
 		}
+		else if(FilterPartSpecifications[0] == "has-tag")
+		{
+			if(Value->HasTag(FilterPartSpecifications[1]) == true)
+			{
+				std::cout << "true";
+			}
+			else
+			{
+				std::cout << "false";
+			}
+		}
 	}
 }
 

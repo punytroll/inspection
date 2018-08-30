@@ -50,11 +50,11 @@ namespace Inspection
 			}
 		}
 		
-		std::shared_ptr< Value > AppendTag(const std::experimental::any & Any)
+		std::shared_ptr< Value > AppendTag(const std::string & Name)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
-			Result->SetAny(Any);
+			Result->SetName(Name);
 			_Tags.push_back(Result);
 			
 			return Result;
