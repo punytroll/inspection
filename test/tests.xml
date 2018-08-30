@@ -127,4 +127,36 @@
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Identifier/value::</argument>
+		</execute>
+		<expected-output>TSSE</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Identifier/has-tag::alphanumeric</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Identifier/has-tag::ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Identifier/has-tag::4 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
 </tests>
