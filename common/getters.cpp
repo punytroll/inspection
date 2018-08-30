@@ -4785,7 +4785,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 		auto MIMETypeLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MIMETypeLength"))};
 		Inspection::Reader FieldReader{Buffer, Inspection::Length{MIMETypeLength, 0}};
 		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("MIMType", FieldResult->GetValue())};
+		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
@@ -4796,7 +4796,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DescriptionLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
