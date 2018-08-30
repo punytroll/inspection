@@ -810,47 +810,56 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Reader & Reader)
 {
-	assert(Length.GetBits() == 0);
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	Result->GetValue()->AppendTag("ASCII printable"s);
-	if(Buffer.Has(Length) == true)
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ASCII"s);
+	Result->GetValue()->AppendTag("printable"s);
+	// verification
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
-		
-		auto Boundary{Buffer.GetPosition() + Length};
-		std::stringstream Value;
-		
-		while(Buffer.GetPosition() < Boundary)
+		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			auto Character{Buffer.Get8Bits()};
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::stringstream Value;
+		auto NumberOfCharacters{0ul};
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto Character{Reader.Get8Bits()};
 			
 			if(Is_ASCII_Character_Printable(Character) == true)
 			{
+				NumberOfCharacters += 1;
 				Value << Character;
 			}
 			else
 			{
 				Result->GetValue()->AppendTag("ended by invalid character '" + to_string_cast(Character) + '\'');
-				Buffer.SetPosition(Buffer.GetPosition() - Inspection::Length{1, 0});
+				Reader.MoveBackPosition(Inspection::Length{1, 0});
 				
 				break;
 			}
 		}
-		if(Buffer.GetPosition() == Boundary)
+		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by boundary"s);
+			Result->GetValue()->AppendTag("ended by length"s);
 		}
-		
-		auto String{Value.str()};
-		
-		Result->GetValue()->SetAny(String);
-		Result->GetValue()->AppendTag(to_string_cast(String.length()) + " characters long");
+		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
