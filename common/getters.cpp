@@ -6207,6 +6207,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frames(Inspection:
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto FrameIndex{0ul};
 	
 	Result->SetSuccess(true);
 	while(Buffer.GetPosition() < Boundary)
@@ -6216,7 +6217,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frames(Inspection:
 		
 		if(FrameResult->GetSuccess() == true)
 		{
-			Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
+			Result->GetValue()->AppendValue("Frame[" + to_string_cast(FrameIndex++) + "]", FrameResult->GetValue());
 		}
 		else
 		{

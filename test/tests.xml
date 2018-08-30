@@ -67,7 +67,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/026_2.2_COM_null_language.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/value::</argument>
 		</execute>
 		<expected-output>00 00 00</expected-output>
 	</test>
@@ -206,5 +206,45 @@
 			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::10 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[11]/sub::ImageFormat/value::</argument>
+		</execute>
+		<expected-output>JPG</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[11]/sub::ImageFormat/has-tag::string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[11]/sub::ImageFormat/has-tag::ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[11]/sub::ImageFormat/has-tag::3 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[11]/sub::ImageFormat/tag::mime-type/value::</argument>
+		</execute>
+		<expected-output>image/jpeg</expected-output>
 	</test>
 </tests>
