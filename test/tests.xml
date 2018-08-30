@@ -159,4 +159,52 @@
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/value::</argument>
+		</execute>
+		<expected-output>image/jpeg</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::ASCII</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::printable</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::10 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
 </tests>
