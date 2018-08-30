@@ -855,49 +855,55 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::Reader & Reader)
 {
-	assert(Length.GetBits() == 0);
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	auto Result{Inspection::InitializeResult(Buffer)};
-	
-	if(Buffer.Has(Length) == true)
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ASCII"s);
+	Result->GetValue()->AppendTag("printable"s);
+	// verification
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("string"s);
-		Result->GetValue()->AppendTag("ASCII"s);
-		Result->GetValue()->AppendTag("printables only"s);
-		Result->SetSuccess(true);
-		
-		auto Boundary{Buffer.GetPosition() + Length};
-		auto NumberOfCharacters{0ul};
-		std::stringstream Value;
-		
-		while(true)
+		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			auto Character{Buffer.Get8Bits()};
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::stringstream Value;
+		auto NumberOfCharacters{0ul};
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto Character{Reader.Get8Bits()};
 			
 			if(Is_ASCII_Character_Printable(Character) == true)
 			{
 				NumberOfCharacters += 1;
 				Value << Character;
-				if(Buffer.GetPosition() == Boundary)
-				{
-					Result->GetValue()->AppendTag("ended by length"s);
-					
-					break;
-				}
 			}
 			else
 			{
-				Result->SetSuccess(false);
-				
-				break;
+				Result->GetValue()->AppendTag("ended by error"s);
+				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
+				Continue = false;
 			}
+		}
+		if(Reader.IsAtEnd() == true)
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
 		}
 		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
 		Result->GetValue()->SetAny(Value.str());
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3841,7 +3847,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	{
 		Buffer.SetPosition(RegisteredApplicationIdentifierStart);
 		
-		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(Buffer, Inspection::Length{4, 0})};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(FieldReader)};
 		
 		if(FieldResult->GetSuccess() == true)
 		{
@@ -4664,10 +4671,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	if(Continue == true)
 	{
 		auto MIMETypeLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MIMETypeLength"))};
-		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(Buffer, Inspection::Length{MIMETypeLength, 0})};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{MIMETypeLength, 0}};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MIMType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
