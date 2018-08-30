@@ -4074,7 +4074,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldResult{Get_FLAC_Frame_Header_SampleRate(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SampleRate", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
@@ -4343,6 +4343,109 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header_SampleRate(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto SampleRate{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		
+		if(SampleRate == 0x00)
+		{
+			Result->GetValue()->AppendTag("interpretation", "get from STREAMINFO metadata block"s);
+		}
+		else if(SampleRate == 0x01)
+		{
+			Result->GetValue()->AppendTag("value", 88.2f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x02)
+		{
+			Result->GetValue()->AppendTag("value", 176.4f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x03)
+		{
+			Result->GetValue()->AppendTag("value", 192.0f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x04)
+		{
+			Result->GetValue()->AppendTag("value", 8.0f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x05)
+		{
+			Result->GetValue()->AppendTag("value", 16.0f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x06)
+		{
+			Result->GetValue()->AppendTag("value", 22.05f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x07)
+		{
+			Result->GetValue()->AppendTag("value", 24.0f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x08)
+		{
+			Result->GetValue()->AppendTag("value", 32.0f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x09)
+		{
+			Result->GetValue()->AppendTag("value", 44.1f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x0A)
+		{
+			Result->GetValue()->AppendTag("value", 48.0f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x0B)
+		{
+			Result->GetValue()->AppendTag("value", 96.0f);
+			Result->GetValue()->AppendTag("unit", "kHz"s);
+		}
+		else if(SampleRate == 0x0C)
+		{
+			Result->GetValue()->AppendTag("interpretation", "get 8 bit sample rate (in kHz) from end of header"s);
+		}
+		else if(SampleRate == 0x0D)
+		{
+			Result->GetValue()->AppendTag("interpretation", "get 16 bit sample rate (in Hz) from end of header"s);
+		}
+		else if(SampleRate == 0x0E)
+		{
+			Result->GetValue()->AppendTag("interpretation", "get 16 bit smaple rate (in tens of Hz) from end of header"s);
+		}
+		else if(SampleRate == 0x0F)
+		{
+			Result->GetValue()->AppendTag("interpretation", "invalid, to prevent sync-fooling string of 1s"s);
+			Result->GetValue()->AppendTag("error", "The sample rate MUST NOT be a value of 16."s);
+			Continue = false;
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
