@@ -440,15 +440,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// verification
 	if(Continue == true)
 	{
-		if(Buffer.Has(Inspection::Length{1, 0}) == false)
+		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
 			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
@@ -457,7 +457,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic
 	// reading
 	if(Continue == true)
 	{
-		auto Character{Buffer.Get8Bits()};
+		auto Character{Reader.Get8Bits()};
 		
 		if(Is_ASCII_Character_Alphabetic(Character) == true)
 		{
@@ -470,20 +470,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumeric(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// verification
 	if(Continue == true)
 	{
-		if(Buffer.Has(Inspection::Length{1, 0}) == false)
+		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
 			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
@@ -492,7 +492,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	// reading
 	if(Continue == true)
 	{
-		auto Character{Buffer.Get8Bits()};
+		auto Character{Reader.Get8Bits()};
 		
 		if((Is_ASCII_Character_Alphabetic(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true))
 		{
@@ -505,20 +505,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// verification
 	if(Continue == true)
 	{
-		if(Buffer.Has(Inspection::Length{1, 0}) == false)
+		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
 			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
@@ -527,7 +527,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	// reading
 	if(Continue == true)
 	{
-		auto Character{Buffer.Get8Bits()};
+		auto Character{Reader.Get8Bits()};
 		
 		if((Is_ASCII_Character_Alphabetic(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true) || (Is_ASCII_Character_Space(Character) == true))
 		{
@@ -540,7 +540,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
