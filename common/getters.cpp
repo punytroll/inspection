@@ -757,45 +757,55 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Reader & Reader)
 {
-	assert(Length.GetBits() == 0);
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
-	
-	if(Buffer.Has(Length) == true)
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("ASCII"s);
+	Result->GetValue()->AppendTag("alphanumeric or space"s);
+	// verification
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("string"s);
-		Result->GetValue()->AppendTag("ASCII"s);
-		Result->GetValue()->AppendTag("alphanumeric or space"s);
-		
-		auto Boundary{Buffer.GetPosition() + Length};
+		if(Reader.GetRemainingLength().GetBits() != 0)
+		{
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
 		
-		while(Buffer.GetPosition() < Boundary)
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto CharacterResult{Get_ASCII_Character_AlphaNumericOrSpace(Buffer)};
+			auto Character{Reader.Get8Bits()};
 			
-			if(CharacterResult->GetSuccess() == false)
+			if((Is_ASCII_Character_Alphabetic(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true) || (Is_ASCII_Character_Space(Character) == true))
 			{
-				break;
+				NumberOfCharacters += 1;
+				Value << Character;
 			}
 			else
 			{
-				NumberOfCharacters += 1;
-				Value << std::experimental::any_cast< std::uint8_t >(CharacterResult->GetAny());
-				if(Buffer.GetPosition() == Boundary)
-				{
-					Result->GetValue()->AppendTag("ended by length"s);
-					Result->SetSuccess(true);
-				}
+				Result->GetValue()->AppendTag("ended by error"s);
+				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric or space ASCII character.");
+				Continue = false;
 			}
 		}
+		if(Reader.IsAtEnd() == true)
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
+		}
 		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -5543,7 +5553,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 	// verification
 	if(Continue == true)
 	{
-		if(Reader.GetRemainingLength() == Inspection::Length{16, 0})
+		if(Reader.GetRemainingLength() != Inspection::Length{16, 0})
 		{
 			Result->GetValue()->AppendTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{16, 0}) + ".");
 			Continue = false;
