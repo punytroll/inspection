@@ -5993,10 +5993,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_Ima
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByLength(Buffer, Inspection::Length{3, 0})};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByLength(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10161,10 +10162,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Charac
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
@@ -10174,51 +10174,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	{
 		std::stringstream Value;
 		
-		if(Buffer.GetPosition() == Boundary)
+		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
 			Result->GetValue()->AppendTag("empty"s);
 		}
 		else
 		{
 			auto NumberOfCharacters{0ul};
 			
-			while(true)
+			while((Continue == true) && (Reader.HasRemaining() == true))
 			{
-				auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+				auto Character{Reader.Get8Bits()};
 				
-				if(Buffer.GetPosition() <= Boundary)
+				if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
 				{
-					if(FieldResult->GetSuccess() == true)
-					{
-						NumberOfCharacters += 1;
-						Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by length"s);
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-							
-							break;
-						}
-					}
-					else
-					{
-						Continue = false;
-						
-						break;
-					}
+					NumberOfCharacters += 1;
+					Value << Character;
 				}
 				else
 				{
+					Result->GetValue()->AppendTag("ended by error"s);
+					Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
 					Continue = false;
 				}
 			}
+			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		}
+		if(Reader.IsAtEnd() == true)
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
