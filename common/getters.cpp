@@ -3936,7 +3936,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buf
 		auto FieldResult{Get_FLAC_Frame_Footer(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Footer", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
