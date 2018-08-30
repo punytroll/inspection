@@ -6382,10 +6382,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 	{
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(TextEncoding == 0x01)
 		{
@@ -6929,10 +6930,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("EMailToUser", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -7011,10 +7013,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -7989,10 +7992,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 	{
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// interpretation
 			if(Continue == true)
 			{
@@ -8358,10 +8362,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("EMailToUser", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -9187,10 +9192,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 	{
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// interpretation
 			if(Continue == true)
 			{
@@ -10190,7 +10196,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 				if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
 				{
 					NumberOfCharacters += 1;
-					Value << Character;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character);
 				}
 				else
 				{
@@ -10214,50 +10220,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
-	// reading
+	//reading
 	if(Continue == true)
 	{
-		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
+		std::stringstream Value;
 		
-		while(true)
+		while((Continue == true) && (Reader.Has(Inspection::Length{1, 0}) == true))
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+			auto Character{Reader.Get8Bits()};
 			
-			if(FieldResult->GetSuccess() == true)
+			if(Character == 0x00)
+			{
+				Result->GetValue()->AppendTag("ended by termination"s);
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				
+				break;
+			}
+			else if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
 			{
 				NumberOfCharacters += 1;
-				Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
+				Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character);
 			}
 			else
 			{
-				auto Byte{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("byte"))};
-				
-				if(Byte == 0x00)
-				{
-					Result->GetValue()->AppendTag("ended by termination"s);
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-				}
-				else
-				{
-					Continue = false;
-				}
-				
-				break;
+				Continue = false;
 			}
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
-	// finalization
+	//finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

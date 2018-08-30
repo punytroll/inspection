@@ -247,4 +247,36 @@
 		</execute>
 		<expected-output>image/jpeg</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::EMailToUser/value::</argument>
+		</execute>
+		<expected-output>test@mail.com</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::EMailToUser/has-tag::string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::EMailToUser/has-tag::ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::EMailToUser/has-tag::13 characters + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
 </tests>
