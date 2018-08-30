@@ -91,10 +91,11 @@ std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Buffer & 
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, Inspection::Length{4, 0})};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -447,25 +448,30 @@ std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer
 {
 	auto EndPosition{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FormTypeResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Buffer, Inspection::Length{4, 0})};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("FormType", FormTypeResult->GetValue());
-	if(FormTypeResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
-		while(Buffer.GetPosition() < EndPosition)
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		auto FieldResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("FormType", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		while((Buffer.GetPosition() < EndPosition) && (Continue == true))
 		{
-			auto ChunkResult{Get_RIFF_Chunk(Buffer)};
+			auto FieldResult{Get_RIFF_Chunk(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Chunk", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("Chunk", ChunkResult->GetValue());
-			if(ChunkResult->GetSuccess() == false)
-			{
-				Result->SetSuccess(false);
-				
-				break;
-			}
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
