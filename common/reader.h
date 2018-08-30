@@ -31,14 +31,14 @@ namespace Inspection
 		
 		void AdvancePosition(const Inspection::Length & Offset)
 		{
-			if(_PositionInBuffer + Offset <= _BoundaryInBuffer)
-			{
-				_PositionInBuffer += Offset;
-			}
-			else
-			{
-				assert(false);
-			}
+			assert(_PositionInBuffer + Offset <= _BoundaryInBuffer);
+			_PositionInBuffer += Offset;
+		}
+		
+		void MoveBackPosition(const Inspection::Length & Offset)
+		{
+			assert(_PositionInBuffer - Offset >= _OffsetInBuffer);
+			_PositionInBuffer -= Offset;
 		}
 		
 		const Inspection::Length & GetPositionInBuffer(void) const
