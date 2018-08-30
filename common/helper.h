@@ -86,9 +86,9 @@ namespace Inspection
 	extern Inspection::GUID g_WM_MediaClassPrimaryID_NeitherAudioNorMusic;
 
 	// validators
-	bool Is_ASCII_Character_Alphabetical(std::uint8_t Character);
-	bool Is_ASCII_Character_Alphabetical_LowerCase(std::uint8_t Character);
-	bool Is_ASCII_Character_Alphabetical_UpperCase(std::uint8_t Character);
+	bool Is_ASCII_Character_Alphabetic(std::uint8_t Character);
+	bool Is_ASCII_Character_Alphabetic_LowerCase(std::uint8_t Character);
+	bool Is_ASCII_Character_Alphabetic_UpperCase(std::uint8_t Character);
 	bool Is_ASCII_Character_DecimalDigit(std::uint8_t Character);
 	bool Is_ASCII_Character_HexadecimalDigit(std::uint8_t Character);
 	bool Is_ASCII_Character_Printable(std::uint8_t Character);
