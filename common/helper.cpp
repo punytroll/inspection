@@ -83,17 +83,17 @@ Inspection::GUID Inspection::g_WM_MediaClassPrimaryID_AudioNoMusic{"01cd0f29-da4
 Inspection::GUID Inspection::g_WM_MediaClassPrimaryID_NeitherAudioNorMusic{"fcf24a76-9a57-4036-990d-e35dd8b244e1"};
 Inspection::GUID Inspection::g_WM_MediaClassPrimaryID_Video{"db9830bd-3ab3-4fab-8a37-1a995f7ff74b"};
 
-bool Inspection::Is_ASCII_Character_Alphabetical(std::uint8_t Character)
+bool Inspection::Is_ASCII_Character_Alphabetic(std::uint8_t Character)
 {
 	return ((Character >= 0x41) && (Character < 0x5b)) || ((Character >= 0x61) && (Character < 0x7b));
 }
 
-bool Inspection::Is_ASCII_Character_Alphabetical_LowerCase(std::uint8_t Character)
+bool Inspection::Is_ASCII_Character_Alphabetic_LowerCase(std::uint8_t Character)
 {
 	return (Character >= 0x61) && (Character < 0x7b);
 }
 
-bool Inspection::Is_ASCII_Character_Alphabetical_UpperCase(std::uint8_t Character)
+bool Inspection::Is_ASCII_Character_Alphabetic_UpperCase(std::uint8_t Character)
 {
 	return (Character >= 0x41) && (Character < 0x5b);
 }
