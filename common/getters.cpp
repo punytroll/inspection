@@ -558,7 +558,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -664,7 +664,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -770,7 +770,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -823,7 +823,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -877,7 +877,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits.");
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -5769,11 +5769,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Buff
 		else
 		{
 			Buffer.SetPosition(AlternativeStart);
-			FieldResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Buffer, Inspection::Length{29, 0});
+			
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{29, 0}};
+			FieldResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(FieldReader);
 			
 			auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// reading
 			if(Continue == true)
 			{
@@ -10183,6 +10185,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.GetRemainingLength().GetBits() != 0)
+		{
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
@@ -10234,6 +10245,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{1, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Continue = false;
+		}
+	}
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.GetRemainingLength().GetBits() != 0)
+		{
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
 	//reading
 	if(Continue == true)
 	{
@@ -10277,6 +10306,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.GetRemainingLength().GetBits() != 0)
+		{
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
@@ -10293,9 +10331,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
 			{
-				auto Character{Reader.Get8Bits()};
+				auto Byte{Reader.Get8Bits()};
 				
-				if(Character == 0x00)
+				if(Byte == 0x00)
 				{
 					if(Reader.HasRemaining() == true)
 					{
@@ -10309,10 +10347,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 					
 					break;
 				}
-				else if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
+				else if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
 				{
 					NumberOfCharacters += 1;
-					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character);
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
 					if(Reader.IsAtEnd() == true)
 					{
 						Result->GetValue()->AppendTag("ended by length"s);
@@ -10337,83 +10375,94 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{1, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Continue = false;
+		}
+	}
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.GetRemainingLength().GetBits() != 0)
+		{
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
+		auto NumberOfCharacters{0ul};
+		auto NumberOfTerminations{0ul};
 		
-		if(Buffer.GetPosition() < Boundary)
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto NumberOfCharacters{0ul};
-			auto NumberOfTerminations{0ul};
+			auto Byte{Reader.Get8Bits()};
 			
-			while(true)
+			if(Byte == 0x00)
 			{
-				auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
-				
-				if(Buffer.GetPosition() <= Boundary)
+				NumberOfTerminations += 1;
+			}
+			else if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
+			{
+				if(NumberOfTerminations == 0)
 				{
-					if(FieldResult->GetSuccess() == true)
-					{
-						NumberOfCharacters += 1;
-						Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
-					}
-					else
-					{
-						auto Byte{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("byte"))};
-						
-						if(Byte == 0x00)
-						{
-							if(NumberOfTerminations == 0)
-							{
-								Result->GetValue()->AppendTag("ended by termination"s);
-								if(NumberOfCharacters > 0)
-								{
-									Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-								}
-								else
-								{
-									Result->GetValue()->AppendTag("empty"s);
-								}
-							}
-							NumberOfTerminations += 1;
-							if(Buffer.GetPosition() == Boundary)
-							{
-								Result->GetValue()->AppendTag("until length"s);
-								Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
-								
-								break;
-							}
-						}
-						else
-						{
-							Continue = false;
-							
-							break;
-						}
-					}
+					NumberOfCharacters += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
 				}
 				else
 				{
+					Result->GetValue()->AppendTag("ended by error"s);
+					Result->GetValue()->AppendTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
 					Continue = false;
-					
-					break;
 				}
 			}
+			else
+			{
+				Result->GetValue()->AppendTag("ended by error"s);
+				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
+				Continue = false;
+			}
+		}
+		if(NumberOfCharacters > 0)
+		{
+			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("empty"s);
+		}
+		if(NumberOfTerminations > 0)
+		{
+			Result->GetValue()->AppendTag("ended by termination"s);
+			if(Reader.IsAtEnd() == true)
+			{
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+			}
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AppendTag("error", "The string must be ended by at least one termination."s);
+			Continue = false;
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
