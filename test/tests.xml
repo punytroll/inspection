@@ -375,4 +375,84 @@
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/value::</argument>
+		</execute>
+		<expected-output>Amazon.com Song ID: 20355908</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::28 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/003_1.1.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::1 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/value::</argument>
+		</execute>
+		<expected-output>Created by Grip</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::15 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
+			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::14 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
 </tests>
