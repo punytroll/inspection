@@ -6418,10 +6418,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 	{
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
+			Inspection::Reader FieldReader{Buffer, Length};
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(TextEncoding == 0x01)
 		{
@@ -7518,17 +7519,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_USLT(In
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
+		Inspection::Reader FieldReader{Buffer, Length};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -7564,10 +7565,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
+		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -8038,10 +8040,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 	{
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
+			Inspection::Reader FieldReader{Buffer, Length};
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// interpretation
 			if(Continue == true)
 			{
@@ -8593,17 +8596,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_USLT(In
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
+		Inspection::Reader FieldReader{Buffer, Length};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -8638,11 +8641,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_WXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Boundary - Buffer.GetPosition())};
+		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9262,10 +9268,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 	{
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Buffer, Length)};
+			Inspection::Reader FieldReader{Buffer, Length};
+			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// interpretation
 			if(Continue == true)
 			{
@@ -10233,7 +10240,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 		auto NumberOfCharacters{0ul};
 		std::stringstream Value;
 		
-		while((Continue == true) && (Reader.Has(Inspection::Length{1, 0}) == true))
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
 			auto Character{Reader.Get8Bits()};
 			
@@ -10263,10 +10270,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
@@ -10276,7 +10282,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	{
 		std::stringstream Value;
 		
-		if(Buffer.GetPosition() == Boundary)
+		if(Reader.IsAtEnd() == true)
 		{
 			Result->GetValue()->AppendTag("ended by length"s);
 			Result->GetValue()->AppendTag("empty"s);
@@ -10285,53 +10291,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 		{
 			auto NumberOfCharacters{0ul};
 			
-			while(true)
+			while((Continue == true) && (Reader.HasRemaining() == true))
 			{
-				auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
+				auto Character{Reader.Get8Bits()};
 				
-				if(Buffer.GetPosition() <= Boundary)
+				if(Character == 0x00)
 				{
-					if(FieldResult->GetSuccess() == true)
+					if(Reader.HasRemaining() == true)
 					{
-						NumberOfCharacters += 1;
-						Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by length"s);
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-							
-							break;
-						}
+						Result->GetValue()->AppendTag("ended by termination"s);
 					}
 					else
 					{
-						auto Byte{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("byte"))};
-						
-						if(Byte == 0x00)
-						{
-							if(Buffer.GetPosition() == Boundary)
-							{
-								Result->GetValue()->AppendTag("ended by termination and length"s);
-							}
-							else
-							{
-								Result->GetValue()->AppendTag("ended by termination"s);
-							}
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-						}
-						else
-						{
-							Continue = false;
-						}
-						
-						break;
+						Result->GetValue()->AppendTag("ended by termination and length"s);
+					}
+					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					
+					break;
+				}
+				else if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
+				{
+					NumberOfCharacters += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character);
+					if(Reader.IsAtEnd() == true)
+					{
+						Result->GetValue()->AppendTag("ended by length"s);
+						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
 					}
 				}
 				else
 				{
+					Result->GetValue()->AppendTag("ended by error"s);
+					Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
 					Continue = false;
-					
-					break;
 				}
 			}
 		}
@@ -10339,7 +10332,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

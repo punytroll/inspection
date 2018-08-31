@@ -279,4 +279,100 @@
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/value::</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/has-tag::empty</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/has-tag::ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/002_2.2_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[4]/sub::Information/value::</argument>
+		</execute>
+		<expected-output>5/30</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/002_2.2_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[4]/sub::Information/has-tag::ended by termination and length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/002_2.2_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[4]/sub::Information/has-tag::4 characters + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/value::</argument>
+		</execute>
+		<expected-output>eng</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/has-tag::ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/has-tag::3 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::ShortContentDescription/value::</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::ShortContentDescription/has-tag::ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::ShortContentDescription/has-tag::0 characters + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
 </tests>
