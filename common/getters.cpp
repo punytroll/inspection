@@ -79,11 +79,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 32}};
-		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_BitSet_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -229,11 +228,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_Ve
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -969,11 +967,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEn
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1009,11 +1006,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEn
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1124,11 +1120,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1211,19 +1206,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CompatibilityObjectData(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CompatibilityObjectData(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Profile", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// verification
 	if(Continue == true)
@@ -1233,11 +1227,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CompatibilityObjectDat
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Mode", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// verification
 	if(Continue == true)
@@ -1246,7 +1239,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CompatibilityObjectDat
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1391,19 +1384,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1442,7 +1434,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::B
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1473,10 +1465,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_DataType(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{2, 0}};
+		auto FieldResult{Get_ASF_DataType(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ValueDataType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2377,10 +2370,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{2, 0}};
+		auto FieldResult{Get_ASF_MetadataLibrary_DescriptionRecord_DataType(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2540,19 +2534,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -2595,7 +2588,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -2668,10 +2661,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_DataType(Buffer)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{2, 0}};
+		auto FieldResult{Get_ASF_DataType(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2844,98 +2838,113 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObjectData(Ins
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ObjectHeaderResult{Get_ASF_ObjectHeader(Buffer)};
+	auto Continue{true};
 	
-	Result->SetValue(ObjectHeaderResult->GetValue());
-	if(ObjectHeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto Size{std::experimental::any_cast< std::uint64_t >(ObjectHeaderResult->GetAny("Size"))};
-		auto GUID{std::experimental::any_cast< Inspection::GUID >(ObjectHeaderResult->GetAny("GUID"))};
-		std::unique_ptr< Inspection::Result > ObjectDataResult;
+		auto FieldResult{Get_ASF_ObjectHeader(Buffer)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		if(GUID == Inspection::g_ASF_HeaderObjectGUID)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Length Size{std::experimental::any_cast< std::uint64_t >(Result->GetAny("Size")), 0};
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(Result->GetAny("GUID"))};
+		
+		if(GUID == Inspection::g_ASF_CompatibilityObjectGUID)
 		{
-			ObjectDataResult = Get_ASF_HeaderObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_FilePropertiesObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_FilePropertiesObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_StreamPropertiesObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_StreamPropertiesObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_CodecListObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_CodecListObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_HeaderExtensionObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_HeaderExtensionObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_LanguageListObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_LanguageListObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_ExtendedStreamPropertiesObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_ExtendedStreamPropertiesObjectData(Buffer, Inspection::Length{Size, 0} - ObjectHeaderResult->GetLength());
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_MetadataObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_MetadataObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_CompatibilityObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_CompatibilityObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_IndexPlaceholderObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_IndexPlaceholderObjectData(Buffer, Inspection::Length{Size, 0} - ObjectHeaderResult->GetLength());
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_PaddingObjectGUID)
-		{
-			ObjectDataResult = Get_Bits_Unset_EndedByLength(Buffer, Inspection::Length{Size, 0} - ObjectHeaderResult->GetLength());
-			Result->GetValue()->AppendValue("Data", ObjectDataResult->GetValue());
-		}
-		else if(GUID == Inspection::g_ASF_ExtendedContentDescriptionObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_ExtendedContentDescriptionObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_StreamBitratePropertiesObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_StreamBitratePropertiesObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_ContentDescriptionObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_ContentDescriptionObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
-		}
-		else if(GUID == Inspection::g_ASF_MetadataLibraryObjectGUID)
-		{
-			ObjectDataResult = Get_ASF_MetadataLibraryObjectData(Buffer);
-			Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			Inspection::Reader FieldReader{Buffer, Size - Result->GetLength()};
+			auto FieldResult{Get_ASF_CompatibilityObjectData(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
-			ObjectDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Inspection::Length{Size, 0} - ObjectHeaderResult->GetLength());
-			Result->GetValue()->AppendValue("Data", ObjectDataResult->GetValue());
-		}
-		if(ObjectDataResult->GetSuccess() == true)
-		{
-			Result->SetSuccess(true);
+			std::unique_ptr< Inspection::Result > ObjectDataResult;
+			
+			if(GUID == Inspection::g_ASF_HeaderObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_HeaderObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_FilePropertiesObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_FilePropertiesObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_StreamPropertiesObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_StreamPropertiesObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_CodecListObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_CodecListObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_HeaderExtensionObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_HeaderExtensionObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_LanguageListObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_LanguageListObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_ExtendedStreamPropertiesObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_ExtendedStreamPropertiesObjectData(Buffer, Size - Result->GetLength());
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_MetadataObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_MetadataObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_IndexPlaceholderObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_IndexPlaceholderObjectData(Buffer, Size - Result->GetLength());
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_PaddingObjectGUID)
+			{
+				ObjectDataResult = Get_Bits_Unset_EndedByLength(Buffer, Size - Result->GetLength());
+				Result->GetValue()->AppendValue("Data", ObjectDataResult->GetValue());
+			}
+			else if(GUID == Inspection::g_ASF_ExtendedContentDescriptionObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_ExtendedContentDescriptionObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_StreamBitratePropertiesObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_StreamBitratePropertiesObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_ContentDescriptionObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_ContentDescriptionObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else if(GUID == Inspection::g_ASF_MetadataLibraryObjectGUID)
+			{
+				ObjectDataResult = Get_ASF_MetadataLibraryObjectData(Buffer);
+				Result->GetValue()->AppendValues(ObjectDataResult->GetValue()->GetValues());
+			}
+			else
+			{
+				ObjectDataResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Buffer, Size - Result->GetLength());
+				Result->GetValue()->AppendValue("Data", ObjectDataResult->GetValue());
+			}
+			if(ObjectDataResult->GetSuccess() == true)
+			{
+				Result->SetSuccess(true);
+			}
 		}
 	}
 	Inspection::FinalizeResult(Result, Buffer);
