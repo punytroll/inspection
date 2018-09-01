@@ -48,7 +48,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_HeaderObjectData(Inspection::Buffer & Buffer);
@@ -93,7 +93,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Buffer & Buffer);
-	std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader, std::uint32_t NumberOfSeekPoints);
 	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer, bool OnlyStreamHeader);

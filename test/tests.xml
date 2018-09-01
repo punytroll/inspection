@@ -163,6 +163,22 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::PictureType/value::</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::PictureType/tag::interpretation/value::</argument>
+		</execute>
+		<expected-output>Cover (front)</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
 			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/value::</argument>
 		</execute>
 		<expected-output>image/jpeg</expected-output>
@@ -452,6 +468,46 @@
 			<command>../generalinspector</command>
 			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
 			<argument>--value=/sub::ID3v1.1Tag/sub::Comment/has-tag::14 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::GUID/value::</argument>
+		</execute>
+		<expected-output>75b22630-668e-11cf-a6d9-00aa0062ce6c</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::GUID/tag::interpretation/value::</argument>
+		</execute>
+		<expected-output>ASF_Header_Object</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::GUID/has-tag::guid</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::GUID/has-tag::binary</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::GUID/has-tag::little endian</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
