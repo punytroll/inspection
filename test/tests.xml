@@ -11,7 +11,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/017_2.3_COMM_bul_UCS-2_bom_be.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/value::</argument>
 		</execute>
 		<expected-output>bul</expected-output>
 	</test>
@@ -75,7 +75,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/015_2.4_COMM_XXX_language.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/value::</argument>
 		</execute>
 		<expected-output>XXX</expected-output>
 	</test>
@@ -83,7 +83,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/015_2.4_COMM_XXX_language.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/tag::interpretation/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/tag::interpretation/value::</argument>
 		</execute>
 		<expected-output>&lt;unknown&gt;</expected-output>
 	</test>
@@ -91,7 +91,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/018_2.3_COMM_deu_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/value::</argument>
 		</execute>
 		<expected-output>deu</expected-output>
 	</test>
@@ -99,7 +99,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/018_2.3_COMM_deu_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/tag::interpretation/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/tag::interpretation/value::</argument>
 		</execute>
 		<expected-output>German</expected-output>
 	</test>
@@ -107,7 +107,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/019_2.3_COMM_ger_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/value::</argument>
 		</execute>
 		<expected-output>ger</expected-output>
 	</test>
@@ -115,7 +115,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/019_2.3_COMM_ger_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/tag::interpretation/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/tag::interpretation/value::</argument>
 		</execute>
 		<expected-output>German</expected-output>
 	</test>
@@ -123,7 +123,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/025_2.3_COMM_null_language.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/value::</argument>
 		</execute>
 		<expected-output>00 00 00</expected-output>
 	</test>
@@ -139,7 +139,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/008_2.4_COMM_null_language.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/value::</argument>
 		</execute>
 		<expected-output>00 00 00</expected-output>
 	</test>
@@ -147,7 +147,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/009_2.4_COMM_eng_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/value::</argument>
 		</execute>
 		<expected-output>eng</expected-output>
 	</test>
@@ -155,7 +155,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/009_2.4_COMM_eng_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/tag::interpretation/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Language/tag::interpretation/value::</argument>
 		</execute>
 		<expected-output>English</expected-output>
 	</test>
@@ -195,7 +195,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Identifier/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Identifier/value::</argument>
 		</execute>
 		<expected-output>TSSE</expected-output>
 	</test>
@@ -203,7 +203,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Identifier/has-tag::alphanumeric</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Identifier/has-tag::alphanumeric</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -211,7 +211,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Identifier/has-tag::ended by length</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Identifier/has-tag::ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -219,7 +219,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Identifier/has-tag::4 characters</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Identifier/has-tag::4 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -371,7 +371,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::EMailToUser/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::EMailToUser/value::</argument>
 		</execute>
 		<expected-output>test@mail.com</expected-output>
 	</test>
@@ -379,7 +379,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::EMailToUser/has-tag::string</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::EMailToUser/has-tag::string</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -387,7 +387,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::EMailToUser/has-tag::ended by termination</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::EMailToUser/has-tag::ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -395,7 +395,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::EMailToUser/has-tag::13 characters + termination</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::EMailToUser/has-tag::13 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -403,7 +403,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Information/value::</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -411,7 +411,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/has-tag::empty</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Information/has-tag::empty</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -419,7 +419,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/has-tag::ended by length</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Information/has-tag::ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -451,7 +451,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Information/value::</argument>
 		</execute>
 		<expected-output>eng</expected-output>
 	</test>
@@ -459,7 +459,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/has-tag::ended by length</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Information/has-tag::ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -467,7 +467,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Information/has-tag::3 characters</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Information/has-tag::3 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -475,7 +475,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::ShortContentDescription/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::ShortContentDescription/value::</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -483,7 +483,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::ShortContentDescription/has-tag::ended by termination</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::ShortContentDescription/has-tag::ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -491,7 +491,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::ShortContentDescription/has-tag::0 characters + termination</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::ShortContentDescription/has-tag::0 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
