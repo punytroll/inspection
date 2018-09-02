@@ -306,6 +306,46 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/value::</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/has-tag::string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/has-tag::UTF-8</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/has-tag::ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/has-tag::0 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC</argument>
 			<argument>--value=/sub::ID3v2Tag/sub::TagHeader/sub::MajorVersion/value::</argument>
 		</execute>
@@ -878,5 +918,45 @@
 			<argument>--value=/sub::APEv2Tag/sub::APETagsFooter/sub::Reserved/tag::length/tag::unit/value::</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsItem[2]/sub::ItemValue/value::</argument>
+		</execute>
+		<expected-output>...Nothing Like The Sun</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsItem[2]/sub::ItemValue/has-tag::string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsItem[2]/sub::ItemValue/has-tag::UTF-8</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsItem[2]/sub::ItemValue/has-tag::ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsItem[2]/sub::ItemValue/has-tag::23 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
 	</test>
 </tests>

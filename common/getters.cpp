@@ -321,11 +321,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 		
 		if(ItemValueType == 0)
 		{
-			Inspection::Length ItemValueSize{std::experimental::any_cast< std::uint32_t >(Result->GetAny("ItemValueSize")), 0};
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, ItemValueSize)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("ItemValueSize")), 0}};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("ItemValue", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
@@ -4911,11 +4911,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto DescriptionLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("DescriptionLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{DescriptionLength, 0})};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("DescriptionLength")), 0}};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -11276,44 +11276,52 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(Length) == true)
+	Result->GetValue()->AppendTag("string"s);
+	Result->GetValue()->AppendTag("UTF-8"s);
+	// verification
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("string"s);
-		Result->GetValue()->AppendTag("UTF-8"s);
-		
-		auto Boundary{Buffer.GetPosition() + Length};
-		auto NumberOfCharacters{0ul};
-		std::string String;
-		
-		while(Buffer.GetPosition() < Boundary)
+		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto Character{Get_ISO_IEC_10646_1_1993_UTF_8_Character(FieldReader)};
-			
-			if(Character->GetSuccess() == true)
-			{
-				Buffer.SetPosition(FieldReader);
-				NumberOfCharacters += 1;
-				String += std::experimental::any_cast< std::string >(Character->GetAny());
-			}
-			else
-			{
-				break;
-			}
-		}
-		Result->GetValue()->SetAny(String);
-		if(Buffer.GetPosition() == Boundary)
-		{
-			Result->GetValue()->AppendTag("ended by length"s);
-			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
-			Result->SetSuccess(true);
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// reading
+	if(Continue == true)
+	{
+		auto NumberOfCharacters{0ul};
+		std::stringstream Value;
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_Character(Reader)};
+			
+			UpdateState(Continue, FieldResult);
+			NumberOfCharacters += 1;
+			Value << std::experimental::any_cast< std::string >(FieldResult->GetAny());
+			if(Continue == false)
+			{
+				Result->GetValue()->AppendTag("ended by error"s);
+				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
+				Continue = false;
+			}
+		}
+		if(Reader.IsAtEnd() == true)
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
+		}
+		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
+		Result->GetValue()->SetAny(Value.str());
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -14697,11 +14705,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	// reading
 	if(Continue == true)
 	{
-		auto Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Length"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{Length, 0})};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Length")), 0}};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -14763,11 +14771,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	// reading
 	if(Continue == true)
 	{
-		auto VendorLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("VendorLength"))};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Buffer, Inspection::Length{VendorLength, 0})};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("VendorLength")), 0}};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Vendor", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
