@@ -49,35 +49,48 @@ std::shared_ptr< Inspection::Value > AppendLength(std::shared_ptr< Inspection::V
 	return Tag;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Readers & Getters                                                                             //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto APETagsHeaderResult{Get_APE_Tags_HeaderOrFooter(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("APETagsHeader", APETagsHeaderResult->GetValue());
-	if(APETagsHeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetSuccess(true);
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_APE_Tags_HeaderOrFooter(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("APETagsHeader", FieldResult->GetValue())};
 		
-		auto ItemCount{std::experimental::any_cast< std::uint32_t >(APETagsHeaderResult->GetAny("ItemCount"))};
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto ItemCount{std::experimental::any_cast< std::uint32_t >(Result->GetValue("APETagsHeader")->GetValueAny("ItemCount"))};
 		
 		for(auto ItemIndex = 0ul; ItemIndex < ItemCount; ++ItemIndex)
 		{
-			auto APETagsItemResult{Get_APE_Tags_Item(Buffer)};
+			auto FieldResult{Get_APE_Tags_Item(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("APETagsItem[" + to_string_cast(ItemIndex) + "]", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("APETagsItem", APETagsItemResult->GetValue());
-			if(APETagsItemResult->GetSuccess() == false)
-			{
-				Result->SetSuccess(false);
-				
-				break;
-			}
+			UpdateState(Continue, FieldResult);
 		}
-		
-		auto APETagsFooterResult{Get_APE_Tags_HeaderOrFooter(Buffer)};
-		
-		Result->GetValue()->AppendValue("APETagsFooter", APETagsFooterResult->GetValue());
 	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_APE_Tags_HeaderOrFooter(FieldReader)};
+		auto FieldValue{Result->GetValue()->AppendValue("APETagsFooter", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -167,68 +180,64 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{8, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{8, 0}};
 		auto FieldResult{Get_ASCII_String_Alphabetic_EndedByTemplateLength(FieldReader, "APETAGEX")};
 		auto FieldValue{Result->GetValue()->AppendValue("Preamble", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(FieldReader)};
+		auto FieldResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("VersionNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TagSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ItemCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_APE_Tags_Flags(FieldReader)};
+		auto FieldResult{Get_APE_Tags_Flags(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TagsFlags", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{8, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{8, 0}};
 		auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
