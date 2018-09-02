@@ -488,6 +488,17 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Bu
 				std::cout << "false";
 			}
 		}
+		else if(FilterPartSpecifications[0] == "has-sub")
+		{
+			if(Value->HasValue(FilterPartSpecifications[1]) == true)
+			{
+				std::cout << "true";
+			}
+			else
+			{
+				std::cout << "false";
+			}
+		}
 	}
 }
 
