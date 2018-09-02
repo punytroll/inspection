@@ -6229,38 +6229,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Header_Ident
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frames_AtLeastOne_EndedByFailure(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto FrameIndex{0ul};
+	auto Continue{true};
 	
-	Result->SetSuccess(true);
-	while(Buffer.GetPosition() < Boundary)
+	// reading
+	if(Continue == true)
 	{
-		auto Start{Buffer.GetPosition()};
-		auto FrameResult{Get_ID3_2_2_Frame(Buffer)};
+		auto FrameIndex{0ul};
 		
-		if(FrameResult->GetSuccess() == true)
+		while((Continue == true) && (Buffer.GetPosition() < Boundary))
 		{
-			Result->GetValue()->AppendValue("Frame[" + to_string_cast(FrameIndex++) + "]", FrameResult->GetValue());
-		}
-		else
-		{
-			Buffer.SetPosition(Start);
+			auto FieldStart{Buffer.GetPosition()};
+			auto FieldResult{Get_ID3_2_2_Frame(Buffer)};
 			
-			auto PaddingResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-			
-			Result->GetValue()->AppendValue("Padding", PaddingResult->GetValue());
-			if(PaddingResult->GetSuccess() == false)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
-				Result->SetSuccess(false);
-				Buffer.SetPosition(Boundary);
+				Result->GetValue()->AppendValue("Frame[" + to_string_cast(FrameIndex++) + "]", FieldResult->GetValue());
 			}
-			
-			break;
+			else
+			{
+				Buffer.SetPosition(FieldStart);
+				if(FrameIndex > 0)
+				{
+					Continue = true;
+				}
+				
+				break;
+			}
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9582,57 +9585,74 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TagHeaderResult{Get_ID3_2_Tag_Header(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValues(TagHeaderResult->GetValue()->GetValues());
-	if(TagHeaderResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(TagHeaderResult->GetAny("MajorVersion"))};
-		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(TagHeaderResult->GetAny("Size")), 0)};
+		auto FieldResult{Get_ID3_2_Tag_Header(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("TagHeader", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	if(Continue == true)
+	{
+		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(Result->GetValue("TagHeader")->GetValueAny("MajorVersion"))};
+		auto Size{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("TagHeader")->GetValueAny("Size")), 0}};
+		auto Boundary{Buffer.GetPosition() + Size};
 		
 		if(MajorVersion == 0x02)
 		{
-			auto FramesResult{Get_ID3_2_2_Frames(Buffer, Size)};
+			auto FieldResult{Get_ID3_2_2_Frames_AtLeastOne_EndedByFailure(Buffer, Size)};
 			
-			Result->GetValue()->AppendValues(FramesResult->GetValue()->GetValues());
-			Result->SetSuccess(FramesResult->GetSuccess());
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, FieldResult);
+			if((Continue == true) && (Buffer.GetPosition() < Boundary))
+			{
+				auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+				auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
 		}
 		else if(MajorVersion == 0x03)
 		{
-			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
+			if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
 			{
 				throw Inspection::NotImplementedException("ID3 2.3 extended header");
 			}
 			
-			auto FramesResult{Get_ID3_2_3_Frames(Buffer, Size)};
+			auto FieldResult{Get_ID3_2_3_Frames(Buffer, Size)};
 			
-			Result->GetValue()->AppendValues(FramesResult->GetValue()->GetValues());
-			Result->SetSuccess(FramesResult->GetSuccess());
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, FieldResult);
 		}
 		else if(MajorVersion == 0x04)
 		{
-			std::unique_ptr< Inspection::Result > ExtendedHeaderResult;
-			
-			if((TagHeaderResult->GetValue("Flags")->HasValue("ExtendedHeader") == true) && (std::experimental::any_cast< bool >(TagHeaderResult->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true))
+			if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
 			{
-				ExtendedHeaderResult = Get_ID3_2_4_Tag_ExtendedHeader(Buffer);
-				Result->GetValue()->AppendValue("ExtendedHeader", ExtendedHeaderResult->GetValue());
-				Result->SetSuccess(ExtendedHeaderResult->GetSuccess());
-				Size -= ExtendedHeaderResult->GetLength();
-			}
-			if((ExtendedHeaderResult == nullptr) || (ExtendedHeaderResult->GetSuccess() == true))
-			{
-				auto FramesResult{Get_ID3_2_4_Frames(Buffer, Size)};
+				auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader(Buffer)};
+				auto FieldValue{Result->GetValue()->AppendValue("ExtendedHeader", FieldResult->GetValue())};
 				
-				Result->GetValue()->AppendValues(FramesResult->GetValue()->GetValues());
-				Result->SetSuccess(FramesResult->GetSuccess());
+				UpdateState(Continue, FieldResult);
+				Size -= FieldResult->GetLength();
+			}
+			if(Continue == true)
+			{
+				auto FieldResult{Get_ID3_2_4_Frames(Buffer, Size)};
+				
+				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				UpdateState(Continue, FieldResult);
 			}
 		}
 		else
 		{
 			Result->GetValue()->PrependTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
