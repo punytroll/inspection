@@ -3,9 +3,73 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/017_2.3_COMM_bul_UCS-2_bom_be.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::TagHeader/sub::MajorVersion/value::</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/017_2.3_COMM_bul_UCS-2_bom_be.mp3</argument>
 			<argument>--value=/sub::ID3v2Tag/sub::Frame/sub::Language/value::</argument>
 		</execute>
 		<expected-output>bul</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/009_id3v2tag_mpeg1stream_apev2tag_id3v1tag</argument>
+			<argument>--value=/sub::ID3v2Tag/has-sub::Padding</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/009_id3v2tag_mpeg1stream_apev2tag_id3v1tag</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/009_id3v2tag_mpeg1stream_apev2tag_id3v1tag</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::1920.0 bytes and bits</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/013_id3_2.4_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/has-sub::Padding</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/013_id3_2.4_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/013_id3_2.4_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::2200.0 bytes and bits</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/id3/015_2.4_COMM_XXX_language.mp3</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::TagHeader/sub::MajorVersion/value::</argument>
+		</execute>
+		<expected-output>4</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -227,6 +291,14 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::TagHeader/sub::MajorVersion/value::</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC</argument>
 			<argument>--value=/sub::ID3v2Tag/sub::Frame[11]/sub::ImageFormat/value::</argument>
 		</execute>
 		<expected-output>JPG</expected-output>
@@ -262,6 +334,38 @@
 			<argument>--value=/sub::ID3v2Tag/sub::Frame[11]/sub::ImageFormat/tag::mime-type/value::</argument>
 		</execute>
 		<expected-output>image/jpeg</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/012_id3_2.2_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::TagHeader/sub::MajorVersion/value::</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/012_id3_2.2_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/has-sub::Padding</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/012_id3_2.2_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/012_id3_2.2_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::1932.0 bytes and bits</argument>
+		</execute>
+		<expected-output>true</expected-output>
 	</test>
 	<test>
 		<execute>
