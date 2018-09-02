@@ -35,9 +35,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/009_id3v2tag_mpeg1stream_apev2tag_id3v1tag</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::1920.0 bytes and bits</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/tag::length/value::</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>1920.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/009_id3v2tag_mpeg1stream_apev2tag_id3v1tag</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -59,9 +67,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/013_id3_2.4_padding</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::2200.0 bytes and bits</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/tag::length/value::</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>2200.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/013_id3_2.4_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -363,9 +379,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/012_id3_2.2_padding</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Padding/has-tag::1932.0 bytes and bits</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/tag::length/value::</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>1932.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/012_id3_2.2_padding</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Padding/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -614,5 +638,189 @@
 			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::GUID/has-tag::little endian</argument>
 		</execute>
 		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[3]/sub::CodecEntry[0]/sub::CodecInformation/value::</argument>
+		</execute>
+		<expected-output>61 01</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[3]/sub::CodecEntry[0]/sub::CodecInformation/has-tag::buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[3]/sub::CodecEntry[0]/sub::CodecInformation/has-tag::buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[3]/sub::CodecEntry[0]/sub::CodecInformation/has-tag::integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[3]/sub::CodecEntry[0]/sub::CodecInformation/has-tag::unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[3]/sub::CodecEntry[0]/sub::CodecInformation/has-tag::8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[3]/sub::CodecEntry[0]/sub::CodecInformation/tag::length/value::</argument>
+		</execute>
+		<expected-output>2.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[3]/sub::CodecEntry[0]/sub::CodecInformation/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[0]/sub::ContentDescriptor[12]/sub::Value/value::</argument>
+		</execute>
+		<expected-output>36 00 2b 00 39 00 36 00 2b 00 34 00 30 00 36 00 30 00 2b 00 39 00 31 00 33 00 32 00 2b 00 45 00 31 00 41 00 30 00 2b 00 31 00 33 00 41 00 36 00 33 00 2b 00 31 00 39 00 35 00 42 00 32 00 2b 00 31 00 44 00 42 00 46 00 30 00 00 00</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[0]/sub::ContentDescriptor[12]/sub::Value/tag::length/value::</argument>
+		</execute>
+		<expected-output>76.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[0]/sub::ContentDescriptor[12]/sub::Value/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[2]/sub::AdditionalExtendedHeader[0]/sub::GUID/tag::interpretation/value::</argument>
+		</execute>
+		<expected-output>ASF_Language_List_Object</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[2]/sub::AdditionalExtendedHeader[6]/sub::DescriptionRecord[0]/sub::Data/value::</argument>
+		</execute>
+		<expected-output>d1607dbc-e323-4be2-86a1-48a42a28441e</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[2]/sub::AdditionalExtendedHeader[2]/sub::DescriptionRecord[1]/sub::Data/value::</argument>
+		</execute>
+		<expected-output>L3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::ErrorCorrectionData/value::</argument>
+		</execute>
+		<expected-output>01 d5 22 d5 22 01 00 00</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::ErrorCorrectionData/tag::length/value::</argument>
+		</execute>
+		<expected-output>8.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::ErrorCorrectionData/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/003_mpeg1stream</argument>
+			<argument>--value=/sub::MPEG1Stream/sub::MPEGFrame[0]/sub::Header/sub::FrameSync/has-tag::set data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/003_mpeg1stream</argument>
+			<argument>--value=/sub::MPEG1Stream/sub::MPEGFrame[0]/sub::Header/sub::FrameSync/tag::length/value::</argument>
+		</execute>
+		<expected-output>1.4</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/003_mpeg1stream</argument>
+			<argument>--value=/sub::MPEG1Stream/sub::MPEGFrame[0]/sub::Header/sub::FrameSync/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/003_mpeg1stream</argument>
+			<argument>--value=/sub::MPEG1Stream/sub::MPEGFrame[0]/sub::AudioData/has-tag::any data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/003_mpeg1stream</argument>
+			<argument>--value=/sub::MPEG1Stream/sub::MPEGFrame[0]/sub::AudioData/tag::length/value::</argument>
+		</execute>
+		<expected-output>1041.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/003_mpeg1stream</argument>
+			<argument>--value=/sub::MPEG1Stream/sub::MPEGFrame[0]/sub::AudioData/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
 	</test>
 </tests>
