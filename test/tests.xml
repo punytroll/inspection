@@ -823,4 +823,60 @@
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsHeader/sub::VersionNumber/value::</argument>
+		</execute>
+		<expected-output>2000</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsHeader/sub::VersionNumber/tag::interpretation/value::</argument>
+		</execute>
+		<expected-output>2.000 (new)</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsItem[3]/sub::ItemValue/value::</argument>
+		</execute>
+		<expected-output>Rock</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsFooter/has-sub::Reserved</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsFooter/sub::Reserved/has-tag::unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsFooter/sub::Reserved/tag::length/value::</argument>
+		</execute>
+		<expected-output>8.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/002_apev2tag</argument>
+			<argument>--value=/sub::APEv2Tag/sub::APETagsFooter/sub::Reserved/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
 </tests>
