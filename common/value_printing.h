@@ -62,7 +62,7 @@ namespace Inspection
 		{
 			auto First{true};
 			
-			std::cout << g_LightGray <<" (" << g_DarkGray;
+			std::cout << g_LightGray <<" {" << g_DarkGray;
 			for(auto & Tag : Value->GetTags())
 			{
 				if(First == false)
@@ -99,7 +99,7 @@ namespace Inspection
 				}
 				if(Tag->GetTags().size() > 0)
 				{
-					std::cout << g_DarkGray << " (";
+					std::cout << g_LightGray << " {" << g_DarkGray;
 					
 					auto FirstSubTag{true};
 					
@@ -132,11 +132,11 @@ namespace Inspection
 						}
 						FirstSubTag = false;
 					}
-					std::cout << ")";
+					std::cout << g_LightGray << '}' << g_DarkGray;
 				}
 				First = false;
 			}
-			std::cout << g_LightGray << ')';
+			std::cout << g_LightGray << '}';
 		}
 		
 		auto SubIndentation{Indentation};
