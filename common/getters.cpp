@@ -7832,42 +7832,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Ident
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frames_AtLeastOne_EndedByFailure(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	Result->SetSuccess(true);
-	while(Buffer.GetPosition() < Boundary)
+	// reading
+	if(Continue == true)
 	{
-		auto Start{Buffer.GetPosition()};
-		auto FrameResult{Get_ID3_2_3_Frame(Buffer)};
+		auto FrameIndex{0ul};
 		
-		if(FrameResult->GetSuccess() == true)
+		while((Continue == true) && (Buffer.GetPosition() < Boundary))
 		{
-			Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
-		}
-		else
-		{
-			auto SavePosition{Buffer.GetPosition()};
+			auto FieldStart{Buffer.GetPosition()};
+			auto FieldResult{Get_ID3_2_3_Frame(Buffer)};
 			
-			Buffer.SetPosition(Start);
-			
-			auto PaddingResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-			
-			if(PaddingResult->GetSuccess() == true)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
-				Result->GetValue()->AppendValue("Padding", PaddingResult->GetValue());
-				
-				break;
+				Result->GetValue()->AppendValue("Frame[" + to_string_cast(FrameIndex++) + "]", FieldResult->GetValue());
 			}
 			else
 			{
-				Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
-				Buffer.SetPosition(SavePosition);
+				Buffer.SetPosition(FieldStart);
+				if(FrameIndex > 0)
+				{
+					Continue = true;
+				}
+				
+				break;
 			}
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -8783,41 +8782,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header_Ident
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frames(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frames_AtLeastOne_EndedByFailure(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Boundary{Buffer.GetPosition() + Length};
 	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	Result->SetSuccess(true);
-	while(Buffer.GetPosition() < Boundary)
+	// reading
+	if(Continue == true)
 	{
-		auto Start{Buffer.GetPosition()};
-		auto FrameResult{Get_ID3_2_4_Frame(Buffer)};
+		auto FrameIndex{0ul};
 		
-		if(FrameResult->GetSuccess() == true)
+		while((Continue == true) && (Buffer.GetPosition() < Boundary))
 		{
-			Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
-		}
-		else
-		{
-			Buffer.SetPosition(Start);
+			auto FieldStart{Buffer.GetPosition()};
+			auto FieldResult{Get_ID3_2_4_Frame(Buffer)};
 			
-			auto PaddingResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-			
-			if(PaddingResult->GetSuccess() == true)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
-				Result->GetValue()->AppendValue("Padding", PaddingResult->GetValue());
+				Result->GetValue()->AppendValue("Frame[" + to_string_cast(FrameIndex++) + "]", FieldResult->GetValue());
 			}
 			else
 			{
-				Result->GetValue()->AppendValue("Frame", FrameResult->GetValue());
-				Result->SetSuccess(false);
-				Buffer.SetPosition(Boundary);
+				Buffer.SetPosition(FieldStart);
+				if(FrameIndex > 0)
+				{
+					Continue = true;
+				}
+				
+				break;
 			}
-			
-			break;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -9595,6 +9594,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 		
 		UpdateState(Continue, FieldResult);
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(Result->GetValue("TagHeader")->GetValueAny("MajorVersion"))};
@@ -9607,13 +9607,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, FieldResult);
-			if((Continue == true) && (Buffer.GetPosition() < Boundary))
-			{
-				auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
-				auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
-				
-				UpdateState(Continue, FieldResult);
-			}
 		}
 		else if(MajorVersion == 0x03)
 		{
@@ -9622,7 +9615,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 				throw Inspection::NotImplementedException("ID3 2.3 extended header");
 			}
 			
-			auto FieldResult{Get_ID3_2_3_Frames(Buffer, Size)};
+			auto FieldResult{Get_ID3_2_3_Frames_AtLeastOne_EndedByFailure(Buffer, Size)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, FieldResult);
@@ -9639,7 +9632,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 			}
 			if(Continue == true)
 			{
-				auto FieldResult{Get_ID3_2_4_Frames(Buffer, Size)};
+				auto FieldResult{Get_ID3_2_4_Frames_AtLeastOne_EndedByFailure(Buffer, Size)};
 				
 				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 				UpdateState(Continue, FieldResult);
@@ -9649,6 +9642,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 		{
 			Result->GetValue()->PrependTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
 			Continue = false;
+		}
+		// reading
+		if(Continue == true)
+		{
+			if(Buffer.GetPosition() < Boundary)
+			{
+				auto FieldResult{Get_Bits_Unset_EndedByLength(Buffer, Boundary - Buffer.GetPosition())};
+				auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+			}
 		}
 	}
 	// finalization
