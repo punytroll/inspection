@@ -37,6 +37,18 @@ void Inspection::UpdateState(bool & Continue, Inspection::Reader & Reader, std::
 	}
 }
 
+std::shared_ptr< Inspection::Value > AppendLength(std::shared_ptr< Inspection::Value > Value, Inspection::Length Length)
+{
+	auto Tag{std::make_shared< Inspection::Value >()};
+	
+	Tag->SetName("length");
+	Tag->SetAny(Length);
+	Tag->AppendTag("unit", "bytes and bits"s);
+	Value->AppendTag(Tag);
+	
+	return Tag;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
