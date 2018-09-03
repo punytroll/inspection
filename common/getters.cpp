@@ -9385,10 +9385,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 		}
 		else if(TextEncoding == 0x03)
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// interpretation
 			if(Continue == true)
 			{
@@ -9574,6 +9575,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 			Continue = false;
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -9620,6 +9622,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 			Continue = false;
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -9646,6 +9649,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		
 		Result->GetValue()->PrependTag("interpretation", ReplayGainAdjustment / 10.0f);
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -9679,6 +9683,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 			Result->GetValue()->PrependTag("interpretation", "negative gain (attenuation)"s);
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -11282,7 +11287,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UTF-8"s);
+	Result->GetValue()->AppendTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AppendTag("encoding", "UTF-8"s);
 	// verification
 	if(Continue == true)
 	{
@@ -11326,48 +11332,63 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UTF-8"s);
-	
-	std::stringstream Value;
-	auto NumberOfCharacters{0ul};
-	
-	while(true)
+	Result->GetValue()->AppendTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AppendTag("encoding", "UTF-8"s);
+	// verification
+	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto CharacterResult{Get_ISO_IEC_10646_1_1993_UTF_8_Character(FieldReader)};
-		
-		if(CharacterResult->GetSuccess() == true)
+		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Buffer.SetPosition(FieldReader);
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto NumberOfCharacters{0ul};
+		std::stringstream Value;
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_Character(Reader)};
 			
-			auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
-			
-			if(CodePoint == 0x00000000)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination"s);
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-				Result->SetSuccess(true);
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny("CodePoint"))};
 				
-				break;
+				if(CodePoint == 0x00000000)
+				{
+					Result->GetValue()->AppendTag("ended by termination"s);
+					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					
+					break;
+				}
+				else
+				{
+					NumberOfCharacters += 1;
+					Value << std::experimental::any_cast< std::string >(FieldResult->GetAny());
+				}
 			}
 			else
 			{
-				NumberOfCharacters += 1;
-				Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
+				Result->GetValue()->AppendTag("ended by error"s);
+				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
+				Continue = false;
 			}
 		}
-		else
-		{
-			break;
-		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -11379,7 +11400,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	std::stringstream Value;
 	
 	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UTF-8"s);
+	Result->GetValue()->AppendTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AppendTag("encoding", "UTF-8"s);
 	if(Buffer.GetPosition() == Boundary)
 	{
 		Result->GetValue()->AppendTag("ended by length"s);
