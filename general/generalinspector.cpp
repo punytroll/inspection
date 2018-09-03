@@ -513,6 +513,7 @@ int main(int argc, char ** argv)
 	while(++ArgumentIndex < Arguments)
 	{
 		std::string Argument{argv[ArgumentIndex]};
+		
 		if(Argument.compare(0, ValuePrefix.size(), ValuePrefix) == 0)
 		{
 			ValuePath = Argument.substr(ValuePrefix.size());
@@ -522,6 +523,10 @@ int main(int argc, char ** argv)
 				
 				return 1;
 			}
+		}
+		else if(Argument == "--verbose")
+		{
+			g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples = true;
 		}
 		else
 		{
