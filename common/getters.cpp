@@ -4031,14 +4031,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buf
 			if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
 			{
 				auto FieldResult{Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample + 1)};
-				auto FieldValue{Result->GetValue()->AppendValue("Subframe", FieldResult->GetValue())};
+				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
 				
 				UpdateState(Continue, FieldResult);
 			}
 			else
 			{
 				auto FieldResult{Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample)};
-				auto FieldValue{Result->GetValue()->AppendValue("Subframe", FieldResult->GetValue())};
+				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
 				
 				UpdateState(Continue, FieldResult);
 			}
@@ -5064,11 +5064,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 	if(Continue == true)
 	{
 		auto LastMetaDataBlock{std::experimental::any_cast< bool >(Result->GetValue("StreamInfoBlock")->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
+		auto MetaDataBlockIndex{0ul};
 		
 		while((Continue == true) && (LastMetaDataBlock == false))
 		{
 			auto FieldResult{Get_FLAC_MetaDataBlock(Buffer)};
-			auto FieldValue{Result->GetValue()->AppendValue("MetaDataBlock", FieldResult->GetValue())};
+			auto FieldValue{Result->GetValue()->AppendValue("MetaDataBlock[" + to_string_cast(MetaDataBlockIndex++) + "]", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -5085,9 +5086,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 		auto FieldValue{Result->GetValue()->AppendValue("Frames", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
+		
+		auto FrameIndex{0ul};
+		
 		for(auto FrameValue : FieldValue->GetValues())
 		{
-			FrameValue->SetName("Frame");
+			FrameValue->SetName("Frame[" + to_string_cast(FrameIndex++) + "]");
 		}
 	}
 	// finalization
@@ -5606,11 +5610,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		auto FieldValue{Result->GetValue()->AppendValue("Partitions", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
+		
+		auto PartitionIndex{0ul};
+		
 		if(Continue == true)
 		{
 			for(auto PartitionValue : FieldValue->GetValues())
 			{
-				PartitionValue->SetName("Partition");
+				PartitionValue->SetName("Partition[" + to_string_cast(PartitionIndex++) + "]");
 			}
 		}
 	}
