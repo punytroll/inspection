@@ -9895,8 +9895,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 32}) == true)
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("signed"s);
+	Result->GetValue()->AppendTag("32bit"s);
+	Result->GetValue()->AppendTag("big endian"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{0, 32}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		if(Reader.Get1Bits() == 0x00)
 		{
@@ -13087,17 +13102,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(In
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 1}) == true)
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("signed"s);
+	Result->GetValue()->AppendTag("1bit"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{0, 1}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		std::int8_t Value{static_cast< std::int8_t >(static_cast< std::int8_t >(Reader.Get1Bits() << 7) >> 7)};
 		
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("integer"s);
-		Result->GetValue()->AppendTag("signed"s);
-		Result->GetValue()->AppendTag("1bit"s);
-		Result->SetSuccess(true);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -13106,17 +13133,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspect
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 5}) == true)
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("signed"s);
+	Result->GetValue()->AppendTag("5bit"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{0, 5}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 5}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		std::int8_t Value{static_cast< std::int8_t >(static_cast< std::int8_t >(Reader.Get5Bits() << 3) >> 3)};
 		
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("integer"s);
-		Result->GetValue()->AppendTag("signed"s);
-		Result->GetValue()->AppendTag("5bit"s);
-		Result->SetSuccess(true);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -13125,19 +13164,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspect
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 12}) == true)
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("signed"s);
+	Result->GetValue()->AppendTag("12bit"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{0, 12}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 12}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		std::int16_t Value{0};
 		
 		Value |= static_cast< std::int16_t >(static_cast< std::int16_t >(Reader.Get4Bits() << 12) >> 4);
 		Value |= static_cast< std::int16_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("integer"s);
-		Result->GetValue()->AppendTag("signed"s);
-		Result->GetValue()->AppendTag("12bit"s);
-		Result->SetSuccess(true);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -13146,8 +13197,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEnd
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 32}) == true)
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("signed"s);
+	Result->GetValue()->AppendTag("32bit"s);
+	Result->GetValue()->AppendTag("big endian"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{0, 32}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		std::int32_t Value{0l};
 		
@@ -13156,12 +13222,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEnd
 		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
 		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("integer"s);
-		Result->GetValue()->AppendTag("signed"s);
-		Result->GetValue()->AppendTag("32bit"s);
-		Result->GetValue()->AppendTag("big endian"s);
-		Result->SetSuccess(true);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -13170,8 +13233,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEnd
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 32}) == true)
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("signed"s);
+	Result->GetValue()->AppendTag("32bit"s);
+	Result->GetValue()->AppendTag("little endian"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{0, 32}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		std::int32_t Value{0l};
 		
@@ -13180,12 +13258,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_Little
 		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 16;
 		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 24;
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("integer"s);
-		Result->GetValue()->AppendTag("signed"s);
-		Result->GetValue()->AppendTag("32bit"s);
-		Result->GetValue()->AppendTag("little endian"s);
-		Result->SetSuccess(true);
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -13939,7 +14014,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_14Bit_BigE
 		
 		Value |= static_cast< std::uint16_t >(Reader.Get6Bits()) << 8;
 		Value |= static_cast< std::uint16_t >(Reader.Get8Bits());
-		Result->SetSuccess(true);
+		Result->GetValue()->SetAny(Value);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -14077,7 +14152,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_17Bit_BigE
 		Value |= static_cast< std::uint32_t >(Reader.Get8Bits()) << 8;
 		Value |= static_cast< std::uint32_t >(Reader.Get8Bits());
 		Result->GetValue()->SetAny(Value);
-		Result->SetSuccess(true);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
