@@ -14,6 +14,8 @@
 
 using namespace std::string_literals;
 
+bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples{false};
+
 void Inspection::UpdateState(bool & Continue, std::unique_ptr< Inspection::Result > & FieldResult)
 {
 	Continue = FieldResult->GetSuccess();
@@ -5653,7 +5655,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 			Inspection::Reader FieldReader{Buffer};
 			auto FieldResult{Get_Array_EndedByNumberOfElements(FieldReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
 			
-			//~ Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
+			{
+				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			}
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
@@ -5661,7 +5666,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 			Inspection::Reader FieldReader{Buffer};
 			auto FieldResult{Get_Array_EndedByNumberOfElements(FieldReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
 			
-			//~ Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
+			{
+				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			}
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 	}

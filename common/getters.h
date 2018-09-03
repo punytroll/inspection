@@ -3,6 +3,8 @@
 
 #include "result.h"
 
+extern bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples;
+
 namespace Inspection
 {
 	class Buffer;
