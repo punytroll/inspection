@@ -763,6 +763,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 				Result->GetValue()->AppendTag("ended by error"s);
 				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
 				Continue = false;
+				
+				break;
 			}
 		}
 		if(Continue == true)
