@@ -101,7 +101,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Buffer & Buffer, bool OnlyStreamHeader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Constant(Inspection::Reader & Reader, std::uint8_t BitsPerSample);
