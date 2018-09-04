@@ -3209,10 +3209,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("FormatTag", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -12030,20 +12031,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_FormatTag(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_FormatTag(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
+	// interpretation
 	if(Continue == true)
 	{
 		auto FormatTag{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
@@ -12138,7 +12139,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_Forma
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -12361,6 +12362,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVe
 			Continue = false;
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
