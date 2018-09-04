@@ -3199,9 +3199,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_Flags
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("AudioMedia"s);
@@ -3209,94 +3209,86 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(FieldReader)};
+		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("FormatTag", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfChannels", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerSecond", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AverageNumberOfBytesPerSecond", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BlockAlignment", FieldResult->GetValue())};
 		
 		FieldValue->PrependTag("unit", "bytes"s);
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FliedValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificDataSize", FieldResult->GetValue())};
 		
 		FieldValue->PrependTag("unit", "bytes"s);
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto FormatTag{std::experimental::any_cast< const std::string & >(Result->GetValue("FormatTag")->GetTagAny("constant name"))};
-		auto CodecSpecificDataSize{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CodecSpecificDataSize"))};
 		
 		if(FormatTag == "WAVE_FORMAT_WMAUDIO2")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{CodecSpecificDataSize, 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CodecSpecificDataSize")), 0}};
 			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificData", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{CodecSpecificDataSize, 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetAny("CodecSpecificDataSize")), 0}};
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificData", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3442,19 +3434,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	// reading
 	if(Continue == true)
 	{
-		auto TypeSpecificDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("TypeSpecificDataLength"))};
 		auto StreamType{std::experimental::any_cast< Inspection::GUID >(Result->GetAny("StreamType"))};
 		
 		if(StreamType == Inspection::g_ASF_AudioMediaGUID)
 		{
-			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Buffer, Inspection::Length{TypeSpecificDataLength, 0})};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("TypeSpecificDataLength")), 0}};
+			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("TypeSpecificData", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{TypeSpecificDataLength, 0}};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("TypeSpecificDataLength")), 0}};
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("TypeSpecificData", FieldResult->GetValue())};
 			
