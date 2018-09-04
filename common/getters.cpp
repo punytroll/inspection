@@ -3279,10 +3279,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 		
 		if(FormatTag == "WAVE_FORMAT_WMAUDIO2")
 		{
-			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Buffer, Inspection::Length{CodecSpecificDataSize, 0})};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{CodecSpecificDataSize, 0}};
+			auto FieldResult{Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificData", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
@@ -3300,50 +3301,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// verification
 	if(Continue == true)
 	{
-		if(Length != Inspection::Length{10, 0})
+		if(Reader.GetRemainingLength() != Inspection::Length{10, 0})
 		{
-			Result->GetValue()->AppendTag("error", "The length must be " + to_string_cast(Inspection::Length{10, 0}) + ", not " + to_string_cast(Length) + ".");
+			Result->GetValue()->AppendTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{10, 0}) + ".");
 			Continue = false;
 		}
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerBlock", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("EncodeOptions", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SuperBlockAlign", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
