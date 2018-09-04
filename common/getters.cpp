@@ -4595,10 +4595,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
-			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(MetaDataBlockType == "Padding")
 		{
@@ -5124,10 +5125,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
-			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
@@ -5166,95 +5168,87 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsP
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Data(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MinimumBlockSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MaximumBlockSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 24}};
-		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MinimumFrameSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 24}};
-		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MaximumFrameSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 20}};
-		auto FieldResult{Get_UnsignedInteger_20Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_20Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SampleRate", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 3}};
-		auto FieldResult{Get_FLAC_StreamInfoBlock_NumberOfChannels(FieldReader)};
+		auto FieldResult{Get_FLAC_StreamInfoBlock_NumberOfChannels(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfChannels", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 5}};
-		auto FieldResult{Get_FLAC_StreamInfoBlock_BitsPerSample(FieldReader)};
+		auto FieldResult{Get_FLAC_StreamInfoBlock_BitsPerSample(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 36}};
-		auto FieldResult{Get_UnsignedInteger_36Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_36Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TotalSamplesPerChannel", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{16, 0}};
 		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MD5SignatureOfUnencodedAudioData", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

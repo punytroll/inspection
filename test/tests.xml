@@ -243,7 +243,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::PictureType/value::</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::PictureType/value::</argument>
 		</execute>
 		<expected-output>3</expected-output>
 	</test>
@@ -251,7 +251,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::PictureType/tag::interpretation/value::</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::PictureType/tag::interpretation/value::</argument>
 		</execute>
 		<expected-output>Cover (front)</expected-output>
 	</test>
@@ -259,7 +259,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/value::</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::MIMEType/value::</argument>
 		</execute>
 		<expected-output>image/jpeg</expected-output>
 	</test>
@@ -267,7 +267,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::string</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::MIMEType/has-tag::string</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -275,7 +275,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::ASCII</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::MIMEType/has-tag::ASCII</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -283,7 +283,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::printable</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::MIMEType/has-tag::printable</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -291,7 +291,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::ended by length</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::MIMEType/has-tag::ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -299,7 +299,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::MIMEType/has-tag::10 characters</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::MIMEType/has-tag::10 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -307,7 +307,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/value::</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::Description/value::</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -315,7 +315,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/has-tag::string</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::Description/has-tag::string</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -323,7 +323,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/tag::character set/value::</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::Description/tag::character set/value::</argument>
 		</execute>
 		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
 	</test>
@@ -331,7 +331,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/tag::encoding/value::</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::Description/tag::encoding/value::</argument>
 		</execute>
 		<expected-output>UTF-8</expected-output>
 	</test>
@@ -339,7 +339,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/has-tag::ended by length</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::Description/has-tag::ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -347,7 +347,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub::FLACStream/sub::MetaDataBlock/sub::Data/sub::Description/has-tag::0 characters</argument>
+			<argument>--value=/sub::FLACStream/sub::MetaDataBlock[0]/sub::Data/sub::Description/has-tag::0 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1166,5 +1166,93 @@
 			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Information[1]/has-tag::ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::MinimumBlockSize/value::</argument>
+		</execute>
+		<expected-output>4096</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::MaximumBlockSize/value::</argument>
+		</execute>
+		<expected-output>4096</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::MinimumFrameSize/value::</argument>
+		</execute>
+		<expected-output>14</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::MaximumFrameSize/value::</argument>
+		</execute>
+		<expected-output>6055</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::SampleRate/value::</argument>
+		</execute>
+		<expected-output>44100</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::NumberOfChannels/value::</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::NumberOfChannels/tag::interpretation/value::</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::BitsPerSample/value::</argument>
+		</execute>
+		<expected-output>15</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::BitsPerSample/tag::interpretation/value::</argument>
+		</execute>
+		<expected-output>16</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::TotalSamplesPerChannel/value::</argument>
+		</execute>
+		<expected-output>368088</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::MD5SignatureOfUnencodedAudioData/value::</argument>
+		</execute>
+		<expected-output>52 d8 0c 42 cf bd 54 72 54 20 21 1d 9f 39 5b 53</expected-output>
 	</test>
 </tests>
