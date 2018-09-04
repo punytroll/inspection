@@ -11185,33 +11185,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("CodePoint", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto CodePoint{std::experimental::any_cast< std::uint32_t >(Result->GetAny("CodePoint"))};
-		
-		Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint));
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -11331,11 +11304,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_Character(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader)};
 			
 			UpdateState(Continue, FieldResult);
 			NumberOfCharacters += 1;
-			Value << std::experimental::any_cast< std::string >(FieldResult->GetAny());
+			Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny()));
 			if(Continue == false)
 			{
 				Result->GetValue()->AppendTag("ended by error"s);
@@ -11382,12 +11355,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_Character(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader)};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny("CodePoint"))};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -11399,7 +11372,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 				else
 				{
 					NumberOfCharacters += 1;
-					Value << std::experimental::any_cast< std::string >(FieldResult->GetAny());
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
@@ -11444,12 +11417,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_Character(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader)};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny("CodePoint"))};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -11460,7 +11433,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 				else
 				{
 					NumberOfCharacters += 1;
-					Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
