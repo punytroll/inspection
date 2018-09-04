@@ -5444,10 +5444,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Header(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Subframe_Type(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_FLAC_Subframe_Type(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Type", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -5671,19 +5672,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	throw Inspection::NotImplementedException("Get_FLAC_Subframe_Residual_Rice2");
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 6}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 6}};
 		auto FieldResult{Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -5696,12 +5697,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 			{
 				Result->GetValue()->AppendTag("interpretation", "SUBFRAME_LPC"s);
 				
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 5}};
-				auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
+				auto FieldResult{Get_UnsignedInteger_5Bit(Reader)};
 				auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
-				if(FieldResult->GetSuccess() == true)
+				UpdateState(Continue, FieldResult);
+				// interpretation
+				if(Continue == true)
 				{
 					auto Order{std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny())};
 					
@@ -5712,21 +5713,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 			}
 		case 2:
 			{
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 3}};
-				auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
+				Result->GetValue()->AppendTag("interpretation", "SUBFRAME_FIXED"s);
+				
+				auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
 				auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
-				if(FieldResult->GetSuccess() == true)
+				UpdateState(Continue, FieldResult);
+				// interpretation and verification
+				if(Continue == true)
 				{
 					auto Order{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny())};
 					
 					FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order));
-					if(Order < 5)
-					{
-						Result->GetValue()->AppendTag("interpretation", "SUBFRAME_FIXED"s);
-					}
-					else
+					if(Order >= 5)
 					{
 						Result->GetValue()->AppendTag("reserved");
 						Result->GetValue()->AppendTag("error", "The subframe type is SUBFRAME_FIXED, and the order " + to_string_cast(Order) + " MUST NOT be used.");
@@ -5764,7 +5763,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
