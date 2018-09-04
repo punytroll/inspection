@@ -288,10 +288,11 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspec
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("FormatTag", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
