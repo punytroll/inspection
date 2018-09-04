@@ -659,6 +659,46 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::TypeSpecificData/sub::FormatTag/tag::constant name/value::</argument>
+		</execute>
+		<expected-output>WAVE_FORMAT_WMAUDIO2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::TypeSpecificData/sub::CodecSpecificDataSize/value::</argument>
+		</execute>
+		<expected-output>10</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::TypeSpecificData/sub::CodecSpecificData/sub::SamplesPerBlock/value::</argument>
+		</execute>
+		<expected-output>34816</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::TypeSpecificData/sub::CodecSpecificData/sub::EncodeOptions/value::</argument>
+		</execute>
+		<expected-output>15</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::TypeSpecificData/sub::CodecSpecificData/sub::SuperBlockAlign/value::</argument>
+		</execute>
+		<expected-output>17837</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
 			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::GUID/value::</argument>
 		</execute>
 		<expected-output>75b22630-668e-11cf-a6d9-00aa0062ce6c</expected-output>
