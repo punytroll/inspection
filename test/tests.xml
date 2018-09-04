@@ -651,6 +651,14 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::Flags/value::</argument>
+		</execute>
+		<expected-output>1000000000000000</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
 			<argument>--value=/sub::ASFFile/sub::HeaderObject/sub::HeaderObject[4]/sub::TypeSpecificData/sub::FormatTag/value::</argument>
 		</execute>
 		<expected-output>353</expected-output>
