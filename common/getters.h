@@ -14,7 +14,7 @@ namespace Inspection
 	void UpdateState(bool & Continue, Inspection::Buffer & Buffer, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader);
 	void UpdateState(bool & Continue, Inspection::Reader & Reader, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader);
 	
-	std::unique_ptr< Inspection::Result > Get_APE_Tags(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_APE_Tags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Reader & Reader);

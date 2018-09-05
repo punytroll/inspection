@@ -55,19 +55,18 @@ std::shared_ptr< Inspection::Value > AppendLength(std::shared_ptr< Inspection::V
 // Readers & Getters                                                                             //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_APE_Tags_HeaderOrFooter(FieldReader)};
+		auto FieldResult{Get_APE_Tags_HeaderOrFooter(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("APETagsHeader", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -76,25 +75,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Buffe
 		
 		for(auto ItemIndex = 0ul; ItemIndex < ItemCount; ++ItemIndex)
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_APE_Tags_Item(FieldReader)};
+			auto FieldResult{Get_APE_Tags_Item(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("APETagsItem[" + to_string_cast(ItemIndex) + "]", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_APE_Tags_HeaderOrFooter(FieldReader)};
+		auto FieldResult{Get_APE_Tags_HeaderOrFooter(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("APETagsFooter", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

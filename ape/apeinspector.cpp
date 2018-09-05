@@ -165,18 +165,34 @@ std::int64_t GetAPETAGOffset(const std::uint8_t * Buffer, std::uint64_t Length, 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Position{GetAPETAGOffset(Buffer.GetData(), Buffer.GetLength().GetBytes(), 0ul)};
+	auto Continue{true};
 	
-	if(Position >= 0)
+	// seeking
+	if(Continue == true)
 	{
-		Buffer.SetPosition(Inspection::Length(Position, 0));
+		auto Position{GetAPETAGOffset(Buffer.GetData(), Buffer.GetLength().GetBytes(), 0ul)};
 		
-		auto APETagsResult{Get_APE_Tags(Buffer)};
-		
-		Result->SetValue(APETagsResult->GetValue());
-		Result->SetSuccess(APETagsResult->GetSuccess());
-		Result->GetValue()->SetName("APEv2 Tag");
+		if(Position >= 0)
+		{
+			Buffer.SetPosition(Inspection::Length(Position, 0));
+		}
+		else
+		{
+			Continue = false;
+		}
 	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_APE_Tags(FieldReader)};
+		
+		Result->SetValue(FieldResult->GetValue());
+		Result->GetValue()->SetName("APEv2 Tag");
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
