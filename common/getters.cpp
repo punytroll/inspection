@@ -3994,10 +3994,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buf
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Frame_Header(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_FLAC_Frame_Header(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// inspect
 	if(Continue == true)
@@ -4079,19 +4080,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Footer(Inspecti
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 14}};
-		auto FieldResult{Get_UnsignedInteger_14Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_14Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SyncCode", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -4101,20 +4101,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	//reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BlockingStrategy", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -4138,11 +4136,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BlockSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -4186,20 +4183,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_FLAC_Frame_Header_SampleRate(FieldReader)};
+		auto FieldResult{Get_FLAC_Frame_Header_SampleRate(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SampleRate", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ChannelAssignment", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -4294,11 +4289,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 3}};
-		auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("SampleSize", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -4355,11 +4349,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -4368,19 +4361,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(BlockingStrategy == 0x00)
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_UnsignedInteger_31Bit_UTF_8_Coded(FieldReader)};
+			auto FieldResult{Get_UnsignedInteger_31Bit_UTF_8_Coded(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("FrameNumber", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(BlockingStrategy == 0x01)
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_UnsignedInteger_36Bit_UTF_8_Coded(FieldReader)};
+			auto FieldResult{Get_UnsignedInteger_36Bit_UTF_8_Coded(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("SampleNumber", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
@@ -4395,11 +4386,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(BlockSize == 0x06)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-			auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+			auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("BlockSizeExplicit", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 			// interpretation
 			if(Continue == true)
 			{
@@ -4411,11 +4401,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		}
 		else if(BlockSize == 0x07)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-			auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
+			auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("BlockSizeExplicit", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 			// interpretation
 			if(Continue == true)
 			{
@@ -4447,15 +4436,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CRC-8", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
