@@ -6580,10 +6580,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Header(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ID3_2_3_Frame_Header(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -7710,15 +7711,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Header_Identifier(Buffer)};
+		auto FieldResult{Get_ID3_2_3_Frame_Header_Identifier(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7726,40 +7727,38 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header(Inspe
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Header_Flags(Buffer)};
+		auto FieldResult{Get_ID3_2_3_Frame_Header_Flags(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_BitSet_16Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_BitSet_16Bit_BigEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -7843,24 +7842,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Identifier(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Identifier(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
 		auto FieldResult{Get_ASCII_String_AlphaNumeric_EndedByLength(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -7930,7 +7929,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Ident
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
