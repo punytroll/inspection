@@ -6518,10 +6518,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 		}
 		else if(TextEncoding == 0x01)
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
@@ -8140,10 +8141,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 		}
 		else if(TextEncoding == 0x01)
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Buffer)};
+			Inspection::Reader FieldReader{Buffer};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// interpretation
 			if(Continue == true)
 			{
@@ -11173,9 +11175,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
@@ -11184,11 +11186,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{2, 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ByteOrderMark", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -11197,24 +11198,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		if(ByteOrderMark == "BigEndian")
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTermination(FieldReader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTermination(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(ByteOrderMark == "LittleEndian")
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTermination(FieldReader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTermination(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
