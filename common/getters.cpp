@@ -9005,28 +9005,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(FieldReader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfFlagBytes", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// verification
 	if(Continue == true)
@@ -9043,61 +9041,60 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-		auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flags(FieldReader)};
+		auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flags(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ExtendedFlags", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	if(Continue == true)
 	{
 		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("TagIsAnUpdate")) == true)
 		{
-			auto TagIsAnUpdateDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Buffer)};
+			auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Reader)};
+			auto FieldValue{Result->GetValue()->AppendValue("TagIsAnUpdateData", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("TagIsAnUpdateData", TagIsAnUpdateDataResult->GetValue());
-			Continue = TagIsAnUpdateDataResult->GetSuccess();
+			UpdateState(Continue, FieldResult);
 		}
 	}
 	if(Continue == true)
 	{
 		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("CRCDataPresent")) == true)
 		{
-			auto CRCDataPresentDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Buffer)};
+			auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Reader)};
+			auto FieldValue{Result->GetValue()->AppendValue("CRCDataPresentData", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("CRCDataPresentData", CRCDataPresentDataResult->GetValue());
-			Continue = CRCDataPresentDataResult->GetSuccess();
+			UpdateState(Continue, FieldResult);
 		}
 	}
 	if(Continue == true)
 	{
 		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("TagRestrictions")) == true)
 		{
-			auto TagRestrictionsDataResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Buffer)};
+			auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Reader)};
+			auto FieldValue{Result->GetValue()->AppendValue("TagRestrictionsData", FieldResult->GetValue())};
 			
-			Result->GetValue()->AppendValue("TagRestrictionsData", TagRestrictionsDataResult->GetValue());
-			Continue = TagRestrictionsDataResult->GetSuccess();
+			UpdateState(Continue, FieldResult);
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
+		auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Reader)};
 		
-		Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
-		Continue = HeaderResult->GetSuccess();
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -9107,54 +9104,66 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 40}};
-		auto FieldResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(FieldReader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TotalFrameCRC", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
-	
-	Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
-	Result->SetSuccess((HeaderResult->GetSuccess() == true) && (std::experimental::any_cast< std::uint8_t >(HeaderResult->GetAny("Size")) == 0x00));
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto HeaderResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Buffer)};
+		auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Reader)};
 		
-		Result->GetValue()->AppendValues(HeaderResult->GetValue()->GetValues());
-		Continue = HeaderResult->GetSuccess();
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
 	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetAny("Size")) == 0x00;
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Reader)};
+		
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
 	if(Continue == true)
 	{
 		if(std::experimental::any_cast< std::uint8_t >(Result->GetAny("Size")) == 0x01)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-			auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+			auto FieldResult{Get_BitSet_8Bit(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Restrictions", FieldResult->GetValue())};
 			
 			FieldValue->AppendTag("error", "This program is missing the interpretation of the tag restriction flags."s); 
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
@@ -9164,28 +9173,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(FieldReader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -9198,11 +9206,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
-		auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+		auto FieldResult{Get_BitSet_8Bit(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -9247,11 +9254,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(I
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
-		auto FieldResult{Get_BitSet_8Bit(FieldReader)};
+		auto FieldResult{Get_BitSet_8Bit(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -9702,10 +9708,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_Tag_Header(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ID3_2_Tag_Header(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TagHeader", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -9737,10 +9744,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 		{
 			if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
 			{
-				auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader(Buffer)};
+				Inspection::Reader FieldReader{Buffer};
+				auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader(FieldReader)};
 				auto FieldValue{Result->GetValue()->AppendValue("ExtendedHeader", FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 				Size -= FieldResult->GetLength();
 			}
 			if(Continue == true)
@@ -9776,37 +9784,34 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
-		auto FieldResult{Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(FieldReader, "ID3")};
+		auto FieldResult{Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Reader, "ID3")};
 		auto FieldValue{Result->GetValue()->AppendValue("FileIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(FieldReader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MajorVersion", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(FieldReader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("RevisionNumber", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -9815,27 +9820,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 		
 		if(MajorVersion == 0x02)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-			auto FieldResult{Get_ID3_2_2_Tag_Header_Flags(FieldReader)};
+			auto FieldResult{Get_ID3_2_2_Tag_Header_Flags(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(MajorVersion == 0x03)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-			auto FieldResult{Get_ID3_2_3_Tag_Header_Flags(FieldReader)};
+			auto FieldResult{Get_ID3_2_3_Tag_Header_Flags(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(MajorVersion == 0x04)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-			auto FieldResult{Get_ID3_2_4_Tag_Header_Flags(FieldReader)};
+			auto FieldResult{Get_ID3_2_4_Tag_Header_Flags(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
@@ -9846,15 +9848,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(FieldReader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
