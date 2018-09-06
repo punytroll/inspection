@@ -6577,7 +6577,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny("Identifier"))};
 		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0)};
 		
-		if(Identifier == "RGAD")
+		if(Identifier == "PCNT")
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_PCNT(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(Identifier == "RGAD")
 		{
 			Inspection::Reader FieldReader{Buffer, Size};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_RGAD(FieldReader)};
@@ -6604,10 +6612,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			else if(Identifier == "MCDI")
 			{
 				BodyHandler = Get_ID3_2_3_Frame_Body_MCDI;
-			}
-			else if(Identifier == "PCNT")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_PCNT;
 			}
 			else if(Identifier == "POPM")
 			{
@@ -6992,48 +6996,44 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		if(Buffer.GetPosition() + Inspection::Length{4, 0} > Boundary)
+		if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
-			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 			Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
 			Continue = false;
 		}
-		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
+		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
-		else if(Buffer.GetPosition() + Inspection::Length{4, 0} < Boundary)
+		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
 		{
-			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 			Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			Continue = false;
 		}
 	}
 	// reading
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -7271,29 +7271,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(In
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 32}};
-		auto FieldResult{Get_ISO_IEC_IEEE_60559_2011_binary32(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_IEEE_60559_2011_binary32(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PeakAmplitude", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
-		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(FieldReader)};
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TrackReplayGainAdjustment", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
-		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(FieldReader)};
+		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
