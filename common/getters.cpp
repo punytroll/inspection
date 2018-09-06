@@ -6537,10 +6537,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 		}
 		else if(TextEncoding == 0x01)
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
+			Inspection::Reader FieldReader{Buffer, Length};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else
 		{
@@ -6969,26 +6970,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB_MI
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(Inspection::Buffer & Buffer, const Inspection::Length & Length)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto TableOfContentsResult{Get_IEC_60908_1999_TableOfContents(Buffer)};
+	auto Continue{true};
 	
-	if(TableOfContentsResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		Result->SetValue(TableOfContentsResult->GetValue());
-		Result->SetSuccess(true);
-	}
-	else
-	{
-		Buffer.SetPosition(Result->GetOffset());
+		auto AlternativeStart{Buffer.GetPosition()};
+		auto Alternative1Result{Get_IEC_60908_1999_TableOfContents(Buffer)};
 		
-		auto MCDIStringResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Buffer, Length)};
-		
-		if(MCDIStringResult->GetSuccess() == true)
+		Result->SetValue(Alternative1Result->GetValue());
+		UpdateState(Continue, Alternative1Result);
+		if(Continue == true)
 		{
-			Result->GetValue()->AppendValue("String", MCDIStringResult->GetValue());
-			Result->GetValue("String")->PrependTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
-			Result->SetSuccess(true);
+			Result->SetValue(Alternative1Result->GetValue());
+		}
+		else
+		{
+			Buffer.SetPosition(AlternativeStart);
+			
+			Inspection::Reader Alternative2Reader{Buffer, Length};
+			auto Alternative2Result{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Alternative2Reader)};
+			
+			UpdateState(Continue, Buffer, Alternative2Result, Alternative2Reader);
+			if(Continue == true)
+			{
+				Result->GetValue()->AppendValue("String", Alternative2Result->GetValue());
+				Result->GetValue("String")->PrependTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
+			}
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
@@ -8163,14 +8175,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 		}
 		else if(TextEncoding == 0x01)
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Buffer, Length)};
+			Inspection::Reader FieldReader{Buffer, Length};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(FieldReader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->ClearTags();
 				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
 			}
 		}
@@ -10030,7 +10042,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Header(FieldReader)};
 		
 		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -10942,77 +10954,94 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UCS-2"s);
-	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AppendTag("encoding", "UCS-2"s);
 	Result->GetValue()->AppendTag("big endian"s);
-	if(Buffer.GetPosition() == Boundary)
+	// verification
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("ended by length"s);
-		Result->GetValue()->AppendTag("empty"s);
-	}
-	else
-	{
-		auto NumberOfCharacters{0ul};
-		
-		while(true)
+		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			auto CharacterResult{Get_ISO_IEC_10646_1_1993_UCS_2_Character_BigEndian(Buffer)};
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto EndedByTermination{false};
+		auto NumberOfCharacters{0ul};
+		std::stringstream Value;
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader)};
 			
-			if(Buffer.GetPosition() <= Boundary)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
-				if(CharacterResult->GetSuccess() == true)
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				
+				if(CodePoint == 0x00000000)
 				{
-					auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+					EndedByTermination = true;
 					
-					if(CodePoint == 0x00000000)
-					{
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by termination and boundary"s);
-						}
-						else
-						{
-							Result->GetValue()->AppendTag("ended by termination"s);
-						}
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-						Result->SetSuccess(true);
-						
-						break;
-					}
-					else
-					{
-						NumberOfCharacters += 1;
-						Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by boundary"s);
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-							Result->SetSuccess(true);
-							
-							break;
-						}
-					}
+					break;
 				}
 				else
 				{
-					break;
+					NumberOfCharacters += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
 			{
-				break;
+				Result->GetValue()->AppendTag("ended by error"s);
+				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Continue = false;
 			}
 		}
+		if(NumberOfCharacters == 0)
+		{
+			Result->GetValue()->AppendTag("empty"s);
+		}
+		else
+		{
+			if(EndedByTermination == true)
+			{
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+			}
+			else
+			{
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+			}
+		}
+		if(Reader.IsAtEnd() == true)
+		{
+			if(EndedByTermination == true)
+			{
+				Result->GetValue()->AppendTag("ended by termination and length"s);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("ended by length"s);
+			}
+		}
+		else if(EndedByTermination == true)
+		{
+			Result->GetValue()->AppendTag("ended by termination"s);
+		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -11079,77 +11108,94 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
-	std::stringstream Value;
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UCS-2"s);
-	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AppendTag("encoding", "UCS-2"s);
 	Result->GetValue()->AppendTag("little endian"s);
-	if(Buffer.GetPosition() == Boundary)
+	// verification
+	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("ended by length"s);
-		Result->GetValue()->AppendTag("empty"s);
-	}
-	else
-	{
-		auto NumberOfCharacters{0ul};
-		
-		while(true)
+		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			auto CharacterResult{Get_ISO_IEC_10646_1_1993_UCS_2_Character_LittleEndian(Buffer)};
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto EndedByTermination{false};
+		auto NumberOfCharacters{0ul};
+		std::stringstream Value;
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader)};
 			
-			if(Buffer.GetPosition() <= Boundary)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
-				if(CharacterResult->GetSuccess() == true)
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				
+				if(CodePoint == 0x00000000)
 				{
-					auto CodePoint{std::experimental::any_cast< std::uint32_t >(CharacterResult->GetAny("CodePoint"))};
+					EndedByTermination = true;
 					
-					if(CodePoint == 0x00000000)
-					{
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by termination and boundary"s);
-						}
-						else
-						{
-							Result->GetValue()->AppendTag("ended by termination"s);
-						}
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-						Result->SetSuccess(true);
-						
-						break;
-					}
-					else
-					{
-						NumberOfCharacters += 1;
-						Value << std::experimental::any_cast< const std::string & >(CharacterResult->GetAny());
-						if(Buffer.GetPosition() == Boundary)
-						{
-							Result->GetValue()->AppendTag("ended by boundary"s);
-							Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-							Result->SetSuccess(true);
-							
-							break;
-						}
-					}
+					break;
 				}
 				else
 				{
-					break;
+					NumberOfCharacters += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
 			{
-				break;
+				Result->GetValue()->AppendTag("ended by error"s);
+				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Continue = false;
 			}
 		}
+		if(NumberOfCharacters == 0)
+		{
+			Result->GetValue()->AppendTag("empty"s);
+		}
+		else
+		{
+			if(EndedByTermination == true)
+			{
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+			}
+			else
+			{
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+			}
+		}
+		if(Reader.IsAtEnd() == true)
+		{
+			if(EndedByTermination == true)
+			{
+				Result->GetValue()->AppendTag("ended by termination and length"s);
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("ended by length"s);
+			}
+		}
+		else if(EndedByTermination == true)
+		{
+			Result->GetValue()->AppendTag("ended by termination"s);
+		}
+		Result->GetValue()->SetAny(Value.str());
 	}
-	Result->GetValue()->SetAny(Value.str());
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -11197,10 +11243,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader)
 {
-	auto StartPosition{Buffer.GetPosition()};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
@@ -11209,11 +11254,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{2, 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ByteOrderMark", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -11222,14 +11266,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		if(ByteOrderMark == "BigEndian")
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
 		else if(ByteOrderMark == "LittleEndian")
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Buffer, StartPosition + Length - Buffer.GetPosition())};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -11237,7 +11281,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
