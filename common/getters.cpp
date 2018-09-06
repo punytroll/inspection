@@ -6576,7 +6576,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny("Identifier"))};
 		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0)};
 		
-		if(Identifier == "PCNT")
+		if(Identifier == "GEOB")
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_GEOB(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(Identifier == "PCNT")
 		{
 			Inspection::Reader FieldReader{Buffer, Size};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_PCNT(FieldReader)};
@@ -6603,10 +6611,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			else if(Identifier == "COMM")
 			{
 				BodyHandler = Get_ID3_2_3_Frame_Body_COMM;
-			}
-			else if(Identifier == "GEOB")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_GEOB;
 			}
 			else if(Identifier == "MCDI")
 			{
@@ -6884,60 +6888,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_COMM(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ID3_2_3_Frame_Body_GEOB_MIMEType(FieldReader)};
+		auto FieldResult{Get_ID3_2_3_Frame_Body_GEOB_MIMEType(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(FieldReader, std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding")))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding")))};
 		auto FieldValue{Result->GetValue()->AppendValue("FileName", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(FieldReader, std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding")))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding")))};
 		auto FieldValue{Result->GetValue()->AppendValue("ContentDescription", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("EncapsulatedObject", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
