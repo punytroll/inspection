@@ -6005,10 +6005,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_COM(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_Language(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ID3_2_2_Language(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Language", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -6350,15 +6351,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frames_AtLeastOne_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// verification
 	if(Continue == true)
 	{
-		if(Buffer.Has(Inspection::Length{3, 0}) == false)
+		if(Reader.Has(Inspection::Length{3, 0}) == false)
 		{
 			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
 			Continue = false;
@@ -6367,23 +6368,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		auto AlternativeStart{Buffer.GetPosition()};
-		Inspection::Reader Alternative1Reader{Buffer, Inspection::Length{3, 0}};
+		Inspection::Reader Alternative1Reader{Reader, Inspection::Length{3, 0}};
 		auto Alternative1Result{Get_ISO_639_2_1998_Code(Alternative1Reader)};
 		
-		UpdateState(Continue, Buffer, Alternative1Result, Alternative1Reader);
+		UpdateState(Continue, Alternative1Result);
 		if(Continue == true)
 		{
+			Reader.AdvancePosition(Alternative1Reader.GetRemainingLength());
 			Result->SetValue(Alternative1Result->GetValue());
 		}
 		else
 		{
-			Buffer.SetPosition(AlternativeStart);
-			
-			Inspection::Reader Alternative2Reader{Buffer, Inspection::Length{3, 0}};
+			Inspection::Reader Alternative2Reader{Reader, Inspection::Length{3, 0}};
 			auto Alternative2Result{Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Alternative2Reader)};
 			
-			UpdateState(Continue, Buffer, Alternative2Result, Alternative2Reader);
+			UpdateState(Continue, Reader, Alternative2Result, Alternative2Reader);
 			Result->SetValue(Alternative2Result->GetValue());
 			if(Continue == true)
 			{
@@ -6394,7 +6393,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -6854,10 +6853,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Language(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ID3_2_3_Language(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Language", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -7601,10 +7601,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_USLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Language(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ID3_2_3_Language(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Language", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -7955,15 +7956,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frames_AtLeastOne_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// verification
 	if(Continue == true)
 	{
-		if(Buffer.Has(Inspection::Length{3, 0}) == false)
+		if(Reader.Has(Inspection::Length{3, 0}) == false)
 		{
 			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
 			Continue = false;
@@ -7972,23 +7973,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		auto AlternativeStart{Buffer.GetPosition()};
-		Inspection::Reader Alternative1Reader{Buffer, Inspection::Length{3, 0}};
+		Inspection::Reader Alternative1Reader{Reader, Inspection::Length{3, 0}};
 		auto Alternative1Result{Get_ISO_639_2_1998_Code(Alternative1Reader)};
 		
-		UpdateState(Continue, Buffer, Alternative1Result, Alternative1Reader);
+		UpdateState(Continue, Alternative1Result);
 		if(Continue == true)
 		{
 			Result->SetValue(Alternative1Result->GetValue());
+			Reader.AdvancePosition(Alternative1Reader.GetConsumedLength());
 		}
 		else
 		{
-			Buffer.SetPosition(AlternativeStart);
-			
-			Inspection::Reader Alternative2Reader{Buffer, Inspection::Length{3, 0}};
+			Inspection::Reader Alternative2Reader{Reader, Inspection::Length{3, 0}};
 			auto Alternative2Result{Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Alternative2Reader)};
 			
-			UpdateState(Continue, Buffer, Alternative2Result, Alternative2Reader);
+			UpdateState(Continue, Reader, Alternative2Result, Alternative2Reader);
 			if(Continue == true)
 			{
 				Result->SetValue(Alternative2Result->GetValue());
@@ -8003,7 +8002,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -8423,10 +8422,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_Language(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ID3_2_4_Language(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Language", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -8689,10 +8689,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_USLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_Language(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ID3_2_4_Language(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Language", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -8919,15 +8920,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frames_AtLeastOne_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// verification
 	if(Continue == true)
 	{
-		if(Buffer.Has(Inspection::Length{3, 0}) == false)
+		if(Reader.Has(Inspection::Length{3, 0}) == false)
 		{
 			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
 			Continue = false;
@@ -8936,27 +8937,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 	// reader
 	if(Continue == true)
 	{
-		auto AlternativeStart{Buffer.GetPosition()};
-		Inspection::Reader Alternative1Reader{Buffer, Inspection::Length{3, 0}};
-		auto Alternative1Result{Get_ISO_639_2_1998_Code(Alternative1Reader)};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
+		auto FieldResult{Get_ISO_639_2_1998_Code(FieldReader)};
 		
-		UpdateState(Continue, Buffer, Alternative1Result, Alternative1Reader);
+		UpdateState(Continue, FieldResult);
 		if(Continue == true)
 		{
-			Result->SetValue(Alternative1Result->GetValue());
+			Result->SetValue(FieldResult->GetValue());
+			Reader.AdvancePosition(FieldReader.GetConsumedLength());
 		}
 		else
 		{
-			Buffer.SetPosition(AlternativeStart);
-			
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
 			auto FieldResult{Get_ASCII_String_Alphabetic_EndedByLength(FieldReader)};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 			// interpretation
 			if(Continue == true)
 			{
 				Result->SetValue(FieldResult->GetValue());
+				Reader.AdvancePosition(FieldReader.GetConsumedLength());
 				
 				const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 				
@@ -8974,13 +8974,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 			}
 			else
 			{
-				Buffer.SetPosition(AlternativeStart);
-				
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
+				Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
 				auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(FieldReader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, Reader, FieldResult, FieldReader);
 				// interpretation
 				if(Continue == true)
 				{
@@ -8992,7 +8990,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
