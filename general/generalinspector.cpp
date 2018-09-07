@@ -132,9 +132,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			else
 			{
 				Buffer.SetPosition(Start);
-				PartialResult = Get_MPEG_1_Stream(Buffer);
+				
+				Inspection::Reader FieldReader{Buffer};
+				
+				PartialResult = Get_MPEG_1_Stream(FieldReader);
 				if(PartialResult->GetSuccess() == true)
 				{
+					Buffer.SetPosition(FieldReader);
 					Start = Buffer.GetPosition();
 					Result->GetValue()->AppendValue("MPEG1Stream", PartialResult->GetValue());
 					if(Buffer.GetPosition() == Buffer.GetLength())
@@ -253,9 +257,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	else
 	{
 		Buffer.SetPosition(Start);
-		PartialResult = Get_MPEG_1_Stream(Buffer);
+		
+		Inspection::Reader FieldReader{Buffer};
+		
+		PartialResult = Get_MPEG_1_Stream(FieldReader);
 		if(PartialResult->GetSuccess() == true)
 		{
+			Buffer.SetPosition(FieldReader);
 			Start = Buffer.GetPosition();
 			Result->GetValue()->AppendValue("MPEG1Stream", PartialResult->GetValue());
 			if(Buffer.GetPosition() == Buffer.GetLength())
