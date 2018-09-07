@@ -107,7 +107,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Constant(Inspection::Reader & Reader, std::uint8_t BitsPerSample);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Fixed(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_LPC(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);
-	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Header(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_CodingMethod(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder);

@@ -1314,6 +1314,62 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::Frames/sub::Frame[2]/sub::Subframe[0]/sub::Header/sub::PaddingBit/value::</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::Frames/sub::Frame[2]/sub::Subframe[0]/sub::Header/sub::PaddingBit/has-tag::unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::Frames/sub::Frame[2]/sub::Subframe[0]/sub::Header/sub::PaddingBit/tag::length/value::</argument>
+		</execute>
+		<expected-output>0.1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::Frames/sub::Frame[2]/sub::Subframe[0]/sub::Header/sub::PaddingBit/tag::length/tag::unit/value::</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::Frames/sub::Frame[2]/sub::Subframe[0]/sub::Header/sub::Type/value::</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::Frames/sub::Frame[2]/sub::Subframe[0]/sub::Header/sub::Type/sub::Order/value::</argument>
+		</execute>
+		<expected-output>6</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub::FLACStream/sub::Frames/sub::Frame[2]/sub::Subframe[0]/sub::Header/sub::WastedBitsPerSampleFlag/value::</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
 			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::DataLength/value::</argument>
 		</execute>
