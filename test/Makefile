@@ -7,7 +7,7 @@ check:
 	python3 test.py --in=tests.xml
 
 clean:
-	$(RM) ../test
+	$(RM) test
 	$(RM) test.o
 	$(RM) getters.o
 	$(RM) guid.o
