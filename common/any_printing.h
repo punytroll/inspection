@@ -15,7 +15,11 @@
 
 inline std::ostream & operator<<(std::ostream & OStream, const std::experimental::any & Any)
 {
-	if(Any.type() == typeid(std::string))
+	if(Any.type() == typeid(void))
+	{
+		return OStream;
+	}
+	else if(Any.type() == typeid(std::string))
 	{
 		return OStream << std::experimental::any_cast< std::string >(Any);
 	}
