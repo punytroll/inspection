@@ -8830,7 +8830,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Reader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -9027,7 +9027,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Reader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -9118,7 +9118,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(Reader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TotalFrameCRC", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -9865,7 +9865,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Reader)};
+		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -9882,45 +9882,52 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("unsigned"s);
+	Result->GetValue()->AppendTag("7bit value"s);
+	Result->GetValue()->AppendTag("8bit field"s);
+	Result->GetValue()->AppendTag("synchsafe"s);
+	// verification
 	if(Continue == true)
 	{
-		if(Reader.Has(Inspection::Length{0, 8}) == true)
+		if(Reader.Has(Inspection::Length{0, 8}) == false)
 		{
-			if(Reader.Get1Bits() == 0x00)
-			{
-				std::uint8_t First{Reader.Get7Bits()};
-				
-				Result->GetValue()->SetAny(First);
-				Result->GetValue()->AppendTag("integer"s);
-				Result->GetValue()->AppendTag("unsigned"s);
-				Result->GetValue()->AppendTag("7bit value"s);
-				Result->GetValue()->AppendTag("8bit field"s);
-				Result->GetValue()->AppendTag("synchsafe"s);
-			}
-			else
-			{
-				Continue = false;
-			}
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		if(Reader.Get1Bits() == 0x00)
+		{
+			std::uint8_t First{Reader.Get7Bits()};
+			
+			Result->GetValue()->SetAny(First);
 		}
 		else
 		{
 			Continue = false;
+			Result->GetValue()->AppendTag("error", "The unsigned integer should start with an unset bit."s);
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("signed"s);
-	Result->GetValue()->AppendTag("32bit"s);
+	Result->GetValue()->AppendTag("unsigned"s);
+	Result->GetValue()->AppendTag("28bit value"s);
+	Result->GetValue()->AppendTag("32bit field"s);
+	Result->GetValue()->AppendTag("synchsafe"s);
 	Result->GetValue()->AppendTag("big endian"s);
 	// verification
 	if(Continue == true)
@@ -9951,27 +9958,60 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bi
 						std::uint32_t Fourth{Reader.Get7Bits()};
 						
 						Result->GetValue()->SetAny((First << 21) | (Second << 14) | (Third << 7) | (Fourth));
-						Result->GetValue()->AppendTag("integer"s);
-						Result->GetValue()->AppendTag("unsigned"s);
-						Result->GetValue()->AppendTag("28bit value"s);
-						Result->GetValue()->AppendTag("32bit field"s);
-						Result->GetValue()->AppendTag("synchsafe"s);
-						Result->SetSuccess(true);
+					}
+					else
+					{
+						Result->GetValue()->AppendTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
+						Continue = false;
 					}
 				}
+				else
+				{
+					Result->GetValue()->AppendTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
+					Continue = false;
+				}
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
+				Continue = false;
 			}
 		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
+			Continue = false;
+		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Reader.Has(Inspection::Length{0, 40}) == true)
+	Result->GetValue()->AppendTag("integer"s);
+	Result->GetValue()->AppendTag("unsigned"s);
+	Result->GetValue()->AppendTag("32bit value"s);
+	Result->GetValue()->AppendTag("40bit field"s);
+	Result->GetValue()->AppendTag("synchsafe"s);
+	Result->GetValue()->AppendTag("big endian"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{0, 40}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 40}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
 	{
 		if(Reader.Get4Bits() == 0x00)
 		{
@@ -9994,18 +10034,39 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bi
 							std::uint32_t Fifth{Reader.Get7Bits()};
 							
 							Result->GetValue()->SetAny((First << 28) | (Second << 21) | (Third << 14) | (Fourth << 7) | Fifth);
-							Result->GetValue()->AppendTag("integer"s);
-							Result->GetValue()->AppendTag("unsigned"s);
-							Result->GetValue()->AppendTag("32bit value"s);
-							Result->GetValue()->AppendTag("40bit field"s);
-							Result->GetValue()->AppendTag("synchsafe"s);
-							Result->SetSuccess(true);
+						}
+						else
+						{
+							Result->GetValue()->AppendTag("error", "The fifth byte of the unsigned integer should start with an unset bit."s);
+							Continue = false;
 						}
 					}
+					else
+					{
+						Result->GetValue()->AppendTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
+						Continue = false;
+					}
+				}
+				else
+				{
+					Result->GetValue()->AppendTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
+					Continue = false;
 				}
 			}
+			else
+			{
+				Result->GetValue()->AppendTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
+				Continue = false;
+			}
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
+			Continue = false;
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
