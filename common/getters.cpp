@@ -421,38 +421,46 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements_PassArrayIndex(Inspection::Buffer & Buffer, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, std::uint64_t) > Getter, std::uint64_t NumberOfElements)
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements_PassArrayIndex(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, std::uint64_t) > Getter, std::uint64_t NumberOfElements)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto ElementIndex{0ull};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	while(true)
+	Result->GetValue()->PrependTag("array"s);
+	// reading
+	if(Continue == true)
 	{
-		if(ElementIndex < NumberOfElements)
+		auto ElementIndex{0ull};
+		
+		while(true)
 		{
-			auto ElementResult{Getter(Buffer, ElementIndex)};
-			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
-			
-			ElementValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
-			ElementIndex++;
-			if(ElementResult->GetSuccess() == false)
+			if(ElementIndex < NumberOfElements)
 			{
-				Result->GetValue()->PrependTag("ended by failure"s);
+				auto FieldResult{Getter(Reader, ElementIndex)};
+				auto FieldValue{Result->GetValue()->AppendValue(FieldResult->GetValue())};
+				
+				UpdateState(Continue, FieldResult);
+				FieldValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
+				ElementIndex++;
+				if(Continue == false)
+				{
+					Result->GetValue()->PrependTag("ended by failure"s);
+					
+					break;
+				}
+			}
+			else
+			{
+				Result->GetValue()->PrependTag("ended by number of elements"s);
 				
 				break;
 			}
 		}
-		else
-		{
-			Result->GetValue()->PrependTag("ended by number of elements"s);
-			Result->SetSuccess(true);
-			
-			break;
-		}
+		Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (NumberOfElements));
 	}
-	Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (NumberOfElements));
-	Result->GetValue()->PrependTag("array"s);
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -5330,10 +5338,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(I
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_FLAC_Subframe_Residual(FieldReader, FrameBlockSize, PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("Residual", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -5401,10 +5410,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Subframe_Residual(Buffer, FrameBlockSize, PredictorOrder)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_FLAC_Subframe_Residual(FieldReader, FrameBlockSize, PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("Residual", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -5460,19 +5470,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Header(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 2}};
-		auto FieldResult{Get_FLAC_Subframe_Residual_CodingMethod(FieldReader)};
+		auto FieldResult{Get_FLAC_Subframe_Residual_CodingMethod(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodingMethod", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -5481,7 +5490,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 		
 		if(CodingMethod == 0x00)
 		{
-			auto FieldResult{Get_FLAC_Subframe_Residual_Rice(Buffer, FrameBlockSize, PredictorOrder)};
+			auto FieldResult{Get_FLAC_Subframe_Residual_Rice(Reader, FrameBlockSize, PredictorOrder)};
 			auto FieldValue{Result->GetValue()->AppendValue("CodedResidual", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -5492,8 +5501,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 		}
 		else if(CodingMethod == 0x01)
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_FLAC_Subframe_Residual_Rice2(FieldReader, FrameBlockSize, PredictorOrder)};
+			auto FieldResult{Get_FLAC_Subframe_Residual_Rice2(Reader, FrameBlockSize, PredictorOrder)};
 			auto FieldValue{Result->GetValue()->AppendValue("CodedResidual", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -5509,7 +5517,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -5554,19 +5562,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Cod
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PartitionOrder", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -5579,7 +5586,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	if(Continue == true)
 	{
 		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue("PartitionOrder")->GetTagAny("number of partitions"))};
-		auto FieldResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(Buffer, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
+		auto FieldResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(Reader, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
 		auto FieldValue{Result->GetValue()->AppendValue("Partitions", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5596,24 +5603,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice_Partition(Inspection::Buffer & Buffer, std::uint64_t ArrayIndex, std::uint32_t NumberOfSamples, std::uint8_t PredictorOrder)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Rice_Partition(Inspection::Reader & Reader, std::uint64_t ArrayIndex, std::uint32_t NumberOfSamples, std::uint8_t PredictorOrder)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("RiceParameter", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -5623,30 +5629,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		
 		if(ArrayIndex == 0)
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_Array_EndedByNumberOfElements(FieldReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
+			auto FieldResult{Get_Array_EndedByNumberOfElements(Reader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
 			
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
 			{
 				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			}
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_Array_EndedByNumberOfElements(FieldReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
+			auto FieldResult{Get_Array_EndedByNumberOfElements(Reader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
 			
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
 			{
 				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			}
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
