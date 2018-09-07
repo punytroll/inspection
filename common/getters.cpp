@@ -3543,24 +3543,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_UntilByteAlignment(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_UntilByteAlignment(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, static_cast< std::uint8_t >((8 - Buffer.GetPosition().GetBits()) % 8)}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{0, static_cast< std::uint8_t >((8 - Reader.GetPositionInBuffer().GetBits()) % 8)}};
 		auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 		Result->GetValue()->AppendTag("until byte alignment"s);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -4050,10 +4050,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buf
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Bits_Unset_UntilByteAlignment(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_Bits_Unset_UntilByteAlignment(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
