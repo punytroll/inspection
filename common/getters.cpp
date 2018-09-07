@@ -12200,20 +12200,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_Forma
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::Reader & Reader)
 {
-	auto Start{Buffer.GetPosition()};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_MPEG_1_FrameHeader(FieldReader)};
+		auto FieldResult{Get_MPEG_1_FrameHeader(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -12222,11 +12220,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 		
 		if(ProtectionBit == 0x00)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-			auto FieldResult{Get_BitSet_16Bit_BigEndian(FieldReader)};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("ErrorCheck", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	}
 	// reading
@@ -12247,15 +12245,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::B
 			FrameLength = 144 * BitRate / SamplingFrequency + PaddingBit;
 		}
 		
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{FrameLength, 0} + Start - Buffer.GetPosition()};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{FrameLength, 0} - Reader.GetConsumedLength()};
 		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AudioData", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -13095,9 +13093,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Samplin
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
@@ -13107,17 +13105,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::
 		
 		while(Continue == true)
 		{
-			auto FieldStart{Buffer.GetPosition()};
-			auto FieldResult{Get_MPEG_1_Frame(Buffer)};
+			Inspection::Reader FieldReader{Reader};
+			auto FieldResult{Get_MPEG_1_Frame(FieldReader)};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
+				Reader.AdvancePosition(FieldReader.GetConsumedLength());
 				Result->GetValue()->AppendValue("MPEGFrame[" + to_string_cast(MPEG1FrameIndex++) + "]", FieldResult->GetValue());
 			}
 			else
 			{
-				Buffer.SetPosition(FieldStart);
 				// if at least one frame could be read from the stream, then the reader was successfull
 				if(MPEG1FrameIndex > 0)
 				{
@@ -13130,7 +13128,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

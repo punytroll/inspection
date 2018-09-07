@@ -4,15 +4,32 @@
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
-	auto MPEGStreamResult{Get_MPEG_1_Stream(Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	MPEGStreamResult->GetValue()->SetName("MPEGStream");
-	if(Buffer.GetPosition() < Buffer.GetLength())
+	// reading
+	if(Continue == true)
 	{
-		MPEGStreamResult->SetSuccess(false);
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_MPEG_1_Stream(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		FieldResult->GetValue()->SetName("MPEGStream");
 	}
+	// verification
+	if(Continue == true)
+	{
+		if(Buffer.GetPosition() < Buffer.GetLength())
+		{
+			Continue = false;
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return MPEGStreamResult;
+	return Result;
 }
 
 int main(int argc, char ** argv)
