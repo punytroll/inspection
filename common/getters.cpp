@@ -6553,210 +6553,209 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ID3_2_3_Frame_Header(FieldReader)};
+		auto FieldResult{Get_ID3_2_3_Frame_Header(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto Start{Buffer.GetPosition()};
+		auto FieldStart{Reader.GetConsumedLength()};
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny("Identifier"))};
-		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0)};
+		auto ClaimedSize{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0}};
 		
 		if(Identifier == "APIC")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_APIC(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "COMM")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_COMM(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "GEOB")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_GEOB(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "MCDI")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_MCDI(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "PCNT")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_PCNT(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "POPM")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_POPM(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "PRIV")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_PRIV(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 
 		else if(Identifier == "RGAD")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_RGAD(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCOP") || (Identifier == "TDAT") || (Identifier == "TDRC") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIME") || (Identifier == "TIT1") || (Identifier == "TIT2") || (Identifier == "TIT3") || (Identifier == "TLEN") || (Identifier == "TMED") || (Identifier == "TOAL") || (Identifier == "TOFN") || (Identifier == "TOPE") || (Identifier == "TOWN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPE3") || (Identifier == "TPE4") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TRDA") || (Identifier == "TSIZ") || (Identifier == "TSO2") || (Identifier == "TSOA") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TSST") || (Identifier == "TYER"))
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_T___(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TCMP")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TCMP(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TCON")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TCON(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TFLT")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TFLT(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TLAN")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TLAN(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TSRC")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TSRC(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TXXX")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TXXX(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "UFID")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_UFID(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "USLT")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_USLT(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if((Identifier == "WCOM") || (Identifier == "WOAF") || (Identifier == "WOAR"))
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_W___(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "WXXX")
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_WXXX(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else
 		{
 			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		
-		auto HandledSize{Buffer.GetPosition() - Start};
+		auto HandledSize{Reader.GetConsumedLength() - FieldStart};
 		
-		if(HandledSize > Size)
+		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->PrependTag("claimed size", to_string_cast(Size));
+			Result->GetValue()->PrependTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
 			Result->GetValue()->PrependTag("error", "The frame size is claimed larger than the actually handled size."s);
 		}
-		else if(HandledSize < Size)
+		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->PrependTag("claimed size", to_string_cast(Size));
+			Result->GetValue()->PrependTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
 			Result->GetValue()->PrependTag("error", "The frame size is claimed smaller than the actually handled size."s);
 		}
-		Buffer.SetPosition(Start + Size);
+		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -7944,10 +7943,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Ident
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frames_AtLeastOne_EndedByFailure(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frames_AtLeastOne_EndedByFailure(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
@@ -7955,19 +7953,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frames_AtLeastOne_
 	{
 		auto FrameIndex{0ul};
 		
-		while((Continue == true) && (Buffer.GetPosition() < Boundary))
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldStart{Buffer.GetPosition()};
-			auto FieldResult{Get_ID3_2_3_Frame(Buffer)};
+			Inspection::Reader FieldReader{Reader};
+			auto FieldResult{Get_ID3_2_3_Frame(FieldReader)};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
+				Reader.AdvancePosition(FieldReader.GetConsumedLength());
 				Result->GetValue()->AppendValue("Frame[" + to_string_cast(FrameIndex++) + "]", FieldResult->GetValue());
 			}
 			else
 			{
-				Buffer.SetPosition(FieldStart);
 				if(FrameIndex > 0)
 				{
 					Continue = true;
@@ -7979,7 +7977,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frames_AtLeastOne_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -9753,10 +9751,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 				throw Inspection::NotImplementedException("ID3 2.3 extended header");
 			}
 			
-			auto FieldResult{Get_ID3_2_3_Frames_AtLeastOne_EndedByFailure(Buffer, Size)};
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frames_AtLeastOne_EndedByFailure(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(MajorVersion == 0x04)
 		{
