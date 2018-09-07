@@ -1395,7 +1395,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Track 6/sub::Number/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Track[6]/sub::Number/value::</argument>
 		</execute>
 		<expected-output>6</expected-output>
 	</test>
@@ -1403,7 +1403,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Track 6/sub::StartAddress/value::</argument>
+			<argument>--value=/sub::ID3v2Tag/sub::Frame[0]/sub::Track[6]/sub::StartAddress/value::</argument>
 		</execute>
 		<expected-output>97740</expected-output>
 	</test>

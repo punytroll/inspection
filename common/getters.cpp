@@ -6979,10 +6979,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(In
 	if(Continue == true)
 	{
 		auto AlternativeStart{Buffer.GetPosition()};
-		auto Alternative1Result{Get_IEC_60908_1999_TableOfContents(Buffer)};
+		Inspection::Reader Alternative1Reader{Buffer};
+		auto Alternative1Result{Get_IEC_60908_1999_TableOfContents(Alternative1Reader)};
 		
 		Result->SetValue(Alternative1Result->GetValue());
-		UpdateState(Continue, Alternative1Result);
+		UpdateState(Continue, Buffer, Alternative1Result, Alternative1Reader);
 		if(Continue == true)
 		{
 			Result->SetValue(Alternative1Result->GetValue());
@@ -8474,10 +8475,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_MCDI(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10032,9 +10034,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("standard", "IEC 60908:1999"s);
@@ -10042,25 +10044,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Header(FieldReader)};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Header(Reader)};
 		
 		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto FirstTrackNumber{std::experimental::any_cast< std::uint8_t >(Result->GetAny("FirstTrackNumber"))};
 		auto LastTrackNumber{std::experimental::any_cast< std::uint8_t >(Result->GetAny("LastTrackNumber"))};
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Tracks(Buffer, FirstTrackNumber, LastTrackNumber)};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Tracks(Reader, FirstTrackNumber, LastTrackNumber)};
 		
 		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -10104,15 +10105,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track(Buffer)};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -10124,33 +10125,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Track(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Track(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{1, 0}};
 		auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ADR", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// verification
 	if(Continue == true)
@@ -10160,20 +10160,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track_Control(FieldReader)};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track_Control(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Control", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Number", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10188,24 +10186,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{1, 0}};
 		auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StartAddress", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -10218,11 +10215,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 4}};
-		auto FieldResult{Get_BitSet_4Bit_MostSignificantBitFirst(FieldReader)};
+		auto FieldResult{Get_BitSet_4Bit_MostSignificantBitFirst(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -10276,37 +10272,38 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Buffer & Buffer, std::uint8_t FirstTrackNumber, std::uint8_t LastTrackNumber)
+std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Reader & Reader, std::uint8_t FirstTrackNumber, std::uint8_t LastTrackNumber)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	Result->SetSuccess(true);
-	for(auto TrackNumber = FirstTrackNumber; TrackNumber <= LastTrackNumber; ++TrackNumber)
+	// reading
+	if(Continue == true)
 	{
-		auto TrackResult{Get_IEC_60908_1999_TableOfContents_Track(Buffer)};
-		auto TrackValue{Result->GetValue()->AppendValue("Track", TrackResult->GetValue())};
-		
-		if(TrackResult->GetSuccess() == true)
+		for(auto TrackNumber = FirstTrackNumber; (Continue == true) && (TrackNumber <= LastTrackNumber); ++TrackNumber)
 		{
-			auto TrackNumber{std::experimental::any_cast< std::uint8_t >(TrackResult->GetAny("Number"))};
+			auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track(Reader)};
+			auto FieldValue{Result->GetValue()->AppendValue("Track", FieldResult->GetValue())};
 			
-			TrackValue->SetName("Track " + to_string_cast(TrackNumber));
-		}
-		else
-		{
-			Result->SetSuccess(false);
-			
-			break;
+			UpdateState(Continue, FieldResult);
+			// interpretation
+			if(Continue == true)
+			{
+				FieldValue->SetName("Track[" + to_string_cast(std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("Number"))) + "]");
+			}
 		}
 	}
-	if(Result->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto LeadOutTrackResult{Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Buffer)};
+		auto FieldResult{Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Reader)};
 		
-		Result->GetValue()->AppendValue("LeadOutTrack", LeadOutTrackResult->GetValue());
-		Result->SetSuccess(LeadOutTrackResult->GetSuccess());
+		Result->GetValue()->AppendValue("LeadOutTrack", FieldResult->GetValue());
+		UpdateState(Continue, FieldResult);
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
