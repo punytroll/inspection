@@ -4588,8 +4588,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "Padding")
 		{
-			auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length"))};
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{MetaDataBlockDataLength, 0}};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
@@ -4622,17 +4621,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "VorbisComment")
 		{
-			auto FieldResult{Get_FLAC_VorbisCommentBlock_Data(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			auto FieldResult{Get_FLAC_VorbisCommentBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(MetaDataBlockType == "Picture")
 		{
-			auto FieldResult{Get_FLAC_PictureBlock_Data(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			auto FieldResult{Get_FLAC_PictureBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 	}
 	// finalization
@@ -4854,115 +4855,105 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_PictureT
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_FLAC_PictureBlock_PictureType(FieldReader)};
+		auto FieldResult{Get_FLAC_PictureBlock_PictureType(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MIMETypeLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto MIMETypeLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MIMETypeLength"))};
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{MIMETypeLength, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MIMETypeLength")), 0}};
 		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DescriptionLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("DescriptionLength")), 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("DescriptionLength")), 0}};
 		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureWidthInPixels", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureHeightInPixels", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitsPerPixel", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("NumberOfColors", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureDataLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto PictureDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("PictureDataLength"))};
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{PictureDataLength, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("PictureDataLength")), 0}};
 		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -5756,9 +5747,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_VorbisCommentBlock_Data(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_VorbisCommentBlock_Data(Inspection::Reader & Reader)
 {
-	return Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer);
+	return Get_Vorbis_CommentHeader_WithoutFramingFlag(Reader);
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspection::Reader & Reader)
@@ -14857,10 +14848,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Vorbis_CommentHeader_WithoutFramingFlag(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_Vorbis_CommentHeader_WithoutFramingFlag(FieldReader)};
 		
 		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -14883,50 +14875,48 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserComment(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserComment(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 		FieldValue->AppendTag("unit", "bytes"s);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Length")), 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Length")), 0}};
 		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserCommentList(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserCommentList(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 		FieldValue->AppendTag("unit", "items"s);
 	}
 	// reading
@@ -14936,7 +14926,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 		
 		for(auto Index = 0ul; (Continue == true) && (Index < Length); ++Index)
 		{
-			auto FieldResult{Get_Vorbis_CommentHeader_UserComment(Buffer)};
+			auto FieldResult{Get_Vorbis_CommentHeader_UserComment(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("UserComment", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -14944,46 +14934,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("VendorLength", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 		FieldValue->AppendTag("unit", "bytes"s);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("VendorLength")), 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("VendorLength")), 0}};
 		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Vendor", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Vorbis_CommentHeader_UserCommentList(Buffer)};
+		auto FieldResult{Get_Vorbis_CommentHeader_UserCommentList(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("UserCommentList", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
