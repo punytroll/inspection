@@ -6574,7 +6574,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny("Identifier"))};
 		auto Size{Inspection::Length(std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0)};
 		
-		if(Identifier == "COMM")
+		if(Identifier == "APIC")
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_APIC(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(Identifier == "COMM")
 		{
 			Inspection::Reader FieldReader{Buffer, Size};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_COMM(FieldReader)};
@@ -6590,6 +6598,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
+		else if(Identifier == "MCDI")
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_MCDI(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
 		else if(Identifier == "PCNT")
 		{
 			Inspection::Reader FieldReader{Buffer, Size};
@@ -6598,6 +6614,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
+		else if(Identifier == "POPM")
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_POPM(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(Identifier == "PRIV")
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_PRIV(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+
 		else if(Identifier == "RGAD")
 		{
 			Inspection::Reader FieldReader{Buffer, Size};
@@ -6662,6 +6695,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
+		else if(Identifier == "UFID")
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_UFID(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
 		else if(Identifier == "USLT")
 		{
 			Inspection::Reader FieldReader{Buffer, Size};
@@ -6670,63 +6711,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
+		else if((Identifier == "WCOM") || (Identifier == "WOAF") || (Identifier == "WOAR"))
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_W___(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
+		else if(Identifier == "WXXX")
+		{
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_ID3_2_3_Frame_Body_WXXX(FieldReader)};
+			
+			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		}
 		else
 		{
-			std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &, const Inspection::Length &) > BodyHandler;
+			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			
-			if(Identifier == "APIC")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_APIC;
-			}
-			else if(Identifier == "MCDI")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_MCDI;
-			}
-			else if(Identifier == "POPM")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_POPM;
-			}
-			else if(Identifier == "PRIV")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_PRIV;
-			}
-			else if(Identifier == "UFID")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_UFID;
-			}
-			else if(Identifier == "WCOM")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_W___;
-			}
-			else if(Identifier == "WOAF")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_W___;
-			}
-			else if(Identifier == "WOAR")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_W___;
-			}
-			else if(Identifier == "WXXX")
-			{
-				BodyHandler = Get_ID3_2_3_Frame_Body_WXXX;
-			}
-			if(BodyHandler != nullptr)
-			{
-				auto FieldResult{BodyHandler(Buffer, Size)};
-				
-				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-				UpdateState(Continue, FieldResult);
-			}
-			else
-			{
-				Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
-				
-				Inspection::Reader FieldReader{Buffer, Size};
-				auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
-				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
-				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
-			}
+			Inspection::Reader FieldReader{Buffer, Size};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		
 		auto HandledSize{Buffer.GetPosition() - Start};
@@ -6752,60 +6761,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ID3_2_3_Frame_Body_APIC_MIMEType(FieldReader)};
+		auto FieldResult{Get_ID3_2_3_Frame_Body_APIC_MIMEType(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-		auto FieldResult{Get_ID3_2_3_Frame_Body_APIC_PictureType(FieldReader)};
+		auto FieldResult{Get_ID3_2_3_Frame_Body_APIC_PictureType(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(FieldReader, std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding")))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding")))};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -6995,32 +6998,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB_MI
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto AlternativeStart{Buffer.GetPosition()};
-		Inspection::Reader Alternative1Reader{Buffer};
+		Inspection::Reader Alternative1Reader{Reader};
 		auto Alternative1Result{Get_IEC_60908_1999_TableOfContents(Alternative1Reader)};
 		
-		Result->SetValue(Alternative1Result->GetValue());
-		UpdateState(Continue, Buffer, Alternative1Result, Alternative1Reader);
+		UpdateState(Continue, Alternative1Result);
 		if(Continue == true)
 		{
 			Result->SetValue(Alternative1Result->GetValue());
+			Reader.AdvancePosition(Alternative1Reader.GetConsumedLength());
 		}
 		else
 		{
-			Buffer.SetPosition(AlternativeStart);
-			
-			Inspection::Reader Alternative2Reader{Buffer, Length};
+			Inspection::Reader Alternative2Reader{Reader};
 			auto Alternative2Result{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Alternative2Reader)};
 			
-			UpdateState(Continue, Buffer, Alternative2Result, Alternative2Reader);
+			UpdateState(Continue, Reader, Alternative2Result, Alternative2Reader);
 			if(Continue == true)
 			{
 				Result->GetValue()->AppendValue("String", Alternative2Result->GetValue());
@@ -7030,7 +7030,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(In
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -7077,30 +7077,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("EMailToUser", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
 		
 		FieldValue->PrependTag("standard", "ID3 2.3"s);
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -7119,7 +7116,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 	// reading
 	if(Continue == true)
 	{
-		if(Buffer.GetPosition() == Boundary)
+		if(Reader.IsAtEnd() == true)
 		{
 			auto FieldValue{std::make_shared< Inspection::Value >()};
 			
@@ -7127,57 +7124,52 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			FieldValue->AppendTag("omitted"s);
 			Result->GetValue()->AppendValue(FieldValue);
 		}
-		else if(Buffer.GetPosition() + Inspection::Length{4, 0} > Boundary)
+		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
-			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
 			Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
-		else if(Buffer.GetPosition() + Inspection::Length{4, 0} == Boundary)
+		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
+			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
-		else if(Buffer.GetPosition() + Inspection::Length{4, 0} < Boundary)
+		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
 		{
-			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
 			Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -7186,120 +7178,106 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 		
 		if(OwnerIdentifier == "AverageLevel")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("AverageLevel", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "PeakValue")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+			auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("PeakValue", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "WM/MediaClassPrimaryID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("MediaClassPrimaryID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "WM/MediaClassSecondaryID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("MediaClassSecondaryID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "WM/WMCollectionGroupID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("CollectionGroupID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "WM/WMCollectionID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("CollectionID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "WM/WMContentID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("ContentID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "ZuneAlbumArtistMediaID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("ZuneAlbumArtistMediaID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "ZuneAlbumMediaID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("ZuneAlbumMediaID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "ZuneCollectionID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("ZuneCollectionID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "ZuneMediaID")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-			auto FieldResult{Get_ID3_GUID(FieldReader)};
+			auto FieldResult{Get_ID3_GUID(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("ZuneMediaID", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "WM/Provider")
 		{
-			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(FieldReader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Provider", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(OwnerIdentifier == "WM/UniqueFileIdentifier")
 		{
-			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(FieldReader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("UniqueFileIdentifier", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
-			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("PrivateData", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -7615,33 +7593,30 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TXXX(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_UFID(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_UFID(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -7690,63 +7665,58 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_USLT(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_W___(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_W___(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Length};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{1, 0}};
-		auto FieldResult{Get_ID3_2_3_TextEncoding(FieldReader)};
+		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(FieldReader, std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding")))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding")))};
 		auto FieldValue{Result->GetValue()->AppendValue("Descriptor", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -8119,11 +8089,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspe
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
