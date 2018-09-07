@@ -186,10 +186,10 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	{
 		Inspection::Reader FieldReader{Buffer};
 		auto FieldResult{Get_APE_Tags(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		Result->SetValue(FieldResult->GetValue());
-		Result->GetValue()->SetName("APEv2 Tag");
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Result->GetValue()->SetName("APEv2 Tag");
 	}
 	// finalization
 	Result->SetSuccess(Continue);
