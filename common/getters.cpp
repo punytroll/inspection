@@ -4033,17 +4033,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buf
 		{
 			if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
 			{
-				auto FieldResult{Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample + 1)};
+				Inspection::Reader FieldReader{Buffer};
+				auto FieldResult{Get_FLAC_Subframe(FieldReader, BlockSize, BitsPerSample + 1)};
 				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 			else
 			{
-				auto FieldResult{Get_FLAC_Subframe(Buffer, BlockSize, BitsPerSample)};
+				Inspection::Reader FieldReader{Buffer};
+				auto FieldResult{Get_FLAC_Subframe(FieldReader, BlockSize, BitsPerSample)};
 				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
 				
-				UpdateState(Continue, FieldResult);
+				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 		}
 	}
@@ -5257,19 +5259,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Numbe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_FLAC_Subframe_Header(FieldReader)};
+		auto FieldResult{Get_FLAC_Subframe_Header(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	if(Continue == true)
 	{
@@ -5277,24 +5278,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 		
 		if(SubframeType == "SUBFRAME_CONSTANT")
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_FLAC_Subframe_Data_Constant(FieldReader, BitsPerSample)};
+			auto FieldResult{Get_FLAC_Subframe_Data_Constant(Reader, BitsPerSample)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(SubframeType == "SUBFRAME_FIXED")
 		{
-			auto Order{static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("Type")->GetValueAny("Order")))};
-			auto FieldResult{Get_FLAC_Subframe_Data_Fixed(Buffer, FrameBlockSize, BitsPerSample, Order)};
+			auto FieldResult{Get_FLAC_Subframe_Data_Fixed(Reader, FrameBlockSize, BitsPerSample, std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("Type")->GetValueAny("Order")))};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
 		else if(SubframeType == "SUBFRAME_LPC")
 		{
-			auto Order{static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("Type")->GetValueAny("Order")) + 1)};
-			auto FieldResult{Get_FLAC_Subframe_Data_LPC(Buffer, FrameBlockSize, BitsPerSample, Order)};
+			auto FieldResult{Get_FLAC_Subframe_Data_LPC(Reader, FrameBlockSize, BitsPerSample, static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("Type")->GetValueAny("Order")) + 1))};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -5306,7 +5304,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -5316,58 +5314,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Constan
 	return Get_UnsignedInteger_BigEndian(Reader, BitsPerSample);
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_UnsignedIntegers_BigEndian(FieldReader, BitsPerSample, PredictorOrder)};
+		auto FieldResult{Get_UnsignedIntegers_BigEndian(Reader, BitsPerSample, PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("WarmUpSamples", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_FLAC_Subframe_Residual(FieldReader, FrameBlockSize, PredictorOrder)};
+		auto FieldResult{Get_FLAC_Subframe_Residual(Reader, FrameBlockSize, PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("Residual", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Inspection::Buffer & Buffer, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_UnsignedIntegers_BigEndian(FieldReader, BitsPerSample, PredictorOrder)};
+		auto FieldResult{Get_UnsignedIntegers_BigEndian(Reader, BitsPerSample, PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("WarmUpSamples", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientsPrecision", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -5387,33 +5381,30 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 5}};
-		auto FieldResult{Get_SignedInteger_5Bit(FieldReader)};
+		auto FieldResult{Get_SignedInteger_5Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("QuantizedLinearPredictorCoefficientShift", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_SignedIntegers_BigEndian(FieldReader, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
+		auto FieldResult{Get_SignedIntegers_BigEndian(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("PredictorCoefficients", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_FLAC_Subframe_Residual(FieldReader, FrameBlockSize, PredictorOrder)};
+		auto FieldResult{Get_FLAC_Subframe_Residual(Reader, FrameBlockSize, PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("Residual", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
