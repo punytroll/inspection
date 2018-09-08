@@ -101,9 +101,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				}
 				else
 				{
-					PartialResult = Get_ID3_1_Tag(Buffer);
+					Inspection::Reader FieldReader{Buffer};
+					
+					PartialResult = Get_ID3_1_Tag(FieldReader);
 					if(PartialResult->GetSuccess() == true)
 					{
+						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 						{
@@ -161,9 +164,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							}
 							else
 							{
-								PartialResult = Get_ID3_1_Tag(Buffer);
+								Inspection::Reader FieldReader{Buffer};
+								
+								PartialResult = Get_ID3_1_Tag(FieldReader);
 								if(PartialResult->GetSuccess() == true)
 								{
+									Buffer.SetPosition(FieldReader);
 									Start = Buffer.GetPosition();
 									if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 									{
@@ -192,9 +198,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						else
 						{
 							Buffer.SetPosition(Start);
-							PartialResult = Get_ID3_1_Tag(Buffer);
+							
+							Inspection::Reader FieldReader{Buffer};
+							
+							PartialResult = Get_ID3_1_Tag(FieldReader);
 							if(PartialResult->GetSuccess() == true)
 							{
+								Buffer.SetPosition(FieldReader);
 								Start = Buffer.GetPosition();
 								if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 								{
@@ -224,9 +234,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				else
 				{
 					Buffer.SetPosition(Start);
-					PartialResult = Get_ID3_1_Tag(Buffer);
+					
+					Inspection::Reader FieldReader{Buffer};
+					
+					PartialResult = Get_ID3_1_Tag(FieldReader);
 					if(PartialResult->GetSuccess() == true)
 					{
+						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 						{
@@ -286,9 +300,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					}
 					else
 					{
-						PartialResult = Get_ID3_1_Tag(Buffer);
+						Inspection::Reader FieldReader{Buffer};
+						
+						PartialResult = Get_ID3_1_Tag(FieldReader);
 						if(PartialResult->GetSuccess() == true)
 						{
+							Buffer.SetPosition(FieldReader);
 							Start = Buffer.GetPosition();
 							if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 							{
@@ -317,9 +334,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				else
 				{
 					Buffer.SetPosition(Start);
-					PartialResult = Get_ID3_1_Tag(Buffer);
+					
+					Inspection::Reader FieldReader{Buffer};
+					
+					PartialResult = Get_ID3_1_Tag(FieldReader);
 					if(PartialResult->GetSuccess() == true)
 					{
+						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 						{
@@ -364,9 +385,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				}
 				else
 				{
-					PartialResult = Get_ID3_1_Tag(Buffer);
+					Inspection::Reader FieldReader{Buffer};
+					
+					PartialResult = Get_ID3_1_Tag(FieldReader);
 					if(PartialResult->GetSuccess() == true)
 					{
+						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 						{
@@ -395,9 +419,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			else
 			{
 				Buffer.SetPosition(Start);
-				PartialResult = Get_ID3_1_Tag(Buffer);
+				
+				Inspection::Reader FieldReader{Buffer};
+				
+				PartialResult = Get_ID3_1_Tag(FieldReader);
 				if(PartialResult->GetSuccess() == true)
 				{
+					Buffer.SetPosition(FieldReader);
 					Start = Buffer.GetPosition();
 					if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
 					{

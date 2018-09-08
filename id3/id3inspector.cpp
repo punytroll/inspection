@@ -21,7 +21,10 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	if(Buffer.GetLength() >= Inspection::Length(128ull, 0))
 	{
 		Buffer.SetPosition(Buffer.GetLength() - Inspection::Length(128ull, 0));
-		ID3v1TagResult = Get_ID3_1_Tag(Buffer);
+		
+		Inspection::Reader FieldReader{Buffer};
+		
+		ID3v1TagResult = Get_ID3_1_Tag(FieldReader);
 		if(ID3v1TagResult->GetSuccess() == true)
 		{
 			if(ID3v1TagResult->GetValue()->HasValue("AlbumTrack") == true)
