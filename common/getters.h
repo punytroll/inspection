@@ -165,7 +165,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Inspection::Reader & Reader, std::uint8_t TextEncoding);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, std::uint8_t TextEncoding);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_APIC(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_APIC_MIMEType(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_APIC_PictureType(Inspection::Reader & Reader);
@@ -180,7 +180,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_WXXX(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header_Identifier(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frames_AtLeastOne_EndedByFailure(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frames_AtLeastOne_EndedByFailure(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_Header_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader(Inspection::Reader & Reader);
