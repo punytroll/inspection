@@ -1687,19 +1687,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_BitSet_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -1718,7 +1717,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1821,10 +1820,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_ExtendedStreamPropertiesObject_Flags(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASF_ExtendedStreamPropertiesObject_Flags(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -2024,19 +2024,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Buffe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesFlags(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesFlags(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_BitSet_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	//~ if(Continue == true)
@@ -2053,7 +2052,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesFlags(In
 	//~ }
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -2138,10 +2137,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesObjectDa
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_FilePropertiesFlags(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASF_FilePropertiesFlags(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
