@@ -5790,93 +5790,113 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{3, 0}};
-		auto FieldResult{Get_ASCII_String_Alphabetic_EndedByTemplateLength(FieldReader, "TAG")};
+		auto FieldResult{Get_ASCII_String_Alphabetic_EndedByTemplateLength(Reader, "TAG")};
 		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{30, 0})};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{30, 0}};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Title", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{30, 0})};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{30, 0}};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Artist", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{30, 0})};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{30, 0}};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Album", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{4, 0})};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Year", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto AlternativeStart{Buffer.GetPosition()};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Buffer, Inspection::Length{30, 0})};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{30, 0}};
+		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
 		
-		if(FieldResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+		if(Continue == true)
 		{
 			auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			Reader.AdvancePosition(FieldReader.GetConsumedLength());
 		}
 		else
 		{
-			Buffer.SetPosition(AlternativeStart);
-			
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{29, 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{29, 0}};
 			FieldResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(FieldReader);
 			
 			auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 			// reading
 			if(Continue == true)
 			{
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-				auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+				auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 				auto FieldValue{Result->GetValue()->AppendValue("AlbumTrack", FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, FieldResult);
 			}
 		}
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
+		auto FieldResult{Get_ID3_1_Genre(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Genre", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Genre", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
@@ -5907,7 +5927,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Buff
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -10724,84 +10744,83 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Inspection::Reader & Reader)
 {
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AppendTag("string"s);
 	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.GetRemainingLength().GetBits() != 0)
+		{
+			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
+		auto NumberOfCharacters{0ul};
+		auto NumberOfTerminations{0ul};
 		
-		if(Buffer.GetPosition() == Boundary)
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
-			Result->GetValue()->AppendTag("empty"s);
-		}
-		else
-		{
-			auto NumberOfCharacters{0ul};
-			auto NumberOfTerminations{0ul};
+			auto Byte{Reader.Get8Bits()};
 			
-			while(true)
+			if(Byte == 0x00)
 			{
-				auto Position{Buffer.GetPosition()};
-				auto FieldResult{Get_ISO_IEC_8859_1_1998_Character(Buffer)};
-				
-				if((Buffer.GetPosition() <= Boundary) && (FieldResult->GetSuccess() == true))
+				NumberOfTerminations += 1;
+			}
+			else if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
+			{
+				if(NumberOfTerminations == 0)
 				{
 					NumberOfCharacters += 1;
-					Value << std::experimental::any_cast< const std::string & >(FieldResult->GetAny());
-					if(Buffer.GetPosition() == Boundary)
-					{
-						Result->GetValue()->AppendTag("ended by length"s);
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-						
-						break;
-					}
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
 				}
 				else
 				{
-					Buffer.SetPosition(Position);
-					
-					break;
-				}
-			}
-			while(Buffer.GetPosition() < Boundary)
-			{
-				auto Byte{Buffer.Get8Bits()};
-				
-				if(Byte == 0x00)
-				{
-					if(NumberOfTerminations == 0)
-					{
-						Result->GetValue()->AppendTag("ended by termination"s);
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
-					}
-					NumberOfTerminations += 1;
-					if(Buffer.GetPosition() == Boundary)
-					{
-						Result->GetValue()->AppendTag("ended by length"s);
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations");
-						
-						break;
-					}
-				}
-				else
-				{
+					Result->GetValue()->AppendTag("ended by error"s);
+					Result->GetValue()->AppendTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
 					Continue = false;
 				}
 			}
+			else
+			{
+				Result->GetValue()->AppendTag("ended by error"s);
+				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
+				Continue = false;
+			}
+		}
+		if(NumberOfCharacters > 0)
+		{
+			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("empty"s);
+		}
+		if(NumberOfTerminations > 0)
+		{
+			Result->GetValue()->AppendTag("ended by termination"s);
+			if(Reader.IsAtEnd() == true)
+			{
+				Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+			}
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("ended by length"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
