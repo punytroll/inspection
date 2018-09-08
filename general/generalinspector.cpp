@@ -78,10 +78,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	auto Result{Inspection::InitializeResult(Buffer)};
 	auto Start{Buffer.GetPosition()};
 	std::unique_ptr< Inspection::Result > PartialResult;
+	Inspection::Reader FieldReader{Buffer};
 	
-	PartialResult = Get_ID3_2_Tag(Buffer);
+	PartialResult = Get_ID3_2_Tag(FieldReader);
 	if(PartialResult->GetSuccess() == true)
 	{
+		Buffer.SetPosition(FieldReader);
 		Start = Buffer.GetPosition();
 		Result->GetValue()->AppendValue("ID3v2Tag", PartialResult->GetValue());
 		if(Buffer.GetPosition() == Buffer.GetLength())

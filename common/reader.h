@@ -56,6 +56,11 @@ namespace Inspection
 			return _BoundaryInBuffer - _PositionInBuffer;
 		}
 		
+		Inspection::Length GetCompleteLength(void) const
+		{
+			return _BoundaryInBuffer - _OffsetInBuffer;
+		}
+		
 		bool Has(const Inspection::Length & Length) const
 		{
 			return _PositionInBuffer + Length <= _BoundaryInBuffer;

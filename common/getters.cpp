@@ -3537,6 +3537,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 	{
 		AppendLength(Result->GetValue(), Reader.GetConsumedLength());
 	}
+	else
+	{
+		Result->GetValue()->AppendTag("error", "Of the requested " + to_string_cast(Reader.GetCompleteLength()) + " bytes and bits, only " + to_string_cast(Reader.GetConsumedLength()) + " could be read as unset data.");
+	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -5894,21 +5899,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 	if(Continue == true)
 	{
 		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Genre", FieldResult->GetValue())};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
 	if(Continue == true)
 	{
-		auto GenreNumber{std::experimental::any_cast< std::uint8_t >(Result->GetAny("Genre"))};
+		auto GenreNumber{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		try
 		{
 			auto Genre{Inspection::Get_ID3_1_Genre(GenreNumber)};
 			
-			Result->GetValue("Genre")->PrependTag("interpretation", Genre);
-			Result->GetValue("Genre")->PrependTag("standard", "ID3v1"s);
+			Result->GetValue()->PrependTag("interpretation", Genre);
+			Result->GetValue()->PrependTag("standard", "ID3v1"s);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
@@ -5916,12 +5921,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 			{
 				auto Genre{Inspection::Get_ID3_1_Winamp_Genre(GenreNumber)};
 				
-				Result->GetValue("Genre")->PrependTag("interpretation", Genre);
-				Result->GetValue("Genre")->PrependTag("standard", "Winamp extension"s);
+				Result->GetValue()->PrependTag("interpretation", Genre);
+				Result->GetValue()->PrependTag("standard", "Winamp extension"s);
 			}
 			catch(Inspection::UnknownValueException & Exception)
 			{
-				Result->GetValue("Genre")->PrependTag("interpretation", "<unrecognized>"s);
+				Result->GetValue()->PrependTag("interpretation", "<unrecognized>"s);
 			}
 		}
 	}
@@ -9721,34 +9726,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ID3_2_Tag_Header(FieldReader)};
+		auto FieldResult{Get_ID3_2_Tag_Header(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TagHeader", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(Result->GetValue("TagHeader")->GetValueAny("MajorVersion"))};
 		auto Size{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("TagHeader")->GetValueAny("Size")), 0}};
-		auto Boundary{Buffer.GetPosition() + Size};
 		
 		if(MajorVersion == 0x02)
 		{
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, Size};
 			auto FieldResult{Get_ID3_2_2_Frames_AtLeastOne_EndedByFailure(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Size -= FieldReader.GetConsumedLength();
 		}
 		else if(MajorVersion == 0x03)
 		{
@@ -9757,30 +9761,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 				throw Inspection::NotImplementedException("ID3 2.3 extended header");
 			}
 			
-			Inspection::Reader FieldReader{Buffer, Size};
+			Inspection::Reader FieldReader{Reader, Size};
 			auto FieldResult{Get_ID3_2_3_Frames_AtLeastOne_EndedByFailure(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Size -= FieldReader.GetConsumedLength();
 		}
 		else if(MajorVersion == 0x04)
 		{
 			if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
 			{
-				Inspection::Reader FieldReader{Buffer};
+				Inspection::Reader FieldReader{Reader, Size};
 				auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader(FieldReader)};
 				auto FieldValue{Result->GetValue()->AppendValue("ExtendedHeader", FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
-				Size -= FieldResult->GetLength();
+				UpdateState(Continue, Reader, FieldResult, FieldReader);
+				Size -= FieldReader.GetConsumedLength();
 			}
 			if(Continue == true)
 			{
-				Inspection::Reader FieldReader{Buffer, Size};
+				Inspection::Reader FieldReader{Reader, Size};
 				auto FieldResult{Get_ID3_2_4_Frames_AtLeastOne_EndedByFailure(FieldReader)};
 				
 				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, Reader, FieldResult, FieldReader);
+				Size -= FieldReader.GetConsumedLength();
 			}
 		}
 		else
@@ -9791,19 +9797,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Buff
 		// reading
 		if(Continue == true)
 		{
-			if(Buffer.GetPosition() < Boundary)
+			if(Size > Inspection::Length{0, 0})
 			{
-				Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
+				Inspection::Reader FieldReader{Reader, Size};
 				auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
 				auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, Reader, FieldResult, FieldReader);
 			}
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

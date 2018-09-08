@@ -39,7 +39,8 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	}
 	Buffer.SetPosition(Inspection::Length(0ull, 0));
 	
-	auto ID3v2TagResult{Get_ID3_2_Tag(Buffer)};
+	Inspection::Reader FieldReader{Buffer};
+	auto ID3v2TagResult{Get_ID3_2_Tag(FieldReader)};
 	
 	Result->GetValue()->AppendValue("ID3v2", ID3v2TagResult->GetValue());
 	Result->SetSuccess(((ID3v1TagResult != nullptr) && (ID3v1TagResult->GetSuccess() == true)) || ID3v2TagResult->GetSuccess());
