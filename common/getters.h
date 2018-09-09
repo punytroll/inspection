@@ -37,7 +37,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_Boolean_32Bit_LittleEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_CodecEntry(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_CodecEntryType(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_ContentDescriptionObjectData(Inspection::Buffer & Buffer);
 	std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Buffer & Buffer);
