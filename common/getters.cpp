@@ -1177,19 +1177,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-		auto FieldResult{Get_ASF_GUID(FieldReader)};
+		auto FieldResult{Get_ASF_GUID(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// verification
 	if(Continue == true)
@@ -1199,11 +1198,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecEntriesCount", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -1212,16 +1210,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 		
 		for(auto CodecEntryIndex = 0ul; (Continue == true) && (CodecEntryIndex < CodecEntriesCount); ++CodecEntryIndex)
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_ASF_CodecEntry(FieldReader)};
+			auto FieldResult{Get_ASF_CodecEntry(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("CodecEntry[" + to_string_cast(CodecEntryIndex) + "]", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -2912,10 +2909,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Buf
 		}
 		else if(GUID == Inspection::g_ASF_CodecListObjectGUID)
 		{
-			auto FieldResult{Get_ASF_CodecListObjectData(Buffer)};
+			Inspection::Reader FieldReader{Buffer, Size - Result->GetLength()};
+			auto FieldResult{Get_ASF_CodecListObjectData(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Buffer, FieldResult, FieldReader);
 		}
 		else if(GUID == Inspection::g_ASF_HeaderExtensionObjectGUID)
 		{
