@@ -5034,10 +5034,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_StreamInfoBlock(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_FLAC_StreamInfoBlock(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StreamInfoBlock", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -5080,19 +5081,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_FLAC_MetaDataBlock_Header(FieldReader)};
+		auto FieldResult{Get_FLAC_MetaDataBlock_Header(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -5101,11 +5101,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
-			Inspection::Reader FieldReader{Buffer};
-			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(FieldReader)};
+			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
@@ -5115,7 +5114,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
