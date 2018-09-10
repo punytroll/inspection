@@ -1954,31 +1954,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
-	auto HeaderObjectResult{Get_ASF_HeaderObject(Buffer)};
+	auto Continue{true};
 	
-	Result->GetValue()->AppendValue("HeaderObject", HeaderObjectResult->GetValue());
-	if(HeaderObjectResult->GetSuccess() == true)
+	// reading
+	if(Continue == true)
 	{
-		auto DataObjectResult{Get_ASF_DataObject(Buffer)};
+		auto FieldResult{Get_ASF_HeaderObject(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("HeaderObject", FieldResult->GetValue())};
 		
-		Result->GetValue()->AppendValue("DataObject", DataObjectResult->GetValue());
-		if(DataObjectResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ASF_DataObject(Buffer)};
+		auto FieldValue{Result->GetValue()->AppendValue("DataObject", FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		while((Continue == true) && (Buffer.GetPosition() < Buffer.GetLength()))
 		{
-			Result->SetSuccess(true);
-			while(Buffer.GetPosition() < Buffer.GetLength())
-			{
-				auto ObjectResult{Get_ASF_Object(Buffer)};
-				
-				Result->GetValue()->AppendValue("Object", ObjectResult->GetValue());
-				if(ObjectResult->GetSuccess() == false)
-				{
-					Result->SetSuccess(false);
-					
-					break;
-				}
-			}
+			auto FieldResult{Get_ASF_Object(Buffer)};
+			auto FieldValue{Result->GetValue()->AppendValue("Object", FieldResult->GetValue())};
+			
+			UpdateState(Continue, FieldResult);
 		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Buffer);
 	
 	return Result;
