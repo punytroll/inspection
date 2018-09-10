@@ -1496,13 +1496,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	// reading
 	if(Continue == true)
 	{
-		auto ValueLength{std::experimental::any_cast< std::uint16_t >(Result->GetAny("ValueLength"))};
-		auto ValueDataType{std::experimental::any_cast< const std::string & >(Result->GetValue("ValueDataType")->GetTagAny("interpretation"))};
-		auto Name{std::experimental::any_cast< const std::string & >(Result->GetAny("Name"))};
-		auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Buffer, Inspection::Length{ValueLength, 0}, ValueDataType, Name)};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetAny("ValueLength")), 0}};
+		auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(FieldReader, std::experimental::any_cast< const std::string & >(Result->GetValue("ValueDataType")->GetTagAny("interpretation")), std::experimental::any_cast< const std::string & >(Result->GetAny("Name")))};
 		auto FieldValue{Result->GetValue()->AppendValue("Value", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -1511,9 +1509,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Buffer & Buffer, const Inspection::Length & Length, const std::string & DataType, const std::string & Name)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::string & DataType, const std::string & Name)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
@@ -1521,11 +1519,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	{
 		if(DataType == "Unicode string")
 		{
-			Inspection::Reader FieldReader{Buffer, Length};
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(FieldReader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Reader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 			// interpretation
 			if(Continue == true)
 			{
@@ -1546,53 +1543,49 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		}
 		else if(DataType == "Byte array")
 		{
-			Inspection::Reader FieldReader{Buffer, Length};
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, FieldResult);
 		}
 		else if(DataType == "Boolean")
 		{
-			if(Length == Inspection::Length{4, 0})
+			if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 			{
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-				auto FieldResult{Get_ASF_Boolean_32Bit_LittleEndian(FieldReader)};
+				auto FieldResult{Get_ASF_Boolean_32Bit_LittleEndian(Reader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, FieldResult);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Length) + ".");
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
 		else if(DataType == "Unsigned integer 32bit")
 		{
-			if(Length == Inspection::Length{4, 0})
+			if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 			{
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
+				auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, FieldResult);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Length) + ".");
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
 		else if(DataType == "Unsigned integer 64bit")
 		{
-			if(Length == Inspection::Length{8, 0})
+			if(Reader.GetRemainingLength() == Inspection::Length{8, 0})
 			{
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 64}};
-				auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(FieldReader)};
+				auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Reader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, FieldResult);
 				// interpretation
 				if(Continue == true)
 				{
@@ -1609,23 +1602,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Length) + ".");
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
 		else if(DataType == "Unsigned integer 16bit")
 		{
-			if(Length == Inspection::Length{2, 0})
+			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
 			{
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
+				auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, FieldResult);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Length) + ".");
+				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -1637,7 +1629,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
