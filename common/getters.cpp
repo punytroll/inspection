@@ -1358,20 +1358,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Start{Buffer.GetPosition()};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ASF_ObjectHeader(FieldReader)};
+		auto FieldResult{Get_ASF_ObjectHeader(Reader)};
 		
 		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// verification
 	if(Continue == true)
@@ -1383,16 +1381,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		auto Size{std::experimental::any_cast< std::uint64_t >(Result->GetAny("Size"))};
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{Size, 0} - (Buffer.GetPosition() - Start)};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetAny("Size")), 0} - Reader.GetConsumedLength()};
 		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1967,10 +1964,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Buffe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_DataObject(Buffer)};
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASF_DataObject(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("DataObject", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
@@ -10371,22 +10369,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Character(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Character(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	if(Buffer.Has(1ull, 0) == true)
+	Result->GetValue()->AppendTag("character"s);
+	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	// verification
+	if(Continue == true)
 	{
-		auto Character{Buffer.Get8Bits()};
-		
-		Result->GetValue()->AppendValue("byte", Character);
-		if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
+		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
-			Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character));
-			Result->SetSuccess(true);
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Continue = false;
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	// reading
+	if(Continue == true)
+	{
+		auto Byte{Reader.Get8Bits()};
+		
+		Result->GetValue()->AppendValue("byte", Byte);
+		if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
+		{
+			Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte));
+		}
+		else
+		{
+			Result->GetValue()->AppendTag("error", "The character is not an ISO/IEC 8859-1:1998 character."s);
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -10800,52 +10816,70 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_BigEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_BigEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{2, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(FieldReader)};
+		auto First{Reader.Get8Bits()};
+		auto Second{Reader.Get8Bits()};
+		auto CodePoint{static_cast< std::uint32_t >((static_cast< std::uint32_t >(First) << 8) | static_cast< std::uint32_t >(Second))};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Result->GetValue()->AppendValue("codepoint", CodePoint);
 		if(Continue == true)
 		{
-			Result->GetValue()->AppendValue("CodePoint", FieldResult->GetValue());
-			Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())));
+			Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint));
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_LittleEndian(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_LittleEndian(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{2, 0}) == false)
+		{
+			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Continue = false;
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(FieldReader)};
+		auto First{Reader.Get8Bits()};
+		auto Second{Reader.Get8Bits()};
+		auto CodePoint{static_cast< std::uint32_t >((static_cast< std::uint32_t >(Second) << 8) | static_cast< std::uint32_t >(First))};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Result->GetValue()->AppendValue("codepoint", CodePoint);
 		if(Continue == true)
 		{
-			Result->GetValue()->AppendValue("CodePoint", FieldResult->GetValue());
-			Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())));
+			Result->GetValue()->SetAny(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint));
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
