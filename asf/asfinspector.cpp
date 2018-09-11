@@ -10,11 +10,24 @@
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
-	auto ASFFileResult{Get_ASF_File(Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	ASFFileResult->GetValue()->SetName("ASFFile");
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_ASF_File(FieldReader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Result->GetValue()->SetName("ASFFile");
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return ASFFileResult;
+	return Result;
 }
 
 int main(int argc, char ** argv)
