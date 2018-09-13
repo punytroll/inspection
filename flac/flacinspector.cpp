@@ -11,9 +11,10 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_FLAC_Stream(FieldReader, true)};
+		auto FieldResult{Get_FLAC_Stream_Header(FieldReader)};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
+		Result->GetValue()->SetName("FLACStream");
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
