@@ -92,9 +92,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		}
 		else
 		{
-			PartialResult = Get_FLAC_Stream(Buffer, false);
+			Inspection::Reader FieldReader{Buffer};
+			
+			PartialResult = Get_FLAC_Stream(FieldReader, false);
 			if(PartialResult->GetSuccess() == true)
 			{
+				Buffer.SetPosition(FieldReader);
 				Start = Buffer.GetPosition();
 				Result->GetValue()->AppendValue("FLACStream", PartialResult->GetValue());
 				if(Buffer.GetPosition() == Buffer.GetLength())
@@ -449,9 +452,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				else
 				{
 					Buffer.SetPosition(Start);
-					PartialResult = Get_FLAC_Stream(Buffer, false);
+					
+					Inspection::Reader FieldReader{Buffer};
+					
+					PartialResult = Get_FLAC_Stream(FieldReader, false);
 					if(PartialResult->GetSuccess() == true)
 					{
+						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
 						Result->GetValue()->AppendValue("FLACStream", PartialResult->GetValue());
 						if(Buffer.GetPosition() == Buffer.GetLength())

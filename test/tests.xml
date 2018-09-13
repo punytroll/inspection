@@ -1275,7 +1275,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::NumberOfChannels/tag::interpretation/value::</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::NumberOfChannels/tag::value/value::</argument>
 		</execute>
 		<expected-output>2</expected-output>
 	</test>
@@ -1291,7 +1291,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::BitsPerSample/tag::interpretation/value::</argument>
+			<argument>--value=/sub::FLACStream/sub::StreamInfoBlock/sub::Data/sub::BitsPerSample/tag::value/value::</argument>
 		</execute>
 		<expected-output>16</expected-output>
 	</test>

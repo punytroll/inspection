@@ -336,47 +336,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Buffer & Buffer, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Getter, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto ElementIndex{0ull};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	
-	while(true)
+	Result->GetValue()->PrependTag("array"s);
+	// reading
+	if(Continue == true)
 	{
-		auto Start{Buffer.GetPosition()};
+		auto ElementIndex{0};
 		
-		if(Start < Boundary)
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto ElementResult{Getter(Buffer)};
+			Inspection::Reader FieldReader{Reader};
+			auto FieldResult{Getter(FieldReader)};
 			
-			if(ElementResult->GetSuccess() == true)
+			UpdateState(Continue, FieldResult);
+			if(Continue == true)
 			{
-				auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+				Reader.AdvancePosition(FieldReader.GetConsumedLength());
 				
-				ElementValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
-				ElementIndex++;
-			}
-			else
-			{
-				Result->GetValue()->AppendValue(ElementResult->GetValue());
-				Result->GetValue()->PrependTag("ended by failure"s);
-				Buffer.SetPosition(Start);
+				auto FieldValue{Result->GetValue()->AppendValue(FieldResult->GetValue())};
 				
-				break;
+				FieldValue->AppendTag("array index", static_cast< std::uint32_t> (ElementIndex++));
 			}
+		}
+		if(Reader.IsAtEnd() == true)
+		{
+			Result->GetValue()->PrependTag("ended by length"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("ended by length"s);
-			
-			break;
+			Result->GetValue()->PrependTag("ended by failure"s);
 		}
+		Result->GetValue()->PrependTag("number of elements", static_cast< std::uint32_t> (ElementIndex));
 	}
-	Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (ElementIndex));
-	Result->GetValue()->PrependTag("array"s);
-	Result->SetSuccess(true);
-	Inspection::FinalizeResult(Result, Buffer);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3870,80 +3868,70 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Boundary{Buffer.GetPosition() + Length};
-	auto RegisteredApplicationIdentifierStart{Buffer.GetPosition()};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
+		Inspection::Reader FieldReader{Reader};
 		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("RegisteredApplicationIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
-	
-	auto ApplicationDataStart{Buffer.GetPosition()};
-	
 	// reading
 	if(Continue == true)
 	{
-		Buffer.SetPosition(RegisteredApplicationIdentifierStart);
-		
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
 		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 		
 		Result->GetValue("RegisteredApplicationIdentifier")->AppendTag("bytes", FieldResult->GetAny());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Buffer.SetPosition(RegisteredApplicationIdentifierStart);
-		
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
+		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
 		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(FieldReader)};
 		
-		if(FieldResult->GetSuccess() == true)
+		UpdateState(Continue, FieldResult);
+		if(Continue == true)
 		{
+			Reader.AdvancePosition(FieldReader.GetConsumedLength());
 			Result->GetValue("RegisteredApplicationIdentifier")->AppendTag("string interpretation", FieldResult->GetAny());
 		}
 	}
 	// reading
 	if(Continue == true)
 	{
-		Buffer.SetPosition(ApplicationDataStart);
-		
-		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
+		Inspection::Reader FieldReader{Reader};
 		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("ApplicationData", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buffer & Buffer, std::uint8_t NumberOfChannelsByStream)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Reader & Reader, std::uint8_t NumberOfChannelsByStream)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_FLAC_Frame_Header(FieldReader)};
+		auto FieldResult{Get_FLAC_Frame_Header(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// inspect
 	if(Continue == true)
@@ -3967,43 +3955,43 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Buf
 		{
 			if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
 			{
-				Inspection::Reader FieldReader{Buffer};
+				Inspection::Reader FieldReader{Reader};
 				auto FieldResult{Get_FLAC_Subframe(FieldReader, BlockSize, BitsPerSample + 1)};
 				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, Reader, FieldResult, FieldReader);
 			}
 			else
 			{
-				Inspection::Reader FieldReader{Buffer};
+				Inspection::Reader FieldReader{Reader};
 				auto FieldResult{Get_FLAC_Subframe(FieldReader, BlockSize, BitsPerSample)};
 				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, Reader, FieldResult, FieldReader);
 			}
 		}
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
+		Inspection::Reader FieldReader{Reader};
 		auto FieldResult{Get_Bits_Unset_UntilByteAlignment(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
+		Inspection::Reader FieldReader{Reader};
 		auto FieldResult{Get_FLAC_Frame_Footer(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Footer", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -4499,19 +4487,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header_SampleRa
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_FLAC_MetaDataBlock_Header(FieldReader)};
+		auto FieldResult{Get_FLAC_MetaDataBlock_Header(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -4520,27 +4507,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
-			Inspection::Reader FieldReader{Buffer};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_FLAC_StreamInfoBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(MetaDataBlockType == "Padding")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(MetaDataBlockType == "Application")
 		{
-			auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length"))};
-			auto FieldResult{Get_FLAC_ApplicationBlock_Data(Buffer, Inspection::Length{MetaDataBlockDataLength, 0})};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			auto FieldResult{Get_FLAC_ApplicationBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, FieldResult);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(MetaDataBlockType == "SeekTable")
 		{
@@ -4548,11 +4535,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 			
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{MetaDataBlockDataLength, 0}};
+				Inspection::Reader FieldReader{Reader, Inspection::Length{MetaDataBlockDataLength, 0}};
 				auto FieldResult{Get_FLAC_SeekTableBlock_Data(FieldReader, MetaDataBlockDataLength / 18)};
 				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				UpdateState(Continue, Reader, FieldResult, FieldReader);
 			}
 			else
 			{
@@ -4561,24 +4548,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "VorbisComment")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_FLAC_VorbisCommentBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(MetaDataBlockType == "Picture")
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_FLAC_PictureBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -4957,28 +4944,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_SeekPo
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Buffer & Buffer, bool OnlyStreamHeader)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Reader & Reader, bool OnlyStreamHeader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_ASCII_String_Alphabetic_EndedByTemplateLength(FieldReader, "fLaC")};
+		auto FieldResult{Get_ASCII_String_Alphabetic_EndedByTemplateLength(Reader, "fLaC")};
 		auto FieldValue{Result->GetValue()->AppendValue("FLAC stream marker", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_FLAC_StreamInfoBlock(FieldReader)};
+		auto FieldResult{Get_FLAC_StreamInfoBlock(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("StreamInfoBlock", FieldResult->GetValue())};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		UpdateState(Continue, FieldResult);
 	}
 	// reading
 	if(Continue == true)
@@ -4988,7 +4973,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 		
 		while((Continue == true) && (LastMetaDataBlock == false))
 		{
-			auto FieldResult{Get_FLAC_MetaDataBlock(Buffer)};
+			auto FieldResult{Get_FLAC_MetaDataBlock(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("MetaDataBlock[" + to_string_cast(MetaDataBlockIndex++) + "]", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -5001,11 +4986,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 	// reading
 	if((Continue == true) && (OnlyStreamHeader == false))
 	{
-		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValueAny("NumberOfChannels")) + 1};
-		auto FieldResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Buffer, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels), Buffer.GetLength() - Buffer.GetPosition())};
+		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValue("NumberOfChannels")->GetTagAny("value"))};
+		Inspection::Reader FieldReader{Reader};
+		auto FieldResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(FieldReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
 		auto FieldValue{Result->GetValue()->AppendValue("Frames", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 		
 		auto FrameIndex{0ul};
 		
@@ -5016,7 +5002,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Bu
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -5075,7 +5061,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsP
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
+		Result->GetValue()->AppendTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -5184,7 +5170,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Numbe
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("interpretation", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
+		Result->GetValue()->AppendTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);

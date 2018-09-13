@@ -4,11 +4,23 @@
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
-	auto FLACStreamResult{Get_FLAC_Stream(Buffer, true)};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	FLACStreamResult->GetValue()->SetName("FLACStream");
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Buffer};
+		auto FieldResult{Get_FLAC_Stream(FieldReader, true)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return FLACStreamResult;
+	return Result;
 }
 
 int main(int argc, char ** argv)
