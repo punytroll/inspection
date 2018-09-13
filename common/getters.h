@@ -98,7 +98,8 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_PictureType(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader, std::uint32_t NumberOfSeekPoints);
 	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Reader & Reader, bool OnlyStreamHeader);
+	std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_FLAC_Stream_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::Reader & Reader);

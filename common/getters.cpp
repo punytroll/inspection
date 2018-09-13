@@ -4944,7 +4944,44 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_SeekPo
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Reader & Reader, bool OnlyStreamHeader)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_FLAC_Stream_Header(Reader)};
+		
+		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValue("NumberOfChannels")->GetTagAny("value"))};
+		Inspection::Reader FieldReader{Reader};
+		auto FieldResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(FieldReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
+		auto FieldValue{Result->GetValue()->AppendValue("Frames", FieldResult->GetValue())};
+		
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		
+		auto FrameIndex{0ul};
+		
+		for(auto FrameValue : FieldValue->GetValues())
+		{
+			FrameValue->SetName("Frame[" + to_string_cast(FrameIndex++) + "]");
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -4981,23 +5018,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 			{
 				LastMetaDataBlock = std::experimental::any_cast< bool >(FieldResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"));
 			}
-		}
-	}
-	// reading
-	if((Continue == true) && (OnlyStreamHeader == false))
-	{
-		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValue("NumberOfChannels")->GetTagAny("value"))};
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(FieldReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
-		auto FieldValue{Result->GetValue()->AppendValue("Frames", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-		
-		auto FrameIndex{0ul};
-		
-		for(auto FrameValue : FieldValue->GetValues())
-		{
-			FrameValue->SetName("Frame[" + to_string_cast(FrameIndex++) + "]");
 		}
 	}
 	// finalization
