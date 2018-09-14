@@ -4,9 +4,10 @@
 
 using namespace std::string_literals;
 
-std::vector< std::string > SplitString(const std::string & String, char Delimiter, char Escape)
+std::vector< std::string > SplitString(const std::string & String, char Delimiter)
 {
 	std::vector< std::string > Result;
+	auto BracketLevel{0};
 	auto IsEscaped{false};
 	std::string Part;
 	
@@ -16,21 +17,53 @@ std::vector< std::string > SplitString(const std::string & String, char Delimite
 		{
 			if(IsEscaped == false)
 			{
-				Result.push_back(Part);
-				Part = "";
+				if(BracketLevel == 0)
+				{
+					Result.push_back(Part);
+					Part = "";
+				}
+				else
+				{
+					Part += Character;
+				}
 			}
 			else
 			{
 				Part += Character;
 			}
 		}
-		else if(Character == Escape)
+		else if(Character == '\\')
 		{
 			if(IsEscaped == true)
 			{
 				Part += Character;
 			}
 			IsEscaped = !IsEscaped;
+		}
+		else if(Character == '[')
+		{
+			Part += Character;
+			if(IsEscaped == true)
+			{
+				IsEscaped = false;
+			}
+			else
+			{
+				BracketLevel += 1;
+			}
+		}
+		else if(Character == ']')
+		{
+			Part += Character;
+			if(IsEscaped == true)
+			{
+				IsEscaped = false;
+			}
+			else
+			{
+				assert(BracketLevel >= 0);
+				BracketLevel -= 1;
+			}
 		}
 		else
 		{
@@ -504,19 +537,96 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	return Result;
 }
 
-void FilterWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Buffer & Buffer, const std::string & FilterPath)
+bool EvaluateTestPath(std::shared_ptr< Inspection::Value > Value, const std::string & TestPath)
 {
-	auto FilterParts{SplitString(FilterPath.substr(1), '/', '\\')};
+	auto FilterParts{SplitString(TestPath, '/')};
+	auto Result{false};
+	
+	for(auto Index = 0ul; Index < FilterParts.size(); ++Index)
+	{
+		auto FilterPart{FilterParts[Index]};
+		auto FilterPartSpecifications{SplitString(FilterPart, ':')};
+		
+		if(FilterPartSpecifications[0] == "sub")
+		{
+			if(FilterPartSpecifications.size() == 2)
+			{
+				Value = Value->GetValue(FilterPartSpecifications[1]);
+			}
+		}
+		else if(FilterPartSpecifications[0] == "value")
+		{
+			std::stringstream Output;
+			
+			Output << Value->GetAny();
+			Result = Output.str() == "true";
+		}
+		else if(FilterPartSpecifications[0] == "tag")
+		{
+			if(FilterPartSpecifications.size() == 2)
+			{
+				Value = Value->GetTag(FilterPartSpecifications[1]);
+			}
+		}
+		else if(FilterPartSpecifications[0] == "has-tag")
+		{
+			Result = Value->HasTag(FilterPartSpecifications[1]);
+		}
+		else if(FilterPartSpecifications[0] == "has-sub")
+		{
+			Result = Value->HasValue(FilterPartSpecifications[1]);
+		}
+		else if(FilterPartSpecifications[0] == "is-value")
+		{
+			std::stringstream Output;
+			
+			Output << Value->GetAny();
+			Result = Output.str() == FilterPartSpecifications[1];
+		}
+	}
+	
+	return Result;
+}
+
+void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::string & FilterPath)
+{
+	auto FilterParts{SplitString(FilterPath.substr(1), '/')};
 	auto Value{Result->GetValue()};
 	
 	for(auto Index = 0ul; Index < FilterParts.size(); ++Index)
 	{
 		auto FilterPart{FilterParts[Index]};
-		auto FilterPartSpecifications{SplitString(FilterPart, ':', '\\')};
+		auto FilterPartSpecifications{SplitString(FilterPart, ':')};
 		
 		if(FilterPartSpecifications[0] == "sub")
 		{
-			Value = Value->GetValue(FilterPartSpecifications[1]);
+			if(FilterPartSpecifications.size() == 2)
+			{
+				Value = Value->GetValue(FilterPartSpecifications[1]);
+			}
+			else if(FilterPartSpecifications.size() == 3)
+			{
+				auto TestPath{FilterPartSpecifications[2].substr(1, FilterPartSpecifications[2].size() - 2)};
+				std::shared_ptr< Inspection::Value > MatchingValue;
+				
+				for(auto PartValue : Value->GetValues())
+				{
+					if((PartValue->GetName() == FilterPartSpecifications[1]) && (EvaluateTestPath(PartValue, TestPath) == true))
+					{
+						MatchingValue = PartValue;
+						
+						break;
+					}
+				}
+				if(MatchingValue == nullptr)
+				{
+					throw std::invalid_argument("The test \"" + TestPath + "\" could not be satisfied by any sub value.");
+				}
+				else
+				{
+					Value = MatchingValue;
+				}
+			}
 			if(Index + 1 == FilterParts.size())
 			{
 				PrintValue(Value);
@@ -614,7 +724,7 @@ int main(int argc, char ** argv)
 	{
 		if(ValuePath != "")
 		{
-			ReadItem(Paths.front(), ProcessBuffer, std::bind(FilterWriter, std::placeholders::_1, std::placeholders::_2, ValuePath));
+			ReadItem(Paths.front(), ProcessBuffer, std::bind(FilterWriter, std::placeholders::_1, ValuePath));
 		}
 		else
 		{
