@@ -45,6 +45,11 @@ namespace Inspection
 			throw std::invalid_argument("Unknown sub value \"" + Name + "\".");
 		}
 		
+		const std::list< std::shared_ptr< Inspection::Value > > & GetValues(void)
+		{
+			return _Value->GetValues();
+		}
+		
 		const std::experimental::any & GetAny(void)
 		{
 			return _Value->GetAny();

@@ -63,31 +63,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Reade
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_APE_Tags_HeaderOrFooter(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("APETagsHeader", FieldResult->GetValue())};
+		auto PartReader{Reader};
+		auto PartResult{Get_APE_Tags_HeaderOrFooter(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("APETagsHeader", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
+		auto PartReader{Reader};
 		auto ItemCount{std::experimental::any_cast< std::uint32_t >(Result->GetValue("APETagsHeader")->GetValueAny("ItemCount"))};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_APE_Tags_Item, ItemCount)};
 		
-		for(auto ItemIndex = 0ul; ItemIndex < ItemCount; ++ItemIndex)
+		Continue = PartResult->GetSuccess();
+		for(auto PartValue : PartResult->GetValues())
 		{
-			auto FieldResult{Get_APE_Tags_Item(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("APETagsItem[" + to_string_cast(ItemIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			Result->GetValue()->AppendValue("APETagsItem", PartValue);
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_APE_Tags_HeaderOrFooter(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("APETagsFooter", FieldResult->GetValue())};
+		auto PartReader{Reader};
+		auto PartResult{Get_APE_Tags_HeaderOrFooter(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("APETagsFooter", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);

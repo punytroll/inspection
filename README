@@ -1,4 +1,16 @@
-On the history of value getters:
+Patterns:
+================================
+These patterns need to spread to all getter implementations:
+1. "Continue" pattern: A local variable named "Continue" tracks, whether the getter should continue its work. If this variable becomes false, the getter should fall through to returning the Result. Every reading of subsequent parts (as well as verification and interpretation) should be surrounded by a "if(Continue == true)" query.
+2. "Field" pattern: Instead of long variable names that refer to parts of the original format specification (like "OwnerIdentifierResult"), the general name "FieldResult" should be used.
+3. "Part" pattern: Instead of FieldReader, FieldResult and FieldValue, PartReader, PartResult and PartValue should be used.
+4. "SubReader" pattern: Every part should be read from its own reader, because that assures, that every getter starts at the postiion 0.
+5. "NoValue" pattern: Don't create the local variable FieldValue or PartValue.
+6. "ValueAfterContinue": First update the Continue variable, then append the PartValue to the result.
+7. "NoUpdateState": All calls to different versions of UpdateState should be replaced by the specific lines "Continue = PartResult->GetSuccess()" and "Reader.AdvancePosition(FieldReader.GetConsumedLength())". These two lines may need to be placed separatly instead of adjoint.
+8. "AdvanceAfterValue": Append the value and THEN advance the reader position.
+
+On the history of getters:
 ================================
 
 1st generation getters:
@@ -38,3 +50,9 @@ Came about as a helper class to incorporate sucess, length and result into one v
 5th generation getters:
 -----------------------
 This generation finally allows bit-precise access to data. A new class Length is responsible for storing byte-and-bit-pairs and a new class Buffer uses that functionality to allow reading from 0 to 8 bits in one uint8_t value. Multiple such values have to be combined in the getters to synthesize larger values. The buffer advances its internal position according to the data that has already been read, thus removing the necessity to advance the index by hand.
+
+
+6th generation getters:
+-----------------------
+The 6th generation of getters resulted from the Reader branch, which implemented a Reader class. This class implements a view of a buffer, defined by a starting offset inside the buffer, a current position inside the buffer, and a boundary position inside the buffer. Reading outside of the reader's accessible portion of the buffer is not allowed, thereby restricting the reach of reading. Getters, which worked directly on the Buffer class, were transformed using the Reader class, which was a long an incremental process. To distinguish getters that had been transformed to using the Reader class, those were called readers as well, but this name is not valid anymore.
+The readers made specifying an allowed length unnecessary for getters, because the length restriction could be encoded in the reader instance.
