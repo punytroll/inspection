@@ -24,26 +24,6 @@ std::vector< std::string > SplitString(const std::string & String, char Delimite
 	return Result;
 }
 
-std::vector< std::string > SplitString(const std::string & String, const std::string & Delimiter)
-{
-	std::vector< std::string > Result;
-	size_t Begin{0};
-	size_t End{String.find(Delimiter, Begin)};
-	
-	while(End != std::string::npos)
-	{
-		Result.push_back(String.substr(Begin, End - Begin));
-		Begin = End + Delimiter.size();
-		End = String.find(Delimiter, Begin);
-	}
-	if(Begin != String.size())
-	{
-		Result.push_back(String.substr(Begin));
-	}
-	
-	return Result;
-}
-
 void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspection::Buffer & Buffer)
 {
 	auto ErrorValue{Value->AppendValue("error", "Unknown continuation."s)};
@@ -514,7 +494,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Bu
 	for(auto Index = 0ul; Index < FilterParts.size(); ++Index)
 	{
 		auto FilterPart{FilterParts[Index]};
-		auto FilterPartSpecifications{SplitString(FilterPart, "::")};
+		auto FilterPartSpecifications{SplitString(FilterPart, ':')};
 		
 		if(FilterPartSpecifications[0] == "sub")
 		{
