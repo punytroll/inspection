@@ -156,7 +156,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "All bits 3 to 28 must be unset.");
+			Result->GetValue()->AppendTag("error", "All bits 3 to 28 must be unset."s);
 		}
 		FlagValue = Result->GetValue()->AppendValue("Type", TagsFlags[29]);
 		if(TagsFlags[29] == true)
