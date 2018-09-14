@@ -556,6 +556,20 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Bu
 				std::cout << "false";
 			}
 		}
+		else if(FilterPartSpecifications[0] == "is-value")
+		{
+			std::stringstream Output;
+			
+			Output << Value->GetAny();
+			if(Output.str() == FilterPartSpecifications[1])
+			{
+				std::cout << "true";
+			}
+			else
+			{
+				std::cout << "false";
+			}
+		}
 	}
 }
 
