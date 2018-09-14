@@ -4,22 +4,40 @@
 
 using namespace std::string_literals;
 
-std::vector< std::string > SplitString(const std::string & String, char Delimiter)
+std::vector< std::string > SplitString(const std::string & String, char Delimiter, char Escape)
 {
 	std::vector< std::string > Result;
-	size_t Begin{0};
-	size_t End{String.find(Delimiter, Begin)};
+	auto IsEscaped{false};
+	std::string Part;
 	
-	while(End != std::string::npos)
+	for(auto Character : String)
 	{
-		Result.push_back(String.substr(Begin, End - Begin));
-		Begin = End + 1;
-		End = String.find(Delimiter, Begin);
+		if(Character == Delimiter)
+		{
+			if(IsEscaped == false)
+			{
+				Result.push_back(Part);
+				Part = "";
+			}
+			else
+			{
+				Part += Character;
+			}
+		}
+		else if(Character == Escape)
+		{
+			if(IsEscaped == true)
+			{
+				Part += Character;
+			}
+			IsEscaped = !IsEscaped;
+		}
+		else
+		{
+			Part += Character;
+		}
 	}
-	if(Begin != String.size())
-	{
-		Result.push_back(String.substr(Begin));
-	}
+	Result.push_back(Part);
 	
 	return Result;
 }
@@ -488,13 +506,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 
 void FilterWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Buffer & Buffer, const std::string & FilterPath)
 {
-	auto FilterParts{SplitString(FilterPath.substr(1), '/')};
+	auto FilterParts{SplitString(FilterPath.substr(1), '/', '\\')};
 	auto Value{Result->GetValue()};
 	
 	for(auto Index = 0ul; Index < FilterParts.size(); ++Index)
 	{
 		auto FilterPart{FilterParts[Index]};
-		auto FilterPartSpecifications{SplitString(FilterPart, ':')};
+		auto FilterPartSpecifications{SplitString(FilterPart, ':', '\\')};
 		
 		if(FilterPartSpecifications[0] == "sub")
 		{
