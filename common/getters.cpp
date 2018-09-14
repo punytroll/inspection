@@ -7551,18 +7551,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_UFID(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Reader)};
+		Inspection::Reader FieldReader{Reader};
+		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
+		Inspection::Reader FieldReader{Reader};
+		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
 		
-		UpdateState(Continue, FieldResult);
+		UpdateState(Continue, Reader, FieldResult, FieldReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
