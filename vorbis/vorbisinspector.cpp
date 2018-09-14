@@ -147,7 +147,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
+		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 64}};
 		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("GranulePosition", FieldResult->GetValue())};
 		
