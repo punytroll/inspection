@@ -9,6 +9,7 @@ These patterns need to spread to all getter implementations:
 6. "ValueAfterContinue": First update the Continue variable, then append the PartValue to the result.
 7. "NoUpdateState": All calls to different versions of UpdateState should be replaced by the specific lines "Continue = PartResult->GetSuccess()" and "Reader.AdvancePosition(FieldReader.GetConsumedLength())". These two lines may need to be placed separatly instead of adjoint.
 8. "AdvanceAfterValue": Append the value and THEN advance the reader position.
+9. "NoLoops": Getters must not implement their own loops but defer to multi-purpose array getters.
 
 On the history of getters:
 ================================
