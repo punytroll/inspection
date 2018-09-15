@@ -6175,18 +6175,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_UFI(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASCII_String_Printable_EndedByTermination(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("OwnerIdentifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Identifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -7556,20 +7560,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_UFID(In
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASCII_String_Printable_EndedByTermination(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("OwnerIdentifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Identifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -8643,18 +8649,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_UFID(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("OwnerIdentifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASCII_String_Printable_EndedByTermination(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("OwnerIdentifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Identifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
