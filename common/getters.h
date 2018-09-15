@@ -19,6 +19,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_Item(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::uint64_t NumberOfElements);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByNumberOfElements_PassArrayIndex(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, std::uint64_t) > Getter, std::uint64_t NumberOfElements);
@@ -129,7 +130,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_UFI(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header_Identifier(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frames_AtLeastOne_EndedByFailure(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Tag_Header_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextEncoding(Inspection::Reader & Reader);
@@ -161,7 +161,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header_Identifier(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frames_AtLeastOne_EndedByFailure(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Tag_Header_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextEncoding(Inspection::Reader & Reader);
@@ -182,7 +181,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_WXXX(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Header_Identifier(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frames_AtLeastOne_EndedByFailure(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Language(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_Header_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader(Inspection::Reader & Reader);

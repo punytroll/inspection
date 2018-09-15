@@ -11,7 +11,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/017_2.3_COMM_bul_UCS-2_bom_be.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
 		</execute>
 		<expected-output>bul</expected-output>
 	</test>
@@ -91,7 +91,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/015_2.4_COMM_XXX_language.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
 		</execute>
 		<expected-output>XXX</expected-output>
 	</test>
@@ -99,7 +99,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/015_2.4_COMM_XXX_language.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/tag:interpretation/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>&lt;unknown&gt;</expected-output>
 	</test>
@@ -107,7 +107,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/018_2.3_COMM_deu_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
 		</execute>
 		<expected-output>deu</expected-output>
 	</test>
@@ -115,7 +115,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/018_2.3_COMM_deu_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/tag:interpretation/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>German</expected-output>
 	</test>
@@ -123,7 +123,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/019_2.3_COMM_ger_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
 		</execute>
 		<expected-output>ger</expected-output>
 	</test>
@@ -131,7 +131,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/019_2.3_COMM_ger_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/tag:interpretation/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>German</expected-output>
 	</test>
@@ -139,7 +139,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/025_2.3_COMM_null_language.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
 		</execute>
 		<expected-output>00 00 00</expected-output>
 	</test>
@@ -147,7 +147,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/026_2.2_COM_null_language.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
 		</execute>
 		<expected-output>00 00 00</expected-output>
 	</test>
@@ -155,7 +155,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/008_2.4_COMM_null_language.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
 		</execute>
 		<expected-output>00 00 00</expected-output>
 	</test>
@@ -163,7 +163,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/009_2.4_COMM_eng_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
 		</execute>
 		<expected-output>eng</expected-output>
 	</test>
@@ -171,7 +171,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/009_2.4_COMM_eng_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Language/tag:interpretation/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>English</expected-output>
 	</test>
@@ -251,7 +251,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/value</argument>
 		</execute>
 		<expected-output>TSSE</expected-output>
 	</test>
@@ -259,7 +259,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier/has-tag:alphanumeric</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/has-tag:alphanumeric</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -267,7 +267,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier/has-tag:ended by length</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/has-tag:ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -275,7 +275,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier/has-tag:4 characters</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/has-tag:4 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -403,7 +403,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[11]/sub:ImageFormat/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:11]/sub:ImageFormat/value</argument>
 		</execute>
 		<expected-output>JPG</expected-output>
 	</test>
@@ -411,7 +411,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[11]/sub:ImageFormat/has-tag:string</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:11]/sub:ImageFormat/has-tag:string</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -419,7 +419,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[11]/sub:ImageFormat/has-tag:ended by length</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:11]/sub:ImageFormat/has-tag:ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -427,7 +427,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[11]/sub:ImageFormat/has-tag:3 characters</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:11]/sub:ImageFormat/has-tag:3 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -435,7 +435,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[11]/sub:ImageFormat/tag:mime-type/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:11]/sub:ImageFormat/tag:mime-type/value</argument>
 		</execute>
 		<expected-output>image/jpeg</expected-output>
 	</test>
@@ -483,7 +483,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:EMailToUser/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:EMailToUser/value</argument>
 		</execute>
 		<expected-output>test@mail.com</expected-output>
 	</test>
@@ -491,7 +491,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:EMailToUser/has-tag:string</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:EMailToUser/has-tag:string</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -499,7 +499,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:EMailToUser/has-tag:ended by termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:EMailToUser/has-tag:ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -507,7 +507,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:EMailToUser/has-tag:13 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:EMailToUser/has-tag:13 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -515,7 +515,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -523,7 +523,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information/has-tag:empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information/has-tag:empty</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -531,7 +531,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/007_2.3_empty_tit2_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information/has-tag:ended by length</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information/has-tag:ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -539,7 +539,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/002_2.2_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[4]/sub:Information/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:4]/sub:Information/value</argument>
 		</execute>
 		<expected-output>5/30</expected-output>
 	</test>
@@ -547,7 +547,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/002_2.2_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[4]/sub:Information/has-tag:ended by termination and length</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:4]/sub:Information/has-tag:ended by termination and length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -555,7 +555,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/002_2.2_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[4]/sub:Information/has-tag:4 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:4]/sub:Information/has-tag:4 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -563,7 +563,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information/value</argument>
 		</execute>
 		<expected-output>eng</expected-output>
 	</test>
@@ -571,7 +571,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information/has-tag:ended by length</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information/has-tag:ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -579,7 +579,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/028_2.3_TLAN_eng_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information/has-tag:3 characters</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information/has-tag:3 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -587,7 +587,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:ShortContentDescription/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:ShortContentDescription/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -595,7 +595,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:ShortContentDescription/has-tag:ended by termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:ShortContentDescription/has-tag:ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -603,7 +603,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:ShortContentDescription/has-tag:0 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:ShortContentDescription/has-tag:0 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1075,7 +1075,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Description/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/value</argument>
 		</execute>
 		<expected-output>Test</expected-output>
 	</test>
@@ -1083,7 +1083,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Description/tag:string/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:string/value</argument>
 		</execute>
 		<expected-output>Test</expected-output>
 	</test>
@@ -1091,7 +1091,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Description/tag:character set/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:character set/value</argument>
 		</execute>
 		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
 	</test>
@@ -1099,7 +1099,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Description/tag:encoding/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:encoding/value</argument>
 		</execute>
 		<expected-output>UTF-8</expected-output>
 	</test>
@@ -1107,7 +1107,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Description/has-tag:ended by termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/has-tag:ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1115,7 +1115,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Description/has-tag:4 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/has-tag:4 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1123,7 +1123,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Value/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Value/value</argument>
 		</execute>
 		<expected-output>Test</expected-output>
 	</test>
@@ -1131,7 +1131,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Value/tag:string/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Value/tag:string/value</argument>
 		</execute>
 		<expected-output>Test</expected-output>
 	</test>
@@ -1139,7 +1139,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Value/tag:character set/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Value/tag:character set/value</argument>
 		</execute>
 		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
 	</test>
@@ -1147,7 +1147,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Value/tag:encoding/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Value/tag:encoding/value</argument>
 		</execute>
 		<expected-output>UTF-8</expected-output>
 	</test>
@@ -1155,7 +1155,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Value/has-tag:ended by termination and length</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Value/has-tag:ended by termination and length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1163,7 +1163,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Value/has-tag:4 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Value/has-tag:4 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1171,7 +1171,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[0]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/value</argument>
 		</execute>
 		<expected-output>101</expected-output>
 	</test>
@@ -1179,7 +1179,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[0]/tag:string/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:string/value</argument>
 		</execute>
 		<expected-output>101</expected-output>
 	</test>
@@ -1187,7 +1187,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[0]/tag:character set/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:character set/value</argument>
 		</execute>
 		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
 	</test>
@@ -1195,7 +1195,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[0]/tag:encoding/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:encoding/value</argument>
 		</execute>
 		<expected-output>UTF-8</expected-output>
 	</test>
@@ -1203,7 +1203,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[0]/has-tag:3 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/has-tag:3 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1211,7 +1211,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[0]/has-tag:ended by termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/has-tag:ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1219,7 +1219,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[1]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/value</argument>
 		</execute>
 		<expected-output>102</expected-output>
 	</test>
@@ -1227,7 +1227,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[1]/tag:string/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/tag:string/value</argument>
 		</execute>
 		<expected-output>102</expected-output>
 	</test>
@@ -1235,7 +1235,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[1]/tag:character set/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/tag:character set/value</argument>
 		</execute>
 		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
 	</test>
@@ -1243,7 +1243,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[1]/tag:encoding/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/tag:encoding/value</argument>
 		</execute>
 		<expected-output>UTF-8</expected-output>
 	</test>
@@ -1251,7 +1251,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[1]/has-tag:3 characters</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/has-tag:3 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1259,7 +1259,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Information[1]/has-tag:ended by length</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/has-tag:ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1411,7 +1411,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:DataLength/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:DataLength/value</argument>
 		</execute>
 		<expected-output>154</expected-output>
 	</test>
@@ -1419,7 +1419,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:FirstTrackNumber/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:FirstTrackNumber/value</argument>
 		</execute>
 		<expected-output>1</expected-output>
 	</test>
@@ -1427,7 +1427,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:LastTrackNumber/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:LastTrackNumber/value</argument>
 		</execute>
 		<expected-output>18</expected-output>
 	</test>
@@ -1435,7 +1435,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Track[6]/sub:Number/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Track[6]/sub:Number/value</argument>
 		</execute>
 		<expected-output>6</expected-output>
 	</test>
@@ -1443,7 +1443,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Track[6]/sub:StartAddress/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Track[6]/sub:StartAddress/value</argument>
 		</execute>
 		<expected-output>97740</expected-output>
 	</test>
@@ -1451,7 +1451,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:LeadOutTrack/sub:Number/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:LeadOutTrack/sub:Number/value</argument>
 		</execute>
 		<expected-output>170</expected-output>
 	</test>
@@ -1531,7 +1531,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:string]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:string]/value</argument>
 		</execute>
 		<expected-output>UFID</expected-output>
 	</test>
@@ -1539,7 +1539,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/value</argument>
 		</execute>
 		<expected-output>http://www.cddb.com/id3/taginfo1.html</expected-output>
 	</test>
@@ -1547,7 +1547,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:string</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:string</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1555,7 +1555,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1563,7 +1563,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:printables only</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:printables only</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1571,7 +1571,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:ended by termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1579,7 +1579,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:37 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:37 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1587,7 +1587,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/value</argument>
 		</execute>
 		<expected-output>33 43 44 33 4e 36 39 53 37 33 35 34 31 30 31 56 31 38 46 42 38 46 36 39 32 31 35 46 43 45 33 43 31 41 32 33 34 41 38 32 34 46 37 39 46 36 44 34 37 38 50 34</expected-output>
 	</test>
@@ -1595,7 +1595,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:integer</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1603,7 +1603,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:unsigned</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1611,7 +1611,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:8bit values</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:8bit values</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1619,7 +1619,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/tag:length/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/tag:length/value</argument>
 		</execute>
 		<expected-output>52.0</expected-output>
 	</test>
@@ -1627,7 +1627,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
@@ -1635,7 +1635,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:string]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:string]/value</argument>
 		</execute>
 		<expected-output>UFI</expected-output>
 	</test>
@@ -1643,7 +1643,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/value</argument>
 		</execute>
 		<expected-output>http://www.cddb.com/id3/taginfo.html</expected-output>
 	</test>
@@ -1651,7 +1651,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:string</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:string</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1659,7 +1659,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1667,7 +1667,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:printables only</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:printables only</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1675,7 +1675,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:ended by termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1683,7 +1683,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:36 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:36 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1691,7 +1691,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/value</argument>
 		</execute>
 		<expected-output>33 43 44 33 4e 36 36 53 37 36 30 35 38 30 39 56 30 38 32 44 46 35 41 35 33 43 43 44 43 39 33 39 35 41 30 37 34 33 44 34 38 31 42 41 35 34 34 32 33 31 50 35 00</expected-output>
 	</test>
@@ -1699,7 +1699,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:integer</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1707,7 +1707,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:unsigned</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1715,7 +1715,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:8bit values</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:8bit values</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1723,7 +1723,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/tag:length/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/tag:length/value</argument>
 		</execute>
 		<expected-output>53.0</expected-output>
 	</test>
@@ -1731,7 +1731,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
@@ -1739,7 +1739,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:string]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:string]/value</argument>
 		</execute>
 		<expected-output>UFID</expected-output>
 	</test>
@@ -1747,7 +1747,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/value</argument>
 		</execute>
 		<expected-output>http://www.cddb.com/id3/taginfo1.html</expected-output>
 	</test>
@@ -1755,7 +1755,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:string</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:string</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1763,7 +1763,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1771,7 +1771,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:printables only</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:printables only</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1779,7 +1779,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:ended by termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1787,7 +1787,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:OwnerIdentifier/has-tag:37 characters + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:37 characters + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1795,7 +1795,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/value</argument>
 		</execute>
 		<expected-output>33 43 44 33 4e 34 30 52 36 36 35 37 35 31 32 32 55 32 31 38 46 36 39 37 33 32 43 31 43 37 30 42 41 35 44 36 34 30 38 42 39 38 46 38 43 34 42 44 33 33 37 36 50 35</expected-output>
 	</test>
@@ -1803,7 +1803,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:integer</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1811,7 +1811,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:unsigned</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1819,7 +1819,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/has-tag:8bit values</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/has-tag:8bit values</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1827,7 +1827,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/tag:length/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/tag:length/value</argument>
 		</execute>
 		<expected-output>54.0</expected-output>
 	</test>
@@ -1835,7 +1835,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame[0]/sub:Identifier:[has-tag:buffer]/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Identifier:[has-tag:buffer]/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
