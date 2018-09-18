@@ -3,34 +3,19 @@ LDFLAGS = -g
 
 default: all
 
+all: common ../asfinspector
+
 clean:
 	$(RM) ../asfinspector
 	$(RM) asfinspector.o
-	$(RM) getters.o
-	$(RM) guid.o
-	$(RM) helper.o
-	$(RM) reader.o
-	$(RM) string_cast.o
 
-all: ../asfinspector
+common:
+	$(MAKE) -C common
 
-../asfinspector: asfinspector.o getters.o guid.o helper.o reader.o string_cast.o
-	$(CXX) $(LDFLAGS) $^ -o $@
+../asfinspector: asfinspector.o common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
 
-asfinspector.o: asfinspector.cpp ../common/any_printing.h ../common/buffer.h ../common/file_handling.h ../common/getters.h ../common/guid.h ../common/length.h ../common/result.h ../common/value.h ../common/value_printing.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+asfinspector.o: asfinspector.cpp common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
 
-getters.o: ../common/getters.cpp ../common/buffer.h ../common/getters.h ../common/length.h ../common/result.h ../common/value.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-guid.o: ../common/guid.cpp ../common/guid.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-helper.o: ../common/helper.cpp ../common/helper.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-reader.o: ../common/reader.cpp ../common/buffer.h ../common/length.h ../common/reader.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-string_cast.o: ../common/string_cast.cpp ../common/string_cast.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+.PHONY: common

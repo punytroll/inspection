@@ -2,34 +2,19 @@ CXXFLAGS = -std=c++14 -Wall -Werror -g -O0
 
 default: all
 
+all: common ../id3inspector
+
 clean:
 	$(RM) ../id3inspector
-	$(RM) getters.o
-	$(RM) guid.o
-	$(RM) helper.o
 	$(RM) id3inspector.o
-	$(RM) reader.o
-	$(RM) string_cast.o
 
-all: ../id3inspector
+common:
+	$(MAKE) -C common
 
-../id3inspector: id3inspector.o getters.o guid.o helper.o reader.o string_cast.o
-	$(CXX) $(LDFLAGS) $^ -o $@
+../id3inspector: id3inspector.o common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
 
-getters.o: ../common/getters.cpp ../common/getters.h ../common/not_implemented_exception.h ../common/result.h ../common/value.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+id3inspector.o: id3inspector.cpp common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
 
-helper.o: ../common/helper.cpp ../common/helper.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-guid.o: ../common/guid.cpp ../common/guid.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-id3inspector.o: id3inspector.cpp ../common/any_printing.h ../common/file_handling.h ../common/getters.h ../common/unknown_value_exception.h ../common/value_printing.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-reader.o: ../common/reader.cpp ../common/buffer.h ../common/length.h ../common/reader.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-string_cast.o: ../common/string_cast.cpp ../common/string_cast.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+.PHONY: common

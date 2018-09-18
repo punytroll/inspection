@@ -3,34 +3,55 @@ LDFLAGS = -g
 
 default: all
 
-clean:
-	$(RM) getters.o
-	$(RM) guid.o
-	$(RM) helper.o
-	$(RM) reader.o
-	$(RM) string_cast.o
-	$(RM) test
-	$(RM) test.o
+HEADER_DIRECTORIES := $(patsubst %/,%,$(sort $(dir $(shell find . -name '*.h'))))
+HEADER_FILES := $(patsubst ./%,%,$(foreach HEADER_DIRECTORY,$(HEADER_DIRECTORIES),$(wildcard $(HEADER_DIRECTORY)/*.h)))
+SOURCE_DIRECTORIES := $(patsubst %/,%,$(sort $(dir $(shell find . -name '*.cpp'))))
+SOURCE_FILES := $(patsubst ./%,%,$(foreach SOURCE_DIRECTORY,$(SOURCE_DIRECTORIES),$(wildcard $(SOURCE_DIRECTORY)/*.cpp)))
+OBJECT_DIRECTORY := .object-files
+OBJECT_DIRECTORIES := $(patsubst .%, $(OBJECT_DIRECTORY)%, $(SOURCE_DIRECTORIES))
+OBJECT_FILES := $(sort $(patsubst %.cpp,$(OBJECT_DIRECTORY)/%.o,$(SOURCE_FILES)))
+DEPENDENCY_DIRECTORY := .dependency-files
+DEPENDENCY_DIRECTORIES := $(sort $(patsubst .%, $(DEPENDENCY_DIRECTORY)%, $(SOURCE_DIRECTORIES)))
+DEPENDENCY_FILES := $(sort $(foreach file,$(SOURCE_FILES),$(DEPENDENCY_DIRECTORY)/$(file).dep))
 
-all: test
+ifeq (0, $(words $(findstring $(MAKECMDGOALS), clean clean-recursive clean-here)))
+    -include $(DEPENDENCY_FILES)
+endif
 
-getters.o: getters.cpp buffer.h getters.h guid.h reader.h result.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+all: all-recursive
 
-guid.o: guid.cpp guid.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+all-here: libcommon.a
 
-helper.o: helper.cpp helper.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+all-recursive: all-here
 
-reader.o: reader.cpp buffer.h length.h reader.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+clean: clean-recursive
 
-string_cast.o: string_cast.cpp string_cast.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+clean-here:
+	$(RM) libcommon.a
+	$(RM) $(OBJECT_FILES)
+	@MORE_OBJECT_FILES="$(filter-out $(OBJECT_FILES),$(wildcard $(OBJECT_DIRECTORY)/*.o))"; \
+	if [ x"$${MORE_OBJECT_FILES}" != x ]; then \
+		echo "\nThe following object files have not been removed explicitly. They are deleted with the \"$(OBJECT_DIRECTORY)\" directory, nevertheless."; \
+		for OBJECT_FILE in $${MORE_OBJECT_FILES}; do \
+			echo "    $${OBJECT_FILE}"; \
+		done; \
+		echo ""; \
+	fi
+	$(RM) -r $(OBJECT_DIRECTORY)
+	$(RM) $(DEPENDENCY_FILES)
+	$(RM) -r $(DEPENDENCY_DIRECTORY)
 
-test: getters.o guid.o helper.o reader.o string_cast.o test.o
-	$(CXX) $(LDFLAGS) $^ -o $@
+clean-recursive: clean-here
 
-test.o: test.cpp buffer.h length.h result.h value.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(DEPENDENCY_DIRECTORY)/%.dep: %
+	@test -d $(@D) || mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -Iinclude -MM $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
+
+$(OBJECT_DIRECTORY)/%.o: %.cpp
+	@test -d $(@D) || mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -Iinclude -c $< -o $@
+
+libcommon.a: $(OBJECT_FILES)
+	ar rcs $@ $(OBJECT_FILES)
+
+.PHONY: default all all-here all-recursive check clean clean-here clean-recursive

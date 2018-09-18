@@ -1,6 +1,13 @@
 #include <deque>
+#include <string>
+#include <vector>
 
-#include "../common/common.h"
+#include <common/any_printing.h>
+#include <common/buffer.h>
+#include <common/file_handling.h>
+#include <common/getters.h>
+#include <common/result.h>
+#include <common/value_printing.h>
 
 using namespace std::string_literals;
 
