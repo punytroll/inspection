@@ -16,7 +16,8 @@ syntax: regexp
 ^asf/.*\.o$
 ^apeinspector$
 ^ape/.*\.o$
-^common/test$
 ^common/.*\.o$
 ^general/.*\.o$
 ^generalinspector$
+^common/libcommon.a$
+^common/.dependency-files/

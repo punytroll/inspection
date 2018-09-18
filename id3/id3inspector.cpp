@@ -1,8 +1,10 @@
 #include <deque>
-#include <map>
 #include <string>
 
-#include "../common/common.h"
+#include <common/buffer.h>
+#include <common/file_handling.h>
+#include <common/getters.h>
+#include <common/result.h>
 
 using namespace std::string_literals;
 

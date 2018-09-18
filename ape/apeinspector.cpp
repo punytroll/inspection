@@ -1,12 +1,11 @@
-#include <bitset>
-#include <cassert>
 #include <deque>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
+#include <memory>
 #include <string>
 
-#include "../common/common.h"
+#include <common/buffer.h>
+#include <common/file_handling.h>
+#include <common/getters.h>
+#include <common/result.h>
 
 using namespace std::string_literals;
 

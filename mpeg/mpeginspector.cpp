@@ -1,6 +1,9 @@
 #include <deque>
 
-#include "../common/common.h"
+#include <common/buffer.h>
+#include <common/file_handling.h>
+#include <common/getters.h>
+#include <common/result.h>
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
