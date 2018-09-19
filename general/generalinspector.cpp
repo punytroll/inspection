@@ -5,6 +5,7 @@
 #include <common/any_printing.h>
 #include <common/buffer.h>
 #include <common/file_handling.h>
+#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
 #include <common/value_printing.h>
@@ -692,6 +693,8 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 
 int main(int argc, char ** argv)
 {
+	InitializeGetterRepository();
+	
 	std::string ValuePrefix{"--value="};
 	std::string ValuePath;
 	std::deque< std::string > Paths;
