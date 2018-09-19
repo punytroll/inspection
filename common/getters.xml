@@ -1,0 +1,26 @@
+<inspection module="ID3 2.3">
+	<getter identifier="FrameBody UFID">
+		<part>
+			<getter>
+				<module>ASCII</module>
+				<identifier>Printable EndedByTermination</identifier>
+			</getter>
+			<value>
+				<append>
+					<name>OwnerIdentifier</name>
+				</append>
+			</value>
+		</part>
+		<part>
+			<getter>
+				<module>Buffers</module>
+				<identifier>UnsignedInteger 8Bit EndedByLength</identifier>
+			</getter>
+			<value>
+				<append>
+					<name>Identifier</name>
+				</append>
+			</value>
+		</part>
+	</getter>
+</inspection> 
