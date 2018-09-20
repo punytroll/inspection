@@ -78,9 +78,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Reade
 		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_APE_Tags_Item, ItemCount)};
 		
 		Continue = PartResult->GetSuccess();
-		for(auto PartValue : PartResult->GetValues())
+		Result->GetValue()->AppendValue("APETagsItems", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			Result->GetValue()->AppendValue("APETagsItem", PartValue);
+			PartValue->SetName("APETagsItem");
 		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
@@ -1267,11 +1268,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_ASF_CodecEntry, std::experimental::any_cast< std::uint32_t >(Result->GetAny("CodecEntriesCount")))};
+		auto CodecEntriesCount{std::experimental::any_cast< std::uint32_t >(Result->GetAny("CodecEntriesCount"))};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_ASF_CodecEntry, CodecEntriesCount)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("CodecEntries", PartResult->GetValue());
-		for(auto PartValue : Result->GetValue("CodecEntries")->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("CodecEntry");
 		}
