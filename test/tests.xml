@@ -787,7 +787,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntry[0]/sub:CodecInformation/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/value</argument>
 		</execute>
 		<expected-output>61 01</expected-output>
 	</test>
@@ -795,7 +795,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntry[0]/sub:CodecInformation/has-tag:buffer</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/has-tag:buffer</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -803,7 +803,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntry[0]/sub:CodecInformation/has-tag:buffer</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/has-tag:buffer</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -811,7 +811,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntry[0]/sub:CodecInformation/has-tag:integer</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -819,7 +819,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntry[0]/sub:CodecInformation/has-tag:unsigned</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -827,7 +827,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntry[0]/sub:CodecInformation/has-tag:8bit values</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/has-tag:8bit values</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -835,7 +835,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntry[0]/sub:CodecInformation/tag:length/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/tag:length/value</argument>
 		</execute>
 		<expected-output>2.0</expected-output>
 	</test>
@@ -843,7 +843,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntry[0]/sub:CodecInformation/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
