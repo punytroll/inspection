@@ -1241,10 +1241,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_GUID(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASF_GUID(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Reserved", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -1254,23 +1256,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("CodecEntriesCount", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("CodecEntriesCount", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto CodecEntriesCount{std::experimental::any_cast< std::uint32_t >(Result->GetAny("CodecEntriesCount"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_ASF_CodecEntry, std::experimental::any_cast< std::uint32_t >(Result->GetAny("CodecEntriesCount")))};
 		
-		for(auto CodecEntryIndex = 0ul; (Continue == true) && (CodecEntryIndex < CodecEntriesCount); ++CodecEntryIndex)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("CodecEntries", PartResult->GetValue());
+		for(auto PartValue : Result->GetValue("CodecEntries")->GetValues())
 		{
-			auto FieldResult{Get_ASF_CodecEntry(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("CodecEntry[" + to_string_cast(CodecEntryIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			PartValue->SetName("CodecEntry");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
