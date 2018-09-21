@@ -6230,7 +6230,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_UFI(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get("ASCII", "String Printable EndedByTermination", PartReader)};
+		auto PartResult{g_GetterRepository.Get(std::vector< std::string >{"ASCII"}, "String Printable EndedByTermination", PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("OwnerIdentifier", PartResult->GetValue());
@@ -6240,7 +6240,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_UFI(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
+		auto PartResult{g_GetterRepository.Get(std::vector< std::string >{"Buffers"}, "UnsignedInteger 8Bit EndedByLength", PartReader)}; 
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Identifier", PartResult->GetValue());
