@@ -1,5 +1,5 @@
-<inspection module="ID3 2.3">
-	<getter identifier="FrameBody UFID">
+<inspection>
+	<getter identifier="UFID">
 		<part>
 			<getter>
 				<module>ASCII</module>

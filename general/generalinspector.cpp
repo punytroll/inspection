@@ -693,7 +693,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 
 int main(int argc, char ** argv)
 {
-	InitializeGetterRepository();
+	Inspection::InitializeGetterRepository();
 	
 	std::string ValuePrefix{"--value="};
 	std::string ValuePath;
