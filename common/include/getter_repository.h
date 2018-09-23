@@ -8,6 +8,7 @@
 
 namespace Inspection
 {
+	class GetterDescriptor;
 	class Module;
 	class Result;
 	class Reader;
@@ -16,17 +17,14 @@ namespace Inspection
 	{
 	public:
 		~GetterRepository(void);
-		void RegisterHardcodedGetter(const std::vector< std::string > & ModulePath, const std::string & GetterName, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > Getter);
-		std::unique_ptr< Inspection::Result > Get(const std::vector< std::string > & ModulePath, const std::string & GetterName, Inspection::Reader & Reader);
+		std::unique_ptr< Inspection::Result > Get(const std::vector< std::string > & ModulePathParts, const std::string & GetterName, Inspection::Reader & Reader);
 	private:
-		Module * GetModule(const std::vector< std::string > & ModulePath);
+		GetterDescriptor * _GetOrLoadGetterDescriptor(const std::vector< std::string > & ModulePathParts, const std::string & GetterName);
 		Module * _GetOrLoadModule(const std::vector< std::string > & ModulePathParts);
 		std::map< std::string, Module * > _Modules;
 	};
 	
 	extern GetterRepository g_GetterRepository;
-	
-	void InitializeGetterRepository(void);
 }
 
 #endif
