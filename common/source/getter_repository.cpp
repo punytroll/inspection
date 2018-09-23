@@ -10,16 +10,6 @@ namespace Inspection
 {
 	Inspection::GetterRepository g_GetterRepository;
 	
-	void InitializeGetterRepository(void)
-	{
-		std::ifstream InputFileStream{"/home/moebius/projects/inspection/common/getters/ASCII.xml"};
-		XMLParser Parser{InputFileStream};
-		
-		Parser.Parse();
-		g_GetterRepository.RegisterHardcodedGetter(std::vector< std::string >{"ASCII"}, "String_Printable_EndedByTermination", Inspection::Get_ASCII_String_Printable_EndedByTermination);
-		g_GetterRepository.RegisterHardcodedGetter(std::vector< std::string >{"Buffers"}, "UnsignedInteger_8Bit_EndedByLength", Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength);
-	}
-
 	class GetterDescriptor
 	{
 	public:
@@ -62,6 +52,7 @@ namespace Inspection
 		
 		std::map< std::string, GetterDescriptor * > _GetterDescriptors;
 		std::map< std::string, Module * > _Modules;
+		std::string _Path;
 	};
 }
 
@@ -74,48 +65,68 @@ Inspection::GetterRepository::~GetterRepository(void)
 	}
 }
 
-void Inspection::GetterRepository::RegisterHardcodedGetter(const std::vector< std::string > & ModulePath, const std::string & GetterName, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > Getter)
+std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const std::vector< std::string > & ModulePathParts, const std::string & GetterName, Inspection::Reader & Reader)
 {
-	auto Module{_GetOrLoadModule(ModulePath)};
+	auto GetterDescriptor{_GetOrLoadGetterDescriptor(ModulePathParts, GetterName)};
 	
-	assert(Module != nullptr);
-	
-	auto GetterDescriptorIterator{Module->_GetterDescriptors.find(GetterName)};
-	
-	assert(GetterDescriptorIterator == Module->_GetterDescriptors.end());
-	
-	auto GetterDescriptor{new Inspection::GetterDescriptor{}};
-	
-	GetterDescriptor->SetHardcodedGetter(Getter);
-	Module->_GetterDescriptors.insert(std::make_pair(GetterName, GetterDescriptor));
-}
-
-std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const std::vector< std::string > & ModulePath, const std::string & GetterName, Inspection::Reader & Reader)
-{
-	auto Module{_GetOrLoadModule(ModulePath)};
-	
-	assert(Module != nullptr);
-	
-	auto GetterDescriptorIterator{Module->_GetterDescriptors.find(GetterName)};
-	
-	if(GetterDescriptorIterator != Module->_GetterDescriptors.end())
+	if(GetterDescriptor != nullptr)
 	{
-		return GetterDescriptorIterator->second->Get(Reader);
+		return GetterDescriptor->Get(Reader);
 	}
 	else
 	{
 		auto Result{Inspection::InitializeResult(Reader)};
-		
-		Result->GetValue()->AppendTag("error", "Could not find the getter \"" + GetterName + "\".");
+		Result->GetValue()->AppendTag("error", "Could not find/load the getter \"" + GetterName + "\".");
 		Inspection::FinalizeResult(Result, Reader);
 		
 		return Result;
 	}
 }
 
+Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDescriptor(const std::vector< std::string > & ModulePathParts, const std::string & GetterName)
+{
+	auto Module{_GetOrLoadModule(ModulePathParts)};
+	
+	assert(Module != nullptr);
+	
+	Inspection::GetterDescriptor * Result{nullptr};
+	auto GetterDescriptorIterator{Module->_GetterDescriptors.find(GetterName)};
+	
+	if(GetterDescriptorIterator != Module->_GetterDescriptors.end())
+	{
+		Result = GetterDescriptorIterator->second;
+	}
+	else
+	{
+		auto GetterPath{Module->_Path + '/' + GetterName + ".xml"};
+		
+		if((FileExists(GetterPath) == true) && (IsRegularFile(GetterPath) == true))
+		{
+			std::ifstream InputFileStream{GetterPath};
+			XMLParser Parser{InputFileStream};
+			
+			Parser.Parse();
+			if(GetterPath == "/home/moebius/projects/inspection/common/getters/ASCII/String_Printable_EndedByTermination.xml")
+			{
+				Result = new Inspection::GetterDescriptor{};
+				Result->SetHardcodedGetter(Inspection::Get_ASCII_String_Printable_EndedByTermination);
+				Module->_GetterDescriptors.insert(std::make_pair(GetterName, Result));
+			}
+			else if(GetterPath == "/home/moebius/projects/inspection/common/getters/Buffers/UnsignedInteger_8Bit_EndedByLength.xml")
+			{
+				Result = new Inspection::GetterDescriptor{};
+				Result->SetHardcodedGetter(Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength);
+				Module->_GetterDescriptors.insert(std::make_pair(GetterName, Result));
+			}
+		}
+	}
+	
+	return Result;
+}
+
 Inspection::Module * Inspection::GetterRepository::_GetOrLoadModule(const std::vector< std::string > & ModulePathParts)
 {
-	std::string ModulePath{"/home/moebius/projects/inspection/common/getters/"};
+	std::string ModulePath{"/home/moebius/projects/inspection/common/getters"};
 	Inspection::Module * Result{nullptr};
 	auto Modules{&_Modules};
 	
@@ -135,6 +146,7 @@ Inspection::Module * Inspection::GetterRepository::_GetOrLoadModule(const std::v
 			if((FileExists(ModulePath) == true) && (IsDirectory(ModulePath) == true))
 			{
 				Result = new Module();
+				Result->_Path = ModulePath;
 				Modules->insert(std::make_pair(ModulePathPart, Result));
 				Modules = &(Result->_Modules);
 			}

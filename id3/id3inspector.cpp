@@ -55,8 +55,6 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 
 int main(int argc, char **argv)
 {
-	Inspection::InitializeGetterRepository();
-	
 	std::deque< std::string > Paths;
 	unsigned int Arguments(argc);
 	unsigned int Argument(0);
