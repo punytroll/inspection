@@ -367,6 +367,12 @@ namespace Inspection
 		{
 		}
 		
+		~Buffer(void)
+		{
+			delete _BitstreamReader;
+			_BitstreamReader = nullptr;
+		}
+		
 		void SetBitstreamType(Inspection::Buffer::BitstreamType BitstreamType)
 		{
 			if(BitstreamType != _BitstreamType)
