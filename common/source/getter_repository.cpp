@@ -1,11 +1,6 @@
-#include <fstream>
-
 #include "file_handling.h"
 #include "getter_descriptor.h"
 #include "getter_repository.h"
-#include "getters.h"
-#include "not_implemented_exception.h"
-#include "xml_parser.h"
 
 namespace Inspection
 {
@@ -80,22 +75,9 @@ Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDes
 		
 		if((FileExists(GetterPath) == true) && (IsRegularFile(GetterPath) == true))
 		{
-			std::ifstream InputFileStream{GetterPath};
-			XMLParser Parser{InputFileStream};
-			
-			Parser.Parse();
-			if(GetterPath == "/home/moebius/projects/inspection/common/getters/ASCII/String_Printable_EndedByTermination.xml")
-			{
-				Result = new Inspection::GetterDescriptor{};
-				Result->SetHardcodedGetter(Inspection::Get_ASCII_String_Printable_EndedByTermination);
-				Module->_GetterDescriptors.insert(std::make_pair(GetterName, Result));
-			}
-			else if(GetterPath == "/home/moebius/projects/inspection/common/getters/Buffers/UnsignedInteger_8Bit_EndedByLength.xml")
-			{
-				Result = new Inspection::GetterDescriptor{};
-				Result->SetHardcodedGetter(Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength);
-				Module->_GetterDescriptors.insert(std::make_pair(GetterName, Result));
-			}
+			Result = new Inspection::GetterDescriptor{};
+			Result->LoadGetterDescription(GetterPath);
+			Module->_GetterDescriptors.insert(std::make_pair(GetterName, Result));
 		}
 	}
 	

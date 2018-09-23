@@ -13,6 +13,7 @@ namespace Inspection
 	{
 	public:
 		void SetHardcodedGetter(std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > HardcodedGetter);
+		void LoadGetterDescription(const std::string & GetterPath);
 		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader);
 	private:
 		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > _HardcodedGetter;
