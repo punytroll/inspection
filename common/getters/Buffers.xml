@@ -1,5 +1,0 @@
-<inspection>
-	<getter identifier="UnsignedInteger 8Bit EndedByLength">
-		<hardcoded-getter>Get_Buffer_UnsignedInteger_8Bit_EndedByLength</hardcoded-getter>
-	</getter>
-</inspection> 
