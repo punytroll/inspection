@@ -3,6 +3,7 @@
 
 #include <common/buffer.h>
 #include <common/file_handling.h>
+#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
 
@@ -54,6 +55,8 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 
 int main(int argc, char **argv)
 {
+	Inspection::InitializeGetterRepository();
+	
 	std::deque< std::string > Paths;
 	unsigned int Arguments(argc);
 	unsigned int Argument(0);
