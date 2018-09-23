@@ -20,7 +20,7 @@ namespace Inspection
 		std::unique_ptr< Inspection::Result > Get(const std::vector< std::string > & ModulePath, const std::string & GetterName, Inspection::Reader & Reader);
 	private:
 		Module * GetModule(const std::vector< std::string > & ModulePath);
-		Module * GetOrCreateModule(const std::vector< std::string > & ModulePath);
+		Module * _GetOrLoadModule(const std::vector< std::string > & ModulePathParts);
 		std::map< std::string, Module * > _Modules;
 	};
 	
