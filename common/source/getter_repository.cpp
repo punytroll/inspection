@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "file_handling.h"
+#include "getter_descriptor.h"
 #include "getter_repository.h"
 #include "getters.h"
 #include "not_implemented_exception.h"
@@ -9,29 +10,6 @@
 namespace Inspection
 {
 	Inspection::GetterRepository g_GetterRepository;
-	
-	class GetterDescriptor
-	{
-	public:
-		void SetHardcodedGetter(std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > HardcodedGetter)
-		{
-			_HardcodedGetter = HardcodedGetter;
-		}
-		
-		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader)
-		{
-			if(_HardcodedGetter != nullptr)
-			{
-				return _HardcodedGetter(Reader);
-			}
-			else
-			{
-				throw Inspection::NotImplementedException{"Only hard coded getters work."};
-			}
-		}
-	private:
-		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > _HardcodedGetter;
-	};
 
 	class Module
 	{
