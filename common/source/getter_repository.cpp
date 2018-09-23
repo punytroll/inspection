@@ -1,5 +1,10 @@
+#include <fstream>
+
+#include "file_handling.h"
 #include "getter_repository.h"
 #include "getters.h"
+#include "not_implemented_exception.h"
+#include "xml_parser.h"
 
 namespace Inspection
 {
@@ -7,39 +12,35 @@ namespace Inspection
 	
 	void InitializeGetterRepository(void)
 	{
-		g_GetterRepository.RegisterHardcodedGetter(std::vector< std::string >{"ASCII"}, "String Printable EndedByTermination", Inspection::Get_ASCII_String_Printable_EndedByTermination);
-		g_GetterRepository.RegisterHardcodedGetter(std::vector< std::string >{"Buffers"}, "UnsignedInteger 8Bit EndedByLength", Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength);
+		std::ifstream InputFileStream{"/home/moebius/projects/inspection/common/getters/ASCII.xml"};
+		XMLParser Parser{InputFileStream};
+		
+		Parser.Parse();
+		g_GetterRepository.RegisterHardcodedGetter(std::vector< std::string >{"ASCII"}, "String_Printable_EndedByTermination", Inspection::Get_ASCII_String_Printable_EndedByTermination);
+		g_GetterRepository.RegisterHardcodedGetter(std::vector< std::string >{"Buffers"}, "UnsignedInteger_8Bit_EndedByLength", Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength);
 	}
-	
-	class Getter
+
+	class GetterDescriptor
 	{
 	public:
-		virtual ~Getter(void) = default;
-		
-		virtual std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader) = 0;
-
-		bool GetSuccess(void) const
+		void SetHardcodedGetter(std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > HardcodedGetter)
 		{
-			return _Continue;
-		}
-	protected:
-		bool _Continue;
-	};
-
-	class HardcodedGetter : public Getter
-	{
-	public:
-		HardcodedGetter(std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > Getter) :
-			_Getter(Getter)
-		{
+			_HardcodedGetter = HardcodedGetter;
 		}
 		
-		virtual std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader) override
+		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader)
 		{
-			return _Getter(Reader);
+			if(_HardcodedGetter != nullptr)
+			{
+				return _HardcodedGetter(Reader);
+			}
+			else
+			{
+				throw Inspection::NotImplementedException{"Only hard coded getters work."};
+			}
 		}
 	private:
-		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > _Getter;
+		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > _HardcodedGetter;
 	};
 
 	class Module
@@ -52,22 +53,14 @@ namespace Inspection
 				delete ModulePair.second;
 				ModulePair.second = nullptr;
 			}
-			for(auto GetterPair : _Getters)
+			for(auto GetterDescriptorPair : _GetterDescriptors)
 			{
-				delete GetterPair.second;
-				GetterPair.second = nullptr;
+				delete GetterDescriptorPair.second;
+				GetterDescriptorPair.second = nullptr;
 			}
 		}
 		
-		void RegisterHardcodedGetter(const std::string & GetterName, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > Getter)
-		{
-			auto GetterIterator{_Getters.find(GetterName)};
-			
-			assert(GetterIterator == _Getters.end());
-			_Getters.insert(std::make_pair(GetterName, new HardcodedGetter(Getter)));
-		}
-		
-		std::map< std::string, Getter * > _Getters;
+		std::map< std::string, GetterDescriptor * > _GetterDescriptors;
 		std::map< std::string, Module * > _Modules;
 	};
 }
@@ -83,53 +76,53 @@ Inspection::GetterRepository::~GetterRepository(void)
 
 void Inspection::GetterRepository::RegisterHardcodedGetter(const std::vector< std::string > & ModulePath, const std::string & GetterName, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > Getter)
 {
-	auto Module{GetOrCreateModule(ModulePath)};
+	auto Module{_GetOrLoadModule(ModulePath)};
 	
 	assert(Module != nullptr);
-	Module->RegisterHardcodedGetter(GetterName, Getter);
+	
+	auto GetterDescriptorIterator{Module->_GetterDescriptors.find(GetterName)};
+	
+	assert(GetterDescriptorIterator == Module->_GetterDescriptors.end());
+	
+	auto GetterDescriptor{new Inspection::GetterDescriptor{}};
+	
+	GetterDescriptor->SetHardcodedGetter(Getter);
+	Module->_GetterDescriptors.insert(std::make_pair(GetterName, GetterDescriptor));
 }
 
 std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const std::vector< std::string > & ModulePath, const std::string & GetterName, Inspection::Reader & Reader)
 {
-	auto Module{GetModule(ModulePath)};
+	auto Module{_GetOrLoadModule(ModulePath)};
 	
-	if(Module != nullptr)
+	assert(Module != nullptr);
+	
+	auto GetterDescriptorIterator{Module->_GetterDescriptors.find(GetterName)};
+	
+	if(GetterDescriptorIterator != Module->_GetterDescriptors.end())
 	{
-		auto GetterIterator{Module->_Getters.find(GetterName)};
-		
-		if(GetterIterator != Module->_Getters.end())
-		{
-			return GetterIterator->second->Get(Reader);
-		}
-		else
-		{
-			auto Result{Inspection::InitializeResult(Reader)};
-			
-			Result->GetValue()->AppendTag("error", "Could not find the getter \"" + GetterName + "\".");
-			Inspection::FinalizeResult(Result, Reader);
-			
-			return Result;
-		}
+		return GetterDescriptorIterator->second->Get(Reader);
 	}
 	else
 	{
 		auto Result{Inspection::InitializeResult(Reader)};
 		
-		Result->GetValue()->AppendTag("error", "Could not find the module.");
-		Result->SetSuccess(false);
+		Result->GetValue()->AppendTag("error", "Could not find the getter \"" + GetterName + "\".");
 		Inspection::FinalizeResult(Result, Reader);
 		
 		return Result;
 	}
 }
 
-Inspection::Module * Inspection::GetterRepository::GetModule(const std::vector< std::string > & ModulePath)
+Inspection::Module * Inspection::GetterRepository::_GetOrLoadModule(const std::vector< std::string > & ModulePathParts)
 {
+	std::string ModulePath{"/home/moebius/projects/inspection/common/getters/"};
 	Inspection::Module * Result{nullptr};
 	auto Modules{&_Modules};
 	
-	for(auto ModulePathPart : ModulePath)
+	for(auto ModulePathPart : ModulePathParts)
 	{
+		ModulePath += '/' + ModulePathPart;
+		
 		auto ModuleIterator{Modules->find(ModulePathPart)};
 		
 		if(ModuleIterator != Modules->end())
@@ -139,34 +132,16 @@ Inspection::Module * Inspection::GetterRepository::GetModule(const std::vector< 
 		}
 		else
 		{
-			Result = nullptr;
-			
-			break;
-		}
-	}
-	
-	return Result;
-}
-
-Inspection::Module * Inspection::GetterRepository::GetOrCreateModule(const std::vector< std::string > & ModulePath)
-{
-	Inspection::Module * Result{nullptr};
-	auto Modules{&_Modules};
-	
-	for(auto ModulePathPart : ModulePath)
-	{
-		auto ModuleIterator{Modules->find(ModulePathPart)};
-		
-		if(ModuleIterator != Modules->end())
-		{
-			Result = ModuleIterator->second;
-			Modules = &(Result->_Modules);
-		}
-		else
-		{
-			Result = new Module();
-			Modules->insert(std::make_pair(ModulePathPart, Result));
-			Modules = &(Result->_Modules);
+			if((FileExists(ModulePath) == true) && (IsDirectory(ModulePath) == true))
+			{
+				Result = new Module();
+				Modules->insert(std::make_pair(ModulePathPart, Result));
+				Modules = &(Result->_Modules);
+			}
+			else
+			{
+				return nullptr;
+			}
 		}
 	}
 	
