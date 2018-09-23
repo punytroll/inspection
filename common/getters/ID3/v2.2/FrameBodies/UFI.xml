@@ -1,0 +1,28 @@
+<getter>
+	<part>
+		<getter>
+			<module>
+				<part>ASCII</part>
+			</module>
+			<identifier>String_Printable_EndedByTermination</identifier>
+		</getter>
+		<value>
+			<append>
+				<name>OwnerIdentifier</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<module>
+				<part>Buffers</part>
+			</module>
+			<identifier>UnsignedInteger_8Bit_EndedByLength</identifier>
+		</getter>
+		<value>
+			<append>
+				<name>Identifier</name>
+			</append>
+		</value>
+	</part>
+</getter>
