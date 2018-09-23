@@ -14,6 +14,8 @@ namespace Inspection
 	class Getter
 	{
 	public:
+		virtual ~Getter(void) = default;
+		
 		virtual std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader) = 0;
 
 		bool GetSuccess(void) const
@@ -43,6 +45,20 @@ namespace Inspection
 	class Module
 	{
 	public:
+		~Module(void)
+		{
+			for(auto ModulePair : _Modules)
+			{
+				delete ModulePair.second;
+				ModulePair.second = nullptr;
+			}
+			for(auto GetterPair : _Getters)
+			{
+				delete GetterPair.second;
+				GetterPair.second = nullptr;
+			}
+		}
+		
 		void RegisterHardcodedGetter(const std::string & GetterName, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > Getter)
 		{
 			auto GetterIterator{_Getters.find(GetterName)};
@@ -54,6 +70,15 @@ namespace Inspection
 		std::map< std::string, Getter * > _Getters;
 		std::map< std::string, Module * > _Modules;
 	};
+}
+
+Inspection::GetterRepository::~GetterRepository(void)
+{
+	for(auto ModulePair : _Modules)
+	{
+		delete ModulePair.second;
+		ModulePair.second = nullptr;
+	}
 }
 
 void Inspection::GetterRepository::RegisterHardcodedGetter(const std::vector< std::string > & ModulePath, const std::string & GetterName, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > Getter)

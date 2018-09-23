@@ -15,7 +15,7 @@ namespace Inspection
 	class GetterRepository
 	{
 	public:
-		void LoadFile(const std::string & FilePath);
+		~GetterRepository(void);
 		void RegisterHardcodedGetter(const std::vector< std::string > & ModulePath, const std::string & GetterName, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > Getter);
 		std::unique_ptr< Inspection::Result > Get(const std::vector< std::string > & ModulePath, const std::string & GetterName, Inspection::Reader & Reader);
 	private:
