@@ -41,6 +41,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_ContentDescriptionObjectData(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ASF_CreationDate(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_DataType(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_ContentDescriptor(Inspection::Reader & Reader);

@@ -1421,6 +1421,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CreationDate(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// interpreting
+	if(Continue == true)
+	{
+		auto CreationDate{std::experimental::any_cast< std::uint64_t >(Result->GetAny())};
+		
+		Result->GetValue()->AppendValue("DateTime", Inspection::Get_DateTime_FromMicrosoftFileTime(CreationDate));
+		Result->GetValue()->GetValue("DateTime")->AppendTag("date and time"s);
+		Result->GetValue()->GetValue("DateTime")->AppendTag("from Microsoft filetime"s);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -2091,99 +2122,112 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesObjectDa
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_GUID_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("FileID", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_GUID_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("FileID", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("FileSize", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("FileSize", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("CreationDate", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASF_CreationDate(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpreting
-	if(Continue == true)
-	{
-		auto CreationDate{std::experimental::any_cast< std::uint64_t >(Result->GetAny("CreationDate"))};
-		
-		Result->GetValue("CreationDate")->AppendValue("DateTime", Inspection::Get_DateTime_FromMicrosoftFileTime(CreationDate));
-		Result->GetValue("CreationDate")->GetValue("DateTime")->AppendTag("date and time"s);
-		Result->GetValue("CreationDate")->GetValue("DateTime")->AppendTag("from Microsoft filetime"s);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("CreationDate", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DataPacketsCount", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DataPacketsCount", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PlayDuration", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PlayDuration", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("SendDuration", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("SendDuration", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Preroll", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Preroll", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_FilePropertiesFlags(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASF_FilePropertiesFlags(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Flags", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("MinimumDataPacketSize", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("MinimumDataPacketSize", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("MaximumDataPacketSize", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("MaximumDataPacketSize", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("MaximumBitrate", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("MaximumBitrate", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
