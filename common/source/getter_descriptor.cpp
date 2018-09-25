@@ -195,9 +195,29 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
+				{
+					_HardcodedGetter = Inspection::Get_ASF_CreationDate;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
+				{
+					_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
 				{
 					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
+				{
+					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
 				}
 				else
 				{

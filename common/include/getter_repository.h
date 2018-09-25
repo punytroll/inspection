@@ -16,12 +16,13 @@ namespace Inspection
 	class GetterRepository
 	{
 	public:
+		GetterRepository(void);
 		~GetterRepository(void);
 		std::unique_ptr< Inspection::Result > Get(const std::vector< std::string > & ModulePathParts, const std::string & GetterName, Inspection::Reader & Reader);
 	private:
 		GetterDescriptor * _GetOrLoadGetterDescriptor(const std::vector< std::string > & ModulePathParts, const std::string & GetterName);
 		Module * _GetOrLoadModule(const std::vector< std::string > & ModulePathParts);
-		std::map< std::string, Module * > _Modules;
+		Module * _RootModule;
 	};
 	
 	extern GetterRepository g_GetterRepository;
