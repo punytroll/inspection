@@ -87,7 +87,7 @@ void XML::DOMReader::Text(const std::string & Text)
 	}
 	else
 	{
-		std::cerr << "Got text but stack is empty." << std::endl;
+		std::cerr << "Misformed XML: Got text \"" << Text << "\" outside of root element." << std::endl;
 		
 		throw std::domain_error("NoElement");
 	}
