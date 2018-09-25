@@ -29,13 +29,16 @@ namespace Inspection
 	};
 }
 
+Inspection::GetterRepository::GetterRepository(void) :
+	_RootModule{new Module{}}
+{
+	_RootModule->_Path = "/home/moebius/projects/inspection/common/getters";
+}
+
 Inspection::GetterRepository::~GetterRepository(void)
 {
-	for(auto ModulePair : _Modules)
-	{
-		delete ModulePair.second;
-		ModulePair.second = nullptr;
-	}
+	delete _RootModule;
+	_RootModule = nullptr;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const std::vector< std::string > & ModulePathParts, const std::string & GetterName, Inspection::Reader & Reader)
@@ -86,29 +89,26 @@ Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDes
 
 Inspection::Module * Inspection::GetterRepository::_GetOrLoadModule(const std::vector< std::string > & ModulePathParts)
 {
-	std::string ModulePath{"/home/moebius/projects/inspection/common/getters"};
-	Inspection::Module * Result{nullptr};
-	auto Modules{&_Modules};
+	Inspection::Module * Result{_RootModule};
 	
 	for(auto ModulePathPart : ModulePathParts)
 	{
-		ModulePath += '/' + ModulePathPart;
+		auto ModulePath{Result->_Path + '/' + ModulePathPart};
+		auto ModuleIterator{Result->_Modules.find(ModulePathPart)};
 		
-		auto ModuleIterator{Modules->find(ModulePathPart)};
-		
-		if(ModuleIterator != Modules->end())
+		if(ModuleIterator != Result->_Modules.end())
 		{
 			Result = ModuleIterator->second;
-			Modules = &(Result->_Modules);
 		}
 		else
 		{
 			if((FileExists(ModulePath) == true) && (IsDirectory(ModulePath) == true))
 			{
-				Result = new Module();
-				Result->_Path = ModulePath;
-				Modules->insert(std::make_pair(ModulePathPart, Result));
-				Modules = &(Result->_Modules);
+				auto NewModule{new Module{}};
+				
+				NewModule->_Path = ModulePath;
+				Result->_Modules.insert(std::make_pair(ModulePathPart, NewModule));
+				Result = NewModule;
 			}
 			else
 			{
