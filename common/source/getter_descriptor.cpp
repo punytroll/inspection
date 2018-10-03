@@ -211,6 +211,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_BitSet_16Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
 				{
 					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
@@ -218,6 +222,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
 				{
 					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Frame_Header_Identifier")
 				{
@@ -230,6 +238,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Identifier")
 				{
 					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Identifier;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Frame_Header_Identifier")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_4_Frame_Header_Identifier;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
 				{
