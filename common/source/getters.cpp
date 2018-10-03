@@ -9473,46 +9473,113 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 		
 		if(MajorVersion == 0x02)
 		{
-			Inspection::Reader PartReader{Reader, Size};
-			auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_2_Frame)};
-			
-			Continue = PartResult->GetSuccess();
-			for(auto PartValue : PartResult->GetValues())
+			// reading
+			if(Continue == true)
 			{
-				Result->GetValue()->AppendValue("Frame", PartValue);
+				Inspection::Reader PartReader{Reader, Size};
+				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_2_Frame)};
+				
+				Continue = PartResult->GetSuccess();
+				for(auto PartValue : PartResult->GetValues())
+				{
+					Result->GetValue()->AppendValue("Frame", PartValue);
+				}
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				Size -= PartReader.GetConsumedLength();
 			}
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
-			Size -= PartReader.GetConsumedLength();
+			// reading
+			if(Continue == true)
+			{
+				if(Size > Inspection::Length{0, 0})
+				{
+					Inspection::Reader PartReader{Reader, Size};
+					auto PartResult{Get_Bits_Unset_EndedByLength(PartReader)};
+					
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
+			}
+			// reading
+			if(Continue == false)
+			{
+				if(Size > Inspection::Length{0, 0})
+				{
+					Inspection::Reader PartReader{Reader, Size};
+					auto PartResult{Get_ID3_2_2_Frame(PartReader)};
+					
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendValue("Frame", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
+			}
 		}
 		else if(MajorVersion == 0x03)
 		{
-			if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
+			// reading
+			if(Continue == true)
 			{
-				throw Inspection::NotImplementedException("ID3 2.3 extended header");
+				if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
+				{
+					throw Inspection::NotImplementedException("ID3 2.3 extended header");
+				}
 			}
-			
-			Inspection::Reader PartReader{Reader, Size};
-			auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_3_Frame)};
-			
-			Continue = PartResult->GetSuccess();
-			for(auto PartValue : PartResult->GetValues())
+			// reading
+			if(Continue == true)
 			{
-				Result->GetValue()->AppendValue("Frame", PartValue);
+				Inspection::Reader PartReader{Reader, Size};
+				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_3_Frame)};
+				
+				Continue = PartResult->GetSuccess();
+				for(auto PartValue : PartResult->GetValues())
+				{
+					Result->GetValue()->AppendValue("Frame", PartValue);
+				}
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				Size -= PartReader.GetConsumedLength();
 			}
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
-			Size -= PartReader.GetConsumedLength();
+			// reading
+			if(Continue == true)
+			{
+				if(Size > Inspection::Length{0, 0})
+				{
+					Inspection::Reader FieldReader{Reader, Size};
+					auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
+					auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
+					
+					UpdateState(Continue, Reader, FieldResult, FieldReader);
+				}
+			}
+			// reading
+			if(Continue == false)
+			{
+				if(Size > Inspection::Length{0, 0})
+				{
+					Inspection::Reader PartReader{Reader, Size};
+					auto PartResult{Get_ID3_2_3_Frame(PartReader)};
+					
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendValue("Frame", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
+			}
 		}
 		else if(MajorVersion == 0x04)
 		{
-			if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
+			// reading
+			if(Continue == true)
 			{
-				Inspection::Reader FieldReader{Reader, Size};
-				auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader(FieldReader)};
-				auto FieldValue{Result->GetValue()->AppendValue("ExtendedHeader", FieldResult->GetValue())};
-				
-				UpdateState(Continue, Reader, FieldResult, FieldReader);
-				Size -= FieldReader.GetConsumedLength();
+				if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
+				{
+					Inspection::Reader FieldReader{Reader, Size};
+					auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader(FieldReader)};
+					auto FieldValue{Result->GetValue()->AppendValue("ExtendedHeader", FieldResult->GetValue())};
+					
+					UpdateState(Continue, Reader, FieldResult, FieldReader);
+					Size -= FieldReader.GetConsumedLength();
+				}
 			}
+			// reading
 			if(Continue == true)
 			{
 				Inspection::Reader PartReader{Reader, Size};
@@ -9526,22 +9593,43 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
 			}
+			// reading
+			if(Continue == true)
+			{
+				if(Size > Inspection::Length{0, 0})
+				{
+					Inspection::Reader FieldReader{Reader, Size};
+					auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
+					auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
+					
+					UpdateState(Continue, Reader, FieldResult, FieldReader);
+				}
+			}
+			// reading
+			if(Continue == false)
+			{
+				if(Size > Inspection::Length{0, 0})
+				{
+					Inspection::Reader PartReader{Reader, Size};
+					auto PartResult{Get_ID3_2_4_Frame(PartReader)};
+					
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendValue("Frame", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
+			}
 		}
 		else
 		{
 			Result->GetValue()->PrependTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
 			Continue = false;
 		}
-		// reading
+		// verification
 		if(Continue == true)
 		{
 			if(Size > Inspection::Length{0, 0})
 			{
-				Inspection::Reader FieldReader{Reader, Size};
-				auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
-				auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
-				
-				UpdateState(Continue, Reader, FieldResult, FieldReader);
+				Result->GetValue()->AppendTag("error", "There are " + to_string_cast(Size) + " bytes and bits remaining.");
 			}
 		}
 	}
