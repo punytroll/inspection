@@ -74,7 +74,7 @@ Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDes
 	}
 	else
 	{
-		auto GetterPath{Module->_Path + '/' + GetterName + ".xml"};
+		auto GetterPath{Module->_Path + '/' + GetterName + ".getter"};
 		
 		if((FileExists(GetterPath) == true) && (IsRegularFile(GetterPath) == true))
 		{
