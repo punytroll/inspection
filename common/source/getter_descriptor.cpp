@@ -44,8 +44,9 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 		auto Continue{true};
 		
 		// reading
-		for(auto PartDescriptor : _PartDescriptors)
+		for(auto PartDescriptorIndex = 0ul; (Continue == true) && (PartDescriptorIndex < _PartDescriptors.size()); ++PartDescriptorIndex)
 		{
+			auto PartDescriptor{_PartDescriptors[PartDescriptorIndex]};
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{g_GetterRepository.Get(PartDescriptor->GetterModuleParts, PartDescriptor->GetterIdentifier, PartReader)};
 			
@@ -210,6 +211,18 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
 				{
 					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Identifier")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Identifier;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
 				{
