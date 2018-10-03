@@ -157,6 +157,10 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 		
 		return OStream << StringStream.str();
 	}
+	else if(Any.type() == typeid(nullptr))
+	{
+		return OStream << "<nothing>";
+	}
 	else
 	{
 		return OStream << "<Unknown any type: " << Any.type().name() << '>';
