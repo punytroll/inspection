@@ -50,8 +50,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ASF_FileProperties_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Reader & Reader);
@@ -129,7 +128,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_PIC_PictureType(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_T__(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_UFI(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Header_Identifier(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Tag_Header_Flags(Inspection::Reader & Reader);
@@ -159,7 +157,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_USLT(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_W___(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_WXXX(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header_Identifier(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Reader & Reader);
