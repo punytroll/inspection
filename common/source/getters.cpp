@@ -9700,6 +9700,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
 					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Size -= PartReader.GetConsumedLength();
 				}
 			}
 			// reading
@@ -9713,6 +9714,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendValue("Frame", PartResult->GetValue());
 					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Size -= PartReader.GetConsumedLength();
 				}
 			}
 		}
@@ -9745,11 +9747,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			{
 				if(Size > Inspection::Length{0, 0})
 				{
-					Inspection::Reader FieldReader{Reader, Size};
-					auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
-					auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
+					Inspection::Reader PartReader{Reader, Size};
+					auto PartResult{Get_Bits_Unset_EndedByLength(PartReader)};
 					
-					UpdateState(Continue, Reader, FieldResult, FieldReader);
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Size -= PartReader.GetConsumedLength();
 				}
 			}
 			// reading
@@ -9763,6 +9767,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendValue("Frame", PartResult->GetValue());
 					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Size -= PartReader.GetConsumedLength();
 				}
 			}
 		}
@@ -9800,11 +9805,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			{
 				if(Size > Inspection::Length{0, 0})
 				{
-					Inspection::Reader FieldReader{Reader, Size};
-					auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
-					auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
+					Inspection::Reader PartReader{Reader, Size};
+					auto PartResult{Get_Bits_Unset_EndedByLength(PartReader)};
 					
-					UpdateState(Continue, Reader, FieldResult, FieldReader);
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Size -= PartReader.GetConsumedLength();
 				}
 			}
 			// reading
@@ -9818,6 +9825,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendValue("Frame", PartResult->GetValue());
 					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Size -= PartReader.GetConsumedLength();
 				}
 			}
 		}
