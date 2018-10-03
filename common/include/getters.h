@@ -50,8 +50,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_File(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesFlags(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASF_FilePropertiesObjectData(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ASF_FileProperties_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_HeaderObject(Inspection::Reader & Reader);
