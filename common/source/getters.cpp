@@ -276,7 +276,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_Ve
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("interpretation", "<unknown>"s);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Result->GetValue()->AppendTag("error", "Unknown version number " + to_string_cast(VersionNumber) + ".");
 			Continue = false;
 		}
@@ -1224,7 +1224,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("interpretation", "<no interpretation>"s);
+			Result->GetValue()->PrependTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -1532,7 +1532,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::R
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("interpretation", "<no interpretation>"s);
+			Result->GetValue()->PrependTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -2663,7 +2663,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("interpretation", "<no interpretation>"s);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -5969,7 +5969,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 			}
 			catch(Inspection::UnknownValueException & Exception)
 			{
-				Result->GetValue()->PrependTag("interpretation", "<unrecognized>"s);
+				Result->GetValue()->PrependTag("interpretation", nullptr);
 			}
 		}
 	}
@@ -7398,7 +7398,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(In
 		}
 		else
 		{
-			Result->GetValue("Information")->PrependTag("interpretation", "<unknown>"s);
+			Result->GetValue("Information")->PrependTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -7515,8 +7515,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TLAN(In
 		{
 			Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
 			Result->GetValue("Information")->PrependTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
-			Result->GetValue("Information")->PrependTag("interpretation", "<unkown>"s);
-			Continue = false;
+			Result->GetValue("Information")->PrependTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -7563,7 +7562,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TSRC(In
 			{
 				CountryCodeValue->PrependTag("standard", "ISRC Bulletin 2015/01"s);
 				CountryCodeValue->PrependTag("error", "The ISRC string needs to contain a two letter country code from ISO 3166-1 alpha-2."s);
-				CountryCodeValue->PrependTag("interpretation", "<unkown>"s);
+				CountryCodeValue->PrependTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -8941,7 +8940,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 				if(Code == "XXX")
 				{
 					Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
-					Result->GetValue()->PrependTag("interpretation", "<unknown>"s);
+					Result->GetValue()->PrependTag("interpretation", nullptr);
 				}
 				else
 				{
@@ -10060,7 +10059,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->PrependTag("interpretation", "<unknown GUID>"s);
+			Result->GetValue()->PrependTag("interpretation", nullptr);
 		}
 	}
 	// finalization
