@@ -10,6 +10,7 @@ These patterns need to spread to all getter implementations:
 7. "NoUpdateState": All calls to different versions of UpdateState should be replaced by the specific lines "Continue = PartResult->GetSuccess()" and "Reader.AdvancePosition(FieldReader.GetConsumedLength())". These two lines may need to be placed separatly instead of adjoint.
 8. "AdvanceAfterValue": Append the value and THEN advance the reader position.
 9. "NoLoops": Getters must not implement their own loops but defer to multi-purpose array getters.
+10. "NoLengthVerification": Getters which defer to other getters instead of accessing the Reader directly, should do no verification step on the available length.
 
 On the history of getters:
 ================================

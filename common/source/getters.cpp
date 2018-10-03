@@ -8803,15 +8803,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{10, 0}) == false)
-		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{10, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
