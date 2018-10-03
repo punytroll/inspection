@@ -34,35 +34,42 @@ Inspection::GetterDescriptor::~GetterDescriptor(void)
 
 std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspection::Reader & Reader)
 {
-	if(_HardcodedGetter != nullptr)
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
 	{
-		return _HardcodedGetter(Reader);
-	}
-	else
-	{
-		auto Result{Inspection::InitializeResult(Reader)};
-		auto Continue{true};
-		
-		// reading
-		for(auto PartDescriptorIndex = 0ul; (Continue == true) && (PartDescriptorIndex < _PartDescriptors.size()); ++PartDescriptorIndex)
+		if(_HardcodedGetter != nullptr)
 		{
-			auto PartDescriptor{_PartDescriptors[PartDescriptorIndex]};
-			Inspection::Reader PartReader{Reader};
-			auto PartResult{g_GetterRepository.Get(PartDescriptor->GetterModuleParts, PartDescriptor->GetterIdentifier, PartReader)};
+			auto HardcodedResult{_HardcodedGetter(Reader)};
 			
-			Continue = PartResult->GetSuccess();
-			if(PartDescriptor->ValueAppendType == Inspection::AppendType::Append)
-			{
-				Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
-			}
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			Continue = HardcodedResult->GetSuccess();
+			Result->SetValue(HardcodedResult->GetValue());
 		}
-		// finalization
-		Result->SetSuccess(Continue);
-		Inspection::FinalizeResult(Result, Reader);
-		
-		return Result;
+		else
+		{
+			// reading
+			for(auto PartDescriptorIndex = 0ul; (Continue == true) && (PartDescriptorIndex < _PartDescriptors.size()); ++PartDescriptorIndex)
+			{
+				auto PartDescriptor{_PartDescriptors[PartDescriptorIndex]};
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{g_GetterRepository.Get(PartDescriptor->GetterModuleParts, PartDescriptor->GetterIdentifier, PartReader)};
+				
+				Continue = PartResult->GetSuccess();
+				if(PartDescriptor->ValueAppendType == Inspection::AppendType::Append)
+				{
+					Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
+				}
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+			}
+		}
 	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
 }
 
 void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & GetterPath)
