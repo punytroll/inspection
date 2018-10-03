@@ -11,7 +11,8 @@ namespace Inspection
 {
 	enum class AppendType
 	{
-		Append
+		Append,
+		Set
 	};
 
 	class PartDescriptor
@@ -57,9 +58,20 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 				auto PartResult{g_GetterRepository.Get(PartDescriptor->GetterModuleParts, PartDescriptor->GetterIdentifier, PartReader)};
 				
 				Continue = PartResult->GetSuccess();
-				if(PartDescriptor->ValueAppendType == Inspection::AppendType::Append)
+				switch(PartDescriptor->ValueAppendType)
 				{
-					Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
+				case Inspection::AppendType::Append:
+					{
+						Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
+						
+						break;
+					}
+				case Inspection::AppendType::Set:
+					{
+						Result->SetValue(PartResult->GetValue());
+						
+						break;
+					}
 				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
@@ -176,6 +188,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 												}
 											}
 										}
+									}
+									else if(PartValueChildElement->GetName() == "set")
+									{
+										assert(PartValueChildElement->GetChilds().size() == 0);
+										PartDescriptor->ValueAppendType = Inspection::AppendType::Set;
 									}
 									else
 									{
