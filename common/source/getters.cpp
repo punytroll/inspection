@@ -7997,10 +7997,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_Frame_Header(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get(std::vector< std::string >{"ID3", "v2.4"}, "Frame_Header", PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -8577,42 +8579,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_WXXX(In
 	{
 		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_4_Frame_Header_Identifier(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_BitSet_16Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
 	}
