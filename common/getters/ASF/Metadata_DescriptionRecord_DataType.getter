@@ -11,7 +11,7 @@
 	<interpret>
 		<apply-enumeration>
 			<part>ASF</part>
-			<part>DataType</part>
+			<part>Metadata_DescriptionRecord_DataType</part>
 		</apply-enumeration>
 	</interpret>
 </getter>
