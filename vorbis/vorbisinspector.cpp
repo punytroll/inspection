@@ -30,7 +30,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 	// interpretation
 	if(Length == Inspection::Length{0, 0})
 	{
-		Result->GetValue()->AppendTag("interpretation", "OGG nil"s);
+		Result->GetValue()->AddTag("interpretation", "OGG nil"s);
 	}
 	else
 	{
@@ -54,7 +54,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 				auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
 				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 				
-				Result->GetValue()->AppendTag("interpretation", "OGG unknown"s);
+				Result->GetValue()->AddTag("interpretation", "OGG unknown"s);
 				UpdateState(Continue, Buffer, FieldResult, FieldReader);
 			}
 		}
@@ -235,7 +235,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 			auto FieldValue{Result->GetValue()->AppendValue("Packet", FieldResult->GetValue())};
 			
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
-			FieldValue->AppendTag("error", "The packet spans multiple pages, which is not yet supported."s);
+			FieldValue->AddTag("error", "The packet spans multiple pages, which is not yet supported."s);
 			Continue = false;
 		}
 	}
@@ -311,7 +311,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 		
 		if(PacketType == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Vorbis Audio"s);
+			Result->GetValue()->AddTag("interpretation", "Vorbis Audio"s);
 		}
 		else
 		{
@@ -413,19 +413,19 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::B
 		
 		if(Type == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Vorbis Identification Header"s);
+			Result->GetValue()->AddTag("interpretation", "Vorbis Identification Header"s);
 		}
 		else if(Type == 0x03)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Vorbis Comment Header"s);
+			Result->GetValue()->AddTag("interpretation", "Vorbis Comment Header"s);
 		}
 		else if(Type == 0x05)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Vorbis Setup Header"s);
+			Result->GetValue()->AddTag("interpretation", "Vorbis Setup Header"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "Unknown packet type " + to_string_cast(Type) + ".");
+			Result->GetValue()->AddTag("error", "Unknown packet type " + to_string_cast(Type) + ".");
 			Continue = false;
 		}
 	}

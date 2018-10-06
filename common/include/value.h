@@ -50,14 +50,14 @@ namespace Inspection
 			}
 		}
 		
-		std::shared_ptr< Value > AppendTag(std::shared_ptr< Value > Value)
+		std::shared_ptr< Value > AddTag(std::shared_ptr< Value > Value)
 		{
 			_Tags.push_back(Value);
 			
 			return Value;
 		}
 		
-		std::shared_ptr< Value > AppendTag(const std::string & Name)
+		std::shared_ptr< Value > AddTag(const std::string & Name)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
@@ -67,7 +67,7 @@ namespace Inspection
 			return Result;
 		}
 		
-		std::shared_ptr< Value > AppendTag(const std::string & Name, const std::experimental::any & Any)
+		std::shared_ptr< Value > AddTag(const std::string & Name, const std::experimental::any & Any)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
