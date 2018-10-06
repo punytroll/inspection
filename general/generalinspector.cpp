@@ -87,8 +87,8 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 {
 	auto ErrorValue{Value->AppendValue("error", "Unknown continuation."s)};
 	
-	ErrorValue->AppendTag("position", to_string_cast(Buffer.GetPosition()));
-	ErrorValue->AppendTag("length", to_string_cast(Buffer.GetLength()));
+	ErrorValue->AddTag("position", to_string_cast(Buffer.GetPosition()));
+	ErrorValue->AddTag("length", to_string_cast(Buffer.GetLength()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

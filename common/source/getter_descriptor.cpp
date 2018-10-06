@@ -145,7 +145,7 @@ void Inspection::GetterDescriptor::_ApplyEnumeration(Inspection::Enumeration * E
 		{
 			if(EnumerationElement->BaseValue == BaseValueString)
 			{
-				Target->AppendTag("interpretation", EnumerationElement->Interpretation);
+				Target->AddTag("interpretation", EnumerationElement->Interpretation);
 				Found = true;
 				
 				break;

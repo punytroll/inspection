@@ -59,7 +59,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const st
 	else
 	{
 		auto Result{Inspection::InitializeResult(Reader)};
-		Result->GetValue()->AppendTag("error", "Could not find/load the getter \"" + PathParts.back() + "\".");
+		Result->GetValue()->AddTag("error", "Could not find/load the getter \"" + PathParts.back() + "\".");
 		Inspection::FinalizeResult(Result, Reader);
 		
 		return Result;

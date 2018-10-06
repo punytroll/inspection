@@ -50,14 +50,14 @@ namespace Inspection
 			}
 		}
 		
-		std::shared_ptr< Value > AppendTag(std::shared_ptr< Value > Value)
+		std::shared_ptr< Value > AddTag(std::shared_ptr< Value > Value)
 		{
 			_Tags.push_back(Value);
 			
 			return Value;
 		}
 		
-		std::shared_ptr< Value > AppendTag(const std::string & Name)
+		std::shared_ptr< Value > AddTag(const std::string & Name)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
@@ -67,39 +67,13 @@ namespace Inspection
 			return Result;
 		}
 		
-		std::shared_ptr< Value > AppendTag(const std::string & Name, const std::experimental::any & Any)
+		std::shared_ptr< Value > AddTag(const std::string & Name, const std::experimental::any & Any)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
 			Result->SetAny(Any);
 			Result->SetName(Name);
 			_Tags.push_back(Result);
-			
-			return Result;
-		}
-		
-		void ClearTags(void)
-		{
-			_Tags.clear();
-		}
-		
-		std::shared_ptr< Value > PrependTag(const std::experimental::any & Any)
-		{
-			auto Result{std::make_shared< Inspection::Value >()};
-			
-			Result->SetAny(Any);
-			_Tags.push_front(Result);
-			
-			return Result;
-		}
-		
-		std::shared_ptr< Value > PrependTag(const std::string & Name, const std::experimental::any & Any)
-		{
-			auto Result{std::make_shared< Inspection::Value >()};
-			
-			Result->SetAny(Any);
-			Result->SetName(Name);
-			_Tags.push_front(Result);
 			
 			return Result;
 		}
@@ -138,19 +112,9 @@ namespace Inspection
 			return _Values.size();
 		}
 		
-		const Inspection::Length & GetLength(void) const
-		{
-			return _Length;
-		}
-		
 		const std::string & GetName(void) const
 		{
 			return _Name;
-		}
-		
-		const Inspection::Length & GetOffset(void) const
-		{
-			return _Offset;
 		}
 		
 		const std::list< std::shared_ptr< Inspection::Value > > & GetTags(void) const
@@ -202,25 +166,13 @@ namespace Inspection
 			_Any = Any;
 		}
 		
-		void SetLength(const Inspection::Length & Length)
-		{
-			_Length = Length;
-		}
-		
 		void SetName(const std::string & Name)
 		{
 			_Name = Name;
 		}
-		
-		void SetOffset(const Inspection::Length & Offset)
-		{
-			_Offset = Offset;
-		}
 	private:
 		std::experimental::any _Any;
-		Inspection::Length _Length;
 		std::string _Name;
-		Inspection::Length _Offset;
 		std::list< std::shared_ptr< Inspection::Value > > _Tags;
 		std::list< std::shared_ptr< Inspection::Value > > _Values;
 	};
