@@ -407,7 +407,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificField
 		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
 		
-		FieldValue->AppendTag("units", "bits per sample"s);
+		FieldValue->AddTag("units", "bits per sample"s);
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// finalization
@@ -438,7 +438,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspectio
 		
 		if(GUID == g_KSDATAFORMAT_SUBTYPE_PCM)
 		{
-			Result->GetValue()->AppendTag("interpretation", "KSDATAFORMAT_SUBTYPE_PCM"s);
+			Result->GetValue()->AddTag("interpretation", "KSDATAFORMAT_SUBTYPE_PCM"s);
 		}
 	}
 	// finalization

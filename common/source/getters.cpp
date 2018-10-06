@@ -45,8 +45,8 @@ std::shared_ptr< Inspection::Value > AppendLength(std::shared_ptr< Inspection::V
 	
 	Tag->SetName("length");
 	Tag->SetAny(Length);
-	Tag->AppendTag("unit", "bytes and bits"s);
-	Value->AppendTag(Tag);
+	Tag->AddTag("unit", "bytes and bits"s);
+	Value->AddTag(Tag);
 	
 	return Tag;
 }
@@ -121,28 +121,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 		const std::bitset<32> & TagsFlags{std::experimental::any_cast< const std::bitset<32> & >(Result->GetAny())};
 		auto FlagValue{Result->GetValue()->AppendValue("TagOrItemIsReadOnly", TagsFlags[0])};
 		
-		FlagValue->AppendTag("bit index", "0"s);
+		FlagValue->AddTag("bit index", "0"s);
 		if((TagsFlags[1] == false) && (TagsFlags[2] == false))
 		{
 			FlagValue = Result->GetValue()->AppendValue("ItemValueType", static_cast< std::uint8_t >(0));
-			FlagValue->AppendTag("interpretation", "Item contains text information coded in UTF-8"s);
+			FlagValue->AddTag("interpretation", "Item contains text information coded in UTF-8"s);
 		}
 		else if((TagsFlags[1] == true) && (TagsFlags[2] == false))
 		{
 			FlagValue = Result->GetValue()->AppendValue("ItemValueType", static_cast< std::uint8_t >(1));
-			FlagValue->AppendTag("interpretation", "Item contains binary information"s);
+			FlagValue->AddTag("interpretation", "Item contains binary information"s);
 		}
 		else if((TagsFlags[1] == false) && (TagsFlags[2] == true))
 		{
 			FlagValue = Result->GetValue()->AppendValue("ItemValueType", static_cast< std::uint8_t >(2));
-			FlagValue->AppendTag("interpretation", "Item is a locator of external stored information"s);
+			FlagValue->AddTag("interpretation", "Item is a locator of external stored information"s);
 		}
 		else if((TagsFlags[1] == true) && (TagsFlags[2] == true))
 		{
 			FlagValue = Result->GetValue()->AppendValue("ItemValueType", static_cast< std::uint8_t >(3));
-			FlagValue->AppendTag("interpretation", "<reserved>"s);
+			FlagValue->AddTag("interpretation", "<reserved>"s);
 		}
-		FlagValue->AppendTag("bit indices", "1 to 2"s);
+		FlagValue->AddTag("bit indices", "1 to 2"s);
 		
 		auto AllFalse{true};
 		
@@ -158,26 +158,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 		if(AllFalse == true)
 		{
 			FlagValue = Result->GetValue()->AppendValue("Undefined", false);
-			FlagValue->AppendTag("bit indices", "3 to 28"s);
+			FlagValue->AddTag("bit indices", "3 to 28"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "All bits 3 to 28 must be unset."s);
+			Result->GetValue()->AddTag("error", "All bits 3 to 28 must be unset."s);
 		}
 		FlagValue = Result->GetValue()->AppendValue("Type", TagsFlags[29]);
 		if(TagsFlags[29] == true)
 		{
-			FlagValue->AppendTag("interpretation", "This is the header, not the footer"s);
+			FlagValue->AddTag("interpretation", "This is the header, not the footer"s);
 		}
 		else
 		{
-			FlagValue->AppendTag("interpretation", "This is the footer, not the header"s);
+			FlagValue->AddTag("interpretation", "This is the footer, not the header"s);
 		}
-		FlagValue->AppendTag("bit index", 29);
+		FlagValue->AddTag("bit index", 29);
 		FlagValue = Result->GetValue()->AppendValue("TagContainsAFooter", TagsFlags[30]);
-		FlagValue->AppendTag("bit index", 30);
+		FlagValue->AddTag("bit index", 30);
 		FlagValue = Result->GetValue()->AppendValue("TagContainsAHeader", TagsFlags[31]);
-		FlagValue->AppendTag("bit index", 31);
+		FlagValue->AddTag("bit index", 31);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -268,16 +268,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_Ve
 		
 		if(VersionNumber == 1000)
 		{
-			Result->GetValue()->AppendTag("interpretation", "1.000 (old)"s);
+			Result->GetValue()->AddTag("interpretation", "1.000 (old)"s);
 		}
 		else if(VersionNumber == 2000)
 		{
-			Result->GetValue()->AppendTag("interpretation", "2.000 (new)"s);
+			Result->GetValue()->AddTag("interpretation", "2.000 (new)"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("interpretation", nullptr);
-			Result->GetValue()->AppendTag("error", "Unknown version number " + to_string_cast(VersionNumber) + ".");
+			Result->GetValue()->AddTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "Unknown version number " + to_string_cast(VersionNumber) + ".");
 			Continue = false;
 		}
 	}
@@ -347,8 +347,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("array"s);
-	Result->GetValue()->AppendTag("at least one element"s);
+	Result->GetValue()->AddTag("array"s);
+	Result->GetValue()->AddTag("at least one element"s);
 	// reading
 	if(Continue == true)
 	{
@@ -364,7 +364,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 			{
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Result->GetValue()->AppendValue(PartResult->GetValue());
-				PartResult->GetValue()->AppendTag("array index", ElementIndex++);
+				PartResult->GetValue()->AddTag("array index", ElementIndex++);
 			}
 			else
 			{
@@ -375,18 +375,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("ended by failure"s);
+			Result->GetValue()->AddTag("ended by failure"s);
 		}
 		if(ElementIndex == 0)
 		{
-			Result->GetValue()->AppendTag("error", "The array contains no elements, although at least one is required."s);
+			Result->GetValue()->AddTag("error", "The array contains no elements, although at least one is required."s);
 			Continue = false;
 		}
-		Result->GetValue()->AppendTag("number of elements", ElementIndex);
+		Result->GetValue()->AddTag("number of elements", ElementIndex);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -400,7 +400,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("array"s);
+	Result->GetValue()->AddTag("array"s);
 	// reading
 	if(Continue == true)
 	{
@@ -418,18 +418,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 				
 				auto FieldValue{Result->GetValue()->AppendValue(FieldResult->GetValue())};
 				
-				FieldValue->AppendTag("array index", ElementIndex++);
+				FieldValue->AddTag("array index", ElementIndex++);
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("ended by failure"s);
+			Result->GetValue()->AddTag("ended by failure"s);
 		}
-		Result->GetValue()->AppendTag("number of elements", ElementIndex);
+		Result->GetValue()->AddTag("number of elements", ElementIndex);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -443,7 +443,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("array"s);
+	Result->GetValue()->AddTag("array"s);
 	// reading
 	if(Continue == true)
 	{
@@ -458,18 +458,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 			
 			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
 			
-			ElementValue->AppendTag("array index", ElementIndex++);
+			ElementValue->AddTag("array index", ElementIndex++);
 			Reader.AdvancePosition(ElementReader.GetConsumedLength());
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("ended by failure"s);
+			Result->GetValue()->AddTag("ended by failure"s);
 		}
-		Result->GetValue()->AppendTag("number of elements", ElementIndex);
+		Result->GetValue()->AddTag("number of elements", ElementIndex);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -483,7 +483,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("array"s);
+	Result->GetValue()->AddTag("array"s);
 	// reading
 	if(Continue == true)
 	{
@@ -497,23 +497,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 				auto ElementResult{Getter(ElementReader)};
 				auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
 				
-				ElementValue->AppendTag("array index", ElementIndex++);
+				ElementValue->AddTag("array index", ElementIndex++);
 				UpdateState(Continue, Reader, ElementResult, ElementReader);
 				if(Continue == false)
 				{
-					Result->GetValue()->AppendTag("ended by failure"s);
+					Result->GetValue()->AddTag("ended by failure"s);
 					
 					break;
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by number of elements"s);
+				Result->GetValue()->AddTag("ended by number of elements"s);
 				
 				break;
 			}
 		}
-		Result->GetValue()->AppendTag("number of elements", NumberOfElements);
+		Result->GetValue()->AddTag("number of elements", NumberOfElements);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -527,7 +527,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("array"s);
+	Result->GetValue()->AddTag("array"s);
 	// reading
 	if(Continue == true)
 	{
@@ -541,22 +541,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 				auto FieldValue{Result->GetValue()->AppendValue(FieldResult->GetValue())};
 				
 				UpdateState(Continue, FieldResult);
-				FieldValue->AppendTag("array index", ElementIndex++);
+				FieldValue->AddTag("array index", ElementIndex++);
 				if(Continue == false)
 				{
-					Result->GetValue()->AppendTag("ended by failure"s);
+					Result->GetValue()->AddTag("ended by failure"s);
 					
 					break;
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by number of elements"s);
+				Result->GetValue()->AddTag("ended by number of elements"s);
 				
 				break;
 			}
 		}
-		Result->GetValue()->AppendTag("number of elements", NumberOfElements);
+		Result->GetValue()->AddTag("number of elements", NumberOfElements);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -575,7 +575,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic
 	{
 		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -610,7 +610,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	{
 		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -645,7 +645,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	{
 		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -675,15 +675,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ASCII"s);
-	Result->GetValue()->AppendTag("alphabetic"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("alphabetic"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -704,16 +704,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphabetic ASCII character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphabetic ASCII character.");
 				Continue = false;
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
-		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -728,15 +728,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ASCII"s);
-	Result->GetValue()->AppendTag("alphabetic"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("alphabetic"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{TemplateString.size(), 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be at least " + to_string_cast(Inspection::Length{TemplateString.size(), 0}) + ", the length of the template string.");
+			Result->GetValue()->AddTag("error", "The available length must be at least " + to_string_cast(Inspection::Length{TemplateString.size(), 0}) + ", the length of the template string.");
 			Continue = false;
 		}
 	}
@@ -757,16 +757,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphabetic ASCII character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphabetic ASCII character.");
 				Continue = false;
 			}
 		}
 		if(Continue == true)
 		{
-			Result->GetValue()->AppendTag("ended by template"s);
+			Result->GetValue()->AddTag("ended by template"s);
 		}
-		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -781,15 +781,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ASCII"s);
-	Result->GetValue()->AppendTag("alphanumeric"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("alphanumeric"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -810,16 +810,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
 				Continue = false;
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
-		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -834,15 +834,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ASCII"s);
-	Result->GetValue()->AppendTag("alphanumeric"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("alphanumeric"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{TemplateString.size(), 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be at least " + to_string_cast(Inspection::Length{TemplateString.size(), 0}) + ", the length of the template string.");
+			Result->GetValue()->AddTag("error", "The available length must be at least " + to_string_cast(Inspection::Length{TemplateString.size(), 0}) + ", the length of the template string.");
 			Continue = false;
 		}
 	}
@@ -863,8 +863,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
 				Continue = false;
 				
 				break;
@@ -872,9 +872,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 		}
 		if(Continue == true)
 		{
-			Result->GetValue()->AppendTag("ended by template"s);
+			Result->GetValue()->AddTag("ended by template"s);
 		}
-		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -889,15 +889,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ASCII"s);
-	Result->GetValue()->AppendTag("alphanumeric or space"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("alphanumeric or space"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -918,16 +918,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric or space ASCII character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric or space ASCII character.");
 				Continue = false;
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
-		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -942,15 +942,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ASCII"s);
-	Result->GetValue()->AppendTag("printable"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("printable"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -971,7 +971,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by invalid character '" + to_string_cast(Character) + '\'');
+				Result->GetValue()->AddTag("ended by invalid character '" + to_string_cast(Character) + '\'');
 				Reader.MoveBackPosition(Inspection::Length{1, 0});
 				
 				break;
@@ -979,9 +979,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
-		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -996,15 +996,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ASCII"s);
-	Result->GetValue()->AppendTag("printable"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("printable"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -1025,16 +1025,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
 				Continue = false;
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
-		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -1049,9 +1049,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ASCII"s);
-	Result->GetValue()->AppendTag("printables only"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("printables only"s);
 	//reading
 	if(Continue == true)
 	{
@@ -1064,8 +1064,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 			
 			if(Character == 0x00)
 			{
-				Result->GetValue()->AppendTag("ended by termination"s);
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag("ended by termination"s);
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 				
 				break;
 			}
@@ -1108,15 +1108,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEn
 		
 		if(UnsignedInteger16Bit == 0x0000)
 		{
-			Result->GetValue()->AppendTag("value", false);
+			Result->GetValue()->AddTag("value", false);
 		}
 		else if(UnsignedInteger16Bit == 0x0001)
 		{
-			Result->GetValue()->AppendTag("value", true);
+			Result->GetValue()->AddTag("value", true);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("value", nullptr);
+			Result->GetValue()->AddTag("value", nullptr);
 			Continue = false;
 		}
 	}
@@ -1147,15 +1147,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEn
 		
 		if(UnsignedInteger32Bit == 0x00000000)
 		{
-			Result->GetValue()->AppendTag("value", false);
+			Result->GetValue()->AddTag("value", false);
 		}
 		else if(UnsignedInteger32Bit == 0x00000001)
 		{
-			Result->GetValue()->AppendTag("value", true);
+			Result->GetValue()->AddTag("value", true);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("value", nullptr);
+			Result->GetValue()->AddTag("value", nullptr);
 			Continue = false;
 		}
 	}
@@ -1255,19 +1255,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 		
 		if(Type == 0x0001)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Video Codec"s);
+			Result->GetValue()->AddTag("interpretation", "Video Codec"s);
 		}
 		else if(Type == 0x0002)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Audio Codec"s);
+			Result->GetValue()->AddTag("interpretation", "Audio Codec"s);
 		}
 		else if(Type == 0xffff)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unknown Codec"s);
+			Result->GetValue()->AddTag("interpretation", "Unknown Codec"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -1485,8 +1485,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CreationDate(Inspectio
 		auto CreationDate{std::experimental::any_cast< std::uint64_t >(Result->GetAny())};
 		
 		Result->GetValue()->AppendValue("DateTime", Inspection::Get_DateTime_FromMicrosoftFileTime(CreationDate));
-		Result->GetValue()->GetValue("DateTime")->AppendTag("date and time"s);
-		Result->GetValue()->GetValue("DateTime")->AppendTag("from Microsoft filetime"s);
+		Result->GetValue()->GetValue("DateTime")->AddTag("date and time"s);
+		Result->GetValue()->GetValue("DateTime")->AddTag("from Microsoft filetime"s);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -1551,31 +1551,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::R
 		
 		if(DataType == 0x0000)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unicode string"s);
+			Result->GetValue()->AddTag("interpretation", "Unicode string"s);
 		}
 		else if(DataType == 0x0001)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Byte array"s);
+			Result->GetValue()->AddTag("interpretation", "Byte array"s);
 		}
 		else if(DataType == 0x0002)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Boolean"s);
+			Result->GetValue()->AddTag("interpretation", "Boolean"s);
 		}
 		else if(DataType == 0x0003)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 32bit"s);
+			Result->GetValue()->AddTag("interpretation", "Unsigned integer 32bit"s);
 		}
 		else if(DataType == 0x0004)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 64bit"s);
+			Result->GetValue()->AddTag("interpretation", "Unsigned integer 64bit"s);
 		}
 		else if(DataType == 0x0005)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 16bit"s);
+			Result->GetValue()->AddTag("interpretation", "Unsigned integer 16bit"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -1663,12 +1663,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 					auto GUID{Inspection::Get_GUID_FromString_WithCurlyBraces(String)};
 					
 					Result->GetValue()->AppendValue("GUID", GUID);
-					Result->GetValue("GUID")->AppendTag("guid"s);
-					Result->GetValue("GUID")->AppendTag("string"s);
+					Result->GetValue("GUID")->AddTag("guid"s);
+					Result->GetValue("GUID")->AddTag("string"s);
 					
 					auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
 					
-					Result->GetValue("GUID")->AppendTag("interpretation", GUIDInterpretation);
+					Result->GetValue("GUID")->AddTag("interpretation", GUIDInterpretation);
 				}
 			}
 		}
@@ -1690,7 +1690,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -1705,7 +1705,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -1726,14 +1726,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 						auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
 						
 						Result->GetValue()->AppendValue("DateTime", DateTime);
-						Result->GetValue("DateTime")->AppendTag("date and time"s);
-						Result->GetValue("DateTime")->AppendTag("from Microsoft filetime"s);
+						Result->GetValue("DateTime")->AddTag("date and time"s);
+						Result->GetValue("DateTime")->AddTag("from Microsoft filetime"s);
 					}
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -1748,13 +1748,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The type \"" + DataType + "\" is unknown.");
+			Result->GetValue()->AddTag("error", "The type \"" + DataType + "\" is unknown.");
 			Continue = false;
 		}
 	}
@@ -1849,7 +1849,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("StartTime", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "milliseconds"s);
+		FieldValue->AddTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1858,7 +1858,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("EndTime", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "milliseconds"s);
+		FieldValue->AddTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1867,7 +1867,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("DataBitrate", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "bits per second"s);
+		FieldValue->AddTag("unit", "bits per second"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1876,7 +1876,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("BufferSize", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "milliseconds"s);
+		FieldValue->AddTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1885,7 +1885,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("InitialBufferFullness", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "milliseconds"s);
+		FieldValue->AddTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1894,7 +1894,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateDataBitrate", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "bits per second"s);
+		FieldValue->AddTag("unit", "bits per second"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1903,7 +1903,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateBufferSize", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "milliseconds"s);
+		FieldValue->AddTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1912,7 +1912,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateInitialBufferFullness", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "milliseconds"s);
+		FieldValue->AddTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -2017,7 +2017,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_GUID(Inspection::Reade
 	{
 		auto GUIDInterpretation{Get_GUID_Interpretation(std::experimental::any_cast< Inspection::GUID >(Result->GetAny()))};
 		
-		Result->GetValue()->AppendTag("interpretation", GUIDInterpretation);
+		Result->GetValue()->AddTag("interpretation", GUIDInterpretation);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2399,7 +2399,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_IndexPlaceholderObject
 	{
 		if(Reader.GetRemainingLength() != Inspection::Length{10, 0})
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{10, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{10, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -2583,7 +2583,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -2598,7 +2598,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -2613,7 +2613,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -2628,7 +2628,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -2646,18 +2646,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 					auto GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetAny())};
 					auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
 					
-					Result->GetValue()->AppendTag("interpretation", GUIDInterpretation);
+					Result->GetValue()->AddTag("interpretation", GUIDInterpretation);
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{16, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{16, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The type \"" + DataType + "\" is unknown.");
+			Result->GetValue()->AddTag("error", "The type \"" + DataType + "\" is unknown.");
 			Continue = false;
 		}
 	}
@@ -2688,35 +2688,35 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		
 		if(DataType == 0x0000)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unicode string"s);
+			Result->GetValue()->AddTag("interpretation", "Unicode string"s);
 		}
 		else if(DataType == 0x0001)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Byte array"s);
+			Result->GetValue()->AddTag("interpretation", "Byte array"s);
 		}
 		else if(DataType == 0x0002)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Boolean"s);
+			Result->GetValue()->AddTag("interpretation", "Boolean"s);
 		}
 		else if(DataType == 0x0003)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 32bit"s);
+			Result->GetValue()->AddTag("interpretation", "Unsigned integer 32bit"s);
 		}
 		else if(DataType == 0x0004)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 64bit"s);
+			Result->GetValue()->AddTag("interpretation", "Unsigned integer 64bit"s);
 		}
 		else if(DataType == 0x0005)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 16bit"s);
+			Result->GetValue()->AddTag("interpretation", "Unsigned integer 16bit"s);
 		}
 		else if(DataType == 0x0006)
 		{
-			Result->GetValue()->AppendTag("interpretation", "GUID"s);
+			Result->GetValue()->AddTag("interpretation", "GUID"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -2864,7 +2864,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -2879,7 +2879,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -2894,7 +2894,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
@@ -2909,13 +2909,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
+				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
 				Continue = false;
 			}
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The type \"" + DataType + "\" is unknown.");
+			Result->GetValue()->AddTag("error", "The type \"" + DataType + "\" is unknown.");
 			Continue = false;
 		}
 	}
@@ -3319,8 +3319,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("AudioMedia"s);
-	Result->GetValue()->AppendTag("WAVEFORMATEX"s);
+	Result->GetValue()->AddTag("AudioMedia"s);
+	Result->GetValue()->AddTag("WAVEFORMATEX"s);
 	// reading
 	if(Continue == true)
 	{
@@ -3359,7 +3359,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BlockAlignment", FieldResult->GetValue())};
 		
-		FieldValue->AppendTag("unit", "bytes"s);
+		FieldValue->AddTag("unit", "bytes"s);
 		UpdateState(Continue, FieldResult);
 	}
 	// reading
@@ -3376,7 +3376,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificDataSize", FieldResult->GetValue())};
 		
-		FieldValue->AppendTag("unit", "bytes"s);
+		FieldValue->AddTag("unit", "bytes"s);
 		UpdateState(Continue, FieldResult);
 	}
 	// reading
@@ -3418,7 +3418,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	{
 		if(Reader.GetRemainingLength() != Inspection::Length{10, 0})
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{10, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{10, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -3590,7 +3590,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Set_EndedByLength(Ins
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("set data"s);
+	Result->GetValue()->AddTag("set data"s);
 	// reading
 	if(Continue == true)
 	{
@@ -3615,7 +3615,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_EndedByLen
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("any data"s);
+	Result->GetValue()->AddTag("any data"s);
 	Reader.AdvancePosition(Reader.GetRemainingLength());
 	AppendLength(Result->GetValue(), Reader.GetConsumedLength());
 	// finalization
@@ -3630,7 +3630,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("unset data"s);
+	Result->GetValue()->AddTag("unset data"s);
 	// reading
 	if(Continue == true)
 	{
@@ -3646,7 +3646,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 	}
 	else
 	{
-		Result->GetValue()->AppendTag("error", "Of the requested " + to_string_cast(Reader.GetCompleteLength()) + " bytes and bits, only " + to_string_cast(Reader.GetConsumedLength()) + " could be read as unset data.");
+		Result->GetValue()->AddTag("error", "Of the requested " + to_string_cast(Reader.GetCompleteLength()) + " bytes and bits, only " + to_string_cast(Reader.GetConsumedLength()) + " could be read as unset data.");
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3668,7 +3668,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_UntilByteAlignm
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
-		Result->GetValue()->AppendTag("until byte alignment"s);
+		Result->GetValue()->AddTag("until byte alignment"s);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3682,15 +3682,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignifican
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("bitset"s);
-	Result->GetValue()->AppendTag("4bit"s);
-	Result->GetValue()->AppendTag("most significant bit first"s);
+	Result->GetValue()->AddTag("bitset"s);
+	Result->GetValue()->AddTag("4bit"s);
+	Result->GetValue()->AddTag("most significant bit first"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 4}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 4}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 4}) + ".");
 			Continue = false;
 		}
 	}
@@ -3705,7 +3705,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignifican
 		Value[2] = (Byte1 & 0x02) == 0x02;
 		Value[3] = (Byte1 & 0x01) == 0x01;
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1});
+		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1});
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3719,15 +3719,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Re
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("bitset"s);
-	Result->GetValue()->AppendTag("8bit"s);
-	Result->GetValue()->AppendTag("least significant bit first"s);
+	Result->GetValue()->AddTag("bitset"s);
+	Result->GetValue()->AddTag("8bit"s);
+	Result->GetValue()->AddTag("least significant bit first"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 8}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
 			Continue = false;
 		}
 	}
@@ -3746,7 +3746,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Re
 		Value[6] = (Byte1 & 0x40) == 0x40;
 		Value[7] = (Byte1 & 0x80) == 0x80;
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1});
+		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1});
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3760,16 +3760,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Ins
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("bitset"s);
-	Result->GetValue()->AppendTag("16bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
-	Result->GetValue()->AppendTag("least significant bit first per byte"s);
+	Result->GetValue()->AddTag("bitset"s);
+	Result->GetValue()->AddTag("16bit"s);
+	Result->GetValue()->AddTag("big endian"s);
+	Result->GetValue()->AddTag("least significant bit first per byte"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 16}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
 			Continue = false;
 		}
 	}
@@ -3799,7 +3799,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Ins
 		Value[6] = (Byte2 & 0x40) == 0x40;
 		Value[7] = (Byte2 & 0x80) == 0x80;
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1, Byte2});
+		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1, Byte2});
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3813,16 +3813,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("bitset"s);
-	Result->GetValue()->AppendTag("16bit"s);
-	Result->GetValue()->AppendTag("little endian"s);
-	Result->GetValue()->AppendTag("least significant bit first per byte"s);
+	Result->GetValue()->AddTag("bitset"s);
+	Result->GetValue()->AddTag("16bit"s);
+	Result->GetValue()->AddTag("little endian"s);
+	Result->GetValue()->AddTag("least significant bit first per byte"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 16}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
 			Continue = false;
 		}
 	}
@@ -3852,7 +3852,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(
 		Value[14] = (Byte2 & 0x40) == 0x40;
 		Value[15] = (Byte2 & 0x80) == 0x80;
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1, Byte2});
+		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1, Byte2});
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3866,16 +3866,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("bitset"s);
-	Result->GetValue()->AppendTag("32bit"s);
-	Result->GetValue()->AppendTag("little endian"s);
-	Result->GetValue()->AppendTag("least significant bit first per byte"s);
+	Result->GetValue()->AddTag("bitset"s);
+	Result->GetValue()->AddTag("32bit"s);
+	Result->GetValue()->AddTag("little endian"s);
+	Result->GetValue()->AddTag("least significant bit first per byte"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 32}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
 			Continue = false;
 		}
 	}
@@ -3927,7 +3927,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(
 		Value[30] = (Byte4 & 0x40) == 0x40;
 		Value[31] = (Byte4 & 0x80) == 0x80;
 		Result->GetValue()->SetAny(Value);
-		Result->GetValue()->AppendTag("data", std::vector< std::uint8_t >{Byte1, Byte2, Byte3, Byte4});
+		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1, Byte2, Byte3, Byte4});
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3941,14 +3941,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Boolean_1Bit(Inspection::R
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("boolean"s);
-	Result->GetValue()->AppendTag("1bit"s);
+	Result->GetValue()->AddTag("boolean"s);
+	Result->GetValue()->AddTag("1bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 1}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
 			Continue = false;
 		}
 	}
@@ -3971,16 +3971,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("buffer"s);
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("8bit values"s);
+	Result->GetValue()->AddTag("buffer"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("8bit values"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -4008,17 +4008,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("buffer"s);
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("8bit values"s);
-	Result->GetValue()->AppendTag("zeroed");
+	Result->GetValue()->AddTag("buffer"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("8bit values"s);
+	Result->GetValue()->AddTag("zeroed");
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -4034,7 +4034,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 			Value.push_back(Byte);
 			if(Byte != 0x00)
 			{
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(Value.size()) + "th byte was not zeroed.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(Value.size()) + "th byte was not zeroed.");
 				Continue = false;
 			}
 		}
@@ -4068,7 +4068,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
 		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 		
-		Result->GetValue("RegisteredApplicationIdentifier")->AppendTag("bytes", FieldResult->GetAny());
+		Result->GetValue("RegisteredApplicationIdentifier")->AddTag("bytes", FieldResult->GetAny());
 		UpdateState(Continue, FieldResult);
 	}
 	// reading
@@ -4081,7 +4081,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 		if(Continue == true)
 		{
 			Reader.AdvancePosition(FieldReader.GetConsumedLength());
-			Result->GetValue("RegisteredApplicationIdentifier")->AppendTag("string interpretation", FieldResult->GetAny());
+			Result->GetValue("RegisteredApplicationIdentifier")->AddTag("string interpretation", FieldResult->GetAny());
 		}
 	}
 	// reading
@@ -4120,7 +4120,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 		
 		if(NumberOfChannelsByStream != NumberOfChannelsByFrame)
 		{
-			Result->GetValue()->AppendTag("error", "The number of channels from the stream (" + to_string_cast(NumberOfChannelsByStream) + ") does not match the number of channels from the frame (" + to_string_cast(NumberOfChannelsByFrame) + ").");
+			Result->GetValue()->AddTag("error", "The number of channels from the stream (" + to_string_cast(NumberOfChannelsByStream) + ") does not match the number of channels from the frame (" + to_string_cast(NumberOfChannelsByFrame) + ").");
 			Continue = false;
 		}
 	}
@@ -4238,11 +4238,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(BlockingStrategy == 0x00)
 		{
-			BlockingStrategyValue->AppendTag("interpretation", "fixed-blocksize stream; frame header encodes the frame number"s);
+			BlockingStrategyValue->AddTag("interpretation", "fixed-blocksize stream; frame header encodes the frame number"s);
 		}
 		else if(BlockingStrategy == 0x01)
 		{
-			BlockingStrategyValue->AppendTag("interpretation", "variable-blocksize stream; frame header encodes the sample number"s);
+			BlockingStrategyValue->AddTag("interpretation", "variable-blocksize stream; frame header encodes the sample number"s);
 		}
 		else
 		{
@@ -4264,32 +4264,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(BlockSize == 0x00)
 		{
-			Result->GetValue("BlockSize")->AppendTag("reserved"s);
-			Result->GetValue("BlockSize")->AppendTag("error", "The block size 0 MUST NOT be used."s);
+			Result->GetValue("BlockSize")->AddTag("reserved"s);
+			Result->GetValue("BlockSize")->AddTag("error", "The block size 0 MUST NOT be used."s);
 			Continue = false;
 		}
 		else if(BlockSize == 0x01)
 		{
-			Result->GetValue("BlockSize")->AppendTag("value", static_cast< std::uint16_t >(192));
-			Result->GetValue("BlockSize")->AppendTag("unit", "samples"s);
+			Result->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(192));
+			Result->GetValue("BlockSize")->AddTag("unit", "samples"s);
 		}
 		else if((BlockSize > 0x01) && (BlockSize <= 0x05))
 		{
-			Result->GetValue("BlockSize")->AppendTag("value", static_cast< std::uint16_t >(576 * (1 << (BlockSize - 2))));
-			Result->GetValue("BlockSize")->AppendTag("unit", "samples"s);
+			Result->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(576 * (1 << (BlockSize - 2))));
+			Result->GetValue("BlockSize")->AddTag("unit", "samples"s);
 		}
 		else if(BlockSize == 0x06)
 		{
-			Result->GetValue("BlockSize")->AppendTag("interpretation", "get 8bit (blocksize - 1) from end of header"s);
+			Result->GetValue("BlockSize")->AddTag("interpretation", "get 8bit (blocksize - 1) from end of header"s);
 		}
 		else if(BlockSize == 0x07)
 		{
-			Result->GetValue("BlockSize")->AppendTag("interpretation", "get 16bit (blocksize - 1) from end of header"s);
+			Result->GetValue("BlockSize")->AddTag("interpretation", "get 16bit (blocksize - 1) from end of header"s);
 		}
 		else if((BlockSize > 0x07) && (BlockSize < 0x10))
 		{
-			Result->GetValue("BlockSize")->AppendTag("value", static_cast< std::uint16_t >(256 * (1 << (BlockSize - 8))));
-			Result->GetValue("BlockSize")->AppendTag("unit", "samples"s);
+			Result->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(256 * (1 << (BlockSize - 8))));
+			Result->GetValue("BlockSize")->AddTag("unit", "samples"s);
 		}
 		else
 		{
@@ -4319,55 +4319,55 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(ChannelAssignment < 0x08)
 		{
-			Result->GetValue("ChannelAssignment")->AppendTag("value", static_cast< std::uint8_t >(ChannelAssignment + 1));
-			Result->GetValue("ChannelAssignment")->AppendTag("interpretation", "independent channels"s);
+			Result->GetValue("ChannelAssignment")->AddTag("value", static_cast< std::uint8_t >(ChannelAssignment + 1));
+			Result->GetValue("ChannelAssignment")->AddTag("interpretation", "independent channels"s);
 			switch(ChannelAssignment)
 			{
 			case 0:
 				{
-					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "mono"s);
+					Result->GetValue("ChannelAssignment")->AddTag("assignment", "mono"s);
 					
 					break;
 				}
 			case 1:
 				{
-					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "left, right"s);
+					Result->GetValue("ChannelAssignment")->AddTag("assignment", "left, right"s);
 					
 					break;
 				}
 			case 2:
 				{
-					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "left, right, center"s);
+					Result->GetValue("ChannelAssignment")->AddTag("assignment", "left, right, center"s);
 					
 					break;
 				}
 			case 3:
 				{
-					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, back left, back right"s);
+					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, back left, back right"s);
 					
 					break;
 				}
 			case 4:
 				{
-					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, front center, back/surround left, back/surround right"s);
+					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, front center, back/surround left, back/surround right"s);
 					
 					break;
 				}
 			case 5:
 				{
-					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, front center, LFE, back/surround left, back/surround right"s);
+					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, front center, LFE, back/surround left, back/surround right"s);
 					
 					break;
 				}
 			case 6:
 				{
-					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, front center, LFE, back center, side left, side right"s);
+					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, front center, LFE, back center, side left, side right"s);
 					
 					break;
 				}
 			case 7:
 				{
-					Result->GetValue("ChannelAssignment")->AppendTag("assignment", "front left, front right, front center, LFE, back left, back right, side left, side right"s);
+					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, front center, LFE, back left, back right, side left, side right"s);
 					
 					break;
 				}
@@ -4379,26 +4379,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		}
 		else if(ChannelAssignment == 0x08)
 		{
-			Result->GetValue("ChannelAssignment")->AppendTag("value", static_cast< std::uint8_t >(2));
-			Result->GetValue("ChannelAssignment")->AppendTag("interpretation", "left/side stereo"s);
-			Result->GetValue("ChannelAssignment")->AppendTag("assignment", "channel 0 is the left channel, channel 1 is the side (difference) channel"s);
+			Result->GetValue("ChannelAssignment")->AddTag("value", static_cast< std::uint8_t >(2));
+			Result->GetValue("ChannelAssignment")->AddTag("interpretation", "left/side stereo"s);
+			Result->GetValue("ChannelAssignment")->AddTag("assignment", "channel 0 is the left channel, channel 1 is the side (difference) channel"s);
 		}
 		else if(ChannelAssignment == 0x09)
 		{
-			Result->GetValue("ChannelAssignment")->AppendTag("value", static_cast< std::uint8_t >(2));
-			Result->GetValue("ChannelAssignment")->AppendTag("interpretation", "right/side stereo"s);
-			Result->GetValue("ChannelAssignment")->AppendTag("assignment", "channel 0 is the side (difference) channel, channel 1 is the right channel"s);
+			Result->GetValue("ChannelAssignment")->AddTag("value", static_cast< std::uint8_t >(2));
+			Result->GetValue("ChannelAssignment")->AddTag("interpretation", "right/side stereo"s);
+			Result->GetValue("ChannelAssignment")->AddTag("assignment", "channel 0 is the side (difference) channel, channel 1 is the right channel"s);
 		}
 		else if(ChannelAssignment == 0x0a)
 		{
-			Result->GetValue("ChannelAssignment")->AppendTag("value", static_cast< std::uint8_t >(2));
-			Result->GetValue("ChannelAssignment")->AppendTag("interpretation", "mid/side stereo"s);
-			Result->GetValue("ChannelAssignment")->AppendTag("assignment", "channel 0 is the mid (average) channel, channel 1 is the side (difference) channel"s);
+			Result->GetValue("ChannelAssignment")->AddTag("value", static_cast< std::uint8_t >(2));
+			Result->GetValue("ChannelAssignment")->AddTag("interpretation", "mid/side stereo"s);
+			Result->GetValue("ChannelAssignment")->AddTag("assignment", "channel 0 is the mid (average) channel, channel 1 is the side (difference) channel"s);
 		}
 		else
 		{
-			Result->GetValue("ChannelAssignment")->AppendTag("reserved"s);
-			Result->GetValue("ChannelAssignment")->AppendTag("error", "The channel assignment " + to_string_cast(ChannelAssignment) + " MUST NOT be used.");
+			Result->GetValue("ChannelAssignment")->AddTag("reserved"s);
+			Result->GetValue("ChannelAssignment")->AddTag("error", "The channel assignment " + to_string_cast(ChannelAssignment) + " MUST NOT be used.");
 			Continue = false;
 		}
 	}
@@ -4418,43 +4418,43 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(SampleSize == 0x00)
 		{
-			SampleSizeValue->AppendTag("interpretation", "get from STREAMINFO metadata block"s);
+			SampleSizeValue->AddTag("interpretation", "get from STREAMINFO metadata block"s);
 		}
 		else if(SampleSize == 0x01)
 		{
-			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(8));
-			SampleSizeValue->AppendTag("unit", "bits"s);
+			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(8));
+			SampleSizeValue->AddTag("unit", "bits"s);
 		}
 		else if(SampleSize == 0x02)
 		{
-			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(12));
-			SampleSizeValue->AppendTag("unit", "bits"s);
+			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(12));
+			SampleSizeValue->AddTag("unit", "bits"s);
 		}
 		else if(SampleSize == 0x03)
 		{
-			SampleSizeValue->AppendTag("reserved"s);
-			SampleSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
+			SampleSizeValue->AddTag("reserved"s);
+			SampleSizeValue->AddTag("error", "The block size 0 MUST NOT be used."s);
 			Continue = false;
 		}
 		else if(SampleSize == 0x04)
 		{
-			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(16));
-			SampleSizeValue->AppendTag("unit", "bits"s);
+			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(16));
+			SampleSizeValue->AddTag("unit", "bits"s);
 		}
 		else if(SampleSize == 0x05)
 		{
-			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(24));
-			SampleSizeValue->AppendTag("unit", "bits"s);
+			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(24));
+			SampleSizeValue->AddTag("unit", "bits"s);
 		}
 		else if(SampleSize == 0x06)
 		{
-			SampleSizeValue->AppendTag("value", static_cast< std::uint8_t >(32));
-			SampleSizeValue->AppendTag("unit", "bits"s);
+			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(32));
+			SampleSizeValue->AddTag("unit", "bits"s);
 		}
 		else if(SampleSize == 0x07)
 		{
-			SampleSizeValue->AppendTag("reserved"s);
-			SampleSizeValue->AppendTag("error", "The block size 0 MUST NOT be used."s);
+			SampleSizeValue->AddTag("reserved"s);
+			SampleSizeValue->AddTag("error", "The block size 0 MUST NOT be used."s);
 			Continue = false;
 		}
 		else
@@ -4491,7 +4491,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "Unknown blocking strategy value " + to_string_cast(BlockingStrategy) + ".");
+			Result->GetValue()->AddTag("error", "Unknown blocking strategy value " + to_string_cast(BlockingStrategy) + ".");
 			Continue = false;
 		}
 	}
@@ -4511,8 +4511,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			{
 				auto BlockSizeValue{Result->GetValue("BlockSize")};
 				
-				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny("BlockSizeExplicit")) + 1));
-				BlockSizeValue->AppendTag("unit", "samples"s);
+				BlockSizeValue->AddTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny("BlockSizeExplicit")) + 1));
+				BlockSizeValue->AddTag("unit", "samples"s);
 			}
 		}
 		else if(BlockSize == 0x07)
@@ -4526,8 +4526,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			{
 				auto BlockSizeValue{Result->GetValue("BlockSize")};
 				
-				BlockSizeValue->AppendTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint16_t >(Result->GetAny("BlockSizeExplicit")) + 1));
-				BlockSizeValue->AppendTag("unit", "samples"s);
+				BlockSizeValue->AddTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint16_t >(Result->GetAny("BlockSizeExplicit")) + 1));
+				BlockSizeValue->AddTag("unit", "samples"s);
 			}
 		}
 	}
@@ -4584,79 +4584,79 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header_SampleRa
 		
 		if(SampleRate == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "get from STREAMINFO metadata block"s);
+			Result->GetValue()->AddTag("interpretation", "get from STREAMINFO metadata block"s);
 		}
 		else if(SampleRate == 0x01)
 		{
-			Result->GetValue()->AppendTag("value", 88.2f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 88.2f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x02)
 		{
-			Result->GetValue()->AppendTag("value", 176.4f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 176.4f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x03)
 		{
-			Result->GetValue()->AppendTag("value", 192.0f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 192.0f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x04)
 		{
-			Result->GetValue()->AppendTag("value", 8.0f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 8.0f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x05)
 		{
-			Result->GetValue()->AppendTag("value", 16.0f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 16.0f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x06)
 		{
-			Result->GetValue()->AppendTag("value", 22.05f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 22.05f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x07)
 		{
-			Result->GetValue()->AppendTag("value", 24.0f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 24.0f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x08)
 		{
-			Result->GetValue()->AppendTag("value", 32.0f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 32.0f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x09)
 		{
-			Result->GetValue()->AppendTag("value", 44.1f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 44.1f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x0A)
 		{
-			Result->GetValue()->AppendTag("value", 48.0f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 48.0f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x0B)
 		{
-			Result->GetValue()->AppendTag("value", 96.0f);
-			Result->GetValue()->AppendTag("unit", "kHz"s);
+			Result->GetValue()->AddTag("value", 96.0f);
+			Result->GetValue()->AddTag("unit", "kHz"s);
 		}
 		else if(SampleRate == 0x0C)
 		{
-			Result->GetValue()->AppendTag("interpretation", "get 8 bit sample rate (in kHz) from end of header"s);
+			Result->GetValue()->AddTag("interpretation", "get 8 bit sample rate (in kHz) from end of header"s);
 		}
 		else if(SampleRate == 0x0D)
 		{
-			Result->GetValue()->AppendTag("interpretation", "get 16 bit sample rate (in Hz) from end of header"s);
+			Result->GetValue()->AddTag("interpretation", "get 16 bit sample rate (in Hz) from end of header"s);
 		}
 		else if(SampleRate == 0x0E)
 		{
-			Result->GetValue()->AppendTag("interpretation", "get 16 bit smaple rate (in tens of Hz) from end of header"s);
+			Result->GetValue()->AddTag("interpretation", "get 16 bit smaple rate (in tens of Hz) from end of header"s);
 		}
 		else if(SampleRate == 0x0F)
 		{
-			Result->GetValue()->AppendTag("interpretation", "invalid, to prevent sync-fooling string of 1s"s);
-			Result->GetValue()->AppendTag("error", "The sample rate MUST NOT be a value of 16."s);
+			Result->GetValue()->AddTag("interpretation", "invalid, to prevent sync-fooling string of 1s"s);
+			Result->GetValue()->AddTag("error", "The sample rate MUST NOT be a value of 16."s);
 			Continue = false;
 		}
 	}
@@ -4806,39 +4806,39 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(In
 		
 		if(NumericValue == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "StreamInfo"s);
+			Result->GetValue()->AddTag("interpretation", "StreamInfo"s);
 		}
 		else if(NumericValue == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Padding"s);
+			Result->GetValue()->AddTag("interpretation", "Padding"s);
 		}
 		else if(NumericValue == 0x02)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Application"s);
+			Result->GetValue()->AddTag("interpretation", "Application"s);
 		}
 		else if(NumericValue == 0x03)
 		{
-			Result->GetValue()->AppendTag("interpretation", "SeekTable"s);
+			Result->GetValue()->AddTag("interpretation", "SeekTable"s);
 		}
 		else if(NumericValue == 0x04)
 		{
-			Result->GetValue()->AppendTag("interpretation", "VorbisComment"s);
+			Result->GetValue()->AddTag("interpretation", "VorbisComment"s);
 		}
 		else if(NumericValue == 0x05)
 		{
-			Result->GetValue()->AppendTag("interpretation", "CueSheet"s);
+			Result->GetValue()->AddTag("interpretation", "CueSheet"s);
 		}
 		else if(NumericValue == 0x06)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Picture"s);
+			Result->GetValue()->AddTag("interpretation", "Picture"s);
 		}
 		else if(NumericValue == 0xff)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Invalid"s);
+			Result->GetValue()->AddTag("interpretation", "Invalid"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("interpretation", "Reserved"s);
+			Result->GetValue()->AddTag("interpretation", "Reserved"s);
 		}
 	}
 	// finalization
@@ -4868,87 +4868,87 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_PictureT
 		
 		if(PictureType == 0)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Other"s);
+			Result->GetValue()->AddTag("interpretation", "Other"s);
 		}
 		else if(PictureType == 1)
 		{
-			Result->GetValue()->AppendTag("interpretation", "32x32 pixels 'file icon' (PNG only)"s);
+			Result->GetValue()->AddTag("interpretation", "32x32 pixels 'file icon' (PNG only)"s);
 		}
 		else if(PictureType == 2)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Other file icon"s);
+			Result->GetValue()->AddTag("interpretation", "Other file icon"s);
 		}
 		else if(PictureType == 3)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Cover (front)"s);
+			Result->GetValue()->AddTag("interpretation", "Cover (front)"s);
 		}
 		else if(PictureType == 4)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Cover (back)"s);
+			Result->GetValue()->AddTag("interpretation", "Cover (back)"s);
 		}
 		else if(PictureType == 5)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Leaflet page"s);
+			Result->GetValue()->AddTag("interpretation", "Leaflet page"s);
 		}
 		else if(PictureType == 6)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Media (e.g. label side of CD"s);
+			Result->GetValue()->AddTag("interpretation", "Media (e.g. label side of CD"s);
 		}
 		else if(PictureType == 7)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Lead artist/lead performer/soloist"s);
+			Result->GetValue()->AddTag("interpretation", "Lead artist/lead performer/soloist"s);
 		}
 		else if(PictureType == 8)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Artist/performer"s);
+			Result->GetValue()->AddTag("interpretation", "Artist/performer"s);
 		}
 		else if(PictureType == 9)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Conductor"s);
+			Result->GetValue()->AddTag("interpretation", "Conductor"s);
 		}
 		else if(PictureType == 10)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Band/Orchestra"s);
+			Result->GetValue()->AddTag("interpretation", "Band/Orchestra"s);
 		}
 		else if(PictureType == 11)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Composer"s);
+			Result->GetValue()->AddTag("interpretation", "Composer"s);
 		}
 		else if(PictureType == 12)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Lyricist/text writer"s);
+			Result->GetValue()->AddTag("interpretation", "Lyricist/text writer"s);
 		}
 		else if(PictureType == 13)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Recording Location"s);
+			Result->GetValue()->AddTag("interpretation", "Recording Location"s);
 		}
 		else if(PictureType == 14)
 		{
-			Result->GetValue()->AppendTag("interpretation", "During recording"s);
+			Result->GetValue()->AddTag("interpretation", "During recording"s);
 		}
 		else if(PictureType == 15)
 		{
-			Result->GetValue()->AppendTag("interpretation", "During performance"s);
+			Result->GetValue()->AddTag("interpretation", "During performance"s);
 		}
 		else if(PictureType == 16)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Movie/video screen capture"s);
+			Result->GetValue()->AddTag("interpretation", "Movie/video screen capture"s);
 		}
 		else if(PictureType == 17)
 		{
-			Result->GetValue()->AppendTag("interpretation", "A bright coloured fish"s);
+			Result->GetValue()->AddTag("interpretation", "A bright coloured fish"s);
 		}
 		else if(PictureType == 18)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Illustration"s);
+			Result->GetValue()->AddTag("interpretation", "Illustration"s);
 		}
 		else if(PictureType == 19)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Band/artist logotype"s);
+			Result->GetValue()->AddTag("interpretation", "Band/artist logotype"s);
 		}
 		else if(PictureType == 20)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Publisher/Studio logotype"s);
+			Result->GetValue()->AddTag("interpretation", "Publisher/Studio logotype"s);
 		}
 		else
 		{
@@ -5234,7 +5234,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The BlockType of the meta data block is not \"StreamInfo\"."s);
+			Result->GetValue()->AddTag("error", "The BlockType of the meta data block is not \"StreamInfo\"."s);
 			Continue = false;
 		}
 	}
@@ -5261,7 +5261,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsP
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
+		Result->GetValue()->AddTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -5370,7 +5370,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Numbe
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
+		Result->GetValue()->AddTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -5489,11 +5489,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 		
 		if(QuantizedLinearPredictorCoefficientsPrecision < 15)
 		{
-			Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AppendTag("value", static_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecision + 1));
+			Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AddTag("value", static_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecision + 1));
 		}
 		else
 		{
-			Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AppendTag("error", "The percision MUST NOT be 15."s);
+			Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AddTag("error", "The percision MUST NOT be 15."s);
 			Continue = false;
 		}
 	}
@@ -5601,7 +5601,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				FieldValue->AppendTag("Rice"s);
+				FieldValue->AddTag("Rice"s);
 			}
 		}
 		else if(CodingMethod == 0x01)
@@ -5612,7 +5612,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				FieldValue->AppendTag("Rice2"s);
+				FieldValue->AddTag("Rice2"s);
 			}
 		}
 		else
@@ -5648,16 +5648,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Cod
 		
 		if(CodingMethod == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "partitioned Rice coding with 4-bit Rice parameter"s);
+			Result->GetValue()->AddTag("interpretation", "partitioned Rice coding with 4-bit Rice parameter"s);
 		}
 		else if(CodingMethod == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "partitioned Rice coding with 5-bit Rice parameter"s);
+			Result->GetValue()->AddTag("interpretation", "partitioned Rice coding with 5-bit Rice parameter"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("interpretation", "<reserved>"s);
-			Result->GetValue()->AppendTag("error", "This coding method MUST NOT be used for the residual."s);
+			Result->GetValue()->AddTag("interpretation", "<reserved>"s);
+			Result->GetValue()->AddTag("error", "This coding method MUST NOT be used for the residual."s);
 			Continue = false;
 		}
 	}
@@ -5685,7 +5685,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	{
 		auto NumberOfPartitions{static_cast< std::uint16_t >(1 << std::experimental::any_cast< std::uint8_t >(Result->GetAny("PartitionOrder")))};
 		
-		Result->GetValue("PartitionOrder")->AppendTag("number of partitions", NumberOfPartitions);
+		Result->GetValue("PartitionOrder")->AddTag("number of partitions", NumberOfPartitions);
 	}
 	// reading
 	if(Continue == true)
@@ -5788,7 +5788,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 		{
 		case 0:
 			{
-				Result->GetValue()->AppendTag("interpretation", "SUBFRAME_LPC"s);
+				Result->GetValue()->AddTag("interpretation", "SUBFRAME_LPC"s);
 				
 				auto FieldResult{Get_UnsignedInteger_5Bit(Reader)};
 				auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
@@ -5799,14 +5799,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 				{
 					auto Order{std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny())};
 					
-					FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order + 1));
+					FieldValue->AddTag("value", static_cast< std::uint8_t >(Order + 1));
 				}
 				
 				break;
 			}
 		case 2:
 			{
-				Result->GetValue()->AppendTag("interpretation", "SUBFRAME_FIXED"s);
+				Result->GetValue()->AddTag("interpretation", "SUBFRAME_FIXED"s);
 				
 				auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
 				auto FieldValue{Result->GetValue()->AppendValue("Order", FieldResult->GetValue())};
@@ -5817,11 +5817,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 				{
 					auto Order{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny())};
 					
-					FieldValue->AppendTag("value", static_cast< std::uint8_t >(Order));
+					FieldValue->AddTag("value", static_cast< std::uint8_t >(Order));
 					if(Order >= 5)
 					{
-						Result->GetValue()->AppendTag("reserved");
-						Result->GetValue()->AppendTag("error", "The subframe type is SUBFRAME_FIXED, and the order " + to_string_cast(Order) + " MUST NOT be used.");
+						Result->GetValue()->AddTag("reserved");
+						Result->GetValue()->AddTag("error", "The subframe type is SUBFRAME_FIXED, and the order " + to_string_cast(Order) + " MUST NOT be used.");
 						Continue = false;
 					}
 				}
@@ -5832,8 +5832,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 		case 3:
 		case 4:
 			{
-				Result->GetValue()->AppendTag("reserved"s);
-				Result->GetValue()->AppendTag("error", "This subframe type MUST NOT be used."s);
+				Result->GetValue()->AddTag("reserved"s);
+				Result->GetValue()->AddTag("error", "This subframe type MUST NOT be used."s);
 				Continue = false;
 				
 				break;
@@ -5844,7 +5844,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 			}
 		case 6:
 			{
-				Result->GetValue()->AppendTag("interpretation", "SUBFRAME_CONSTANT"s);
+				Result->GetValue()->AddTag("interpretation", "SUBFRAME_CONSTANT"s);
 				
 				break;
 			}
@@ -5876,16 +5876,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 	{
 		if(Reader.Has(Inspection::Length{16, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{16, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{16, 0}) + ".");
 			Continue = false;
 		}
 	}
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("guid"s);
-		Result->GetValue()->AppendTag("binary"s);
-		Result->GetValue()->AppendTag("little endian"s);
+		Result->GetValue()->AddTag("guid"s);
+		Result->GetValue()->AddTag("binary"s);
+		Result->GetValue()->AddTag("little endian"s);
 		
 		GUID Value;
 		
@@ -6026,8 +6026,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 		{
 			auto Genre{Inspection::Get_ID3_1_Genre(GenreNumber)};
 			
-			Result->GetValue()->AppendTag("interpretation", Genre);
-			Result->GetValue()->AppendTag("standard", "ID3v1"s);
+			Result->GetValue()->AddTag("interpretation", Genre);
+			Result->GetValue()->AddTag("standard", "ID3v1"s);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
@@ -6035,12 +6035,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 			{
 				auto Genre{Inspection::Get_ID3_1_Winamp_Genre(GenreNumber)};
 				
-				Result->GetValue()->AppendTag("interpretation", Genre);
-				Result->GetValue()->AppendTag("standard", "Winamp extension"s);
+				Result->GetValue()->AddTag("interpretation", Genre);
+				Result->GetValue()->AddTag("standard", "Winamp extension"s);
 			}
 			catch(Inspection::UnknownValueException & Exception)
 			{
-				Result->GetValue()->AppendTag("interpretation", nullptr);
+				Result->GetValue()->AddTag("interpretation", nullptr);
 			}
 		}
 	}
@@ -6114,7 +6114,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
+			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
@@ -6127,15 +6127,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->AppendTag("error", "The frame size is claimed larger than the actually handled size."s);
-			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->AppendTag("error", "The frame size is claimed smaller than the actually handled size."s);
-			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
@@ -6263,19 +6263,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_Ima
 		
 		if(ImageFormat == "-->")
 		{
-			Result->GetValue()->AppendTag("mime-type", "application/x-url"s);
+			Result->GetValue()->AddTag("mime-type", "application/x-url"s);
 		}
 		else if(ImageFormat == "PNG")
 		{
-			Result->GetValue()->AppendTag("mime-type", "image/png"s);
+			Result->GetValue()->AddTag("mime-type", "image/png"s);
 		}
 		else if(ImageFormat == "JPG")
 		{
-			Result->GetValue()->AppendTag("mime-type", "image/jpeg"s);
+			Result->GetValue()->AddTag("mime-type", "image/jpeg"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("mime-type", nullptr);
+			Result->GetValue()->AddTag("mime-type", nullptr);
 		}
 	}
 	// finalization
@@ -6301,18 +6301,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_Pic
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
+		Result->GetValue()->AddTag("standard", "ID3 2.2"s);
 		
 		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		try
 		{
-			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
+			Result->GetValue()->AddTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->AppendTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -6374,7 +6374,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_TCO(Ins
 		
 		if(std::get<0>(Interpretation) == true)
 		{
-			Result->GetValue("Information")->AppendTag("interpretation", std::get<1>(Interpretation));
+			Result->GetValue("Information")->AddTag("interpretation", std::get<1>(Interpretation));
 		}
 	}
 	// finalization
@@ -6465,21 +6465,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Header_Ident
 		
 		try
 		{
-			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
-			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_2_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", Get_ID3_2_2_FrameIdentifier_Interpretation(Identifier));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Identifier == "TCP")
 			{
-				Result->GetValue()->AppendTag("standard", "<from the internet>"s);
-				Result->GetValue()->AppendTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
-				Result->GetValue()->AppendTag("interpretation", "Compilation"s);
+				Result->GetValue()->AddTag("standard", "<from the internet>"s);
+				Result->GetValue()->AddTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
+				Result->GetValue()->AddTag("interpretation", "Compilation"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "Unknown frame identifier \"" + Identifier + "\".");
-				Result->GetValue()->AppendTag("interpretation", nullptr);
+				Result->GetValue()->AddTag("error", "Unknown frame identifier \"" + Identifier + "\".");
+				Result->GetValue()->AddTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -6501,7 +6501,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspectio
 	{
 		if(Reader.Has(Inspection::Length{3, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -6526,8 +6526,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspectio
 			Result->SetValue(Alternative2Result->GetValue());
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-				Result->GetValue()->AppendTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+				Result->GetValue()->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+				Result->GetValue()->AddTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 			}
 		}
 	}
@@ -6557,16 +6557,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(I
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
-		Flag->AppendTag("bit index", 7);
+		Flag->AddTag("bit index", 7);
 		Flag = Result->GetValue()->AppendValue("Compression", Flags[6]);
-		Flag->AppendTag("bit index", 6);
+		Flag->AddTag("bit index", 6);
 		Flag = Result->GetValue()->AppendValue("Reserved", false);
-		Flag->AppendTag("bit index", 5);
-		Flag->AppendTag("bit index", 4);
-		Flag->AppendTag("bit index", 3);
-		Flag->AppendTag("bit index", 2);
-		Flag->AppendTag("bit index", 1);
-		Flag->AppendTag("bit index", 0);
+		Flag->AddTag("bit index", 5);
+		Flag->AddTag("bit index", 4);
+		Flag->AddTag("bit index", 3);
+		Flag->AddTag("bit index", 2);
+		Flag->AddTag("bit index", 1);
+		Flag->AddTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 5; ++FlagIndex)
 		{
 			Continue ^= ~Flags[FlagIndex];
@@ -6595,24 +6595,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextEncoding(Inspe
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
+		Result->GetValue()->AddTag("standard", "ID3 2.2"s);
 		
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->AppendTag("standard", "ISO/IEC 8859-1:1998"s);
-			Result->GetValue()->AppendTag("name", "Latin alphabet No. 1"s);
+			Result->GetValue()->AddTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AddTag("name", "Latin alphabet No. 1"s);
 		}
 		else if(TextEncoding == 0x01)
 		{
-			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AppendTag("name", "UCS-2"s);
+			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AddTag("name", "UCS-2"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is unknown.");
-			Result->GetValue()->AppendTag("name", nullptr);
+			Result->GetValue()->AddTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is unknown.");
+			Result->GetValue()->AddTag("name", nullptr);
 			Continue = false;
 		}
 	}
@@ -6647,7 +6647,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "Could not read text with text encoding " + to_string_cast(TextEncoding) + ".");
+			Result->GetValue()->AddTag("error", "Could not read text with text encoding " + to_string_cast(TextEncoding) + ".");
 			Continue = false;
 		}
 	}
@@ -6682,7 +6682,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "Could not read text with text encoding " + to_string_cast(TextEncoding) + ".");
+			Result->GetValue()->AddTag("error", "Could not read text with text encoding " + to_string_cast(TextEncoding) + ".");
 			Continue = false;
 		}
 	}
@@ -6868,7 +6868,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
+			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
@@ -6881,15 +6881,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->AppendTag("error", "The frame size is claimed larger than the actually handled size."s);
-			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->AppendTag("error", "The frame size is claimed smaller than the actually handled size."s);
-			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
@@ -6992,18 +6992,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC_Pi
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
+		Result->GetValue()->AddTag("standard", "ID3 2.3"s);
 		
 		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		try
 		{
-			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
+			Result->GetValue()->AddTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->AppendTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 		
@@ -7127,7 +7127,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB_MI
 		/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
 		if(Continue == false)
 		{
-			Result->GetValue()->AppendTag("error", "This field could not be interpreted as a terminated ASCII string of printable characters."s);
+			Result->GetValue()->AddTag("error", "This field could not be interpreted as a terminated ASCII string of printable characters."s);
 		}
 	}
 	// finalization
@@ -7163,7 +7163,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(In
 			if(Continue == true)
 			{
 				Result->GetValue()->AppendValue("String", Alternative2Result->GetValue());
-				Result->GetValue("String")->AppendTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
+				Result->GetValue("String")->AddTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
 			}
 		}
 	}
@@ -7188,8 +7188,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
-			Result->GetValue("Counter")->AppendTag("standard", "ID3 2.3"s);
-			Result->GetValue("Counter")->AppendTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+			Result->GetValue("Counter")->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Continue = false;
 		}
 		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
@@ -7205,7 +7205,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
-			Result->GetValue("Counter")->AppendTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Result->GetValue("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			Continue = false;
 		}
 	}
@@ -7235,7 +7235,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
 		
-		FieldValue->AppendTag("standard", "ID3 2.3"s);
+		FieldValue->AddTag("standard", "ID3 2.3"s);
 		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
@@ -7245,11 +7245,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		
 		if(Rating > 0)
 		{
-			Result->GetValue("Rating")->AppendTag("interpretation", to_string_cast(Rating) + " / 255");
+			Result->GetValue("Rating")->AddTag("interpretation", to_string_cast(Rating) + " / 255");
 		}
 		else
 		{
-			Result->GetValue("Rating")->AppendTag("interpretation", nullptr);
+			Result->GetValue("Rating")->AddTag("interpretation", nullptr);
 		}
 	}
 	// reading
@@ -7260,7 +7260,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			auto FieldValue{std::make_shared< Inspection::Value >()};
 			
 			FieldValue->SetName("Counter");
-			FieldValue->AppendTag("omitted"s);
+			FieldValue->AddTag("omitted"s);
 			Result->GetValue()->AppendValue(FieldValue);
 		}
 		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
@@ -7268,8 +7268,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue("Counter")->AppendTag("standard", "ID3 2.3"s);
-			Result->GetValue("Counter")->AppendTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+			Result->GetValue("Counter")->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -7285,7 +7285,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue("Counter")->AppendTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Result->GetValue("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -7505,15 +7505,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(In
 		
 		if(Information == "1")
 		{
-			Result->GetValue("Information")->AppendTag("interpretation", "yes, this is part of a comilation"s);
+			Result->GetValue("Information")->AddTag("interpretation", "yes, this is part of a comilation"s);
 		}
 		else if(Information == "0")
 		{
-			Result->GetValue("Information")->AppendTag("interpretation", "no, this is not part of a compilation"s);
+			Result->GetValue("Information")->AddTag("interpretation", "no, this is not part of a compilation"s);
 		}
 		else
 		{
-			Result->GetValue("Information")->AppendTag("interpretation", nullptr);
+			Result->GetValue("Information")->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -7544,7 +7544,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCON(In
 		
 		if(std::get<0>(Interpretation) == true)
 		{
-			Result->GetValue("Information")->AppendTag("interpretation", std::get<1>(Interpretation));
+			Result->GetValue("Information")->AddTag("interpretation", std::get<1>(Interpretation));
 		}
 	}
 	// finalization
@@ -7570,25 +7570,25 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TFLT(In
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue("Information")->AppendTag("standard", "ID3 2.3"s);
+		Result->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
 		
 		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
 		
 		try
 		{
-			Result->GetValue("Information")->AppendTag("interpretation", Get_ID3_2_3_FileType_Interpretation(Information));
+			Result->GetValue("Information")->AddTag("interpretation", Get_ID3_2_3_FileType_Interpretation(Information));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Information == "/3")
 			{
-				Result->GetValue("Information")->AppendTag("error", "The file type could not be interpreted strictly according to the standard, but this seems plausible."s);
-				Result->GetValue("Information")->AppendTag("interpretation", "MPEG 1/2 layer III");
+				Result->GetValue("Information")->AddTag("error", "The file type could not be interpreted strictly according to the standard, but this seems plausible."s);
+				Result->GetValue("Information")->AddTag("interpretation", "MPEG 1/2 layer III");
 			}
 			else
 			{
-				Result->GetValue("Information")->AppendTag("error", "The file type could not be interpreted."s);
-				Result->GetValue("Information")->AppendTag("interpretation", nullptr);
+				Result->GetValue("Information")->AddTag("error", "The file type could not be interpreted."s);
+				Result->GetValue("Information")->AddTag("interpretation", nullptr);
 			}
 			Continue = false;
 		}
@@ -7620,14 +7620,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TLAN(In
 		{
 			auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
 			
-			Result->GetValue("Information")->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-			Result->GetValue("Information")->AppendTag("interpretation", Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(Information));
+			Result->GetValue("Information")->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+			Result->GetValue("Information")->AddTag("interpretation", Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(Information));
 		}
 		catch(...)
 		{
-			Result->GetValue("Information")->AppendTag("standard", "ID3 2.3"s);
-			Result->GetValue("Information")->AppendTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
-			Result->GetValue("Information")->AppendTag("interpretation", nullptr);
+			Result->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue("Information")->AddTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
+			Result->GetValue("Information")->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -7657,31 +7657,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TSRC(In
 		
 		if(Information.length() == 12)
 		{
-			Result->GetValue("Information")->AppendTag("standard", "ISRC Bulletin 2015/01"s);
-			Result->GetValue("Information")->AppendTag("DesignationCode", Information.substr(7, 5));
-			Result->GetValue("Information")->AppendTag("YearOfReference", Information.substr(5, 2));
-			Result->GetValue("Information")->AppendTag("RegistrantCode", Information.substr(2, 3));
+			Result->GetValue("Information")->AddTag("standard", "ISRC Bulletin 2015/01"s);
+			Result->GetValue("Information")->AddTag("DesignationCode", Information.substr(7, 5));
+			Result->GetValue("Information")->AddTag("YearOfReference", Information.substr(5, 2));
+			Result->GetValue("Information")->AddTag("RegistrantCode", Information.substr(2, 3));
 			
 			std::string CountryCode{Information.substr(0, 2)};
-			auto CountryCodeValue{Result->GetValue("Information")->AppendTag("CountryCode", CountryCode)};
+			auto CountryCodeValue{Result->GetValue("Information")->AddTag("CountryCode", CountryCode)};
 			
 			try
 			{
-				CountryCodeValue->AppendTag("standard", "ISO 3166-1 alpha-2"s);
-				CountryCodeValue->AppendTag("interpretation", Inspection::Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(CountryCode));
+				CountryCodeValue->AddTag("standard", "ISO 3166-1 alpha-2"s);
+				CountryCodeValue->AddTag("interpretation", Inspection::Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(CountryCode));
 			}
 			catch(Inspection::UnknownValueException & Exception)
 			{
-				CountryCodeValue->AppendTag("standard", "ISRC Bulletin 2015/01"s);
-				CountryCodeValue->AppendTag("error", "The ISRC string needs to contain a two letter country code from ISO 3166-1 alpha-2."s);
-				CountryCodeValue->AppendTag("interpretation", nullptr);
+				CountryCodeValue->AddTag("standard", "ISRC Bulletin 2015/01"s);
+				CountryCodeValue->AddTag("error", "The ISRC string needs to contain a two letter country code from ISO 3166-1 alpha-2."s);
+				CountryCodeValue->AddTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
 		else
 		{
-			Result->GetValue("Information")->AppendTag("standard", "ID3 2.3"s);
-			Result->GetValue("Information")->AppendTag("error", "The TSRC frame needs to contain a twelve letter ISRC code from ISRC Bulletin 2015/01."s);
+			Result->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue("Information")->AddTag("error", "The TSRC frame needs to contain a twelve letter ISRC code from ISRC Bulletin 2015/01."s);
 			Continue = false;
 		}
 	}
@@ -7916,76 +7916,76 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags
 		std::shared_ptr< Inspection::Value > FlagValue;
 		
 		FlagValue = Result->GetValue()->AppendValue("TagAlterPreservation", Flags[15]);
-		FlagValue->AppendTag("bit index", 15);
-		FlagValue->AppendTag("bit name", "a"s);
+		FlagValue->AddTag("bit index", 15);
+		FlagValue->AddTag("bit name", "a"s);
 		if(Flags[15] == true)
 		{
-			FlagValue->AppendTag("interpretation", "Frame should be discarded."s);
+			FlagValue->AddTag("interpretation", "Frame should be discarded."s);
 		}
 		else
 		{
-			FlagValue->AppendTag("interpretation", "Frame should be preserved."s);
+			FlagValue->AddTag("interpretation", "Frame should be preserved."s);
 		}
 		FlagValue = Result->GetValue()->AppendValue("FileAlterPreservation", Flags[14]);
-		FlagValue->AppendTag("bit index", 14);
-		FlagValue->AppendTag("bit name", "b"s);
+		FlagValue->AddTag("bit index", 14);
+		FlagValue->AddTag("bit name", "b"s);
 		if(Flags[14] == true)
 		{
-			FlagValue->AppendTag("interpretation", "Frame should be discarded."s);
+			FlagValue->AddTag("interpretation", "Frame should be discarded."s);
 		}
 		else
 		{
-			FlagValue->AppendTag("interpretation", "Frame should be preserved."s);
+			FlagValue->AddTag("interpretation", "Frame should be preserved."s);
 		}
 		FlagValue = Result->GetValue()->AppendValue("ReadOnly", Flags[13]);
-		FlagValue->AppendTag("bit index", 13);
-		FlagValue->AppendTag("bit name", "c"s);
+		FlagValue->AddTag("bit index", 13);
+		FlagValue->AddTag("bit name", "c"s);
 		FlagValue = Result->GetValue()->AppendValue("Reserved", false);
 		for(auto FlagIndex = 8; FlagIndex <= 12; ++FlagIndex)
 		{
-			FlagValue->AppendTag("bit index", FlagIndex);
+			FlagValue->AddTag("bit index", FlagIndex);
 			Continue = Continue && ~Flags[FlagIndex];
 		}
 		FlagValue = Result->GetValue()->AppendValue("Compression", Flags[7]);
-		FlagValue->AppendTag("bit index", 7);
-		FlagValue->AppendTag("bit name", "i"s);
+		FlagValue->AddTag("bit index", 7);
+		FlagValue->AddTag("bit name", "i"s);
 		if(Flags[7] == true)
 		{
-			FlagValue->AppendTag("interpretation", "Frame is compressed using ZLIB with 4 bytes for 'decompressed size' appended to the frame header."s);
-			FlagValue->AppendTag("error", "Frame compression is not yet implemented!");
+			FlagValue->AddTag("interpretation", "Frame is compressed using ZLIB with 4 bytes for 'decompressed size' appended to the frame header."s);
+			FlagValue->AddTag("error", "Frame compression is not yet implemented!");
 		}
 		else
 		{
-			FlagValue->AppendTag("interpretation", "Frame is not compressed."s);
+			FlagValue->AddTag("interpretation", "Frame is not compressed."s);
 		}
 		FlagValue = Result->GetValue()->AppendValue("Encryption", Flags[6]);
-		FlagValue->AppendTag("bit index", 6);
-		FlagValue->AppendTag("bit name", "j"s);
+		FlagValue->AddTag("bit index", 6);
+		FlagValue->AddTag("bit name", "j"s);
 		if(Flags[6] == true)
 		{
-			FlagValue->AppendTag("interpretation", "Frame is encrypted."s);
-			FlagValue->AppendTag("error", "Frame encryption is not yet implemented!");
+			FlagValue->AddTag("interpretation", "Frame is encrypted."s);
+			FlagValue->AddTag("error", "Frame encryption is not yet implemented!");
 		}
 		else
 		{
-			FlagValue->AppendTag("interpretation", "Frame is not encrypted."s);
+			FlagValue->AddTag("interpretation", "Frame is not encrypted."s);
 		}
 		FlagValue = Result->GetValue()->AppendValue("GroupingIdentity", Flags[5]);
-		FlagValue->AppendTag("bit index", 5);
-		FlagValue->AppendTag("bit name", "k"s);
+		FlagValue->AddTag("bit index", 5);
+		FlagValue->AddTag("bit name", "k"s);
 		if(Flags[5] == true)
 		{
-			FlagValue->AppendTag("interpretation", "Frame contains group information."s);
-			FlagValue->AppendTag("error", "Frame grouping is not yet implemented!");
+			FlagValue->AddTag("interpretation", "Frame contains group information."s);
+			FlagValue->AddTag("error", "Frame grouping is not yet implemented!");
 		}
 		else
 		{
-			FlagValue->AppendTag("interpretation", "Frame does not contain group information."s);
+			FlagValue->AddTag("interpretation", "Frame does not contain group information."s);
 		}
 		FlagValue = Result->GetValue()->AppendValue("Reserved", false);
 		for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
 		{
-			FlagValue->AppendTag("bit index", FlagIndex);
+			FlagValue->AddTag("bit index", FlagIndex);
 			Continue = Continue && ~Flags[FlagIndex];
 		}
 	}
@@ -8017,64 +8017,64 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Ident
 		
 		try
 		{
-			Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
-			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Identifier == "RGAD")
 			{
-				Result->GetValue()->AppendTag("standard", "Hydrogenaudio ReplayGain"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org."s);
-				Result->GetValue()->AppendTag("interpretation", "Replay gain adjustment"s);
+				Result->GetValue()->AddTag("standard", "Hydrogenaudio ReplayGain"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org."s);
+				Result->GetValue()->AddTag("interpretation", "Replay gain adjustment"s);
 			}
 			else if(Identifier == "TCMP")
 			{
-				Result->GetValue()->AppendTag("standard", "iTunes"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
-				Result->GetValue()->AppendTag("interpretation", "Part of a compilation"s);
+				Result->GetValue()->AddTag("standard", "iTunes"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
+				Result->GetValue()->AddTag("interpretation", "Part of a compilation"s);
 			}
 			else if(Identifier == "TDRC")
 			{
-				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AppendTag("interpretation", "Recording time"s);
+				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AddTag("interpretation", "Recording time"s);
 			}
 			else if(Identifier == "TDTG")
 			{
-				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AppendTag("interpretation", "Tagging time"s);
+				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AddTag("interpretation", "Tagging time"s);
 			}
 			else if(Identifier == "TSST")
 			{
-				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AppendTag("interpretation", "Set subtitle"s);
+				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AddTag("interpretation", "Set subtitle"s);
 			}
 			else if(Identifier == "TSOA")
 			{
-				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AppendTag("interpretation", "Album sort order"s);
+				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AddTag("interpretation", "Album sort order"s);
 			}
 			else if(Identifier == "TSOP")
 			{
-				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AppendTag("interpretation", "Performer sort order"s);
+				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AddTag("interpretation", "Performer sort order"s);
 			}
 			else if(Identifier == "TSO2")
 			{
-				Result->GetValue()->AppendTag("standard", "iTunes"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order."s);
-				Result->GetValue()->AppendTag("interpretation", "Album artist sort order"s);
+				Result->GetValue()->AddTag("standard", "iTunes"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order."s);
+				Result->GetValue()->AddTag("interpretation", "Album artist sort order"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
-				Result->GetValue()->AppendTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
-				Result->GetValue()->AppendTag("interpretation", nullptr);
+				Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+				Result->GetValue()->AddTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+				Result->GetValue()->AddTag("interpretation", nullptr);
 			}
 		}
 	}
@@ -8095,7 +8095,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 	{
 		if(Reader.Has(Inspection::Length{3, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -8120,12 +8120,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 			if(Continue == true)
 			{
 				Result->SetValue(Alternative2Result->GetValue());
-				Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-				Result->GetValue()->AppendTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+				Result->GetValue()->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+				Result->GetValue()->AddTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "Could not read a language for ID3v2.3."s);
+				Result->GetValue()->AddTag("error", "Could not read a language for ID3v2.3."s);
 			}
 		}
 	}
@@ -8156,20 +8156,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
-		Flag->AppendTag("bit index", 7);
-		Flag->AppendTag("bit name", "a"s);
+		Flag->AddTag("bit index", 7);
+		Flag->AddTag("bit name", "a"s);
 		Flag = Result->GetValue()->AppendValue("ExtendedHeader", Flags[6]);
-		Flag->AppendTag("bit index", 6);
-		Flag->AppendTag("bit name", "b"s);
+		Flag->AddTag("bit index", 6);
+		Flag->AddTag("bit name", "b"s);
 		Flag = Result->GetValue()->AppendValue("ExperimentalIndicator", Flags[5]);
-		Flag->AppendTag("bit index", 5);
-		Flag->AppendTag("bit name", "c"s);
+		Flag->AddTag("bit index", 5);
+		Flag->AddTag("bit name", "c"s);
 		Flag = Result->GetValue()->AppendValue("Reserved", false);
-		Flag->AppendTag("bit index", 4);
-		Flag->AppendTag("bit index", 3);
-		Flag->AppendTag("bit index", 2);
-		Flag->AppendTag("bit index", 1);
-		Flag->AppendTag("bit index", 0);
+		Flag->AddTag("bit index", 4);
+		Flag->AddTag("bit index", 3);
+		Flag->AddTag("bit index", 2);
+		Flag->AddTag("bit index", 1);
+		Flag->AddTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
 		{
 			Continue ^= ~Flags[FlagIndex];
@@ -8198,24 +8198,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspe
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
+		Result->GetValue()->AddTag("standard", "ID3 2.3"s);
 		
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->AppendTag("standard", "ISO/IEC 8859-1:1998"s);
-			Result->GetValue()->AppendTag("name", "Latin alphabet No. 1"s);
+			Result->GetValue()->AddTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AddTag("name", "Latin alphabet No. 1"s);
 		}
 		else if(TextEncoding == 0x01)
 		{
-			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AppendTag("name", "UCS-2"s);
+			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AddTag("name", "UCS-2"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is not known.");
-			Result->GetValue()->AppendTag("name", nullptr);
+			Result->GetValue()->AddTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is not known.");
+			Result->GetValue()->AddTag("name", nullptr);
 			Continue = false;
 		}
 	}
@@ -8243,7 +8243,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -8255,7 +8255,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny("String"));
+				Result->GetValue()->AddTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else
@@ -8287,7 +8287,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -8299,7 +8299,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny("String"));
+				Result->GetValue()->AddTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else
@@ -8330,7 +8330,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("content", Result->GetValue("Identifier")->GetTagAny("interpretation"));
+		Result->GetValue()->AddTag("content", Result->GetValue("Identifier")->GetTagAny("interpretation"));
 		
 		auto FieldStart{Reader.GetConsumedLength()};
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny("Identifier"))};
@@ -8418,7 +8418,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
+			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
@@ -8431,15 +8431,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->AppendTag("error", "The frame size is claimed larger than the actually handled size."s);
-			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->AppendTag("error", "The frame size is claimed smaller than the actually handled size."s);
-			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
@@ -8540,18 +8540,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC_Pi
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+		Result->GetValue()->AddTag("standard", "ID3 2.4"s);
 		
 		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		try
 		{
-			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
+			Result->GetValue()->AddTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->AppendTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -8645,7 +8645,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
 		
-		FieldValue->AppendTag("standard", "ID3 2.3"s);
+		FieldValue->AddTag("standard", "ID3 2.3"s);
 		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
@@ -8655,11 +8655,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		
 		if(Rating > 0)
 		{
-			Result->GetValue("Rating")->AppendTag("interpretation", to_string_cast(Rating) + " / 255");
+			Result->GetValue("Rating")->AddTag("interpretation", to_string_cast(Rating) + " / 255");
 		}
 		else
 		{
-			Result->GetValue("Rating")->AppendTag("interpretation", nullptr);
+			Result->GetValue("Rating")->AddTag("interpretation", nullptr);
 		}
 	}
 	// reading
@@ -8670,7 +8670,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			auto CounterValue{std::make_shared< Inspection::Value >()};
 			
 			CounterValue->SetName("Counter");
-			CounterValue->AppendTag("omitted"s);
+			CounterValue->AddTag("omitted"s);
 			Result->GetValue()->AppendValue(CounterValue);
 		}
 		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
@@ -8678,8 +8678,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			FieldValue->AppendTag("standard", "ID3 2.4"s);
-			FieldValue->AppendTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+			FieldValue->AddTag("standard", "ID3 2.4"s);
+			FieldValue->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -8695,7 +8695,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			FieldValue->AppendTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			FieldValue->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -8958,7 +8958,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header_Ident
 	{
 		if(Reader.Has(Inspection::Length{4, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{4, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{4, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -8978,22 +8978,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header_Ident
 		
 		try
 		{
-			Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
-			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Identifier == "TYER")
 			{
-				Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
-				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3."s);
-				Result->GetValue()->AppendTag("interpretation", "Year"s);
+				Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3."s);
+				Result->GetValue()->AddTag("interpretation", "Year"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AppendTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
-				Result->GetValue()->AppendTag("interpretation", nullptr);
+				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AddTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+				Result->GetValue()->AddTag("interpretation", nullptr);
 			}
 		}
 	}
@@ -9014,7 +9014,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 	{
 		if(Reader.Has(Inspection::Length{3, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -9046,13 +9046,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 				
 				if(Code == "XXX")
 				{
-					Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
-					Result->GetValue()->AppendTag("interpretation", "the language is unknown"s);
+					Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+					Result->GetValue()->AddTag("interpretation", "the language is unknown"s);
 				}
 				else
 				{
-					Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-					Result->GetValue()->AppendTag("error", "The language code \"" + Code + "\" is unknown."s);
+					Result->GetValue()->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+					Result->GetValue()->AddTag("error", "The language code \"" + Code + "\" is unknown."s);
 					Continue = false;
 				}
 			}
@@ -9066,8 +9066,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 				// interpretation
 				if(Continue == true)
 				{
-					Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-					Result->GetValue()->AppendTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+					Result->GetValue()->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+					Result->GetValue()->AddTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 				}
 			}
 		}
@@ -9107,8 +9107,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 		
 		if(NumberOfFlagBytes != 0x01)
 		{
-			Result->GetValue()->AppendTag("error", "According to the standard, the number of flag bytes must be equal to 1."s);
-			Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("error", "According to the standard, the number of flag bytes must be equal to 1."s);
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
 			Continue = false;
 		}
 	}
@@ -9236,12 +9236,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 			auto FieldResult{Get_BitSet_8Bit(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Restrictions", FieldResult->GetValue())};
 			
-			FieldValue->AppendTag("error", "This program is missing the interpretation of the tag restriction flags."s); 
+			FieldValue->AddTag("error", "This program is missing the interpretation of the tag restriction flags."s); 
 			UpdateState(Continue, FieldResult);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The size of the tag restriction flags is not equal to 1."s); 
+			Result->GetValue()->AddTag("error", "The size of the tag restriction flags is not equal to 1."s); 
 			Continue = false;
 		}
 	}
@@ -9288,26 +9288,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("synchsafe"s);
+		Result->GetValue()->AddTag("synchsafe"s);
 		
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Reserved", Flags[7])};
 		
-		Flag->AppendTag("bit index", 7);
+		Flag->AddTag("bit index", 7);
 		Flag = Result->GetValue()->AppendValue("TagIsAnUpdate", Flags[6]);
-		Flag->AppendTag("bit index", 6);
-		Flag->AppendTag("bit name", "b"s);
+		Flag->AddTag("bit index", 6);
+		Flag->AddTag("bit name", "b"s);
 		Flag = Result->GetValue()->AppendValue("CRCDataPresent", Flags[5]);
-		Flag->AppendTag("bit index", 5);
-		Flag->AppendTag("bit name", "c"s);
+		Flag->AddTag("bit index", 5);
+		Flag->AddTag("bit name", "c"s);
 		Flag = Result->GetValue()->AppendValue("TagRestrictions", Flags[4]);
-		Flag->AppendTag("bit index", 4);
-		Flag->AppendTag("bit name", "d"s);
+		Flag->AddTag("bit index", 4);
+		Flag->AddTag("bit name", "d"s);
 		Flag = Result->GetValue()->AppendValue("Reserved", false);
-		Flag->AppendTag("bit index", 3);
-		Flag->AppendTag("bit index", 2);
-		Flag->AppendTag("bit index", 1);
-		Flag->AppendTag("bit index", 0);
+		Flag->AddTag("bit index", 3);
+		Flag->AddTag("bit index", 2);
+		Flag->AddTag("bit index", 1);
+		Flag->AddTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 3; ++FlagIndex)
 		{
 			Continue ^= ~Flags[FlagIndex];
@@ -9339,22 +9339,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(I
 		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
-		Flag->AppendTag("bit index", 7);
-		Flag->AppendTag("bit name", "a"s);
+		Flag->AddTag("bit index", 7);
+		Flag->AddTag("bit name", "a"s);
 		Flag = Result->GetValue()->AppendValue("ExtendedHeader", Flags[6]);
-		Flag->AppendTag("bit index", 6);
-		Flag->AppendTag("bit name", "b"s);
+		Flag->AddTag("bit index", 6);
+		Flag->AddTag("bit name", "b"s);
 		Flag = Result->GetValue()->AppendValue("ExperimentalIndicator", Flags[5]);
-		Flag->AppendTag("bit index", 5);
-		Flag->AppendTag("bit name", "c"s);
+		Flag->AddTag("bit index", 5);
+		Flag->AddTag("bit name", "c"s);
 		Flag = Result->GetValue()->AppendValue("FooterPresent", Flags[4]);
-		Flag->AppendTag("bit index", 4);
-		Flag->AppendTag("bit name", "d"s);
+		Flag->AddTag("bit index", 4);
+		Flag->AddTag("bit name", "d"s);
 		Flag = Result->GetValue()->AppendValue("Reserved", false);
-		Flag->AppendTag("bit index", 3);
-		Flag->AppendTag("bit index", 2);
-		Flag->AppendTag("bit index", 1);
-		Flag->AppendTag("bit index", 0);
+		Flag->AddTag("bit index", 3);
+		Flag->AddTag("bit index", 2);
+		Flag->AddTag("bit index", 1);
+		Flag->AddTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 3; ++FlagIndex)
 		{
 			Continue ^= ~Flags[FlagIndex];
@@ -9383,37 +9383,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextEncoding(Inspe
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+		Result->GetValue()->AddTag("standard", "ID3 2.4"s);
 		
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->AppendTag("standard", "ISO/IEC 8859-1:1998"s);
-			Result->GetValue()->AppendTag("name", "Latin alphabet No. 1"s);
+			Result->GetValue()->AddTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AddTag("name", "Latin alphabet No. 1"s);
 		}
 		else if(TextEncoding == 0x01)
 		{
-			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AppendTag("standard", "RFC 2781"s);
-			Result->GetValue()->AppendTag("name", "UTF-16"s);
+			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AddTag("standard", "RFC 2781"s);
+			Result->GetValue()->AddTag("name", "UTF-16"s);
 		}
 		else if(TextEncoding == 0x02)
 		{
-			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AppendTag("standard", "RFC 2781"s);
-			Result->GetValue()->AppendTag("name", "UTF-16BE"s);
+			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AddTag("standard", "RFC 2781"s);
+			Result->GetValue()->AddTag("name", "UTF-16BE"s);
 		}
 		else if(TextEncoding == 0x03)
 		{
-			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AppendTag("standard", "RFC 2279"s);
-			Result->GetValue()->AppendTag("name", "UTF-8"s);
+			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AddTag("standard", "RFC 2279"s);
+			Result->GetValue()->AddTag("name", "UTF-8"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The text encoding \"" + to_string_cast(TextEncoding) + "\" is unknown.");
-			Result->GetValue()->AppendTag("name", nullptr);
+			Result->GetValue()->AddTag("error", "The text encoding \"" + to_string_cast(TextEncoding) + "\" is unknown.");
+			Result->GetValue()->AddTag("name", nullptr);
 			Continue = false;
 		}
 	}
@@ -9441,7 +9441,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -9453,7 +9453,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny("String"));
+				Result->GetValue()->AddTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else if(TextEncoding == 0x02)
@@ -9465,7 +9465,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x03)
@@ -9477,7 +9477,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetAny());
 			}
 		}
 		else
@@ -9509,7 +9509,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -9521,7 +9521,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny("String"));
+				Result->GetValue()->AddTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else if(TextEncoding == 0x02)
@@ -9533,7 +9533,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x03)
@@ -9545,7 +9545,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetAny());
 			}
 		}
 		else
@@ -9565,7 +9565,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("standard", "Hydrogenaudio ReplayGain"s);
+	Result->GetValue()->AddTag("standard", "Hydrogenaudio ReplayGain"s);
 	// reading
 	if(Continue == true)
 	{
@@ -9612,7 +9612,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		{
 			ReplayGainAdjustment *= -1.0f;
 		}
-		Result->GetValue()->AppendTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
+		Result->GetValue()->AddTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -9641,20 +9641,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		
 		if(NameCode == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "not set"s);
+			Result->GetValue()->AddTag("interpretation", "not set"s);
 		}
 		else if(NameCode == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "track gain adjustment"s);
+			Result->GetValue()->AddTag("interpretation", "track gain adjustment"s);
 		}
 		else if(NameCode == 0x02)
 		{
-			Result->GetValue()->AppendTag("interpretation", "album gain adjustment"s);
+			Result->GetValue()->AddTag("interpretation", "album gain adjustment"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The value \"" + to_string_cast(NameCode) + "\" is unknown and MUST NOT be used."s);
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(NameCode) + "\" is unknown and MUST NOT be used."s);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -9685,24 +9685,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		
 		if(OriginatorCode == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "unspecified"s);
+			Result->GetValue()->AddTag("interpretation", "unspecified"s);
 		}
 		else if(OriginatorCode == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
+			Result->GetValue()->AddTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
 		}
 		else if(OriginatorCode == 0x02)
 		{
-			Result->GetValue()->AppendTag("interpretation", "set by user"s);
+			Result->GetValue()->AddTag("interpretation", "set by user"s);
 		}
 		else if(OriginatorCode == 0x03)
 		{
-			Result->GetValue()->AppendTag("interpretation", "determined automatically"s);
+			Result->GetValue()->AddTag("interpretation", "determined automatically"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The value \"" + to_string_cast(OriginatorCode) + "\" is unknown and MUST NOT be used."s);
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(OriginatorCode) + "\" is unknown and MUST NOT be used."s);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -9731,7 +9731,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	{
 		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetAny()))};
 		
-		Result->GetValue()->AppendTag("interpretation", ReplayGainAdjustment / 10.0f);
+		Result->GetValue()->AddTag("interpretation", ReplayGainAdjustment / 10.0f);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -9760,11 +9760,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		
 		if(SignBit == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "positive gain (boost)"s);
+			Result->GetValue()->AddTag("interpretation", "positive gain (boost)"s);
 		}
 		else if(SignBit == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "negative gain (attenuation)"s);
+			Result->GetValue()->AddTag("interpretation", "negative gain (attenuation)"s);
 		}
 		else
 		{
@@ -9956,7 +9956,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
+			Result->GetValue()->AddTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
 			Continue = false;
 		}
 		// verification
@@ -9964,7 +9964,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 		{
 			if(Size > Inspection::Length{0, 0})
 			{
-				Result->GetValue()->AppendTag("error", "There are " + to_string_cast(Size) + " bytes and bits remaining.");
+				Result->GetValue()->AddTag("error", "There are " + to_string_cast(Size) + " bytes and bits remaining.");
 			}
 		}
 	}
@@ -10032,7 +10032,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The major version of the tag (" + to_string_cast(MajorVersion) + ") cannot be handled!"s);
+			Result->GetValue()->AddTag("error", "The major version of the tag (" + to_string_cast(MajorVersion) + ") cannot be handled!"s);
 			Continue = false;
 		}
 	}
@@ -10056,17 +10056,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("7bit value"s);
-	Result->GetValue()->AppendTag("8bit field"s);
-	Result->GetValue()->AppendTag("synchsafe"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("7bit value"s);
+	Result->GetValue()->AddTag("8bit field"s);
+	Result->GetValue()->AddTag("synchsafe"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 8}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
 			Continue = false;
 		}
 	}
@@ -10082,7 +10082,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit
 		else
 		{
 			Continue = false;
-			Result->GetValue()->AppendTag("error", "The unsigned integer should start with an unset bit."s);
+			Result->GetValue()->AddTag("error", "The unsigned integer should start with an unset bit."s);
 		}
 	}
 	// finalization
@@ -10097,18 +10097,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bi
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("28bit value"s);
-	Result->GetValue()->AppendTag("32bit field"s);
-	Result->GetValue()->AppendTag("synchsafe"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("28bit value"s);
+	Result->GetValue()->AddTag("32bit field"s);
+	Result->GetValue()->AddTag("synchsafe"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 32}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
 			Continue = false;
 		}
 	}
@@ -10135,25 +10135,25 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bi
 					}
 					else
 					{
-						Result->GetValue()->AppendTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
+						Result->GetValue()->AddTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
 						Continue = false;
 					}
 				}
 				else
 				{
-					Result->GetValue()->AppendTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
+					Result->GetValue()->AddTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
 					Continue = false;
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
+				Result->GetValue()->AddTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
 				Continue = false;
 			}
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
+			Result->GetValue()->AddTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
 			Continue = false;
 		}
 	}
@@ -10169,18 +10169,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bi
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("32bit value"s);
-	Result->GetValue()->AppendTag("40bit field"s);
-	Result->GetValue()->AppendTag("synchsafe"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("32bit value"s);
+	Result->GetValue()->AddTag("40bit field"s);
+	Result->GetValue()->AddTag("synchsafe"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 40}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 40}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 40}) + ".");
 			Continue = false;
 		}
 	}
@@ -10211,31 +10211,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bi
 						}
 						else
 						{
-							Result->GetValue()->AppendTag("error", "The fifth byte of the unsigned integer should start with an unset bit."s);
+							Result->GetValue()->AddTag("error", "The fifth byte of the unsigned integer should start with an unset bit."s);
 							Continue = false;
 						}
 					}
 					else
 					{
-						Result->GetValue()->AppendTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
+						Result->GetValue()->AddTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
 						Continue = false;
 					}
 				}
 				else
 				{
-					Result->GetValue()->AppendTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
+					Result->GetValue()->AddTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
 					Continue = false;
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
+				Result->GetValue()->AddTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
 				Continue = false;
 			}
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
+			Result->GetValue()->AddTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
 			Continue = false;
 		}
 	}
@@ -10267,11 +10267,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 		{
 			const Inspection::GUID & GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetAny())};
 			
-			Result->GetValue()->AppendTag("interpretation", Inspection::Get_GUID_Interpretation(GUID));
+			Result->GetValue()->AddTag("interpretation", Inspection::Get_GUID_Interpretation(GUID));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -10286,8 +10286,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("standard", "IEC 60908:1999"s);
-	Result->GetValue()->AppendTag("name", "Compact Disc Digital Audio"s);
+	Result->GetValue()->AddTag("standard", "IEC 60908:1999"s);
+	Result->GetValue()->AddTag("name", "Compact Disc Digital Audio"s);
 	// reading
 	if(Continue == true)
 	{
@@ -10427,7 +10427,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 		
 		if(Number == 0xaa)
 		{
-			Result->GetValue("Number")->AppendTag("interpretation", "Lead-Out"s);
+			Result->GetValue("Number")->AddTag("interpretation", "Lead-Out"s);
 		}
 	}
 	// reading
@@ -10480,7 +10480,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 				
 				auto Value{Result->GetValue()->AppendValue("Reserved", true)};
 				
-				Value->AppendTag("error", "The track type is \"Data\" so this bit must be off.");
+				Value->AddTag("error", "The track type is \"Data\" so this bit must be off.");
 			}
 			else
 			{
@@ -10565,7 +10565,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	{
 		if(Reader.Has(Inspection::Length{3, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -10581,18 +10581,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+		Result->GetValue()->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
 		
 		const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
 		try
 		{
-			Result->GetValue()->AppendTag("interpretation", Get_LanguageName_From_ISO_639_2_1998_Code(Code));
+			Result->GetValue()->AddTag("interpretation", Get_LanguageName_From_ISO_639_2_1998_Code(Code));
 		}
 		catch(...)
 		{
-			Result->GetValue()->AppendTag("error", "The code \"" + Code + "\" is unknown.");
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The code \"" + Code + "\" is unknown.");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -10608,14 +10608,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Charac
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("character"s);
-	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("character"s);
+	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -10631,7 +10631,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Charac
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The character is not an ISO/IEC 8859-1:1998 character."s);
+			Result->GetValue()->AddTag("error", "The character is not an ISO/IEC 8859-1:1998 character."s);
 		}
 	}
 	// finalization
@@ -10646,14 +10646,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -10664,7 +10664,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 		
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
@@ -10681,16 +10681,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 				}
 				else
 				{
-					Result->GetValue()->AppendTag("ended by error"s);
-					Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
 					Continue = false;
 				}
 			}
-			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -10706,14 +10706,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -10722,7 +10722,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -10738,8 +10738,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 			
 			if(Character == 0x00)
 			{
-				Result->GetValue()->AppendTag("ended by termination"s);
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag("ended by termination"s);
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 				
 				break;
 			}
@@ -10767,14 +10767,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -10785,8 +10785,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 		
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("ended by length"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
@@ -10800,13 +10800,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 				{
 					if(Reader.HasRemaining() == true)
 					{
-						Result->GetValue()->AppendTag("ended by termination"s);
+						Result->GetValue()->AddTag("ended by termination"s);
 					}
 					else
 					{
-						Result->GetValue()->AppendTag("ended by termination and length"s);
+						Result->GetValue()->AddTag("ended by termination and length"s);
 					}
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 					
 					break;
 				}
@@ -10816,15 +10816,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
 					if(Reader.IsAtEnd() == true)
 					{
-						Result->GetValue()->AppendTag("ended by length"s);
-						Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+						Result->GetValue()->AddTag("ended by length"s);
+						Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 					}
 				}
 				else
 				{
-					Result->GetValue()->AppendTag("ended by error"s);
-					Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 					Continue = false;
 				}
 			}
@@ -10843,14 +10843,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -10859,7 +10859,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -10887,38 +10887,38 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 				}
 				else
 				{
-					Result->GetValue()->AppendTag("ended by error"s);
-					Result->GetValue()->AppendTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
 					Continue = false;
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
 				Continue = false;
 			}
 		}
 		if(NumberOfCharacters > 0)
 		{
-			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		if(NumberOfTerminations > 0)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 			if(Reader.IsAtEnd() == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfTerminations) + " terminations until length");
 			}
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
-			Result->GetValue()->AppendTag("error", "The string must be ended by at least one termination."s);
+			Result->GetValue()->AddTag("ended by length"s);
+			Result->GetValue()->AddTag("error", "The string must be ended by at least one termination."s);
 			Continue = false;
 		}
 		Result->GetValue()->SetAny(Value.str());
@@ -10935,14 +10935,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -10970,37 +10970,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 				}
 				else
 				{
-					Result->GetValue()->AppendTag("ended by error"s);
-					Result->GetValue()->AppendTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
 					Continue = false;
 				}
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
 				Continue = false;
 			}
 		}
 		if(NumberOfCharacters > 0)
 		{
-			Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		if(NumberOfTerminations > 0)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 			if(Reader.IsAtEnd() == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfTerminations) + " terminations until length");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfTerminations) + " terminations until length");
 			}
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -11032,16 +11032,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
 		{
-			Result->GetValue()->AppendTag("interpretation", "BigEndian"s);
+			Result->GetValue()->AddTag("interpretation", "BigEndian"s);
 		}
 		else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
 		{
-			Result->GetValue()->AppendTag("interpretation", "LittleEndian"s);
+			Result->GetValue()->AddTag("interpretation", "LittleEndian"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The byte combination is not a valid byte order mark."s);
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The byte combination is not a valid byte order mark."s);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -11062,7 +11062,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	{
 		if(Reader.Has(Inspection::Length{2, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -11096,7 +11096,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	{
 		if(Reader.Has(Inspection::Length{2, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -11130,7 +11130,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	{
 		if(Reader.Has(Inspection::Length{2, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -11159,7 +11159,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	{
 		if(Reader.Has(Inspection::Length{2, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -11183,16 +11183,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("encoding", "UCS-2"s);
-	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("encoding", "UCS-2"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -11213,8 +11213,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 				
 				if(CodePoint == 0x00000000)
 				{
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-					Result->GetValue()->AppendTag("ended by termination"s);
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					Result->GetValue()->AddTag("ended by termination"s);
 					
 					break;
 				}
@@ -11226,8 +11226,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
 				Continue = false;
 			}
 		}
@@ -11245,16 +11245,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UCS-2"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UCS-2"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -11288,40 +11288,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
 				Continue = false;
 			}
 		}
 		if(NumberOfCharacters == 0)
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 			}
 			else
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination and length"s);
+				Result->GetValue()->AddTag("ended by termination and length"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by length"s);
+				Result->GetValue()->AddTag("ended by length"s);
 			}
 		}
 		else if(EndedByTermination == true)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -11337,16 +11337,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("encoding", "UCS-2"s);
-	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("encoding", "UCS-2"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("little endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -11367,8 +11367,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 				
 				if(CodePoint == 0x00000000)
 				{
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-					Result->GetValue()->AppendTag("ended by termination"s);
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					Result->GetValue()->AddTag("ended by termination"s);
 					
 					break;
 				}
@@ -11380,8 +11380,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
 				Continue = false;
 			}
 		}
@@ -11399,16 +11399,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UCS-2"s);
-	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UCS-2"s);
+	Result->GetValue()->AddTag("little endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -11442,40 +11442,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
 				Continue = false;
 			}
 		}
 		if(NumberOfCharacters == 0)
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 			}
 			else
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination and length"s);
+				Result->GetValue()->AddTag("ended by termination and length"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by length"s);
+				Result->GetValue()->AddTag("ended by length"s);
 			}
 		}
 		else if(EndedByTermination == true)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -11491,9 +11491,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UCS-2"s);
-	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("UCS-2"s);
+	Result->GetValue()->AddTag("ISO/IEC 10646-1:1993"s);
 	// reading
 	if(Continue == true)
 	{
@@ -11534,9 +11534,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UCS-2"s);
-	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("UCS-2"s);
+	Result->GetValue()->AddTag("ISO/IEC 10646-1:1993"s);
 	// reading
 	if(Continue == true)
 	{
@@ -11582,7 +11582,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	{
 		if(Reader.Has(Inspection::Length{1, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -11671,15 +11671,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UTF-8"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-8"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -11698,16 +11698,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 			Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny()));
 			if(Continue == false)
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
 				Continue = false;
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->AppendTag("ended by length"s);
+			Result->GetValue()->AddTag("ended by length"s);
 		}
-		Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters"s);
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -11722,15 +11722,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UTF-8"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-8"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -11751,8 +11751,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 				
 				if(CodePoint == 0x00000000)
 				{
-					Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-					Result->GetValue()->AppendTag("ended by termination"s);
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					Result->GetValue()->AddTag("ended by termination"s);
 					
 					break;
 				}
@@ -11764,8 +11764,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
 				Continue = false;
 			}
 		}
@@ -11783,15 +11783,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UTF-8"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-8"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength().GetBits() != 0)
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -11825,40 +11825,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
 				Continue = false;
 			}
 		}
 		if(NumberOfCharacters == 0)
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 			}
 			else
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCharacters) + " characters");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination and length"s);
+				Result->GetValue()->AddTag("ended by termination and length"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by length"s);
+				Result->GetValue()->AddTag("ended by length"s);
 			}
 		}
 		else if(EndedByTermination == true)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -11879,7 +11879,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	{
 		if(Reader.Has(Inspection::Length{2, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -11899,16 +11899,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		
 		if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
 		{
-			Result->GetValue()->AppendTag("interpretation", "BigEndian"s);
+			Result->GetValue()->AddTag("interpretation", "BigEndian"s);
 		}
 		else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
 		{
-			Result->GetValue()->AppendTag("interpretation", "LittleEndian"s);
+			Result->GetValue()->AddTag("interpretation", "LittleEndian"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The byte combination is not a valid byte order mark."s);
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The byte combination is not a valid byte order mark."s);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -11929,9 +11929,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("UTF-16"s);
-	Result->GetValue()->AppendTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("UTF-16"s);
+	Result->GetValue()->AddTag("ISO/IEC 10646-1:1993"s);
 	// reading
 	if(Continue == true)
 	{
@@ -12031,7 +12031,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	{
 		if(Reader.Has(Inspection::Length{2, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -12060,17 +12060,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UTF-16"s);
-	Result->GetValue()->AppendTag("big endian"s);
-	Result->GetValue()->AppendTag("without byte order mark"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
+	Result->GetValue()->AddTag("big endian"s);
+	Result->GetValue()->AddTag("without byte order mark"s);
 	// verification
 	if(Continue == true)
 	{
 		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -12104,40 +12104,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th codepoint is not a valid UTF-16 code point.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th codepoint is not a valid UTF-16 code point.");
 				Continue = false;
 			}
 		}
 		if(NumberOfCodePoints == 0)
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 			}
 			else
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination and length"s);
+				Result->GetValue()->AddTag("ended by termination and length"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by length"s);
+				Result->GetValue()->AddTag("ended by length"s);
 			}
 		}
 		else if(EndedByTermination == true)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -12213,7 +12213,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	{
 		if(Reader.Has(Inspection::Length{2, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -12237,17 +12237,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UTF-16"s);
-	Result->GetValue()->AppendTag("little endian"s);
-	Result->GetValue()->AppendTag("without byte order mark"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
+	Result->GetValue()->AddTag("little endian"s);
+	Result->GetValue()->AddTag("without byte order mark"s);
 	// verification
 	if(Continue == true)
 	{
 		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -12272,7 +12272,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 					EndedByTermination = true;
 					if(Reader.HasRemaining() == true)
 					{
-						Result->GetValue()->AppendTag("error", "The termination must be the last code point in the availble length."s);
+						Result->GetValue()->AddTag("error", "The termination must be the last code point in the availble length."s);
 						Continue = false;
 					}
 					
@@ -12286,45 +12286,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 codepoint.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 codepoint.");
 				Continue = false;
 			}
 		}
 		if(EndedByTermination == false)
 		{
-			Result->GetValue()->AppendTag("error", "The string must be ended by a termination."s);
+			Result->GetValue()->AddTag("error", "The string must be ended by a termination."s);
 			Continue = false;
 		}
 		if(NumberOfCodePoints == 0)
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 			}
 			else
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination and length"s);
+				Result->GetValue()->AddTag("ended by termination and length"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by length"s);
+				Result->GetValue()->AddTag("ended by length"s);
 			}
 		}
 		else if(EndedByTermination == true)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -12340,17 +12340,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UTF-16"s);
-	Result->GetValue()->AppendTag("little endian"s);
-	Result->GetValue()->AppendTag("without byte order mark"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
+	Result->GetValue()->AddTag("little endian"s);
+	Result->GetValue()->AddTag("without byte order mark"s);
 	// verification
 	if(Continue == true)
 	{
 		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -12384,40 +12384,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th codepoint is not a valid UTF-16 code point.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th codepoint is not a valid UTF-16 code point.");
 				Continue = false;
 			}
 		}
 		if(NumberOfCodePoints == 0)
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 			}
 			else
 			{
-				Result->GetValue()->AppendTag(to_string_cast(NumberOfCodePoints) + " code points");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination and length"s);
+				Result->GetValue()->AddTag("ended by termination and length"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by length"s);
+				Result->GetValue()->AddTag("ended by length"s);
 			}
 		}
 		else if(EndedByTermination == true)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -12433,17 +12433,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("string"s);
-	Result->GetValue()->AppendTag("character set", "ISO/IEC 10646-1:1993"s);
-	Result->GetValue()->AppendTag("encoding", "UTF-16"s);
-	Result->GetValue()->AppendTag("little endian"s);
-	Result->GetValue()->AppendTag("without byte order mark"s);
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
+	Result->GetValue()->AddTag("little endian"s);
+	Result->GetValue()->AddTag("without byte order mark"s);
 	// verification
 	if(Continue == true)
 	{
 		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
 		{
-			Result->GetValue()->AppendTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -12468,7 +12468,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 					EndedByTermination = true;
 					if(CodePointIndex + 1 != NumberOfCodePoints)
 					{
-						Result->GetValue()->AppendTag("error", "With the termination code point, the string must contain exactly " + to_string_cast(NumberOfCodePoints) + " code points."s);
+						Result->GetValue()->AddTag("error", "With the termination code point, the string must contain exactly " + to_string_cast(NumberOfCodePoints) + " code points."s);
 						Continue = false;
 					}
 					
@@ -12482,45 +12482,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by error"s);
-				Result->GetValue()->AppendTag("error", "The " + to_string_cast(CodePointIndex + 1) + "th code point is not a valid UTF-16 codepoint.");
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(CodePointIndex + 1) + "th code point is not a valid UTF-16 codepoint.");
 				Continue = false;
 			}
 		}
 		if(EndedByTermination == false)
 		{
-			Result->GetValue()->AppendTag("error", "The string must be ended by a termination."s);
+			Result->GetValue()->AddTag("error", "The string must be ended by a termination."s);
 			Continue = false;
 		}
 		if(CodePointIndex == 0)
 		{
-			Result->GetValue()->AppendTag("empty"s);
+			Result->GetValue()->AddTag("empty"s);
 		}
 		else
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag(to_string_cast(CodePointIndex) + " code points + termination");
+				Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points + termination");
 			}
 			else
 			{
-				Result->GetValue()->AppendTag(to_string_cast(CodePointIndex) + " code points");
+				Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AppendTag("ended by termination and length"s);
+				Result->GetValue()->AddTag("ended by termination and length"s);
 			}
 			else
 			{
-				Result->GetValue()->AppendTag("ended by length"s);
+				Result->GetValue()->AddTag("ended by length"s);
 			}
 		}
 		else if(EndedByTermination == true)
 		{
-			Result->GetValue()->AppendTag("ended by termination"s);
+			Result->GetValue()->AddTag("ended by termination"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -12536,15 +12536,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_bi
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("floating point"s);
-	Result->GetValue()->AppendTag("32bit"s);
-	Result->GetValue()->AppendTag("standard", "ISO/IEC/IEEE-60559:2011 binary32"s);
+	Result->GetValue()->AddTag("floating point"s);
+	Result->GetValue()->AddTag("32bit"s);
+	Result->GetValue()->AddTag("standard", "ISO/IEC/IEEE-60559:2011 binary32"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{4, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{4, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -12588,85 +12588,85 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_Forma
 		{
 		case 0x0000:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_UNKNOWN"s);
-				Result->GetValue()->AppendTag("description", "Unknown or invalid format tag"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_UNKNOWN"s);
+				Result->GetValue()->AddTag("description", "Unknown or invalid format tag"s);
 				
 				break;
 			}
 		case 0x0001:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_PCM"s);
-				Result->GetValue()->AppendTag("description", "Pulse Code Modulation"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_PCM"s);
+				Result->GetValue()->AddTag("description", "Pulse Code Modulation"s);
 				
 				break;
 			}
 		case 0x0002:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_ADPCM"s);
-				Result->GetValue()->AppendTag("description", "Microsoft Adaptive Differental PCM"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_ADPCM"s);
+				Result->GetValue()->AddTag("description", "Microsoft Adaptive Differental PCM"s);
 				
 				break;
 			}
 		case 0x0003:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_IEEE_FLOAT"s);
-				Result->GetValue()->AppendTag("description", "32-bit floating-point"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_IEEE_FLOAT"s);
+				Result->GetValue()->AddTag("description", "32-bit floating-point"s);
 				
 				break;
 			}
 		case 0x0055:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_MPEGLAYER3"s);
-				Result->GetValue()->AppendTag("description", "ISO/MPEG Layer3"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_MPEGLAYER3"s);
+				Result->GetValue()->AddTag("description", "ISO/MPEG Layer3"s);
 				
 				break;
 			}
 		case 0x0092:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_DOLBY_AC3_SPDIF"s);
-				Result->GetValue()->AppendTag("description", "Dolby Audio Codec 3 over S/PDIF"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_DOLBY_AC3_SPDIF"s);
+				Result->GetValue()->AddTag("description", "Dolby Audio Codec 3 over S/PDIF"s);
 				
 				break;
 			}
 		case 0x0161:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_WMAUDIO2"s);
-				Result->GetValue()->AppendTag("description", "Windows Media Audio Standard (Versions 7, 8, and 9 Series)"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_WMAUDIO2"s);
+				Result->GetValue()->AddTag("description", "Windows Media Audio Standard (Versions 7, 8, and 9 Series)"s);
 				
 				break;
 			}
 		case 0x0162:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_WMAUDIO3"s);
-				Result->GetValue()->AppendTag("description", "Windows Media Audio Professional (9 Series)"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_WMAUDIO3"s);
+				Result->GetValue()->AddTag("description", "Windows Media Audio Professional (9 Series)"s);
 				
 				break;
 			}
 		case 0x0163:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_WMAUDIO_LOSSLESS"s);
-				Result->GetValue()->AppendTag("description", "Windows Media Audio Lossless (9 Series)"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_WMAUDIO_LOSSLESS"s);
+				Result->GetValue()->AddTag("description", "Windows Media Audio Lossless (9 Series)"s);
 				
 				break;
 			}
 		case 0x0164:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_WMASPDIF"s);
-				Result->GetValue()->AppendTag("description", "Windows Media Audio over S/PDIF"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_WMASPDIF"s);
+				Result->GetValue()->AddTag("description", "Windows Media Audio over S/PDIF"s);
 				
 				break;
 			}
 		case 0xFFFE:
 			{
-				Result->GetValue()->AppendTag("constant name", "WAVE_FORMAT_EXTENSIBLE"s);
-				Result->GetValue()->AppendTag("description", "All new audio formats"s);
+				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_EXTENSIBLE"s);
+				Result->GetValue()->AddTag("description", "All new audio formats"s);
 				
 				break;
 			}
 		default:
 			{
-				Result->GetValue()->AppendTag("constant name", "<no interpretation>"s);
-				Result->GetValue()->AppendTag("description", "<no interpretation>"s);
+				Result->GetValue()->AddTag("constant name", "<no interpretation>"s);
+				Result->GetValue()->AddTag("description", "<no interpretation>"s);
 				
 				break;
 			}
@@ -12747,7 +12747,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	{
 		if(Reader.Has(Inspection::Length{4, 0}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{4, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{4, 0}) + ".");
 			Continue = false;
 		}
 	}
@@ -12887,12 +12887,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVe
 		
 		if(AudioVersionID == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "MPEG Version 1 (ISO/IEC 11172-3)"s);
+			Result->GetValue()->AddTag("interpretation", "MPEG Version 1 (ISO/IEC 11172-3)"s);
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("error", "The audio version ID \"" + to_string_cast(AudioVersionID) + "\" is reserved and should not be used.");
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The audio version ID \"" + to_string_cast(AudioVersionID) + "\" is reserved and should not be used.");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -12925,82 +12925,82 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 		{
 			if(BitRateIndex == 0x00)
 			{
-				Result->GetValue()->AppendTag("interpretation", "free format"s);
+				Result->GetValue()->AddTag("interpretation", "free format"s);
 			}
 			else if(BitRateIndex == 0x01)
 			{
-				Result->GetValue()->AppendTag("value", 32000u);
-				Result->GetValue()->AppendTag("interpretation", "32 kbit/s"s);
+				Result->GetValue()->AddTag("value", 32000u);
+				Result->GetValue()->AddTag("interpretation", "32 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x02)
 			{
-				Result->GetValue()->AppendTag("value", 64000u);
-				Result->GetValue()->AppendTag("interpretation", "64 kbit/s"s);
+				Result->GetValue()->AddTag("value", 64000u);
+				Result->GetValue()->AddTag("interpretation", "64 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x03)
 			{
-				Result->GetValue()->AppendTag("value", 96000u);
-				Result->GetValue()->AppendTag("interpretation", "96 kbit/s"s);
+				Result->GetValue()->AddTag("value", 96000u);
+				Result->GetValue()->AddTag("interpretation", "96 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x04)
 			{
-				Result->GetValue()->AppendTag("value", 128000u);
-				Result->GetValue()->AppendTag("interpretation", "128 kbit/s"s);
+				Result->GetValue()->AddTag("value", 128000u);
+				Result->GetValue()->AddTag("interpretation", "128 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x05)
 			{
-				Result->GetValue()->AppendTag("value", 160000u);
-				Result->GetValue()->AppendTag("interpretation", "160 kbit/s"s);
+				Result->GetValue()->AddTag("value", 160000u);
+				Result->GetValue()->AddTag("interpretation", "160 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x06)
 			{
-				Result->GetValue()->AppendTag("value", 192000u);
-				Result->GetValue()->AppendTag("interpretation", "192 kbit/s"s);
+				Result->GetValue()->AddTag("value", 192000u);
+				Result->GetValue()->AddTag("interpretation", "192 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x07)
 			{
-				Result->GetValue()->AppendTag("value", 224000u);
-				Result->GetValue()->AppendTag("interpretation", "224 kbit/s"s);
+				Result->GetValue()->AddTag("value", 224000u);
+				Result->GetValue()->AddTag("interpretation", "224 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x08)
 			{
-				Result->GetValue()->AppendTag("value", 256000u);
-				Result->GetValue()->AppendTag("interpretation", "256 kbit/s"s);
+				Result->GetValue()->AddTag("value", 256000u);
+				Result->GetValue()->AddTag("interpretation", "256 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x09)
 			{
-				Result->GetValue()->AppendTag("value", 288000u);
-				Result->GetValue()->AppendTag("interpretation", "288 kbit/s"s);
+				Result->GetValue()->AddTag("value", 288000u);
+				Result->GetValue()->AddTag("interpretation", "288 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
-				Result->GetValue()->AppendTag("value", 320000u);
-				Result->GetValue()->AppendTag("interpretation", "320 kbit/s"s);
+				Result->GetValue()->AddTag("value", 320000u);
+				Result->GetValue()->AddTag("interpretation", "320 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
-				Result->GetValue()->AppendTag("value", 352000u);
-				Result->GetValue()->AppendTag("interpretation", "352 kbit/s"s);
+				Result->GetValue()->AddTag("value", 352000u);
+				Result->GetValue()->AddTag("interpretation", "352 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
-				Result->GetValue()->AppendTag("value", 384000u);
-				Result->GetValue()->AppendTag("interpretation", "384 kbit/s"s);
+				Result->GetValue()->AddTag("value", 384000u);
+				Result->GetValue()->AddTag("interpretation", "384 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
-				Result->GetValue()->AppendTag("value", 416000u);
-				Result->GetValue()->AppendTag("interpretation", "416 kbit/s"s);
+				Result->GetValue()->AddTag("value", 416000u);
+				Result->GetValue()->AddTag("interpretation", "416 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
-				Result->GetValue()->AppendTag("value", 448000u);
-				Result->GetValue()->AppendTag("interpretation", "448 kbit/s"s);
+				Result->GetValue()->AddTag("value", 448000u);
+				Result->GetValue()->AddTag("interpretation", "448 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
-				Result->GetValue()->AppendTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
-				Result->GetValue()->AppendTag("interpretation", nullptr);
+				Result->GetValue()->AddTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+				Result->GetValue()->AddTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -13008,82 +13008,82 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 		{
 			if(BitRateIndex == 0x00)
 			{
-				Result->GetValue()->AppendTag("interpretation", "free format"s);
+				Result->GetValue()->AddTag("interpretation", "free format"s);
 			}
 			else if(BitRateIndex == 0x01)
 			{
-				Result->GetValue()->AppendTag("value", 32000u);
-				Result->GetValue()->AppendTag("interpretation", "32 kbit/s"s);
+				Result->GetValue()->AddTag("value", 32000u);
+				Result->GetValue()->AddTag("interpretation", "32 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x02)
 			{
-				Result->GetValue()->AppendTag("value", 48000u);
-				Result->GetValue()->AppendTag("interpretation", "48 kbit/s"s);
+				Result->GetValue()->AddTag("value", 48000u);
+				Result->GetValue()->AddTag("interpretation", "48 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x03)
 			{
-				Result->GetValue()->AppendTag("value", 56000u);
-				Result->GetValue()->AppendTag("interpretation", "56 kbit/s"s);
+				Result->GetValue()->AddTag("value", 56000u);
+				Result->GetValue()->AddTag("interpretation", "56 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x04)
 			{
-				Result->GetValue()->AppendTag("value", 64000u);
-				Result->GetValue()->AppendTag("interpretation", "64 kbit/s"s);
+				Result->GetValue()->AddTag("value", 64000u);
+				Result->GetValue()->AddTag("interpretation", "64 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x05)
 			{
-				Result->GetValue()->AppendTag("value", 80000u);
-				Result->GetValue()->AppendTag("interpretation", "80 kbit/s"s);
+				Result->GetValue()->AddTag("value", 80000u);
+				Result->GetValue()->AddTag("interpretation", "80 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x06)
 			{
-				Result->GetValue()->AppendTag("value", 96000u);
-				Result->GetValue()->AppendTag("interpretation", "96 kbit/s"s);
+				Result->GetValue()->AddTag("value", 96000u);
+				Result->GetValue()->AddTag("interpretation", "96 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x07)
 			{
-				Result->GetValue()->AppendTag("value", 112000u);
-				Result->GetValue()->AppendTag("interpretation", "112 kbit/s"s);
+				Result->GetValue()->AddTag("value", 112000u);
+				Result->GetValue()->AddTag("interpretation", "112 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x08)
 			{
-				Result->GetValue()->AppendTag("value", 128000u);
-				Result->GetValue()->AppendTag("interpretation", "128 kbit/s"s);
+				Result->GetValue()->AddTag("value", 128000u);
+				Result->GetValue()->AddTag("interpretation", "128 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x09)
 			{
-				Result->GetValue()->AppendTag("value", 160000u);
-				Result->GetValue()->AppendTag("interpretation", "160 kbit/s"s);
+				Result->GetValue()->AddTag("value", 160000u);
+				Result->GetValue()->AddTag("interpretation", "160 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
-				Result->GetValue()->AppendTag("value", 192000u);
-				Result->GetValue()->AppendTag("interpretation", "192 kbit/s"s);
+				Result->GetValue()->AddTag("value", 192000u);
+				Result->GetValue()->AddTag("interpretation", "192 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
-				Result->GetValue()->AppendTag("value", 224000u);
-				Result->GetValue()->AppendTag("interpretation", "224 kbit/s"s);
+				Result->GetValue()->AddTag("value", 224000u);
+				Result->GetValue()->AddTag("interpretation", "224 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
-				Result->GetValue()->AppendTag("value", 256000u);
-				Result->GetValue()->AppendTag("interpretation", "256 kbit/s"s);
+				Result->GetValue()->AddTag("value", 256000u);
+				Result->GetValue()->AddTag("interpretation", "256 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
-				Result->GetValue()->AppendTag("value", 320000u);
-				Result->GetValue()->AppendTag("interpretation", "320 kbit/s"s);
+				Result->GetValue()->AddTag("value", 320000u);
+				Result->GetValue()->AddTag("interpretation", "320 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
-				Result->GetValue()->AppendTag("value", 384000u);
-				Result->GetValue()->AppendTag("interpretation", "384 kbit/s"s);
+				Result->GetValue()->AddTag("value", 384000u);
+				Result->GetValue()->AddTag("interpretation", "384 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
-				Result->GetValue()->AppendTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
-				Result->GetValue()->AppendTag("interpretation", nullptr);
+				Result->GetValue()->AddTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+				Result->GetValue()->AddTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -13091,82 +13091,82 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 		{
 			if(BitRateIndex == 0x00)
 			{
-				Result->GetValue()->AppendTag("interpretation", "free format"s);
+				Result->GetValue()->AddTag("interpretation", "free format"s);
 			}
 			else if(BitRateIndex == 0x01)
 			{
-				Result->GetValue()->AppendTag("value", 32000u);
-				Result->GetValue()->AppendTag("interpretation", "32 kbit/s"s);
+				Result->GetValue()->AddTag("value", 32000u);
+				Result->GetValue()->AddTag("interpretation", "32 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x02)
 			{
-				Result->GetValue()->AppendTag("value", 40000u);
-				Result->GetValue()->AppendTag("interpretation", "40 kbit/s"s);
+				Result->GetValue()->AddTag("value", 40000u);
+				Result->GetValue()->AddTag("interpretation", "40 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x03)
 			{
-				Result->GetValue()->AppendTag("value", 48000u);
-				Result->GetValue()->AppendTag("interpretation", "48 kbit/s"s);
+				Result->GetValue()->AddTag("value", 48000u);
+				Result->GetValue()->AddTag("interpretation", "48 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x04)
 			{
-				Result->GetValue()->AppendTag("value", 56000u);
-				Result->GetValue()->AppendTag("interpretation", "56 kbit/s"s);
+				Result->GetValue()->AddTag("value", 56000u);
+				Result->GetValue()->AddTag("interpretation", "56 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x05)
 			{
-				Result->GetValue()->AppendTag("value", 64000u);
-				Result->GetValue()->AppendTag("interpretation", "64 kbit/s"s);
+				Result->GetValue()->AddTag("value", 64000u);
+				Result->GetValue()->AddTag("interpretation", "64 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x06)
 			{
-				Result->GetValue()->AppendTag("value", 80000u);
-				Result->GetValue()->AppendTag("interpretation", "80 kbit/s"s);
+				Result->GetValue()->AddTag("value", 80000u);
+				Result->GetValue()->AddTag("interpretation", "80 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x07)
 			{
-				Result->GetValue()->AppendTag("value", 96000u);
-				Result->GetValue()->AppendTag("interpretation", "96 kbit/s"s);
+				Result->GetValue()->AddTag("value", 96000u);
+				Result->GetValue()->AddTag("interpretation", "96 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x08)
 			{
-				Result->GetValue()->AppendTag("value", 112000u);
-				Result->GetValue()->AppendTag("interpretation", "112 kbit/s"s);
+				Result->GetValue()->AddTag("value", 112000u);
+				Result->GetValue()->AddTag("interpretation", "112 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x09)
 			{
-				Result->GetValue()->AppendTag("value", 128000u);
-				Result->GetValue()->AppendTag("interpretation", "128 kbit/s"s);
+				Result->GetValue()->AddTag("value", 128000u);
+				Result->GetValue()->AddTag("interpretation", "128 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
-				Result->GetValue()->AppendTag("value", 160000u);
-				Result->GetValue()->AppendTag("interpretation", "160 kbit/s"s);
+				Result->GetValue()->AddTag("value", 160000u);
+				Result->GetValue()->AddTag("interpretation", "160 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
-				Result->GetValue()->AppendTag("value", 192000u);
-				Result->GetValue()->AppendTag("interpretation", "192 kbit/s"s);
+				Result->GetValue()->AddTag("value", 192000u);
+				Result->GetValue()->AddTag("interpretation", "192 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
-				Result->GetValue()->AppendTag("value", 224000u);
-				Result->GetValue()->AppendTag("interpretation", "224 kbit/s"s);
+				Result->GetValue()->AddTag("value", 224000u);
+				Result->GetValue()->AddTag("interpretation", "224 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
-				Result->GetValue()->AppendTag("value", 256000u);
-				Result->GetValue()->AppendTag("interpretation", "256 kbit/s"s);
+				Result->GetValue()->AddTag("value", 256000u);
+				Result->GetValue()->AddTag("interpretation", "256 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
-				Result->GetValue()->AppendTag("value", 320000u);
-				Result->GetValue()->AppendTag("interpretation", "320 kbit/s"s);
+				Result->GetValue()->AddTag("value", 320000u);
+				Result->GetValue()->AddTag("interpretation", "320 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
-				Result->GetValue()->AppendTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
-				Result->GetValue()->AppendTag("interpretation", nullptr);
+				Result->GetValue()->AddTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+				Result->GetValue()->AddTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -13202,11 +13202,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyrig
 		
 		if(Copyright == 0x00)
 		{
-			Result->GetValue()->AppendTag("copyright", false);
+			Result->GetValue()->AddTag("copyright", false);
 		}
 		else if(Copyright == 0x01)
 		{
-			Result->GetValue()->AppendTag("copyright", true);
+			Result->GetValue()->AddTag("copyright", true);
 			Continue = false;
 		}
 		else
@@ -13242,21 +13242,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Emphasi
 		
 		if(Emphasis == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "no emphasis"s);
+			Result->GetValue()->AddTag("interpretation", "no emphasis"s);
 		}
 		else if(Emphasis == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "50/15 microsec. emphasis"s);
+			Result->GetValue()->AddTag("interpretation", "50/15 microsec. emphasis"s);
 		}
 		else if(Emphasis == 0x02)
 		{
-			Result->GetValue()->AppendTag("error", "The emphasis \"" + to_string_cast(Emphasis) + "\" is reserved and MUST not be used.");
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The emphasis \"" + to_string_cast(Emphasis) + "\" is reserved and MUST not be used.");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 		else if(Emphasis == 0x03)
 		{
-			Result->GetValue()->AppendTag("interpretation", "CCITT J.17"s);
+			Result->GetValue()->AddTag("interpretation", "CCITT J.17"s);
 		}
 		else
 		{
@@ -13291,21 +13291,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_LayerDe
 		
 		if(LayerDescription == 0x00)
 		{
-			Result->GetValue()->AppendTag("error", "The layer description \"" + to_string_cast(LayerDescription) + "\" is reserved and MUST NOT be used.");
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The layer description \"" + to_string_cast(LayerDescription) + "\" is reserved and MUST NOT be used.");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 		else if(LayerDescription == 0x01)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Layer III"s);
+			Result->GetValue()->AddTag("interpretation", "Layer III"s);
 		}
 		else if(LayerDescription == 0x02)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Layer II"s);
+			Result->GetValue()->AddTag("interpretation", "Layer II"s);
 		}
 		else if(LayerDescription == 0x03)
 		{
-			Result->GetValue()->AppendTag("interpretation", "Layer I"s);
+			Result->GetValue()->AddTag("interpretation", "Layer I"s);
 		}
 		else
 		{
@@ -13340,17 +13340,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(In
 		
 		if(Mode == 0x00)
 		{
-			Result->GetValue()->AppendTag("interpretation", "stereo"s);
+			Result->GetValue()->AddTag("interpretation", "stereo"s);
 		}
 		else if(Mode == 0x01)
 		{
 			if((LayerDescription == 0x03) || (LayerDescription == 0x02))
 			{
-				Result->GetValue()->AppendTag("interpretation", "joint stereo (intensity_stereo)"s);
+				Result->GetValue()->AddTag("interpretation", "joint stereo (intensity_stereo)"s);
 			}
 			else if(LayerDescription == 0x01)
 			{
-				Result->GetValue()->AppendTag("interpretation", "joint stereo (intensity_stereo and/or ms_stereo)"s);
+				Result->GetValue()->AddTag("interpretation", "joint stereo (intensity_stereo and/or ms_stereo)"s);
 			}
 			else
 			{
@@ -13360,11 +13360,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(In
 		}
 		else if(Mode == 0x02)
 		{
-			Result->GetValue()->AppendTag("interpretation", "dual_channel"s);
+			Result->GetValue()->AddTag("interpretation", "dual_channel"s);
 		}
 		else if(Mode == 0x03)
 		{
-			Result->GetValue()->AppendTag("interpretation", "single_channel"s);
+			Result->GetValue()->AddTag("interpretation", "single_channel"s);
 		}
 		else
 		{
@@ -13403,19 +13403,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 			{
 				if(ModeExtension == 0x00)
 				{
-					Result->GetValue()->AppendTag("subbands 4-31 in intensity_stereo, bound==4"s);
+					Result->GetValue()->AddTag("subbands 4-31 in intensity_stereo, bound==4"s);
 				}
 				else if(ModeExtension == 0x01)
 				{
-					Result->GetValue()->AppendTag("subbands 8-31 in intensity_stereo, bound==8"s);
+					Result->GetValue()->AddTag("subbands 8-31 in intensity_stereo, bound==8"s);
 				}
 				else if(ModeExtension == 0x02)
 				{
-					Result->GetValue()->AppendTag("subbands 12-31 in intensity_stereo, bound==12"s);
+					Result->GetValue()->AddTag("subbands 12-31 in intensity_stereo, bound==12"s);
 				}
 				else if(ModeExtension == 0x03)
 				{
-					Result->GetValue()->AppendTag("subbands 16-31 in intensity_stereo, bound==16"s);
+					Result->GetValue()->AddTag("subbands 16-31 in intensity_stereo, bound==16"s);
 				}
 				else
 				{
@@ -13427,23 +13427,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 			{
 				if(ModeExtension == 0x00)
 				{
-					Result->GetValue()->AppendTag("ms_stereo", "off"s);
-					Result->GetValue()->AppendTag("intensity_stereo", "off"s);
+					Result->GetValue()->AddTag("ms_stereo", "off"s);
+					Result->GetValue()->AddTag("intensity_stereo", "off"s);
 				}
 				else if(ModeExtension == 0x01)
 				{
-					Result->GetValue()->AppendTag("ms_stereo", "off"s);
-					Result->GetValue()->AppendTag("intensity_stereo", "on"s);
+					Result->GetValue()->AddTag("ms_stereo", "off"s);
+					Result->GetValue()->AddTag("intensity_stereo", "on"s);
 				}
 				else if(ModeExtension == 0x02)
 				{
-					Result->GetValue()->AppendTag("ms_stereo", "on"s);
-					Result->GetValue()->AppendTag("intensity_stereo", "off"s);
+					Result->GetValue()->AddTag("ms_stereo", "on"s);
+					Result->GetValue()->AddTag("intensity_stereo", "off"s);
 				}
 				else if(ModeExtension == 0x03)
 				{
-					Result->GetValue()->AppendTag("ms_stereo", "on"s);
-					Result->GetValue()->AppendTag("intensity_stereo", "on"s);
+					Result->GetValue()->AddTag("ms_stereo", "on"s);
+					Result->GetValue()->AddTag("intensity_stereo", "on"s);
 				}
 				else
 				{
@@ -13459,7 +13459,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 		}
 		else
 		{
-			Result->GetValue()->AppendTag("<ignored>"s);
+			Result->GetValue()->AddTag("<ignored>"s);
 		}
 	}
 	// finalization
@@ -13489,11 +13489,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Origina
 		
 		if(OriginalHome == 0x00)
 		{
-			Result->GetValue()->AppendTag("original", false);
+			Result->GetValue()->AddTag("original", false);
 		}
 		else if(OriginalHome == 0x01)
 		{
-			Result->GetValue()->AppendTag("original", true);
+			Result->GetValue()->AddTag("original", true);
 		}
 		else
 		{
@@ -13528,11 +13528,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Padding
 		
 		if(OriginalHome == 0x00)
 		{
-			Result->GetValue()->AppendTag("padding", false);
+			Result->GetValue()->AddTag("padding", false);
 		}
 		else if(OriginalHome == 0x01)
 		{
-			Result->GetValue()->AppendTag("padding", true);
+			Result->GetValue()->AddTag("padding", true);
 		}
 		else
 		{
@@ -13567,11 +13567,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Protect
 		
 		if(OriginalHome == 0x00)
 		{
-			Result->GetValue()->AppendTag("redundancy", false);
+			Result->GetValue()->AddTag("redundancy", false);
 		}
 		else if(OriginalHome == 0x01)
 		{
-			Result->GetValue()->AppendTag("redundancy", true);
+			Result->GetValue()->AddTag("redundancy", true);
 		}
 		else
 		{
@@ -13606,23 +13606,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Samplin
 		
 		if(SamplingFrequency == 0x00)
 		{
-			Result->GetValue()->AppendTag("value", 44100u);
-			Result->GetValue()->AppendTag("interpretation", "44.1 kHz"s);
+			Result->GetValue()->AddTag("value", 44100u);
+			Result->GetValue()->AddTag("interpretation", "44.1 kHz"s);
 		}
 		else if(SamplingFrequency == 0x01)
 		{
-			Result->GetValue()->AppendTag("value", 48000u);
-			Result->GetValue()->AppendTag("interpretation", "48 kHz"s);
+			Result->GetValue()->AddTag("value", 48000u);
+			Result->GetValue()->AddTag("interpretation", "48 kHz"s);
 		}
 		else if(SamplingFrequency == 0x02)
 		{
-			Result->GetValue()->AppendTag("value", 32000u);
-			Result->GetValue()->AppendTag("interpretation", "32 kHz"s);
+			Result->GetValue()->AddTag("value", 32000u);
+			Result->GetValue()->AddTag("interpretation", "32 kHz"s);
 		}
 		else if(SamplingFrequency == 0x03)
 		{
-			Result->GetValue()->AppendTag("error", "The sampling frequency \"" + to_string_cast(SamplingFrequency) + "\" is reserved and MUST NOT be used.");
-			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Result->GetValue()->AddTag("error", "The sampling frequency \"" + to_string_cast(SamplingFrequency) + "\" is reserved and MUST NOT be used.");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 		else
@@ -13723,15 +13723,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspect
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("signed"s);
-	Result->GetValue()->AppendTag("1bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("signed"s);
+	Result->GetValue()->AddTag("1bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 1}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
 			Continue = false;
 		}
 	}
@@ -13754,15 +13754,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspect
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("signed"s);
-	Result->GetValue()->AppendTag("5bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("signed"s);
+	Result->GetValue()->AddTag("5bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 5}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 5}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 5}) + ".");
 			Continue = false;
 		}
 	}
@@ -13785,15 +13785,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEnd
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("signed"s);
-	Result->GetValue()->AppendTag("12bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("signed"s);
+	Result->GetValue()->AddTag("12bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 12}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 12}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 12}) + ".");
 			Continue = false;
 		}
 	}
@@ -13818,16 +13818,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEnd
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("signed"s);
-	Result->GetValue()->AppendTag("32bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("signed"s);
+	Result->GetValue()->AddTag("32bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 32}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
 			Continue = false;
 		}
 	}
@@ -13854,16 +13854,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_Little
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("signed"s);
-	Result->GetValue()->AppendTag("32bit"s);
-	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("signed"s);
+	Result->GetValue()->AddTag("32bit"s);
+	Result->GetValue()->AddTag("little endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 32}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
 			Continue = false;
 		}
 	}
@@ -14151,9 +14151,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_0Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("0bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("0bit"s);
 	Result->GetValue()->SetAny(Reader.Get0Bits());
 	// finalization
 	Result->SetSuccess(Continue);
@@ -14167,15 +14167,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("1bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("1bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 1}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
 			Continue = false;
 		}
 	}
@@ -14196,15 +14196,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("2bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("2bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 2}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 2}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 2}) + ".");
 			Continue = false;
 		}
 	}
@@ -14225,15 +14225,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("3bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("3bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 3}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 3}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 3}) + ".");
 			Continue = false;
 		}
 	}
@@ -14254,15 +14254,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("4bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("4bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 4}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 4}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 4}) + ".");
 			Continue = false;
 		}
 	}
@@ -14283,15 +14283,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_5Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("5bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("5bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 5}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 5}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 5}) + ".");
 			Continue = false;
 		}
 	}
@@ -14312,15 +14312,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_6Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("6bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("6bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 6}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 6}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 6}) + ".");
 			Continue = false;
 		}
 	}
@@ -14341,15 +14341,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("7bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("7bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 7}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 7}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 7}) + ".");
 			Continue = false;
 		}
 	}
@@ -14370,15 +14370,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspe
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("8bit"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("8bit"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 8}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
 			Continue = false;
 		}
 	}
@@ -14399,9 +14399,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit_Alter
 	auto Result{Inspection::InitializeResult(Reader)};
 	std::uint8_t Value{0ul};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("alternative unary"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("alternative unary"s);
 	while(true)
 	{
 		if(Reader.Has(Inspection::Length{0, 1}) == true)
@@ -14415,7 +14415,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit_Alter
 			else
 			{
 				Result->SetSuccess(true);
-				Result->GetValue()->AppendTag(to_string_cast(Value + 1) + "bit"s);
+				Result->GetValue()->AddTag(to_string_cast(Value + 1) + "bit"s);
 				
 				break;
 			}
@@ -14423,8 +14423,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit_Alter
 		else
 		{
 			Result->SetSuccess(true);
-			Result->GetValue()->AppendTag(to_string_cast(Value) + "bit"s);
-			Result->GetValue()->AppendTag("ended by boundary"s);
+			Result->GetValue()->AddTag(to_string_cast(Value) + "bit"s);
+			Result->GetValue()->AddTag("ended by boundary"s);
 			
 			break;
 		}
@@ -14443,16 +14443,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_9Bit_BigEn
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("9bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("9bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 9}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 9}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 9}) + ".");
 			Continue = false;
 		}
 	}
@@ -14477,16 +14477,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_10Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("10bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("10bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 10}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 10}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 10}) + ".");
 			Continue = false;
 		}
 	}
@@ -14511,16 +14511,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_11Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("11bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("11bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 11}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 11}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 11}) + ".");
 			Continue = false;
 		}
 	}
@@ -14545,16 +14545,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_12Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("12bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("12bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 12}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 12}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 12}) + ".");
 			Continue = false;
 		}
 	}
@@ -14579,16 +14579,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_13Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("13bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("13bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 13}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 13}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 13}) + ".");
 			Continue = false;
 		}
 	}
@@ -14613,16 +14613,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_14Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("14bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("14bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 14}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 14}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 14}) + ".");
 			Continue = false;
 		}
 	}
@@ -14647,16 +14647,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_15Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("15bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("15bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 15}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 15}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 15}) + ".");
 			Continue = false;
 		}
 	}
@@ -14681,16 +14681,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("16bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("16bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 16}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
 			Continue = false;
 		}
 	}
@@ -14715,16 +14715,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_16Bit_Litt
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("16bit"s);
-	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("16bit"s);
+	Result->GetValue()->AddTag("little endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 16}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
 			Continue = false;
 		}
 	}
@@ -14749,16 +14749,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_17Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("17bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("17bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 17}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 17}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 17}) + ".");
 			Continue = false;
 		}
 	}
@@ -14784,16 +14784,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("20bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("20bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 20}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 20}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 20}) + ".");
 			Continue = false;
 		}
 	}
@@ -14819,16 +14819,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("24bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("24bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 24}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 24}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 24}) + ".");
 			Continue = false;
 		}
 	}
@@ -14986,9 +14986,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Alte
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("alternative unary"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("alternative unary"s);
 	// reading
 	if(Continue == true)
 	{
@@ -15030,16 +15030,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("32bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("32bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 32}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
 			Continue = false;
 		}
 	}
@@ -15066,16 +15066,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Litt
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("32bit"s);
-	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("32bit"s);
+	Result->GetValue()->AddTag("little endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 32}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
 			Continue = false;
 		}
 	}
@@ -15102,16 +15102,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("36bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("36bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 36}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 36}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 36}) + ".");
 			Continue = false;
 		}
 	}
@@ -15296,16 +15296,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_BigE
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("64bit"s);
-	Result->GetValue()->AppendTag("big endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("64bit"s);
+	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 64}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 64}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 64}) + ".");
 			Continue = false;
 		}
 	}
@@ -15336,16 +15336,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->AppendTag("integer"s);
-	Result->GetValue()->AppendTag("unsigned"s);
-	Result->GetValue()->AppendTag("64bit"s);
-	Result->GetValue()->AppendTag("little endian"s);
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("unsigned"s);
+	Result->GetValue()->AddTag("64bit"s);
+	Result->GetValue()->AddTag("little endian"s);
 	// verification
 	if(Continue == true)
 	{
 		if(Reader.Has(Inspection::Length{0, 64}) == false)
 		{
-			Result->GetValue()->AppendTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 64}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 64}) + ".");
 			Continue = false;
 		}
 	}
@@ -15430,7 +15430,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "bytes"s);
+		FieldValue->AddTag("unit", "bytes"s);
 	}
 	// reading
 	if(Continue == true)
@@ -15460,7 +15460,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "items"s);
+		FieldValue->AddTag("unit", "items"s);
 	}
 	// reading
 	if(Continue == true)
@@ -15494,7 +15494,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 		auto FieldValue{Result->GetValue()->AppendValue("VendorLength", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->AppendTag("unit", "bytes"s);
+		FieldValue->AddTag("unit", "bytes"s);
 	}
 	// reading
 	if(Continue == true)
