@@ -1515,7 +1515,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get(std::vector< std::string >{"ASF", "DataType"}, PartReader)};
+		auto PartResult{g_GetterRepository.Get(std::vector< std::string >{"ASF", "ExtendedContentDescription_ContentDescriptor_ValueDataType"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("ValueDataType", PartResult->GetValue());
@@ -2567,7 +2567,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get(std::vector< std::string >{"ASF", "DataType"}, PartReader)};
+		auto PartResult{g_GetterRepository.Get(std::vector< std::string >{"ASF", "Metadata_DescriptionRecord_DataType"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("DataType", PartResult->GetValue());
