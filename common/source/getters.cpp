@@ -12406,10 +12406,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_bi
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	Result->GetValue()->AppendTag("floating point"s);
+	Result->GetValue()->AppendTag("32bit"s);
+	Result->GetValue()->AppendTag("standard", "ISO/IEC/IEEE-60559:2011 binary32"s);
 	// verification
 	if(Continue == true)
 	{
-		if(Reader.GetRemainingLength() != Inspection::Length{4, 0})
+		if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
 			Result->GetValue()->AppendTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{4, 0}) + ".");
 			Continue = false;
@@ -12418,16 +12421,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_bi
 	// reading
 	if(Continue == true)
 	{
-		std::vector< std::uint8_t > Data;
+		std::uint8_t Data[4];
 		
-		Data.push_back(Reader.Get8Bits());
-		Data.push_back(Reader.Get8Bits());
-		Data.push_back(Reader.Get8Bits());
-		Data.push_back(Reader.Get8Bits());
-		Result->GetValue()->SetAny(*reinterpret_cast< const float * const >(&(Data.front())));
-		Result->GetValue()->AppendTag("floating point"s);
-		Result->GetValue()->AppendTag("32bit"s);
-		Result->GetValue()->AppendTag("standard", "ISO/IEC/IEEE-60559:2011 binary32"s);
+		Data[0] = Reader.Get8Bits();
+		Data[1] = Reader.Get8Bits();
+		Data[2] = Reader.Get8Bits();
+		Data[3] = Reader.Get8Bits();
+		Result->GetValue()->SetAny(*reinterpret_cast< const float * const >(Data));
 	}
 	// finalization
 	Result->SetSuccess(Continue);
