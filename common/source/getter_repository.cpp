@@ -12,6 +12,11 @@ namespace Inspection
 	public:
 		~Module(void)
 		{
+			for(auto EnumerationPair : _Enumerations)
+			{
+				delete EnumerationPair.second;
+				EnumerationPair.second = nullptr;
+			}
 			for(auto ModulePair : _Modules)
 			{
 				delete ModulePair.second;
