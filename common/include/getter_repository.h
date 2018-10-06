@@ -19,12 +19,12 @@ namespace Inspection
 	public:
 		GetterRepository(void);
 		~GetterRepository(void);
-		std::unique_ptr< Inspection::Result > Get(const std::vector< std::string > & ModulePathParts, const std::string & GetterName, Inspection::Reader & Reader);
-		Inspection::Enumeration * GetEnumeration(const std::vector< std::string > & ModulePathParts, const std::string & EnumerationIdentifier);
+		std::unique_ptr< Inspection::Result > Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader);
+		Inspection::Enumeration * GetEnumeration(const std::vector< std::string > & PathParts);
 	private:
-		Inspection::Enumeration * _GetOrLoadEnumeration(const std::vector< std::string > & ModulePathParts, const std::string & EnumerationName);
-		Inspection::GetterDescriptor * _GetOrLoadGetterDescriptor(const std::vector< std::string > & ModulePathParts, const std::string & GetterName);
-		Module * _GetOrLoadModule(const std::vector< std::string > & ModulePathParts);
+		Inspection::Enumeration * _GetOrLoadEnumeration(const std::vector< std::string > & PathParts);
+		Inspection::GetterDescriptor * _GetOrLoadGetterDescriptor(const std::vector< std::string > & PathParts);
+		Module * _GetOrLoadModule(const std::vector< std::string > & PathParts);
 		Module * _RootModule;
 	};
 	

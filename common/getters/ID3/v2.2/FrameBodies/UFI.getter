@@ -1,10 +1,8 @@
 <getter>
 	<part>
 		<getter>
-			<module>
-				<part>ASCII</part>
-			</module>
-			<name>String_Printable_EndedByTermination</name>
+			<part>ASCII</part>
+			<part>String_Printable_EndedByTermination</part>
 		</getter>
 		<value>
 			<append>
@@ -14,10 +12,8 @@
 	</part>
 	<part>
 		<getter>
-			<module>
-				<part>Buffers</part>
-			</module>
-			<name>UnsignedInteger_8Bit_EndedByLength</name>
+			<part>Buffers</part>
+			<part>UnsignedInteger_8Bit_EndedByLength</part>
 		</getter>
 		<value>
 			<append>
