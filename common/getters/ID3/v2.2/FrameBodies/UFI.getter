@@ -4,7 +4,7 @@
 			<module>
 				<part>ASCII</part>
 			</module>
-			<identifier>String_Printable_EndedByTermination</identifier>
+			<name>String_Printable_EndedByTermination</name>
 		</getter>
 		<value>
 			<append>
@@ -17,7 +17,7 @@
 			<module>
 				<part>Buffers</part>
 			</module>
-			<identifier>UnsignedInteger_8Bit_EndedByLength</identifier>
+			<name>UnsignedInteger_8Bit_EndedByLength</name>
 		</getter>
 		<value>
 			<append>

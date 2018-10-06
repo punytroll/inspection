@@ -5,7 +5,7 @@
 				<part>ID3</part>
 				<part>v2.3</part>
 			</module>
-			<identifier>Frame_Header_Identifier</identifier>
+			<name>Frame_Header_Identifier</name>
 		</getter>
 		<value>
 			<append>
@@ -18,7 +18,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_32Bit_BigEndian</identifier>
+			<name>UnsignedInteger_32Bit_BigEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -32,7 +32,7 @@
 				<part>ID3</part>
 				<part>v2.3</part>
 			</module>
-			<identifier>Frame_Header_Flags</identifier>
+			<name>Frame_Header_Flags</name>
 		</getter>
 		<value>
 			<append>

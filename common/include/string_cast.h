@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007  Hagen Möbius
+ * Copyright (C) 2007, 2018  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.1.7 of the string cast.
+ * This is version 1.1.8 of the string cast.
  **/
 
 #ifndef STRING_CAST_H

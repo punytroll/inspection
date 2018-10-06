@@ -4,7 +4,7 @@
 			<module>
 				<part>ASCII</part>
 			</module>
-			<identifier>String_Printable_EndedByTermination</identifier>
+			<name>String_Printable_EndedByTermination</name>
 		</getter>
 		<value>
 			<set/>
