@@ -11,8 +11,7 @@ namespace Inspection
 	class Result
 	{
 	public:
-		Result(const Inspection::Length & Offset) :
-			_Offset(Offset),
+		Result(void) :
 			_Success(false),
 			_Value(std::make_shared< Inspection::Value >())
 		{
@@ -66,18 +65,6 @@ namespace Inspection
 			throw std::invalid_argument("Unknown sub value \"" + Name + "\".");
 		}
 		
-		const Inspection::Length & GetLength(void) const
-		{
-			assert(_Value != nullptr);
-			
-			return _Value->GetLength();
-		}
-		
-		const Inspection::Length & GetOffset(void) const
-		{
-			return _Offset;
-		}
-		
 		void SetSuccess(bool Success)
 		{
 			_Success = Success;
@@ -90,31 +77,26 @@ namespace Inspection
 			return _Value;
 		}
 	private:
-		Inspection::Length _Offset;
 		bool _Success;
 		std::shared_ptr< Value > _Value;
 	};
 	
 	inline std::unique_ptr< Inspection::Result > InitializeResult(const Inspection::Buffer & Buffer)
 	{
-		return std::make_unique< Inspection::Result >(Buffer.GetPosition());
+		return std::make_unique< Inspection::Result >();
 	}
 	
 	inline std::unique_ptr< Inspection::Result > InitializeResult(const Inspection::Reader & Reader)
 	{
-		return std::make_unique< Inspection::Result >(Reader.GetPositionInBuffer());
+		return std::make_unique< Inspection::Result >();
 	}
 	
 	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Buffer & Buffer)
 	{
-		Result->GetValue()->SetOffset(Result->GetOffset());
-		Result->GetValue()->SetLength(Buffer.GetPosition() - Result->GetValue()->GetOffset());
 	}
 	
 	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Reader & Reader)
 	{
-		Result->GetValue()->SetOffset(Result->GetOffset());
-		Result->GetValue()->SetLength(Reader.GetPositionInBuffer() - Result->GetValue()->GetOffset());
 	}
 }
 
