@@ -6021,13 +6021,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
-		else if((Identifier == "TAL") || (Identifier == "TCM") || (Identifier == "TCO") || (Identifier == "TCP") || (Identifier == "TEN") || (Identifier == "TP1") || (Identifier == "TP2") || (Identifier == "TPA") || (Identifier == "TRK") || (Identifier == "TT1") || (Identifier == "TT2") || (Identifier == "TYE"))
+		else if((Identifier == "TAL") || (Identifier == "TCM") || (Identifier == "TCP") || (Identifier == "TEN") || (Identifier == "TP1") || (Identifier == "TP2") || (Identifier == "TPA") || (Identifier == "TRK") || (Identifier == "TT1") || (Identifier == "TT2") || (Identifier == "TYE"))
 		{
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_2_Frame_Body_T__(FieldReader)};
 			
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
+		}
+		else if(Identifier == "TCO")
+		{
+			Inspection::Reader PartReader{Reader, ClaimedSize};
+			auto PartResult{Get_ID3_2_2_Frame_Body_TCO(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "UFI")
 		{
@@ -6268,6 +6277,39 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_T__(Ins
 		auto FieldValue{Result->GetValue()->AppendValue("Information", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_TCO(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ID3_2_2_Frame_Body_T__(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetAny())};
+		auto Interpretation{GetContentTypeInterpretation2_3(Information)};
+		
+		if(std::get<0>(Interpretation) == true)
+		{
+			Result->GetValue("Information")->PrependTag("interpretation", std::get<1>(Interpretation));
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
