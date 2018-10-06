@@ -11,6 +11,7 @@ These patterns need to spread to all getter implementations:
 8. "AdvanceAfterValue": Append the value and THEN advance the reader position.
 9. "NoLoops": Getters must not implement their own loops but defer to multi-purpose array getters.
 10. "NoLengthVerification": Getters which defer to other getters instead of accessing the Reader directly, should do no verification step on the available length.
+11. "ExplicitArrays": Whenever using arrays, always append the array value instead of appending the items of the array.
 
 On the history of getters:
 ================================

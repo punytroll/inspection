@@ -851,7 +851,343 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptor[12]/sub:Value/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:0]/sub:ValueDataType/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:0]/sub:ValueDataType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Unicode string</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:0]/sub:ValueLength/value</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:0]/sub:Value/value</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:0]/sub:Value/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:0]/sub:Value/has-tag:empty</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:0]/sub:Value/has-tag:ended by termination and length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:ValueDataType/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:ValueDataType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Unicode string</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:ValueLength/value</argument>
+		</execute>
+		<expected-output>78</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:Value/value</argument>
+		</execute>
+		<expected-output>{D1607DBC-E323-4BE2-86A1-48A42A28441E}</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:Value/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:Value/has-tag:ended by termination and length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:Value/sub:GUID/value</argument>
+		</execute>
+		<expected-output>d1607dbc-e323-4be2-86a1-48a42a28441e</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:Value/sub:GUID/has-tag:guid</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:Value/sub:GUID/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:Value/sub:GUID/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>audio, music</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:ValueDataType/value</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:ValueDataType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Boolean</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:ValueLength/value</argument>
+		</execute>
+		<expected-output>4</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:Value/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:Value/tag:value/value</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:Value/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:Value/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:Value/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:Value/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:ValueDataType/value</argument>
+		</execute>
+		<expected-output>4</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:ValueDataType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Unsigned integer 64bit</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:ValueLength/value</argument>
+		</execute>
+		<expected-output>8</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:Value/value</argument>
+		</execute>
+		<expected-output>128035393740000000</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:Value/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:Value/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:Value/has-tag:64bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:Value/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:Value/sub:DateTime/value</argument>
+		</execute>
+		<expected-output>2006/09/24 02:42:54</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:Value/sub:DateTime/has-tag:date and time</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:6]/sub:Value/sub:DateTime/has-tag:from Microsoft filetime</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:12]/sub:NameLength/value</argument>
+		</execute>
+		<expected-output>16</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:12]/sub:Name/value</argument>
+		</execute>
+		<expected-output>WM/MCDI</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:12]/sub:ValueDataType/value</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:12]/sub:ValueDataType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Byte array</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:12]/sub:ValueLength/value</argument>
+		</execute>
+		<expected-output>76</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:12]/sub:Value/value</argument>
 		</execute>
 		<expected-output>36 00 2b 00 39 00 36 00 2b 00 34 00 30 00 36 00 30 00 2b 00 39 00 31 00 33 00 32 00 2b 00 45 00 31 00 41 00 30 00 2b 00 31 00 33 00 41 00 36 00 33 00 2b 00 31 00 39 00 35 00 42 00 32 00 2b 00 31 00 44 00 42 00 46 00 30 00 00 00</expected-output>
 	</test>
@@ -859,7 +1195,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptor[12]/sub:Value/tag:length/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:12]/sub:Value/tag:length/value</argument>
 		</execute>
 		<expected-output>76.0</expected-output>
 	</test>
@@ -867,9 +1203,73 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptor[12]/sub:Value/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:12]/sub:Value/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:16]/sub:ValueDataType/value</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:16]/sub:ValueDataType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Unsigned integer 32bit</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:16]/sub:ValueLength/value</argument>
+		</execute>
+		<expected-output>4</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:16]/sub:Value/value</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:16]/sub:Value/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:16]/sub:Value/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:16]/sub:Value/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:16]/sub:Value/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
 	</test>
 	<test>
 		<execute>
