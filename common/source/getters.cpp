@@ -7496,7 +7496,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(In
 	// reading
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("string"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
 		
 		if(Information == "1")
 		{
@@ -7534,7 +7534,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCON(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("string"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
 		auto Interpretation{GetContentTypeInterpretation2_3(Information)};
 		
 		if(std::get<0>(Interpretation) == true)
@@ -7565,7 +7565,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TFLT(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("string"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
 		std::string Interpretation;
 		
 		Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
@@ -7612,7 +7612,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TLAN(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("string"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
 		
 		try
 		{
@@ -7651,7 +7651,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TSRC(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("string"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
 		
 		if(Information.length() == 12)
 		{
@@ -8238,7 +8238,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -8250,8 +8250,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->ClearTags();
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else
@@ -8283,7 +8282,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -8295,7 +8294,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else
@@ -9431,7 +9430,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -9443,8 +9442,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->ClearTags();
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else if(TextEncoding == 0x02)
@@ -9456,7 +9454,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x03)
@@ -9468,7 +9466,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
 			}
 		}
 		else
@@ -9500,7 +9498,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -9512,8 +9510,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->ClearTags();
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny("String"));
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else if(TextEncoding == 0x02)
@@ -9525,7 +9522,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x03)
@@ -9537,7 +9534,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("string", FieldResult->GetAny());
+				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
 			}
 		}
 		else
