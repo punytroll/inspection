@@ -1108,15 +1108,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEn
 		
 		if(UnsignedInteger16Bit == 0x0000)
 		{
-			Result->GetValue()->PrependTag("value", false);
+			Result->GetValue()->AppendTag("value", false);
 		}
 		else if(UnsignedInteger16Bit == 0x0001)
 		{
-			Result->GetValue()->PrependTag("value", true);
+			Result->GetValue()->AppendTag("value", true);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("value", "<no interpretation>"s);
+			Result->GetValue()->AppendTag("value", nullptr);
 			Continue = false;
 		}
 	}
@@ -1147,15 +1147,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEn
 		
 		if(UnsignedInteger32Bit == 0x00000000)
 		{
-			Result->GetValue()->PrependTag("value", false);
+			Result->GetValue()->AppendTag("value", false);
 		}
 		else if(UnsignedInteger32Bit == 0x00000001)
 		{
-			Result->GetValue()->PrependTag("value", true);
+			Result->GetValue()->AppendTag("value", true);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("value", "<no interpretation>"s);
+			Result->GetValue()->AppendTag("value", nullptr);
 			Continue = false;
 		}
 	}
@@ -1255,19 +1255,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspect
 		
 		if(Type == 0x0001)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Video Codec"s);
+			Result->GetValue()->AppendTag("interpretation", "Video Codec"s);
 		}
 		else if(Type == 0x0002)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Audio Codec"s);
+			Result->GetValue()->AppendTag("interpretation", "Audio Codec"s);
 		}
 		else if(Type == 0xffff)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Unknown Codec"s);
+			Result->GetValue()->AppendTag("interpretation", "Unknown Codec"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("interpretation", nullptr);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -1551,31 +1551,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::R
 		
 		if(DataType == 0x0000)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Unicode string"s);
+			Result->GetValue()->AppendTag("interpretation", "Unicode string"s);
 		}
 		else if(DataType == 0x0001)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Byte array"s);
+			Result->GetValue()->AppendTag("interpretation", "Byte array"s);
 		}
 		else if(DataType == 0x0002)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Boolean"s);
+			Result->GetValue()->AppendTag("interpretation", "Boolean"s);
 		}
 		else if(DataType == 0x0003)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 32bit"s);
+			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 32bit"s);
 		}
 		else if(DataType == 0x0004)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 64bit"s);
+			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 64bit"s);
 		}
 		else if(DataType == 0x0005)
 		{
-			Result->GetValue()->PrependTag("interpretation", "Unsigned integer 16bit"s);
+			Result->GetValue()->AppendTag("interpretation", "Unsigned integer 16bit"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("interpretation", nullptr);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -1849,7 +1849,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("StartTime", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->PrependTag("unit", "milliseconds"s);
+		FieldValue->AppendTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1858,7 +1858,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("EndTime", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->PrependTag("unit", "milliseconds"s);
+		FieldValue->AppendTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1867,7 +1867,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("DataBitrate", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->PrependTag("unit", "bits per second"s);
+		FieldValue->AppendTag("unit", "bits per second"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1876,7 +1876,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("BufferSize", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->PrependTag("unit", "milliseconds"s);
+		FieldValue->AppendTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1885,7 +1885,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("InitialBufferFullness", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->PrependTag("unit", "milliseconds"s);
+		FieldValue->AppendTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1894,7 +1894,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateDataBitrate", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->PrependTag("unit", "bits per second"s);
+		FieldValue->AppendTag("unit", "bits per second"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1903,7 +1903,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateBufferSize", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->PrependTag("unit", "milliseconds"s);
+		FieldValue->AppendTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -1912,7 +1912,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		auto FieldValue{Result->GetValue()->AppendValue("AlternateInitialBufferFullness", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-		FieldValue->PrependTag("unit", "milliseconds"s);
+		FieldValue->AppendTag("unit", "milliseconds"s);
 	}
 	// reading
 	if(Continue == true)
@@ -2017,7 +2017,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_GUID(Inspection::Reade
 	{
 		auto GUIDInterpretation{Get_GUID_Interpretation(std::experimental::any_cast< Inspection::GUID >(Result->GetAny()))};
 		
-		Result->GetValue()->PrependTag("interpretation", GUIDInterpretation);
+		Result->GetValue()->AppendTag("interpretation", GUIDInterpretation);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3359,7 +3359,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("BlockAlignment", FieldResult->GetValue())};
 		
-		FieldValue->PrependTag("unit", "bytes"s);
+		FieldValue->AppendTag("unit", "bytes"s);
 		UpdateState(Continue, FieldResult);
 	}
 	// reading
@@ -3376,7 +3376,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("CodecSpecificDataSize", FieldResult->GetValue())};
 		
-		FieldValue->PrependTag("unit", "bytes"s);
+		FieldValue->AppendTag("unit", "bytes"s);
 		UpdateState(Continue, FieldResult);
 	}
 	// reading
@@ -6026,8 +6026,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 		{
 			auto Genre{Inspection::Get_ID3_1_Genre(GenreNumber)};
 			
-			Result->GetValue()->PrependTag("interpretation", Genre);
-			Result->GetValue()->PrependTag("standard", "ID3v1"s);
+			Result->GetValue()->AppendTag("interpretation", Genre);
+			Result->GetValue()->AppendTag("standard", "ID3v1"s);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
@@ -6035,12 +6035,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 			{
 				auto Genre{Inspection::Get_ID3_1_Winamp_Genre(GenreNumber)};
 				
-				Result->GetValue()->PrependTag("interpretation", Genre);
-				Result->GetValue()->PrependTag("standard", "Winamp extension"s);
+				Result->GetValue()->AppendTag("interpretation", Genre);
+				Result->GetValue()->AppendTag("standard", "Winamp extension"s);
 			}
 			catch(Inspection::UnknownValueException & Exception)
 			{
-				Result->GetValue()->PrependTag("interpretation", nullptr);
+				Result->GetValue()->AppendTag("interpretation", nullptr);
 			}
 		}
 	}
@@ -6127,15 +6127,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->PrependTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
-			Result->GetValue()->PrependTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AppendTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->PrependTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
-			Result->GetValue()->PrependTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AppendTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
 		}
 		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
@@ -6263,19 +6263,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_Ima
 		
 		if(ImageFormat == "-->")
 		{
-			Result->GetValue()->PrependTag("mime-type", "application/x-url"s);
+			Result->GetValue()->AppendTag("mime-type", "application/x-url"s);
 		}
 		else if(ImageFormat == "PNG")
 		{
-			Result->GetValue()->PrependTag("mime-type", "image/png"s);
+			Result->GetValue()->AppendTag("mime-type", "image/png"s);
 		}
 		else if(ImageFormat == "JPG")
 		{
-			Result->GetValue()->PrependTag("mime-type", "image/jpeg"s);
+			Result->GetValue()->AppendTag("mime-type", "image/jpeg"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("mime-type", "<unrecognized>"s);
+			Result->GetValue()->AppendTag("mime-type", nullptr);
 		}
 	}
 	// finalization
@@ -6301,20 +6301,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_Pic
 	// interpretation
 	if(Continue == true)
 	{
-		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		std::string Interpretation;
+		Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
 		
-		Result->GetValue()->PrependTag("standard", "ID3 2.2"s);
+		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		
 		try
 		{
-			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
+			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
+			Result->GetValue()->AppendTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
-			Interpretation = "unknown";
 		}
-		Result->GetValue()->PrependTag("interpretation", Interpretation);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -6374,7 +6374,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_TCO(Ins
 		
 		if(std::get<0>(Interpretation) == true)
 		{
-			Result->GetValue("Information")->PrependTag("interpretation", std::get<1>(Interpretation));
+			Result->GetValue("Information")->AppendTag("interpretation", std::get<1>(Interpretation));
 		}
 	}
 	// finalization
@@ -6465,20 +6465,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Header_Ident
 		
 		try
 		{
-			Result->GetValue()->PrependTag("interpretation", Get_ID3_2_2_FrameIdentifier_Interpretation(Identifier));
-			Result->GetValue()->PrependTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AppendTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_2_FrameIdentifier_Interpretation(Identifier));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Identifier == "TCP")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Compilation"s);
-				Result->GetValue()->PrependTag("standard", "<from the internet>"s);
-				Result->GetValue()->PrependTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
+				Result->GetValue()->AppendTag("standard", "<from the internet>"s);
+				Result->GetValue()->AppendTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
+				Result->GetValue()->AppendTag("interpretation", "Compilation"s);
 			}
 			else
 			{
-				Result->GetValue()->PrependTag("error", "Unknown frame identifier \"" + Identifier + "\".");
+				Result->GetValue()->AppendTag("error", "Unknown frame identifier \"" + Identifier + "\".");
+				Result->GetValue()->AppendTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -6525,8 +6526,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspectio
 			Result->SetValue(Alternative2Result->GetValue());
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-				Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+				Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+				Result->GetValue()->AppendTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 			}
 		}
 	}
@@ -6600,17 +6601,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextEncoding(Inspe
 		
 		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->PrependTag("name", "Latin alphabet No. 1"s);
-			Result->GetValue()->PrependTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AppendTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AppendTag("name", "Latin alphabet No. 1"s);
 		}
 		else if(TextEncoding == 0x01)
 		{
-			Result->GetValue()->PrependTag("name", "UCS-2"s);
-			Result->GetValue()->PrependTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("name", "UCS-2"s);
 		}
 		else
 		{
 			Result->GetValue()->AppendTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is unknown.");
+			Result->GetValue()->AppendTag("name", nullptr);
 			Continue = false;
 		}
 	}
@@ -6879,15 +6881,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->PrependTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
-			Result->GetValue()->PrependTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AppendTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->PrependTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
-			Result->GetValue()->PrependTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AppendTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
 		}
 		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
@@ -6990,21 +6992,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC_Pi
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
+		Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
 		
 		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		std::string Interpretation;
 		
 		try
 		{
-			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
+			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			Interpretation = "unknown";
+			Result->GetValue()->AppendTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
-		Result->GetValue()->PrependTag("interpretation", Interpretation);
+		
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -7125,7 +7127,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB_MI
 		/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
 		if(Continue == false)
 		{
-			Result->GetValue()->PrependTag("error", "This field could not be interpreted as a terminated ASCII string of printable characters."s);
+			Result->GetValue()->AppendTag("error", "This field could not be interpreted as a terminated ASCII string of printable characters."s);
 		}
 	}
 	// finalization
@@ -7161,7 +7163,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(In
 			if(Continue == true)
 			{
 				Result->GetValue()->AppendValue("String", Alternative2Result->GetValue());
-				Result->GetValue("String")->PrependTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
+				Result->GetValue("String")->AppendTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
 			}
 		}
 	}
@@ -7186,8 +7188,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
-			Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
-			Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
+			Result->GetValue("Counter")->AppendTag("standard", "ID3 2.3"s);
+			Result->GetValue("Counter")->AppendTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Continue = false;
 		}
 		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
@@ -7203,7 +7205,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
-			Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Result->GetValue("Counter")->AppendTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			Continue = false;
 		}
 	}
@@ -7233,7 +7235,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
 		
-		FieldValue->PrependTag("standard", "ID3 2.3"s);
+		FieldValue->AppendTag("standard", "ID3 2.3"s);
 		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
@@ -7243,11 +7245,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		
 		if(Rating > 0)
 		{
-			Result->GetValue("Rating")->PrependTag("interpretation", to_string_cast(Rating) + " / 255");
+			Result->GetValue("Rating")->AppendTag("interpretation", to_string_cast(Rating) + " / 255");
 		}
 		else
 		{
-			Result->GetValue("Rating")->PrependTag("interpretation", "unknown"s);
+			Result->GetValue("Rating")->AppendTag("interpretation", nullptr);
 		}
 	}
 	// reading
@@ -7266,8 +7268,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue("Counter")->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
-			Result->GetValue("Counter")->PrependTag("standard", "ID3 2.3"s);
+			Result->GetValue("Counter")->AppendTag("standard", "ID3 2.3"s);
+			Result->GetValue("Counter")->AppendTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -7283,7 +7285,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue("Counter")->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Result->GetValue("Counter")->AppendTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -7503,15 +7505,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(In
 		
 		if(Information == "1")
 		{
-			Result->GetValue("Information")->PrependTag("interpretation", "yes, this is part of a comilation"s);
+			Result->GetValue("Information")->AppendTag("interpretation", "yes, this is part of a comilation"s);
 		}
 		else if(Information == "0")
 		{
-			Result->GetValue("Information")->PrependTag("interpretation", "no, this is not part of a compilation"s);
+			Result->GetValue("Information")->AppendTag("interpretation", "no, this is not part of a compilation"s);
 		}
 		else
 		{
-			Result->GetValue("Information")->PrependTag("interpretation", nullptr);
+			Result->GetValue("Information")->AppendTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -7542,7 +7544,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCON(In
 		
 		if(std::get<0>(Interpretation) == true)
 		{
-			Result->GetValue("Information")->PrependTag("interpretation", std::get<1>(Interpretation));
+			Result->GetValue("Information")->AppendTag("interpretation", std::get<1>(Interpretation));
 		}
 	}
 	// finalization
@@ -7568,29 +7570,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TFLT(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
-		std::string Interpretation;
+		Result->GetValue("Information")->AppendTag("standard", "ID3 2.3"s);
 		
-		Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
+		
 		try
 		{
-			Interpretation = Get_ID3_2_3_FileType_Interpretation(Information);
+			Result->GetValue("Information")->AppendTag("interpretation", Get_ID3_2_3_FileType_Interpretation(Information));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Information == "/3")
 			{
-				Interpretation = "MPEG 1/2 layer III";
-				Result->GetValue("Information")->PrependTag("error", "The file type could not be interpreted strictly according to the standard, but this seems plausible."s);
+				Result->GetValue("Information")->AppendTag("error", "The file type could not be interpreted strictly according to the standard, but this seems plausible."s);
+				Result->GetValue("Information")->AppendTag("interpretation", "MPEG 1/2 layer III");
 			}
 			else
 			{
-				Interpretation = "unkown";
-				Result->GetValue("Information")->PrependTag("error", "The file type could not be interpreted."s);
+				Result->GetValue("Information")->AppendTag("error", "The file type could not be interpreted."s);
+				Result->GetValue("Information")->AppendTag("interpretation", nullptr);
 			}
 			Continue = false;
 		}
-		Result->GetValue("Information")->PrependTag("interpretation", Interpretation);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -7615,20 +7616,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TLAN(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
-		
 		try
 		{
-			auto Interpretation{Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(Information)};
+			auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
 			
-			Result->GetValue("Information")->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-			Result->GetValue("Information")->PrependTag("interpretation", Interpretation);
+			Result->GetValue("Information")->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+			Result->GetValue("Information")->AppendTag("interpretation", Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(Information));
 		}
 		catch(...)
 		{
-			Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
-			Result->GetValue("Information")->PrependTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
-			Result->GetValue("Information")->PrependTag("interpretation", nullptr);
+			Result->GetValue("Information")->AppendTag("standard", "ID3 2.3"s);
+			Result->GetValue("Information")->AppendTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
+			Result->GetValue("Information")->AppendTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -7658,31 +7657,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TSRC(In
 		
 		if(Information.length() == 12)
 		{
-			Result->GetValue("Information")->PrependTag("standard", "ISRC Bulletin 2015/01"s);
-			Result->GetValue("Information")->PrependTag("DesignationCode", Information.substr(7, 5));
-			Result->GetValue("Information")->PrependTag("YearOfReference", Information.substr(5, 2));
-			Result->GetValue("Information")->PrependTag("RegistrantCode", Information.substr(2, 3));
+			Result->GetValue("Information")->AppendTag("standard", "ISRC Bulletin 2015/01"s);
+			Result->GetValue("Information")->AppendTag("DesignationCode", Information.substr(7, 5));
+			Result->GetValue("Information")->AppendTag("YearOfReference", Information.substr(5, 2));
+			Result->GetValue("Information")->AppendTag("RegistrantCode", Information.substr(2, 3));
 			
 			std::string CountryCode{Information.substr(0, 2)};
-			auto CountryCodeValue{Result->GetValue("Information")->PrependTag("CountryCode", CountryCode)};
+			auto CountryCodeValue{Result->GetValue("Information")->AppendTag("CountryCode", CountryCode)};
 			
 			try
 			{
-				CountryCodeValue->PrependTag("standard", "ISO 3166-1 alpha-2"s);
-				CountryCodeValue->PrependTag("interpretation", Inspection::Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(CountryCode));
+				CountryCodeValue->AppendTag("standard", "ISO 3166-1 alpha-2"s);
+				CountryCodeValue->AppendTag("interpretation", Inspection::Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(CountryCode));
 			}
 			catch(Inspection::UnknownValueException & Exception)
 			{
-				CountryCodeValue->PrependTag("standard", "ISRC Bulletin 2015/01"s);
-				CountryCodeValue->PrependTag("error", "The ISRC string needs to contain a two letter country code from ISO 3166-1 alpha-2."s);
-				CountryCodeValue->PrependTag("interpretation", nullptr);
+				CountryCodeValue->AppendTag("standard", "ISRC Bulletin 2015/01"s);
+				CountryCodeValue->AppendTag("error", "The ISRC string needs to contain a two letter country code from ISO 3166-1 alpha-2."s);
+				CountryCodeValue->AppendTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
 		else
 		{
-			Result->GetValue("Information")->PrependTag("standard", "ID3 2.3"s);
-			Result->GetValue("Information")->PrependTag("error", "The TSRC frame needs to contain a twelve letter ISRC code from ISRC Bulletin 2015/01."s);
+			Result->GetValue("Information")->AppendTag("standard", "ID3 2.3"s);
+			Result->GetValue("Information")->AppendTag("error", "The TSRC frame needs to contain a twelve letter ISRC code from ISRC Bulletin 2015/01."s);
 			Continue = false;
 		}
 	}
@@ -8018,62 +8017,64 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Ident
 		
 		try
 		{
-			Result->GetValue()->PrependTag("interpretation", Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier));
-			Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Identifier == "RGAD")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Replay gain adjustment"s);
-				Result->GetValue()->PrependTag("standard", "Hydrogenaudio ReplayGain"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org."s);
+				Result->GetValue()->AppendTag("standard", "Hydrogenaudio ReplayGain"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org."s);
+				Result->GetValue()->AppendTag("interpretation", "Replay gain adjustment"s);
 			}
 			else if(Identifier == "TCMP")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Part of a compilation"s);
-				Result->GetValue()->PrependTag("standard", "iTunes"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
+				Result->GetValue()->AppendTag("standard", "iTunes"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
+				Result->GetValue()->AppendTag("interpretation", "Part of a compilation"s);
 			}
 			else if(Identifier == "TDRC")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Recording time"s);
-				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("interpretation", "Recording time"s);
 			}
 			else if(Identifier == "TDTG")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Tagging time"s);
-				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("interpretation", "Tagging time"s);
 			}
 			else if(Identifier == "TSST")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Set subtitle"s);
-				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("interpretation", "Set subtitle"s);
 			}
 			else if(Identifier == "TSOA")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Album sort order"s);
-				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("interpretation", "Album sort order"s);
 			}
 			else if(Identifier == "TSOP")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Performer sort order"s);
-				Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+				Result->GetValue()->AppendTag("interpretation", "Performer sort order"s);
 			}
 			else if(Identifier == "TSO2")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Album artist sort order"s);
-				Result->GetValue()->PrependTag("standard", "iTunes"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order."s);
+				Result->GetValue()->AppendTag("standard", "iTunes"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order."s);
+				Result->GetValue()->AppendTag("interpretation", "Album artist sort order"s);
 			}
 			else
 			{
-				Result->GetValue()->PrependTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+				Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
+				Result->GetValue()->AppendTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+				Result->GetValue()->AppendTag("interpretation", nullptr);
 			}
 		}
 	}
@@ -8119,12 +8120,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 			if(Continue == true)
 			{
 				Result->SetValue(Alternative2Result->GetValue());
-				Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-				Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+				Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+				Result->GetValue()->AppendTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 			}
 			else
 			{
-				Result->GetValue()->PrependTag("error", "Could not read a language for ID3v2.3."s);
+				Result->GetValue()->AppendTag("error", "Could not read a language for ID3v2.3."s);
 			}
 		}
 	}
@@ -8197,23 +8198,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspe
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
+		Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
 		
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->PrependTag("name", "Latin alphabet No. 1"s);
-			Result->GetValue()->PrependTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AppendTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AppendTag("name", "Latin alphabet No. 1"s);
 		}
 		else if(TextEncoding == 0x01)
 		{
-			Result->GetValue()->PrependTag("name", "UCS-2"s);
-			Result->GetValue()->PrependTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("name", "UCS-2"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is not known.");
+			Result->GetValue()->AppendTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is not known.");
+			Result->GetValue()->AppendTag("name", nullptr);
 			Continue = false;
 		}
 	}
@@ -8241,7 +8243,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -8253,7 +8255,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny("String"));
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else
@@ -8285,7 +8287,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -8297,7 +8299,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny("String"));
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else
@@ -8328,7 +8330,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->PrependTag("content", Result->GetValue("Identifier")->GetTagAny("interpretation"));
+		Result->GetValue()->AppendTag("content", Result->GetValue("Identifier")->GetTagAny("interpretation"));
 		
 		auto FieldStart{Reader.GetConsumedLength()};
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny("Identifier"))};
@@ -8429,15 +8431,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->PrependTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
-			Result->GetValue()->PrependTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AppendTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->PrependTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->PrependTag("handled size", to_string_cast(HandledSize));
-			Result->GetValue()->PrependTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AppendTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AppendTag("claimed size", to_string_cast(ClaimedSize));
+			Result->GetValue()->AppendTag("handled size", to_string_cast(HandledSize));
 		}
 		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
@@ -8538,20 +8540,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC_Pi
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
+		Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
 		
 		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		std::string Interpretation;
 		
 		try
 		{
-			Interpretation = Get_ID3_2_PictureType_Interpretation(PictureType);
+			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			Interpretation = "unknown";
+			Result->GetValue()->AppendTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
+			Result->GetValue()->AppendTag("interpretation", nullptr);
+			Continue = false;
 		}
-		Result->GetValue()->PrependTag("interpretation", Interpretation);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -8643,7 +8645,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
 		
-		FieldValue->PrependTag("standard", "ID3 2.3"s);
+		FieldValue->AppendTag("standard", "ID3 2.3"s);
 		UpdateState(Continue, FieldResult);
 	}
 	// interpretation
@@ -8653,11 +8655,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		
 		if(Rating > 0)
 		{
-			Result->GetValue("Rating")->PrependTag("interpretation", to_string_cast(Rating) + " / 255");
+			Result->GetValue("Rating")->AppendTag("interpretation", to_string_cast(Rating) + " / 255");
 		}
 		else
 		{
-			Result->GetValue("Rating")->PrependTag("interpretation", "unknown"s);
+			Result->GetValue("Rating")->AppendTag("interpretation", nullptr);
 		}
 	}
 	// reading
@@ -8676,8 +8678,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			FieldValue->PrependTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
-			FieldValue->PrependTag("standard", "ID3 2.4"s);
+			FieldValue->AppendTag("standard", "ID3 2.4"s);
+			FieldValue->AppendTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -8693,7 +8695,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			FieldValue->PrependTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			FieldValue->AppendTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -8976,20 +8978,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header_Ident
 		
 		try
 		{
-			Result->GetValue()->PrependTag("interpretation", Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier));
-			Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AppendTag("interpretation", Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Identifier == "TYER")
 			{
-				Result->GetValue()->PrependTag("interpretation", "Year"s);
-				Result->GetValue()->PrependTag("standard", "ID3 2.3"s);
-				Result->GetValue()->PrependTag("error", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3."s);
+				Result->GetValue()->AppendTag("standard", "ID3 2.3"s);
+				Result->GetValue()->AppendTag("error", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3."s);
+				Result->GetValue()->AppendTag("interpretation", "Year"s);
 			}
 			else
 			{
-				Result->GetValue()->PrependTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+				Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+				Result->GetValue()->AppendTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+				Result->GetValue()->AppendTag("interpretation", nullptr);
 			}
 		}
 	}
@@ -9042,13 +9046,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 				
 				if(Code == "XXX")
 				{
-					Result->GetValue()->PrependTag("standard", "ID3 2.4"s);
-					Result->GetValue()->PrependTag("interpretation", nullptr);
+					Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+					Result->GetValue()->AppendTag("interpretation", "the language is unknown"s);
 				}
 				else
 				{
-					Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-					Result->GetValue()->PrependTag("error", "The language code \"" + Code + "\" is unknown."s);
+					Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+					Result->GetValue()->AppendTag("error", "The language code \"" + Code + "\" is unknown."s);
 					Continue = false;
 				}
 			}
@@ -9062,8 +9066,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 				// interpretation
 				if(Continue == true)
 				{
-					Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-					Result->GetValue()->PrependTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
+					Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+					Result->GetValue()->AppendTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 				}
 			}
 		}
@@ -9379,33 +9383,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextEncoding(Inspe
 	// interpretation
 	if(Continue == true)
 	{
+		Result->GetValue()->AppendTag("standard", "ID3 2.4"s);
+		
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
 		
 		if(TextEncoding == 0x00)
 		{
-			Result->GetValue()->PrependTag("name", "Latin alphabet No. 1"s);
-			Result->GetValue()->PrependTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AppendTag("standard", "ISO/IEC 8859-1:1998"s);
+			Result->GetValue()->AppendTag("name", "Latin alphabet No. 1"s);
 		}
 		else if(TextEncoding == 0x01)
 		{
-			Result->GetValue()->PrependTag("name", "UTF-16"s);
-			Result->GetValue()->PrependTag("standard", "RFC 2781"s);
-			Result->GetValue()->PrependTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("standard", "RFC 2781"s);
+			Result->GetValue()->AppendTag("name", "UTF-16"s);
 		}
 		else if(TextEncoding == 0x02)
 		{
-			Result->GetValue()->PrependTag("name", "UTF-16BE"s);
-			Result->GetValue()->PrependTag("standard", "RFC 2781"s);
-			Result->GetValue()->PrependTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("standard", "RFC 2781"s);
+			Result->GetValue()->AppendTag("name", "UTF-16BE"s);
 		}
 		else if(TextEncoding == 0x03)
 		{
-			Result->GetValue()->PrependTag("name", "UTF-8"s);
-			Result->GetValue()->PrependTag("standard", "RFC 2279"s);
-			Result->GetValue()->PrependTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("standard", "ISO/IEC 10646-1:1993"s);
+			Result->GetValue()->AppendTag("standard", "RFC 2279"s);
+			Result->GetValue()->AppendTag("name", "UTF-8"s);
 		}
 		else
 		{
+			Result->GetValue()->AppendTag("error", "The text encoding \"" + to_string_cast(TextEncoding) + "\" is unknown.");
+			Result->GetValue()->AppendTag("name", nullptr);
 			Continue = false;
 		}
 	}
@@ -9433,7 +9441,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -9445,7 +9453,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny("String"));
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else if(TextEncoding == 0x02)
@@ -9457,7 +9465,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x03)
@@ -9469,7 +9477,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
 			}
 		}
 		else
@@ -9501,7 +9509,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -9513,7 +9521,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny("String"));
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny("String"));
 			}
 		}
 		else if(TextEncoding == 0x02)
@@ -9525,7 +9533,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x03)
@@ -9537,7 +9545,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->PrependTag("value", FieldResult->GetAny());
+				Result->GetValue()->AppendTag("value", FieldResult->GetAny());
 			}
 		}
 		else
@@ -9604,7 +9612,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		{
 			ReplayGainAdjustment *= -1.0f;
 		}
-		Result->GetValue()->PrependTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
+		Result->GetValue()->AppendTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -9633,19 +9641,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		
 		if(NameCode == 0x00)
 		{
-			Result->GetValue()->PrependTag("interpretation", "not set"s);
+			Result->GetValue()->AppendTag("interpretation", "not set"s);
 		}
 		else if(NameCode == 0x01)
 		{
-			Result->GetValue()->PrependTag("interpretation", "track gain adjustment"s);
+			Result->GetValue()->AppendTag("interpretation", "track gain adjustment"s);
 		}
 		else if(NameCode == 0x02)
 		{
-			Result->GetValue()->PrependTag("interpretation", "album gain adjustment"s);
+			Result->GetValue()->AppendTag("interpretation", "album gain adjustment"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("error", "This value is unknown and MUST NOT be used."s);
+			Result->GetValue()->AppendTag("error", "The value \"" + to_string_cast(NameCode) + "\" is unknown and MUST NOT be used."s);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -9676,23 +9685,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		
 		if(OriginatorCode == 0x00)
 		{
-			Result->GetValue()->PrependTag("interpretation", "unspecified"s);
+			Result->GetValue()->AppendTag("interpretation", "unspecified"s);
 		}
 		else if(OriginatorCode == 0x01)
 		{
-			Result->GetValue()->PrependTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
+			Result->GetValue()->AppendTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
 		}
 		else if(OriginatorCode == 0x02)
 		{
-			Result->GetValue()->PrependTag("interpretation", "set by user"s);
+			Result->GetValue()->AppendTag("interpretation", "set by user"s);
 		}
 		else if(OriginatorCode == 0x03)
 		{
-			Result->GetValue()->PrependTag("interpretation", "determined automatically"s);
+			Result->GetValue()->AppendTag("interpretation", "determined automatically"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("error", "This value is unknown and MUST NOT be used."s);
+			Result->GetValue()->AppendTag("error", "The value \"" + to_string_cast(OriginatorCode) + "\" is unknown and MUST NOT be used."s);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -9721,7 +9731,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	{
 		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetAny()))};
 		
-		Result->GetValue()->PrependTag("interpretation", ReplayGainAdjustment / 10.0f);
+		Result->GetValue()->AppendTag("interpretation", ReplayGainAdjustment / 10.0f);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -9750,11 +9760,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		
 		if(SignBit == 0x00)
 		{
-			Result->GetValue()->PrependTag("interpretation", "positive gain (boost)"s);
+			Result->GetValue()->AppendTag("interpretation", "positive gain (boost)"s);
+		}
+		else if(SignBit == 0x01)
+		{
+			Result->GetValue()->AppendTag("interpretation", "negative gain (attenuation)"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("interpretation", "negative gain (attenuation)"s);
+			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
 	// finalization
@@ -9941,7 +9956,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
+			Result->GetValue()->AppendTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
 			Continue = false;
 		}
 		// verification
@@ -10248,15 +10263,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 	// reading
 	if(Continue == true)
 	{
-		const Inspection::GUID & GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetAny())};
-		
 		try
 		{
-			Result->GetValue()->PrependTag("interpretation", Inspection::Get_GUID_Interpretation(GUID));
+			const Inspection::GUID & GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetAny())};
+			
+			Result->GetValue()->AppendTag("interpretation", Inspection::Get_GUID_Interpretation(GUID));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			Result->GetValue()->PrependTag("interpretation", nullptr);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -10412,7 +10427,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 		
 		if(Number == 0xaa)
 		{
-			Result->GetValue("Number")->PrependTag("interpretation", "Lead-Out"s);
+			Result->GetValue("Number")->AppendTag("interpretation", "Lead-Out"s);
 		}
 	}
 	// reading
@@ -10566,17 +10581,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	// interpretation
 	if(Continue == true)
 	{
+		Result->GetValue()->AppendTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+		
 		const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
 		try
 		{
-			auto Interpretation{Get_LanguageName_From_ISO_639_2_1998_Code(Code)};
-			
-			Result->GetValue()->PrependTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-			Result->GetValue()->PrependTag("interpretation", Interpretation);
+			Result->GetValue()->AppendTag("interpretation", Get_LanguageName_From_ISO_639_2_1998_Code(Code));
 		}
 		catch(...)
 		{
+			Result->GetValue()->AppendTag("error", "The code \"" + Code + "\" is unknown.");
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -11016,14 +11032,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
 		{
-			Result->GetValue()->PrependTag("interpretation", "BigEndian"s);
+			Result->GetValue()->AppendTag("interpretation", "BigEndian"s);
 		}
 		else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
 		{
-			Result->GetValue()->PrependTag("interpretation", "LittleEndian"s);
+			Result->GetValue()->AppendTag("interpretation", "LittleEndian"s);
 		}
 		else
 		{
+			Result->GetValue()->AppendTag("error", "The byte combination is not a valid byte order mark."s);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -11881,14 +11899,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		
 		if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
 		{
-			Result->GetValue()->PrependTag("interpretation", "BigEndian"s);
+			Result->GetValue()->AppendTag("interpretation", "BigEndian"s);
 		}
 		else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
 		{
-			Result->GetValue()->PrependTag("interpretation", "LittleEndian"s);
+			Result->GetValue()->AppendTag("interpretation", "LittleEndian"s);
 		}
 		else
 		{
+			Result->GetValue()->AppendTag("error", "The byte combination is not a valid byte order mark."s);
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -12690,8 +12710,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::R
 	if(Continue == true)
 	{
 		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("LayerDescription"))};
-		auto BitRate{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValue("BitRateIndex")->GetTagAny("numeric"))};
-		auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValue("SamplingFrequency")->GetTagAny("numeric"))};
+		auto BitRate{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValue("BitRateIndex")->GetTagAny("value"))};
+		auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValue("SamplingFrequency")->GetTagAny("value"))};
 		auto PaddingBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("PaddingBit"))};
 		auto FrameLength{0ul};
 		
@@ -12867,11 +12887,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVe
 		
 		if(AudioVersionID == 0x01)
 		{
-			Result->GetValue()->PrependTag("MPEG Version 1 (ISO/IEC 11172-3)"s);
+			Result->GetValue()->AppendTag("interpretation", "MPEG Version 1 (ISO/IEC 11172-3)"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("<reserved>");
+			Result->GetValue()->AppendTag("error", "The audio version ID \"" + to_string_cast(AudioVersionID) + "\" is reserved and should not be used.");
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
@@ -12904,81 +12925,82 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 		{
 			if(BitRateIndex == 0x00)
 			{
-				Result->GetValue()->PrependTag("free format"s);
+				Result->GetValue()->AppendTag("interpretation", "free format"s);
 			}
 			else if(BitRateIndex == 0x01)
 			{
-				Result->GetValue()->PrependTag("numeric", 32000u);
-				Result->GetValue()->PrependTag("32 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 32000u);
+				Result->GetValue()->AppendTag("interpretation", "32 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x02)
 			{
-				Result->GetValue()->PrependTag("numeric", 64000u);
-				Result->GetValue()->PrependTag("64 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 64000u);
+				Result->GetValue()->AppendTag("interpretation", "64 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x03)
 			{
-				Result->GetValue()->PrependTag("numeric", 96000u);
-				Result->GetValue()->PrependTag("96 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 96000u);
+				Result->GetValue()->AppendTag("interpretation", "96 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x04)
 			{
-				Result->GetValue()->PrependTag("numeric", 128000u);
-				Result->GetValue()->PrependTag("128 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 128000u);
+				Result->GetValue()->AppendTag("interpretation", "128 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x05)
 			{
-				Result->GetValue()->PrependTag("numeric", 160000u);
-				Result->GetValue()->PrependTag("160 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 160000u);
+				Result->GetValue()->AppendTag("interpretation", "160 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x06)
 			{
-				Result->GetValue()->PrependTag("numeric", 192000u);
-				Result->GetValue()->PrependTag("192 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 192000u);
+				Result->GetValue()->AppendTag("interpretation", "192 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x07)
 			{
-				Result->GetValue()->PrependTag("numeric", 224000u);
-				Result->GetValue()->PrependTag("224 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 224000u);
+				Result->GetValue()->AppendTag("interpretation", "224 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x08)
 			{
-				Result->GetValue()->PrependTag("numeric", 256000u);
-				Result->GetValue()->PrependTag("256 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 256000u);
+				Result->GetValue()->AppendTag("interpretation", "256 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x09)
 			{
-				Result->GetValue()->PrependTag("numeric", 288000u);
-				Result->GetValue()->PrependTag("288 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 288000u);
+				Result->GetValue()->AppendTag("interpretation", "288 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
-				Result->GetValue()->PrependTag("numeric", 320000u);
-				Result->GetValue()->PrependTag("320 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 320000u);
+				Result->GetValue()->AppendTag("interpretation", "320 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
-				Result->GetValue()->PrependTag("numeric", 352000u);
-				Result->GetValue()->PrependTag("352 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 352000u);
+				Result->GetValue()->AppendTag("interpretation", "352 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
-				Result->GetValue()->PrependTag("numeric", 384000u);
-				Result->GetValue()->PrependTag("384 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 384000u);
+				Result->GetValue()->AppendTag("interpretation", "384 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
-				Result->GetValue()->PrependTag("numeric", 416000u);
-				Result->GetValue()->PrependTag("416 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 416000u);
+				Result->GetValue()->AppendTag("interpretation", "416 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
-				Result->GetValue()->PrependTag("numeric", 448000u);
-				Result->GetValue()->PrependTag("448 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 448000u);
+				Result->GetValue()->AppendTag("interpretation", "448 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
-				Result->GetValue()->PrependTag("<reserved>"s);
+				Result->GetValue()->AppendTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+				Result->GetValue()->AppendTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -12986,81 +13008,82 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 		{
 			if(BitRateIndex == 0x00)
 			{
-				Result->GetValue()->PrependTag("free format"s);
+				Result->GetValue()->AppendTag("interpretation", "free format"s);
 			}
 			else if(BitRateIndex == 0x01)
 			{
-				Result->GetValue()->PrependTag("numeric", 32000u);
-				Result->GetValue()->PrependTag("32 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 32000u);
+				Result->GetValue()->AppendTag("interpretation", "32 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x02)
 			{
-				Result->GetValue()->PrependTag("numeric", 48000u);
-				Result->GetValue()->PrependTag("48 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 48000u);
+				Result->GetValue()->AppendTag("interpretation", "48 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x03)
 			{
-				Result->GetValue()->PrependTag("numeric", 56000u);
-				Result->GetValue()->PrependTag("56 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 56000u);
+				Result->GetValue()->AppendTag("interpretation", "56 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x04)
 			{
-				Result->GetValue()->PrependTag("numeric", 64000u);
-				Result->GetValue()->PrependTag("64 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 64000u);
+				Result->GetValue()->AppendTag("interpretation", "64 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x05)
 			{
-				Result->GetValue()->PrependTag("numeric", 80000u);
-				Result->GetValue()->PrependTag("80 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 80000u);
+				Result->GetValue()->AppendTag("interpretation", "80 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x06)
 			{
-				Result->GetValue()->PrependTag("numeric", 96000u);
-				Result->GetValue()->PrependTag("96 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 96000u);
+				Result->GetValue()->AppendTag("interpretation", "96 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x07)
 			{
-				Result->GetValue()->PrependTag("numeric", 112000u);
-				Result->GetValue()->PrependTag("112 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 112000u);
+				Result->GetValue()->AppendTag("interpretation", "112 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x08)
 			{
-				Result->GetValue()->PrependTag("numeric", 128000u);
-				Result->GetValue()->PrependTag("128 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 128000u);
+				Result->GetValue()->AppendTag("interpretation", "128 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x09)
 			{
-				Result->GetValue()->PrependTag("numeric", 160000u);
-				Result->GetValue()->PrependTag("160 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 160000u);
+				Result->GetValue()->AppendTag("interpretation", "160 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
-				Result->GetValue()->PrependTag("numeric", 192000u);
-				Result->GetValue()->PrependTag("192 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 192000u);
+				Result->GetValue()->AppendTag("interpretation", "192 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
-				Result->GetValue()->PrependTag("numeric", 224000u);
-				Result->GetValue()->PrependTag("224 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 224000u);
+				Result->GetValue()->AppendTag("interpretation", "224 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
-				Result->GetValue()->PrependTag("numeric", 256000u);
-				Result->GetValue()->PrependTag("256 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 256000u);
+				Result->GetValue()->AppendTag("interpretation", "256 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
-				Result->GetValue()->PrependTag("numeric", 320000u);
-				Result->GetValue()->PrependTag("320 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 320000u);
+				Result->GetValue()->AppendTag("interpretation", "320 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
-				Result->GetValue()->PrependTag("numeric", 384000u);
-				Result->GetValue()->PrependTag("384 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 384000u);
+				Result->GetValue()->AppendTag("interpretation", "384 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
-				Result->GetValue()->PrependTag("<reserved>"s);
+				Result->GetValue()->AppendTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+				Result->GetValue()->AppendTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -13068,81 +13091,82 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 		{
 			if(BitRateIndex == 0x00)
 			{
-				Result->GetValue()->PrependTag("free format"s);
+				Result->GetValue()->AppendTag("interpretation", "free format"s);
 			}
 			else if(BitRateIndex == 0x01)
 			{
-				Result->GetValue()->PrependTag("numeric", 32000u);
-				Result->GetValue()->PrependTag("32 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 32000u);
+				Result->GetValue()->AppendTag("interpretation", "32 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x02)
 			{
-				Result->GetValue()->PrependTag("numeric", 40000u);
-				Result->GetValue()->PrependTag("40 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 40000u);
+				Result->GetValue()->AppendTag("interpretation", "40 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x03)
 			{
-				Result->GetValue()->PrependTag("numeric", 48000u);
-				Result->GetValue()->PrependTag("48 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 48000u);
+				Result->GetValue()->AppendTag("interpretation", "48 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x04)
 			{
-				Result->GetValue()->PrependTag("numeric", 56000u);
-				Result->GetValue()->PrependTag("56 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 56000u);
+				Result->GetValue()->AppendTag("interpretation", "56 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x05)
 			{
-				Result->GetValue()->PrependTag("numeric", 64000u);
-				Result->GetValue()->PrependTag("64 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 64000u);
+				Result->GetValue()->AppendTag("interpretation", "64 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x06)
 			{
-				Result->GetValue()->PrependTag("numeric", 80000u);
-				Result->GetValue()->PrependTag("80 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 80000u);
+				Result->GetValue()->AppendTag("interpretation", "80 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x07)
 			{
-				Result->GetValue()->PrependTag("numeric", 96000u);
-				Result->GetValue()->PrependTag("96 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 96000u);
+				Result->GetValue()->AppendTag("interpretation", "96 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x08)
 			{
-				Result->GetValue()->PrependTag("numeric", 112000u);
-				Result->GetValue()->PrependTag("112 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 112000u);
+				Result->GetValue()->AppendTag("interpretation", "112 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x09)
 			{
-				Result->GetValue()->PrependTag("numeric", 128000u);
-				Result->GetValue()->PrependTag("128 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 128000u);
+				Result->GetValue()->AppendTag("interpretation", "128 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0a)
 			{
-				Result->GetValue()->PrependTag("numeric", 160000u);
-				Result->GetValue()->PrependTag("160 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 160000u);
+				Result->GetValue()->AppendTag("interpretation", "160 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0b)
 			{
-				Result->GetValue()->PrependTag("numeric", 192000u);
-				Result->GetValue()->PrependTag("192 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 192000u);
+				Result->GetValue()->AppendTag("interpretation", "192 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0c)
 			{
-				Result->GetValue()->PrependTag("numeric", 224000u);
-				Result->GetValue()->PrependTag("224 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 224000u);
+				Result->GetValue()->AppendTag("interpretation", "224 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0d)
 			{
-				Result->GetValue()->PrependTag("numeric", 256000u);
-				Result->GetValue()->PrependTag("256 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 256000u);
+				Result->GetValue()->AppendTag("interpretation", "256 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0e)
 			{
-				Result->GetValue()->PrependTag("numeric", 320000u);
-				Result->GetValue()->PrependTag("320 kbit/s"s);
+				Result->GetValue()->AppendTag("value", 320000u);
+				Result->GetValue()->AppendTag("interpretation", "320 kbit/s"s);
 			}
 			else if(BitRateIndex == 0x0f)
 			{
-				Result->GetValue()->PrependTag("<reserved>"s);
+				Result->GetValue()->AppendTag("error", "The bit rate index \"" + to_string_cast(BitRateIndex) + "\" in layer \"" + to_string_cast(LayerDescription) + "\" is reserved and should not be used.");
+				Result->GetValue()->AppendTag("interpretation", nullptr);
 				Continue = false;
 			}
 		}
@@ -13178,12 +13202,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyrig
 		
 		if(Copyright == 0x00)
 		{
-			Result->GetValue()->PrependTag("copyright", false);
+			Result->GetValue()->AppendTag("copyright", false);
 		}
 		else if(Copyright == 0x01)
 		{
-			Result->GetValue()->PrependTag("copyright", true);
+			Result->GetValue()->AppendTag("copyright", true);
 			Continue = false;
+		}
+		else
+		{
+			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
 	// finalization
@@ -13213,20 +13242,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Emphasi
 		
 		if(Emphasis == 0x00)
 		{
-			Result->GetValue()->PrependTag("no emphasis"s);
+			Result->GetValue()->AppendTag("interpretation", "no emphasis"s);
 		}
 		else if(Emphasis == 0x01)
 		{
-			Result->GetValue()->PrependTag("50/15 microsec. emphasis"s);
+			Result->GetValue()->AppendTag("interpretation", "50/15 microsec. emphasis"s);
 		}
 		else if(Emphasis == 0x02)
 		{
-			Result->GetValue()->PrependTag("<reserved>"s);
+			Result->GetValue()->AppendTag("error", "The emphasis \"" + to_string_cast(Emphasis) + "\" is reserved and MUST not be used.");
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 		else if(Emphasis == 0x03)
 		{
-			Result->GetValue()->PrependTag("CCITT J.17"s);
+			Result->GetValue()->AppendTag("interpretation", "CCITT J.17"s);
+		}
+		else
+		{
+			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
 	// finalization
@@ -13256,20 +13291,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_LayerDe
 		
 		if(LayerDescription == 0x00)
 		{
-			Result->GetValue()->PrependTag("<reserved>"s);
+			Result->GetValue()->AppendTag("error", "The layer description \"" + to_string_cast(LayerDescription) + "\" is reserved and MUST NOT be used.");
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
 		}
 		else if(LayerDescription == 0x01)
 		{
-			Result->GetValue()->PrependTag("Layer III"s);
+			Result->GetValue()->AppendTag("interpretation", "Layer III"s);
 		}
 		else if(LayerDescription == 0x02)
 		{
-			Result->GetValue()->PrependTag("Layer II"s);
+			Result->GetValue()->AppendTag("interpretation", "Layer II"s);
 		}
 		else if(LayerDescription == 0x03)
 		{
-			Result->GetValue()->PrependTag("Layer I"s);
+			Result->GetValue()->AppendTag("interpretation", "Layer I"s);
+		}
+		else
+		{
+			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
 	// finalization
@@ -13299,30 +13340,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(In
 		
 		if(Mode == 0x00)
 		{
-			Result->GetValue()->PrependTag("stereo"s);
+			Result->GetValue()->AppendTag("interpretation", "stereo"s);
 		}
 		else if(Mode == 0x01)
 		{
 			if((LayerDescription == 0x03) || (LayerDescription == 0x02))
 			{
-				Result->GetValue()->PrependTag("joint stereo (intensity_stereo)"s);
+				Result->GetValue()->AppendTag("interpretation", "joint stereo (intensity_stereo)"s);
 			}
 			else if(LayerDescription == 0x01)
 			{
-				Result->GetValue()->PrependTag("joint stereo (intensity_stereo and/or ms_stereo)"s);
+				Result->GetValue()->AppendTag("interpretation", "joint stereo (intensity_stereo and/or ms_stereo)"s);
 			}
 			else
 			{
-				Continue = false;
+				// LayerDescription is a 2-bit value. Value 0 is reserved, 1, 2 and 3 are handled above. Otherwise the program is corrupt.
+				assert(false);
 			}
 		}
 		else if(Mode == 0x02)
 		{
-			Result->GetValue()->PrependTag("dual_channel"s);
+			Result->GetValue()->AppendTag("interpretation", "dual_channel"s);
 		}
 		else if(Mode == 0x03)
 		{
-			Result->GetValue()->PrependTag("single_channel"s);
+			Result->GetValue()->AppendTag("interpretation", "single_channel"s);
+		}
+		else
+		{
+			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
 	// finalization
@@ -13356,48 +13403,63 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 			{
 				if(ModeExtension == 0x00)
 				{
-					Result->GetValue()->PrependTag("subbands 4-31 in intensity_stereo, bound==4"s);
+					Result->GetValue()->AppendTag("subbands 4-31 in intensity_stereo, bound==4"s);
 				}
 				else if(ModeExtension == 0x01)
 				{
-					Result->GetValue()->PrependTag("subbands 8-31 in intensity_stereo, bound==8"s);
+					Result->GetValue()->AppendTag("subbands 8-31 in intensity_stereo, bound==8"s);
 				}
 				else if(ModeExtension == 0x02)
 				{
-					Result->GetValue()->PrependTag("subbands 12-31 in intensity_stereo, bound==12"s);
+					Result->GetValue()->AppendTag("subbands 12-31 in intensity_stereo, bound==12"s);
 				}
 				else if(ModeExtension == 0x03)
 				{
-					Result->GetValue()->PrependTag("subbands 16-31 in intensity_stereo, bound==16"s);
+					Result->GetValue()->AppendTag("subbands 16-31 in intensity_stereo, bound==16"s);
+				}
+				else
+				{
+					// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
+					assert(false);
 				}
 			}
 			else if(LayerDescription == 0x01)
 			{
 				if(ModeExtension == 0x00)
 				{
-					Result->GetValue()->PrependTag("ms_stereo", "off"s);
-					Result->GetValue()->PrependTag("intensity_stereo", "off"s);
+					Result->GetValue()->AppendTag("ms_stereo", "off"s);
+					Result->GetValue()->AppendTag("intensity_stereo", "off"s);
 				}
 				else if(ModeExtension == 0x01)
 				{
-					Result->GetValue()->PrependTag("ms_stereo", "off"s);
-					Result->GetValue()->PrependTag("intensity_stereo", "on"s);
+					Result->GetValue()->AppendTag("ms_stereo", "off"s);
+					Result->GetValue()->AppendTag("intensity_stereo", "on"s);
 				}
 				else if(ModeExtension == 0x02)
 				{
-					Result->GetValue()->PrependTag("ms_stereo", "on"s);
-					Result->GetValue()->PrependTag("intensity_stereo", "off"s);
+					Result->GetValue()->AppendTag("ms_stereo", "on"s);
+					Result->GetValue()->AppendTag("intensity_stereo", "off"s);
 				}
 				else if(ModeExtension == 0x03)
 				{
-					Result->GetValue()->PrependTag("ms_stereo", "on"s);
-					Result->GetValue()->PrependTag("intensity_stereo", "on"s);
+					Result->GetValue()->AppendTag("ms_stereo", "on"s);
+					Result->GetValue()->AppendTag("intensity_stereo", "on"s);
 				}
+				else
+				{
+					// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
+					assert(false);
+				}
+			}
+			else
+			{
+				// LayerDescription is a 2-bit value. Value 0 is reserved, 1, 2 and 3 are handled above. Otherwise the program is corrupt.
+				assert(false);
 			}
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("<ignored>"s);
+			Result->GetValue()->AppendTag("<ignored>"s);
 		}
 	}
 	// finalization
@@ -13427,13 +13489,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Origina
 		
 		if(OriginalHome == 0x00)
 		{
-			Result->GetValue()->PrependTag("original", false);
+			Result->GetValue()->AppendTag("original", false);
 		}
 		else if(OriginalHome == 0x01)
 		{
-			Result->GetValue()->PrependTag("original", true);
+			Result->GetValue()->AppendTag("original", true);
+		}
+		else
+		{
+			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -13460,13 +13528,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Padding
 		
 		if(OriginalHome == 0x00)
 		{
-			Result->GetValue()->PrependTag("padding", false);
+			Result->GetValue()->AppendTag("padding", false);
 		}
 		else if(OriginalHome == 0x01)
 		{
-			Result->GetValue()->PrependTag("padding", true);
+			Result->GetValue()->AppendTag("padding", true);
+		}
+		else
+		{
+			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -13493,13 +13567,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Protect
 		
 		if(OriginalHome == 0x00)
 		{
-			Result->GetValue()->PrependTag("redundancy", false);
+			Result->GetValue()->AppendTag("redundancy", false);
 		}
 		else if(OriginalHome == 0x01)
 		{
-			Result->GetValue()->PrependTag("redundancy", true);
+			Result->GetValue()->AppendTag("redundancy", true);
+		}
+		else
+		{
+			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
+	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -13526,23 +13606,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Samplin
 		
 		if(SamplingFrequency == 0x00)
 		{
-			Result->GetValue()->PrependTag("numeric", 44100u);
-			Result->GetValue()->PrependTag("44.1 kHz"s);
+			Result->GetValue()->AppendTag("value", 44100u);
+			Result->GetValue()->AppendTag("interpretation", "44.1 kHz"s);
 		}
 		else if(SamplingFrequency == 0x01)
 		{
-			Result->GetValue()->PrependTag("numeric", 48000u);
-			Result->GetValue()->PrependTag("48 kHz"s);
+			Result->GetValue()->AppendTag("value", 48000u);
+			Result->GetValue()->AppendTag("interpretation", "48 kHz"s);
 		}
 		else if(SamplingFrequency == 0x02)
 		{
-			Result->GetValue()->PrependTag("numeric", 32000u);
-			Result->GetValue()->PrependTag("32 kHz"s);
+			Result->GetValue()->AppendTag("value", 32000u);
+			Result->GetValue()->AppendTag("interpretation", "32 kHz"s);
 		}
 		else if(SamplingFrequency == 0x03)
 		{
-			Result->GetValue()->PrependTag("<reserved>"s);
+			Result->GetValue()->AppendTag("error", "The sampling frequency \"" + to_string_cast(SamplingFrequency) + "\" is reserved and MUST NOT be used.");
+			Result->GetValue()->AppendTag("interpretation", nullptr);
 			Continue = false;
+		}
+		else
+		{
+			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
+			assert(false);
 		}
 	}
 	// finalization
