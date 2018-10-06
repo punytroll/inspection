@@ -1275,7 +1275,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[2]/sub:AdditionalExtendedHeader[0]/sub:GUID/tag:interpretation/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[2]/sub:AdditionalExtendedHeaders/sub:AdditionalExtendedHeader:[tag:array index/is-value:0]/sub:GUID/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>ASF_Language_List_Object</expected-output>
 	</test>
@@ -1283,7 +1283,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[2]/sub:AdditionalExtendedHeader[6]/sub:DescriptionRecord[0]/sub:Data/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[2]/sub:AdditionalExtendedHeaders/sub:AdditionalExtendedHeader:[tag:array index/is-value:6]/sub:DescriptionRecord[0]/sub:Data/value</argument>
 		</execute>
 		<expected-output>d1607dbc-e323-4be2-86a1-48a42a28441e</expected-output>
 	</test>
@@ -1291,7 +1291,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[2]/sub:AdditionalExtendedHeader[2]/sub:DescriptionRecord[1]/sub:Data/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[2]/sub:AdditionalExtendedHeaders/sub:AdditionalExtendedHeader:[tag:array index/is-value:2]/sub:DescriptionRecord[1]/sub:Data/value</argument>
 		</execute>
 		<expected-output>L3</expected-output>
 	</test>

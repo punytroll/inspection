@@ -138,19 +138,9 @@ namespace Inspection
 			return _Values.size();
 		}
 		
-		const Inspection::Length & GetLength(void) const
-		{
-			return _Length;
-		}
-		
 		const std::string & GetName(void) const
 		{
 			return _Name;
-		}
-		
-		const Inspection::Length & GetOffset(void) const
-		{
-			return _Offset;
 		}
 		
 		const std::list< std::shared_ptr< Inspection::Value > > & GetTags(void) const
@@ -202,25 +192,13 @@ namespace Inspection
 			_Any = Any;
 		}
 		
-		void SetLength(const Inspection::Length & Length)
-		{
-			_Length = Length;
-		}
-		
 		void SetName(const std::string & Name)
 		{
 			_Name = Name;
 		}
-		
-		void SetOffset(const Inspection::Length & Offset)
-		{
-			_Offset = Offset;
-		}
 	private:
 		std::experimental::any _Any;
-		Inspection::Length _Length;
 		std::string _Name;
-		Inspection::Length _Offset;
 		std::list< std::shared_ptr< Inspection::Value > > _Tags;
 		std::list< std::shared_ptr< Inspection::Value > > _Values;
 	};
