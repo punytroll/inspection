@@ -78,11 +78,6 @@ namespace Inspection
 			return Result;
 		}
 		
-		void ClearTags(void)
-		{
-			_Tags.clear();
-		}
-		
 		std::shared_ptr< Value > PrependTag(const std::experimental::any & Any)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};

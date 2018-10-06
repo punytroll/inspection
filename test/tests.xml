@@ -1483,7 +1483,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:string/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:value/value</argument>
 		</execute>
 		<expected-output>Test</expected-output>
 	</test>
@@ -1531,7 +1531,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/030_2.4_TXXX_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Value/tag:string/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Value/tag:value/value</argument>
 		</execute>
 		<expected-output>Test</expected-output>
 	</test>
@@ -1579,7 +1579,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:string/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:value/value</argument>
 		</execute>
 		<expected-output>101</expected-output>
 	</test>
@@ -1627,7 +1627,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/tag:string/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/tag:value/value</argument>
 		</execute>
 		<expected-output>102</expected-output>
 	</test>
@@ -2395,7 +2395,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:string/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:value/value:</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
