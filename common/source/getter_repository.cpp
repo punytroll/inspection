@@ -43,9 +43,9 @@ Inspection::GetterRepository::~GetterRepository(void)
 	_RootModule = nullptr;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const std::vector< std::string > & ModulePathParts, const std::string & GetterName, Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader)
 {
-	auto GetterDescriptor{_GetOrLoadGetterDescriptor(ModulePathParts, GetterName)};
+	auto GetterDescriptor{_GetOrLoadGetterDescriptor(PathParts)};
 	
 	if(GetterDescriptor != nullptr)
 	{
@@ -54,26 +54,26 @@ std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const st
 	else
 	{
 		auto Result{Inspection::InitializeResult(Reader)};
-		Result->GetValue()->AppendTag("error", "Could not find/load the getter \"" + GetterName + "\".");
+		Result->GetValue()->AppendTag("error", "Could not find/load the getter \"" + PathParts.back() + "\".");
 		Inspection::FinalizeResult(Result, Reader);
 		
 		return Result;
 	}
 }
 
-Inspection::Enumeration * Inspection::GetterRepository::GetEnumeration(const std::vector< std::string > & ModulePathParts, const std::string & EnumerationName)
+Inspection::Enumeration * Inspection::GetterRepository::GetEnumeration(const std::vector< std::string > & PathParts)
 {
-	return _GetOrLoadEnumeration(ModulePathParts, EnumerationName);
+	return _GetOrLoadEnumeration(PathParts);
 }
 
-Inspection::Enumeration * Inspection::GetterRepository::_GetOrLoadEnumeration(const std::vector< std::string > & ModulePathParts, const std::string & EnumerationName)
+Inspection::Enumeration * Inspection::GetterRepository::_GetOrLoadEnumeration(const std::vector< std::string > & PathParts)
 {
-	auto Module{_GetOrLoadModule(ModulePathParts)};
+	auto Module{_GetOrLoadModule(std::vector< std::string >{PathParts.begin(), PathParts.end() - 1})};
 	
 	assert(Module != nullptr);
 	
 	Inspection::Enumeration * Result{nullptr};
-	auto EnumerationIterator{Module->_Enumerations.find(EnumerationName)};
+	auto EnumerationIterator{Module->_Enumerations.find(PathParts.back())};
 	
 	if(EnumerationIterator != Module->_Enumerations.end())
 	{
@@ -81,27 +81,27 @@ Inspection::Enumeration * Inspection::GetterRepository::_GetOrLoadEnumeration(co
 	}
 	else
 	{
-		auto FilePath{Module->_Path + '/' + EnumerationName + ".enumeration"};
+		auto FilePath{Module->_Path + '/' + PathParts.back() + ".enumeration"};
 		
 		if((FileExists(FilePath) == true) && (IsRegularFile(FilePath) == true))
 		{
 			Result = new Inspection::Enumeration{};
 			Result->Load(FilePath);
-			Module->_Enumerations.insert(std::make_pair(EnumerationName, Result));
+			Module->_Enumerations.insert(std::make_pair(PathParts.back(), Result));
 		}
 	}
 	
 	return Result;
 }
 
-Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDescriptor(const std::vector< std::string > & ModulePathParts, const std::string & GetterName)
+Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDescriptor(const std::vector< std::string > & PathParts)
 {
-	auto Module{_GetOrLoadModule(ModulePathParts)};
+	auto Module{_GetOrLoadModule(std::vector< std::string >{PathParts.begin(), PathParts.end() - 1})};
 	
 	assert(Module != nullptr);
 	
 	Inspection::GetterDescriptor * Result{nullptr};
-	auto GetterDescriptorIterator{Module->_GetterDescriptors.find(GetterName)};
+	auto GetterDescriptorIterator{Module->_GetterDescriptors.find(PathParts.back())};
 	
 	if(GetterDescriptorIterator != Module->_GetterDescriptors.end())
 	{
@@ -109,13 +109,13 @@ Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDes
 	}
 	else
 	{
-		auto GetterPath{Module->_Path + '/' + GetterName + ".getter"};
+		auto GetterPath{Module->_Path + '/' + PathParts.back() + ".getter"};
 		
 		if((FileExists(GetterPath) == true) && (IsRegularFile(GetterPath) == true))
 		{
 			Result = new Inspection::GetterDescriptor{this};
 			Result->LoadGetterDescription(GetterPath);
-			Module->_GetterDescriptors.insert(std::make_pair(GetterName, Result));
+			Module->_GetterDescriptors.insert(std::make_pair(PathParts.back(), Result));
 		}
 	}
 	

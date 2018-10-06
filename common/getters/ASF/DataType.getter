@@ -1,10 +1,8 @@
 <getter>
 	<part>
 		<getter>
-			<module>
-				<part>Numbers</part>
-			</module>
-			<name>UnsignedInteger_16Bit_LittleEndian</name>
+			<part>Numbers</part>
+			<part>UnsignedInteger_16Bit_LittleEndian</part>
 		</getter>
 		<value>
 			<set/>
@@ -12,10 +10,8 @@
 	</part>
 	<interpret>
 		<apply-enumeration>
-			<module>
-				<part>ASF</part>
-			</module>
-			<name>DataType</name>
+			<part>ASF</part>
+			<part>DataType</part>
 		</apply-enumeration>
 	</interpret>
 </getter>

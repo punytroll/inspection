@@ -24,8 +24,7 @@ namespace Inspection
 	class PartDescriptor
 	{
 	public:
-		std::string Name;
-		std::vector< std::string > ModulePathParts;
+		std::vector< std::string > PathParts;
 		Inspection::AppendType ValueAppendType;
 		std::string ValueName;
 	};
@@ -33,8 +32,7 @@ namespace Inspection
 	class InterpretDescriptor
 	{
 	public:
-		std::string Name;
-		std::vector< std::string > ModulePathParts;
+		std::vector< std::string > PathParts;
 		Inspection::InterpretType Type;
 	};
 }
@@ -89,7 +87,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							{
 								auto Target{Result->GetValue()};
 								
-								_ApplyEnumeration(_GetterRepository->GetEnumeration(InterpretDescriptor->ModulePathParts, InterpretDescriptor->Name), Target);
+								_ApplyEnumeration(_GetterRepository->GetEnumeration(InterpretDescriptor->PathParts), Target);
 								
 								break;
 							}
@@ -101,7 +99,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 					{
 						auto PartDescriptor{_PartDescriptors[Action.second]};
 						Inspection::Reader PartReader{Reader};
-						auto PartResult{g_GetterRepository.Get(PartDescriptor->ModulePathParts, PartDescriptor->Name, PartReader)};
+						auto PartResult{g_GetterRepository.Get(PartDescriptor->PathParts, PartReader)};
 						
 						Continue = PartResult->GetSuccess();
 						switch(PartDescriptor->ValueAppendType)
@@ -273,38 +271,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 								{
 									auto ApplyEnumerationChildElement{dynamic_cast< const XML::Element * >(ApplyEnumerationChildNode)};
 									
-									if(ApplyEnumerationChildElement->GetName() == "module")
-									{
-										for(auto ApplyEnumerationModuleChildNode : ApplyEnumerationChildElement->GetChilds())
-										{
-											if(ApplyEnumerationModuleChildNode->GetNodeType() == XML::NodeType::Element)
-											{
-												auto ApplyEnumerationModuleChildElement{dynamic_cast< const XML::Element * >(ApplyEnumerationModuleChildNode)};
-												
-												if(ApplyEnumerationModuleChildElement->GetName() == "part")
-												{
-													assert(ApplyEnumerationModuleChildElement->GetChilds().size() == 1);
-													
-													auto ModulePartText{dynamic_cast< const XML::Text * >(ApplyEnumerationModuleChildElement->GetChild(0))};
-													
-													assert(ModulePartText != nullptr);
-													InterpretDescriptor->ModulePathParts.push_back(ModulePartText->GetText());
-												}
-												else
-												{
-													throw std::domain_error{ApplyEnumerationModuleChildElement->GetName()};
-												}
-											}
-										}
-									}
-									else if(ApplyEnumerationChildElement->GetName() == "name")
+									if(ApplyEnumerationChildElement->GetName() == "part")
 									{
 										assert(ApplyEnumerationChildElement->GetChilds().size() == 1);
 										
-										auto NameText{dynamic_cast< const XML::Text * >(ApplyEnumerationChildElement->GetChild(0))};
+										auto PartText{dynamic_cast< const XML::Text * >(ApplyEnumerationChildElement->GetChild(0))};
 										
-										assert(NameText != nullptr);
-										InterpretDescriptor->Name = NameText->GetText();
+										assert(PartText != nullptr);
+										InterpretDescriptor->PathParts.push_back(PartText->GetText());
 									}
 									else
 									{
@@ -340,38 +314,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 								{
 									auto PartGetterChildElement{dynamic_cast< const XML::Element * >(PartGetterChildNode)};
 									
-									if(PartGetterChildElement->GetName() == "module")
-									{
-										for(auto PartGetterModuleChildNode : PartGetterChildElement->GetChilds())
-										{
-											if(PartGetterModuleChildNode->GetNodeType() == XML::NodeType::Element)
-											{
-												auto PartGetterModuleChildElement{dynamic_cast< const XML::Element * >(PartGetterModuleChildNode)};
-												
-												if(PartGetterModuleChildElement->GetName() == "part")
-												{
-													assert(PartGetterModuleChildElement->GetChilds().size() == 1);
-													
-													auto ModulePartText{dynamic_cast< const XML::Text * >(PartGetterModuleChildElement->GetChild(0))};
-													
-													assert(ModulePartText != nullptr);
-													PartDescriptor->ModulePathParts.push_back(ModulePartText->GetText());
-												}
-												else
-												{
-													throw std::domain_error{PartGetterModuleChildElement->GetName()};
-												}
-											}
-										}
-									}
-									else if(PartGetterChildElement->GetName() == "name")
+									if(PartGetterChildElement->GetName() == "part")
 									{
 										assert(PartGetterChildElement->GetChilds().size() == 1);
 										
-										auto NameText{dynamic_cast< const XML::Text * >(PartGetterChildElement->GetChild(0))};
+										auto PartText{dynamic_cast< const XML::Text * >(PartGetterChildElement->GetChild(0))};
 										
-										assert(NameText != nullptr);
-										PartDescriptor->Name = NameText->GetText();
+										assert(PartText != nullptr);
+										PartDescriptor->PathParts.push_back(PartText->GetText());
 									}
 									else
 									{

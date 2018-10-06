@@ -1,10 +1,8 @@
 <getter>
 	<part>
 		<getter>
-			<module>
-				<part>ASCII</part>
-			</module>
-			<name>String_Printable_EndedByTermination</name>
+			<part>ASCII</part>
+			<part>String_Printable_EndedByTermination</part>
 		</getter>
 		<value>
 			<set/>

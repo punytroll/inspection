@@ -1,11 +1,9 @@
 <getter>
 	<part>
 		<getter>
-			<module>
-				<part>ID3</part>
-				<part>v2.2</part>
-			</module>
-			<name>Frame_Header_Identifier</name>
+			<part>ID3</part>
+			<part>v2.2</part>
+			<part>Frame_Header_Identifier</part>
 		</getter>
 		<value>
 			<append>
@@ -15,10 +13,8 @@
 	</part>
 	<part>
 		<getter>
-			<module>
-				<part>Numbers</part>
-			</module>
-			<name>UnsignedInteger_24Bit_BigEndian</name>
+			<part>Numbers</part>
+			<part>UnsignedInteger_24Bit_BigEndian</part>
 		</getter>
 		<value>
 			<append>
