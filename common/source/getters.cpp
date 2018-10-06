@@ -352,7 +352,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 	// reading
 	if(Continue == true)
 	{
-		auto ElementIndex{0};
+		std::uint64_t ElementIndex{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
@@ -364,7 +364,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 			{
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Result->GetValue()->AppendValue(PartResult->GetValue());
-				PartResult->GetValue()->AppendTag("array index", static_cast< std::uint32_t> (ElementIndex++));
+				PartResult->GetValue()->AppendTag("array index", ElementIndex++);
 			}
 			else
 			{
@@ -386,7 +386,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 			Result->GetValue()->AppendTag("error", "The array contains no elements, although at least one is required."s);
 			Continue = false;
 		}
-		Result->GetValue()->AppendTag("number of elements", static_cast< std::uint32_t> (ElementIndex));
+		Result->GetValue()->AppendTag("number of elements", ElementIndex);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -400,11 +400,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->PrependTag("array"s);
+	Result->GetValue()->AppendTag("array"s);
 	// reading
 	if(Continue == true)
 	{
-		auto ElementIndex{0};
+		std::uint64_t ElementIndex{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
@@ -418,18 +418,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 				
 				auto FieldValue{Result->GetValue()->AppendValue(FieldResult->GetValue())};
 				
-				FieldValue->AppendTag("array index", static_cast< std::uint32_t> (ElementIndex++));
+				FieldValue->AppendTag("array index", ElementIndex++);
 			}
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->PrependTag("ended by length"s);
+			Result->GetValue()->AppendTag("ended by length"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("ended by failure"s);
+			Result->GetValue()->AppendTag("ended by failure"s);
 		}
-		Result->GetValue()->PrependTag("number of elements", static_cast< std::uint32_t> (ElementIndex));
+		Result->GetValue()->AppendTag("number of elements", ElementIndex);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -443,11 +443,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->PrependTag("array"s);
+	Result->GetValue()->AppendTag("array"s);
 	// reading
 	if(Continue == true)
 	{
-		auto ElementIndex{0};
+		std::uint64_t ElementIndex{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
@@ -458,18 +458,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 			
 			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
 			
-			ElementValue->AppendTag("array index", static_cast< std::uint32_t> (ElementIndex++));
+			ElementValue->AppendTag("array index", ElementIndex++);
 			Reader.AdvancePosition(ElementReader.GetConsumedLength());
 		}
 		if(Reader.IsAtEnd() == true)
 		{
-			Result->GetValue()->PrependTag("ended by length"s);
+			Result->GetValue()->AppendTag("ended by length"s);
 		}
 		else
 		{
-			Result->GetValue()->PrependTag("ended by failure"s);
+			Result->GetValue()->AppendTag("ended by failure"s);
 		}
-		Result->GetValue()->PrependTag("number of elements", static_cast< std::uint32_t> (ElementIndex));
+		Result->GetValue()->AppendTag("number of elements", ElementIndex);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -481,36 +481,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::uint64_t NumberOfElements)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
-	auto ElementIndex{0ull};
 	auto Continue{true};
 	
-	while(true)
+	Result->GetValue()->AppendTag("array"s);
+	// reading
+	if(Continue == true)
 	{
-		if(ElementIndex < NumberOfElements)
+		std::uint64_t ElementIndex{0};
+		
+		while(true)
 		{
-			Inspection::Reader ElementReader{Reader};
-			auto ElementResult{Getter(ElementReader)};
-			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
-			
-			ElementValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
-			ElementIndex++;
-			UpdateState(Continue, Reader, ElementResult, ElementReader);
-			if(Continue == false)
+			if(ElementIndex < NumberOfElements)
 			{
-				Result->GetValue()->PrependTag("ended by failure"s);
+				Inspection::Reader ElementReader{Reader};
+				auto ElementResult{Getter(ElementReader)};
+				auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+				
+				ElementValue->AppendTag("array index", ElementIndex++);
+				UpdateState(Continue, Reader, ElementResult, ElementReader);
+				if(Continue == false)
+				{
+					Result->GetValue()->AppendTag("ended by failure"s);
+					
+					break;
+				}
+			}
+			else
+			{
+				Result->GetValue()->AppendTag("ended by number of elements"s);
 				
 				break;
 			}
 		}
-		else
-		{
-			Result->GetValue()->PrependTag("ended by number of elements"s);
-			
-			break;
-		}
+		Result->GetValue()->AppendTag("number of elements", NumberOfElements);
 	}
-	Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (NumberOfElements));
-	Result->GetValue()->PrependTag("array"s);
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -523,11 +527,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	Result->GetValue()->PrependTag("array"s);
+	Result->GetValue()->AppendTag("array"s);
 	// reading
 	if(Continue == true)
 	{
-		auto ElementIndex{0ull};
+		std::uint64_t ElementIndex{0};
 		
 		while(true)
 		{
@@ -537,23 +541,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 				auto FieldValue{Result->GetValue()->AppendValue(FieldResult->GetValue())};
 				
 				UpdateState(Continue, FieldResult);
-				FieldValue->AppendTag("array index", static_cast< std::uint64_t> (ElementIndex));
-				ElementIndex++;
+				FieldValue->AppendTag("array index", ElementIndex++);
 				if(Continue == false)
 				{
-					Result->GetValue()->PrependTag("ended by failure"s);
+					Result->GetValue()->AppendTag("ended by failure"s);
 					
 					break;
 				}
 			}
 			else
 			{
-				Result->GetValue()->PrependTag("ended by number of elements"s);
+				Result->GetValue()->AppendTag("ended by number of elements"s);
 				
 				break;
 			}
 		}
-		Result->GetValue()->PrependTag("number of elements", static_cast< std::uint64_t> (NumberOfElements));
+		Result->GetValue()->AppendTag("number of elements", NumberOfElements);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
