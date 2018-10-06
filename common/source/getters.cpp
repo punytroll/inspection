@@ -1678,22 +1678,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ContentDescriptorsCount", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ContentDescriptorsCount", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto ContentDescriptorsCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("ContentDescriptorsCount"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(Reader, Get_ASF_ExtendedContentDescription_ContentDescriptor, ContentDescriptorsCount)};
 		
-		for(auto ContentDescriptorIndex = 0; (Continue == true) && (ContentDescriptorIndex < ContentDescriptorsCount); ++ContentDescriptorIndex)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ContentDescriptors", PartResult->GetValue());
+		for(auto ContentDescriptorValue : PartResult->GetValues())
 		{
-			auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("ContentDescriptor[" + to_string_cast(ContentDescriptorIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			ContentDescriptorValue->SetName("ContentDescriptor");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
