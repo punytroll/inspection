@@ -438,6 +438,46 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->PrependTag("array"s);
+	// reading
+	if(Continue == true)
+	{
+		auto ElementIndex{0};
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			Inspection::Reader ElementReader{Reader};
+			auto ElementResult{Getter(ElementReader)};
+			
+			Continue = ElementResult->GetSuccess();
+			
+			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+			
+			ElementValue->AppendTag("array index", static_cast< std::uint32_t> (ElementIndex++));
+			Reader.AdvancePosition(ElementReader.GetConsumedLength());
+		}
+		if(Reader.IsAtEnd() == true)
+		{
+			Result->GetValue()->PrependTag("ended by length"s);
+		}
+		else
+		{
+			Result->GetValue()->PrependTag("ended by failure"s);
+		}
+		Result->GetValue()->PrependTag("number of elements", static_cast< std::uint32_t> (ElementIndex));
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::uint64_t NumberOfElements)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -1991,10 +2031,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_GUID(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ReservedField1", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASF_GUID(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ReservedField1", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -2004,10 +2046,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ReservedField2", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ReservedField2", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -2017,25 +2061,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("HeaderExtensionDataSize", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("HeaderExtensionDataSize", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("HeaderExtensionDataSize")), 0}};
-		auto AdditionalExtendedHeaderIndex{0ul};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("HeaderExtensionDataSize")), 0}};
+		auto PartResult{Get_Array_EndedByLength(PartReader, Get_ASF_Object)};
 		
-		while((Continue == true) && (FieldReader.HasRemaining() == true))
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("AdditionalExtendedHeaders", PartResult->GetValue());
+		for(auto AdditionalExtendedHeaderValue : PartResult->GetValues())
 		{
-			auto FieldResult{Get_ASF_Object(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendValue("AdditionalExtendedHeader[" + to_string_cast(AdditionalExtendedHeaderIndex++) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			AdditionalExtendedHeaderValue->SetName("AdditionalExtendedHeader");
 		}
-		Reader.AdvancePosition(FieldReader.GetConsumedLength());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2919,10 +2964,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_ObjectHeader(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASF_ObjectHeader(Reader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -2932,131 +2979,147 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		
 		if(GUID == Inspection::g_ASF_CompatibilityObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_CompatibilityObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_CompatibilityObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_HeaderObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_HeaderObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_HeaderObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_FilePropertiesObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_FilePropertiesObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_FilePropertiesObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_StreamPropertiesObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_StreamPropertiesObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_StreamPropertiesObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_CodecListObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_CodecListObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_CodecListObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_HeaderExtensionObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_HeaderExtensionObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_HeaderExtensionObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_LanguageListObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_LanguageListObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_LanguageListObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_ExtendedStreamPropertiesObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_ExtendedStreamPropertiesObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_ExtendedStreamPropertiesObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_MetadataObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_MetadataObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_MetadataObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_IndexPlaceholderObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_IndexPlaceholderObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_IndexPlaceholderObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_PaddingObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_Bits_Unset_EndedByLength(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("Data", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_ExtendedContentDescriptionObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_ExtendedContentDescriptionObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_ExtendedContentDescriptionObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_StreamBitratePropertiesObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_StreamBitratePropertiesObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_StreamBitratePropertiesObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_ContentDescriptionObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_ContentDescriptionObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_ContentDescriptionObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_MetadataLibraryObjectGUID)
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_ASF_MetadataLibraryObjectData(FieldReader)};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_ASF_MetadataLibraryObjectData(PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
-			Inspection::Reader FieldReader{Reader, Size - Result->GetLength()};
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
+			auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("Data", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
