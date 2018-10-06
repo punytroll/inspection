@@ -11,7 +11,7 @@
 	<interpret>
 		<apply-enumeration>
 			<part>ASF</part>
-			<part>DataType</part>
+			<part>ExtendedContentDescription_ContentDescriptor_ValueDataType</part>
 		</apply-enumeration>
 	</interpret>
 </getter>
