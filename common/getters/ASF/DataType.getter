@@ -1,0 +1,21 @@
+<getter>
+	<part>
+		<getter>
+			<module>
+				<part>Numbers</part>
+			</module>
+			<name>UnsignedInteger_16Bit_LittleEndian</name>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<module>
+				<part>ASF</part>
+			</module>
+			<name>DataType</name>
+		</apply-enumeration>
+	</interpret>
+</getter>

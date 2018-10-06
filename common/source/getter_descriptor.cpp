@@ -1,5 +1,6 @@
 #include <fstream>
 
+#include "enumeration.h"
 #include "getter_descriptor.h"
 #include "getter_repository.h"
 #include "getters.h"
@@ -14,19 +15,41 @@ namespace Inspection
 		Append,
 		Set
 	};
+	
+	enum class InterpretType
+	{
+		ApplyEnumeration
+	};
 
 	class PartDescriptor
 	{
 	public:
-		std::vector< std::string > GetterModuleParts;
-		std::string GetterIdentifier;
+		std::string Name;
+		std::vector< std::string > ModulePathParts;
 		Inspection::AppendType ValueAppendType;
 		std::string ValueName;
 	};
+
+	class InterpretDescriptor
+	{
+	public:
+		std::string Name;
+		std::vector< std::string > ModulePathParts;
+		Inspection::InterpretType Type;
+	};
+}
+
+Inspection::GetterDescriptor::GetterDescriptor(Inspection::GetterRepository * GetterRepository) :
+	_GetterRepository{GetterRepository}
+{
 }
 
 Inspection::GetterDescriptor::~GetterDescriptor(void)
 {
+	for(auto InterpretDescriptor : _InterpretDescriptors)
+	{
+		delete InterpretDescriptor;
+	}
 	for(auto PartDescriptor : _PartDescriptors)
 	{
 		delete PartDescriptor;
@@ -50,30 +73,57 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 		}
 		else
 		{
-			// reading
-			for(auto PartDescriptorIndex = 0ul; (Continue == true) && (PartDescriptorIndex < _PartDescriptors.size()); ++PartDescriptorIndex)
+			for(auto ActionIndex = 0ul; (Continue == true) && (ActionIndex < _Actions.size()); ++ActionIndex)
 			{
-				auto PartDescriptor{_PartDescriptors[PartDescriptorIndex]};
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{g_GetterRepository.Get(PartDescriptor->GetterModuleParts, PartDescriptor->GetterIdentifier, PartReader)};
+				auto Action{_Actions[ActionIndex]};
 				
-				Continue = PartResult->GetSuccess();
-				switch(PartDescriptor->ValueAppendType)
+				switch(Action.first)
 				{
-				case Inspection::AppendType::Append:
+				case Inspection::ActionType::Interpret:
 					{
-						Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
+						auto InterpretDescriptor{_InterpretDescriptors[Action.second]};
+						
+						switch(InterpretDescriptor->Type)
+						{
+						case Inspection::InterpretType::ApplyEnumeration:
+							{
+								auto Target{Result->GetValue()};
+								
+								_ApplyEnumeration(_GetterRepository->GetEnumeration(InterpretDescriptor->ModulePathParts, InterpretDescriptor->Name), Target);
+								
+								break;
+							}
+						}
 						
 						break;
 					}
-				case Inspection::AppendType::Set:
+				case Inspection::ActionType::Read:
 					{
-						Result->SetValue(PartResult->GetValue());
+						auto PartDescriptor{_PartDescriptors[Action.second]};
+						Inspection::Reader PartReader{Reader};
+						auto PartResult{g_GetterRepository.Get(PartDescriptor->ModulePathParts, PartDescriptor->Name, PartReader)};
+						
+						Continue = PartResult->GetSuccess();
+						switch(PartDescriptor->ValueAppendType)
+						{
+						case Inspection::AppendType::Append:
+							{
+								Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
+								
+								break;
+							}
+						case Inspection::AppendType::Set:
+							{
+								Result->SetValue(PartResult->GetValue());
+								
+								break;
+							}
+						}
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
 						
 						break;
 					}
 				}
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 		}
 	}
@@ -82,6 +132,36 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
+}
+
+void Inspection::GetterDescriptor::_ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target)
+{
+	assert(Enumeration != nullptr);
+	if(Enumeration->BaseType == "std::uint16_t")
+	{
+		auto BaseValue{std::experimental::any_cast< const std::uint16_t & >(Target->GetAny())};
+		auto BaseValueString{to_string_cast(BaseValue)};
+		auto Found{false};
+		
+		for(auto EnumerationElement : Enumeration->Elements)
+		{
+			if(EnumerationElement->BaseValue == BaseValueString)
+			{
+				Target->AppendTag("interpretation", EnumerationElement->Interpretation);
+				Found = true;
+				
+				break;
+			}
+		}
+		if(Found == false)
+		{
+			throw std::domain_error("Unknown enumeration base value \"" + BaseValueString + "\".");
+		}
+	}
+	else
+	{
+		throw std::domain_error("Unknown enumeration base type \"" + Enumeration->BaseType + "\".");
+	}
 }
 
 void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & GetterPath)
@@ -98,7 +178,151 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 		{
 			auto GetterChildElement{dynamic_cast< const XML::Element * >(GetterChildNode)};
 			
-			if(GetterChildElement->GetName() == "part")
+			if(GetterChildElement->GetName() == "hardcoded-getter")
+			{
+				assert(GetterChildElement->GetChilds().size() == 1);
+				
+				auto HardcodedGetterText{dynamic_cast< const XML::Text * >(GetterChildElement->GetChild(0))};
+				
+				assert(HardcodedGetterText != nullptr);
+				if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
+				{
+					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
+				{
+					_HardcodedGetter = Inspection::Get_ASF_CreationDate;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
+				{
+					_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_BitSet_16Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
+				{
+					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
+				{
+					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Frame_Header_Identifier")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_2_Frame_Header_Identifier;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Identifier")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Identifier;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Frame_Header_Identifier")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_4_Frame_Header_Identifier;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_LittleEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
+				}
+				else
+				{
+					throw std::domain_error{HardcodedGetterText->GetText()};
+				}
+			}
+			else if(GetterChildElement->GetName() == "interpret")
+			{
+				auto InterpretDescriptor{new Inspection::InterpretDescriptor{}};
+				
+				for(auto InterpretChildNode : GetterChildElement->GetChilds())
+				{
+					if(InterpretChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						auto InterpretChildElement{dynamic_cast< const XML::Element * >(InterpretChildNode)};
+						
+						if(InterpretChildElement->GetName() == "apply-enumeration")
+						{
+							InterpretDescriptor->Type = Inspection::InterpretType::ApplyEnumeration;
+							for(auto ApplyEnumerationChildNode : InterpretChildElement->GetChilds())
+							{
+								if(ApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
+								{
+									auto ApplyEnumerationChildElement{dynamic_cast< const XML::Element * >(ApplyEnumerationChildNode)};
+									
+									if(ApplyEnumerationChildElement->GetName() == "module")
+									{
+										for(auto ApplyEnumerationModuleChildNode : ApplyEnumerationChildElement->GetChilds())
+										{
+											if(ApplyEnumerationModuleChildNode->GetNodeType() == XML::NodeType::Element)
+											{
+												auto ApplyEnumerationModuleChildElement{dynamic_cast< const XML::Element * >(ApplyEnumerationModuleChildNode)};
+												
+												if(ApplyEnumerationModuleChildElement->GetName() == "part")
+												{
+													assert(ApplyEnumerationModuleChildElement->GetChilds().size() == 1);
+													
+													auto ModulePartText{dynamic_cast< const XML::Text * >(ApplyEnumerationModuleChildElement->GetChild(0))};
+													
+													assert(ModulePartText != nullptr);
+													InterpretDescriptor->ModulePathParts.push_back(ModulePartText->GetText());
+												}
+												else
+												{
+													throw std::domain_error{ApplyEnumerationModuleChildElement->GetName()};
+												}
+											}
+										}
+									}
+									else if(ApplyEnumerationChildElement->GetName() == "name")
+									{
+										assert(ApplyEnumerationChildElement->GetChilds().size() == 1);
+										
+										auto NameText{dynamic_cast< const XML::Text * >(ApplyEnumerationChildElement->GetChild(0))};
+										
+										assert(NameText != nullptr);
+										InterpretDescriptor->Name = NameText->GetText();
+									}
+									else
+									{
+										throw std::domain_error{ApplyEnumerationChildElement->GetName()};
+									}
+								}
+							}
+						}
+						else
+						{
+							throw std::domain_error{InterpretChildElement->GetName()};
+						}
+					}
+				}
+				_Actions.push_back(std::make_pair(Inspection::ActionType::Interpret, _InterpretDescriptors.size()));
+				_InterpretDescriptors.push_back(InterpretDescriptor);
+			}
+			else if(GetterChildElement->GetName() == "part")
 			{
 				auto PartDescriptor{new Inspection::PartDescriptor{}};
 				
@@ -131,7 +355,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													auto ModulePartText{dynamic_cast< const XML::Text * >(PartGetterModuleChildElement->GetChild(0))};
 													
 													assert(ModulePartText != nullptr);
-													PartDescriptor->GetterModuleParts.push_back(ModulePartText->GetText());
+													PartDescriptor->ModulePathParts.push_back(ModulePartText->GetText());
 												}
 												else
 												{
@@ -140,14 +364,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											}
 										}
 									}
-									else if(PartGetterChildElement->GetName() == "identifier")
+									else if(PartGetterChildElement->GetName() == "name")
 									{
 										assert(PartGetterChildElement->GetChilds().size() == 1);
 										
-										auto IdentifierText{dynamic_cast< const XML::Text * >(PartGetterChildElement->GetChild(0))};
+										auto NameText{dynamic_cast< const XML::Text * >(PartGetterChildElement->GetChild(0))};
 										
-										assert(IdentifierText != nullptr);
-										PartDescriptor->GetterIdentifier = IdentifierText->GetText();
+										assert(NameText != nullptr);
+										PartDescriptor->Name = NameText->GetText();
 									}
 									else
 									{
@@ -207,79 +431,8 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 						}
 					}
 				}
+				_Actions.push_back(std::make_pair(Inspection::ActionType::Read, _PartDescriptors.size()));
 				_PartDescriptors.push_back(PartDescriptor);
-			}
-			else if(GetterChildElement->GetName() == "hardcoded-getter")
-			{
-				assert(GetterChildElement->GetChilds().size() == 1);
-				
-				auto HardcodedGetterText{dynamic_cast< const XML::Text * >(GetterChildElement->GetChild(0))};
-				
-				assert(HardcodedGetterText != nullptr);
-				if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
-				{
-					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
-				{
-					_HardcodedGetter = Inspection::Get_ASF_CreationDate;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
-				{
-					_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_BitSet_16Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
-				{
-					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
-				{
-					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Frame_Header_Identifier")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_2_Frame_Header_Identifier;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Identifier")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Identifier;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Frame_Header_Identifier")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_4_Frame_Header_Identifier;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
-				}
-				else
-				{
-					throw std::domain_error{HardcodedGetterText->GetText()};
-				}
 			}
 			else
 			{

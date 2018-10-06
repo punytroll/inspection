@@ -2,7 +2,7 @@
 	<part>
 		<getter>
 			<module/>
-			<identifier>GUID_LittleEndian</identifier>
+			<name>GUID_LittleEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -15,7 +15,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_64Bit_LittleEndian</identifier>
+			<name>UnsignedInteger_64Bit_LittleEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -28,7 +28,7 @@
 			<module>
 				<part>ASF</part>
 			</module>
-			<identifier>CreationDate</identifier>
+			<name>CreationDate</name>
 		</getter>
 		<value>
 			<append>
@@ -41,7 +41,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_64Bit_LittleEndian</identifier>
+			<name>UnsignedInteger_64Bit_LittleEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -54,7 +54,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_64Bit_LittleEndian</identifier>
+			<name>UnsignedInteger_64Bit_LittleEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -67,7 +67,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_64Bit_LittleEndian</identifier>
+			<name>UnsignedInteger_64Bit_LittleEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -80,7 +80,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_64Bit_LittleEndian</identifier>
+			<name>UnsignedInteger_64Bit_LittleEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -93,7 +93,7 @@
 			<module>
 				<part>ASF</part>
 			</module>
-			<identifier>FileProperties_Flags</identifier>
+			<name>FileProperties_Flags</name>
 		</getter>
 		<value>
 			<append>
@@ -106,7 +106,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_32Bit_LittleEndian</identifier>
+			<name>UnsignedInteger_32Bit_LittleEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -119,7 +119,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_32Bit_LittleEndian</identifier>
+			<name>UnsignedInteger_32Bit_LittleEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -132,7 +132,7 @@
 			<module>
 				<part>Numbers</part>
 			</module>
-			<identifier>UnsignedInteger_32Bit_LittleEndian</identifier>
+			<name>UnsignedInteger_32Bit_LittleEndian</name>
 		</getter>
 		<value>
 			<append>

@@ -1,3 +1,4 @@
+#include "enumeration.h"
 #include "file_handling.h"
 #include "getter_descriptor.h"
 #include "getter_repository.h"
@@ -23,6 +24,7 @@ namespace Inspection
 			}
 		}
 		
+		std::map< std::string, Enumeration * > _Enumerations;
 		std::map< std::string, GetterDescriptor * > _GetterDescriptors;
 		std::map< std::string, Module * > _Modules;
 		std::string _Path;
@@ -59,6 +61,39 @@ std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const st
 	}
 }
 
+Inspection::Enumeration * Inspection::GetterRepository::GetEnumeration(const std::vector< std::string > & ModulePathParts, const std::string & EnumerationName)
+{
+	return _GetOrLoadEnumeration(ModulePathParts, EnumerationName);
+}
+
+Inspection::Enumeration * Inspection::GetterRepository::_GetOrLoadEnumeration(const std::vector< std::string > & ModulePathParts, const std::string & EnumerationName)
+{
+	auto Module{_GetOrLoadModule(ModulePathParts)};
+	
+	assert(Module != nullptr);
+	
+	Inspection::Enumeration * Result{nullptr};
+	auto EnumerationIterator{Module->_Enumerations.find(EnumerationName)};
+	
+	if(EnumerationIterator != Module->_Enumerations.end())
+	{
+		Result = EnumerationIterator->second;
+	}
+	else
+	{
+		auto FilePath{Module->_Path + '/' + EnumerationName + ".enumeration"};
+		
+		if((FileExists(FilePath) == true) && (IsRegularFile(FilePath) == true))
+		{
+			Result = new Inspection::Enumeration{};
+			Result->Load(FilePath);
+			Module->_Enumerations.insert(std::make_pair(EnumerationName, Result));
+		}
+	}
+	
+	return Result;
+}
+
 Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDescriptor(const std::vector< std::string > & ModulePathParts, const std::string & GetterName)
 {
 	auto Module{_GetOrLoadModule(ModulePathParts)};
@@ -78,7 +113,7 @@ Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDes
 		
 		if((FileExists(GetterPath) == true) && (IsRegularFile(GetterPath) == true))
 		{
-			Result = new Inspection::GetterDescriptor{};
+			Result = new Inspection::GetterDescriptor{this};
 			Result->LoadGetterDescription(GetterPath);
 			Module->_GetterDescriptors.insert(std::make_pair(GetterName, Result));
 		}

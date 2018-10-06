@@ -5,7 +5,7 @@
 				<part>ID3</part>
 				<part>v2.4</part>
 			</module>
-			<identifier>Frame_Header_Identifier</identifier>
+			<name>Frame_Header_Identifier</name>
 		</getter>
 		<value>
 			<append>
@@ -18,7 +18,7 @@
 			<module>
 				<part>ID3</part>
 			</module>
-			<identifier>UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian</identifier>
+			<name>UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian</name>
 		</getter>
 		<value>
 			<append>
@@ -31,7 +31,7 @@
 			<module>
 				<part>BitSets</part>
 			</module>
-			<identifier>16Bit_BigEndian</identifier>
+			<name>16Bit_BigEndian</name>
 		</getter>
 		<value>
 			<append>
