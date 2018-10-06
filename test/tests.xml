@@ -2031,4 +2031,388 @@
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PeakAmplitude/value:</argument>
+		</execute>
+		<expected-output>1.03924e-33</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PeakAmplitude/has-tag:floating point</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PeakAmplitude/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PeakAmplitude/tag:standard/value:</argument>
+		</execute>
+		<expected-output>ISO/IEC/IEEE-60559:2011 binary32</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/tag:standard/value:</argument>
+		</execute>
+		<expected-output>Hydrogenaudio ReplayGain</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>-0.5 dB</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/value:</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>track gain adjustment</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/has-tag:3bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/value:</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>determined automatically</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/has-tag:3bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/value:</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>negative gain (attenuation)</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/has-tag:1bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/value:</argument>
+		</execute>
+		<expected-output>5</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>0.5</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/has-tag:9bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/tag:standard/value:</argument>
+		</execute>
+		<expected-output>Hydrogenaudio ReplayGain</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>0.2 dB</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/value:</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>album gain adjustment</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/has-tag:3bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/value:</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>pre-set by artist/producer/mastering engineer</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/has-tag:3bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/value:</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>positive gain (boost)</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/has-tag:1bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/value:</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/tag:interpretation/value:</argument>
+		</execute>
+		<expected-output>0.2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/019_id3_2.3_RGAD</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/has-tag:9bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
 </tests>
