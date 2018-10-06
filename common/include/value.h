@@ -78,27 +78,6 @@ namespace Inspection
 			return Result;
 		}
 		
-		std::shared_ptr< Value > PrependTag(const std::experimental::any & Any)
-		{
-			auto Result{std::make_shared< Inspection::Value >()};
-			
-			Result->SetAny(Any);
-			_Tags.push_front(Result);
-			
-			return Result;
-		}
-		
-		std::shared_ptr< Value > PrependTag(const std::string & Name, const std::experimental::any & Any)
-		{
-			auto Result{std::make_shared< Inspection::Value >()};
-			
-			Result->SetAny(Any);
-			Result->SetName(Name);
-			_Tags.push_front(Result);
-			
-			return Result;
-		}
-		
 		const std::experimental::any & GetAny(void)
 		{
 			return _Any;

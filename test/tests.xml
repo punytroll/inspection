@@ -101,7 +101,7 @@
 			<argument>../examples/id3/015_2.4_COMM_XXX_language.mp3</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Language/tag:interpretation/value</argument>
 		</execute>
-		<expected-output>&lt;nothing&gt;</expected-output>
+		<expected-output>the language is unknown</expected-output>
 	</test>
 	<test>
 		<execute>
