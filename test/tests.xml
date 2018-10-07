@@ -787,6 +787,22 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:Type/value</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:Type/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Audio Codec</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
 			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/value</argument>
 		</execute>
 		<expected-output>61 01</expected-output>
