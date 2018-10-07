@@ -201,7 +201,11 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 	Inspection::EvaluationResult Result;
 	
 	Result.StructureIsValid = true;
-	if(Enumeration->BaseType == "unsigned integer 16bit")
+	if(Enumeration->BaseType == "unsigned integer 8bit")
+	{
+		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint8_t >(Enumeration, Target);
+	}
+	else if(Enumeration->BaseType == "unsigned integer 16bit")
 	{
 		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint16_t >(Enumeration, Target);
 	}
@@ -282,6 +286,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Frame_Header_Identifier")
 				{
 					_HardcodedGetter = Inspection::Get_ID3_2_4_Frame_Header_Identifier;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_3Bit")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_LittleEndian")
 				{

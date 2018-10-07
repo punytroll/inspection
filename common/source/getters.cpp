@@ -9061,7 +9061,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_OriginatorCode(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_OriginatorCode"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("OriginatorCode", PartResult->GetValue());
@@ -9139,54 +9139,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		else
 		{
 			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(NameCode) + "\" is unknown and MUST NOT be used."s);
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto OriginatorCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(OriginatorCode == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "unspecified"s);
-		}
-		else if(OriginatorCode == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
-		}
-		else if(OriginatorCode == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "set by user"s);
-		}
-		else if(OriginatorCode == 0x03)
-		{
-			Result->GetValue()->AddTag("interpretation", "determined automatically"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(OriginatorCode) + "\" is unknown and MUST NOT be used."s);
 			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
