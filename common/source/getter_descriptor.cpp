@@ -158,22 +158,15 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 	Result.StructureIsValid = true;
 	if(Enumeration->BaseType == "std::uint16_t")
 	{
-		auto BaseValue{std::experimental::any_cast< const std::uint16_t & >(Target->GetAny())};
-		auto BaseValueString{to_string_cast(BaseValue)};
-		auto Found{false};
+		auto BaseValueString{to_string_cast(std::experimental::any_cast< const std::uint16_t & >(Target->GetAny()))};
+		auto ElementIterator{std::find_if(Enumeration->Elements.begin(), Enumeration->Elements.end(), [BaseValueString](auto Element){ return Element->BaseValue == BaseValueString; })};
 		
-		for(auto EnumerationElement : Enumeration->Elements)
+		if(ElementIterator != Enumeration->Elements.end())
 		{
-			if(EnumerationElement->BaseValue == BaseValueString)
-			{
-				Target->AddTag(EnumerationElement->TagName, EnumerationElement->TagValue);
-				Result.DataIsValid = true;
-				Found = true;
-				
-				break;
-			}
+			Target->AddTag((*ElementIterator)->TagName, (*ElementIterator)->TagValue);
+			Result.DataIsValid = true;
 		}
-		if(Found == false)
+		else
 		{
 			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
 			Target->AddTag("interpretation", nullptr);
@@ -182,22 +175,15 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 	}
 	else if(Enumeration->BaseType == "std::uint32_t")
 	{
-		auto BaseValue{std::experimental::any_cast< const std::uint32_t & >(Target->GetAny())};
-		auto BaseValueString{to_string_cast(BaseValue)};
-		auto Found{false};
+		auto BaseValueString{to_string_cast(std::experimental::any_cast< const std::uint32_t & >(Target->GetAny()))};
+		auto ElementIterator{std::find_if(Enumeration->Elements.begin(), Enumeration->Elements.end(), [BaseValueString](auto Element){ return Element->BaseValue == BaseValueString; })};
 		
-		for(auto EnumerationElement : Enumeration->Elements)
+		if(ElementIterator != Enumeration->Elements.end())
 		{
-			if(EnumerationElement->BaseValue == BaseValueString)
-			{
-				Target->AddTag(EnumerationElement->TagName, EnumerationElement->TagValue);
-				Result.DataIsValid = true;
-				Found = true;
-				
-				break;
-			}
+			Target->AddTag((*ElementIterator)->TagName, (*ElementIterator)->TagValue);
+			Result.DataIsValid = true;
 		}
-		if(Found == false)
+		else
 		{
 			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
 			Target->AddTag("interpretation", nullptr);
