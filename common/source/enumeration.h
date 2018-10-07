@@ -12,8 +12,9 @@ namespace Inspection
 		class Element
 		{
 		public:
-		std::string BaseValue;
-		std::string Interpretation;
+			std::string BaseValue;
+			std::string TagValue;
+			std::string TagName;
 		};
 		
 		~Enumeration(void);

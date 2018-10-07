@@ -38,14 +38,16 @@ void Inspection::Enumeration::Load(const std::string & Path)
 					{
 						auto EnumerationElementChildElement{dynamic_cast< const XML::Element * >(EnumerationElementChildNode)};
 						
-						if(EnumerationElementChildElement->GetName() == "interpretation")
+						if(EnumerationElementChildElement->GetName() == "tag")
 						{
+							Element->TagName = EnumerationElementChildElement->GetAttribute("name");
+							
 							assert(EnumerationElementChildElement->GetChilds().size() == 1);
 							
-							auto InterpretationText{dynamic_cast< const XML::Text * >(EnumerationElementChildElement->GetChild(0))};
+							auto TagText{dynamic_cast< const XML::Text * >(EnumerationElementChildElement->GetChild(0))};
 							
-							assert(InterpretationText != nullptr);
-							Element->Interpretation = InterpretationText->GetText();
+							assert(TagText != nullptr);
+							Element->TagValue = TagText->GetText();
 						}
 						else
 						{

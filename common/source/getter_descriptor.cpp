@@ -166,7 +166,7 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 		{
 			if(EnumerationElement->BaseValue == BaseValueString)
 			{
-				Target->AddTag("interpretation", EnumerationElement->Interpretation);
+				Target->AddTag(EnumerationElement->TagName, EnumerationElement->TagValue);
 				Result.DataIsValid = true;
 				Found = true;
 				
@@ -190,7 +190,7 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 		{
 			if(EnumerationElement->BaseValue == BaseValueString)
 			{
-				Target->AddTag("interpretation", EnumerationElement->Interpretation);
+				Target->AddTag(EnumerationElement->TagName, EnumerationElement->TagValue);
 				Result.DataIsValid = true;
 				Found = true;
 				
