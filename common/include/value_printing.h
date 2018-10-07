@@ -91,7 +91,15 @@ namespace Inspection
 				}
 				if(Tag->GetAny().empty() == false)
 				{
-					std::cout << g_DarkGray << Tag->GetAny();
+					if(Tag->GetAny().type() == typeid(nullptr))
+					{
+						std::cout << g_DarkGreen;
+					}
+					else
+					{
+						std::cout << g_DarkGray;
+					}
+					std::cout << Tag->GetAny();
 				}
 				if(Tag->GetValues().size() > 0)
 				{

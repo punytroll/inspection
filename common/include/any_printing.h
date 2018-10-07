@@ -159,7 +159,7 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::experimental
 	}
 	else if(Any.type() == typeid(nullptr))
 	{
-		return OStream << "<nothing>";
+		return OStream << "nothing";
 	}
 	else
 	{
