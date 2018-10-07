@@ -1,0 +1,17 @@
+<getter>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_16Bit_LittleEndian</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration strict="false">
+			<part>ASF</part>
+			<part>CodecEntryType</part>
+		</apply-enumeration>
+	</interpret>
+</getter>

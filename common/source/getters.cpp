@@ -1175,10 +1175,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_CodecEntryType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Type", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "CodecEntryType"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Type", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -1228,48 +1230,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 		auto FieldValue{Result->GetValue()->AppendValue("CodecInformation", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto Type{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
-		
-		if(Type == 0x0001)
-		{
-			Result->GetValue()->AddTag("interpretation", "Video Codec"s);
-		}
-		else if(Type == 0x0002)
-		{
-			Result->GetValue()->AddTag("interpretation", "Audio Codec"s);
-		}
-		else if(Type == 0xffff)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unknown Codec"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", nullptr);
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
