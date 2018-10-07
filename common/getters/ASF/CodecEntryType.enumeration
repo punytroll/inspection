@@ -1,5 +1,11 @@
 <enumeration base-type="std::uint16_t">
-	<element base-value="1" interpretation="Video Codec"/>
-	<element base-value="2" interpretation="Audio Codec"/>
-	<element base-value="65535" interpretation="Unknown Codec"/>
+	<element base-value="1">
+		<interpretation>Video Codec</interpretation>
+	</element>
+	<element base-value="2">
+		<interpretation>Audio Codec</interpretation>
+	</element>
+	<element base-value="65535">
+		<interpretation>Unknown Codec</interpretation>
+	</element>
 </enumeration>

@@ -29,12 +29,30 @@ void Inspection::Enumeration::Load(const std::string & Path)
 			
 			if(EnumerationChildElement->GetName() == "element")
 			{
-				assert(EnumerationChildElement->GetChilds().size() == 0);
-				
 				auto Element{new Inspection::Enumeration::Element{}};
 				
 				Element->BaseValue = EnumerationChildElement->GetAttribute("base-value");
-				Element->Interpretation = EnumerationChildElement->GetAttribute("interpretation");
+				for(auto EnumerationElementChildNode : EnumerationChildElement->GetChilds())
+				{
+					if(EnumerationElementChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						auto EnumerationElementChildElement{dynamic_cast< const XML::Element * >(EnumerationElementChildNode)};
+						
+						if(EnumerationElementChildElement->GetName() == "interpretation")
+						{
+							assert(EnumerationElementChildElement->GetChilds().size() == 1);
+							
+							auto InterpretationText{dynamic_cast< const XML::Text * >(EnumerationElementChildElement->GetChild(0))};
+							
+							assert(InterpretationText != nullptr);
+							Element->Interpretation = InterpretationText->GetText();
+						}
+						else
+						{
+							throw std::domain_error{EnumerationElementChildElement->GetName()};
+						}
+					}
+				}
 				Elements.push_back(Element);
 			}
 			else

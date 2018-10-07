@@ -1,8 +1,20 @@
 <enumeration base-type="std::uint16_t">
-	<element base-value="0" interpretation="Unicode string"/>
-	<element base-value="1" interpretation="Byte array"/>
-	<element base-value="2" interpretation="Boolean"/>
-	<element base-value="3" interpretation="Unsigned integer 32bit"/>
-	<element base-value="4" interpretation="Unsigned integer 64bit"/>
-	<element base-value="5" interpretation="Unsigned integer 16bit"/>
+	<element base-value="0">
+		<interpretation>Unicode string</interpretation>
+	</element>
+	<element base-value="1">
+		<interpretation>Byte array</interpretation>
+	</element>
+	<element base-value="2">
+		<interpretation>Boolean</interpretation>
+	</element>
+	<element base-value="3">
+		<interpretation>Unsigned integer 32bit</interpretation>
+	</element>
+	<element base-value="4">
+		<interpretation>Unsigned integer 64bit</interpretation>
+	</element>
+	<element base-value="5">
+		<interpretation>Unsigned integer 16bit</interpretation>
+	</element>
 </enumeration>
