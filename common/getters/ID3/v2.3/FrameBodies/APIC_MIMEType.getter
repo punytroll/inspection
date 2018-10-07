@@ -1,0 +1,11 @@
+<getter>
+	<part>
+		<getter>
+			<part>ASCII</part>
+			<part>String_Printable_EndedByTermination</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+</getter>
