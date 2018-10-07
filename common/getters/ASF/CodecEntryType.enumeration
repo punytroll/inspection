@@ -1,11 +1,11 @@
-<enumeration base-type="std::uint16_t">
+<enumeration base-type="unsigned integer 16bit">
 	<element base-value="1">
-		<tag name="interpretation">Video Codec</tag>
+		<tag name="interpretation" type="string">Video Codec</tag>
 	</element>
 	<element base-value="2">
-		<tag name="interpretation">Audio Codec</tag>
+		<tag name="interpretation" type="string">Audio Codec</tag>
 	</element>
 	<element base-value="65535">
-		<tag name="interpretation">Unknown Codec</tag>
+		<tag name="interpretation" type="string">Unknown Codec</tag>
 	</element>
 </enumeration>

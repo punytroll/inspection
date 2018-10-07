@@ -1,8 +1,8 @@
-<enumeration base-type="std::uint32_t">
+<enumeration base-type="unsigned integer 32bit">
 	<element base-value="1000">
-		<tag name="interpretation">1.000 (old)</tag>
+		<tag name="interpretation" type="string">1.000 (old)</tag>
 	</element>
 	<element base-value="2000">
-		<tag name="interpretation">2.000 (new)</tag>
+		<tag name="interpretation" type="string">2.000 (new)</tag>
 	</element>
 </enumeration>

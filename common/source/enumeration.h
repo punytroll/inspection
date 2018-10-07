@@ -13,8 +13,9 @@ namespace Inspection
 		{
 		public:
 			std::string BaseValue;
-			std::string TagValue;
 			std::string TagName;
+			std::string TagType;
+			std::string TagValue;
 		};
 		
 		~Enumeration(void);

@@ -55,7 +55,14 @@ namespace Inspection
 		
 		if(ElementIterator != Enumeration->Elements.end())
 		{
-			Target->AddTag((*ElementIterator)->TagName, (*ElementIterator)->TagValue);
+			if((*ElementIterator)->TagType == "string")
+			{
+				Target->AddTag((*ElementIterator)->TagName, (*ElementIterator)->TagValue);
+			}
+			else if((*ElementIterator)->TagType == "boolean")
+			{
+				Target->AddTag((*ElementIterator)->TagName, from_string_cast< bool >((*ElementIterator)->TagValue));
+			}
 			Result = true;
 		}
 		else
@@ -177,11 +184,11 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 	Inspection::EvaluationResult Result;
 	
 	Result.StructureIsValid = true;
-	if(Enumeration->BaseType == "std::uint16_t")
+	if(Enumeration->BaseType == "unsigned integer 16bit")
 	{
 		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint16_t >(Enumeration, Target);
 	}
-	else if(Enumeration->BaseType == "std::uint32_t")
+	else if(Enumeration->BaseType == "unsigned integer 32bit")
 	{
 		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint32_t >(Enumeration, Target);
 	}
