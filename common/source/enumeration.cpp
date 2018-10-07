@@ -16,12 +16,16 @@ void Inspection::Enumeration::Load(const std::string & Path)
 {
 	std::ifstream InputFileStream{Path};
 	XML::Document Document{InputFileStream};
-	auto DocumentElement{Document.GetDocumentElement()};
 	
-	assert(DocumentElement != nullptr);
-	assert(DocumentElement->GetName() == "enumeration");
-	BaseType = DocumentElement->GetAttribute("base-type");
-	for(auto EnumerationChildNode : DocumentElement->GetChilds())
+	Load(Document.GetDocumentElement());
+}
+
+void Inspection::Enumeration::Load(const XML::Element * EnumerationElement)
+{
+	assert(EnumerationElement != nullptr);
+	assert(EnumerationElement->GetName() == "enumeration");
+	BaseType = EnumerationElement->GetAttribute("base-type");
+	for(auto EnumerationChildNode : EnumerationElement->GetChilds())
 	{
 		if(EnumerationChildNode->GetNodeType() == XML::NodeType::Element)
 		{

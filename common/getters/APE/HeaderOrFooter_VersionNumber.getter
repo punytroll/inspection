@@ -10,8 +10,14 @@
 	</part>
 	<interpret>
 		<apply-enumeration>
-			<part>APE</part>
-			<part>HeaderOrFooter_VersionNumber</part>
+			<enumeration base-type="unsigned integer 32bit">
+				<element base-value="1000">
+					<tag name="interpretation" type="string">1.000 (old)</tag>
+				</element>
+				<element base-value="2000">
+					<tag name="interpretation" type="string">2.000 (new)</tag>
+				</element>
+			</enumeration>
 		</apply-enumeration>
 	</interpret>
 </getter>

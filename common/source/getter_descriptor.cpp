@@ -42,8 +42,14 @@ namespace Inspection
 	class InterpretDescriptor
 	{
 	public:
+		InterpretDescriptor(void) :
+			Enumeration{nullptr}
+		{
+		}
+		
 		std::vector< std::string > PathParts;
 		Inspection::InterpretType Type;
+		Inspection::Enumeration * Enumeration;
 	};
 	
 	template< typename Type >
@@ -123,8 +129,19 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						{
 						case Inspection::InterpretType::ApplyEnumeration:
 							{
+								Inspection::Enumeration * Enumeration{nullptr};
+								
+								if(InterpretDescriptor->Enumeration != nullptr)
+								{
+									Enumeration = InterpretDescriptor->Enumeration;
+								}
+								else
+								{
+									Enumeration = _GetterRepository->GetEnumeration(InterpretDescriptor->PathParts);
+								}
+								
 								auto Target{Result->GetValue()};
-								auto EvaluationResult{_ApplyEnumeration(_GetterRepository->GetEnumeration(InterpretDescriptor->PathParts), Target)};
+								auto EvaluationResult{_ApplyEnumeration(Enumeration, Target)};
 								
 								if(EvaluationResult.AbortEvaluation)
 								{
@@ -318,6 +335,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										
 										assert(PartText != nullptr);
 										InterpretDescriptor->PathParts.push_back(PartText->GetText());
+									}
+									else if(ApplyEnumerationChildElement->GetName() == "enumeration")
+									{
+										InterpretDescriptor->Enumeration = new Enumeration{};
+										InterpretDescriptor->Enumeration->Load(ApplyEnumerationChildElement);
 									}
 									else
 									{

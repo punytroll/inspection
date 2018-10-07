@@ -4,6 +4,11 @@
 #include <string>
 #include <vector>
 
+namespace XML
+{
+	class Element;
+}
+
 namespace Inspection
 {
 	class Enumeration
@@ -20,6 +25,7 @@ namespace Inspection
 		
 		~Enumeration(void);
 		void Load(const std::string & Path);
+		void Load(const XML::Element * EnumerationElement);
 		std::string BaseType;
 		std::vector< Inspection::Enumeration::Element * > Elements;
 	};
