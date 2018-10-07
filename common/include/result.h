@@ -1,8 +1,7 @@
 #ifndef INSPECTION_COMMON_RESULT_H
 #define INSPECTION_COMMON_RESULT_H
 
-#include <iostream>
-
+#include "buffer.h"
 #include "length.h"
 #include "reader.h"
 #include "value.h"
