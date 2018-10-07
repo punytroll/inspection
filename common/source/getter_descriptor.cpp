@@ -45,6 +45,27 @@ namespace Inspection
 		std::vector< std::string > PathParts;
 		Inspection::InterpretType Type;
 	};
+	
+	template< typename Type >
+	bool ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target)
+	{
+		bool Result{false};
+		auto BaseValueString{to_string_cast(std::experimental::any_cast< const Type & >(Target->GetAny()))};
+		auto ElementIterator{std::find_if(Enumeration->Elements.begin(), Enumeration->Elements.end(), [BaseValueString](auto Element){ return Element->BaseValue == BaseValueString; })};
+		
+		if(ElementIterator != Enumeration->Elements.end())
+		{
+			Target->AddTag((*ElementIterator)->TagName, (*ElementIterator)->TagValue);
+			Result = true;
+		}
+		else
+		{
+			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
+			Target->AddTag("interpretation", nullptr);
+		}
+		
+		return Result;
+	}
 }
 
 Inspection::GetterDescriptor::GetterDescriptor(Inspection::GetterRepository * GetterRepository) :
@@ -158,37 +179,11 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 	Result.StructureIsValid = true;
 	if(Enumeration->BaseType == "std::uint16_t")
 	{
-		auto BaseValueString{to_string_cast(std::experimental::any_cast< const std::uint16_t & >(Target->GetAny()))};
-		auto ElementIterator{std::find_if(Enumeration->Elements.begin(), Enumeration->Elements.end(), [BaseValueString](auto Element){ return Element->BaseValue == BaseValueString; })};
-		
-		if(ElementIterator != Enumeration->Elements.end())
-		{
-			Target->AddTag((*ElementIterator)->TagName, (*ElementIterator)->TagValue);
-			Result.DataIsValid = true;
-		}
-		else
-		{
-			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
-			Target->AddTag("interpretation", nullptr);
-			Result.DataIsValid = false;
-		}
+		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint16_t >(Enumeration, Target);
 	}
 	else if(Enumeration->BaseType == "std::uint32_t")
 	{
-		auto BaseValueString{to_string_cast(std::experimental::any_cast< const std::uint32_t & >(Target->GetAny()))};
-		auto ElementIterator{std::find_if(Enumeration->Elements.begin(), Enumeration->Elements.end(), [BaseValueString](auto Element){ return Element->BaseValue == BaseValueString; })};
-		
-		if(ElementIterator != Enumeration->Elements.end())
-		{
-			Target->AddTag((*ElementIterator)->TagName, (*ElementIterator)->TagValue);
-			Result.DataIsValid = true;
-		}
-		else
-		{
-			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
-			Target->AddTag("interpretation", nullptr);
-			Result.DataIsValid = false;
-		}
+		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint32_t >(Enumeration, Target);
 	}
 	else
 	{
