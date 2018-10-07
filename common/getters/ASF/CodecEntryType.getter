@@ -9,7 +9,7 @@
 		</value>
 	</part>
 	<interpret>
-		<apply-enumeration strict="false">
+		<apply-enumeration>
 			<part>ASF</part>
 			<part>CodecEntryType</part>
 		</apply-enumeration>
