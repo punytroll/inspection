@@ -41,6 +41,7 @@ void Inspection::Enumeration::Load(const std::string & Path)
 						if(EnumerationElementChildElement->GetName() == "tag")
 						{
 							Element->TagName = EnumerationElementChildElement->GetAttribute("name");
+							Element->TagType = EnumerationElementChildElement->GetAttribute("type");
 							
 							assert(EnumerationElementChildElement->GetChilds().size() == 1);
 							
