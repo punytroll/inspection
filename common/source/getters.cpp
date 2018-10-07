@@ -2735,23 +2735,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibraryObjectD
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DescriptionRecordsCount", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DescriptionRecordsCount", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto DescriptionRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("DescriptionRecordsCount"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_ASF_MetadataLibrary_DescriptionRecord, std::experimental::any_cast< std::uint16_t >(Result->GetAny("DescriptionRecordsCount")))};
 		
-		for(auto DescriptionRecordIndex = 0; (Continue == true) && (DescriptionRecordIndex < DescriptionRecordsCount); ++DescriptionRecordIndex)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DescriptionRecords", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValues())
 		{
-			auto FieldResult{Get_ASF_MetadataLibrary_DescriptionRecord(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("DescriptionRecord[" + to_string_cast(DescriptionRecordIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			PartValue->SetName("DescriptionRecord");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2934,23 +2937,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObjectData(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DescriptionRecordsCount", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DescriptionRecordsCount", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto DescriptionRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("DescriptionRecordsCount"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_ASF_MetadataLibrary_DescriptionRecord, std::experimental::any_cast< std::uint16_t >(Result->GetAny("DescriptionRecordsCount")))};
 		
-		for(auto DescriptionRecordIndex = 0; (Continue == true) && (DescriptionRecordIndex < DescriptionRecordsCount); ++DescriptionRecordIndex)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DescriptionRecords", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValues())
 		{
-			auto FieldResult{Get_ASF_MetadataObject_DescriptionRecord(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("DescriptionRecord[" + to_string_cast(DescriptionRecordIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			PartValue->SetName("DescriptionRecord");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
