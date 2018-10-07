@@ -251,6 +251,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ASF_CreationDate;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_GUID")
+				{
+					_HardcodedGetter = Inspection::Get_ASF_GUID;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
 				{
 					_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
