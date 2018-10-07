@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, 2018  Hagen Möbius
+ * Copyright (C) 2006, 2007  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,21 +17,26 @@
 **/
 
 /**
- * This is version 1.1.8 of the string cast.
+ * This is version 1.5.2 of the xml parser.
  **/
 
-#ifndef STRING_CAST_H
-#define STRING_CAST_H
+#ifndef XML_PARSER_H
+#define XML_PARSER_H
 
-#include <string>
+#include <istream>
+#include <map>
 
-template < typename Type >
-Type from_string_cast(const std::string & String);
-
-template < typename Type >
-std::string to_string_cast(const Type & Value);
-
-template < typename Type >
-std::string to_string_cast(const Type & Value, int Precision);
+class XMLParser
+{
+public:
+	XMLParser(std::istream & InputStream);
+	virtual ~XMLParser(void);
+	void Parse(void);
+	virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes);
+	virtual void ElementEnd(const std::string & TagName);
+	virtual void Text(const std::string & Text);
+private:
+	std::istream & _InputStream;
+};
 
 #endif
