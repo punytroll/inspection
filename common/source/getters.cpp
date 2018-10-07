@@ -2184,10 +2184,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DataType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "MetadataLibrary_DescriptionRecord_DataType"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DataType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -2332,65 +2334,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		else
 		{
 			Result->GetValue()->AddTag("error", "The type \"" + DataType + "\" is unknown.");
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto DataType{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
-		
-		if(DataType == 0x0000)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unicode string"s);
-		}
-		else if(DataType == 0x0001)
-		{
-			Result->GetValue()->AddTag("interpretation", "Byte array"s);
-		}
-		else if(DataType == 0x0002)
-		{
-			Result->GetValue()->AddTag("interpretation", "Boolean"s);
-		}
-		else if(DataType == 0x0003)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 32bit"s);
-		}
-		else if(DataType == 0x0004)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 64bit"s);
-		}
-		else if(DataType == 0x0005)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 16bit"s);
-		}
-		else if(DataType == 0x0006)
-		{
-			Result->GetValue()->AddTag("interpretation", "GUID"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", nullptr);
 			Continue = false;
 		}
 	}
