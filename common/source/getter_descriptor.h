@@ -8,6 +8,7 @@
 namespace Inspection
 {
 	class Enumeration;
+	class EvaluationResult;
 	class GetterRepository;
 	class InterpretDescriptor;
 	class PartDescriptor;
@@ -29,7 +30,7 @@ namespace Inspection
 		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader);
 		void LoadGetterDescription(const std::string & GetterPath);
 	private:
-		void _ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target);
+		EvaluationResult _ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target);
 		Inspection::GetterRepository * _GetterRepository;
 		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > _HardcodedGetter;
 		std::vector< Inspection::InterpretDescriptor * > _InterpretDescriptors;

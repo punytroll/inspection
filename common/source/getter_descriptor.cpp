@@ -1,3 +1,4 @@
+#include <experimental/optional>
 #include <fstream>
 
 #include "enumeration.h"
@@ -10,6 +11,15 @@
 
 namespace Inspection
 {
+	class EvaluationResult
+	{
+	public:
+		std::experimental::optional< bool > AbortEvaluation;
+		std::experimental::optional< bool > DataIsValid;
+		std::experimental::optional< bool > EngineError;
+		std::experimental::optional< bool > StructureIsValid;
+	};
+	
 	enum class AppendType
 	{
 		Append,
@@ -86,8 +96,15 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						case Inspection::InterpretType::ApplyEnumeration:
 							{
 								auto Target{Result->GetValue()};
+								auto EvaluationResult{_ApplyEnumeration(_GetterRepository->GetEnumeration(InterpretDescriptor->PathParts), Target)};
 								
-								_ApplyEnumeration(_GetterRepository->GetEnumeration(InterpretDescriptor->PathParts), Target);
+								if(EvaluationResult.AbortEvaluation)
+								{
+									if(EvaluationResult.AbortEvaluation.value() == true)
+									{
+										Continue = false;
+									}
+								}
 								
 								break;
 							}
@@ -132,9 +149,13 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 	return Result;
 }
 
-void Inspection::GetterDescriptor::_ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target)
+Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target)
 {
 	assert(Enumeration != nullptr);
+	
+	Inspection::EvaluationResult Result;
+	
+	Result.StructureIsValid = true;
 	if(Enumeration->BaseType == "std::uint16_t")
 	{
 		auto BaseValue{std::experimental::any_cast< const std::uint16_t & >(Target->GetAny())};
@@ -146,6 +167,7 @@ void Inspection::GetterDescriptor::_ApplyEnumeration(Inspection::Enumeration * E
 			if(EnumerationElement->BaseValue == BaseValueString)
 			{
 				Target->AddTag("interpretation", EnumerationElement->Interpretation);
+				Result.DataIsValid = true;
 				Found = true;
 				
 				break;
@@ -153,13 +175,42 @@ void Inspection::GetterDescriptor::_ApplyEnumeration(Inspection::Enumeration * E
 		}
 		if(Found == false)
 		{
-			throw std::domain_error("Unknown enumeration base value \"" + BaseValueString + "\".");
+			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
+			Target->AddTag("interpretation", nullptr);
+			Result.DataIsValid = false;
+		}
+	}
+	else if(Enumeration->BaseType == "std::uint32_t")
+	{
+		auto BaseValue{std::experimental::any_cast< const std::uint32_t & >(Target->GetAny())};
+		auto BaseValueString{to_string_cast(BaseValue)};
+		auto Found{false};
+		
+		for(auto EnumerationElement : Enumeration->Elements)
+		{
+			if(EnumerationElement->BaseValue == BaseValueString)
+			{
+				Target->AddTag("interpretation", EnumerationElement->Interpretation);
+				Result.DataIsValid = true;
+				Found = true;
+				
+				break;
+			}
+		}
+		if(Found == false)
+		{
+			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
+			Target->AddTag("interpretation", nullptr);
+			Result.DataIsValid = false;
 		}
 	}
 	else
 	{
-		throw std::domain_error("Unknown enumeration base type \"" + Enumeration->BaseType + "\".");
+		Target->AddTag("error", "Could not handle the enumeration base type \"" + Enumeration->BaseType + "\".");
+		Result.EngineError = true;
 	}
+	
+	return Result;
 }
 
 void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & GetterPath)
