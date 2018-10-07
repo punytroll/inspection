@@ -204,10 +204,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("VersionNumber", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"APE", "HeaderOrFooter_VersionNumber"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("VersionNumber", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -241,46 +243,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto VersionNumber{std::experimental::any_cast< std::uint32_t >(Result->GetAny())};
-		
-		if(VersionNumber == 1000)
-		{
-			Result->GetValue()->AddTag("interpretation", "1.000 (old)"s);
-		}
-		else if(VersionNumber == 2000)
-		{
-			Result->GetValue()->AddTag("interpretation", "2.000 (new)"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Result->GetValue()->AddTag("error", "Unknown version number " + to_string_cast(VersionNumber) + ".");
-			Continue = false;
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
