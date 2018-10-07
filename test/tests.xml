@@ -1003,6 +1003,14 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:Name/value</argument>
+		</execute>
+		<expected-output>IsVBR</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
 			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:ValueDataType/value</argument>
 		</execute>
 		<expected-output>2</expected-output>
