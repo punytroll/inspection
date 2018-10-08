@@ -7512,7 +7512,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(In
 		
 		if(Information == "1")
 		{
-			Result->GetValue("Information")->AddTag("interpretation", "yes, this is part of a comilation"s);
+			Result->GetValue("Information")->AddTag("interpretation", "yes, this is part of a compilation"s);
 		}
 		else if(Information == "0")
 		{
@@ -8383,6 +8383,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
+		else if(Identifier == "TCMP")
+		{
+			Inspection::Reader PartReader{Reader, ClaimedSize};
+			auto PartResult{Get_ID3_2_4_Frame_Body_TCMP(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
 		else if(Identifier == "TXXX")
 		{
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
@@ -8751,6 +8760,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TCMP(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_ID3_2_4_Frame_Body_T___(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information[0]")->GetTagAny("value"))};
+		
+		if(Information == "1")
+		{
+			Result->GetValue("Information[0]")->AddTag("interpretation", "yes, this is part of a compilation"s);
+		}
+		else if(Information == "0")
+		{
+			Result->GetValue("Information[0]")->AddTag("interpretation", "no, this is not part of a compilation"s);
+		}
+		else
+		{
+			Result->GetValue("Information[0]")->AddTag("error", "The value \"" + Information + "\" could not interpreted.");
+			Result->GetValue("Information[0]")->AddTag("interpretation", nullptr);
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TXXX(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -8985,12 +9033,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header_Ident
 		
 		try
 		{
+			auto Interpretation{Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier)};
+			
 			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-			Result->GetValue()->AddTag("interpretation", Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->AddTag("interpretation", Interpretation);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
-			if(Identifier == "TYER")
+			if(Identifier == "TCMP")
+			{
+				Result->GetValue()->AddTag("standard", "iTunes"s);
+				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.4. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
+				Result->GetValue()->AddTag("interpretation", "Part of a compilation"s);
+			}
+			else if(Identifier == "TYER")
 			{
 				Result->GetValue()->AddTag("standard", "ID3 2.3"s);
 				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3."s);

@@ -182,6 +182,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_MCDI(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_POPM(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_T___(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_TCMP(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_TXXX(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_UFID(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_USLT(Inspection::Reader & Reader);
