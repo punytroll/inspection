@@ -291,6 +291,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ID3_2_4_Frame_Header_Identifier;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_1Bit")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_1Bit;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_3Bit")
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;

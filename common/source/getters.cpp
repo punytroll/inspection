@@ -9027,7 +9027,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_NameCode(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_NameCode"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("NameCode", PartResult->GetValue());
@@ -9047,7 +9047,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_SignBit(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_SignBit"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("SignBit", PartResult->GetValue());
@@ -9082,50 +9082,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_NameCode(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto NameCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(NameCode == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "not set"s);
-		}
-		else if(NameCode == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "track gain adjustment"s);
-		}
-		else if(NameCode == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "album gain adjustment"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(NameCode) + "\" is unknown and MUST NOT be used."s);
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -9145,45 +9101,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetAny()))};
 		
 		Result->GetValue()->AddTag("interpretation", ReplayGainAdjustment / 10.0f);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_SignBit(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(SignBit == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "positive gain (boost)"s);
-		}
-		else if(SignBit == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "negative gain (attenuation)"s);
-		}
-		else
-		{
-			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
-			assert(false);
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
