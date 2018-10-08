@@ -6459,21 +6459,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Header_Ident
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
-		auto FieldResult{Get_ASCII_String_AlphaNumeric_EndedByLength(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
+		auto PartResult{Get_ASCII_String_AlphaNumeric_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
 	{
-		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
+		auto & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
 		try
 		{
+			auto Interpretation{Get_ID3_2_2_FrameIdentifier_Interpretation(Identifier)};
+			
 			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
-			Result->GetValue()->AddTag("interpretation", Get_ID3_2_2_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->AddTag("interpretation", Interpretation);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
@@ -6485,6 +6488,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Header_Ident
 			}
 			else
 			{
+				Result->GetValue()->AddTag("standard", "ID3 2.2"s);
 				Result->GetValue()->AddTag("error", "Unknown frame identifier \"" + Identifier + "\".");
 				Result->GetValue()->AddTag("interpretation", nullptr);
 				Continue = false;
@@ -8011,21 +8015,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Ident
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
-		auto FieldResult{Get_ASCII_String_AlphaNumeric_EndedByLength(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{4, 0}};
+		auto PartResult{Get_ASCII_String_AlphaNumeric_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
 	{
-		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
+		auto & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
 		try
 		{
+			auto Interpretation{Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier)};
+			
 			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
-			Result->GetValue()->AddTag("interpretation", Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier));
+			Result->GetValue()->AddTag("interpretation", Interpretation);
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
@@ -9008,28 +9015,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header_Ident
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{4, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{4, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
-		auto FieldResult{Get_ASCII_String_AlphaNumeric_EndedByLength(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{4, 0}};
+		auto PartResult{Get_ASCII_String_AlphaNumeric_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
 	{
-		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
+		auto & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
 		try
 		{
