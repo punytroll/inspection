@@ -243,9 +243,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/004_id3v1tag</argument>
-			<argument>--value=/sub:ID3v1.1Tag/sub:Artist/has-tag:ISO\/IEC 8859-1\:1998</argument>
+			<argument>--value=/sub:ID3v1.1Tag/sub:Artist/tag:character set/value</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_id3v1tag</argument>
+			<argument>--value=/sub:ID3v1.1Tag/sub:Artist/tag:encoding/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -315,9 +323,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
-			<argument>--value=/sub:FLACStream/sub:MetaDataBlock[0]/sub:Data/sub:MIMEType/has-tag:ASCII</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlock[0]/sub:Data/sub:MIMEType/tag:character set/value</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlock[0]/sub:Data/sub:MIMEType/tag:encoding/value</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -2035,9 +2051,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/015_id3_2.3_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/tag:character set/value</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/015_id3_2.3_UFID</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/tag:encoding/value</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -2139,9 +2163,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/016_id3_2.2_UFI</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/tag:character set/value</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/016_id3_2.2_UFI</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/tag:encoding/value</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -2243,9 +2275,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/017_id3_2.4_UFID</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ASCII</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/tag:character set/value</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/017_id3_2.4_UFID</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/tag:encoding/value</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
 	</test>
 	<test>
 		<execute>
