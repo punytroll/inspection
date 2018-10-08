@@ -4472,120 +4472,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_PictureType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto PictureType{std::experimental::any_cast< std::uint32_t >(Result->GetAny())};
-		
-		if(PictureType == 0)
-		{
-			Result->GetValue()->AddTag("interpretation", "Other"s);
-		}
-		else if(PictureType == 1)
-		{
-			Result->GetValue()->AddTag("interpretation", "32x32 pixels 'file icon' (PNG only)"s);
-		}
-		else if(PictureType == 2)
-		{
-			Result->GetValue()->AddTag("interpretation", "Other file icon"s);
-		}
-		else if(PictureType == 3)
-		{
-			Result->GetValue()->AddTag("interpretation", "Cover (front)"s);
-		}
-		else if(PictureType == 4)
-		{
-			Result->GetValue()->AddTag("interpretation", "Cover (back)"s);
-		}
-		else if(PictureType == 5)
-		{
-			Result->GetValue()->AddTag("interpretation", "Leaflet page"s);
-		}
-		else if(PictureType == 6)
-		{
-			Result->GetValue()->AddTag("interpretation", "Media (e.g. label side of CD"s);
-		}
-		else if(PictureType == 7)
-		{
-			Result->GetValue()->AddTag("interpretation", "Lead artist/lead performer/soloist"s);
-		}
-		else if(PictureType == 8)
-		{
-			Result->GetValue()->AddTag("interpretation", "Artist/performer"s);
-		}
-		else if(PictureType == 9)
-		{
-			Result->GetValue()->AddTag("interpretation", "Conductor"s);
-		}
-		else if(PictureType == 10)
-		{
-			Result->GetValue()->AddTag("interpretation", "Band/Orchestra"s);
-		}
-		else if(PictureType == 11)
-		{
-			Result->GetValue()->AddTag("interpretation", "Composer"s);
-		}
-		else if(PictureType == 12)
-		{
-			Result->GetValue()->AddTag("interpretation", "Lyricist/text writer"s);
-		}
-		else if(PictureType == 13)
-		{
-			Result->GetValue()->AddTag("interpretation", "Recording Location"s);
-		}
-		else if(PictureType == 14)
-		{
-			Result->GetValue()->AddTag("interpretation", "During recording"s);
-		}
-		else if(PictureType == 15)
-		{
-			Result->GetValue()->AddTag("interpretation", "During performance"s);
-		}
-		else if(PictureType == 16)
-		{
-			Result->GetValue()->AddTag("interpretation", "Movie/video screen capture"s);
-		}
-		else if(PictureType == 17)
-		{
-			Result->GetValue()->AddTag("interpretation", "A bright coloured fish"s);
-		}
-		else if(PictureType == 18)
-		{
-			Result->GetValue()->AddTag("interpretation", "Illustration"s);
-		}
-		else if(PictureType == 19)
-		{
-			Result->GetValue()->AddTag("interpretation", "Band/artist logotype"s);
-		}
-		else if(PictureType == 20)
-		{
-			Result->GetValue()->AddTag("interpretation", "Publisher/Studio logotype"s);
-		}
-		else
-		{
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -4594,93 +4480,112 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_PictureBlock_PictureType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"FLAC", "PictureBlock_PictureType"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PictureType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("MIMETypeLength", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("MIMETypeLength", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MIMETypeLength")), 0}};
-		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("MIMETypeLength")), 0}};
+		auto PartResult{Get_ASCII_String_Printable_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("MIMEType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DescriptionLength", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DescriptionLength", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("DescriptionLength")), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("DescriptionLength")), 0}};
+		auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Description", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PictureWidthInPixels", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PictureWidthInPixels", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PictureHeightInPixels", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PictureHeightInPixels", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("BitsPerPixel", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("BitsPerPixel", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("NumberOfColors", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("NumberOfColors", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PictureDataLength", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PictureDataLength", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("PictureDataLength")), 0}};
-		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("PictureDataLength")), 0}};
+		auto PartResult{Get_Bits_SetOrUnset_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PictureData", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
