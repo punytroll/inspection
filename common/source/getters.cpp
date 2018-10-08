@@ -571,6 +571,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	Result->GetValue()->AddTag("character");
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
+	Result->GetValue()->AddTag("alphabetic");
 	// verification
 	if(Continue == true)
 	{
@@ -606,6 +610,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	Result->GetValue()->AddTag("character");
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
+	Result->GetValue()->AddTag("alphanumeric");
 	// verification
 	if(Continue == true)
 	{
@@ -641,6 +649,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	Result->GetValue()->AddTag("character");
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
+	Result->GetValue()->AddTag("alphanumeric or space");
 	// verification
 	if(Continue == true)
 	{
@@ -677,7 +689,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphabetic"s);
 	// verification
 	if(Continue == true)
@@ -730,7 +743,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphabetic"s);
 	// verification
 	if(Continue == true)
@@ -783,7 +797,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphanumeric"s);
 	// verification
 	if(Continue == true)
@@ -836,7 +851,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphanumeric"s);
 	// verification
 	if(Continue == true)
@@ -891,7 +907,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphanumeric or space"s);
 	// verification
 	if(Continue == true)
@@ -944,7 +961,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("printable"s);
 	// verification
 	if(Continue == true)
@@ -998,7 +1016,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("printable"s);
 	// verification
 	if(Continue == true)
@@ -1051,7 +1070,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ASCII"s);
+	Result->GetValue()->AddTag("character set", "ASCII"s);
+	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("printables only"s);
 	//reading
 	if(Continue == true)
@@ -11744,7 +11764,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Charac
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("character"s);
-	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
@@ -11782,7 +11803,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
@@ -11842,7 +11864,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
@@ -11903,7 +11926,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
@@ -11979,7 +12003,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
@@ -12071,7 +12096,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
+	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
 	// verification
 	if(Continue == true)
 	{
