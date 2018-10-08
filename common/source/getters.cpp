@@ -11818,33 +11818,29 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	if(Continue == true)
 	{
 		std::stringstream Value;
+		auto NumberOfCharacters{0ul};
 		
-		if(Reader.IsAtEnd() == true)
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto Character{Reader.Get8Bits()};
+			
+			if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
+			{
+				NumberOfCharacters += 1;
+				Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+				Continue = false;
+			}
+		}
+		if(NumberOfCharacters == 0)
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
-		else
-		{
-			auto NumberOfCharacters{0ul};
-			
-			while((Continue == true) && (Reader.HasRemaining() == true))
-			{
-				auto Character{Reader.Get8Bits()};
-				
-				if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
-				{
-					NumberOfCharacters += 1;
-					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character);
-				}
-				else
-				{
-					Result->GetValue()->AddTag("ended by error"s);
-					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
-					Continue = false;
-				}
-			}
-			Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
-		}
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		if(Reader.IsAtEnd() == true)
 		{
 			Result->GetValue()->AddTag("ended by length"s);
@@ -11896,8 +11892,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 			
 			if(Character == 0x00)
 			{
-				Result->GetValue()->AddTag("ended by termination"s);
+				if(NumberOfCharacters == 0)
+				{
+					Result->GetValue()->AddTag("empty"s);
+				}
 				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag("ended by termination"s);
 				
 				break;
 			}
@@ -11941,52 +11941,57 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	if(Continue == true)
 	{
 		std::stringstream Value;
+		auto NumberOfCharacters{0ul};
+		auto EndedByTermination{false};
 		
-		if(Reader.IsAtEnd() == true)
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			Result->GetValue()->AddTag("ended by length"s);
+			auto Byte{Reader.Get8Bits()};
+			
+			if(Byte == 0x00)
+			{
+				EndedByTermination = true;
+				
+				break;
+			}
+			else if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
+			{
+				NumberOfCharacters += 1;
+				Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+				Continue = false;
+			}
+		}
+		if(NumberOfCharacters == 0)
+		{
 			Result->GetValue()->AddTag("empty"s);
+		}
+		if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
 		}
 		else
 		{
-			auto NumberOfCharacters{0ul};
-			
-			while((Continue == true) && (Reader.HasRemaining() == true))
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+		}
+		if(Reader.IsAtEnd() == true)
+		{
+			if(EndedByTermination == true)
 			{
-				auto Byte{Reader.Get8Bits()};
-				
-				if(Byte == 0x00)
-				{
-					if(Reader.HasRemaining() == true)
-					{
-						Result->GetValue()->AddTag("ended by termination"s);
-					}
-					else
-					{
-						Result->GetValue()->AddTag("ended by termination and length"s);
-					}
-					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-					
-					break;
-				}
-				else if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
-				{
-					NumberOfCharacters += 1;
-					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
-					if(Reader.IsAtEnd() == true)
-					{
-						Result->GetValue()->AddTag("ended by length"s);
-						Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
-					}
-				}
-				else
-				{
-					Result->GetValue()->AddTag("ended by error"s);
-					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
-					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
-					Continue = false;
-				}
+				Result->GetValue()->AddTag("ended by termination and length"s);
 			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by length"s);
+			}
+		}
+		else if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag("ended by termination"s);
 		}
 		Result->GetValue()->SetAny(Value.str());
 	}
@@ -12374,6 +12379,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 				
 				if(CodePoint == 0x00000000)
 				{
+					if(NumberOfCodePoints == 0)
+					{
+						Result->GetValue()->AddTag("empty"s);
+					}
 					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 					Result->GetValue()->AddTag("ended by termination"s);
 					
@@ -12458,16 +12467,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
+		if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+		}
 		else
 		{
-			if(EndedByTermination == true)
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
-			}
-			else
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
-			}
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 		}
 		if(Reader.IsAtEnd() == true)
 		{
@@ -12528,6 +12534,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 				
 				if(CodePoint == 0x00000000)
 				{
+					if(NumberOfCodePoints == 0)
+					{
+						Result->GetValue()->AddTag("empty"s);
+					}
 					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 					Result->GetValue()->AddTag("ended by termination"s);
 					
@@ -12612,16 +12622,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
+		if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+		}
 		else
 		{
-			if(EndedByTermination == true)
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
-			}
-			else
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
-			}
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 		}
 		if(Reader.IsAtEnd() == true)
 		{
@@ -12864,11 +12871,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 				Continue = false;
 			}
 		}
+		if(NumberOfCodePoints == 0)
+		{
+			Result->GetValue()->AddTag("empty"s);
+		}
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points"s);
 		if(Reader.IsAtEnd() == true)
 		{
 			Result->GetValue()->AddTag("ended by length"s);
 		}
-		Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points"s);
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -12912,6 +12923,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 				
 				if(CodePoint == 0x00000000)
 				{
+					if(NumberOfCodePoints == 0)
+					{
+						Result->GetValue()->AddTag("empty"s);
+					}
 					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 					Result->GetValue()->AddTag("ended by termination"s);
 					
@@ -12995,16 +13010,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
+		if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+		}
 		else
 		{
-			if(EndedByTermination == true)
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
-			}
-			else
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
-			}
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 		}
 		if(Reader.IsAtEnd() == true)
 		{
@@ -13298,6 +13310,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 				
 				if(CodePoint == 0x00000000)
 				{
+					if(NumberOfCodePoints == 0)
+					{
+						Result->GetValue()->AddTag("emtpy"s);
+					}
 					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 					Result->GetValue()->AddTag("ended by termination"s);
 					
@@ -13382,16 +13398,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
+		if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+		}
 		else
 		{
-			if(EndedByTermination == true)
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
-			}
-			else
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
-			}
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 		}
 		if(Reader.IsAtEnd() == true)
 		{
@@ -13537,6 +13550,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 				
 				if(CodePoint == 0x00000000)
 				{
+					if(NumberOfCodePoints == 0)
+					{
+						Result->GetValue()->AddTag("emtpy"s);
+					}
 					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 					Result->GetValue()->AddTag("ended by termination"s);
 					
@@ -13631,16 +13648,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
+		if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+		}
 		else
 		{
-			if(EndedByTermination == true)
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
-			}
-			else
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
-			}
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 		}
 		if(Reader.IsAtEnd() == true)
 		{
@@ -13724,16 +13738,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
+		if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+		}
 		else
 		{
-			if(EndedByTermination == true)
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
-			}
-			else
-			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
-			}
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 		}
 		if(Reader.IsAtEnd() == true)
 		{
@@ -13827,16 +13838,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
+		if(EndedByTermination == true)
+		{
+			Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points + termination");
+		}
 		else
 		{
-			if(EndedByTermination == true)
-			{
-				Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points + termination");
-			}
-			else
-			{
-				Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points");
-			}
+			Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points");
 		}
 		if(Reader.IsAtEnd() == true)
 		{
