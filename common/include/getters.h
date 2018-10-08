@@ -1,6 +1,11 @@
 #ifndef INSPECTION_COMMON_GETTERS_H
 #define INSPECTION_COMMON_GETTERS_H
 
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+
 #include "result.h"
 
 extern bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples;

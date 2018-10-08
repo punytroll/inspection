@@ -1,4 +1,5 @@
 #include <bitset>
+#include <functional>
 #include <sstream>
 #include <vector>
 
@@ -1827,7 +1828,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		Result->GetValue()->AppendValue("[4-31] Reserved", false);
 		for(auto Index = 4; Index < 32; ++Index)
 		{
-			Continue &= ~Flags[Index];
+			Continue &= !Flags[Index];
 		}
 	}
 	// finalization
@@ -6575,7 +6576,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(I
 		Flag->AddTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 5; ++FlagIndex)
 		{
-			Continue ^= ~Flags[FlagIndex];
+			Continue &= !Flags[FlagIndex];
 		}
 	}
 	// finalization
@@ -7950,7 +7951,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags
 		for(auto FlagIndex = 8; FlagIndex <= 12; ++FlagIndex)
 		{
 			FlagValue->AddTag("bit index", FlagIndex);
-			Continue = Continue && ~Flags[FlagIndex];
+			Continue &= !Flags[FlagIndex];
 		}
 		FlagValue = Result->GetValue()->AppendValue("Compression", Flags[7]);
 		FlagValue->AddTag("bit index", 7);
@@ -7992,7 +7993,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags
 		for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
 		{
 			FlagValue->AddTag("bit index", FlagIndex);
-			Continue = Continue && ~Flags[FlagIndex];
+			Continue &= !Flags[FlagIndex];
 		}
 	}
 	// finalization
@@ -8178,7 +8179,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 		Flag->AddTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
 		{
-			Continue ^= ~Flags[FlagIndex];
+			Continue &= !Flags[FlagIndex];
 		}
 	}
 	// finalization
@@ -9316,7 +9317,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 		Flag->AddTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 3; ++FlagIndex)
 		{
-			Continue ^= ~Flags[FlagIndex];
+			Continue &= !Flags[FlagIndex];
 		}
 	}
 	// finalization
@@ -9363,7 +9364,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(I
 		Flag->AddTag("bit index", 0);
 		for(auto FlagIndex = 0; FlagIndex <= 3; ++FlagIndex)
 		{
-			Continue ^= ~Flags[FlagIndex];
+			Continue &= !Flags[FlagIndex];
 		}
 	}
 	// finalization
