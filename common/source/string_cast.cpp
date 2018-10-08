@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007  Hagen Möbius
+ * Copyright (C) 2007, 2018  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.1.7 of the string cast.
+ * This is version 1.1.8 of the string cast.
  **/
 
 #include <iomanip>
@@ -98,6 +98,16 @@ std::string to_string_cast< int >(const int & Value)
 
 template < >
 std::string to_string_cast< std::uint8_t >(const std::uint8_t & Value)
+{
+	std::ostringstream StringStream;
+	
+	StringStream << static_cast< std::uint32_t >(Value);
+	
+	return StringStream.str();
+}
+
+template < >
+std::string to_string_cast< std::uint16_t >(const std::uint16_t & Value)
 {
 	std::ostringstream StringStream;
 	

@@ -1,0 +1,26 @@
+<getter>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_3Bit</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 8bit">
+				<element base-value="0">
+					<tag name="interpretation" type="string">not set</tag>
+				</element>
+				<element base-value="1">
+					<tag name="interpretation" type="string">track gain adjustment</tag>
+				</element>
+				<element base-value="2">
+					<tag name="interpretation" type="string">album gain adjustment</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>
