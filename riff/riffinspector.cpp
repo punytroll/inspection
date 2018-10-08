@@ -258,7 +258,7 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 		}
 		for(auto BitIndex = 18; BitIndex < 31; ++BitIndex)
 		{
-			Continue &= ~ChannelMask[BitIndex];
+			Continue &= !ChannelMask[BitIndex];
 		}
 		if(ChannelMask[31] == true)
 		{
