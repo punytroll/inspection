@@ -11194,8 +11194,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	Result->GetValue()->AddTag("big endian"s);
 	// verification
 	if(Continue == true)
@@ -11209,7 +11209,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	// reading
 	if(Continue == true)
 	{
-		auto NumberOfCharacters{0ul};
+		auto NumberOfCodePoints{0ul};
 		std::stringstream Value;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -11223,21 +11223,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 				
 				if(CodePoint == 0x00000000)
 				{
-					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 					Result->GetValue()->AddTag("ended by termination"s);
 					
 					break;
 				}
 				else
 				{
-					NumberOfCharacters += 1;
+					NumberOfCodePoints += 1;
 					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UCS-2 code point.");
 				Continue = false;
 			}
 		}
@@ -11272,7 +11272,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	if(Continue == true)
 	{
 		auto EndedByTermination{false};
-		auto NumberOfCharacters{0ul};
+		auto NumberOfCodePoints{0ul};
 		std::stringstream Value;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -11292,18 +11292,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 				}
 				else
 				{
-					NumberOfCharacters += 1;
+					NumberOfCodePoints += 1;
 					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UCS-2 code point.");
 				Continue = false;
 			}
 		}
-		if(NumberOfCharacters == 0)
+		if(NumberOfCodePoints == 0)
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
@@ -11311,11 +11311,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 			}
 			else
 			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
@@ -11348,8 +11348,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	Result->GetValue()->AddTag("little endian"s);
 	// verification
 	if(Continue == true)
@@ -11363,7 +11363,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	// reading
 	if(Continue == true)
 	{
-		auto NumberOfCharacters{0ul};
+		auto NumberOfCodePoints{0ul};
 		std::stringstream Value;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -11377,21 +11377,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 				
 				if(CodePoint == 0x00000000)
 				{
-					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 					Result->GetValue()->AddTag("ended by termination"s);
 					
 					break;
 				}
 				else
 				{
-					NumberOfCharacters += 1;
+					NumberOfCodePoints += 1;
 					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UCS-2 code point.");
 				Continue = false;
 			}
 		}
@@ -11426,7 +11426,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	if(Continue == true)
 	{
 		auto EndedByTermination{false};
-		auto NumberOfCharacters{0ul};
+		auto NumberOfCodePoints{0ul};
 		std::stringstream Value;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -11446,18 +11446,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 				}
 				else
 				{
-					NumberOfCharacters += 1;
+					NumberOfCodePoints += 1;
 					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UCS-2 encoded unicode character.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UCS-2 code point.");
 				Continue = false;
 			}
 		}
-		if(NumberOfCharacters == 0)
+		if(NumberOfCodePoints == 0)
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
@@ -11465,11 +11465,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 			}
 			else
 			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
@@ -11502,8 +11502,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("UCS-2"s);
-	Result->GetValue()->AddTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	// reading
 	if(Continue == true)
 	{
@@ -11545,8 +11545,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("UCS-2"s);
-	Result->GetValue()->AddTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	// reading
 	if(Continue == true)
 	{
@@ -11696,7 +11696,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	// reading
 	if(Continue == true)
 	{
-		auto NumberOfCharacters{0ul};
+		auto NumberOfCodePoints{0ul};
 		std::stringstream Value;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -11704,12 +11704,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader)};
 			
 			UpdateState(Continue, FieldResult);
-			NumberOfCharacters += 1;
+			NumberOfCodePoints += 1;
 			Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny()));
 			if(Continue == false)
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-8 code point.");
 				Continue = false;
 			}
 		}
@@ -11717,7 +11717,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 		{
 			Result->GetValue()->AddTag("ended by length"s);
 		}
-		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
+		Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points"s);
 		Result->GetValue()->SetAny(Value.str());
 	}
 	// finalization
@@ -11747,7 +11747,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	// reading
 	if(Continue == true)
 	{
-		auto NumberOfCharacters{0ul};
+		auto NumberOfCodePoints{0ul};
 		std::stringstream Value;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -11761,21 +11761,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 				
 				if(CodePoint == 0x00000000)
 				{
-					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 					Result->GetValue()->AddTag("ended by termination"s);
 					
 					break;
 				}
 				else
 				{
-					NumberOfCharacters += 1;
+					NumberOfCodePoints += 1;
 					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-8 code point.");
 				Continue = false;
 			}
 		}
@@ -11809,7 +11809,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	if(Continue == true)
 	{
 		auto EndedByTermination{false};
-		auto NumberOfCharacters{0ul};
+		auto NumberOfCodePoints{0ul};
 		std::stringstream Value;
 	
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -11829,18 +11829,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 				}
 				else
 				{
-					NumberOfCharacters += 1;
+					NumberOfCodePoints += 1;
 					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
 				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a UTF-8 encoded unicode character.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-8 code point.");
 				Continue = false;
 			}
 		}
-		if(NumberOfCharacters == 0)
+		if(NumberOfCodePoints == 0)
 		{
 			Result->GetValue()->AddTag("empty"s);
 		}
@@ -11848,11 +11848,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 		{
 			if(EndedByTermination == true)
 			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
 			}
 			else
 			{
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
+				Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points");
 			}
 		}
 		if(Reader.IsAtEnd() == true)
@@ -11931,7 +11931,51 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTermination(Inspection::Reader & Reader)
 {
-	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTermination()");
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ByteOrderMark", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
+		
+		if(ByteOrderMark == "BigEndian")
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(PartReader)};
+		
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("String", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else if(ByteOrderMark == "LittleEndian")
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTermination(PartReader)};
+		
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("String", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader)
@@ -11940,33 +11984,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("UTF-16"s);
-	Result->GetValue()->AddTag("ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ByteOrderMark", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ByteOrderMark", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
+	// reading
 	if(Continue == true)
 	{
 		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
 		
 		if(ByteOrderMark == "BigEndian")
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(PartReader)};
+		
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("String", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(ByteOrderMark == "LittleEndian")
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("String", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(PartReader)};
+		
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("String", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
@@ -12062,7 +12113,64 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Reader & Reader)
 {
-	throw NotImplementedException("Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination()");
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
+	Result->GetValue()->AddTag("big endian"s);
+	Result->GetValue()->AddTag("without byte order mark"s);
+	// verification
+	if(Continue == true)
+	{
+		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
+		{
+			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto NumberOfCodePoints{0ul};
+		std::stringstream Value;
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader)};
+			
+			Continue = PartResult->GetSuccess();
+			if(Continue == true)
+			{
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(PartResult->GetAny())};
+				
+				if(CodePoint == 0x00000000)
+				{
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+					Result->GetValue()->AddTag("ended by termination"s);
+					
+					break;
+				}
+				else
+				{
+					NumberOfCodePoints += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
+				}
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
+			}
+		}
+		Result->GetValue()->SetAny(Value.str());
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader)
@@ -12080,7 +12188,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	{
 		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
 		{
-			Result->GetValue()->AddTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -12115,7 +12223,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th codepoint is not a valid UTF-16 code point.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
 				Continue = false;
 			}
 		}
@@ -12242,6 +12350,68 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
+	Result->GetValue()->AddTag("little endian"s);
+	Result->GetValue()->AddTag("without byte order mark"s);
+	// verification
+	if(Continue == true)
+	{
+		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
+		{
+			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto NumberOfCodePoints{0ul};
+		std::stringstream Value;
+		
+		while((Continue == true) && (Reader.HasRemaining() == true))
+		{
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader)};
+			
+			Continue = PartResult->GetSuccess();
+			if(Continue == true)
+			{
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(PartResult->GetAny())};
+				
+				if(CodePoint == 0x00000000)
+				{
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCodePoints) + " code points + termination");
+					Result->GetValue()->AddTag("ended by termination"s);
+					
+					break;
+				}
+				else
+				{
+					NumberOfCodePoints += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
+				}
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
+			}
+		}
+		Result->GetValue()->SetAny(Value.str());
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -12257,7 +12427,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	{
 		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
 		{
-			Result->GetValue()->AddTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -12297,7 +12467,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 codepoint.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
 				Continue = false;
 			}
 		}
@@ -12360,7 +12530,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	{
 		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
 		{
-			Result->GetValue()->AddTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -12395,7 +12565,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th codepoint is not a valid UTF-16 code point.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCodePoints + 1) + "th code point is not a valid UTF-16 code point.");
 				Continue = false;
 			}
 		}
@@ -12453,7 +12623,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	{
 		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
 		{
-			Result->GetValue()->AddTag("error", "The available length must be an multiple of two bytes, without additional bits."s);
+			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
 			Continue = false;
 		}
 	}
@@ -12493,7 +12663,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(CodePointIndex + 1) + "th code point is not a valid UTF-16 codepoint.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(CodePointIndex + 1) + "th code point is not a valid UTF-16 code point.");
 				Continue = false;
 			}
 		}
