@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "buffer.h"
+#include "getter_repository.h"
 #include "getters.h"
 #include "guid.h"
 #include "helper.h"
@@ -204,10 +205,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_APE_Tags_HeaderOrFooter_VersionNumber(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("VersionNumber", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"APE", "HeaderOrFooter_VersionNumber"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("VersionNumber", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -241,46 +244,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter(In
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_HeaderOrFooter_VersionNumber(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto VersionNumber{std::experimental::any_cast< std::uint32_t >(Result->GetAny())};
-		
-		if(VersionNumber == 1000)
-		{
-			Result->GetValue()->AddTag("interpretation", "1.000 (old)"s);
-		}
-		else if(VersionNumber == 2000)
-		{
-			Result->GetValue()->AddTag("interpretation", "2.000 (new)"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Result->GetValue()->AddTag("error", "Unknown version number " + to_string_cast(VersionNumber) + ".");
-			Continue = false;
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -1109,84 +1072,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_16Bit_LittleEndian(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto UnsignedInteger16Bit{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
-		
-		if(UnsignedInteger16Bit == 0x0000)
-		{
-			Result->GetValue()->AddTag("value", false);
-		}
-		else if(UnsignedInteger16Bit == 0x0001)
-		{
-			Result->GetValue()->AddTag("value", true);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("value", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Boolean_32Bit_LittleEndian(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto UnsignedInteger32Bit{std::experimental::any_cast< std::uint32_t >(Result->GetAny())};
-		
-		if(UnsignedInteger32Bit == 0x00000000)
-		{
-			Result->GetValue()->AddTag("value", false);
-		}
-		else if(UnsignedInteger32Bit == 0x00000001)
-		{
-			Result->GetValue()->AddTag("value", true);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("value", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -1195,10 +1080,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_CodecEntryType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Type", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "CodecEntryType"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Type", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -1248,48 +1135,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntry(Inspection:
 		auto FieldValue{Result->GetValue()->AppendValue("CodecInformation", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecEntryType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto Type{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
-		
-		if(Type == 0x0001)
-		{
-			Result->GetValue()->AddTag("interpretation", "Video Codec"s);
-		}
-		else if(Type == 0x0002)
-		{
-			Result->GetValue()->AddTag("interpretation", "Audio Codec"s);
-		}
-		else if(Type == 0xffff)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unknown Codec"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", nullptr);
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -1524,10 +1369,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_ObjectHeader(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -1539,66 +1386,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetAny("Size")), 0} - Reader.GetConsumedLength()};
-		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetAny("Size")), 0} - Reader.GetConsumedLength()};
+		auto PartResult{Get_Bits_SetOrUnset_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto DataType{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
-		
-		if(DataType == 0x0000)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unicode string"s);
-		}
-		else if(DataType == 0x0001)
-		{
-			Result->GetValue()->AddTag("interpretation", "Byte array"s);
-		}
-		else if(DataType == 0x0002)
-		{
-			Result->GetValue()->AddTag("interpretation", "Boolean"s);
-		}
-		else if(DataType == 0x0003)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 32bit"s);
-		}
-		else if(DataType == 0x0004)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 64bit"s);
-		}
-		else if(DataType == 0x0005)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 16bit"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Data", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -1632,10 +1425,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_DataType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ValueDataType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "ExtendedContentDescription_ContentDescriptor_ValueDataType"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ValueDataType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -1704,10 +1499,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		{
 			if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 			{
-				auto FieldResult{Get_ASF_Boolean_32Bit_LittleEndian(Reader)};
-				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{g_GetterRepository.Get({"ASF", "Boolean_32Bit_LittleEndian"}, PartReader)};
 				
-				UpdateState(Continue, FieldResult);
+				Continue = PartResult->GetSuccess();
+				Result->SetValue(PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else
 			{
@@ -2155,7 +1952,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Reade
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesFlags(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FileProperties_Flags(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -2188,128 +1985,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesFlags(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FilePropertiesObjectData(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_GUID_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("FileID", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("FileSize", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ASF_CreationDate(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("CreationDate", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("DataPacketsCount", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("PlayDuration", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("SendDuration", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("Preroll", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ASF_FilePropertiesFlags(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("Flags", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("MinimumDataPacketSize", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("MaximumDataPacketSize", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("MaximumBitrate", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -2318,30 +1993,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_ASF_ObjectHeader(FieldReader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// verification
+	if(Continue == true)
+	{
+		Continue = std::experimental::any_cast< Inspection::GUID >(Result->GetAny("GUID")) == Inspection::g_ASF_HeaderObjectGUID;
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto GUID{std::experimental::any_cast< Inspection::GUID >(Result->GetAny("GUID"))};
-		Inspection::Length Size{std::experimental::any_cast< std::uint64_t >(Result->GetAny("Size")), 0};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetAny("Size")), 0} - Reader.GetConsumedLength()};
+		auto PartResult{Get_ASF_HeaderObjectData(PartReader)};
 		
-		if(GUID == Inspection::g_ASF_HeaderObjectGUID)
-		{
-			Inspection::Reader FieldReader{Reader, Size - Reader.GetConsumedLength()};
-			auto FieldResult{Get_ASF_HeaderObjectData(FieldReader)};
-			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
-		}
-		else
-		{
-			Continue = false;
-		}
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2533,10 +2205,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DataType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "MetadataLibrary_DescriptionRecord_DataType"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DataType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -2597,10 +2271,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		{
 			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
 			{
-				auto FieldResult{Get_ASF_Boolean_16Bit_LittleEndian(Reader)};
-				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{g_GetterRepository.Get({"ASF", "Boolean_16Bit_LittleEndian"}, PartReader)};
 				
-				UpdateState(Continue, FieldResult);
+				Continue = PartResult->GetSuccess();
+				Result->SetValue(PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else
 			{
@@ -2689,65 +2365,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_DataType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto DataType{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
-		
-		if(DataType == 0x0000)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unicode string"s);
-		}
-		else if(DataType == 0x0001)
-		{
-			Result->GetValue()->AddTag("interpretation", "Byte array"s);
-		}
-		else if(DataType == 0x0002)
-		{
-			Result->GetValue()->AddTag("interpretation", "Boolean"s);
-		}
-		else if(DataType == 0x0003)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 32bit"s);
-		}
-		else if(DataType == 0x0004)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 64bit"s);
-		}
-		else if(DataType == 0x0005)
-		{
-			Result->GetValue()->AddTag("interpretation", "Unsigned integer 16bit"s);
-		}
-		else if(DataType == 0x0006)
-		{
-			Result->GetValue()->AddTag("interpretation", "GUID"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibraryObjectData(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -2817,10 +2434,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_DataType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DataType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "Metadata_DescriptionRecord_DataType"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("DataType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -2881,10 +2500,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 		{
 			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
 			{
-				auto FieldResult{Get_ASF_Boolean_16Bit_LittleEndian(Reader)};
-				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{g_GetterRepository.Get({"ASF", "Boolean_16Bit_LittleEndian"}, PartReader)};
 				
-				UpdateState(Continue, FieldResult);
+				Continue = PartResult->GetSuccess();
+				Result->SetValue(PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else
 			{
@@ -2995,7 +2616,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ASF_ObjectHeader(Reader)};
+		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -3028,7 +2649,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_FilePropertiesObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Get_ASF_FilePropertiesObjectData(PartReader)};
+			auto PartResult{g_GetterRepository.Get({"ASF", "FileProperties_ObjectData"}, PartReader)};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
@@ -3151,34 +2772,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			Result->GetValue()->AppendValue("Data", PartResult->GetValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ObjectHeader(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ASF_GUID(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("GUID", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_64Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3488,10 +3081,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_ObjectHeader(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -3501,10 +3096,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASF_StreamPropertiesObjectData(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASF_StreamPropertiesObjectData(PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -6086,10 +5683,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_Frame_Header(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "Frame_Header"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6133,11 +5732,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		}
 		else if(Identifier == "UFI")
 		{
-			Inspection::Reader FieldReader{Reader, ClaimedSize};
-			auto FieldResult{Get_ID3_2_2_Frame_Body_UFI(FieldReader)};
+			Inspection::Reader PartReader{Reader, ClaimedSize};
+			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBodies", "UFI"}, PartReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
@@ -6403,66 +6003,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_TCO(Ins
 		{
 			Result->GetValue("Information")->AddTag("interpretation", std::get<1>(Interpretation));
 		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_UFI(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ASCII_String_Printable_EndedByTermination(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("OwnerIdentifier", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("Identifier", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Header(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_2_Frame_Header_Identifier(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -7036,10 +6576,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Header(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "Frame_Header"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -7251,10 +6793,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Body_APIC_MIMEType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("MIMEType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBodies", "APIC_MIMEType"}, Reader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("MIMEType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -7279,29 +6823,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC_MIMEType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_ASCII_String_Printable_EndedByTermination(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-		/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
-		/// @todo As per [ID3 2.3.0], the value '-->' is also permitted to signal a URL [RFC 1738] in the picture data.
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -8195,42 +7716,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_3_Frame_Header_Identifier(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_3_Frame_Header_Flags(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -9020,10 +8505,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_Frame_Header(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Frame_Header"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -9651,42 +9138,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_WXXX(In
 	{
 		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("URL", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_4_Frame_Header_Identifier(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_BitSet_16Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
 	}
@@ -10724,7 +10175,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_NameCode(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_NameCode"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("NameCode", PartResult->GetValue());
@@ -10734,7 +10185,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_OriginatorCode(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_OriginatorCode"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("OriginatorCode", PartResult->GetValue());
@@ -10744,7 +10195,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_SignBit(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_SignBit"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("SignBit", PartResult->GetValue());
@@ -10779,98 +10230,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_NameCode(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto NameCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(NameCode == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "not set"s);
-		}
-		else if(NameCode == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "track gain adjustment"s);
-		}
-		else if(NameCode == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "album gain adjustment"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(NameCode) + "\" is unknown and MUST NOT be used."s);
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto OriginatorCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(OriginatorCode == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "unspecified"s);
-		}
-		else if(OriginatorCode == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
-		}
-		else if(OriginatorCode == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "set by user"s);
-		}
-		else if(OriginatorCode == 0x03)
-		{
-			Result->GetValue()->AddTag("interpretation", "determined automatically"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(OriginatorCode) + "\" is unknown and MUST NOT be used."s);
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -10890,45 +10249,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment
 		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetAny()))};
 		
 		Result->GetValue()->AddTag("interpretation", ReplayGainAdjustment / 10.0f);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_SignBit(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(SignBit == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "positive gain (boost)"s);
-		}
-		else if(SignBit == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "negative gain (attenuation)"s);
-		}
-		else
-		{
-			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
-			assert(false);
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
