@@ -6471,28 +6471,332 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Header_Ident
 	{
 		auto & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
-		try
+		if(Identifier == "BUF")
 		{
-			auto Interpretation{Get_ID3_2_2_FrameIdentifier_Interpretation(Identifier)};
-			
 			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
-			Result->GetValue()->AddTag("interpretation", Interpretation);
+			Result->GetValue()->AddTag("interpretation", "Recommended buffer size"s);
 		}
-		catch(Inspection::UnknownValueException & Exception)
+		else if(Identifier == "CNT")
 		{
-			if(Identifier == "TCP")
-			{
-				Result->GetValue()->AddTag("standard", "<from the internet>"s);
-				Result->GetValue()->AddTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
-				Result->GetValue()->AddTag("interpretation", "Compilation"s);
-			}
-			else
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.2"s);
-				Result->GetValue()->AddTag("error", "Unknown frame identifier \"" + Identifier + "\".");
-				Result->GetValue()->AddTag("interpretation", nullptr);
-				Continue = false;
-			}
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Play counter"s);
+		}
+		else if(Identifier == "COM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Comments"s);
+		}
+		else if(Identifier == "CRA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Audio encryption"s);
+		}
+		else if(Identifier == "CRM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Encrypted meta frame"s);
+		}
+		else if(Identifier == "ETC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Event timing codes"s);
+		}
+		else if(Identifier == "EQU")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Equalization"s);
+		}
+		else if(Identifier == "GEO")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "General encapsulated object"s);
+		}
+		else if(Identifier == "IPL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Involved people list"s);
+		}
+		else if(Identifier == "LNK")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Linked information"s);
+		}
+		else if(Identifier == "MCI")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Music CD Identifier"s);
+		}
+		else if(Identifier == "MLL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "MPEG location lookup table"s);
+		}
+		else if(Identifier == "PIC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Attached picture"s);
+		}
+		else if(Identifier == "POP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Popularimeter"s);
+		}
+		else if(Identifier == "REV")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Reverb"s);
+		}
+		else if(Identifier == "RVA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Relative volume adjustment"s);
+		}
+		else if(Identifier == "SLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Synchronized lyric/text"s);
+		}
+		else if(Identifier == "STC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Synced tempo codes"s);
+		}
+		else if(Identifier == "TAL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Album/Movie/Show title"s);
+		}
+		else if(Identifier == "TBP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "BPM (Beats Per Minute)"s);
+		}
+		else if(Identifier == "TCM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Composer"s);
+		}
+		else if(Identifier == "TCO")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Content type"s);
+		}
+		else if(Identifier == "TCP")
+		{
+			Result->GetValue()->AddTag("standard", "<from the internet>"s);
+			Result->GetValue()->AddTag("error", "This frame is not officially defined for tag version 2.2 but has been seen used nonetheless."s);
+			Result->GetValue()->AddTag("interpretation", "Compilation"s);
+		}
+		else if(Identifier == "TCR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Copyright message"s);
+		}
+		else if(Identifier == "TDA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Date"s);
+		}
+		else if(Identifier == "TDY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Playlist delay"s);
+		}
+		else if(Identifier == "TEN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Encoded by"s);
+		}
+		else if(Identifier == "TFT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "File type"s);
+		}
+		else if(Identifier == "TIM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Time"s);
+		}
+		else if(Identifier == "TKE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Initial key"s);
+		}
+		else if(Identifier == "TLA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Language(s)"s);
+		}
+		else if(Identifier == "TLE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Length"s);
+		}
+		else if(Identifier == "TMT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Media type"s);
+		}
+		else if(Identifier == "TOA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Original artist(s)/performer(s)"s);
+		}
+		else if(Identifier == "TOF")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Original filename"s);
+		}
+		else if(Identifier == "TOL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Original Lyricist(s)/text writer(s)"s);
+		}
+		else if(Identifier == "TOR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Original release year"s);
+		}
+		else if(Identifier == "TOT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Original album/Movie/Show title"s);
+		}
+		else if(Identifier == "TP1")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group"s);
+		}
+		else if(Identifier == "TP2")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Band/Orchestra/Accompaniment"s);
+		}
+		else if(Identifier == "TP3")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Conductor/Performer refinement"s);
+		}
+		else if(Identifier == "TP4 Interpreted, remixed, or otherwise modified by")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Comments"s);
+		}
+		else if(Identifier == "TPA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Part of a set"s);
+		}
+		else if(Identifier == "TPB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Publisher"s);
+		}
+		else if(Identifier == "TRC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "ISRC (International Standard Recording Code)"s);
+		}
+		else if(Identifier == "TRD")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Recording dates"s);
+		}
+		else if(Identifier == "TRK")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Track number/Position in set"s);
+		}
+		else if(Identifier == "TSI")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Size"s);
+		}
+		else if(Identifier == "TSS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Software/hardware and settings used for encoding"s);
+		}
+		else if(Identifier == "TT1")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Content group description"s);
+		}
+		else if(Identifier == "TT2")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Title/Songname/Content description"s);
+		}
+		else if(Identifier == "TT3")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Subtitle/Description refinement"s);
+		}
+		else if(Identifier == "TXT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Lyricist/text writer"s);
+		}
+		else if(Identifier == "TXX")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "User defined text information frame"s);
+		}
+		else if(Identifier == "TYE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Year"s);
+		}
+		else if(Identifier == "UFI")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Unique file identifier"s);
+		}
+		else if(Identifier == "ULT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Unsynchronized lyric/text transcription"s);
+		}
+		else if(Identifier == "WAF")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Official audio file webpage"s);
+		}
+		else if(Identifier == "WAR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Official artist/performer webpage"s);
+		}
+		else if(Identifier == "WAS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Official audio source webpage"s);
+		}
+		else if(Identifier == "WCM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Commercial information"s);
+		}
+		else if(Identifier == "WCP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Copyright/Legal information"s);
+		}
+		else if(Identifier == "WPB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "Publishers official webpage"s);
+		}
+		else if(Identifier == "WXX")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("interpretation", "User defined URL link frame"s);
+		}
+		else
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.2"s);
+			Result->GetValue()->AddTag("error", "Unknown frame identifier \"" + Identifier + "\".");
+			Result->GetValue()->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -8027,69 +8331,429 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Ident
 	{
 		auto & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
-		try
+		if(Identifier == "AENC")
 		{
-			auto Interpretation{Get_ID3_2_3_FrameIdentifier_Interpretation(Identifier)};
-			
 			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
-			Result->GetValue()->AddTag("interpretation", Interpretation);
+			Result->GetValue()->AddTag("interpretation", "Audio encryption"s);
 		}
-		catch(Inspection::UnknownValueException & Exception)
+		else if(Identifier == "APIC")
 		{
-			if(Identifier == "RGAD")
-			{
-				Result->GetValue()->AddTag("standard", "Hydrogenaudio ReplayGain"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org."s);
-				Result->GetValue()->AddTag("interpretation", "Replay gain adjustment"s);
-			}
-			else if(Identifier == "TCMP")
-			{
-				Result->GetValue()->AddTag("standard", "iTunes"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
-				Result->GetValue()->AddTag("interpretation", "Part of a compilation"s);
-			}
-			else if(Identifier == "TDRC")
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AddTag("interpretation", "Recording time"s);
-			}
-			else if(Identifier == "TDTG")
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AddTag("interpretation", "Tagging time"s);
-			}
-			else if(Identifier == "TSST")
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AddTag("interpretation", "Set subtitle"s);
-			}
-			else if(Identifier == "TSOA")
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AddTag("interpretation", "Album sort order"s);
-			}
-			else if(Identifier == "TSOP")
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
-				Result->GetValue()->AddTag("interpretation", "Performer sort order"s);
-			}
-			else if(Identifier == "TSO2")
-			{
-				Result->GetValue()->AddTag("standard", "iTunes"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order."s);
-				Result->GetValue()->AddTag("interpretation", "Album artist sort order"s);
-			}
-			else
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.3"s);
-				Result->GetValue()->AddTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
-				Result->GetValue()->AddTag("interpretation", nullptr);
-			}
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Attached Picture"s);
+		}
+		else if(Identifier == "COMM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Comments"s);
+		}
+		else if(Identifier == "COMR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Commercial frame"s);
+		}
+		else if(Identifier == "ENCR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Encryption method registration"s);
+		}
+		else if(Identifier == "EQUA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Equalisation"s);
+		}
+		else if(Identifier == "ETCO")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Event timing codes"s);
+		}
+		else if(Identifier == "GEOB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "General encapsulated object"s);
+		}
+		else if(Identifier == "GRID")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Group identification registration"s);
+		}
+		else if(Identifier == "IPLS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Involved people list"s);
+		}
+		else if(Identifier == "LINK")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Linked information"s);
+		}
+		else if(Identifier == "MCDI")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Music CD identifier"s);
+		}
+		else if(Identifier == "MLLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "MPEG location lookup table"s);
+		}
+		else if(Identifier == "OWNE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Ownership frame"s);
+		}
+		else if(Identifier == "PRIV")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Private frame"s);
+		}
+		else if(Identifier == "PCNT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Play counter"s);
+		}
+		else if(Identifier == "POPM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Popularimeter"s);
+		}
+		else if(Identifier == "POSS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Position synchronisation frame"s);
+		}
+		else if(Identifier == "RBUF")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Recommended buffer size"s);
+		}
+		else if(Identifier == "RGAD")
+		{
+			Result->GetValue()->AddTag("standard", "Hydrogenaudio ReplayGain"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org."s);
+			Result->GetValue()->AddTag("interpretation", "Replay gain adjustment"s);
+		}
+		else if(Identifier == "RVAD")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Relative volume adjustment"s);
+		}
+		else if(Identifier == "RVRB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Reverb"s);
+		}
+		else if(Identifier == "SYLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Synchronised lyric/text"s);
+		}
+		else if(Identifier == "SYTC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Synchronised tempo codes"s);
+		}
+		else if(Identifier == "TALB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Album/Movie/Show title"s);
+		}
+		else if(Identifier == "TBPM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "BPM (beats per minute)"s);
+		}
+		else if(Identifier == "TCMP")
+		{
+			Result->GetValue()->AddTag("standard", "iTunes"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
+			Result->GetValue()->AddTag("interpretation", "Part of a compilation"s);
+		}
+		else if(Identifier == "TCOM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Composer"s);
+		}
+		else if(Identifier == "TCON")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Content type"s);
+		}
+		else if(Identifier == "TCOP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Copyright message"s);
+		}
+		else if(Identifier == "TDAT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Date"s);
+		}
+		else if(Identifier == "TDLY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Playlist delay"s);
+		}
+		else if(Identifier == "TDRC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			Result->GetValue()->AddTag("interpretation", "Recording time"s);
+		}
+		else if(Identifier == "TDTG")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			Result->GetValue()->AddTag("interpretation", "Tagging time"s);
+		}
+		else if(Identifier == "TENC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Encoded by"s);
+		}
+		else if(Identifier == "TEXT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Lyricist/Text writer"s);
+		}
+		else if(Identifier == "TFLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "File type"s);
+		}
+		else if(Identifier == "TIME")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Time"s);
+		}
+		else if(Identifier == "TIT1")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Content group description"s);
+		}
+		else if(Identifier == "TIT2")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Title/songname/content description"s);
+		}
+		else if(Identifier == "TIT3")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Subtitle/Description refinement"s);
+		}
+		else if(Identifier == "TKEY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Initial key"s);
+		}
+		else if(Identifier == "TLAN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Language(s)"s);
+		}
+		else if(Identifier == "TLEN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Length"s);
+		}
+		else if(Identifier == "TMED")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Media type"s);
+		}
+		else if(Identifier == "TOAL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Original album/movie/show title"s);
+		}
+		else if(Identifier == "TOFN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Original filename"s);
+		}
+		else if(Identifier == "TOLY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Original lyricist(s)/text writer(s)"s);
+		}
+		else if(Identifier == "TOPE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Original artist(s)/performer(s)"s);
+		}
+		else if(Identifier == "TORY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Original release year"s);
+		}
+		else if(Identifier == "TOWN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "File owner/licensee"s);
+		}
+		else if(Identifier == "TPE1")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Lead performer(s)/Soloist(s)"s);
+		}
+		else if(Identifier == "TPE2")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Band/orchestra/accompaniment"s);
+		}
+		else if(Identifier == "TPE3")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Conductor/performer refinement"s);
+		}
+		else if(Identifier == "TPE4")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Interpreted, remixed, or otherwise modified by"s);
+		}
+		else if(Identifier == "TPOS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Part of a set"s);
+		}
+		else if(Identifier == "TPUB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Publisher"s);
+		}
+		else if(Identifier == "TRCK")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Track number/Position in set"s);
+		}
+		else if(Identifier == "TRDA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Recording dates"s);
+		}
+		else if(Identifier == "TRSN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Internet radio station name"s);
+		}
+		else if(Identifier == "TRSO")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Internet radio station owner"s);
+		}
+		else if(Identifier == "TSIZ")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Size"s);
+		}
+		else if(Identifier == "TSOA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			Result->GetValue()->AddTag("interpretation", "Album sort order"s);
+		}
+		else if(Identifier == "TSOP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			Result->GetValue()->AddTag("interpretation", "Performer sort order"s);
+		}
+		else if(Identifier == "TSO2")
+		{
+			Result->GetValue()->AddTag("standard", "iTunes"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order."s);
+			Result->GetValue()->AddTag("interpretation", "Album artist sort order"s);
+		}
+		else if(Identifier == "TSRC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "ISRC (international standard recording code)"s);
+		}
+		else if(Identifier == "TSSE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Software/Hardware and settings used for encoding"s);
+		}
+		else if(Identifier == "TSST")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4."s);
+			Result->GetValue()->AddTag("interpretation", "Set subtitle"s);
+		}
+		else if(Identifier == "TXXX")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "User defined text information frame"s);
+		}
+		else if(Identifier == "TYER")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Year"s);
+		}
+		else if(Identifier == "UFID")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Unique file identifier"s);
+		}
+		else if(Identifier == "USER")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Terms of use"s);
+		}
+		else if(Identifier == "USLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Unsynchronised lyric/text transcription"s);
+		}
+		else if(Identifier == "WCOM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Commercial information"s);
+		}
+		else if(Identifier == "WCOP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Copyright/legal information"s);
+		}
+		else if(Identifier == "WOAF")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Official audio file webpage"s);
+		}
+		else if(Identifier == "WOAR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Official artist/performer webpage"s);
+		}
+		else if(Identifier == "WOAS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Official audio source webpage"s);
+		}
+		else if(Identifier == "WORS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Official internet radio station webpage"s);
+		}
+		else if(Identifier == "WPAY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Payment"s);
+		}
+		else if(Identifier == "WPUB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "Publisher's official webpage"s);
+		}
+		else if(Identifier == "WXXX")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("interpretation", "User defined URL link frame"s);
+		}
+		else
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -9030,33 +9694,438 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header_Ident
 	{
 		auto & Identifier{std::experimental::any_cast< const std::string & >(Result->GetAny())};
 		
-		try
+		if(Identifier == "AENC")
 		{
-			auto Interpretation{Get_ID3_2_4_FrameIdentifier_Interpretation(Identifier)};
-			
 			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-			Result->GetValue()->AddTag("interpretation", Interpretation);
+			Result->GetValue()->AddTag("interpretation", "Audio encryption"s);
 		}
-		catch(Inspection::UnknownValueException & Exception)
+		else if(Identifier == "APIC")
 		{
-			if(Identifier == "TCMP")
-			{
-				Result->GetValue()->AddTag("standard", "iTunes"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.4. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
-				Result->GetValue()->AddTag("interpretation", "Part of a compilation"s);
-			}
-			else if(Identifier == "TYER")
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.3"s);
-				Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3."s);
-				Result->GetValue()->AddTag("interpretation", "Year"s);
-			}
-			else
-			{
-				Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-				Result->GetValue()->AddTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
-				Result->GetValue()->AddTag("interpretation", nullptr);
-			}
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Attached Picture"s);
+		}
+		else if(Identifier == "ASPI")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Audio seek point index"s);
+		}
+		else if(Identifier == "COMM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Comments"s);
+		}
+		else if(Identifier == "COMR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Commercial frame"s);
+		}
+		else if(Identifier == "ENCR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Encryption method registration"s);
+		}
+		else if(Identifier == "EQU2")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Equalisation (2)"s);
+		}
+		else if(Identifier == "ETCO")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Event timing codes"s);
+		}
+		else if(Identifier == "GEOB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "General encapsulated object"s);
+		}
+		else if(Identifier == "GRID")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Group identification registration"s);
+		}
+		else if(Identifier == "LINK")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Linked information"s);
+		}
+		else if(Identifier == "MCDI")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Music CD identifier"s);
+		}
+		else if(Identifier == "MLLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "MPEG location lookup table"s);
+		}
+		else if(Identifier == "OWNE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Ownership frame"s);
+		}
+		else if(Identifier == "PRIV")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Private frame"s);
+		}
+		else if(Identifier == "PCNT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Play counter"s);
+		}
+		else if(Identifier == "POPM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Popularimeter"s);
+		}
+		else if(Identifier == "POSS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Position synchronisation frame"s);
+		}
+		else if(Identifier == "RBUF")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Recommended buffer size"s);
+		}
+		else if(Identifier == "RVA2")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Relative volume adjustment (2)"s);
+		}
+		else if(Identifier == "RVRB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Reverb"s);
+		}
+		else if(Identifier == "SEEK")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Seek frame"s);
+		}
+		else if(Identifier == "SIGN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Signature frame"s);
+		}
+		else if(Identifier == "SYLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Synchronised lyric/text"s);
+		}
+		else if(Identifier == "SYTC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Synchronised tempo codes"s);
+		}
+		else if(Identifier == "TALB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Album/Movie/Show title"s);
+		}
+		else if(Identifier == "TBPM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "BPM (beats per minute)"s);
+		}
+		else if(Identifier == "TCMP")
+		{
+			Result->GetValue()->AddTag("standard", "iTunes"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.4. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation."s);
+			Result->GetValue()->AddTag("interpretation", "Part of a compilation"s);
+		}
+		else if(Identifier == "TCOM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Composer"s);
+		}
+		else if(Identifier == "TCON")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Content type"s);
+		}
+		else if(Identifier == "TCOP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Copyright message"s);
+		}
+		else if(Identifier == "TDEN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Encoding time"s);
+		}
+		else if(Identifier == "TDLY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Playlist delay"s);
+		}
+		else if(Identifier == "TDOR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Original release time"s);
+		}
+		else if(Identifier == "TDRC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Recording time"s);
+		}
+		else if(Identifier == "TDRL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Release time"s);
+		}
+		else if(Identifier == "TDTG")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Tagging time"s);
+		}
+		else if(Identifier == "TENC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Encoded by"s);
+		}
+		else if(Identifier == "TEXT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Lyricist/Text writer"s);
+		}
+		else if(Identifier == "TFLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "File type"s);
+		}
+		else if(Identifier == "TIPL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Involved people list"s);
+		}
+		else if(Identifier == "TIT1")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Content group description"s);
+		}
+		else if(Identifier == "TIT2")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Title/songname/content description"s);
+		}
+		else if(Identifier == "TIT3")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Subtitle/Description refinement"s);
+		}
+		else if(Identifier == "TKEY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Initial key"s);
+		}
+		else if(Identifier == "TLAN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Language(s)"s);
+		}
+		else if(Identifier == "TLEN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Length"s);
+		}
+		else if(Identifier == "TMCL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Musician credits list"s);
+		}
+		else if(Identifier == "TMED")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Media type"s);
+		}
+		else if(Identifier == "TMOO")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Mood"s);
+		}
+		else if(Identifier == "TOAL")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Original album/movie/show title"s);
+		}
+		else if(Identifier == "TOFN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Original filename"s);
+		}
+		else if(Identifier == "TOLY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Original lyricist(s)/text writer(s)"s);
+		}
+		else if(Identifier == "TOPE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Original artist(s)/performer(s)"s);
+		}
+		else if(Identifier == "TOWN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "File owner/licensee"s);
+		}
+		else if(Identifier == "TPE1")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Lead performer(s)/Soloist(s)"s);
+		}
+		else if(Identifier == "TPE2")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Band/orchestra/accompaniment"s);
+		}
+		else if(Identifier == "TPE3")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Conductor/performer refinement"s);
+		}
+		else if(Identifier == "TPE4")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Interpreted, remixed, or otherwise modified by"s);
+		}
+		else if(Identifier == "TPOS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Part of a set"s);
+		}
+		else if(Identifier == "TPRO")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Produced notice"s);
+		}
+		else if(Identifier == "TPUB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Publisher"s);
+		}
+		else if(Identifier == "TRCK")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Track number/Position in set"s);
+		}
+		else if(Identifier == "TRSN")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Internet radio station name"s);
+		}
+		else if(Identifier == "TRSO")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Internet radio station owner"s);
+		}
+		else if(Identifier == "TSOA")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Album sort order"s);
+		}
+		else if(Identifier == "TSOP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Performer sort order"s);
+		}
+		else if(Identifier == "TSOT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Title sort order"s);
+		}
+		else if(Identifier == "TSRC")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "ISRC (international standard recording code)"s);
+		}
+		else if(Identifier == "TSSE")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Software/Hardware and settings used for encoding"s);
+		}
+		else if(Identifier == "TSST")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Set subtitle"s);
+		}
+		else if(Identifier == "TXXX")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "User defined text information frame"s);
+		}
+		else if(Identifier == "TYER")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->AddTag("error", "This frame is not defined in tag version 2.4. It has only been valid until tag version 2.3."s);
+			Result->GetValue()->AddTag("interpretation", "Year"s);
+		}
+		else if(Identifier == "UFID")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Unique file identifier"s);
+		}
+		else if(Identifier == "USER")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Terms of use"s);
+		}
+		else if(Identifier == "USLT")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Unsynchronised lyric/text transcription"s);
+		}
+		else if(Identifier == "WCOM")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Commercial information"s);
+		}
+		else if(Identifier == "WCOP")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Copyright/legal information"s);
+		}
+		else if(Identifier == "WOAF")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Official audio file webpage"s);
+		}
+		else if(Identifier == "WOAR")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Official artist/performer webpage"s);
+		}
+		else if(Identifier == "WOAS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Official audio source webpage"s);
+		}
+		else if(Identifier == "WORS")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Official internet radio station webpage"s);
+		}
+		else if(Identifier == "WPAY")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Payment"s);
+		}
+		else if(Identifier == "WPUB")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "Publisher's official webpage"s);
+		}
+		else if(Identifier == "WXXX")
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("interpretation", "User defined URL link frame"s);
+		}
+		else
+		{
+			Result->GetValue()->AddTag("standard", "ID3 2.4"s);
+			Result->GetValue()->AddTag("error", "Unkown frame identifier \"" + Identifier + "\"."s);
+			Result->GetValue()->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
