@@ -1667,7 +1667,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/value</argument>
 		</execute>
 		<expected-output>101</expected-output>
 	</test>
@@ -1675,7 +1675,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:value/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/tag:value/value</argument>
 		</execute>
 		<expected-output>101</expected-output>
 	</test>
@@ -1683,7 +1683,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:character set/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/tag:character set/value</argument>
 		</execute>
 		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
 	</test>
@@ -1691,7 +1691,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:encoding/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/tag:encoding/value</argument>
 		</execute>
 		<expected-output>UTF-8</expected-output>
 	</test>
@@ -1699,7 +1699,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/has-tag:3 code points + termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/has-tag:3 code points + termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1707,7 +1707,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/has-tag:ended by termination</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/has-tag:ended by termination</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1715,7 +1715,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:1]/value</argument>
 		</execute>
 		<expected-output>102</expected-output>
 	</test>
@@ -1723,7 +1723,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/tag:value/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:1]/tag:value/value</argument>
 		</execute>
 		<expected-output>102</expected-output>
 	</test>
@@ -1731,7 +1731,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/tag:character set/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:1]/tag:character set/value</argument>
 		</execute>
 		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
 	</test>
@@ -1739,7 +1739,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/tag:encoding/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:1]/tag:encoding/value</argument>
 		</execute>
 		<expected-output>UTF-8</expected-output>
 	</test>
@@ -1747,7 +1747,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/has-tag:3 code points</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:1]/has-tag:3 code points</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1755,7 +1755,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/041_2.4_TCON_101_102_utf-8.mp3</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[1]/has-tag:ended by length</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:1]/has-tag:ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -3211,7 +3211,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/023_id3_2.4_TSOP</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:value/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/tag:value/value</argument>
 		</execute>
 		<expected-output>Keys, Alicia</expected-output>
 	</test>
@@ -3259,7 +3259,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/024_id3_2.4_TCMP</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/value</argument>
 		</execute>
 		<expected-output>1</expected-output>
 	</test>
@@ -3267,7 +3267,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/024_id3_2.4_TCMP</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:value/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/tag:value/value</argument>
 		</execute>
 		<expected-output>1</expected-output>
 	</test>
@@ -3275,7 +3275,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/024_id3_2.4_TCMP</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Information[0]/tag:interpretation/value</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Informations/sub:Information:[tag:array index/is-value:0]/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>yes, this is part of a compilation</expected-output>
 	</test>

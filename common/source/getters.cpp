@@ -9422,27 +9422,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ID3_2_4_TextEncoding(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny("TextEncoding"))};
-		auto InformationIndex{0ul};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByLength(PartReader, std::bind(Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength, std::placeholders::_1, TextEncoding))};
 		
-		while((Continue == true) && (Reader.HasRemaining() == true))
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Informations", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValues())
 		{
-			auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, TextEncoding)};
-			
-			UpdateState(Continue, FieldResult);
-			if(Continue == true)
-			{
-				Result->GetValue()->AppendValue("Information[" + to_string_cast(InformationIndex++) + "]", FieldResult->GetValue());
-			}
+			PartValue->SetName("Information");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -9467,20 +9467,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TCMP(In
 	// reading
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information[0]")->GetTagAny("value"))};
-		
-		if(Information == "1")
+		for(auto PartValue : Result->GetValue("Informations")->GetValues())
 		{
-			Result->GetValue("Information[0]")->AddTag("interpretation", "yes, this is part of a compilation"s);
-		}
-		else if(Information == "0")
-		{
-			Result->GetValue("Information[0]")->AddTag("interpretation", "no, this is not part of a compilation"s);
-		}
-		else
-		{
-			Result->GetValue("Information[0]")->AddTag("error", "The value \"" + Information + "\" could not interpreted.");
-			Result->GetValue("Information[0]")->AddTag("interpretation", nullptr);
+			auto Information{std::experimental::any_cast< const std::string & >(PartValue->GetTagAny("value"))};
+			
+			if(Information == "1")
+			{
+				PartValue->AddTag("interpretation", "yes, this is part of a compilation"s);
+			}
+			else if(Information == "0")
+			{
+				PartValue->AddTag("interpretation", "no, this is not part of a compilation"s);
+			}
+			else
+			{
+				PartValue->AddTag("error", "The value \"" + Information + "\" could not interpreted.");
+				PartValue->AddTag("interpretation", nullptr);
+			}
 		}
 	}
 	// finalization
