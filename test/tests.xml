@@ -458,6 +458,54 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC_JPG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:11]/sub:PictureType/value</argument>
+		</execute>
+		<expected-output>5</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC_JPG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:11]/sub:PictureType/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC_JPG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:11]/sub:PictureType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Leaflet page</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/020_id3_2.2_PIC_PNG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/value</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/020_id3_2.2_PIC_PNG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/020_id3_2.2_PIC_PNG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Cover (front)</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/012_id3_2.2_padding</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:TagHeader/sub:MajorVersion/value</argument>
 		</execute>
@@ -2499,6 +2547,14 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/018_id3_2.3_APIC</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:interpretation/value:</argument>
 		</execute>
 		<expected-output>Cover (front)</expected-output>
@@ -3302,6 +3358,14 @@
 			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/value:</argument>
 		</execute>
 		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/025_id3_2.4_APIC</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.4</expected-output>
 	</test>
 	<test>
 		<execute>
