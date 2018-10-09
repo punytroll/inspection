@@ -2,7 +2,9 @@
 	<part>
 		<getter>
 			<part>Numbers</part>
-			<part>UnsignedInteger_32Bit_LittleEndian</part>
+			<part>Integers</part>
+			<part>Unsigned</part>
+			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
 			<set/>

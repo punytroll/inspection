@@ -142,7 +142,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PCNT(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PRIV(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_RGAD(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_T___(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCMP(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCON(Inspection::Reader & Reader);

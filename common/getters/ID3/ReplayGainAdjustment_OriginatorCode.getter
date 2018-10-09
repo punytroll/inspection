@@ -2,7 +2,9 @@
 	<part>
 		<getter>
 			<part>Numbers</part>
-			<part>UnsignedInteger_3Bit</part>
+			<part>Integers</part>
+			<part>Unsigned</part>
+			<part>3Bit</part>
 		</getter>
 		<value>
 			<set/>

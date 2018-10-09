@@ -1,0 +1,36 @@
+<getter>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>Reals</part>
+			<part>ISO_IEC_IEEE_60559_2011_binary32</part>
+		</getter>
+		<value>
+			<append>
+				<name>PeakAmplitude</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>ReplayGainAdjustment</part>
+		</getter>
+		<value>
+			<append>
+				<name>TrackReplayGainAdjustment</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>ReplayGainAdjustment</part>
+		</getter>
+		<value>
+			<append>
+				<name>AlbumReplayGainAdjustment</name>
+			</append>
+		</value>
+	</part>
+</getter>
