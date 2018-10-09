@@ -1810,7 +1810,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("ContentDescriptors", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("ContentDescriptor");
 		}
@@ -2100,7 +2100,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("AdditionalExtendedHeaders", PartResult->GetValue());
-		for(auto AdditionalExtendedHeaderValue : PartResult->GetValues())
+		for(auto AdditionalExtendedHeaderValue : PartResult->GetValue()->GetValues())
 		{
 			AdditionalExtendedHeaderValue->SetName("AdditionalExtendedHeader");
 		}
@@ -2771,7 +2771,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibraryObjectD
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("DescriptionRecords", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("DescriptionRecord");
 		}
@@ -2973,7 +2973,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObjectData(Ins
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("DescriptionRecords", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("DescriptionRecord");
 		}
@@ -4162,7 +4162,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Subframes", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("Subframe");
 		}
@@ -5153,7 +5153,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 		auto PartResult{Get_FLAC_Stream_Header(PartReader)};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValues());
+		Result->SetValue(PartResult->GetValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
@@ -5165,7 +5165,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("Frame");
 		}
@@ -5749,7 +5749,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Partitions", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("Partition");
 		}
@@ -9465,7 +9465,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Informations", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("Information");
 		}
@@ -10769,7 +10769,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_2_Frame)};
 				
 				Continue = PartResult->GetSuccess();
-				for(auto PartValue : PartResult->GetValues())
+				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
 					Result->GetValue()->AppendValue("Frame", PartValue);
 				}
@@ -10822,7 +10822,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_3_Frame)};
 				
 				Continue = PartResult->GetSuccess();
-				for(auto PartValue : PartResult->GetValues())
+				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
 					Result->GetValue()->AppendValue("Frame", PartValue);
 				}
@@ -10880,7 +10880,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_4_Frame)};
 				
 				Continue = PartResult->GetSuccess();
-				for(auto PartValue : PartResult->GetValues())
+				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
 					Result->GetValue()->AppendValue("Frame", PartValue);
 				}
