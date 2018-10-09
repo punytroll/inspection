@@ -11763,18 +11763,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		for(auto TrackNumber = FirstTrackNumber; (Continue == true) && (TrackNumber <= LastTrackNumber); ++TrackNumber)
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_IEC_60908_1999_TableOfContents_Track, LastTrackNumber - FirstTrackNumber + 1)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Tracks", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("Track", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
-			// interpretation
-			if(Continue == true)
-			{
-				FieldValue->SetName("Track[" + to_string_cast(std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("Number"))) + "]");
-			}
+			PartValue->SetName("Track");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
