@@ -641,7 +641,14 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 		}
 		else if(FilterPartSpecifications[0] == "value")
 		{
-			std::cout << Value->GetAny();
+			if(FilterPartSpecifications.size() == 1)
+			{
+				std::cout << Value->GetAny();
+			}
+			else
+			{
+				throw std::invalid_argument("The \"value\" part specification does not accept any arguments.");
+			}
 		}
 		else if(FilterPartSpecifications[0] == "tag")
 		{
