@@ -186,13 +186,13 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextEncoding(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Reader & Reader, std::uint8_t TextEncoding);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, std::uint8_t TextEncoding);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ID3_ReplayGainAdjustment(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ID3_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_GUID(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Header(Inspection::Reader & Reader);
