@@ -4,6 +4,14 @@
 #include "enumeration.h"
 #include "xml_puny_dom.h"
 
+Inspection::Enumeration::Element::~Element(void)
+{
+	for(auto Tag : Tags)
+	{
+		delete Tag;
+	}
+}
+
 Inspection::Enumeration::~Enumeration(void)
 {
 	for(auto Element : Elements)
@@ -44,15 +52,18 @@ void Inspection::Enumeration::Load(const XML::Element * EnumerationElement)
 						
 						if(EnumerationElementChildElement->GetName() == "tag")
 						{
-							Element->TagName = EnumerationElementChildElement->GetAttribute("name");
-							Element->TagType = EnumerationElementChildElement->GetAttribute("type");
+							auto Tag{new Inspection::Enumeration::Element::Tag{}};
+							
+							Tag->Name = EnumerationElementChildElement->GetAttribute("name");
+							Tag->Type = EnumerationElementChildElement->GetAttribute("type");
 							
 							assert(EnumerationElementChildElement->GetChilds().size() == 1);
 							
 							auto TagText{dynamic_cast< const XML::Text * >(EnumerationElementChildElement->GetChild(0))};
 							
 							assert(TagText != nullptr);
-							Element->TagValue = TagText->GetText();
+							Tag->Value = TagText->GetText();
+							Element->Tags.push_back(Tag);
 						}
 						else
 						{

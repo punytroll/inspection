@@ -47,6 +47,12 @@ namespace Inspection
 		{
 		}
 		
+		~InterpretDescriptor(void)
+		{
+			delete Enumeration;
+			Enumeration = nullptr;
+		}
+		
 		std::vector< std::string > PathParts;
 		Inspection::InterpretType Type;
 		Inspection::Enumeration * Enumeration;
@@ -61,13 +67,16 @@ namespace Inspection
 		
 		if(ElementIterator != Enumeration->Elements.end())
 		{
-			if((*ElementIterator)->TagType == "string")
+			for(auto Tag : (*ElementIterator)->Tags)
 			{
-				Target->AddTag((*ElementIterator)->TagName, (*ElementIterator)->TagValue);
-			}
-			else if((*ElementIterator)->TagType == "boolean")
-			{
-				Target->AddTag((*ElementIterator)->TagName, from_string_cast< bool >((*ElementIterator)->TagValue));
+				if(Tag->Type == "string")
+				{
+					Target->AddTag(Tag->Name, Tag->Value);
+				}
+				else if(Tag->Type == "boolean")
+				{
+					Target->AddTag(Tag->Name, from_string_cast< bool >(Tag->Value));
+				}
 			}
 			Result = true;
 		}
@@ -298,6 +307,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_3Bit")
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_8Bit;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_LittleEndian")
 				{

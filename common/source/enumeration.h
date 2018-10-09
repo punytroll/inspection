@@ -17,10 +17,17 @@ namespace Inspection
 		class Element
 		{
 		public:
+			class Tag
+			{
+			public:
+				std::string Name;
+				std::string Type;
+				std::string Value;
+			};
+			
+			~Element(void);
 			std::string BaseValue;
-			std::string TagName;
-			std::string TagType;
-			std::string TagValue;
+			std::vector< Inspection::Enumeration::Element::Tag * > Tags;
 		};
 		
 		~Enumeration(void);
