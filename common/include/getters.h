@@ -113,6 +113,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample);
+	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_CalculateBitsPerSample(Inspection::Reader & Reader, std::uint64_t SubFrameIndex, std::uint16_t BlockSize, std::uint8_t BitsPerSample, std::uint8_t ChannelAssignment);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Constant(Inspection::Reader & Reader, std::uint8_t BitsPerSample);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_LPC(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);
