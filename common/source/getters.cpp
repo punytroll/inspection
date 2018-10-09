@@ -2139,14 +2139,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Reade
 	// reading
 	if(Continue == true)
 	{
-		while((Continue == true) && (Reader.HasRemaining() == true))
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByLength(PartReader, Get_ASF_Object)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Objects", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			Inspection::Reader FieldReader{Reader};
-			auto FieldResult{Get_ASF_Object(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendValue("Object", FieldResult->GetValue())};
-			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			PartValue->SetName("Object");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
