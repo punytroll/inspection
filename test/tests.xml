@@ -1810,6 +1810,150 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:BlockType/value</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:BlockType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>SeekTable</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:Length/value</argument>
+		</execute>
+		<expected-output>378</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:SampleNumberOfFirstSampleInTargetFrame/value</argument>
+		</execute>
+		<expected-output>2641920</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:SampleNumberOfFirstSampleInTargetFrame/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:SampleNumberOfFirstSampleInTargetFrame/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:SampleNumberOfFirstSampleInTargetFrame/has-tag:64bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:SampleNumberOfFirstSampleInTargetFrame/has-tag:big endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:ByteOffsetOfTargetFrame/value</argument>
+		</execute>
+		<expected-output>6913279</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:ByteOffsetOfTargetFrame/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:ByteOffsetOfTargetFrame/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:ByteOffsetOfTargetFrame/has-tag:64bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:ByteOffsetOfTargetFrame/has-tag:big endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:NumberOfSamplesInTargetFrame/value</argument>
+		</execute>
+		<expected-output>4096</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:NumberOfSamplesInTargetFrame/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:NumberOfSamplesInTargetFrame/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:NumberOfSamplesInTargetFrame/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/026_FLAC_SeekTable</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:SeekPoints/sub:SeekPoint:[tag:array index/is-value:6]/sub:NumberOfSamplesInTargetFrame/has-tag:big endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
 			<argument>--value=/sub:FLACStream/sub:StreamInfoBlock/sub:Data/sub:MinimumBlockSize/value</argument>
 		</execute>
