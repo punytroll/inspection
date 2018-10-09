@@ -1,0 +1,37 @@
+<getter>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>v2.3</part>
+			<part>Frame_Header_Identifier</part>
+		</getter>
+		<value>
+			<append>
+				<name>Identifier</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_32Bit_BigEndian</part>
+		</getter>
+		<value>
+			<append>
+				<name>Size</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>v2.3</part>
+			<part>Frame_Header_Flags</part>
+		</getter>
+		<value>
+			<append>
+				<name>Flags</name>
+			</append>
+		</value>
+	</part>
+</getter>

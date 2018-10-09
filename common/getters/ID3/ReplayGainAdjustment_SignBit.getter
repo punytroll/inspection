@@ -1,0 +1,23 @@
+<getter>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_1Bit</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 8bit">
+				<element base-value="0">
+					<tag name="interpretation" type="string">positive gain (boost)</tag>
+				</element>
+				<element base-value="1">
+					<tag name="interpretation" type="string">negative gain (attenuation)</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>

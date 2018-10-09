@@ -1,0 +1,25 @@
+<getter>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>v2.2</part>
+			<part>Frame_Header_Identifier</part>
+		</getter>
+		<value>
+			<append>
+				<name>Identifier</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_24Bit_BigEndian</part>
+		</getter>
+		<value>
+			<append>
+				<name>Size</name>
+			</append>
+		</value>
+	</part>
+</getter>
