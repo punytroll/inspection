@@ -2434,16 +2434,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObjectData(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto NumberOfHeaderObjectsValue{std::experimental::any_cast< std::uint32_t >(Result->GetAny("NumberOfHeaderObjects"))};
+		auto NumberOfHeaderObjects{std::experimental::any_cast< std::uint32_t >(Result->GetAny("NumberOfHeaderObjects"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_ASF_Object, NumberOfHeaderObjects)};
 		
-		for(auto HeaderObjectIndex = 0ul; (Continue == true) && (HeaderObjectIndex < NumberOfHeaderObjectsValue); ++HeaderObjectIndex)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("HeaderObjects", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			Inspection::Reader FieldReader{Reader};
-			auto FieldResult{Get_ASF_Object(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendValue("HeaderObject[" + to_string_cast(HeaderObjectIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			PartValue->SetName("HeaderObject");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
