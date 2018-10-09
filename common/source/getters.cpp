@@ -4775,11 +4775,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 			
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
-				Inspection::Reader FieldReader{Reader, Inspection::Length{MetaDataBlockDataLength, 0}};
-				auto FieldResult{Get_FLAC_SeekTableBlock_Data(FieldReader, MetaDataBlockDataLength / 18)};
-				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+				Inspection::Reader PartReader{Reader, Inspection::Length{MetaDataBlockDataLength, 0}};
+				auto PartResult{Get_FLAC_SeekTableBlock_Data(PartReader)};
 				
-				UpdateState(Continue, Reader, FieldResult, FieldReader);
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValue("Data", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else
 			{
@@ -5125,7 +5126,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader, std::uint32_t NumberOfSeekPoints)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -5133,13 +5134,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(I
 	// reading
 	if(Continue == true)
 	{
-		for(auto SeekPointIndex = 0ul; ((Continue == true) && (SeekPointIndex < NumberOfSeekPoints)); ++SeekPointIndex)
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByLength(PartReader, Get_FLAC_SeekTableBlock_SeekPoint)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("SeekPoints", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			auto FieldResult{Get_FLAC_SeekTableBlock_SeekPoint(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("SeekPoint[" + to_string_cast(SeekPointIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			PartValue->SetName("SeekPoint");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
