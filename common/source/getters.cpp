@@ -1810,9 +1810,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("ContentDescriptors", PartResult->GetValue());
-		for(auto ContentDescriptorValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValues())
 		{
-			ContentDescriptorValue->SetName("ContentDescriptor");
+			PartValue->SetName("ContentDescriptor");
 		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
@@ -4157,26 +4157,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 		auto BlockSize{std::experimental::any_cast< std::uint16_t >(Result->GetValue("Header")->GetValue("BlockSize")->GetTagAny("value"))};
 		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("SampleSize")->GetTagAny("value"))};
 		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("ChannelAssignment"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(PartReader, std::bind(Get_FLAC_Subframe_CalculateBitsPerSample, std::placeholders::_1, std::placeholders::_2, BlockSize, BitsPerSample, ChannelAssignment), NumberOfChannelsByStream)};
 		
-		for(auto SubFrameIndex = 0; (Continue == true) && (SubFrameIndex < NumberOfChannelsByStream); ++SubFrameIndex)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Subframes", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValues())
 		{
-			if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
-			{
-				Inspection::Reader FieldReader{Reader};
-				auto FieldResult{Get_FLAC_Subframe(FieldReader, BlockSize, BitsPerSample + 1)};
-				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
-				
-				UpdateState(Continue, Reader, FieldResult, FieldReader);
-			}
-			else
-			{
-				Inspection::Reader FieldReader{Reader};
-				auto FieldResult{Get_FLAC_Subframe(FieldReader, BlockSize, BitsPerSample)};
-				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
-				
-				UpdateState(Continue, Reader, FieldResult, FieldReader);
-			}
+			PartValue->SetName("Subframe");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -5159,27 +5149,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Stream_Header(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_FLAC_Stream_Header(PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValue("NumberOfChannels")->GetTagAny("value"))};
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(FieldReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
-		auto FieldValue{Result->GetValue()->AppendValue("Frames", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-		
-		auto FrameIndex{0ul};
-		
-		for(auto FrameValue : FieldValue->GetValues())
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValues())
 		{
-			FrameValue->SetName("Frame[" + to_string_cast(FrameIndex++) + "]");
+			PartValue->SetName("Frame");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -5455,6 +5445,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_CalculateBitsPerSample(Inspection::Reader & Reader, std::uint64_t SubFrameIndex, std::uint16_t BlockSize, std::uint8_t BitsPerSample, std::uint8_t ChannelAssignment)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_FLAC_Subframe(PartReader, BlockSize, BitsPerSample + 1)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_FLAC_Subframe(PartReader, BlockSize, BitsPerSample)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Constant(Inspection::Reader & Reader, std::uint8_t BitsPerSample)
 {
 	return Get_UnsignedInteger_BigEndian(Reader, BitsPerSample);
@@ -5702,10 +5726,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PartitionOrder", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PartitionOrder", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -5718,20 +5744,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	if(Continue == true)
 	{
 		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue("PartitionOrder")->GetTagAny("number of partitions"))};
-		auto FieldResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(Reader, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
-		auto FieldValue{Result->GetValue()->AppendValue("Partitions", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(PartReader, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
 		
-		UpdateState(Continue, FieldResult);
-		
-		auto PartitionIndex{0ul};
-		
-		if(Continue == true)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Partitions", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValues())
 		{
-			for(auto PartitionValue : FieldValue->GetValues())
-			{
-				PartitionValue->SetName("Partition[" + to_string_cast(PartitionIndex++) + "]");
-			}
+			PartValue->SetName("Partition");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -5748,36 +5770,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("RiceParameter", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("RiceParameter", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto RiceParameter{std::experimental::any_cast< std::uint8_t >(Result->GetAny("RiceParameter"))};
-		std::unique_ptr< Inspection::Result > SamplesResult;
 		
 		if(ArrayIndex == 0)
 		{
-			auto FieldResult{Get_Array_EndedByNumberOfElements(Reader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
 			
+			Continue = PartResult->GetSuccess();
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
 			{
-				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValue("Samples", PartResult->GetValue());
 			}
-			UpdateState(Continue, FieldResult);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
-			auto FieldResult{Get_Array_EndedByNumberOfElements(Reader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
 			
+			Continue = PartResult->GetSuccess();
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
 			{
-				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValue("Samples", PartResult->GetValue());
 			}
-			UpdateState(Continue, FieldResult);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization

@@ -1899,7 +1899,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame[2]/sub:Subframe[0]/sub:Header/sub:PaddingBit/value</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Header/sub:PaddingBit/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -1907,7 +1907,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame[2]/sub:Subframe[0]/sub:Header/sub:PaddingBit/has-tag:unset data</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Header/sub:PaddingBit/has-tag:unset data</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1915,7 +1915,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame[2]/sub:Subframe[0]/sub:Header/sub:PaddingBit/tag:length/value</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Header/sub:PaddingBit/tag:length/value</argument>
 		</execute>
 		<expected-output>0.1</expected-output>
 	</test>
@@ -1923,7 +1923,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame[2]/sub:Subframe[0]/sub:Header/sub:PaddingBit/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Header/sub:PaddingBit/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
@@ -1931,7 +1931,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame[2]/sub:Subframe[0]/sub:Header/sub:Type/value</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Header/sub:Type/value</argument>
 		</execute>
 		<expected-output>0</expected-output>
 	</test>
@@ -1939,7 +1939,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame[2]/sub:Subframe[0]/sub:Header/sub:Type/sub:Order/value</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Header/sub:Type/sub:Order/value</argument>
 		</execute>
 		<expected-output>6</expected-output>
 	</test>
@@ -1947,9 +1947,104 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
-			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame[2]/sub:Subframe[0]/sub:Header/sub:WastedBitsPerSampleFlag/value</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Header/sub:WastedBitsPerSampleFlag/value</argument>
 		</execute>
 		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/has-tag:ended by number of elements</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/tag:number of elements/value</argument>
+		</execute>
+		<expected-output>32</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/sub:Partition:[tag:array index/is-value:11]/sub:RiceParameter/value</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--verbose</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:1]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/sub:Partition:[tag:array index/is-value:25]/sub:Samples/sub::[tag:array index/is-value:117]/value</argument>
+		</execute>
+		<expected-output>-74</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--verbose</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:1]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/sub:Partition:[tag:array index/is-value:25]/sub:Samples/sub::[tag:array index/is-value:117]/sub:MostSignificantBits/value</argument>
+		</execute>
+		<expected-output>9</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--verbose</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:1]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/sub:Partition:[tag:array index/is-value:25]/sub:Samples/sub::[tag:array index/is-value:117]/sub:MostSignificantBits/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--verbose</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:1]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/sub:Partition:[tag:array index/is-value:25]/sub:Samples/sub::[tag:array index/is-value:117]/sub:MostSignificantBits/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--verbose</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:1]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/sub:Partition:[tag:array index/is-value:25]/sub:Samples/sub::[tag:array index/is-value:117]/sub:MostSignificantBits/has-tag:alternative unary</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--verbose</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:1]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/sub:Partition:[tag:array index/is-value:25]/sub:Samples/sub::[tag:array index/is-value:117]/sub:MostSignificantBits/tag:length/value</argument>
+		</execute>
+		<expected-output>1.2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--verbose</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:1]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/sub:Partition:[tag:array index/is-value:25]/sub:Samples/sub::[tag:array index/is-value:117]/sub:MostSignificantBits/tag:length/tag:unit/value</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
 	</test>
 	<test>
 		<execute>
