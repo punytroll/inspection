@@ -10769,9 +10769,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_2_Frame)};
 				
 				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
 				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
-					Result->GetValue()->AppendValue("Frame", PartValue);
+					PartValue->SetName("Frame");
 				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
@@ -10822,9 +10823,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_3_Frame)};
 				
 				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
 				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
-					Result->GetValue()->AppendValue("Frame", PartValue);
+					PartValue->SetName("Frame");
 				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
@@ -10880,9 +10882,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_4_Frame)};
 				
 				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
 				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
-					Result->GetValue()->AppendValue("Frame", PartValue);
+					PartValue->SetName("Frame");
 				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
