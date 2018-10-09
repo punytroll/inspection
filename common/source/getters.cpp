@@ -566,6 +566,46 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByPredicate(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::function< bool (std::shared_ptr< Inspection::Value > PartValue) > EndedPredicate)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("array"s);
+	Result->GetValue()->AddTag("ended by predicate"s);
+	// reading
+	if(Continue == true)
+	{
+		std::uint64_t ElementIndex{0};
+		
+		while(Continue == true)
+		{
+			Inspection::Reader ElementReader{Reader};
+			auto ElementResult{Getter(ElementReader)};
+			
+			Continue = ElementResult->GetSuccess();
+			
+			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+			
+			ElementValue->AddTag("array index", ElementIndex++);
+			Reader.AdvancePosition(ElementReader.GetConsumedLength());
+			if(Continue == true)
+			{
+				if(EndedPredicate(ElementValue) == true)
+				{
+					break;
+				}
+			}
+		}
+		Result->GetValue()->AddTag("number of elements", ElementIndex);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -5205,18 +5245,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspect
 	if(Continue == true)
 	{
 		auto LastMetaDataBlock{std::experimental::any_cast< bool >(Result->GetValue("StreamInfoBlock")->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
-		auto MetaDataBlockIndex{0ul};
 		
-		while((Continue == true) && (LastMetaDataBlock == false))
+		if(LastMetaDataBlock == false)
 		{
-			auto FieldResult{Get_FLAC_MetaDataBlock(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("MetaDataBlock[" + to_string_cast(MetaDataBlockIndex++) + "]", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Array_EndedByPredicate(PartReader, Get_FLAC_MetaDataBlock, [](std::shared_ptr< Inspection::Value > PartValue) { return std::experimental::any_cast< bool >(PartValue->GetValue("Header")->GetValueAny("LastMetaDataBlock")); })};
 			
-			UpdateState(Continue, FieldResult);
-			if(Continue == true)
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("MetaDataBlocks", PartResult->GetValue());
+			for(auto PartValue : PartResult->GetValue()->GetValues())
 			{
-				LastMetaDataBlock = std::experimental::any_cast< bool >(FieldResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"));
+				PartValue->SetName("MetaDataBlock");
 			}
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
