@@ -1,0 +1,101 @@
+<getter>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_8Bit</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 8bit">
+				<element base-value="0">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Other</tag>
+				</element>
+				<element base-value="1">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">32x32 pixels 'file icon' (PNG only)</tag>
+				</element>
+				<element base-value="2">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Other file icon</tag>
+				</element>
+				<element base-value="3">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Cover (front)</tag>
+				</element>
+				<element base-value="4">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Cover (back)</tag>
+				</element>
+				<element base-value="5">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Leaflet page</tag>
+				</element>
+				<element base-value="6">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Media (e.g. label side of CD)</tag>
+				</element>
+				<element base-value="7">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Lead artist/lead performer/soloist</tag>
+				</element>
+				<element base-value="8">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Artist/performer</tag>
+				</element>
+				<element base-value="9">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Conductor</tag>
+				</element>
+				<element base-value="10">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Band/Orchestra</tag>
+				</element>
+				<element base-value="11">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Composer</tag>
+				</element>
+				<element base-value="12">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Lyricist/text writer</tag>
+				</element>
+				<element base-value="13">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Recording Location</tag>
+				</element>
+				<element base-value="14">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">During recording</tag>
+				</element>
+				<element base-value="15">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">During performance</tag>
+				</element>
+				<element base-value="16">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Movie/video screen capture</tag>
+				</element>
+				<element base-value="17">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">A bright coloured fish</tag>
+				</element>
+				<element base-value="18">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Illustration</tag>
+				</element>
+				<element base-value="19">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Band/artist logotype</tag>
+				</element>
+				<element base-value="20">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Publisher/Studio logotype</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>

@@ -5746,10 +5746,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_Frame_Body_PIC_PictureType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBodies", "PIC_PictureType"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PictureType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -5808,44 +5810,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_Ima
 		else
 		{
 			Result->GetValue()->AddTag("mime-type", nullptr);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_PictureType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	//reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Result->GetValue()->AddTag("standard", "ID3 2.2"s);
-		
-		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		try
-		{
-			Result->GetValue()->AddTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
-		}
-		catch(Inspection::UnknownValueException & Exception)
-		{
-			Result->GetValue()->AddTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
 		}
 	}
 	// finalization
@@ -6708,10 +6672,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Body_APIC_PictureType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBodies", "APIC_PictureType"}, Reader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PictureType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6728,46 +6694,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC_PictureType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Result->GetValue()->AddTag("standard", "ID3 2.3"s);
-		
-		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		try
-		{
-			Result->GetValue()->AddTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
-		}
-		catch(Inspection::UnknownValueException & Exception)
-		{
-			Result->GetValue()->AddTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-		
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -8573,10 +8499,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_Frame_Body_APIC_PictureType(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PictureType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBodies", "APIC_PictureType"}, Reader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PictureType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -8615,44 +8543,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC_MI
 		UpdateState(Continue, FieldResult);
 		/// @todo There are certain opportunities for at least validating the data! [RFC 2045]
 		/// @todo As per [ID3 2.4.0], the value '-->' is also permitted to signal a URL [RFC 1738] in the picture data.
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC_PictureType(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-		
-		auto PictureType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		try
-		{
-			Result->GetValue()->AddTag("interpretation", Get_ID3_2_PictureType_Interpretation(PictureType));
-		}
-		catch(Inspection::UnknownValueException & Exception)
-		{
-			Result->GetValue()->AddTag("error", "The PictureType \"" + to_string_cast(PictureType) + "\" is unknown.");
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10207,8 +10097,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					Size -= PartReader.GetConsumedLength();
+					if(Continue == true)
+					{
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						Size -= PartReader.GetConsumedLength();
+					}
 				}
 			}
 			// reading
