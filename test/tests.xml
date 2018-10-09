@@ -2411,7 +2411,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:GUID/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:GUID/value</argument>
 		</execute>
 		<expected-output>8cabdca1-a947-11cf-8ee4-00c00c205365</expected-output>
 	</test>
@@ -2419,7 +2419,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:Size/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:Size/value</argument>
 		</execute>
 		<expected-output>104</expected-output>
 	</test>
@@ -2427,7 +2427,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:FileID/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:FileID/value</argument>
 		</execute>
 		<expected-output>436059a6-b8f2-4cf9-bd26-cccbd3562b24</expected-output>
 	</test>
@@ -2435,7 +2435,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:FileSize/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:FileSize/value</argument>
 		</execute>
 		<expected-output>373153</expected-output>
 	</test>
@@ -2443,7 +2443,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:CreationDate/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:CreationDate/value</argument>
 		</execute>
 		<expected-output>130614850168640000</expected-output>
 	</test>
@@ -2451,7 +2451,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:CreationDate/sub:DateTime/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:CreationDate/sub:DateTime/value</argument>
 		</execute>
 		<expected-output>2014/11/26 14:16:56</expected-output>
 	</test>
@@ -2459,7 +2459,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:DataPacketsCount/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:DataPacketsCount/value</argument>
 		</execute>
 		<expected-output>82</expected-output>
 	</test>
@@ -2467,7 +2467,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:PlayDuration/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:PlayDuration/value</argument>
 		</execute>
 		<expected-output>317640000</expected-output>
 	</test>
@@ -2475,7 +2475,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:SendDuration/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:SendDuration/value</argument>
 		</execute>
 		<expected-output>304610000</expected-output>
 	</test>
@@ -2483,7 +2483,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:Preroll/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:Preroll/value</argument>
 		</execute>
 		<expected-output>1579</expected-output>
 	</test>
@@ -2491,7 +2491,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:Flags/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:Flags/value</argument>
 		</execute>
 		<expected-output>01000000000000000000000000000000</expected-output>
 	</test>
@@ -2499,7 +2499,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:MinimumDataPacketSize/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:MinimumDataPacketSize/value</argument>
 		</execute>
 		<expected-output>4490</expected-output>
 	</test>
@@ -2507,7 +2507,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:MaximumDataPacketSize/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:MaximumDataPacketSize/value</argument>
 		</execute>
 		<expected-output>4490</expected-output>
 	</test>
@@ -2515,7 +2515,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:MaximumBitrate/value:</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:MaximumBitrate/value</argument>
 		</execute>
 		<expected-output>96647</expected-output>
 	</test>
@@ -2523,7 +2523,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/value</argument>
 		</execute>
 		<expected-output>0</expected-output>
 	</test>
@@ -2531,7 +2531,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:MIMEType/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:MIMEType/value</argument>
 		</execute>
 		<expected-output>image/jpeg</expected-output>
 	</test>
@@ -2539,7 +2539,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/value</argument>
 		</execute>
 		<expected-output>3</expected-output>
 	</test>
@@ -2555,7 +2555,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>Cover (front)</expected-output>
 	</test>
@@ -2563,7 +2563,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -2571,7 +2571,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:value/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:value/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -2595,7 +2595,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/value</argument>
 		</execute>
 		<expected-output>56587.0</expected-output>
 	</test>
@@ -2603,7 +2603,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/tag:unit/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
@@ -2611,7 +2611,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PeakAmplitude/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PeakAmplitude/value</argument>
 		</execute>
 		<expected-output>1.03924e-33</expected-output>
 	</test>
@@ -2635,7 +2635,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PeakAmplitude/tag:standard/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PeakAmplitude/tag:standard/value</argument>
 		</execute>
 		<expected-output>ISO/IEC/IEEE-60559:2011 binary32</expected-output>
 	</test>
@@ -2643,7 +2643,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/tag:standard/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/tag:standard/value</argument>
 		</execute>
 		<expected-output>Hydrogenaudio ReplayGain</expected-output>
 	</test>
@@ -2651,7 +2651,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>-0.5 dB</expected-output>
 	</test>
@@ -2659,7 +2659,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/value</argument>
 		</execute>
 		<expected-output>1</expected-output>
 	</test>
@@ -2667,7 +2667,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:NameCode/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>track gain adjustment</expected-output>
 	</test>
@@ -2699,7 +2699,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/value</argument>
 		</execute>
 		<expected-output>3</expected-output>
 	</test>
@@ -2707,7 +2707,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:OriginatorCode/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>determined automatically</expected-output>
 	</test>
@@ -2739,7 +2739,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/value</argument>
 		</execute>
 		<expected-output>1</expected-output>
 	</test>
@@ -2747,7 +2747,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:SignBit/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>negative gain (attenuation)</expected-output>
 	</test>
@@ -2779,7 +2779,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/value</argument>
 		</execute>
 		<expected-output>5</expected-output>
 	</test>
@@ -2787,7 +2787,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TrackReplayGainAdjustment/sub:ReplayGainAdjustment/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>0.5</expected-output>
 	</test>
@@ -2819,7 +2819,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/tag:standard/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/tag:standard/value</argument>
 		</execute>
 		<expected-output>Hydrogenaudio ReplayGain</expected-output>
 	</test>
@@ -2827,7 +2827,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>0.2 dB</expected-output>
 	</test>
@@ -2835,7 +2835,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/value</argument>
 		</execute>
 		<expected-output>2</expected-output>
 	</test>
@@ -2843,7 +2843,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:NameCode/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>album gain adjustment</expected-output>
 	</test>
@@ -2875,7 +2875,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/value</argument>
 		</execute>
 		<expected-output>1</expected-output>
 	</test>
@@ -2883,7 +2883,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:OriginatorCode/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>pre-set by artist/producer/mastering engineer</expected-output>
 	</test>
@@ -2915,7 +2915,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/value</argument>
 		</execute>
 		<expected-output>0</expected-output>
 	</test>
@@ -2923,7 +2923,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:SignBit/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>positive gain (boost)</expected-output>
 	</test>
@@ -2955,7 +2955,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/value</argument>
 		</execute>
 		<expected-output>2</expected-output>
 	</test>
@@ -2963,7 +2963,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>0.2</expected-output>
 	</test>
@@ -3339,7 +3339,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/025_id3_2.4_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/value</argument>
 		</execute>
 		<expected-output>3</expected-output>
 	</test>
@@ -3347,7 +3347,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/025_id3_2.4_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:MIMEType/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:MIMEType/value</argument>
 		</execute>
 		<expected-output>image/jpeg</expected-output>
 	</test>
@@ -3355,7 +3355,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/025_id3_2.4_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/value</argument>
 		</execute>
 		<expected-output>3</expected-output>
 	</test>
@@ -3371,7 +3371,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/025_id3_2.4_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:interpretation/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureType/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>Cover (front)</expected-output>
 	</test>
@@ -3379,7 +3379,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/025_id3_2.4_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -3387,7 +3387,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/025_id3_2.4_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:value/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:value/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -3411,7 +3411,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/025_id3_2.4_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/value</argument>
 		</execute>
 		<expected-output>56587.0</expected-output>
 	</test>
@@ -3419,7 +3419,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/025_id3_2.4_APIC</argument>
-			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/tag:unit/value:</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
