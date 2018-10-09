@@ -1,0 +1,35 @@
+<getter>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_16Bit_LittleEndian</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 16bit">
+				<element base-value="0">
+					<tag name="interpretation" type="string">Unicode string</tag>
+				</element>
+				<element base-value="1">
+					<tag name="interpretation" type="string">Byte array</tag>
+				</element>
+				<element base-value="2">
+					<tag name="interpretation" type="string">Boolean</tag>
+				</element>
+				<element base-value="3">
+					<tag name="interpretation" type="string">Unsigned integer 32bit</tag>
+				</element>
+				<element base-value="4">
+					<tag name="interpretation" type="string">Unsigned integer 64bit</tag>
+				</element>
+				<element base-value="5">
+					<tag name="interpretation" type="string">Unsigned integer 16bit</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>

@@ -1,0 +1,29 @@
+<getter>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_3Bit</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 8bit">
+				<element base-value="0">
+					<tag name="interpretation" type="string">unspecified</tag>
+				</element>
+				<element base-value="1">
+					<tag name="interpretation" type="string">pre-set by artist/producer/mastering engineer</tag>
+				</element>
+				<element base-value="2">
+					<tag name="interpretation" type="string">set by user</tag>
+				</element>
+				<element base-value="3">
+					<tag name="interpretation" type="string">determined automatically</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>

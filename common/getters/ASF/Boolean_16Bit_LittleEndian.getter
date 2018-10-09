@@ -1,0 +1,23 @@
+<getter>
+	<part>
+		<getter>
+			<part>Numbers</part>
+			<part>UnsignedInteger_16Bit_LittleEndian</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 16bit">
+				<element base-value="0">
+					<tag name="value" type="boolean">false</tag>
+				</element>
+				<element base-value="1">
+					<tag name="value" type="boolean">true</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>

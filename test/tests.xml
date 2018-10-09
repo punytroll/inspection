@@ -851,6 +851,22 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:Type/value</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:Type/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Audio Codec</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
 			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[3]/sub:CodecEntries/sub:CodecEntry:[tag:array index/is-value:0]/sub:CodecInformation/value</argument>
 		</execute>
 		<expected-output>61 01</expected-output>
@@ -1046,6 +1062,14 @@
 			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:1]/sub:Value/sub:GUID/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>audio, music</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObject[0]/sub:ContentDescriptors/sub:ContentDescriptor:[tag:array index/is-value:4]/sub:Name/value</argument>
+		</execute>
+		<expected-output>IsVBR</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -2988,6 +3012,30 @@
 			<command>../generalinspector</command>
 			<argument>../examples/019_id3_2.3_RGAD</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frame:[tag:array index/is-value:0]/sub:AlbumReplayGainAdjustment/sub:ReplayGainAdjustment/has-tag:9bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/022_apev2.5tag</argument>
+			<argument>--value=/sub:APEv2Tag/sub:APETagsHeader/sub:VersionNumber/value</argument>
+		</execute>
+		<expected-output>2500</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/022_apev2.5tag</argument>
+			<argument>--value=/sub:APEv2Tag/sub:APETagsHeader/sub:VersionNumber/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>nothing</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/022_apev2.5tag</argument>
+			<argument>--value=/sub:APEv2Tag/sub:APETagsHeader/sub:VersionNumber/has-tag:error</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
