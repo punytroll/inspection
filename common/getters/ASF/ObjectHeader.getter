@@ -13,7 +13,9 @@
 	<part>
 		<getter>
 			<part>Numbers</part>
-			<part>UnsignedInteger_64Bit_LittleEndian</part>
+			<part>Integers</part>
+			<part>Unsigned</part>
+			<part>64Bit_LittleEndian</part>
 		</getter>
 		<value>
 			<append>
