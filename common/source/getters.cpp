@@ -7772,7 +7772,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(Reader)};
+		auto FieldResult{Get_ID3_ReplayGainAdjustment(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TrackReplayGainAdjustment", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7780,7 +7780,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_RGAD(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_ReplayGainAdjustment(Reader)};
+		auto FieldResult{Get_ID3_ReplayGainAdjustment(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("AlbumReplayGainAdjustment", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -9677,7 +9677,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Header(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
+		auto FieldResult{Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -10241,7 +10241,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
+		auto FieldResult{Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -10332,7 +10332,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Reader)};
+		auto FieldResult{Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("TotalFrameCRC", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -10414,7 +10414,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
+		auto FieldResult{Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -10714,229 +10714,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	Result->GetValue()->AddTag("standard", "Hydrogenaudio ReplayGain"s);
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_NameCode(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("NameCode", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_OriginatorCode(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("OriginatorCode", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_SignBit(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("SignBit", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("ReplayGainAdjustment", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetAny("SignBit"))};
-		auto ReplayGainAdjustment{std::experimental::any_cast< float >(Result->GetValue("ReplayGainAdjustment")->GetTagAny("interpretation"))};
-		
-		if(SignBit == 0x01)
-		{
-			ReplayGainAdjustment *= -1.0f;
-		}
-		Result->GetValue()->AddTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_NameCode(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto NameCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(NameCode == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "not set"s);
-		}
-		else if(NameCode == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "track gain adjustment"s);
-		}
-		else if(NameCode == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "album gain adjustment"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(NameCode) + "\" is unknown and MUST NOT be used."s);
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_OriginatorCode(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto OriginatorCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(OriginatorCode == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "unspecified"s);
-		}
-		else if(OriginatorCode == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
-		}
-		else if(OriginatorCode == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "set by user"s);
-		}
-		else if(OriginatorCode == 0x03)
-		{
-			Result->GetValue()->AddTag("interpretation", "determined automatically"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(OriginatorCode) + "\" is unknown and MUST NOT be used."s);
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetAny()))};
-		
-		Result->GetValue()->AddTag("interpretation", ReplayGainAdjustment / 10.0f);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_ReplayGainAdjustment_SignBit(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(SignBit == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "positive gain (boost)"s);
-		}
-		else if(SignBit == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "negative gain (attenuation)"s);
-		}
-		else
-		{
-			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
-			assert(false);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -11149,7 +10926,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
+		auto FieldResult{Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("MajorVersion", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -11157,7 +10934,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
+		auto FieldResult{Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("RevisionNumber", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -11197,7 +10974,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
+		auto FieldResult{Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -11209,7 +10986,230 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("standard", "Hydrogenaudio ReplayGain"s);
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ID3_ReplayGainAdjustment_NameCode(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("NameCode", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ID3_ReplayGainAdjustment_OriginatorCode(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("OriginatorCode", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ID3_ReplayGainAdjustment_SignBit(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("SignBit", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ID3_ReplayGainAdjustment_ReplayGainAdjustment(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ReplayGainAdjustment", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetAny("SignBit"))};
+		auto ReplayGainAdjustment{std::experimental::any_cast< float >(Result->GetValue("ReplayGainAdjustment")->GetTagAny("interpretation"))};
+		
+		if(SignBit == 0x01)
+		{
+			ReplayGainAdjustment *= -1.0f;
+		}
+		Result->GetValue()->AddTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment_NameCode(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto NameCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		
+		if(NameCode == 0x00)
+		{
+			Result->GetValue()->AddTag("interpretation", "not set"s);
+		}
+		else if(NameCode == 0x01)
+		{
+			Result->GetValue()->AddTag("interpretation", "track gain adjustment"s);
+		}
+		else if(NameCode == 0x02)
+		{
+			Result->GetValue()->AddTag("interpretation", "album gain adjustment"s);
+		}
+		else
+		{
+			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(NameCode) + "\" is unknown and MUST NOT be used."s);
+			Result->GetValue()->AddTag("interpretation", nullptr);
+			Continue = false;
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment_OriginatorCode(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto OriginatorCode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		
+		if(OriginatorCode == 0x00)
+		{
+			Result->GetValue()->AddTag("interpretation", "unspecified"s);
+		}
+		else if(OriginatorCode == 0x01)
+		{
+			Result->GetValue()->AddTag("interpretation", "pre-set by artist/producer/mastering engineer"s);
+		}
+		else if(OriginatorCode == 0x02)
+		{
+			Result->GetValue()->AddTag("interpretation", "set by user"s);
+		}
+		else if(OriginatorCode == 0x03)
+		{
+			Result->GetValue()->AddTag("interpretation", "determined automatically"s);
+		}
+		else
+		{
+			Result->GetValue()->AddTag("error", "The value \"" + to_string_cast(OriginatorCode) + "\" is unknown and MUST NOT be used."s);
+			Result->GetValue()->AddTag("interpretation", nullptr);
+			Continue = false;
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetAny()))};
+		
+		Result->GetValue()->AddTag("interpretation", ReplayGainAdjustment / 10.0f);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment_SignBit(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
+		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		
+		UpdateState(Continue, FieldResult);
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		
+		if(SignBit == 0x00)
+		{
+			Result->GetValue()->AddTag("interpretation", "positive gain (boost)"s);
+		}
+		else if(SignBit == 0x01)
+		{
+			Result->GetValue()->AddTag("interpretation", "negative gain (attenuation)"s);
+		}
+		else
+		{
+			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
+			assert(false);
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11250,7 +11250,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_7Bit
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11322,7 +11322,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_28Bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
