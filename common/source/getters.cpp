@@ -529,6 +529,46 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByPredicate(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::function< bool (std::shared_ptr< Inspection::Value > PartValue) > EndedPredicate)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("array"s);
+	Result->GetValue()->AddTag("ended by predicate"s);
+	// reading
+	if(Continue == true)
+	{
+		std::uint64_t ElementIndex{0};
+		
+		while(Continue == true)
+		{
+			Inspection::Reader ElementReader{Reader};
+			auto ElementResult{Getter(ElementReader)};
+			
+			Continue = ElementResult->GetSuccess();
+			
+			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+			
+			ElementValue->AddTag("array index", ElementIndex++);
+			Reader.AdvancePosition(ElementReader.GetConsumedLength());
+			if(Continue == true)
+			{
+				if(EndedPredicate(ElementValue) == true)
+				{
+					break;
+				}
+			}
+		}
+		Result->GetValue()->AddTag("number of elements", ElementIndex);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -1607,9 +1647,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("ContentDescriptors", PartResult->GetValue());
-		for(auto ContentDescriptorValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			ContentDescriptorValue->SetName("ContentDescriptor");
+			PartValue->SetName("ContentDescriptor");
 		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
@@ -1897,7 +1937,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("AdditionalExtendedHeaders", PartResult->GetValue());
-		for(auto AdditionalExtendedHeaderValue : PartResult->GetValues())
+		for(auto AdditionalExtendedHeaderValue : PartResult->GetValue()->GetValues())
 		{
 			AdditionalExtendedHeaderValue->SetName("AdditionalExtendedHeader");
 		}
@@ -1936,14 +1976,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Reade
 	// reading
 	if(Continue == true)
 	{
-		while((Continue == true) && (Reader.HasRemaining() == true))
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByLength(PartReader, Get_ASF_Object)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Objects", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			Inspection::Reader FieldReader{Reader};
-			auto FieldResult{Get_ASF_Object(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendValue("Object", FieldResult->GetValue())};
-			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			PartValue->SetName("Object");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2064,16 +2106,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObjectData(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto NumberOfHeaderObjectsValue{std::experimental::any_cast< std::uint32_t >(Result->GetAny("NumberOfHeaderObjects"))};
+		auto NumberOfHeaderObjects{std::experimental::any_cast< std::uint32_t >(Result->GetAny("NumberOfHeaderObjects"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_ASF_Object, NumberOfHeaderObjects)};
 		
-		for(auto HeaderObjectIndex = 0ul; (Continue == true) && (HeaderObjectIndex < NumberOfHeaderObjectsValue); ++HeaderObjectIndex)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("HeaderObjects", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			Inspection::Reader FieldReader{Reader};
-			auto FieldResult{Get_ASF_Object(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendValue("HeaderObject[" + to_string_cast(HeaderObjectIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			PartValue->SetName("HeaderObject");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2388,7 +2431,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibraryObjectD
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("DescriptionRecords", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("DescriptionRecord");
 		}
@@ -2594,7 +2637,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObjectData(Ins
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("DescriptionRecords", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("DescriptionRecord");
 		}
@@ -3754,26 +3797,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 		auto BlockSize{std::experimental::any_cast< std::uint16_t >(Result->GetValue("Header")->GetValue("BlockSize")->GetTagAny("value"))};
 		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("SampleSize")->GetTagAny("value"))};
 		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("ChannelAssignment"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(PartReader, std::bind(Get_FLAC_Subframe_CalculateBitsPerSample, std::placeholders::_1, std::placeholders::_2, BlockSize, BitsPerSample, ChannelAssignment), NumberOfChannelsByStream)};
 		
-		for(auto SubFrameIndex = 0; (Continue == true) && (SubFrameIndex < NumberOfChannelsByStream); ++SubFrameIndex)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Subframes", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
-			{
-				Inspection::Reader FieldReader{Reader};
-				auto FieldResult{Get_FLAC_Subframe(FieldReader, BlockSize, BitsPerSample + 1)};
-				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
-				
-				UpdateState(Continue, Reader, FieldResult, FieldReader);
-			}
-			else
-			{
-				Inspection::Reader FieldReader{Reader};
-				auto FieldResult{Get_FLAC_Subframe(FieldReader, BlockSize, BitsPerSample)};
-				auto FieldValue{Result->GetValue()->AppendValue("Subframe[" + to_string_cast(SubFrameIndex) + "]", FieldResult->GetValue())};
-				
-				UpdateState(Continue, Reader, FieldResult, FieldReader);
-			}
+			PartValue->SetName("Subframe");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -4339,11 +4372,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 			
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
-				Inspection::Reader FieldReader{Reader, Inspection::Length{MetaDataBlockDataLength, 0}};
-				auto FieldResult{Get_FLAC_SeekTableBlock_Data(FieldReader, MetaDataBlockDataLength / 18)};
-				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+				Inspection::Reader PartReader{Reader, Inspection::Length{MetaDataBlockDataLength, 0}};
+				auto PartResult{Get_FLAC_SeekTableBlock_Data(PartReader)};
 				
-				UpdateState(Continue, Reader, FieldResult, FieldReader);
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValue("Data", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else
 			{
@@ -4594,7 +4628,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_PictureBlock_Data(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader, std::uint32_t NumberOfSeekPoints)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -4602,13 +4636,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(I
 	// reading
 	if(Continue == true)
 	{
-		for(auto SeekPointIndex = 0ul; ((Continue == true) && (SeekPointIndex < NumberOfSeekPoints)); ++SeekPointIndex)
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByLength(PartReader, Get_FLAC_SeekTableBlock_SeekPoint)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("SeekPoints", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			auto FieldResult{Get_FLAC_SeekTableBlock_SeekPoint(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("SeekPoint[" + to_string_cast(SeekPointIndex) + "]", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			PartValue->SetName("SeekPoint");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -4661,27 +4698,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Stream_Header(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_FLAC_Stream_Header(PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValue("NumberOfChannels")->GetTagAny("value"))};
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(FieldReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
-		auto FieldValue{Result->GetValue()->AppendValue("Frames", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-		
-		auto FrameIndex{0ul};
-		
-		for(auto FrameValue : FieldValue->GetValues())
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			FrameValue->SetName("Frame[" + to_string_cast(FrameIndex++) + "]");
+			PartValue->SetName("Frame");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -4715,18 +4752,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspect
 	if(Continue == true)
 	{
 		auto LastMetaDataBlock{std::experimental::any_cast< bool >(Result->GetValue("StreamInfoBlock")->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
-		auto MetaDataBlockIndex{0ul};
 		
-		while((Continue == true) && (LastMetaDataBlock == false))
+		if(LastMetaDataBlock == false)
 		{
-			auto FieldResult{Get_FLAC_MetaDataBlock(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("MetaDataBlock[" + to_string_cast(MetaDataBlockIndex++) + "]", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Array_EndedByPredicate(PartReader, Get_FLAC_MetaDataBlock, [](std::shared_ptr< Inspection::Value > PartValue) { return std::experimental::any_cast< bool >(PartValue->GetValue("Header")->GetValueAny("LastMetaDataBlock")); })};
 			
-			UpdateState(Continue, FieldResult);
-			if(Continue == true)
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("MetaDataBlocks", PartResult->GetValue());
+			for(auto PartValue : PartResult->GetValue()->GetValues())
 			{
-				LastMetaDataBlock = std::experimental::any_cast< bool >(FieldResult->GetValue("Header")->GetValueAny("LastMetaDataBlock"));
+				PartValue->SetName("MetaDataBlock");
 			}
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
@@ -4948,6 +4986,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 		else
 		{
 			Continue = false;
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_CalculateBitsPerSample(Inspection::Reader & Reader, std::uint64_t SubFrameIndex, std::uint16_t BlockSize, std::uint8_t BitsPerSample, std::uint8_t ChannelAssignment)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		if(((SubFrameIndex == 0) && (ChannelAssignment == 0x09)) || ((SubFrameIndex == 1) && ((ChannelAssignment == 0x08) || (ChannelAssignment == 0x0a))))
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_FLAC_Subframe(PartReader, BlockSize, BitsPerSample + 1)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_FLAC_Subframe(PartReader, BlockSize, BitsPerSample)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
@@ -5204,10 +5276,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PartitionOrder", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PartitionOrder", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -5220,20 +5294,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	if(Continue == true)
 	{
 		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue("PartitionOrder")->GetTagAny("number of partitions"))};
-		auto FieldResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(Reader, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
-		auto FieldValue{Result->GetValue()->AppendValue("Partitions", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(PartReader, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
 		
-		UpdateState(Continue, FieldResult);
-		
-		auto PartitionIndex{0ul};
-		
-		if(Continue == true)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Partitions", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			for(auto PartitionValue : FieldValue->GetValues())
-			{
-				PartitionValue->SetName("Partition[" + to_string_cast(PartitionIndex++) + "]");
-			}
+			PartValue->SetName("Partition");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -5250,36 +5320,41 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("RiceParameter", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("RiceParameter", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto RiceParameter{std::experimental::any_cast< std::uint8_t >(Result->GetAny("RiceParameter"))};
-		std::unique_ptr< Inspection::Result > SamplesResult;
 		
 		if(ArrayIndex == 0)
 		{
-			auto FieldResult{Get_Array_EndedByNumberOfElements(Reader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples - PredictorOrder)};
 			
+			Continue = PartResult->GetSuccess();
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
 			{
-				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValue("Samples", PartResult->GetValue());
 			}
-			UpdateState(Continue, FieldResult);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
-			auto FieldResult{Get_Array_EndedByNumberOfElements(Reader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, std::bind(Get_SignedInteger_32Bit_RiceEncoded, std::placeholders::_1, RiceParameter), NumberOfSamples)};
 			
+			Continue = PartResult->GetSuccess();
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
 			{
-				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValue("Samples", PartResult->GetValue());
 			}
-			UpdateState(Continue, FieldResult);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
@@ -8685,7 +8760,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Informations", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
 			PartValue->SetName("Information");
 		}
@@ -9953,9 +10028,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_2_Frame)};
 				
 				Continue = PartResult->GetSuccess();
-				for(auto PartValue : PartResult->GetValues())
+				Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
+				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
-					Result->GetValue()->AppendValue("Frame", PartValue);
+					PartValue->SetName("Frame");
 				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
@@ -10009,9 +10085,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_3_Frame)};
 				
 				Continue = PartResult->GetSuccess();
-				for(auto PartValue : PartResult->GetValues())
+				Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
+				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
-					Result->GetValue()->AppendValue("Frame", PartValue);
+					PartValue->SetName("Frame");
 				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
@@ -10067,9 +10144,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_4_Frame)};
 				
 				Continue = PartResult->GetSuccess();
-				for(auto PartValue : PartResult->GetValues())
+				Result->GetValue()->AppendValue("Frames", PartResult->GetValue());
+				for(auto PartValue : PartResult->GetValue()->GetValues())
 				{
-					Result->GetValue()->AppendValue("Frame", PartValue);
+					PartValue->SetName("Frame");
 				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
@@ -10768,18 +10846,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		for(auto TrackNumber = FirstTrackNumber; (Continue == true) && (TrackNumber <= LastTrackNumber); ++TrackNumber)
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_IEC_60908_1999_TableOfContents_Track, LastTrackNumber - FirstTrackNumber + 1)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Tracks", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("Track", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
-			// interpretation
-			if(Continue == true)
-			{
-				FieldValue->SetName("Track[" + to_string_cast(std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny("Number"))) + "]");
-			}
+			PartValue->SetName("Track");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
