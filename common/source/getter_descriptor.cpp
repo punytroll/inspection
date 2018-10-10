@@ -304,10 +304,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
 				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Frame_Header_Identifier")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_4_Frame_Header_Identifier;
-				}
 				else if(HardcodedGetterText->GetText() == "Get_ID3_ReplayGainAdjustment")
 				{
 					_HardcodedGetter = Inspection::Get_ID3_ReplayGainAdjustment;
