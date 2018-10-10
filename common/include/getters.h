@@ -28,6 +28,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByLength(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::uint64_t NumberOfElements);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByNumberOfElements_PassArrayIndex(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, std::uint64_t) > Getter, std::uint64_t NumberOfElements);
+	std::unique_ptr< Inspection::Result > Get_Array_EndedByPredicate(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::function< bool (std::shared_ptr< Inspection::Value > PartValue) > EndedPredicate);
 	std::unique_ptr< Inspection::Result > Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader);
@@ -96,7 +97,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock_Type(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_PictureBlock_Data(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader, std::uint32_t NumberOfSeekPoints);
+	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_SeekPoint(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Stream_Header(Inspection::Reader & Reader);
@@ -105,6 +106,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_Data(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample);
+	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_CalculateBitsPerSample(Inspection::Reader & Reader, std::uint64_t SubFrameIndex, std::uint16_t BlockSize, std::uint8_t BitsPerSample, std::uint8_t ChannelAssignment);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Constant(Inspection::Reader & Reader, std::uint8_t BitsPerSample);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_LPC(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);
