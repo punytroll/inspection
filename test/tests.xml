@@ -2802,6 +2802,30 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/value</argument>
+		</execute>
+		<expected-output>APIC</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/018_id3_2.3_APIC</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/018_id3_2.3_APIC</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Attached picture</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/018_id3_2.3_APIC</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/value</argument>
 		</execute>
 		<expected-output>0</expected-output>

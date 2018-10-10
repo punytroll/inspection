@@ -1,4 +1,357 @@
 <getter>
-	<hardcoded-getter>Get_ID3_2_3_Frame_Header_Identifier</hardcoded-getter>
+	<part>
+		<getter>
+			<part>ASCII</part>
+			<part>String_AlphaNumeric_EndedByLength</part>
+		</getter>
+		<length>
+			<bytes>4</bytes>
+			<bits>0</bits>
+		</length>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="string">
+				<element base-value="AENC">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Audio encryption</tag>
+				</element>
+				<element base-value="APIC">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Attached picture</tag>
+				</element>
+				<element base-value="COMM">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Comments</tag>
+				</element>
+				<element base-value="COMR">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Commercial frame</tag>
+				</element>
+				<element base-value="ENCR">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Encryption method registration</tag>
+				</element>
+				<element base-value="EQUA">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Equalisation</tag>
+				</element>
+				<element base-value="ETCO">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Event timing codes</tag>
+				</element>
+				<element base-value="GEOB">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">General encapsulated object</tag>
+				</element>
+				<element base-value="GRID">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Group identification registration</tag>
+				</element>
+				<element base-value="IPLS">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Involved people list</tag>
+				</element>
+				<element base-value="LINK">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Linked information</tag>
+				</element>
+				<element base-value="MCDI">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Music CD identifier</tag>
+				</element>
+				<element base-value="MLLT">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">MPEG location lookup table</tag>
+				</element>
+				<element base-value="OWNE">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Ownership frame</tag>
+				</element>
+				<element base-value="PRIV">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Private frame</tag>
+				</element>
+				<element base-value="PCNT">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Play counter</tag>
+				</element>
+				<element base-value="POPM">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Popularimeter</tag>
+				</element>
+				<element base-value="POSS">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Position synchronisation frame</tag>
+				</element>
+				<element base-value="RBUF">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Recommended buffer size</tag>
+				</element>
+				<element base-value="RGAD">
+					<tag name="standard" type="string">Hydrogenaudio ReplayGain</tag>
+					<tag name="error" type="string">This frame is not defined in tag version 2.3. It is a non-standard frame which is acknowledged as an 'in the wild' tag by id3.org.</tag>
+					<tag name="interpretation" type="string">Replay gain adjustment</tag>
+				</element>
+				<element base-value="RVAD">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Relative volume adjustment</tag>
+				</element>
+				<element base-value="RVRB">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Reverb</tag>
+				</element>
+				<element base-value="SYLT">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Synchronised lyric/text</tag>
+				</element>
+				<element base-value="SYTC">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Synchronised tempo codes</tag>
+				</element>
+				<element base-value="TALB">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Album/Movie/Show title</tag>
+				</element>
+				<element base-value="TBPM">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">BPM (beats per minute)</tag>
+				</element>
+				<element base-value="TCMP">
+					<tag name="standard" type="string">iTunes</tag>
+					<tag name="error" type="string">This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate whether a title is a part of a compilation.</tag>
+					<tag name="interpretation" type="string">Part of a compilation</tag>
+				</element>
+				<element base-value="TCOM">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Composer</tag>
+				</element>
+				<element base-value="TCON">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Content type</tag>
+				</element>
+				<element base-value="TCOP">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Copyright message</tag>
+				</element>
+				<element base-value="TDAT">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Date</tag>
+				</element>
+				<element base-value="TDLY">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Playlist delay</tag>
+				</element>
+				<element base-value="TDRC">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="error" type="string">This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.</tag>
+					<tag name="interpretation" type="string">Recording time</tag>
+				</element>
+				<element base-value="TDTG">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="error" type="string">This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.</tag>
+					<tag name="interpretation" type="string">Tagging time</tag>
+				</element>
+				<element base-value="TENC">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Encoded by</tag>
+				</element>
+				<element base-value="TEXT">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Lyricist/Text writer</tag>
+				</element>
+				<element base-value="TFLT">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">File type</tag>
+				</element>
+				<element base-value="TIME">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Time</tag>
+				</element>
+				<element base-value="TIT1">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Content group description</tag>
+				</element>
+				<element base-value="TIT2">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Title/songname/content description</tag>
+				</element>
+				<element base-value="TIT3">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Subtitle/Description refinement</tag>
+				</element>
+				<element base-value="TKEY">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Initial key</tag>
+				</element>
+				<element base-value="TLAN">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Language(s)</tag>
+				</element>
+				<element base-value="TLEN">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Length</tag>
+				</element>
+				<element base-value="TMED">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Media type</tag>
+				</element>
+				<element base-value="TOAL">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Original album/movie/show title</tag>
+				</element>
+				<element base-value="TOFN">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Original filename</tag>
+				</element>
+				<element base-value="TOLY">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Original lyricist(s)/text writer(s)</tag>
+				</element>
+				<element base-value="TOPE">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Original artist(s)/performer(s)</tag>
+				</element>
+				<element base-value="TORY">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Original release year</tag>
+				</element>
+				<element base-value="TOWN">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">File owner/licensee</tag>
+				</element>
+				<element base-value="TPE1">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Lead performer(s)/Soloist(s)</tag>
+				</element>
+				<element base-value="TPE2">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Band/orchestra/accompaniment</tag>
+				</element>
+				<element base-value="TPE3">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Conductor/performer refinement</tag>
+				</element>
+				<element base-value="TPE4">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Interpreted, remixed, or otherwise modified by</tag>
+				</element>
+				<element base-value="TPOS">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Part of a set</tag>
+				</element>
+				<element base-value="TPUB">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Publisher</tag>
+				</element>
+				<element base-value="TRCK">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Track number/Position in set</tag>
+				</element>
+				<element base-value="TRDA">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Recording dates</tag>
+				</element>
+				<element base-value="TRSN">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Internet radio station name</tag>
+				</element>
+				<element base-value="TRSO">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Internet radio station owner</tag>
+				</element>
+				<element base-value="TSIZ">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Size</tag>
+				</element>
+				<element base-value="TSOA">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="error" type="string">This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.</tag>
+					<tag name="interpretation" type="string">Album sort order</tag>
+				</element>
+				<element base-value="TSOP">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="error" type="string">This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.</tag>
+					<tag name="interpretation" type="string">Performer sort order</tag>
+				</element>
+				<element base-value="TSO2">
+					<tag name="standard" type="string">iTunes</tag>
+					<tag name="error" type="string">This frame is not defined in tag version 2.3. It is a non-standard text frame added by iTunes to indicate the album artist sort order.</tag>
+					<tag name="interpretation" type="string">Album artist sort order</tag>
+				</element>
+				<element base-value="TSRC">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">ISRC (international standard recording code)</tag>
+				</element>
+				<element base-value="TSSE">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Software/Hardware and settings used for encoding</tag>
+				</element>
+				<element base-value="TSST">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="error" type="string">This frame is not defined in tag version 2.3. It has only been introduced with tag version 2.4.</tag>
+					<tag name="interpretation" type="string">Set subtitle</tag>
+				</element>
+				<element base-value="TXXX">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">User defined text information frame</tag>
+				</element>
+				<element base-value="TYER">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Year</tag>
+				</element>
+				<element base-value="UFID">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Unique file identifier</tag>
+				</element>
+				<element base-value="USER">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Terms of use</tag>
+				</element>
+				<element base-value="USLT">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Unsynchronised lyric/text transcription</tag>
+				</element>
+				<element base-value="WCOM">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Commercial information</tag>
+				</element>
+				<element base-value="WCOP">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Copyright/legal information</tag>
+				</element>
+				<element base-value="WOAF">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Official audio file webpage</tag>
+				</element>
+				<element base-value="WOAR">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Official artist/performer webpage</tag>
+				</element>
+				<element base-value="WOAS">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Official audio source webpage</tag>
+				</element>
+				<element base-value="WORS">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Official internet radio station webpage</tag>
+				</element>
+				<element base-value="WPAY">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Payment</tag>
+				</element>
+				<element base-value="WPUB">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">Publisher's official webpage</tag>
+				</element>
+				<element base-value="WXXX">
+					<tag name="standard" type="string">ID3 2.3</tag>
+					<tag name="interpretation" type="string">User defined URL link frame</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
 </getter>
- 
