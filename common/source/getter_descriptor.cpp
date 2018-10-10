@@ -34,6 +34,7 @@ namespace Inspection
 	class PartDescriptor
 	{
 	public:
+		std::experimental::optional< Inspection::Length > Length;
 		std::vector< std::string > PathParts;
 		Inspection::AppendType ValueAppendType;
 		std::string ValueName;
@@ -169,8 +170,18 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 				case Inspection::ActionType::Read:
 					{
 						auto PartDescriptor{_PartDescriptors[Action.second]};
-						Inspection::Reader PartReader{Reader};
-						auto PartResult{g_GetterRepository.Get(PartDescriptor->PathParts, PartReader)};
+						Inspection::Reader * PartReader{nullptr};
+						
+						if(PartDescriptor->Length)
+						{
+							PartReader = new Inspection::Reader{Reader, PartDescriptor->Length.value()};
+						}
+						else
+						{
+							PartReader = new Inspection::Reader{Reader};
+						}
+						
+						auto PartResult{g_GetterRepository.Get(PartDescriptor->PathParts, *PartReader)};
 						
 						Continue = PartResult->GetSuccess();
 						switch(PartDescriptor->ValueAppendType)
@@ -188,7 +199,8 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								break;
 							}
 						}
-						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						Reader.AdvancePosition(PartReader->GetConsumedLength());
+						delete PartReader;
 						
 						break;
 					}
@@ -210,7 +222,11 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 	Inspection::EvaluationResult Result;
 	
 	Result.StructureIsValid = true;
-	if(Enumeration->BaseType == "unsigned integer 8bit")
+	if(Enumeration->BaseType == "string")
+	{
+		Result.DataIsValid = Inspection::ApplyEnumeration< std::string >(Enumeration, Target);
+	}
+	else if(Enumeration->BaseType == "unsigned integer 8bit")
 	{
 		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint8_t >(Enumeration, Target);
 	}
@@ -252,7 +268,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				auto HardcodedGetterText{dynamic_cast< const XML::Text * >(GetterChildElement->GetChild(0))};
 				
 				assert(HardcodedGetterText != nullptr);
-				if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
+				if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
+				{
+					_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
 				}
@@ -279,10 +299,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
 				{
 					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Frame_Header_Identifier")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_2_Frame_Header_Identifier;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
 				{
@@ -427,6 +443,43 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									}
 								}
 							}
+						}
+						else if(PartChildElement->GetName() == "length")
+						{
+							std::uint64_t Bytes;
+							std::uint8_t Bits;
+							
+							for(auto PartLengthChildNode : PartChildElement->GetChilds())
+							{
+								if(PartLengthChildNode->GetNodeType() == XML::NodeType::Element)
+								{
+									auto PartLengthChildElement{dynamic_cast< const XML::Element * >(PartLengthChildNode)};
+									
+									if(PartLengthChildElement->GetName() == "bytes")
+									{
+										assert(PartLengthChildElement->GetChilds().size() == 1);
+										
+										auto BytesText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
+										
+										assert(BytesText != nullptr);
+										Bytes = from_string_cast< std::uint64_t >(BytesText->GetText());
+									}
+									else if(PartLengthChildElement->GetName() == "bits")
+									{
+										assert(PartLengthChildElement->GetChilds().size() == 1);
+										
+										auto BitsText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
+										
+										assert(BitsText != nullptr);
+										Bits = from_string_cast< std::uint8_t >(BitsText->GetText());
+									}
+									else
+									{
+										throw std::domain_error{PartLengthChildElement->GetName()};
+									}
+								}
+							}
+							PartDescriptor->Length = Inspection::Length{Bytes, Bits};
 						}
 						else if(PartChildElement->GetName() == "value")
 						{
