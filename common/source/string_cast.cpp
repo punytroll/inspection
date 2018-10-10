@@ -25,6 +25,17 @@
 
 #include "string_cast.h"
 
+template< >
+std::uint8_t from_string_cast< std::uint8_t >(const std::string & String)
+{
+	std::istringstream StringStream(String);
+	std::uint32_t Result;
+	
+	StringStream >> Result;
+	
+	return static_cast< std::uint8_t >(Result);
+}
+
 template < >
 int from_string_cast< int >(const std::string & String)
 {
@@ -197,4 +208,10 @@ std::string to_string_cast< bool >(const bool & Value)
 	{
 		return "false";
 	}
+}
+
+template< >
+std::string to_string_cast< std::string >(const std::string & Value)
+{
+	return Value;
 }
