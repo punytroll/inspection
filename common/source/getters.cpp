@@ -7625,6 +7625,15 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
+		else if(Identifier == "PRIV")
+		{
+			Inspection::Reader PartReader{Reader, ClaimedSize};
+			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "PRIV"}, PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
 		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCON") || (Identifier == "TCOP") || (Identifier == "TDRC") || (Identifier == "TDRL") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIT2") || (Identifier == "TLAN") || (Identifier == "TLEN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TYER"))
 		{
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
@@ -8843,8 +8852,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					Size -= PartReader.GetConsumedLength();
+					if(Continue == true)
+					{
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						Size -= PartReader.GetConsumedLength();
+					}
 				}
 			}
 			// reading
@@ -8902,8 +8914,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					Size -= PartReader.GetConsumedLength();
+					if(Continue == true)
+					{
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						Size -= PartReader.GetConsumedLength();
+					}
 				}
 			}
 			// reading
