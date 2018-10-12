@@ -1,0 +1,42 @@
+<getter>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>64Bit_BigEndian</part>
+		</getter>
+		<value>
+			<append>
+				<name>SampleNumberOfFirstSampleInTargetFrame</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>64Bit_BigEndian</part>
+		</getter>
+		<value>
+			<append>
+				<name>ByteOffsetOfTargetFrame</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_BigEndian</part>
+		</getter>
+		<value>
+			<append>
+				<name>NumberOfSamplesInTargetFrame</name>
+			</append>
+		</value>
+	</part>
+</getter>
+ 
