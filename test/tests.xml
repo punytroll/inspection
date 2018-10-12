@@ -1491,7 +1491,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/003_mpeg1stream</argument>
-			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrame[0]/sub:Header/sub:FrameSync/has-tag:set data</argument>
+			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrames/sub:MPEGFrame:[tag:array index/is-value:0]/sub:Header/sub:FrameSync/has-tag:set data</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1499,7 +1499,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/003_mpeg1stream</argument>
-			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrame[0]/sub:Header/sub:FrameSync/tag:length/value</argument>
+			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrames/sub:MPEGFrame:[tag:array index/is-value:0]/sub:Header/sub:FrameSync/tag:length/value</argument>
 		</execute>
 		<expected-output>1.4</expected-output>
 	</test>
@@ -1507,7 +1507,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/003_mpeg1stream</argument>
-			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrame[0]/sub:Header/sub:FrameSync/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrames/sub:MPEGFrame:[tag:array index/is-value:0]/sub:Header/sub:FrameSync/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
@@ -1515,7 +1515,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/003_mpeg1stream</argument>
-			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrame[0]/sub:AudioData/has-tag:any data</argument>
+			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrames/sub:MPEGFrame:[tag:array index/is-value:0]/sub:AudioData/has-tag:any data</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1523,7 +1523,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/003_mpeg1stream</argument>
-			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrame[0]/sub:AudioData/tag:length/value</argument>
+			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrames/sub:MPEGFrame:[tag:array index/is-value:0]/sub:AudioData/tag:length/value</argument>
 		</execute>
 		<expected-output>1041.0</expected-output>
 	</test>
@@ -1531,7 +1531,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/003_mpeg1stream</argument>
-			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrame[0]/sub:AudioData/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:MPEG1Stream/sub:MPEGFrames/sub:MPEGFrame:[tag:array index/is-value:0]/sub:AudioData/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>

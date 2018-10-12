@@ -12887,30 +12887,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto MPEG1FrameIndex{0ul};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_MPEG_1_Frame)};
 		
-		while(Continue == true)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("MPEGFrames", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			Inspection::Reader FieldReader{Reader};
-			auto FieldResult{Get_MPEG_1_Frame(FieldReader)};
-			
-			UpdateState(Continue, FieldResult);
-			if(Continue == true)
-			{
-				Reader.AdvancePosition(FieldReader.GetConsumedLength());
-				Result->GetValue()->AppendValue("MPEGFrame[" + to_string_cast(MPEG1FrameIndex++) + "]", FieldResult->GetValue());
-			}
-			else
-			{
-				// if at least one frame could be read from the stream, then the reader was successfull
-				if(MPEG1FrameIndex > 0)
-				{
-					Continue = true;
-				}
-				
-				break;
-			}
+			PartValue->SetName("MPEGFrame");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
