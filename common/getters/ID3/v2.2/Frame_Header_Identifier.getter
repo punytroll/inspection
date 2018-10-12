@@ -1,8 +1,9 @@
 <getter>
 	<part>
 		<getter>
+			<part>String</part>
 			<part>ASCII</part>
-			<part>String_AlphaNumeric_EndedByLength</part>
+			<part>AlphaNumeric_EndedByLength</part>
 		</getter>
 		<length>
 			<bytes>3</bytes>

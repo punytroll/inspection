@@ -1,8 +1,8 @@
 <getter>
 	<part>
 		<getter>
-			<part>Numbers</part>
-			<part>Integers</part>
+			<part>Number</part>
+			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>3Bit</part>
 		</getter>

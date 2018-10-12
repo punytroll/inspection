@@ -24,7 +24,7 @@
 	</part>
 	<part>
 		<getter>
-			<part>BitSets</part>
+			<part>BitSet</part>
 			<part>16Bit_BigEndian</part>
 		</getter>
 		<value>

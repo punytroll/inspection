@@ -5721,7 +5721,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		else if(Identifier == "UFI")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBodies", "UFI"}, PartReader)};
+			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "UFI"}, PartReader)};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
@@ -5830,7 +5830,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBodies", "PIC_PictureType"}, PartReader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "PIC_PictureType"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("PictureType", PartResult->GetValue());
@@ -6247,7 +6247,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "RGAD")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBodies", "RGAD"}, PartReader)};
+			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "RGAD"}, PartReader)};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
@@ -6392,7 +6392,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBodies", "APIC_MIMEType"}, Reader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "APIC_MIMEType"}, Reader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("MIMEType", PartResult->GetValue());
@@ -6402,7 +6402,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBodies", "APIC_PictureType"}, Reader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "APIC_PictureType"}, Reader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("PictureType", PartResult->GetValue());
@@ -7741,7 +7741,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBodies", "APIC_PictureType"}, Reader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "APIC_PictureType"}, Reader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("PictureType", PartResult->GetValue());

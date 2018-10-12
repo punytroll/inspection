@@ -12,8 +12,8 @@
 	</part>
 	<part>
 		<getter>
-			<part>Numbers</part>
-			<part>Integers</part>
+			<part>Number</part>
+			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_LittleEndian</part>
 		</getter>

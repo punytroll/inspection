@@ -1,8 +1,8 @@
 <getter>
 	<part>
 		<getter>
-			<part>Numbers</part>
-			<part>Reals</part>
+			<part>Number</part>
+			<part>Real</part>
 			<part>ISO_IEC_IEEE_60559_2011_binary32</part>
 		</getter>
 		<value>
