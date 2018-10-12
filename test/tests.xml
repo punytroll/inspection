@@ -3750,4 +3750,108 @@
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/value</argument>
+		</execute>
+		<expected-output>http://www.cdtag.com</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:20 characters + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/tag:character set/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:OwnerIdentifier/tag:encoding/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PrivateData/value</argument>
+		</execute>
+		<expected-output>02 00 dc 21 27 00</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PrivateData/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PrivateData/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PrivateData/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PrivateData/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PrivateData/tag:length/value</argument>
+		</execute>
+		<expected-output>6.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/027_ID3_2.4_PRIV</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PrivateData/tag:length/tag:unit/value</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
 </tests>
