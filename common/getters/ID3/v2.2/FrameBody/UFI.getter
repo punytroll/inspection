@@ -1,8 +1,9 @@
 <getter>
 	<part>
 		<getter>
+			<part>String</part>
 			<part>ASCII</part>
-			<part>String_Printable_EndedByTermination</part>
+			<part>Printable_EndedByTermination</part>
 		</getter>
 		<value>
 			<append>
@@ -12,7 +13,7 @@
 	</part>
 	<part>
 		<getter>
-			<part>Buffers</part>
+			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
 		</getter>
 		<value>

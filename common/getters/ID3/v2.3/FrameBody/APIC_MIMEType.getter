@@ -1,8 +1,9 @@
 <getter>
 	<part>
 		<getter>
+			<part>String</part>
 			<part>ASCII</part>
-			<part>String_Printable_EndedByTermination</part>
+			<part>Printable_EndedByTermination</part>
 		</getter>
 		<value>
 			<set/>
