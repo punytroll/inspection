@@ -4645,7 +4645,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, Get_FLAC_SeekTableBlock_SeekPoint)};
+		auto PartResult{Get_Array_EndedByLength(PartReader, std::bind(&Inspection::GetterRepository::Get, &g_GetterRepository, std::vector< std::string >({"FLAC", "SeekTableBlock_SeekPoint"}), std::placeholders::_1))};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("SeekPoints", PartResult->GetValue());
