@@ -12,12 +12,18 @@ Inspection::Enumeration::Element::~Element(void)
 	}
 }
 
+Inspection::Enumeration::Enumeration(void) :
+	FallbackElement{nullptr}
+{
+}
+
 Inspection::Enumeration::~Enumeration(void)
 {
 	for(auto Element : Elements)
 	{
 		delete Element;
 	}
+	delete FallbackElement;
 }
 
 void Inspection::Enumeration::Load(const std::string & Path)
@@ -72,6 +78,44 @@ void Inspection::Enumeration::Load(const XML::Element * EnumerationElement)
 					}
 				}
 				Elements.push_back(Element);
+			}
+			else if(EnumerationChildElement->GetName() == "fallback-element")
+			{
+				assert(FallbackElement == nullptr);
+				FallbackElement = new Inspection::Enumeration::Element{};
+				for(auto EnumerationFallbackElementChildNode : EnumerationChildElement->GetChilds())
+				{
+					if(EnumerationFallbackElementChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						auto EnumerationFallbackElementChildElement{dynamic_cast< const XML::Element * >(EnumerationFallbackElementChildNode)};
+						
+						if(EnumerationFallbackElementChildElement->GetName() == "tag")
+						{
+							auto Tag{new Inspection::Enumeration::Element::Tag{}};
+							
+							Tag->Name = EnumerationFallbackElementChildElement->GetAttribute("name");
+							Tag->Type = EnumerationFallbackElementChildElement->GetAttribute("type");
+							if(Tag->Type == "nothing")
+							{
+								assert(EnumerationFallbackElementChildElement->GetChilds().size() == 0);
+							}
+							else
+							{
+								assert(EnumerationFallbackElementChildElement->GetChilds().size() == 1);
+								
+								auto TagText{dynamic_cast< const XML::Text * >(EnumerationFallbackElementChildElement->GetChild(0))};
+								
+								assert(TagText != nullptr);
+								Tag->Value = TagText->GetText();
+							}
+							FallbackElement->Tags.push_back(Tag);
+						}
+						else
+						{
+							throw std::domain_error{EnumerationFallbackElementChildElement->GetName()};
+						}
+					}
+				}
 			}
 			else
 			{

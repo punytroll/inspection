@@ -59,6 +59,25 @@ namespace Inspection
 		Inspection::Enumeration * Enumeration;
 	};
 	
+	void ApplyTags(const std::vector< Inspection::Enumeration::Element::Tag * > & Tags, std::shared_ptr< Inspection::Value > Target)
+	{
+		for(auto Tag : Tags)
+		{
+			if(Tag->Type == "string")
+			{
+				Target->AddTag(Tag->Name, Tag->Value);
+			}
+			else if(Tag->Type == "boolean")
+			{
+				Target->AddTag(Tag->Name, from_string_cast< bool >(Tag->Value));
+			}
+			else if(Tag->Type == "nothing")
+			{
+				Target->AddTag(Tag->Name, nullptr);
+			}
+		}
+	}
+	
 	template< typename Type >
 	bool ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target)
 	{
@@ -68,23 +87,17 @@ namespace Inspection
 		
 		if(ElementIterator != Enumeration->Elements.end())
 		{
-			for(auto Tag : (*ElementIterator)->Tags)
-			{
-				if(Tag->Type == "string")
-				{
-					Target->AddTag(Tag->Name, Tag->Value);
-				}
-				else if(Tag->Type == "boolean")
-				{
-					Target->AddTag(Tag->Name, from_string_cast< bool >(Tag->Value));
-				}
-			}
+			ApplyTags((*ElementIterator)->Tags, Target);
 			Result = true;
 		}
 		else
 		{
+			if(Enumeration->FallbackElement != nullptr)
+			{
+				ApplyTags(Enumeration->FallbackElement->Tags, Target);
+			}
 			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
-			Target->AddTag("interpretation", nullptr);
+			Result = false;
 		}
 		
 		return Result;
