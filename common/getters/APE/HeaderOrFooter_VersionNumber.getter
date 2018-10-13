@@ -19,6 +19,9 @@
 				<element base-value="2000">
 					<tag name="interpretation" type="string">2.000 (new)</tag>
 				</element>
+				<fallback-element>
+					<tag name="interpretation" type="nothing"/>
+				</fallback-element>
 			</enumeration>
 		</apply-enumeration>
 	</interpret>

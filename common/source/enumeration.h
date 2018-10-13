@@ -30,11 +30,13 @@ namespace Inspection
 			std::vector< Inspection::Enumeration::Element::Tag * > Tags;
 		};
 		
+		Enumeration(void);
 		~Enumeration(void);
 		void Load(const std::string & Path);
 		void Load(const XML::Element * EnumerationElement);
 		std::string BaseType;
 		std::vector< Inspection::Enumeration::Element * > Elements;
+		Inspection::Enumeration::Element * FallbackElement;
 	};
 }
 
