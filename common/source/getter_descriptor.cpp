@@ -319,6 +319,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
+				{
+					_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
+				{
+					_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
 				{
 					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
@@ -367,6 +375,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_LittleEndian;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_20Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_20Bit_BigEndian;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
@@ -378,6 +390,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_36Bit_BigEndian")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_36Bit_BigEndian;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_BigEndian")
 				{
