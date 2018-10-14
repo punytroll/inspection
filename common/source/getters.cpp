@@ -8254,10 +8254,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -8287,10 +8289,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -8312,10 +8316,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -8333,26 +8339,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 			Result->GetValue()->AddTag("error", "The size of the tag restriction flags is not equal to 1."s); 
 			Continue = false;
 		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Header(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
