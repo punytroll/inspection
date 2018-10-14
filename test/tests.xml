@@ -3854,4 +3854,284 @@
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:BlockType/value</argument>
+		</execute>
+		<expected-output>4</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:BlockType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>VorbisComment</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:Length/value</argument>
+		</execute>
+		<expected-output>186</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:VendorLength/value</argument>
+		</execute>
+		<expected-output>32</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:VendorLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:VendorLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:VendorLength/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:VendorLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:VendorLength/tag:unit/value</argument>
+		</execute>
+		<expected-output>bytes</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:Vendor/value</argument>
+		</execute>
+		<expected-output>reference libFLAC 1.2.1 20070917</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:Vendor/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:Vendor/has-tag:32 code points</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:Vendor/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:Vendor/tag:character set/value</argument>
+		</execute>
+		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:Vendor/tag:encoding/value</argument>
+		</execute>
+		<expected-output>UTF-8</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentListLength/value</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentListLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentListLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentListLength/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentListLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/has-tag:ended by number of elements</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/tag:number of elements/value</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:Length/value</argument>
+		</execute>
+		<expected-output>14</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:Length/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:Length/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:Length/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:Length/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:Length/tag:unit/value</argument>
+		</execute>
+		<expected-output>bytes</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:String/value</argument>
+		</execute>
+		<expected-output>TRACKNUMBER=01</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:String/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:String/has-tag:14 code points</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:String/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:String/tag:character set/value</argument>
+		</execute>
+		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/028_FLAC_VorbisComment</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:UserCommentList/sub:UserComment:[tag:array index/is-value:4]/sub:String/tag:encoding/value</argument>
+		</execute>
+		<expected-output>UTF-8</expected-output>
+	</test>
 </tests>

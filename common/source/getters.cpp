@@ -14652,40 +14652,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserCommentList(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-		FieldValue->AddTag("unit", "items"s);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Length"))};
-		
-		for(auto Index = 0ul; (Continue == true) && (Index < Length); ++Index)
-		{
-			auto FieldResult{Get_Vorbis_CommentHeader_UserComment(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("UserComment", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -14694,28 +14660,48 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("VendorLength", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
 		
-		UpdateState(Continue, FieldResult);
-		FieldValue->AddTag("unit", "bytes"s);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("VendorLength", PartResult->GetValue());
+		Result->GetValue("VendorLength")->AddTag("unit", "bytes"s);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("VendorLength")), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Vendor", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("VendorLength")), 0}};
+		auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Vendor", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Vorbis_CommentHeader_UserCommentList(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("UserCommentList", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("UserCommentListLength", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto UserCommentListLength{std::experimental::any_cast< std::uint32_t >(Result->GetAny("UserCommentListLength"))};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_Vorbis_CommentHeader_UserComment, UserCommentListLength)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("UserCommentList", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
+		{
+			PartValue->SetName("UserComment");
+		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
