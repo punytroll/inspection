@@ -1,0 +1,25 @@
+<getter>
+	<part>
+		<getter>
+			<part>String</part>
+			<part>ASCII</part>
+			<part>Printable_EndedByTermination</part>
+		</getter>
+		<value>
+			<append>
+				<name>OwnerIdentifier</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Buffer</part>
+			<part>UnsignedInteger_8Bit_EndedByLength</part>
+		</getter>
+		<value>
+			<append>
+				<name>Identifier</name>
+			</append>
+		</value>
+	</part>
+</getter>
