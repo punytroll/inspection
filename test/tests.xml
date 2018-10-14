@@ -4134,4 +4134,20 @@
 		</execute>
 		<expected-output>UTF-8</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/030_ID3_2.3_TCON_too_short</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Information/sub:ByteOrderMark/has-value</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/030_ID3_2.3_TCON_too_short</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Information/sub:ByteOrderMark/has-tag:error</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
 </tests>

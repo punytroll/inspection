@@ -187,32 +187,42 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						
 						if(PartDescriptor->Length)
 						{
-							PartReader = new Inspection::Reader{Reader, PartDescriptor->Length.value()};
+							if(Reader.Has(PartDescriptor->Length.value()) == true)
+							{
+								PartReader = new Inspection::Reader{Reader, PartDescriptor->Length.value()};
+							}
+							else
+							{
+								Result->GetValue()->AddTag("error", "At least " + to_string_cast(PartDescriptor->Length.value()) + " bytes and bits are necessary to read this part.");
+								Continue = false;
+							}
 						}
 						else
 						{
 							PartReader = new Inspection::Reader{Reader};
 						}
-						
-						auto PartResult{g_GetterRepository.Get(PartDescriptor->PathParts, *PartReader)};
-						
-						Continue = PartResult->GetSuccess();
-						switch(PartDescriptor->ValueAppendType)
+						if(PartReader != nullptr)
 						{
-						case Inspection::AppendType::Append:
+							auto PartResult{g_GetterRepository.Get(PartDescriptor->PathParts, *PartReader)};
+							
+							Continue = PartResult->GetSuccess();
+							switch(PartDescriptor->ValueAppendType)
 							{
-								Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
-								
-								break;
+							case Inspection::AppendType::Append:
+								{
+									Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
+									
+									break;
+								}
+							case Inspection::AppendType::Set:
+								{
+									Result->SetValue(PartResult->GetValue());
+									
+									break;
+								}
 							}
-						case Inspection::AppendType::Set:
-							{
-								Result->SetValue(PartResult->GetValue());
-								
-								break;
-							}
+							Reader.AdvancePosition(PartReader->GetConsumedLength());
 						}
-						Reader.AdvancePosition(PartReader->GetConsumedLength());
 						delete PartReader;
 						
 						break;

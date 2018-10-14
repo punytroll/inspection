@@ -10033,11 +10033,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{2, 0}};
-		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
-		
-		Result->SetValue(FieldResult->GetValue());
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		if(Reader.Has(Inspection::Length{2, 0}) == true)
+		{
+			Inspection::Reader FieldReader{Reader, Inspection::Length{2, 0}};
+			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
+			
+			Result->SetValue(FieldResult->GetValue());
+			UpdateState(Continue, Reader, FieldResult, FieldReader);
+		}
+		else
+		{
+			Result->GetValue()->AddTag("error", "At least " + to_string_cast(Inspection::Length{2, 0}) + " bytes and bits are necessary to read a byte order mark.");
+			Continue = false;
+		}
 	}
 	// verification
 	if(Continue == true)
