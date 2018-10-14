@@ -584,12 +584,20 @@ bool EvaluateTestPath(std::shared_ptr< Inspection::Value > Value, const std::str
 		{
 			Result = Value->HasValue(FilterPartSpecifications[1]);
 		}
+		else if(FilterPartSpecifications[0] == "has-value")
+		{
+			return Value->GetAny().empty() == false;
+		}
 		else if(FilterPartSpecifications[0] == "is-value")
 		{
 			std::stringstream Output;
 			
 			Output << Value->GetAny();
 			Result = Output.str() == FilterPartSpecifications[1];
+		}
+		else
+		{
+			assert(false);
 		}
 	}
 	
@@ -681,6 +689,17 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 				std::cout << "false";
 			}
 		}
+		else if(FilterPartSpecifications[0] == "has-value")
+		{
+			if(Value->GetAny().empty() == false)
+			{
+				std::cout << "true";
+			}
+			else
+			{
+				std::cout << "false";
+			}
+		}
 		else if(FilterPartSpecifications[0] == "is-value")
 		{
 			std::stringstream Output;
@@ -694,6 +713,10 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 			{
 				std::cout << "false";
 			}
+		}
+		else
+		{
+			assert(false);
 		}
 	}
 }
