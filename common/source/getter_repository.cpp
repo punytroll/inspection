@@ -1,3 +1,5 @@
+#include <experimental/iterator>
+
 #include "enumeration.h"
 #include "file_handling.h"
 #include "getter_descriptor.h"
@@ -102,26 +104,33 @@ Inspection::Enumeration * Inspection::GetterRepository::_GetOrLoadEnumeration(co
 Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDescriptor(const std::vector< std::string > & PathParts)
 {
 	auto Module{_GetOrLoadModule(std::vector< std::string >{PathParts.begin(), PathParts.end() - 1})};
-	
-	assert(Module != nullptr);
-	
 	Inspection::GetterDescriptor * Result{nullptr};
-	auto GetterDescriptorIterator{Module->_GetterDescriptors.find(PathParts.back())};
 	
-	if(GetterDescriptorIterator != Module->_GetterDescriptors.end())
+	if(Module != nullptr)
 	{
-		Result = GetterDescriptorIterator->second;
+		auto GetterDescriptorIterator{Module->_GetterDescriptors.find(PathParts.back())};
+		
+		if(GetterDescriptorIterator != Module->_GetterDescriptors.end())
+		{
+			Result = GetterDescriptorIterator->second;
+		}
+		else
+		{
+			auto GetterPath{Module->_Path + '/' + PathParts.back() + ".getter"};
+			
+			if((FileExists(GetterPath) == true) && (IsRegularFile(GetterPath) == true))
+			{
+				Result = new Inspection::GetterDescriptor{this};
+				Result->LoadGetterDescription(GetterPath);
+				Module->_GetterDescriptors.insert(std::make_pair(PathParts.back(), Result));
+			}
+		}
 	}
 	else
 	{
-		auto GetterPath{Module->_Path + '/' + PathParts.back() + ".getter"};
-		
-		if((FileExists(GetterPath) == true) && (IsRegularFile(GetterPath) == true))
-		{
-			Result = new Inspection::GetterDescriptor{this};
-			Result->LoadGetterDescription(GetterPath);
-			Module->_GetterDescriptors.insert(std::make_pair(PathParts.back(), Result));
-		}
+		std::cerr << "Getting or loading the module at ";
+		std::copy(std::begin(PathParts), std::end(PathParts), std::experimental::make_ostream_joiner(std::cerr, "/"));
+		std::cerr << " failed!" << std::endl;
 	}
 	
 	return Result;
