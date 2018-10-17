@@ -6227,10 +6227,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6283,10 +6285,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6327,10 +6331,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6689,10 +6695,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_T___(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6924,10 +6932,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6960,10 +6970,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_USLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -7024,10 +7036,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -7240,50 +7254,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 		for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
 		{
 			Continue &= !Flags[FlagIndex];
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextEncoding(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Result->GetValue()->AddTag("standard", "ID3 2.3"s);
-		
-		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(TextEncoding == 0x00)
-		{
-			Result->GetValue()->AddTag("standard", "ISO/IEC 8859-1:1998"s);
-			Result->GetValue()->AddTag("name", "Latin alphabet No. 1"s);
-		}
-		else if(TextEncoding == 0x01)
-		{
-			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AddTag("name", "UCS-2"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The text encoding " + to_string_cast(TextEncoding) + " is not known.");
-			Result->GetValue()->AddTag("name", nullptr);
-			Continue = false;
 		}
 	}
 	// finalization
@@ -7546,10 +7516,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -7622,10 +7594,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -7768,7 +7742,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ID3_2_4_TextEncoding(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "TextEncoding"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
@@ -7846,10 +7820,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -7882,10 +7858,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_USLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -7946,10 +7924,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_WXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextEncoding(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TextEncoding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "TextEncoding"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -8314,63 +8294,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(I
 		for(auto FlagIndex = 0; FlagIndex <= 3; ++FlagIndex)
 		{
 			Continue &= !Flags[FlagIndex];
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextEncoding(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Result->GetValue()->AddTag("standard", "ID3 2.4"s);
-		
-		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(TextEncoding == 0x00)
-		{
-			Result->GetValue()->AddTag("standard", "ISO/IEC 8859-1:1998"s);
-			Result->GetValue()->AddTag("name", "Latin alphabet No. 1"s);
-		}
-		else if(TextEncoding == 0x01)
-		{
-			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AddTag("standard", "RFC 2781"s);
-			Result->GetValue()->AddTag("name", "UTF-16"s);
-		}
-		else if(TextEncoding == 0x02)
-		{
-			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AddTag("standard", "RFC 2781"s);
-			Result->GetValue()->AddTag("name", "UTF-16BE"s);
-		}
-		else if(TextEncoding == 0x03)
-		{
-			Result->GetValue()->AddTag("standard", "ISO/IEC 10646-1:1993"s);
-			Result->GetValue()->AddTag("standard", "RFC 2279"s);
-			Result->GetValue()->AddTag("name", "UTF-8"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The text encoding \"" + to_string_cast(TextEncoding) + "\" is unknown.");
-			Result->GetValue()->AddTag("name", nullptr);
-			Continue = false;
 		}
 	}
 	// finalization

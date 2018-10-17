@@ -1,0 +1,46 @@
+<getter>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>8Bit</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 8bit">
+				<element base-value="0">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="standard" type="string">ISO/IEC 8859-1:1998</tag>
+					<tag name="name" type="string">Latin alphabet No. 1</tag>
+				</element>
+				<element base-value="1">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="standard" type="string">ISO/IEC 10646-1:1993</tag>
+					<tag name="standard" type="string">RFC 2781</tag>
+					<tag name="name" type="string">UTF-16</tag>
+				</element>
+				<element base-value="2">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="standard" type="string">ISO/IEC 10646-1:1993</tag>
+					<tag name="standard" type="string">RFC 2781</tag>
+					<tag name="name" type="string">UTF-16BE</tag>
+				</element>
+				<element base-value="3">
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="standard" type="string">ISO/IEC 10646-1:1993</tag>
+					<tag name="standard" type="string">RFC 2279</tag>
+					<tag name="name" type="string">UTF-8</tag>
+				</element>
+				<fallback-element>
+					<tag name="standard" type="string">ID3 2.4</tag>
+					<tag name="name" type="nothing"/>
+				</fallback-element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>
