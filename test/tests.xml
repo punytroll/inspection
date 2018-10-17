@@ -2801,6 +2801,70 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:5]/sub:GUID/value</argument>
+		</execute>
+		<expected-output>7bf875ce-468d-11d1-8d82-006097c9a2b2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:5]/sub:GUID/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>ASF_Stream_Bitrate_Properties_Object</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:5]/sub:BitrateRecordsCount/value</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:5]/sub:BitrateRecords/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:5]/sub:BitrateRecords/has-tag:ended by number of elements</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:5]/sub:BitrateRecords/tag:number of elements/value</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:5]/sub:BitrateRecords/sub:BitrateRecord:[tag:array index/is-value:0]/sub:Flags/value</argument>
+		</execute>
+		<expected-output>1000000000000000</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:5]/sub:BitrateRecords/sub:BitrateRecord:[tag:array index/is-value:0]/sub:AverageBitrate/value</argument>
+		</execute>
+		<expected-output>96647</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/018_id3_2.3_APIC</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/value</argument>
 		</execute>
