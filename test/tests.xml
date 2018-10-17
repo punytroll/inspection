@@ -2217,6 +2217,62 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Footer/sub:CRC-16/value</argument>
+		</execute>
+		<expected-output>47342</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Footer/sub:CRC-16/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Footer/sub:CRC-16/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Footer/sub:CRC-16/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Footer/sub:CRC-16/has-tag:big endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:1]/sub:Footer/sub:CRC-16/value</argument>
+		</execute>
+		<expected-output>13342</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Footer/sub:CRC-16/value</argument>
+		</execute>
+		<expected-output>34686</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:DataLength/value</argument>
 		</execute>
