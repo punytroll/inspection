@@ -299,6 +299,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
+				{
+					_HardcodedGetter = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
 				{
 					_HardcodedGetter = Inspection::Get_ASF_CreationDate;

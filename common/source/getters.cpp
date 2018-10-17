@@ -2827,34 +2827,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Flags", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("AverageBitrate", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -2913,7 +2885,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 	{
 		auto BitrateRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetAny("BitrateRecordsCount"))};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_ASF_StreamBitrateProperties_BitrateRecord, BitrateRecordsCount)};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, [](Inspection::Reader & Reader) { return g_GetterRepository.Get({"ASF", "StreamBitrateProperties", "BitrateRecord"}, Reader); }, BitrateRecordsCount)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("BitrateRecords", PartResult->GetValue());
