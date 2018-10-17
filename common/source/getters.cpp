@@ -3757,31 +3757,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_FLAC_Frame_Footer(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Footer", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Footer"}, PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Footer(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("CRC-16", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Footer", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);

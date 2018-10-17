@@ -1,0 +1,16 @@
+<getter>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_BigEndian</part>
+		</getter>
+		<value>
+			<append>
+				<name>CRC-16</name>
+			</append>
+		</value>
+	</part>
+</getter>
+ 
