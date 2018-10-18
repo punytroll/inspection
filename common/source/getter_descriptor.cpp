@@ -380,6 +380,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_4Bit")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_4Bit;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_8Bit;
