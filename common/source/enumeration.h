@@ -28,6 +28,7 @@ namespace Inspection
 			~Element(void);
 			std::string BaseValue;
 			std::vector< Inspection::Enumeration::Element::Tag * > Tags;
+			bool Valid;
 		};
 		
 		Enumeration(void);

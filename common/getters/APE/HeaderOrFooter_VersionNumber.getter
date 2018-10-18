@@ -13,13 +13,13 @@
 	<interpret>
 		<apply-enumeration>
 			<enumeration base-type="unsigned integer 32bit">
-				<element base-value="1000">
+				<element base-value="1000" valid="true">
 					<tag name="interpretation" type="string">1.000 (old)</tag>
 				</element>
-				<element base-value="2000">
+				<element base-value="2000" valid="true">
 					<tag name="interpretation" type="string">2.000 (new)</tag>
 				</element>
-				<fallback-element>
+				<fallback-element valid="false">
 					<tag name="interpretation" type="nothing"/>
 				</fallback-element>
 			</enumeration>
