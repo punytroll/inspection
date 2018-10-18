@@ -6,6 +6,8 @@
 #include <common/getters.h>
 #include <common/result.h>
 
+bool g_WithFrames{false};
+
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
@@ -14,12 +16,26 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_FLAC_Stream_Header(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		Result->GetValue()->SetName("FLACStream");
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		if(g_WithFrames == true)
+		{
+			Inspection::Reader PartReader{Buffer};
+			auto PartResult{Get_FLAC_Stream(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Result->GetValue()->SetName("FLACStream");
+			Buffer.SetPosition(PartReader);
+		}
+		else
+		{
+			Inspection::Reader PartReader{Buffer};
+			auto PartResult{Get_FLAC_Stream_Header(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Result->GetValue()->SetName("FLACStream");
+			Buffer.SetPosition(PartReader);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -32,11 +48,20 @@ int main(int argc, char ** argv)
 {
 	std::deque< std::string > Paths;
 	auto Arguments{argc};
-	auto Argument{0};
+	auto ArgumentIndex{0};
 	
-	while(++Argument < Arguments)
+	while(++ArgumentIndex < Arguments)
 	{
-		Paths.push_back(argv[Argument]);
+		std::string Argument{argv[ArgumentIndex]};
+		
+		if(Argument == "--with-frames")
+		{
+			g_WithFrames = true;
+		}
+		else
+		{
+			Paths.push_back(Argument);
+		}
 	}
 	if(Paths.size() == 0)
 	{
