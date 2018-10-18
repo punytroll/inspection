@@ -75,6 +75,14 @@ namespace Inspection
 			{
 				Target->AddTag(Tag->Name, nullptr);
 			}
+			else if(Tag->Type == "single precision real")
+			{
+				Target->AddTag(Tag->Name, from_string_cast< float >(Tag->Value));
+			}
+			else
+			{
+				assert(false);
+			}
 		}
 	}
 	
