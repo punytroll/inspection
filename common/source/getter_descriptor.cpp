@@ -63,25 +63,41 @@ namespace Inspection
 	{
 		for(auto Tag : Tags)
 		{
-			if(Tag->Type == "string")
+			if(Tag->Type)
 			{
-				Target->AddTag(Tag->Name, Tag->Value);
-			}
-			else if(Tag->Type == "boolean")
-			{
-				Target->AddTag(Tag->Name, from_string_cast< bool >(Tag->Value));
-			}
-			else if(Tag->Type == "nothing")
-			{
-				Target->AddTag(Tag->Name, nullptr);
-			}
-			else if(Tag->Type == "single precision real")
-			{
-				Target->AddTag(Tag->Name, from_string_cast< float >(Tag->Value));
+				if(Tag->Type.value() == "string")
+				{
+					assert(Tag->Value);
+					Target->AddTag(Tag->Name, Tag->Value.value());
+				}
+				else if(Tag->Type.value() == "boolean")
+				{
+					assert(Tag->Value);
+					Target->AddTag(Tag->Name, from_string_cast< bool >(Tag->Value.value()));
+				}
+				else if(Tag->Type.value() == "nothing")
+				{
+					assert(!Tag->Value);
+					Target->AddTag(Tag->Name, nullptr);
+				}
+				else if(Tag->Type.value() == "single precision real")
+				{
+					assert(Tag->Value);
+					Target->AddTag(Tag->Name, from_string_cast< float >(Tag->Value.value()));
+				}
+				else if(Tag->Type.value() == "unsigned integer 8bit")
+				{
+					assert(Tag->Value);
+					Target->AddTag(Tag->Name, from_string_cast< std::uint8_t >(Tag->Value.value()));
+				}
+				else
+				{
+					assert(false);
+				}
 			}
 			else
 			{
-				assert(false);
+				Target->AddTag(Tag->Name);
 			}
 		}
 	}
