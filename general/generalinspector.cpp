@@ -714,6 +714,11 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 				std::cout << "false";
 			}
 		}
+		else if(FilterPartSpecifications[0] == "type")
+		{
+			assert(FilterPartSpecifications.size() == 1);
+			std::cout << GetTypeName(Value->GetAny().type());
+		}
 		else
 		{
 			assert(false);

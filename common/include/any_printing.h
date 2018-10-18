@@ -13,6 +13,30 @@
 #include "guid.h"
 #include "length.h"
 
+inline std::string GetTypeName(const std::type_info & type)
+{
+	if(type == typeid(float))
+	{
+		return "single precision real";
+	}
+	else if(type == typeid(nullptr))
+	{
+		return "nothing";
+	}
+	else if(type == typeid(std::string))
+	{
+		return "string";
+	}
+	else if(type == typeid(bool))
+	{
+		return "boolean";
+	}
+	else
+	{
+		assert(false);
+	}
+}
+
 inline std::ostream & operator<<(std::ostream & OStream, const std::experimental::any & Any)
 {
 	if(Any.type() == typeid(void))
