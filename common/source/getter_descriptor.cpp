@@ -88,16 +88,21 @@ namespace Inspection
 		if(ElementIterator != Enumeration->Elements.end())
 		{
 			ApplyTags((*ElementIterator)->Tags, Target);
-			Result = true;
+			Result = (*ElementIterator)->Valid;
 		}
 		else
 		{
 			if(Enumeration->FallbackElement != nullptr)
 			{
 				ApplyTags(Enumeration->FallbackElement->Tags, Target);
+				Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
+				Result = Enumeration->FallbackElement->Valid;
 			}
-			Target->AddTag("error", "Could not find an interpretation for the base value \"" + BaseValueString + "\".");
-			Result = false;
+			else
+			{
+				Target->AddTag("error", "Could find neither an enumarion element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
+				Result = false;
+			}
 		}
 		
 		return Result;

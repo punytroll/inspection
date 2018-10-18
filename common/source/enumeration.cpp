@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include "enumeration.h"
+#include "string_cast.h"
 #include "xml_puny_dom.h"
 
 Inspection::Enumeration::Element::~Element(void)
@@ -49,7 +50,10 @@ void Inspection::Enumeration::Load(const XML::Element * EnumerationElement)
 			{
 				auto Element{new Inspection::Enumeration::Element{}};
 				
+				assert(EnumerationChildElement->HasAttribute("base-value") == true);
 				Element->BaseValue = EnumerationChildElement->GetAttribute("base-value");
+				assert(EnumerationChildElement->HasAttribute("valid") == true);
+				Element->Valid = from_string_cast< bool >(EnumerationChildElement->GetAttribute("valid"));
 				for(auto EnumerationElementChildNode : EnumerationChildElement->GetChilds())
 				{
 					if(EnumerationElementChildNode->GetNodeType() == XML::NodeType::Element)
@@ -60,7 +64,9 @@ void Inspection::Enumeration::Load(const XML::Element * EnumerationElement)
 						{
 							auto Tag{new Inspection::Enumeration::Element::Tag{}};
 							
+							assert(EnumerationElementChildElement->HasAttribute("name") == true);
 							Tag->Name = EnumerationElementChildElement->GetAttribute("name");
+							assert(EnumerationElementChildElement->HasAttribute("type") == true);
 							Tag->Type = EnumerationElementChildElement->GetAttribute("type");
 							
 							assert(EnumerationElementChildElement->GetChilds().size() == 1);
@@ -83,6 +89,7 @@ void Inspection::Enumeration::Load(const XML::Element * EnumerationElement)
 			{
 				assert(FallbackElement == nullptr);
 				FallbackElement = new Inspection::Enumeration::Element{};
+				FallbackElement->Valid = from_string_cast< bool >(EnumerationChildElement->GetAttribute("valid"));
 				for(auto EnumerationFallbackElementChildNode : EnumerationChildElement->GetChilds())
 				{
 					if(EnumerationFallbackElementChildNode->GetNodeType() == XML::NodeType::Element)
