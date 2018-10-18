@@ -1,6 +1,7 @@
 #ifndef INSPECTION_COMMON_ENUMERATION_H
 #define INSPECTION_COMMON_ENUMERATION_H
 
+#include <experimental/optional>
 #include <string>
 #include <vector>
 
@@ -21,8 +22,8 @@ namespace Inspection
 			{
 			public:
 				std::string Name;
-				std::string Type;
-				std::string Value;
+				std::experimental::optional< std::string > Type;
+				std::experimental::optional< std::string > Value;
 			};
 			
 			~Element(void);

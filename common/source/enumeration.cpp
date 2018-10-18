@@ -66,16 +66,29 @@ void Inspection::Enumeration::Load(const XML::Element * EnumerationElement)
 							
 							assert(EnumerationElementChildElement->HasAttribute("name") == true);
 							Tag->Name = EnumerationElementChildElement->GetAttribute("name");
-							assert(EnumerationElementChildElement->HasAttribute("type") == true);
-							Tag->Type = EnumerationElementChildElement->GetAttribute("type");
+							if(EnumerationElementChildElement->HasAttribute("type") == true)
+							{
+								Tag->Type = EnumerationElementChildElement->GetAttribute("type");
+								if(Tag->Type.value() == "nothing")
+								{
+									assert(EnumerationElementChildElement->GetChilds().size() == 0);
+								}
+								else
+								{
+									assert(EnumerationElementChildElement->GetChilds().size() == 1);
+									
+									auto TagText{dynamic_cast< const XML::Text * >(EnumerationElementChildElement->GetChild(0))};
+									
+									assert(TagText != nullptr);
+									Tag->Value = TagText->GetText();
+								}
+								Element->Tags.push_back(Tag);
+							}
+							else
+							{
+								assert(EnumerationElementChildElement->GetChilds().size() == 0);
+							}
 							
-							assert(EnumerationElementChildElement->GetChilds().size() == 1);
-							
-							auto TagText{dynamic_cast< const XML::Text * >(EnumerationElementChildElement->GetChild(0))};
-							
-							assert(TagText != nullptr);
-							Tag->Value = TagText->GetText();
-							Element->Tags.push_back(Tag);
 						}
 						else
 						{
@@ -101,19 +114,26 @@ void Inspection::Enumeration::Load(const XML::Element * EnumerationElement)
 							auto Tag{new Inspection::Enumeration::Element::Tag{}};
 							
 							Tag->Name = EnumerationFallbackElementChildElement->GetAttribute("name");
-							Tag->Type = EnumerationFallbackElementChildElement->GetAttribute("type");
-							if(Tag->Type == "nothing")
+							if(EnumerationFallbackElementChildElement->HasAttribute("type") == true)
 							{
-								assert(EnumerationFallbackElementChildElement->GetChilds().size() == 0);
+								Tag->Type = EnumerationFallbackElementChildElement->GetAttribute("type");
+								if(Tag->Type.value() == "nothing")
+								{
+									assert(EnumerationFallbackElementChildElement->GetChilds().size() == 0);
+								}
+								else
+								{
+									assert(EnumerationFallbackElementChildElement->GetChilds().size() == 1);
+									
+									auto TagText{dynamic_cast< const XML::Text * >(EnumerationFallbackElementChildElement->GetChild(0))};
+									
+									assert(TagText != nullptr);
+									Tag->Value = TagText->GetText();
+								}
 							}
 							else
 							{
-								assert(EnumerationFallbackElementChildElement->GetChilds().size() == 1);
-								
-								auto TagText{dynamic_cast< const XML::Text * >(EnumerationFallbackElementChildElement->GetChild(0))};
-								
-								assert(TagText != nullptr);
-								Tag->Value = TagText->GetText();
+								assert(EnumerationFallbackElementChildElement->GetChilds().size() == 0);
 							}
 							FallbackElement->Tags.push_back(Tag);
 						}

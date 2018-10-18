@@ -3982,62 +3982,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("SampleSize", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Header_SampleSize"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto SampleSizeValue{Result->GetValue("SampleSize")};
-		auto SampleSize{std::experimental::any_cast< std::uint8_t >(SampleSizeValue->GetAny())};
-		
-		if(SampleSize == 0x00)
-		{
-			SampleSizeValue->AddTag("interpretation", "get from STREAMINFO metadata block"s);
-		}
-		else if(SampleSize == 0x01)
-		{
-			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(8));
-			SampleSizeValue->AddTag("unit", "bits"s);
-		}
-		else if(SampleSize == 0x02)
-		{
-			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(12));
-			SampleSizeValue->AddTag("unit", "bits"s);
-		}
-		else if(SampleSize == 0x03)
-		{
-			SampleSizeValue->AddTag("reserved"s);
-			SampleSizeValue->AddTag("error", "The block size 0 MUST NOT be used."s);
-			Continue = false;
-		}
-		else if(SampleSize == 0x04)
-		{
-			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(16));
-			SampleSizeValue->AddTag("unit", "bits"s);
-		}
-		else if(SampleSize == 0x05)
-		{
-			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(24));
-			SampleSizeValue->AddTag("unit", "bits"s);
-		}
-		else if(SampleSize == 0x06)
-		{
-			SampleSizeValue->AddTag("value", static_cast< std::uint8_t >(32));
-			SampleSizeValue->AddTag("unit", "bits"s);
-		}
-		else if(SampleSize == 0x07)
-		{
-			SampleSizeValue->AddTag("reserved"s);
-			SampleSizeValue->AddTag("error", "The block size 0 MUST NOT be used."s);
-			Continue = false;
-		}
-		else
-		{
-			assert(false);
-		}
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("SampleSize", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
