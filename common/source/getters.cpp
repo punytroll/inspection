@@ -5238,10 +5238,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_Frame_Body_PIC_ImageFormat(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ImageFormat", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "PIC_ImageFormat"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ImageFormat", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -5268,49 +5270,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC(Ins
 		auto FieldValue{Result->GetValue()->AppendValue("PictureData", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC_ImageFormat(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByLength(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		const std::string & ImageFormat{std::experimental::any_cast< const std::string & >(Result->GetAny())};
-		
-		if(ImageFormat == "-->")
-		{
-			Result->GetValue()->AddTag("mime-type", "application/x-url"s);
-		}
-		else if(ImageFormat == "PNG")
-		{
-			Result->GetValue()->AddTag("mime-type", "image/png"s);
-		}
-		else if(ImageFormat == "JPG")
-		{
-			Result->GetValue()->AddTag("mime-type", "image/jpeg"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("mime-type", nullptr);
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
