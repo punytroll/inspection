@@ -1,0 +1,35 @@
+<getter>
+	<part>
+		<length>
+			<bytes>3</bytes>
+			<bits>0</bits>
+		</length>
+		<getter>
+			<part>String</part>
+			<part>ISO_IEC_8859_1_1998</part>
+			<part>EndedByLength</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="string">
+				<element base-value="--&gt;" valid="true">
+					<tag name="mime-type" type="string">application/x-url</tag>
+				</element>
+				<element base-value="PNG" valid="true">
+					<tag name="mime-type" type="string">image/png</tag>
+				</element>
+				<element base-value="JPG" valid="true">
+					<tag name="mime-type" type="string">image/jpeg</tag>
+				</element>
+				<fallback-element valid="false">
+					<tag name="mime-type" type="nothing"/>
+				</fallback-element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>
+ 

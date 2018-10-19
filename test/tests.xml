@@ -459,6 +459,14 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC_JPG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:11]/sub:ImageFormat/tag:mime-type/value</argument>
+		</execute>
+		<expected-output>image/jpeg</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/011_id3_2.2_PIC_JPG</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:11]/sub:ImageFormat/has-tag:string</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -510,6 +518,22 @@
 			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:11]/sub:PictureType/tag:interpretation/value</argument>
 		</execute>
 		<expected-output>Leaflet page</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/020_id3_2.2_PIC_PNG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:ImageFormat/value</argument>
+		</execute>
+		<expected-output>PNG</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/020_id3_2.2_PIC_PNG</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:ImageFormat/tag:mime-type/value</argument>
+		</execute>
+		<expected-output>image/png</expected-output>
 	</test>
 	<test>
 		<execute>
