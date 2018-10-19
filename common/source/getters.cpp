@@ -3800,29 +3800,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	//reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("BlockingStrategy", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Header_BlockingStrategy"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto BlockingStrategyValue{Result->GetValue("BlockingStrategy")};
-		auto BlockingStrategy{std::experimental::any_cast< std::uint8_t >(BlockingStrategyValue->GetAny())};
-		
-		if(BlockingStrategy == 0x00)
-		{
-			BlockingStrategyValue->AddTag("interpretation", "fixed-blocksize stream; frame header encodes the frame number"s);
-		}
-		else if(BlockingStrategy == 0x01)
-		{
-			BlockingStrategyValue->AddTag("interpretation", "variable-blocksize stream; frame header encodes the sample number"s);
-		}
-		else
-		{
-			assert(false);
-		}
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("BlockingStrategy", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
