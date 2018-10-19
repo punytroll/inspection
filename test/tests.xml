@@ -291,6 +291,38 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub:FLACStream/sub:StreamInfoBlock/sub:Header/sub:BlockType/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub:FLACStream/sub:StreamInfoBlock/sub:Header/sub:BlockType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>StreamInfo</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:BlockType/value</argument>
+		</execute>
+		<expected-output>6</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:BlockType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Picture</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
 			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Data/sub:PictureType/value</argument>
 		</execute>
 		<expected-output>3</expected-output>
@@ -1978,6 +2010,14 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--value=/sub:FLACStream/sub:StreamInfoBlock/sub:Header/sub:LastMetaDataBlock/value</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
 			<argument>--value=/sub:FLACStream/sub:StreamInfoBlock/sub:Data/sub:MinimumBlockSize/value</argument>
 		</execute>
@@ -2062,6 +2102,38 @@
 			<argument>--value=/sub:FLACStream/sub:StreamInfoBlock/sub:Data/sub:MD5SignatureOfUnencodedAudioData/value</argument>
 		</execute>
 		<expected-output>52 d8 0c 42 cf bd 54 72 54 20 21 1d 9f 39 5b 53</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:0]/sub:Header/sub:LastMetaDataBlock/value</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:1]/sub:Header/sub:LastMetaDataBlock/value</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:1]/sub:Header/sub:BlockType/value</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:MetaDataBlocks/sub:MetaDataBlock:[tag:array index/is-value:1]/sub:Header/sub:BlockType/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Padding</expected-output>
 	</test>
 	<test>
 		<execute>
