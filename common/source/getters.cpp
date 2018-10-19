@@ -4643,10 +4643,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Subframe_Residual_CodingMethod(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("CodingMethod", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"FLAC", "Subframe_Residual_CodingMethod"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("CodingMethod", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -4681,46 +4683,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 		}
 	}
 	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_CodingMethod(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 2}};
-		auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto CodingMethod{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(CodingMethod == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "partitioned Rice coding with 4-bit Rice parameter"s);
-		}
-		else if(CodingMethod == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "partitioned Rice coding with 5-bit Rice parameter"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", "<reserved>"s);
-			Result->GetValue()->AddTag("error", "This coding method MUST NOT be used for the residual."s);
-			Continue = false;
-		}
-	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	

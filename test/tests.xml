@@ -2195,6 +2195,46 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodingMethod/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodingMethod/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>partitioned Rice coding with 4-bit Rice parameter</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodingMethod/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodingMethod/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
+			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodingMethod/has-tag:2bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_small_flacstream</argument>
 			<argument>--value=/sub:FLACStream/sub:Frames/sub:Frame:[tag:array index/is-value:2]/sub:Subframes/sub:Subframe:[tag:array index/is-value:0]/sub:Data/sub:Residual/sub:CodedResidual/sub:Partitions/has-tag:array</argument>
 		</execute>
 		<expected-output>true</expected-output>
