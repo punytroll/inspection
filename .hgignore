@@ -21,3 +21,5 @@ syntax: regexp
 ^generalinspector$
 ^common/libcommon.a$
 ^common/.dependency-files/
+^examples/preparations/
+^examples/ideas/
