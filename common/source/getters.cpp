@@ -3884,100 +3884,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ChannelAssignment", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Header_ChannelAssignment"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetAny("ChannelAssignment"))};
-		
-		if(ChannelAssignment < 0x08)
-		{
-			Result->GetValue("ChannelAssignment")->AddTag("value", static_cast< std::uint8_t >(ChannelAssignment + 1));
-			Result->GetValue("ChannelAssignment")->AddTag("interpretation", "independent channels"s);
-			switch(ChannelAssignment)
-			{
-			case 0:
-				{
-					Result->GetValue("ChannelAssignment")->AddTag("assignment", "mono"s);
-					
-					break;
-				}
-			case 1:
-				{
-					Result->GetValue("ChannelAssignment")->AddTag("assignment", "left, right"s);
-					
-					break;
-				}
-			case 2:
-				{
-					Result->GetValue("ChannelAssignment")->AddTag("assignment", "left, right, center"s);
-					
-					break;
-				}
-			case 3:
-				{
-					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, back left, back right"s);
-					
-					break;
-				}
-			case 4:
-				{
-					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, front center, back/surround left, back/surround right"s);
-					
-					break;
-				}
-			case 5:
-				{
-					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, front center, LFE, back/surround left, back/surround right"s);
-					
-					break;
-				}
-			case 6:
-				{
-					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, front center, LFE, back center, side left, side right"s);
-					
-					break;
-				}
-			case 7:
-				{
-					Result->GetValue("ChannelAssignment")->AddTag("assignment", "front left, front right, front center, LFE, back left, back right, side left, side right"s);
-					
-					break;
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
-		else if(ChannelAssignment == 0x08)
-		{
-			Result->GetValue("ChannelAssignment")->AddTag("value", static_cast< std::uint8_t >(2));
-			Result->GetValue("ChannelAssignment")->AddTag("interpretation", "left/side stereo"s);
-			Result->GetValue("ChannelAssignment")->AddTag("assignment", "channel 0 is the left channel, channel 1 is the side (difference) channel"s);
-		}
-		else if(ChannelAssignment == 0x09)
-		{
-			Result->GetValue("ChannelAssignment")->AddTag("value", static_cast< std::uint8_t >(2));
-			Result->GetValue("ChannelAssignment")->AddTag("interpretation", "right/side stereo"s);
-			Result->GetValue("ChannelAssignment")->AddTag("assignment", "channel 0 is the side (difference) channel, channel 1 is the right channel"s);
-		}
-		else if(ChannelAssignment == 0x0a)
-		{
-			Result->GetValue("ChannelAssignment")->AddTag("value", static_cast< std::uint8_t >(2));
-			Result->GetValue("ChannelAssignment")->AddTag("interpretation", "mid/side stereo"s);
-			Result->GetValue("ChannelAssignment")->AddTag("assignment", "channel 0 is the mid (average) channel, channel 1 is the side (difference) channel"s);
-		}
-		else
-		{
-			Result->GetValue("ChannelAssignment")->AddTag("reserved"s);
-			Result->GetValue("ChannelAssignment")->AddTag("error", "The channel assignment " + to_string_cast(ChannelAssignment) + " MUST NOT be used.");
-			Continue = false;
-		}
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ChannelAssignment", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
