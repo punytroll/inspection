@@ -3784,7 +3784,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		UpdateState(Continue, FieldResult);
 	}
-	// interpretation
+	// verification
 	if(Continue == true)
 	{
 		Continue = std::experimental::any_cast< std::uint16_t >(Result->GetAny("SyncCode")) == 0x3ffe;
@@ -3796,8 +3796,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
+		// verification
+		if(Continue == true)
+		{
+			Continue = std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny()) == 0x00;
+		}
 	}
-	//reading
+	// reading
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
@@ -3891,6 +3896,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		auto FieldValue{Result->GetValue()->AppendValue("Reserved", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
+		// verification
+		if(Continue == true)
+		{
+			Continue = std::experimental::any_cast< std::uint8_t >(FieldValue->GetAny()) == 0x00;
+		}
 	}
 	// reading
 	if(Continue == true)
