@@ -348,6 +348,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_Boolean_1Bit")
+				{
+					_HardcodedGetter = Inspection::Get_Boolean_1Bit;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
 				{
 					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
@@ -399,6 +403,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_4Bit")
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_4Bit;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_7Bit")
+				{
+					_HardcodedGetter = Inspection::Get_UnsignedInteger_7Bit;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
 				{

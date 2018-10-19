@@ -4004,10 +4004,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_MetaDataBlock_Header(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"FLAC", "MetaDataBlock_Header"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Header", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -4072,104 +4074,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Header(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_Boolean_1Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("LastMetaDataBlock", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_FLAC_MetaDataBlock_Type(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("BlockType", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_24Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Length", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock_Type(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_7Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto NumericValue{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(NumericValue == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "StreamInfo"s);
-		}
-		else if(NumericValue == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "Padding"s);
-		}
-		else if(NumericValue == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "Application"s);
-		}
-		else if(NumericValue == 0x03)
-		{
-			Result->GetValue()->AddTag("interpretation", "SeekTable"s);
-		}
-		else if(NumericValue == 0x04)
-		{
-			Result->GetValue()->AddTag("interpretation", "VorbisComment"s);
-		}
-		else if(NumericValue == 0x05)
-		{
-			Result->GetValue()->AddTag("interpretation", "CueSheet"s);
-		}
-		else if(NumericValue == 0x06)
-		{
-			Result->GetValue()->AddTag("interpretation", "Picture"s);
-		}
-		else if(NumericValue == 0xff)
-		{
-			Result->GetValue()->AddTag("interpretation", "Invalid"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("interpretation", "Reserved"s);
 		}
 	}
 	// finalization
@@ -4419,10 +4323,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_MetaDataBlock_Header(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Header", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"FLAC", "MetaDataBlock_Header"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Header", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)

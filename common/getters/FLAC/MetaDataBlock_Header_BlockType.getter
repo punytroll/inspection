@@ -1,0 +1,46 @@
+<getter>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>7Bit</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 8bit">
+				<element base-value="0" valid="true">
+					<tag name="interpretation" type="string">StreamInfo</tag>
+				</element>
+				<element base-value="1" valid="true">
+					<tag name="interpretation" type="string">Padding</tag>
+				</element>
+				<element base-value="2" valid="true">
+					<tag name="interpretation" type="string">Application</tag>
+				</element>
+				<element base-value="3" valid="true">
+					<tag name="interpretation" type="string">SeekTable</tag>
+				</element>
+				<element base-value="4" valid="true">
+					<tag name="interpretation" type="string">VorbisComment</tag>
+				</element>
+				<element base-value="5" valid="true">
+					<tag name="interpretation" type="string">CueSheet</tag>
+				</element>
+				<element base-value="6" valid="true">
+					<tag name="interpretation" type="string">Picture</tag>
+				</element>
+				<element base-value="7" valid="false">
+					<tag name="interpretation" type="string">Invalid</tag>
+				</element>
+				<fallback-element valid="false">
+					<tag name="interpretation" type="string">Reserved</tag>
+				</fallback-element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>
