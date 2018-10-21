@@ -14,172 +14,218 @@ Inspection::GUID g_KSDATAFORMAT_SUBTYPE_PCM{"00000001-0000-0010-8000-00aa00389b7
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer & Buffer, const Inspection::Length & Length);
+std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Reader & Reader);
+std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Reader & Reader);
 std::unique_ptr< Inspection::Result > Get_RIFF_File(Inspection::Buffer & Buffer);
 
-std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_RIFF_ChunkHeader(Buffer)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_RIFF_ChunkHeader(PartReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto ChunkSize{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size"))};
+		auto ChunkLength{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0}};
 		
-		if(Buffer.Has(ChunkSize, 0) == true)
+		if(Reader.Has(ChunkLength) == true)
 		{
 			auto ChunkIdentifier{std::experimental::any_cast< std::string >(Result->GetAny("Identifier"))};
 			
 			if(ChunkIdentifier == "RIFF")
 			{
-				auto FieldResult{Get_RIFF_RIFF_ChunkData(Buffer, Inspection::Length{ChunkSize, 0})};
+				Inspection::Reader PartReader{Reader, ChunkLength};
+				auto PartResult{Get_RIFF_RIFF_ChunkData(PartReader)};
 				
-				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-				UpdateState(Continue, FieldResult);
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else if(ChunkIdentifier == "fact")
 			{
-				auto FieldResult{Get_RIFF_fact_ChunkData(Buffer)};
+				Inspection::Reader PartReader{Reader, ChunkLength};
+				auto PartResult{Get_RIFF_fact_ChunkData(PartReader)};
 				
-				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-				UpdateState(Continue, FieldResult);
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else if(ChunkIdentifier == "fmt ")
 			{
-				auto FieldResult{Get_RIFF_fmt_ChunkData(Buffer)};
+				Inspection::Reader PartReader{Reader, ChunkLength};
+				auto PartResult{Get_RIFF_fmt_ChunkData(PartReader)};
 				
-				Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-				UpdateState(Continue, FieldResult);
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else
 			{
-				Inspection::Reader FieldReader{Buffer, Inspection::Length{ChunkSize, 0}};
-				auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
-				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
+				Inspection::Reader PartReader{Reader, ChunkLength};
+				auto PartResult{Get_Bits_SetOrUnset_EndedByLength(PartReader)};
 				
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValue("Data", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 		}
+		else
+		{
+			Result->GetValue()->AddTag("error", "The RIFF chunk claims to have a length of " + to_string_cast(ChunkLength) + " bytes and bits but only " + to_string_cast(Reader.GetRemainingLength()) + " bytes and bits are available.");
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Identifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{4, 0}};
+		auto PartResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Identifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Size", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Size", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("NumberOfSamples", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("NumberOfSamples", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto CommonFieldsResult{Get_RIFF_fmt_ChunkData_CommonFields(Buffer)};
-	
-	Result->GetValue()->AppendValues(CommonFieldsResult->GetValue()->GetValues());
-	if(CommonFieldsResult->GetSuccess() == true)
-	{
-		const std::string & Format{std::experimental::any_cast< const std::string & >(CommonFieldsResult->GetValue("FormatTag")->GetTagAny("constant name"))};
-		std::unique_ptr< Inspection::Result > FormatSpecificFieldsResult;
-		
-		if(Format == "WAVE_FORMAT_PCM")
-		{
-			FormatSpecificFieldsResult = Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Buffer);
-		}
-		else if(Format == "WAVE_FORMAT_EXTENSIBLE")
-		{
-			FormatSpecificFieldsResult = Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Buffer);
-		}
-		if(FormatSpecificFieldsResult)
-		{
-			Result->GetValue()->AppendValues(FormatSpecificFieldsResult->GetValue()->GetValues());
-			Result->SetSuccess(FormatSpecificFieldsResult->GetSuccess());
-		}
-	}
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_BitSet_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_RIFF_fmt_ChunkData_CommonFields(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
+	// reading
+	if(Continue == true)
+	{
+		const std::string & FormatTag{std::experimental::any_cast< const std::string & >(Result->GetValue("FormatTag")->GetTagAny("constant name"))};
+		
+		if(FormatTag == "WAVE_FORMAT_PCM")
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else if(FormatTag == "WAVE_FORMAT_EXTENSIBLE")
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("Rest", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			Result->GetValue()->AddTag("error", "Unknown format tag " + FormatTag + ".");
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_BitSet_32Bit_LittleEndian(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// interpretation
 	if(Continue == true)
 	{
 		const std::bitset< 32 > & ChannelMask{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
@@ -278,158 +324,172 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("FormatTag", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Microsoft_WaveFormat_FormatTag(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("FormatTag", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("NumberOfChannels", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("NumberOfChannels", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("SamplesPerSecond", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("SamplesPerSecond", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("AverageBytesPerSecond", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("AverageBytesPerSecond", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("BlockAlign", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("BlockAlign", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("BitsPerSample", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ExtensionSize", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ExtensionSize", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ValidBitsPerSample", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ValidBitsPerSample", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_RIFF_fmt_ChunkData_ChannelMask(Buffer)};
-		auto FieldValue{Result->GetValue()->AppendValue("ChannelMask", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_RIFF_fmt_ChunkData_ChannelMask(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ChannelMask", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_RIFF_fmt_ChunkData_SubFormat(Buffer)};
-		auto FieldValue{Result->GetValue()->AppendValue("SubFormat", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_RIFF_fmt_ChunkData_SubFormat(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("SubFormat", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("BitsPerSample", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
 		
-		FieldValue->AddTag("units", "bits per sample"s);
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("BitsPerSample", PartResult->GetValue());
+		Result->GetValue("BitsPerSample")->AddTag("units", "bits per sample"s);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{16, 0}};
-		auto FieldResult{Get_GUID_LittleEndian(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_GUID_LittleEndian(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -440,54 +500,75 @@ std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspectio
 		{
 			Result->GetValue()->AddTag("interpretation", "KSDATAFORMAT_SUBTYPE_PCM"s);
 		}
+		else
+		{
+			Result->GetValue()->AddTag("interpretation", nullptr);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Reader & Reader)
 {
-	auto EndPosition{Buffer.GetPosition() + Length};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("FormType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{4, 0}};
+		auto PartResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("FormType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		while((Buffer.GetPosition() < EndPosition) && (Continue == true))
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByLength(PartReader, Get_RIFF_Chunk)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Chunks", PartResult->GetValue());
+		for(auto PartValue : PartResult->GetValue()->GetValues())
 		{
-			auto FieldResult{Get_RIFF_Chunk(Buffer)};
-			auto FieldValue{Result->GetValue()->AppendValue("Chunk", FieldResult->GetValue())};
-			
-			UpdateState(Continue, FieldResult);
+			PartValue->SetName("Chunk");
 		}
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
-	auto RIFFChunkResult{Get_RIFF_Chunk(Buffer)};
+	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Continue{true};
 	
-	RIFFChunkResult->GetValue()->SetName("RIFFChunk");
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_RIFF_Chunk(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("RIFFChunk", PartResult->GetValue());
+		Result->GetValue()->SetName("RIFFFile");
+		Buffer.SetPosition(PartReader);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Buffer);
 	
-	return RIFFChunkResult;
+	return Result;
 }
 
 int main(int argc, char ** argv)
