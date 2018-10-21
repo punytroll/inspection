@@ -77,6 +77,9 @@ Inspection::GUID Inspection::g_ASF_Reserved2GUID{"86d15241-311d-11d0-a3a4-00a0c9
 /// Other GUIDs found on the web
 Inspection::GUID Inspection::g_ASF_IndexPlaceholderObjectGUID{"d9aade20-7c17-4f9c-bc28-8555dd98e2a2"};
 
+/// RIFF GUIDs
+Inspection::GUID Inspection::g_KSDATAFORMAT_SUBTYPE_PCM{"00000001-0000-0010-8000-00aa00389b71"};
+
 /// WM/MediaClassPrimaryID
 Inspection::GUID Inspection::g_WM_MediaClassPrimaryID_AudioMusic{"d1607dbc-e323-4be2-86a1-48a42a28441e"};
 Inspection::GUID Inspection::g_WM_MediaClassPrimaryID_AudioNoMusic{"01cd0f29-da4e-4157-897b-6275d50c4f11"};

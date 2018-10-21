@@ -79,6 +79,9 @@ namespace Inspection
 	/// Other ASF GUIDs found on the web
 	extern Inspection::GUID g_ASF_IndexPlaceholderObjectGUID;
 	
+	/// RIFF GUIDs
+	extern Inspection::GUID g_KSDATAFORMAT_SUBTYPE_PCM;
+	
 	/// WM/MediaClassPrimaryID
 	extern Inspection::GUID g_WM_MediaClassPrimaryID_AudioNoMusic;
 	extern Inspection::GUID g_WM_MediaClassPrimaryID_AudioMusic;

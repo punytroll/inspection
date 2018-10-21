@@ -110,6 +110,7 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 // - ID3v1Tag                                                                                    //
 // - FLACStream                                                                                  //
 // - ASFFile                                                                                     //
+// - RIFFFile
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
@@ -532,8 +533,30 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						}
 						else
 						{
-							Buffer.SetPosition(FieldReader);
-							AppendUnkownContinuation(Result->GetValue(), Buffer);
+							Buffer.SetPosition(Start);
+							
+							Inspection::Reader PartReader{Buffer};
+							auto PartResult{Get_RIFF_Chunk(PartReader)};
+							
+							if(PartResult->GetSuccess() == true)
+							{
+								Result->GetValue()->AppendValue("RIFFChunk", PartResult->GetValue());
+								Result->GetValue()->SetName("RIFFFile");
+								Buffer.SetPosition(PartReader);
+								if(Buffer.GetPosition() == Buffer.GetLength())
+								{
+									Result->SetSuccess(true);
+								}
+								else
+								{
+									AppendUnkownContinuation(Result->GetValue(), Buffer);
+								}
+							}
+							else
+							{
+								Buffer.SetPosition(FieldReader);
+								AppendUnkownContinuation(Result->GetValue(), Buffer);
+							}
 						}
 					}
 				}
