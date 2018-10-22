@@ -24,7 +24,7 @@ namespace Inspection
 		{
 		}
 		
-		Length(std::uint64_t Bytes, std::uint8_t Bits) :
+		Length(std::uint64_t Bytes, std::uint64_t Bits) :
 			_Bits(Bits),
 			_Bytes(Bytes)
 		{
@@ -36,9 +36,14 @@ namespace Inspection
 			return _Bytes;
 		}
 		
-		std::uint8_t GetBits(void) const
+		std::uint64_t GetBits(void) const
 		{
 			return _Bits;
+		}
+		
+		std::uint64_t GetTotalBits(void) const
+		{
+			return _Bytes * 8 + _Bits;
 		}
 		
 		void Reset(void)
@@ -47,10 +52,11 @@ namespace Inspection
 			_Bits = 0;
 		}
 		
-		void Set(std::uint64_t Bytes, std::uint8_t Bits)
+		void Set(std::uint64_t Bytes, std::uint64_t Bits)
 		{
 			_Bytes = Bytes;
 			_Bits = Bits;
+			_Normalize();
 		}
 		
 		Length operator-(const Length & Length) const
@@ -146,14 +152,16 @@ namespace Inspection
 	private:
 		void _Normalize(void)
 		{
-			while(_Bits >= 8)
+			auto BytesInBits{_Bits / 8};
+			
+			if(BytesInBits > 0)
 			{
-				_Bits -= 8;
-				_Bytes += 1;
+				_Bits = _Bits % 8;
+				_Bytes += BytesInBits;
 			}
 		}
 		
-		std::uint8_t _Bits;
+		std::uint64_t _Bits;
 		std::uint64_t _Bytes;
 	};
 }
@@ -163,7 +171,7 @@ inline std::string to_string_cast< Inspection::Length >(const Inspection::Length
 {
 	std::ostringstream StringStream;
 	
-	StringStream << Value.GetBytes() << '.' << static_cast< std::uint32_t >(Value.GetBits());
+	StringStream << Value.GetBytes() << '.' << Value.GetBits();
 	
 	return StringStream.str();
 }
