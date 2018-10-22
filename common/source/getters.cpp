@@ -12126,16 +12126,25 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		auto ChunkLength{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0}};
+		auto ClaimedSize{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0}};
 		
-		if(Reader.Has(ChunkLength) == true)
+		if(Reader.Has(ClaimedSize) == true)
 		{
 			auto ChunkIdentifier{std::experimental::any_cast< std::string >(Result->GetAny("Identifier"))};
 			
 			if(ChunkIdentifier == "RIFF")
 			{
-				Inspection::Reader PartReader{Reader, ChunkLength};
+				Inspection::Reader PartReader{Reader, ClaimedSize};
 				auto PartResult{Get_RIFF_RIFF_ChunkData(PartReader)};
+				
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+			}
+			else if(ChunkIdentifier == "inst")
+			{
+				Inspection::Reader PartReader{Reader, ClaimedSize};
+				auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "inst"}, PartReader)};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
@@ -12143,7 +12152,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 			}
 			else if(ChunkIdentifier == "fact")
 			{
-				Inspection::Reader PartReader{Reader, ChunkLength};
+				Inspection::Reader PartReader{Reader, ClaimedSize};
 				auto PartResult{Get_RIFF_fact_ChunkData(PartReader)};
 				
 				Continue = PartResult->GetSuccess();
@@ -12152,7 +12161,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 			}
 			else if(ChunkIdentifier == "fmt ")
 			{
-				Inspection::Reader PartReader{Reader, ChunkLength};
+				Inspection::Reader PartReader{Reader, ClaimedSize};
 				auto PartResult{Get_RIFF_fmt_ChunkData(PartReader)};
 				
 				Continue = PartResult->GetSuccess();
@@ -12161,7 +12170,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 			}
 			else
 			{
-				Inspection::Reader PartReader{Reader, ChunkLength};
+				Inspection::Reader PartReader{Reader, ClaimedSize};
 				auto PartResult{Get_Bits_SetOrUnset_EndedByLength(PartReader)};
 				
 				Continue = PartResult->GetSuccess();
@@ -12171,8 +12180,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 		}
 		else
 		{
-			Result->GetValue()->AddTag("error", "The RIFF chunk claims to have a length of " + to_string_cast(ChunkLength) + " bytes and bits but only " + to_string_cast(Reader.GetRemainingLength()) + " bytes and bits are available.");
+			Result->GetValue()->AddTag("error", "The RIFF chunk claims to have a length of " + to_string_cast(ClaimedSize) + " bytes and bits but only " + to_string_cast(Reader.GetRemainingLength()) + " bytes and bits are available.");
 			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto ExtraBits{16 - (Reader.GetPositionInBuffer().GetTotalBits() % 16)};
+		
+		if(ExtraBits > 1)
+		{
+			Inspection::Reader PartReader{Reader, Inspection::Length{0, ExtraBits}};
+			auto PartResult{Get_Bits_SetOrUnset_EndedByLength(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
+			Result->GetValue("Padding")->AddTag("to next 16bit boundary");
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
