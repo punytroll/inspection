@@ -247,6 +247,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_1Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_5Bit(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_SignedInteger_8Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_12Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_32Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader);

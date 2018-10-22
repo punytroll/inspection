@@ -396,6 +396,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
+				{
+					_HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_1Bit")
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_1Bit;
