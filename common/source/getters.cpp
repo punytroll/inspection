@@ -12732,6 +12732,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspect
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_8Bit(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("integer"s);
+	Result->GetValue()->AddTag("signed"s);
+	Result->GetValue()->AddTag("8bit"s);
+	// verification
+	if(Continue == true)
+	{
+		if(Reader.Has(Inspection::Length{0, 8}) == false)
+		{
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
+			Continue = false;
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		std::int8_t Value{static_cast< std::int8_t >(Reader.Get8Bits())};
+		
+		Result->GetValue()->SetAny(Value);
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEndian(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
