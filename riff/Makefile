@@ -3,7 +3,7 @@ LDFLAGS = -g
 
 default: all
 
-all: ../riffinspector
+all: common ../riffinspector
 
 clean:
 	$(RM) ../riffinspector
