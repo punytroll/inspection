@@ -3229,6 +3229,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_EndedByLen
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_SetOrUnset_Until16BitAlignment(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("any data"s);
+	Result->GetValue()->AddTag("until 16bit alignment");
+	
+	Inspection::Length LengthUntil16BitAlignment;
+	auto OutOfAlignmentBits{Reader.GetPositionInBuffer().GetTotalBits() % 16};
+	
+	if(OutOfAlignmentBits > 0)
+	{
+		LengthUntil16BitAlignment.Set(0, 16 - OutOfAlignmentBits);
+		if(Reader.Has(LengthUntil16BitAlignment) == true)
+		{
+			Reader.AdvancePosition(LengthUntil16BitAlignment);
+		}
+		else
+		{
+			Result->GetValue()->AddTag("error", "The next 16bit alignment is not inside the reader's available data length.");
+		}
+	}
+	AppendLength(Result->GetValue(), LengthUntil16BitAlignment);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -3259,7 +3290,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_EndedByLength(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_UntilByteAlignment(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_Until8BitAlignment(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -3272,7 +3303,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Bits_Unset_UntilByteAlignm
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
-		Result->GetValue()->AddTag("until byte alignment"s);
+		Result->GetValue()->AddTag("until 8bit alignment"s);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3749,7 +3780,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_Bits_Unset_UntilByteAlignment(FieldReader)};
+		auto FieldResult{Get_Bits_Unset_Until8BitAlignment(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Padding", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -12187,18 +12218,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		auto ExtraBits{16 - (Reader.GetPositionInBuffer().GetTotalBits() % 16)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Bits_SetOrUnset_Until16BitAlignment(PartReader)};
 		
-		if(ExtraBits > 1)
-		{
-			Inspection::Reader PartReader{Reader, Inspection::Length{0, ExtraBits}};
-			auto PartResult{Get_Bits_SetOrUnset_EndedByLength(PartReader)};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
-			Result->GetValue("Padding")->AddTag("to next 16bit boundary");
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
-		}
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
