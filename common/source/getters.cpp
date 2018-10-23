@@ -2967,10 +2967,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Microsoft_WaveFormat_FormatTag(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("FormatTag", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"Microsoft_WaveFormat_FormatTag"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("FormatTag", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -11042,119 +11044,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_FormatTag(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto FormatTag{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
-		
-		switch(FormatTag)
-		{
-		case 0x0000:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_UNKNOWN"s);
-				Result->GetValue()->AddTag("description", "Unknown or invalid format tag"s);
-				
-				break;
-			}
-		case 0x0001:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_PCM"s);
-				Result->GetValue()->AddTag("description", "Pulse Code Modulation"s);
-				
-				break;
-			}
-		case 0x0002:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_ADPCM"s);
-				Result->GetValue()->AddTag("description", "Microsoft Adaptive Differental PCM"s);
-				
-				break;
-			}
-		case 0x0003:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_IEEE_FLOAT"s);
-				Result->GetValue()->AddTag("description", "32-bit floating-point"s);
-				
-				break;
-			}
-		case 0x0055:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_MPEGLAYER3"s);
-				Result->GetValue()->AddTag("description", "ISO/MPEG Layer3"s);
-				
-				break;
-			}
-		case 0x0092:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_DOLBY_AC3_SPDIF"s);
-				Result->GetValue()->AddTag("description", "Dolby Audio Codec 3 over S/PDIF"s);
-				
-				break;
-			}
-		case 0x0161:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_WMAUDIO2"s);
-				Result->GetValue()->AddTag("description", "Windows Media Audio Standard (Versions 7, 8, and 9 Series)"s);
-				
-				break;
-			}
-		case 0x0162:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_WMAUDIO3"s);
-				Result->GetValue()->AddTag("description", "Windows Media Audio Professional (9 Series)"s);
-				
-				break;
-			}
-		case 0x0163:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_WMAUDIO_LOSSLESS"s);
-				Result->GetValue()->AddTag("description", "Windows Media Audio Lossless (9 Series)"s);
-				
-				break;
-			}
-		case 0x0164:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_WMASPDIF"s);
-				Result->GetValue()->AddTag("description", "Windows Media Audio over S/PDIF"s);
-				
-				break;
-			}
-		case 0xFFFE:
-			{
-				Result->GetValue()->AddTag("constant name", "WAVE_FORMAT_EXTENSIBLE"s);
-				Result->GetValue()->AddTag("description", "All new audio formats"s);
-				
-				break;
-			}
-		default:
-			{
-				Result->GetValue()->AddTag("constant name", "<no interpretation>"s);
-				Result->GetValue()->AddTag("description", "<no interpretation>"s);
-				
-				break;
-			}
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -12470,7 +12359,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_fmt_ChunkData_CommonF
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Microsoft_WaveFormat_FormatTag(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"Microsoft_WaveFormat_FormatTag"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("FormatTag", PartResult->GetValue());

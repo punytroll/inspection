@@ -220,7 +220,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Reader & Reader, std::uint64_t NumberOfCodePoints);
 	std::unique_ptr< Inspection::Result > Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_Microsoft_WaveFormat_FormatTag(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_Frame(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_AudioVersionID(Inspection::Reader & Reader);
