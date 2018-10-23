@@ -324,6 +324,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumericOrSpace_EndedByLength")
+				{
+					_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;

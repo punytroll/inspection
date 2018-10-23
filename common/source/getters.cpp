@@ -12037,20 +12037,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_RIFF_ChunkHeader(PartReader)};
+		auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkHeader"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendValue("Header", PartResult->GetValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto ClaimedSize{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetAny("Size")), 0}};
+		auto ClaimedSize{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Size")), 0}};
 		
 		if(Reader.Has(ClaimedSize) == true)
 		{
-			auto ChunkIdentifier{std::experimental::any_cast< std::string >(Result->GetAny("Identifier"))};
+			auto ChunkIdentifier{std::experimental::any_cast< std::string >(Result->GetValue("Header")->GetValueAny("Identifier"))};
 			
 			if(ChunkIdentifier == "RIFF")
 			{
@@ -12058,7 +12058,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 				auto PartResult{Get_RIFF_RIFF_ChunkData(PartReader)};
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValue("Data", PartResult->GetValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else if(ChunkIdentifier == "inst")
@@ -12067,7 +12067,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 				auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "inst"}, PartReader)};
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValue("Data", PartResult->GetValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else if(ChunkIdentifier == "fact")
@@ -12076,7 +12076,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 				auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "fact"}, PartReader)};
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValue("Data", PartResult->GetValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else if(ChunkIdentifier == "fmt ")
@@ -12085,7 +12085,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 				auto PartResult{Get_RIFF_fmt_ChunkData(PartReader)};
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+				Result->GetValue()->AppendValue("Data", PartResult->GetValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			else
@@ -12112,38 +12112,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkHeader(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{4, 0}};
-		auto PartResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("Identifier", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("Size", PartResult->GetValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
