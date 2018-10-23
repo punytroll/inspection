@@ -4626,7 +4626,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Identifier/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Header/sub:Identifier/value</argument>
 		</execute>
 		<expected-output>RIFF</expected-output>
 	</test>
@@ -4634,7 +4634,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Size/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Header/sub:Size/value</argument>
 		</execute>
 		<expected-output>2168</expected-output>
 	</test>
@@ -4642,7 +4642,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:FormType/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:FormType/value</argument>
 		</execute>
 		<expected-output>WAVE</expected-output>
 	</test>
@@ -4650,7 +4650,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Identifier/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Header/sub:Identifier/value</argument>
 		</execute>
 		<expected-output>fmt </expected-output>
 	</test>
@@ -4658,7 +4658,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Size/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Header/sub:Size/value</argument>
 		</execute>
 		<expected-output>16</expected-output>
 	</test>
@@ -4666,7 +4666,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:FormatTag/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Data/sub:FormatTag/value</argument>
 		</execute>
 		<expected-output>1</expected-output>
 	</test>
@@ -4674,7 +4674,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:FormatTag/tag:constant name/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Data/sub:FormatTag/tag:constant name/value</argument>
 		</execute>
 		<expected-output>WAVE_FORMAT_PCM</expected-output>
 	</test>
@@ -4682,7 +4682,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:FormatTag/tag:description/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Data/sub:FormatTag/tag:description/value</argument>
 		</execute>
 		<expected-output>Pulse Code Modulation</expected-output>
 	</test>
@@ -4690,7 +4690,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:NumberOfChannels/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Data/sub:NumberOfChannels/value</argument>
 		</execute>
 		<expected-output>2</expected-output>
 	</test>
@@ -4698,7 +4698,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:SamplesPerSecond/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Data/sub:SamplesPerSecond/value</argument>
 		</execute>
 		<expected-output>44100</expected-output>
 	</test>
@@ -4706,7 +4706,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:AverageBytesPerSecond/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Data/sub:AverageBytesPerSecond/value</argument>
 		</execute>
 		<expected-output>176400</expected-output>
 	</test>
@@ -4714,7 +4714,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:BlockAlign/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Data/sub:BlockAlign/value</argument>
 		</execute>
 		<expected-output>4</expected-output>
 	</test>
@@ -4722,7 +4722,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:BitsPerSample/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Data/sub:BitsPerSample/value</argument>
 		</execute>
 		<expected-output>16</expected-output>
 	</test>
@@ -4730,7 +4730,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -4738,7 +4738,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/has-tag:any data</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/has-tag:any data</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -4746,7 +4746,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/has-tag:until 16bit alignment</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/has-tag:until 16bit alignment</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -4754,7 +4754,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/tag:length/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/tag:length/value</argument>
 		</execute>
 		<expected-output>0.0</expected-output>
 	</test>
@@ -4762,7 +4762,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
@@ -4770,7 +4770,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/value</argument>
 		</execute>
 		<expected-output></expected-output>
 	</test>
@@ -4778,7 +4778,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/has-tag:any data</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/has-tag:any data</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -4786,7 +4786,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/has-tag:until 16bit alignment</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/has-tag:until 16bit alignment</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -4794,7 +4794,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/tag:length/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/tag:length/value</argument>
 		</execute>
 		<expected-output>1.0</expected-output>
 	</test>
@@ -4802,7 +4802,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
