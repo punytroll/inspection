@@ -1,0 +1,38 @@
+<getter>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>2Bit</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<interpret>
+		<apply-enumeration>
+			<enumeration base-type="unsigned integer 8bit">
+				<element base-value="0" valid="true">
+					<tag name="value" type="unsigned integer 32bit">44100</tag>
+					<tag name="unit" type="string">kHz</tag>
+					<tag name="interpretation" type="string">44.1 kHz</tag>
+				</element>
+				<element base-value="1" valid="true">
+					<tag name="value" type="unsigned integer 32bit">48000</tag>
+					<tag name="unit" type="string">kHz</tag>
+					<tag name="interpretation" type="string">48 kHz</tag>
+				</element>
+				<element base-value="2" valid="true">
+					<tag name="value" type="unsigned integer 32bit">32000</tag>
+					<tag name="unit" type="string">kHz</tag>
+					<tag name="interpretation" type="string">32 kHz</tag>
+				</element>
+				<element base-value="3" valid="false">
+					<tag name="interpretation" type="nothing"/>
+					<tag name="error" type="string">This sampling frequency is reserved and MUST NOT be used.</tag>
+				</element>
+			</enumeration>
+		</apply-enumeration>
+	</interpret>
+</getter>

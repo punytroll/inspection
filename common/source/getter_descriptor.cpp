@@ -90,6 +90,11 @@ namespace Inspection
 					assert(Tag->Value);
 					Target->AddTag(Tag->Name, from_string_cast< std::uint8_t >(Tag->Value.value()));
 				}
+				else if(Tag->Type.value() == "unsigned integer 32bit")
+				{
+					assert(Tag->Value);
+					Target->AddTag(Tag->Name, from_string_cast< std::uint32_t >(Tag->Value.value()));
+				}
 				else
 				{
 					assert(false);
