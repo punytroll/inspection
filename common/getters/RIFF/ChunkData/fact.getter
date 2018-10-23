@@ -1,0 +1,15 @@
+<getter>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>32Bit_LittleEndian</part>
+		</getter>
+		<value>
+			<append>
+				<name>NumberOfSamples</name>
+			</append>
+		</value>
+	</part>
+</getter>

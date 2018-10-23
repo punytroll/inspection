@@ -236,10 +236,8 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkHeader(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_RIFF_fact_ChunkData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_CommonFields(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Reader & Reader);
