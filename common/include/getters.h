@@ -232,7 +232,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_OriginalHome(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_PaddingBit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ProtectionBit(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_SamplingFrequency(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Reader & Reader);

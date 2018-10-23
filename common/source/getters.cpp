@@ -11161,10 +11161,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_SamplingFrequency(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("SamplingFrequency", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_SamplingFrequency"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("SamplingFrequency", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -11941,58 +11943,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Protect
 		else
 		{
 			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
-			assert(false);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_SamplingFrequency(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	//reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_2Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto SamplingFrequency{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
-		
-		if(SamplingFrequency == 0x00)
-		{
-			Result->GetValue()->AddTag("value", 44100u);
-			Result->GetValue()->AddTag("interpretation", "44.1 kHz"s);
-		}
-		else if(SamplingFrequency == 0x01)
-		{
-			Result->GetValue()->AddTag("value", 48000u);
-			Result->GetValue()->AddTag("interpretation", "48 kHz"s);
-		}
-		else if(SamplingFrequency == 0x02)
-		{
-			Result->GetValue()->AddTag("value", 32000u);
-			Result->GetValue()->AddTag("interpretation", "32 kHz"s);
-		}
-		else if(SamplingFrequency == 0x03)
-		{
-			Result->GetValue()->AddTag("error", "The sampling frequency \"" + to_string_cast(SamplingFrequency) + "\" is reserved and MUST NOT be used.");
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-		else
-		{
-			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
 			assert(false);
 		}
 	}
