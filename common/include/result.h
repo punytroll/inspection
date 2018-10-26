@@ -43,18 +43,6 @@ namespace Inspection
 			throw std::invalid_argument("Unknown sub value \"" + Name + "\".");
 		}
 		
-		const std::experimental::any & GetAny(const std::string & Name)
-		{
-			for(auto & Value : _Value->GetValues())
-			{
-				if(Value->GetName() == Name)
-				{
-					return Value->GetAny();
-				}
-			}
-			throw std::invalid_argument("Unknown sub value \"" + Name + "\".");
-		}
-		
 		void SetSuccess(bool Success)
 		{
 			_Success = Success;
