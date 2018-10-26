@@ -196,7 +196,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		auto PageSegments{std::experimental::any_cast< std::uint8_t >(Result->GetAny("PageSegments"))};
+		auto PageSegments{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValueAny("PageSegments"))};
 		auto FieldResult{Get_Ogg_Page_SegmentTable(Buffer, PageSegments)};
 		auto FieldValue{Result->GetValue()->AppendValue("SegmentTable", FieldResult->GetValue())};
 		
@@ -307,7 +307,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 	// interpretation
 	if(Continue == true)
 	{
-		auto PacketType{std::experimental::any_cast< std::uint8_t >(Result->GetAny("PacketType"))};
+		auto PacketType{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValueAny("PacketType"))};
 		
 		if(PacketType == 0x00)
 		{
@@ -360,7 +360,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 	// reading
 	if(Continue == true)
 	{
-		auto PacketType{std::experimental::any_cast< std::uint8_t >(Result->GetAny("PacketType"))};
+		auto PacketType{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValueAny("PacketType"))};
 		
 		if(PacketType == 0x01)
 		{
@@ -525,7 +525,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	// verification
 	if(Continue == true)
 	{
-		Continue = std::experimental::any_cast< bool >(Result->GetAny("FramingFlag"));
+		Continue = std::experimental::any_cast< bool >(Result->GetValue()->GetValueAny("FramingFlag"));
 	}
 	// finalization
 	Result->SetSuccess(Continue);
