@@ -83,18 +83,6 @@ namespace Inspection
 			return _Any;
 		}
 		
-		const std::experimental::any & GetTagAny(const std::string & Name)
-		{
-			for(auto & Tag : _Tags)
-			{
-				if(Tag->GetName() == Name)
-				{
-					return Tag->GetAny();
-				}
-			}
-			throw std::invalid_argument("Could not find any value named \"" + Name + "\".");
-		}
-		
 		std::uint32_t GetCount(void) const
 		{
 			return _Values.size();
