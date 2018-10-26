@@ -208,7 +208,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 		auto PacketStart{Buffer.GetPosition()};
 		auto PacketLength{0ull};
 		
-		for(auto SegmentTableEntryValue : Result->GetValue("SegmentTable")->GetValues())
+		for(auto SegmentTableEntryValue : Result->GetValue()->GetValue("SegmentTable")->GetValues())
 		{
 			auto SegmentTableEntry{std::experimental::any_cast< std::uint8_t >(SegmentTableEntryValue->GetAny())};
 			
@@ -259,7 +259,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 		Result->GetValue()->AppendValue("OggPage", OggPageResult->GetValue());
 		if(OggPageResult->GetSuccess() == true)
 		{
-			bool BeginOfStream{std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetValueAny("BeginOfStream"))};
+			bool BeginOfStream{std::experimental::any_cast< bool >(OggPageResult->GetValue()->GetValue("HeaderType")->GetValueAny("BeginOfStream"))};
 			
 			if(BeginOfStream == true)
 			{
@@ -275,7 +275,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 					break;
 				}
 			}
-			StreamEnded = std::experimental::any_cast< bool >(OggPageResult->GetValue("HeaderType")->GetValueAny("EndOfStream"));
+			StreamEnded = std::experimental::any_cast< bool >(OggPageResult->GetValue()->GetValue("HeaderType")->GetValueAny("EndOfStream"));
 		}
 		else
 		{

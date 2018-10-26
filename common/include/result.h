@@ -31,18 +31,6 @@ namespace Inspection
 			return _Value;
 		}
 		
-		const std::shared_ptr< Value > & GetValue(const std::string & Name)
-		{
-			for(auto & Value : _Value->GetValues())
-			{
-				if(Value->GetName() == Name)
-				{
-					return Value;
-				}
-			}
-			throw std::invalid_argument("Unknown sub value \"" + Name + "\".");
-		}
-		
 		void SetSuccess(bool Success)
 		{
 			_Success = Success;
