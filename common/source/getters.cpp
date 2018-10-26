@@ -76,7 +76,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags(Inspection::Reade
 	if(Continue == true)
 	{
 		auto PartReader{Reader};
-		auto ItemCount{std::experimental::any_cast< std::uint32_t >(Result->GetValue("APETagsHeader")->GetValueAny("ItemCount"))};
+		auto ItemCount{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("APETagsHeader")->GetValueAny("ItemCount"))};
 		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, Get_APE_Tags_Item, ItemCount)};
 		
 		Continue = PartResult->GetSuccess();
@@ -284,7 +284,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Item(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto ItemValueType{std::experimental::any_cast< std::uint8_t >(Result->GetValue("ItemFlags")->GetValueAny("ItemValueType"))};
+		auto ItemValueType{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("ItemFlags")->GetValueAny("ItemValueType"))};
 		
 		if(ItemValueType == 0)
 		{
@@ -1484,7 +1484,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValueAny("ValueLength")), 0}};
-		auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(FieldReader, std::experimental::any_cast< const std::string & >(Result->GetValue("ValueDataType")->GetTagAny("interpretation")), std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValueAny("Name")))};
+		auto FieldResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(FieldReader, std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("ValueDataType")->GetTagAny("interpretation")), std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValueAny("Name")))};
 		auto FieldValue{Result->GetValue()->AppendValue("Value", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -1519,12 +1519,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 					auto GUID{Inspection::Get_GUID_FromString_WithCurlyBraces(String)};
 					
 					Result->GetValue()->AppendValue("GUID", GUID);
-					Result->GetValue("GUID")->AddTag("guid"s);
-					Result->GetValue("GUID")->AddTag("string"s);
+					Result->GetValue()->GetValue("GUID")->AddTag("guid"s);
+					Result->GetValue()->GetValue("GUID")->AddTag("string"s);
 					
 					auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
 					
-					Result->GetValue("GUID")->AddTag("interpretation", GUIDInterpretation);
+					Result->GetValue()->GetValue("GUID")->AddTag("interpretation", GUIDInterpretation);
 				}
 			}
 		}
@@ -1584,8 +1584,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 						auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
 						
 						Result->GetValue()->AppendValue("DateTime", DateTime);
-						Result->GetValue("DateTime")->AddTag("date and time"s);
-						Result->GetValue("DateTime")->AddTag("from Microsoft filetime"s);
+						Result->GetValue()->GetValue("DateTime")->AddTag("date and time"s);
+						Result->GetValue()->GetValue("DateTime")->AddTag("from Microsoft filetime"s);
 					}
 				}
 			}
@@ -2280,7 +2280,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValueAny("DataLength")), 0}};
-		auto FieldResult{Get_ASF_MetadataLibrary_DescriptionRecord_Data(FieldReader, std::experimental::any_cast< const std::string & >(Result->GetValue("DataType")->GetTagAny("interpretation")))};
+		auto FieldResult{Get_ASF_MetadataLibrary_DescriptionRecord_Data(FieldReader, std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("DataType")->GetTagAny("interpretation")))};
 		auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -2509,7 +2509,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObject_Descrip
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValueAny("DataLength")), 0}};
-		auto FieldResult{Get_ASF_MetadataObject_DescriptionRecord_Data(FieldReader, std::experimental::any_cast< std::string >(Result->GetValue("DataType")->GetTagAny("interpretation")))};
+		auto FieldResult{Get_ASF_MetadataObject_DescriptionRecord_Data(FieldReader, std::experimental::any_cast< std::string >(Result->GetValue()->GetValue("DataType")->GetTagAny("interpretation")))};
 		auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -3025,7 +3025,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	// reading
 	if(Continue == true)
 	{
-		auto FormatTag{std::experimental::any_cast< const std::string & >(Result->GetValue("FormatTag")->GetTagAny("constant name"))};
+		auto FormatTag{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("FormatTag")->GetTagAny("constant name"))};
 		
 		if(FormatTag == "WAVE_FORMAT_WMAUDIO2")
 		{
@@ -3703,7 +3703,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
 		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 		
-		Result->GetValue("RegisteredApplicationIdentifier")->AddTag("bytes", FieldResult->GetValue()->GetAny());
+		Result->GetValue()->GetValue("RegisteredApplicationIdentifier")->AddTag("bytes", FieldResult->GetValue()->GetAny());
 		UpdateState(Continue, FieldResult);
 	}
 	// reading
@@ -3716,7 +3716,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 		if(Continue == true)
 		{
 			Reader.AdvancePosition(FieldReader.GetConsumedLength());
-			Result->GetValue("RegisteredApplicationIdentifier")->AddTag("string interpretation", FieldResult->GetValue()->GetAny());
+			Result->GetValue()->GetValue("RegisteredApplicationIdentifier")->AddTag("string interpretation", FieldResult->GetValue()->GetAny());
 		}
 	}
 	// reading
@@ -3751,7 +3751,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 	// inspect
 	if(Continue == true)
 	{
-		auto NumberOfChannelsByFrame{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("ChannelAssignment")->GetTagAny("value"))};
+		auto NumberOfChannelsByFrame{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Header")->GetValue("ChannelAssignment")->GetTagAny("value"))};
 		
 		if(NumberOfChannelsByStream != NumberOfChannelsByFrame)
 		{
@@ -3762,9 +3762,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		auto BlockSize{std::experimental::any_cast< std::uint16_t >(Result->GetValue("Header")->GetValue("BlockSize")->GetTagAny("value"))};
-		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("SampleSize")->GetTagAny("value"))};
-		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("ChannelAssignment"))};
+		auto BlockSize{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("Header")->GetValue("BlockSize")->GetTagAny("value"))};
+		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Header")->GetValue("SampleSize")->GetTagAny("value"))};
+		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Header")->GetValueAny("ChannelAssignment"))};
 		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(PartReader, std::bind(Get_FLAC_Subframe_CalculateBitsPerSample, std::placeholders::_1, std::placeholders::_2, BlockSize, BitsPerSample, ChannelAssignment), NumberOfChannelsByStream)};
 		
@@ -3858,32 +3858,32 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(BlockSize == 0x00)
 		{
-			Result->GetValue("BlockSize")->AddTag("reserved"s);
-			Result->GetValue("BlockSize")->AddTag("error", "The block size 0 MUST NOT be used."s);
+			Result->GetValue()->GetValue("BlockSize")->AddTag("reserved"s);
+			Result->GetValue()->GetValue("BlockSize")->AddTag("error", "The block size 0 MUST NOT be used."s);
 			Continue = false;
 		}
 		else if(BlockSize == 0x01)
 		{
-			Result->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(192));
-			Result->GetValue("BlockSize")->AddTag("unit", "samples"s);
+			Result->GetValue()->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(192));
+			Result->GetValue()->GetValue("BlockSize")->AddTag("unit", "samples"s);
 		}
 		else if((BlockSize > 0x01) && (BlockSize <= 0x05))
 		{
-			Result->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(576 * (1 << (BlockSize - 2))));
-			Result->GetValue("BlockSize")->AddTag("unit", "samples"s);
+			Result->GetValue()->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(576 * (1 << (BlockSize - 2))));
+			Result->GetValue()->GetValue("BlockSize")->AddTag("unit", "samples"s);
 		}
 		else if(BlockSize == 0x06)
 		{
-			Result->GetValue("BlockSize")->AddTag("interpretation", "get 8bit (blocksize - 1) from end of header"s);
+			Result->GetValue()->GetValue("BlockSize")->AddTag("interpretation", "get 8bit (blocksize - 1) from end of header"s);
 		}
 		else if(BlockSize == 0x07)
 		{
-			Result->GetValue("BlockSize")->AddTag("interpretation", "get 16bit (blocksize - 1) from end of header"s);
+			Result->GetValue()->GetValue("BlockSize")->AddTag("interpretation", "get 16bit (blocksize - 1) from end of header"s);
 		}
 		else if((BlockSize > 0x07) && (BlockSize < 0x10))
 		{
-			Result->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(256 * (1 << (BlockSize - 8))));
-			Result->GetValue("BlockSize")->AddTag("unit", "samples"s);
+			Result->GetValue()->GetValue("BlockSize")->AddTag("value", static_cast< std::uint16_t >(256 * (1 << (BlockSize - 8))));
+			Result->GetValue()->GetValue("BlockSize")->AddTag("unit", "samples"s);
 		}
 		else
 		{
@@ -3972,7 +3972,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			// interpretation
 			if(Continue == true)
 			{
-				auto BlockSizeValue{Result->GetValue("BlockSize")};
+				auto BlockSizeValue{Result->GetValue()->GetValue("BlockSize")};
 				
 				BlockSizeValue->AddTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValueAny("BlockSizeExplicit")) + 1));
 				BlockSizeValue->AddTag("unit", "samples"s);
@@ -3987,7 +3987,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 			// interpretation
 			if(Continue == true)
 			{
-				auto BlockSizeValue{Result->GetValue("BlockSize")};
+				auto BlockSizeValue{Result->GetValue()->GetValue("BlockSize")};
 				
 				BlockSizeValue->AddTag("value", static_cast< std::uint16_t >(std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValueAny("BlockSizeExplicit")) + 1));
 				BlockSizeValue->AddTag("unit", "samples"s);
@@ -4045,11 +4045,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 	// reading
 	if(Continue == true)
 	{
-		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(Result->GetValue("Header")->GetValue("BlockType")->GetTagAny("interpretation"))};
+		const std::string & MetaDataBlockType{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Header")->GetValue("BlockType")->GetTagAny("interpretation"))};
 		
 		if(MetaDataBlockType == "StreamInfo")
 		{
-			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto PartResult{g_GetterRepository.Get({"FLAC", "StreamInfoBlock_Data"}, PartReader)};
 			
 			Continue = PartResult->GetSuccess();
@@ -4058,7 +4058,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "Padding")
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_Bits_Unset_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
@@ -4066,7 +4066,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "Application")
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_FLAC_ApplicationBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
@@ -4074,7 +4074,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "SeekTable")
 		{
-			auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length"))};
+			auto MetaDataBlockDataLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValueAny("Length"))};
 			
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
@@ -4092,7 +4092,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "VorbisComment")
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_FLAC_VorbisCommentBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
@@ -4100,7 +4100,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "Picture")
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValueAny("Length")), 0}};
 			auto FieldResult{Get_FLAC_PictureBlock_Data(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
@@ -4280,7 +4280,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue("StreamInfoBlock")->GetValue("Data")->GetValue("NumberOfChannels")->GetTagAny("value"))};
+		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("StreamInfoBlock")->GetValue("Data")->GetValue("NumberOfChannels")->GetTagAny("value"))};
 		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
 		
@@ -4323,7 +4323,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto LastMetaDataBlock{std::experimental::any_cast< bool >(Result->GetValue("StreamInfoBlock")->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
+		auto LastMetaDataBlock{std::experimental::any_cast< bool >(Result->GetValue()->GetValue("StreamInfoBlock")->GetValue("Header")->GetValueAny("LastMetaDataBlock"))};
 		
 		if(LastMetaDataBlock == false)
 		{
@@ -4364,7 +4364,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 	// verification
 	if(Continue == true)
 	{
-		if(std::experimental::any_cast< const std::string & >(Result->GetValue("Header")->GetValue("BlockType")->GetTagAny("interpretation")) != "StreamInfo")
+		if(std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Header")->GetValue("BlockType")->GetTagAny("interpretation")) != "StreamInfo")
 		{
 			Result->GetValue()->AddTag("error", "The block type of the meta data block is not \"StreamInfo\"."s);
 			Continue = false;
@@ -4373,7 +4373,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValueAny("Length")), 0}};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValueAny("Length")), 0}};
 		auto PartResult{g_GetterRepository.Get({"FLAC", "StreamInfoBlock_Data"}, PartReader)};
 		
 		Continue = PartResult->GetSuccess();
@@ -4450,7 +4450,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 	}
 	if(Continue == true)
 	{
-		auto SubframeType{std::experimental::any_cast< const std::string & >(Result->GetValue("Header")->GetValue("Type")->GetTagAny("interpretation"))};
+		auto SubframeType{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Header")->GetValue("Type")->GetTagAny("interpretation"))};
 		
 		if(SubframeType == "SUBFRAME_CONSTANT")
 		{
@@ -4461,14 +4461,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 		}
 		else if(SubframeType == "SUBFRAME_FIXED")
 		{
-			auto FieldResult{Get_FLAC_Subframe_Data_Fixed(Reader, FrameBlockSize, BitsPerSample, std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("Type")->GetValueAny("Order")))};
+			auto FieldResult{Get_FLAC_Subframe_Data_Fixed(Reader, FrameBlockSize, BitsPerSample, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Header")->GetValue("Type")->GetValueAny("Order")))};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
 		}
 		else if(SubframeType == "SUBFRAME_LPC")
 		{
-			auto FieldResult{Get_FLAC_Subframe_Data_LPC(Reader, FrameBlockSize, BitsPerSample, static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValue("Type")->GetValueAny("Order")) + 1))};
+			auto FieldResult{Get_FLAC_Subframe_Data_LPC(Reader, FrameBlockSize, BitsPerSample, static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Header")->GetValue("Type")->GetValueAny("Order")) + 1))};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -4580,11 +4580,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 		
 		if(QuantizedLinearPredictorCoefficientsPrecision < 15)
 		{
-			Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AddTag("value", static_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecision + 1));
+			Result->GetValue()->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AddTag("value", static_cast< std::uint8_t >(QuantizedLinearPredictorCoefficientsPrecision + 1));
 		}
 		else
 		{
-			Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AddTag("error", "The percision MUST NOT be 15."s);
+			Result->GetValue()->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->AddTag("error", "The percision MUST NOT be 15."s);
 			Continue = false;
 		}
 	}
@@ -4599,7 +4599,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_SignedIntegers_BigEndian(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
+		auto FieldResult{Get_SignedIntegers_BigEndian(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("QuantizedLinearPredictorCoefficientsPrecision")->GetTagAny("value")), PredictorOrder)};
 		auto FieldValue{Result->GetValue()->AppendValue("PredictorCoefficients", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -4740,12 +4740,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	{
 		auto NumberOfPartitions{static_cast< std::uint16_t >(1 << std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValueAny("PartitionOrder")))};
 		
-		Result->GetValue("PartitionOrder")->AddTag("number of partitions", NumberOfPartitions);
+		Result->GetValue()->GetValue("PartitionOrder")->AddTag("number of partitions", NumberOfPartitions);
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue("PartitionOrder")->GetTagAny("number of partitions"))};
+		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("PartitionOrder")->GetTagAny("number of partitions"))};
 		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_Array_EndedByNumberOfElements_PassArrayIndex(PartReader, std::bind(Get_FLAC_Subframe_Residual_Rice_Partition, std::placeholders::_1, std::placeholders::_2, FrameBlockSize / NumberOfPartitions, PredictorOrder), NumberOfPartitions)};
 		
@@ -5357,12 +5357,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_TCO(Ins
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetAny())};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Information")->GetAny())};
 		auto Interpretation{GetContentTypeInterpretation2_3(Information)};
 		
 		if(std::get<0>(Interpretation) == true)
 		{
-			Result->GetValue("Information")->AddTag("interpretation", std::get<1>(Interpretation));
+			Result->GetValue()->GetValue("Information")->AddTag("interpretation", std::get<1>(Interpretation));
 		}
 	}
 	// finalization
@@ -5951,7 +5951,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(In
 			if(Continue == true)
 			{
 				Result->GetValue()->AppendValue("String", Alternative2Result->GetValue());
-				Result->GetValue("String")->AddTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
+				Result->GetValue()->GetValue("String")->AddTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
 			}
 		}
 	}
@@ -5976,8 +5976,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
-			Result->GetValue("Counter")->AddTag("standard", "ID3 2.3"s);
-			Result->GetValue("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+			Result->GetValue()->GetValue("Counter")->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->GetValue("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Continue = false;
 		}
 		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
@@ -5993,7 +5993,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
-			Result->GetValue("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Result->GetValue()->GetValue("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			Continue = false;
 		}
 	}
@@ -6033,11 +6033,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		
 		if(Rating > 0)
 		{
-			Result->GetValue("Rating")->AddTag("interpretation", to_string_cast(Rating) + " / 255");
+			Result->GetValue()->GetValue("Rating")->AddTag("interpretation", to_string_cast(Rating) + " / 255");
 		}
 		else
 		{
-			Result->GetValue("Rating")->AddTag("interpretation", nullptr);
+			Result->GetValue()->GetValue("Rating")->AddTag("interpretation", nullptr);
 		}
 	}
 	// reading
@@ -6056,8 +6056,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue("Counter")->AddTag("standard", "ID3 2.3"s);
-			Result->GetValue("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
+			Result->GetValue()->GetValue("Counter")->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->GetValue("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -6073,7 +6073,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Counter", FieldResult->GetValue())};
 			
-			Result->GetValue("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
+			Result->GetValue()->GetValue("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			UpdateState(Continue, FieldResult);
 			Continue = false;
 		}
@@ -6255,19 +6255,19 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(In
 	// reading
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Information")->GetTagAny("value"))};
 		
 		if(Information == "1")
 		{
-			Result->GetValue("Information")->AddTag("interpretation", "yes, this is part of a compilation"s);
+			Result->GetValue()->GetValue("Information")->AddTag("interpretation", "yes, this is part of a compilation"s);
 		}
 		else if(Information == "0")
 		{
-			Result->GetValue("Information")->AddTag("interpretation", "no, this is not part of a compilation"s);
+			Result->GetValue()->GetValue("Information")->AddTag("interpretation", "no, this is not part of a compilation"s);
 		}
 		else
 		{
-			Result->GetValue("Information")->AddTag("interpretation", nullptr);
+			Result->GetValue()->GetValue("Information")->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -6293,12 +6293,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCON(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Information")->GetTagAny("value"))};
 		auto Interpretation{GetContentTypeInterpretation2_3(Information)};
 		
 		if(std::get<0>(Interpretation) == true)
 		{
-			Result->GetValue("Information")->AddTag("interpretation", std::get<1>(Interpretation));
+			Result->GetValue()->GetValue("Information")->AddTag("interpretation", std::get<1>(Interpretation));
 		}
 	}
 	// finalization
@@ -6324,25 +6324,25 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TFLT(In
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
+		Result->GetValue()->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
 		
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Information")->GetTagAny("value"))};
 		
 		try
 		{
-			Result->GetValue("Information")->AddTag("interpretation", Get_ID3_2_3_FileType_Interpretation(Information));
+			Result->GetValue()->GetValue("Information")->AddTag("interpretation", Get_ID3_2_3_FileType_Interpretation(Information));
 		}
 		catch(Inspection::UnknownValueException & Exception)
 		{
 			if(Information == "/3")
 			{
-				Result->GetValue("Information")->AddTag("error", "The file type could not be interpreted strictly according to the standard, but this seems plausible."s);
-				Result->GetValue("Information")->AddTag("interpretation", "MPEG 1/2 layer III");
+				Result->GetValue()->GetValue("Information")->AddTag("error", "The file type could not be interpreted strictly according to the standard, but this seems plausible."s);
+				Result->GetValue()->GetValue("Information")->AddTag("interpretation", "MPEG 1/2 layer III");
 			}
 			else
 			{
-				Result->GetValue("Information")->AddTag("error", "The file type could not be interpreted."s);
-				Result->GetValue("Information")->AddTag("interpretation", nullptr);
+				Result->GetValue()->GetValue("Information")->AddTag("error", "The file type could not be interpreted."s);
+				Result->GetValue()->GetValue("Information")->AddTag("interpretation", nullptr);
 			}
 			Continue = false;
 		}
@@ -6372,16 +6372,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TLAN(In
 	{
 		try
 		{
-			auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
+			auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Information")->GetTagAny("value"))};
 			
-			Result->GetValue("Information")->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-			Result->GetValue("Information")->AddTag("interpretation", Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(Information));
+			Result->GetValue()->GetValue("Information")->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
+			Result->GetValue()->GetValue("Information")->AddTag("interpretation", Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(Information));
 		}
 		catch(...)
 		{
-			Result->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
-			Result->GetValue("Information")->AddTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
-			Result->GetValue("Information")->AddTag("interpretation", nullptr);
+			Result->GetValue()->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->GetValue("Information")->AddTag("error", "The language frame needs to contain a three letter code from ISO 639-2:1998 (alpha-3)."s);
+			Result->GetValue()->GetValue("Information")->AddTag("interpretation", nullptr);
 		}
 	}
 	// finalization
@@ -6407,17 +6407,17 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TSRC(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue("Information")->GetTagAny("value"))};
+		auto Information{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Information")->GetTagAny("value"))};
 		
 		if(Information.length() == 12)
 		{
-			Result->GetValue("Information")->AddTag("standard", "ISRC Bulletin 2015/01"s);
-			Result->GetValue("Information")->AddTag("DesignationCode", Information.substr(7, 5));
-			Result->GetValue("Information")->AddTag("YearOfReference", Information.substr(5, 2));
-			Result->GetValue("Information")->AddTag("RegistrantCode", Information.substr(2, 3));
+			Result->GetValue()->GetValue("Information")->AddTag("standard", "ISRC Bulletin 2015/01"s);
+			Result->GetValue()->GetValue("Information")->AddTag("DesignationCode", Information.substr(7, 5));
+			Result->GetValue()->GetValue("Information")->AddTag("YearOfReference", Information.substr(5, 2));
+			Result->GetValue()->GetValue("Information")->AddTag("RegistrantCode", Information.substr(2, 3));
 			
 			std::string CountryCode{Information.substr(0, 2)};
-			auto CountryCodeValue{Result->GetValue("Information")->AddTag("CountryCode", CountryCode)};
+			auto CountryCodeValue{Result->GetValue()->GetValue("Information")->AddTag("CountryCode", CountryCode)};
 			
 			try
 			{
@@ -6434,8 +6434,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TSRC(In
 		}
 		else
 		{
-			Result->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
-			Result->GetValue("Information")->AddTag("error", "The TSRC frame needs to contain a twelve letter ISRC code from ISRC Bulletin 2015/01."s);
+			Result->GetValue()->GetValue("Information")->AddTag("standard", "ID3 2.3"s);
+			Result->GetValue()->GetValue("Information")->AddTag("error", "The TSRC frame needs to contain a twelve letter ISRC code from ISRC Bulletin 2015/01."s);
 			Continue = false;
 		}
 	}
@@ -6891,7 +6891,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->AddTag("content", Result->GetValue("Identifier")->GetTagAny("interpretation"));
+		Result->GetValue()->AddTag("content", Result->GetValue()->GetValue("Identifier")->GetTagAny("interpretation"));
 		
 		auto FieldStart{Reader.GetConsumedLength()};
 		const std::string & Identifier{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValueAny("Identifier"))};
@@ -7203,11 +7203,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		
 		if(Rating > 0)
 		{
-			Result->GetValue("Rating")->AddTag("interpretation", to_string_cast(Rating) + " / 255");
+			Result->GetValue()->GetValue("Rating")->AddTag("interpretation", to_string_cast(Rating) + " / 255");
 		}
 		else
 		{
-			Result->GetValue("Rating")->AddTag("interpretation", nullptr);
+			Result->GetValue()->GetValue("Rating")->AddTag("interpretation", nullptr);
 		}
 	}
 	// reading
@@ -7308,7 +7308,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TCMP(In
 	// reading
 	if(Continue == true)
 	{
-		for(auto PartValue : Result->GetValue("Informations")->GetValues())
+		for(auto PartValue : Result->GetValue()->GetValue("Informations")->GetValues())
 		{
 			auto Information{std::experimental::any_cast< const std::string & >(PartValue->GetTagAny("value"))};
 			
@@ -7594,7 +7594,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	}
 	if(Continue == true)
 	{
-		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("TagIsAnUpdate")) == true)
+		if(std::experimental::any_cast< bool >(Result->GetValue()->GetValue("ExtendedFlags")->GetValueAny("TagIsAnUpdate")) == true)
 		{
 			auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("TagIsAnUpdateData", FieldResult->GetValue())};
@@ -7604,7 +7604,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	}
 	if(Continue == true)
 	{
-		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("CRCDataPresent")) == true)
+		if(std::experimental::any_cast< bool >(Result->GetValue()->GetValue("ExtendedFlags")->GetValueAny("CRCDataPresent")) == true)
 		{
 			auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("CRCDataPresentData", FieldResult->GetValue())};
@@ -7614,7 +7614,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	}
 	if(Continue == true)
 	{
-		if(std::experimental::any_cast< bool >(Result->GetValue("ExtendedFlags")->GetValueAny("TagRestrictions")) == true)
+		if(std::experimental::any_cast< bool >(Result->GetValue()->GetValue("ExtendedFlags")->GetValueAny("TagRestrictions")) == true)
 		{
 			auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Reader)};
 			auto FieldValue{Result->GetValue()->AppendValue("TagRestrictionsData", FieldResult->GetValue())};
@@ -7977,8 +7977,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 	// reading
 	if(Continue == true)
 	{
-		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(Result->GetValue("TagHeader")->GetValueAny("MajorVersion"))};
-		auto Size{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue("TagHeader")->GetValueAny("Size")), 0}};
+		auto MajorVersion{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TagHeader")->GetValueAny("MajorVersion"))};
+		auto Size{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("TagHeader")->GetValueAny("Size")), 0}};
 		
 		if(MajorVersion == 0x02)
 		{
@@ -8034,7 +8034,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			// reading
 			if(Continue == true)
 			{
-				if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
+				if(std::experimental::any_cast< bool >(Result->GetValue()->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
 				{
 					throw Inspection::NotImplementedException("ID3 2.3 extended header");
 				}
@@ -8091,7 +8091,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			// reading
 			if(Continue == true)
 			{
-				if(std::experimental::any_cast< bool >(Result->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
+				if(std::experimental::any_cast< bool >(Result->GetValue()->GetValue("TagHeader")->GetValue("Flags")->GetValueAny("ExtendedHeader")) == true)
 				{
 					Inspection::Reader FieldReader{Reader, Size};
 					auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader(FieldReader)};
@@ -8295,7 +8295,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 	if(Continue == true)
 	{
 		auto SignBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValueAny("SignBit"))};
-		auto ReplayGainAdjustment{std::experimental::any_cast< float >(Result->GetValue("ReplayGainAdjustment")->GetTagAny("interpretation"))};
+		auto ReplayGainAdjustment{std::experimental::any_cast< float >(Result->GetValue()->GetValue("ReplayGainAdjustment")->GetTagAny("interpretation"))};
 		
 		if(SignBit == 0x01)
 		{
@@ -8654,7 +8654,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// verification
 	if(Continue == true)
 	{
-		Continue = (Result->GetValue("Number")->HasTag("interpretation") == true) && (std::experimental::any_cast< const std::string & >(Result->GetValue("Number")->GetTagAny("interpretation")) == "Lead-Out");
+		Continue = (Result->GetValue()->GetValue("Number")->HasTag("interpretation") == true) && (std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("Number")->GetTagAny("interpretation")) == "Lead-Out");
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -8713,7 +8713,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 		
 		if(Number == 0xaa)
 		{
-			Result->GetValue("Number")->AddTag("interpretation", "Lead-Out"s);
+			Result->GetValue()->GetValue("Number")->AddTag("interpretation", "Lead-Out"s);
 		}
 	}
 	// reading
@@ -9810,7 +9810,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	// reading
 	if(Continue == true)
 	{
-		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
 		
 		if(ByteOrderMark == "BigEndian")
 		{
@@ -9853,7 +9853,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	// reading
 	if(Continue == true)
 	{
-		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
 		
 		if(ByteOrderMark == "BigEndian")
 		{
@@ -10250,7 +10250,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	// reading
 	if(Continue == true)
 	{
-		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
 		
 		if(ByteOrderMark == "BigEndian")
 		{
@@ -10299,7 +10299,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	// reading
 	if(Continue == true)
 	{
-		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
+		auto ByteOrderMark{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("ByteOrderMark")->GetTagAny("interpretation"))};
 		
 		if(ByteOrderMark == "BigEndian")
 		{
@@ -11171,7 +11171,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::R
 	// reading
 	if(Continue == true)
 	{
-		auto ProtectionBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("ProtectionBit"))};
+		auto ProtectionBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Header")->GetValueAny("ProtectionBit"))};
 		
 		if(ProtectionBit == 0x00)
 		{
@@ -11185,10 +11185,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::R
 	// reading
 	if(Continue == true)
 	{
-		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("LayerDescription"))};
-		auto BitRate{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValue("BitRateIndex")->GetTagAny("value"))};
-		auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(Result->GetValue("Header")->GetValue("SamplingFrequency")->GetTagAny("value"))};
-		auto PaddingBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue("Header")->GetValueAny("PaddingBit"))};
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Header")->GetValueAny("LayerDescription"))};
+		auto BitRate{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValue("BitRateIndex")->GetTagAny("value"))};
+		auto SamplingFrequency{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValue("SamplingFrequency")->GetTagAny("value"))};
+		auto PaddingBit{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Header")->GetValueAny("PaddingBit"))};
 		auto FrameLength{0ul};
 		
 		if(LayerDescription == 0x03)
@@ -12304,7 +12304,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_fmt_ChunkData(Inspect
 	// reading
 	if(Continue == true)
 	{
-		const std::string & FormatTag{std::experimental::any_cast< const std::string & >(Result->GetValue("FormatTag")->GetTagAny("constant name"))};
+		const std::string & FormatTag{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetValue("FormatTag")->GetTagAny("constant name"))};
 		
 		if(FormatTag == "WAVE_FORMAT_PCM")
 		{
@@ -12598,7 +12598,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_fmt_ChunkData_FormatS
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("BitsPerSample", PartResult->GetValue());
-		Result->GetValue("BitsPerSample")->AddTag("units", "bits per sample"s);
+		Result->GetValue()->GetValue("BitsPerSample")->AddTag("units", "bits per sample"s);
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
@@ -14494,7 +14494,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("VendorLength", PartResult->GetValue());
-		Result->GetValue("VendorLength")->AddTag("unit", "bytes"s);
+		Result->GetValue()->GetValue("VendorLength")->AddTag("unit", "bytes"s);
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
