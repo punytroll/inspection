@@ -95,18 +95,6 @@ namespace Inspection
 			throw std::invalid_argument("Could not find any value named \"" + Name + "\".");
 		}
 		
-		const std::experimental::any & GetValueAny(const std::string & Name)
-		{
-			for(auto & Value : _Values)
-			{
-				if(Value->GetName() == Name)
-				{
-					return Value->GetAny();
-				}
-			}
-			throw std::invalid_argument("Could not find any value named \"" + Name + "\".");
-		}
-		
 		std::uint32_t GetCount(void) const
 		{
 			return _Values.size();
