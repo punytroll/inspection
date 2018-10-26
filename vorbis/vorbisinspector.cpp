@@ -83,7 +83,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 8 > & HeaderType{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
+		const std::bitset< 8 > & HeaderType{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetValue()->GetAny())};
 		
 		Result->GetValue()->AppendValue("Continuation", HeaderType[0]);
 		Result->GetValue()->AppendValue("BeginOfStream", HeaderType[1]);
@@ -409,7 +409,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::B
 	// interpretation
 	if(Continue == true)
 	{
-		auto Type{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto Type{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(Type == 0x01)
 		{

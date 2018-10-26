@@ -120,7 +120,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tags_Flags(Inspection:
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset<32> & TagsFlags{std::experimental::any_cast< const std::bitset<32> & >(Result->GetAny())};
+		const std::bitset<32> & TagsFlags{std::experimental::any_cast< const std::bitset<32> & >(Result->GetValue()->GetAny())};
 		auto FlagValue{Result->GetValue()->AppendValue("TagOrItemIsReadOnly", TagsFlags[0])};
 		
 		FlagValue->AddTag("bit index", "0"s);
@@ -1388,7 +1388,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CreationDate(Inspectio
 	// interpreting
 	if(Continue == true)
 	{
-		auto CreationDate{std::experimental::any_cast< std::uint64_t >(Result->GetAny())};
+		auto CreationDate{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetAny())};
 		
 		Result->GetValue()->AppendValue("DateTime", Inspection::Get_DateTime_FromMicrosoftFileTime(CreationDate));
 		Result->GetValue()->GetValue("DateTime")->AddTag("date and time"s);
@@ -1515,7 +1515,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 			{
 				if(Name == "WM/MediaPrimaryClassID")
 				{
-					auto String{std::experimental::any_cast< const std::string & >(Result->GetAny())};
+					auto String{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetAny())};
 					auto GUID{Inspection::Get_GUID_FromString_WithCurlyBraces(String)};
 					
 					Result->GetValue()->AppendValue("GUID", GUID);
@@ -1580,7 +1580,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 				{
 					if(Name == "WM/EncodingTime")
 					{
-						auto UnsignedInteger64Bit{std::experimental::any_cast< std::uint64_t >(Result->GetAny())};
+						auto UnsignedInteger64Bit{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetAny())};
 						auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
 						
 						Result->GetValue()->AppendValue("DateTime", DateTime);
@@ -1676,7 +1676,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
+		const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetValue()->GetAny())};
 		
 		Result->GetValue()->AppendValue("[0] Reliable", Flags[0]);
 		Result->GetValue()->AppendValue("[1] Seekable", Flags[1]);
@@ -1873,7 +1873,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_GUID(Inspection::Reade
 	// reading
 	if(Continue == true)
 	{
-		auto GUIDInterpretation{Get_GUID_Interpretation(std::experimental::any_cast< Inspection::GUID >(Result->GetAny()))};
+		auto GUIDInterpretation{Get_GUID_Interpretation(std::experimental::any_cast< Inspection::GUID >(Result->GetValue()->GetAny()))};
 		
 		Result->GetValue()->AddTag("interpretation", GUIDInterpretation);
 	}
@@ -2010,7 +2010,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FileProperties_Flags(I
 	// interpretation
 	//~ if(Continue == true)
 	//~ {
-		//~ const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
+		//~ const std::bitset< 32 > & Flags{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetValue()->GetAny())};
 		
 		//~ Result->GetValue()->AppendValue("[0] Broadcast", Flags[0]);
 		//~ Result->GetValue()->AppendValue("[1] Seekable", Flags[1]);
@@ -2387,7 +2387,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 				// interpretation
 				if(Continue == true)
 				{
-					auto GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetAny())};
+					auto GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetValue()->GetAny())};
 					auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
 					
 					Result->GetValue()->AddTag("interpretation", GUIDInterpretation);
@@ -3703,7 +3703,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
 		auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader)};
 		
-		Result->GetValue("RegisteredApplicationIdentifier")->AddTag("bytes", FieldResult->GetAny());
+		Result->GetValue("RegisteredApplicationIdentifier")->AddTag("bytes", FieldResult->GetValue()->GetAny());
 		UpdateState(Continue, FieldResult);
 	}
 	// reading
@@ -3716,7 +3716,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 		if(Continue == true)
 		{
 			Reader.AdvancePosition(FieldReader.GetConsumedLength());
-			Result->GetValue("RegisteredApplicationIdentifier")->AddTag("string interpretation", FieldResult->GetAny());
+			Result->GetValue("RegisteredApplicationIdentifier")->AddTag("string interpretation", FieldResult->GetValue()->GetAny());
 		}
 	}
 	// reading
@@ -4403,7 +4403,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_BitsP
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AddTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
+		Result->GetValue()->AddTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny()) + 1));
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -4427,7 +4427,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Numbe
 	// interpretation
 	if(Continue == true)
 	{
-		Result->GetValue()->AddTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetAny()) + 1));
+		Result->GetValue()->AddTag("value", static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny()) + 1));
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -4838,7 +4838,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto SubframeType{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto SubframeType{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		switch(SubframeType)
 		{
@@ -4871,7 +4871,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 				// interpretation and verification
 				if(Continue == true)
 				{
-					auto Order{std::experimental::any_cast< std::uint8_t >(FieldResult->GetAny())};
+					auto Order{std::experimental::any_cast< std::uint8_t >(FieldResult->GetValue()->GetAny())};
 					
 					FieldValue->AddTag("value", static_cast< std::uint8_t >(Order));
 					if(Order >= 5)
@@ -5076,7 +5076,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 	// interpretation
 	if(Continue == true)
 	{
-		auto GenreNumber{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto GenreNumber{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		try
 		{
@@ -5435,7 +5435,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(I
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetValue()->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AddTag("bit index", 7);
@@ -6604,7 +6604,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 16 > & Flags{std::experimental::any_cast< const std::bitset< 16 > & >(Result->GetAny())};
+		const std::bitset< 16 > & Flags{std::experimental::any_cast< const std::bitset< 16 > & >(Result->GetValue()->GetAny())};
 		std::shared_ptr< Inspection::Value > FlagValue;
 		
 		FlagValue = Result->GetValue()->AppendValue("TagAlterPreservation", Flags[15]);
@@ -6756,7 +6756,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetValue()->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AddTag("bit index", 7);
@@ -6802,7 +6802,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -6846,7 +6846,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -7514,7 +7514,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 				Result->SetValue(FieldResult->GetValue());
 				Reader.AdvancePosition(FieldReader.GetConsumedLength());
 				
-				const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetAny())};
+				const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetAny())};
 				
 				if(Code == "XXX")
 				{
@@ -7748,7 +7748,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	{
 		Result->GetValue()->AddTag("synchsafe"s);
 		
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetValue()->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Reserved", Flags[7])};
 		
 		Flag->AddTag("bit index", 7);
@@ -7794,7 +7794,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(I
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetAny())};
+		const std::bitset< 8 > & Flags{std::experimental::any_cast< const std::bitset< 8 > & >(Result->GetValue()->GetAny())};
 		auto Flag{Result->GetValue()->AppendValue("Unsynchronization", Flags[7])};
 		
 		Flag->AddTag("bit index", 7);
@@ -7842,7 +7842,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -7866,7 +7866,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x03)
@@ -7878,7 +7878,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetAny());
 			}
 		}
 		else
@@ -7910,7 +7910,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -7934,7 +7934,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetAny());
 			}
 		}
 		else if(TextEncoding == 0x03)
@@ -7946,7 +7946,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetAny());
+				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetAny());
 			}
 		}
 		else
@@ -8326,7 +8326,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment_R
 	// interpretation
 	if(Continue == true)
 	{
-		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetAny()))};
+		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetAny()))};
 		
 		Result->GetValue()->AddTag("interpretation", ReplayGainAdjustment / 10.0f);
 	}
@@ -8551,7 +8551,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 	{
 		try
 		{
-			const Inspection::GUID & GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetAny())};
+			const Inspection::GUID & GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetValue()->GetAny())};
 			
 			Result->GetValue()->AddTag("interpretation", Inspection::Get_GUID_Interpretation(GUID));
 		}
@@ -8756,7 +8756,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 4 > & Control{std::experimental::any_cast< const std::bitset< 4 > & >(Result->GetAny())};
+		const std::bitset< 4 > & Control{std::experimental::any_cast< const std::bitset< 4 > & >(Result->GetValue()->GetAny())};
 		
 		if(Control[1] == true)
 		{
@@ -8867,7 +8867,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	{
 		Result->GetValue()->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
 		
-		const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetAny())};
+		const std::string & Code{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetAny())};
 		
 		try
 		{
@@ -9331,7 +9331,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	// verification
 	if(Continue == true)
 	{
-		const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(Result->GetAny())};
+		const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(Result->GetValue()->GetAny())};
 		
 		if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
 		{
@@ -9512,7 +9512,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -9579,7 +9579,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -9667,7 +9667,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -9734,7 +9734,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -10000,7 +10000,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 			
 			UpdateState(Continue, FieldResult);
 			NumberOfCodePoints += 1;
-			Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny()));
+			Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny()));
 			if(Continue == false)
 			{
 				Result->GetValue()->AddTag("ended by error"s);
@@ -10056,7 +10056,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -10122,7 +10122,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -10205,7 +10205,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	// verification
 	if(Continue == true)
 	{
-		const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(Result->GetAny())};
+		const std::vector< std::uint8_t > & Bytes{std::experimental::any_cast< const std::vector< std::uint8_t > & >(Result->GetValue()->GetAny())};
 		
 		if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
 		{
@@ -10340,7 +10340,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		UpdateState(Continue, FirstCodeUnitResult);
 		if(Continue == true)
 		{
-			auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetAny())};
+			auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetValue()->GetAny())};
 			
 			if((FirstCodeUnit < 0xd800) || (FirstCodeUnit >= 0xe000))
 			{
@@ -10355,7 +10355,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 				UpdateState(Continue, SecondCodeUnitResult);
 				if(Continue == true)
 				{
-					auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetAny())};
+					auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetValue()->GetAny())};
 					
 					if((SecondCodeUnit >= 0xdc00) && (SecondCodeUnit < 0xe000))
 					{
@@ -10443,7 +10443,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			Continue = PartResult->GetSuccess();
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(PartResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -10510,7 +10510,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -10580,7 +10580,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		UpdateState(Continue, FirstCodeUnitResult);
 		if(Continue == true)
 		{
-			auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetAny())};
+			auto FirstCodeUnit{std::experimental::any_cast< std::uint16_t >(FirstCodeUnitResult->GetValue()->GetAny())};
 			
 			if((FirstCodeUnit < 0xd800) || (FirstCodeUnit >= 0xe000))
 			{
@@ -10595,7 +10595,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 				UpdateState(Continue, SecondCodeUnitResult);
 				if(Continue == true)
 				{
-					auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetAny())};
+					auto SecondCodeUnit{std::experimental::any_cast< std::uint16_t >(SecondCodeUnitResult->GetValue()->GetAny())};
 					
 					if((SecondCodeUnit >= 0xdc00) && (SecondCodeUnit < 0xe000))
 					{
@@ -10683,7 +10683,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			Continue = PartResult->GetSuccess();
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(PartResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -10750,7 +10750,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -10850,7 +10850,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -10940,7 +10940,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
 			{
-				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetAny())};
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(FieldResult->GetValue()->GetAny())};
 				
 				if(CodePoint == 0x00000000)
 				{
@@ -11058,7 +11058,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Microsoft_WaveFormat_Forma
 	// interpretation
 	if(Continue == true)
 	{
-		auto FormatTag{std::experimental::any_cast< std::uint16_t >(Result->GetAny())};
+		auto FormatTag{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetAny())};
 		
 		switch(FormatTag)
 		{
@@ -11359,7 +11359,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVe
 	// interpretation
 	if(Continue == true)
 	{
-		auto AudioVersionID{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto AudioVersionID{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(AudioVersionID == 0x01)
 		{
@@ -11395,7 +11395,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 	// interpretation
 	if(Continue == true)
 	{
-		auto BitRateIndex{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto BitRateIndex{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(LayerDescription == 0x03)
 		{
@@ -11674,7 +11674,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyrig
 	// interpretation
 	if(Continue == true)
 	{
-		auto Copyright{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto Copyright{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(Copyright == 0x00)
 		{
@@ -11714,7 +11714,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Emphasi
 	// interpretation
 	if(Continue == true)
 	{
-		auto Emphasis{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto Emphasis{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(Emphasis == 0x00)
 		{
@@ -11763,7 +11763,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_LayerDe
 	// interpretation
 	if(Continue == true)
 	{
-		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(LayerDescription == 0x00)
 		{
@@ -11812,7 +11812,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(In
 	// interpretation
 	if(Continue == true)
 	{
-		auto Mode{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto Mode{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(Mode == 0x00)
 		{
@@ -11871,7 +11871,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 	// interpretation
 	if(Continue == true)
 	{
-		auto ModeExtension{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto ModeExtension{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(Mode == 0x01)
 		{
@@ -11961,7 +11961,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Origina
 	// interpretation
 	if(Continue == true)
 	{
-		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(OriginalHome == 0x00)
 		{
@@ -12000,7 +12000,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Padding
 	// interpretation
 	if(Continue == true)
 	{
-		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(OriginalHome == 0x00)
 		{
@@ -12039,7 +12039,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Protect
 	// interpretation
 	if(Continue == true)
 	{
-		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(OriginalHome == 0x00)
 		{
@@ -12078,7 +12078,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Samplin
 	// interpretation
 	if(Continue == true)
 	{
-		auto SamplingFrequency{std::experimental::any_cast< std::uint8_t >(Result->GetAny())};
+		auto SamplingFrequency{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(SamplingFrequency == 0x00)
 		{
@@ -12360,7 +12360,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_fmt_ChunkData_Channel
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 32 > & ChannelMask{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetAny())};
+		const std::bitset< 32 > & ChannelMask{std::experimental::any_cast< const std::bitset< 32 > & >(Result->GetValue()->GetAny())};
 		
 		if(ChannelMask[0] == true)
 		{
@@ -12626,7 +12626,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_fmt_ChunkData_SubForm
 	// interpretation
 	if(Continue == true)
 	{
-		auto GUID{std::experimental::any_cast< Inspection::GUID >(Result->GetAny())};
+		auto GUID{std::experimental::any_cast< Inspection::GUID >(Result->GetValue()->GetAny())};
 		
 		if(GUID == g_KSDATAFORMAT_SUBTYPE_PCM)
 		{
