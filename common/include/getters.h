@@ -227,11 +227,9 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Reader & Reader, std::uint8_t LayerDescription, std::uint8_t Mode);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_ChannelMask(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_Extensible(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_FormatSpecificFields_PCM(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_RIFF_fmt_ChunkData_SubFormat(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkData_fmt_(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_1Bit(Inspection::Reader & Reader);
