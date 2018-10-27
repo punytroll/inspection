@@ -11107,56 +11107,56 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
+	// reading
 	if(Continue == true)
 	{
-		if(Reader.Has(Inspection::Length{4, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{4, 0}) + ".");
-			Continue = false;
-		}
+		Inspection::Reader PartReader{Reader, Inspection::Length{0, 12}};
+		auto PartResult{Get_Bits_Set_EndedByLength(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("FrameSync", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 12}};
-		auto FieldResult{Get_Bits_Set_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("FrameSync", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_AudioVersionID"}, PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("AudioVersionID", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_AudioVersionID(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("AudioVersionID", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_LayerDescription"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("LayerDescription", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_LayerDescription(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("LayerDescription", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_ProtectionBit"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_ProtectionBit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("ProtectionBit", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ProtectionBit", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("LayerDescription")->GetAny())};
-		auto FieldResult{Get_MPEG_1_FrameHeader_BitRateIndex(Reader, LayerDescription)};
-		auto FieldValue{Result->GetValue()->AppendValue("BitRateIndex", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_MPEG_1_FrameHeader_BitRateIndex(PartReader, LayerDescription)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("BitRateIndex", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -11171,97 +11171,75 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_PaddingBit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PaddingBit", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_PaddingBit"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PaddingBit", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("PrivateBit", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_1Bit(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("PrivateBit", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("LayerDescription")->GetAny())};
-		auto FieldResult{Get_MPEG_1_FrameHeader_Mode(Reader, LayerDescription)};
-		auto FieldValue{Result->GetValue()->AppendValue("Mode", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_MPEG_1_FrameHeader_Mode(PartReader, LayerDescription)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Mode", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("LayerDescription")->GetAny())};
 		auto Mode{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Mode")->GetAny())};
-		auto FieldResult{Get_MPEG_1_FrameHeader_ModeExtension(Reader, LayerDescription, Mode)};
-		auto FieldValue{Result->GetValue()->AppendValue("ModeExtension", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_MPEG_1_FrameHeader_ModeExtension(PartReader, LayerDescription, Mode)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("ModeExtension", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_Copyright(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Copyright", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_Copyright"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Copyright", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_OriginalHome(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Original/Home", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_OriginalHome"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Original/Home", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_MPEG_1_FrameHeader_Emphasis(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Emphasis", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_Emphasis"}, PartReader)};
 		
-		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_AudioVersionID(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto AudioVersionID{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
-		
-		if(AudioVersionID == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "MPEG Version 1 (ISO/IEC 11172-3)"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The audio version ID \"" + to_string_cast(AudioVersionID) + "\" is reserved and should not be used.");
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("Emphasis", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11549,144 +11527,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Copyright(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto Copyright{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
-		
-		if(Copyright == 0x00)
-		{
-			Result->GetValue()->AddTag("copyright", false);
-		}
-		else if(Copyright == 0x01)
-		{
-			Result->GetValue()->AddTag("copyright", true);
-			Continue = false;
-		}
-		else
-		{
-			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
-			assert(false);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Emphasis(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_2Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto Emphasis{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
-		
-		if(Emphasis == 0x00)
-		{
-			Result->GetValue()->AddTag("interpretation", "no emphasis"s);
-		}
-		else if(Emphasis == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "50/15 microsec. emphasis"s);
-		}
-		else if(Emphasis == 0x02)
-		{
-			Result->GetValue()->AddTag("error", "The emphasis \"" + to_string_cast(Emphasis) + "\" is reserved and MUST not be used.");
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-		else if(Emphasis == 0x03)
-		{
-			Result->GetValue()->AddTag("interpretation", "CCITT J.17"s);
-		}
-		else
-		{
-			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
-			assert(false);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_LayerDescription(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_2Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
-		
-		if(LayerDescription == 0x00)
-		{
-			Result->GetValue()->AddTag("error", "The layer description \"" + to_string_cast(LayerDescription) + "\" is reserved and MUST NOT be used.");
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
-		}
-		else if(LayerDescription == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "Layer III"s);
-		}
-		else if(LayerDescription == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "Layer II"s);
-		}
-		else if(LayerDescription == 0x03)
-		{
-			Result->GetValue()->AddTag("interpretation", "Layer I"s);
-		}
-		else
-		{
-			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
-			assert(false);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(Inspection::Reader & Reader, std::uint8_t LayerDescription)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -11827,123 +11667,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 		else
 		{
 			Result->GetValue()->AddTag("<ignored>"s);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_OriginalHome(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
-		
-		if(OriginalHome == 0x00)
-		{
-			Result->GetValue()->AddTag("original", false);
-		}
-		else if(OriginalHome == 0x01)
-		{
-			Result->GetValue()->AddTag("original", true);
-		}
-		else
-		{
-			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
-			assert(false);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_PaddingBit(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
-		
-		if(OriginalHome == 0x00)
-		{
-			Result->GetValue()->AddTag("padding", false);
-		}
-		else if(OriginalHome == 0x01)
-		{
-			Result->GetValue()->AddTag("padding", true);
-		}
-		else
-		{
-			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
-			assert(false);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ProtectionBit(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto OriginalHome{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
-		
-		if(OriginalHome == 0x00)
-		{
-			Result->GetValue()->AddTag("redundancy", false);
-		}
-		else if(OriginalHome == 0x01)
-		{
-			Result->GetValue()->AddTag("redundancy", true);
-		}
-		else
-		{
-			// every 1-bit value is either 0 or 1 ... otherwise the program is corrupt.
-			assert(false);
 		}
 	}
 	// finalization
