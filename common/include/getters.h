@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "result.h"
 
@@ -19,9 +20,8 @@ namespace Inspection
 	void UpdateState(bool & Continue, Inspection::Buffer & Buffer, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader);
 	void UpdateState(bool & Continue, Inspection::Reader & Reader, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader);
 	
+	std::unique_ptr< Inspection::Result > Get_APE_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_APE_Tags_Flags(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_APE_Tags_HeaderOrFooter(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_APE_Tags_Item(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter);
@@ -33,7 +33,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_Alphabetic_EndedByLength(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASCII_String_Alphabetic_EndedByTemplateLength(Inspection::Reader & Reader, const std::string & TemplateString);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_AlphaNumeric_EndedByLength(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Inspection::Reader & Reader, const std::string & TemplateString);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Reader & Reader);
@@ -74,11 +73,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObject(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_StreamPropertiesObjectData(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_Bits_Set_EndedByLength(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_Bits_SetOrUnset_EndedByLength(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_Bits_SetOrUnset_Until16BitAlignment(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_Bits_Unset_EndedByLength(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_Bits_Unset_Until8BitAlignment(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_BitSet_8Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_BitSet_16Bit_BigEndian(Inspection::Reader & Reader);
@@ -87,6 +81,11 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_Boolean_1Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_Data_Set_EndedByLength(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_Data_SetOrUnset_EndedByLength(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_Data_SetOrUnset_Until16BitAlignment(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_Data_Unset_EndedByLength(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_Data_Unset_Until8BitAlignment(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame(Inspection::Reader & Reader, std::uint8_t NumberOfChannels);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame_Footer(Inspection::Reader & Reader);
@@ -240,6 +239,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_32Bit_RiceEncoded(Inspection::Reader & Reader, std::uint8_t RiceParameter);
 	std::unique_ptr< Inspection::Result > Get_SignedIntegers_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits, std::uint64_t NumberOfElements);
+	std::unique_ptr< Inspection::Result > Get_String_ASCII_Alphabetic_ByTemplate(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_0Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_1Bit(Inspection::Reader & Reader);

@@ -51,7 +51,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 				Buffer.SetPosition(Start);
 				
 				Inspection::Reader FieldReader{Buffer, Length};
-				auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+				auto FieldResult{Get_Data_SetOrUnset_EndedByLength(FieldReader)};
 				auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 				
 				Result->GetValue()->AddTag("interpretation", "OGG unknown"s);
@@ -125,11 +125,12 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{4, 0}};
-		auto FieldResult{Get_ASCII_String_Alphabetic_EndedByTemplateLength(FieldReader, "OggS")};
-		auto FieldValue{Result->GetValue()->AppendValue("CapturePattern", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_String_ASCII_Alphabetic_ByTemplate(PartReader, {{"Template", "OggS"s}})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("CapturePattern", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
@@ -231,7 +232,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 		if(PacketLength > 0ull)
 		{
 			Inspection::Reader FieldReader{Buffer, Inspection::Length{PacketLength, 0}};
-			auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+			auto FieldResult{Get_Data_SetOrUnset_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Packet", FieldResult->GetValue())};
 			
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);
@@ -322,7 +323,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-		auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+		auto FieldResult{Get_Data_SetOrUnset_EndedByLength(FieldReader)};
 		auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
@@ -351,11 +352,12 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{6, 0}};
-		auto FieldResult{Get_ASCII_String_Alphabetic_EndedByTemplateLength(FieldReader, "vorbis")};
-		auto FieldValue{Result->GetValue()->AppendValue("VorbisIdentifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_String_ASCII_Alphabetic_ByTemplate(PartReader, {{"Template", "vorbis"s}})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendValue("VorbisIdentifier", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
@@ -379,7 +381,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 		else if(PacketType == 0x05)
 		{
 			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_Bits_SetOrUnset_EndedByLength(FieldReader)};
+			auto FieldResult{Get_Data_SetOrUnset_EndedByLength(FieldReader)};
 			auto FieldValue{Result->GetValue()->AppendValue("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, Buffer, FieldResult, FieldReader);

@@ -20,6 +20,14 @@ namespace Inspection
 		std::experimental::optional< bool > StructureIsValid;
 	};
 	
+	class ParameterDescriptor
+	{
+	public:
+		std::string Name;
+		std::experimental::optional< std::string > Type;
+		std::experimental::optional< std::string > Value;
+	};
+	
 	enum class AppendType
 	{
 		Append,
@@ -34,7 +42,20 @@ namespace Inspection
 	class PartDescriptor
 	{
 	public:
+		PartDescriptor(void)
+		{
+		}
+		
+		~PartDescriptor(void)
+		{
+			for(auto ParameterDescriptor : ParameterDescriptors)
+			{
+				delete ParameterDescriptor;
+			}
+		}
+		
 		std::experimental::optional< Inspection::Length > Length;
+		std::vector< ParameterDescriptor * > ParameterDescriptors;
 		std::vector< std::string > PathParts;
 		Inspection::AppendType ValueAppendType;
 		std::string ValueName;
@@ -155,7 +176,7 @@ Inspection::GetterDescriptor::~GetterDescriptor(void)
 	}
 }
 
-std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -166,6 +187,13 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 		if(_HardcodedGetter != nullptr)
 		{
 			auto HardcodedResult{_HardcodedGetter(Reader)};
+			
+			Continue = HardcodedResult->GetSuccess();
+			Result->SetValue(HardcodedResult->GetValue());
+		}
+		else if(_HardcodedGetterWithParameters != nullptr)
+		{
+			auto HardcodedResult{_HardcodedGetterWithParameters(Reader, Parameters)};
 			
 			Continue = HardcodedResult->GetSuccess();
 			Result->SetValue(HardcodedResult->GetValue());
@@ -237,7 +265,21 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						}
 						if(PartReader != nullptr)
 						{
-							auto PartResult{g_GetterRepository.Get(PartDescriptor->PathParts, *PartReader)};
+							std::unordered_map< std::string, std::experimental::any > Parameters;
+							
+							for(auto ParameterDescriptor : PartDescriptor->ParameterDescriptors)
+							{
+								if(ParameterDescriptor->Type.value() == "string")
+								{
+									Parameters.emplace(ParameterDescriptor->Name, ParameterDescriptor->Value.value());
+								}
+								else
+								{
+									assert(false);
+								}
+							}
+							
+							auto PartResult{g_GetterRepository.Get(PartDescriptor->PathParts, *PartReader, Parameters)};
 							
 							Continue = PartResult->GetSuccess();
 							switch(PartDescriptor->ValueAppendType)
@@ -325,7 +367,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				auto HardcodedGetterText{dynamic_cast< const XML::Text * >(GetterChildElement->GetChild(0))};
 				
 				assert(HardcodedGetterText != nullptr);
-				if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
+				if(HardcodedGetterText->GetText() == "Get_APE_Flags")
+				{
+					_HardcodedGetter = Inspection::Get_APE_Flags;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
 				}
@@ -364,6 +410,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
 				{
 					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_Data_Unset_EndedByLength")
+				{
+					_HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
 				{
@@ -416,6 +466,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
 				{
 					_HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_String_ASCII_Alphabetic_ByTemplate")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_String_ASCII_Alphabetic_ByTemplate;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_1Bit")
 				{
@@ -601,6 +655,37 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 								}
 							}
 							PartDescriptor->Length = Inspection::Length{Bytes, Bits};
+						}
+						else if(PartChildElement->GetName() == "parameters")
+						{
+							for(auto PartParametersChildNode : PartChildElement->GetChilds())
+							{
+								if(PartParametersChildNode->GetNodeType() == XML::NodeType::Element)
+								{
+									auto PartParametersChildElement{dynamic_cast< const XML::Element * >(PartParametersChildNode)};
+									
+									if(PartParametersChildElement->GetName() == "parameter")
+									{
+										auto ParameterDescriptor{new Inspection::ParameterDescriptor{}};
+										
+										assert(PartParametersChildElement->HasAttribute("name") == true);
+										ParameterDescriptor->Name = PartParametersChildElement->GetAttribute("name");
+										assert(PartParametersChildElement->HasAttribute("type") == true);
+										ParameterDescriptor->Type = PartParametersChildElement->GetAttribute("type");
+										assert(PartParametersChildElement->GetChilds().size() == 1);
+										
+										auto ParameterText{dynamic_cast< const XML::Text * >(PartParametersChildElement->GetChild(0))};
+										
+										assert(ParameterText != nullptr);
+										ParameterDescriptor->Value = ParameterText->GetText();
+										PartDescriptor->ParameterDescriptors.push_back(ParameterDescriptor);
+									}
+									else
+									{
+										throw std::domain_error{PartParametersChildElement->GetName()};
+									}
+								}
+							}
 						}
 						else if(PartChildElement->GetName() == "value")
 						{

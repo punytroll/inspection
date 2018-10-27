@@ -50,13 +50,13 @@ Inspection::GetterRepository::~GetterRepository(void)
 	_RootModule = nullptr;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto GetterDescriptor{_GetOrLoadGetterDescriptor(PathParts)};
 	
 	if(GetterDescriptor != nullptr)
 	{
-		return GetterDescriptor->Get(Reader);
+		return GetterDescriptor->Get(Reader, Parameters);
 	}
 	else
 	{
