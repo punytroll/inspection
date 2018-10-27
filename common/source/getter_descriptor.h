@@ -1,8 +1,10 @@
 #ifndef INSPECTION_COMMON_GETTER_DESCRIPTOR_H
 #define INSPECTION_COMMON_GETTER_DESCRIPTOR_H
 
+#include <experimental/any>
 #include <functional>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace Inspection
@@ -27,12 +29,13 @@ namespace Inspection
 	public:
 		GetterDescriptor(GetterRepository * GetterRepository);
 		~GetterDescriptor(void);
-		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader);
+		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void LoadGetterDescription(const std::string & GetterPath);
 	private:
 		EvaluationResult _ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target);
 		Inspection::GetterRepository * _GetterRepository;
 		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > _HardcodedGetter;
+		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) > _HardcodedGetterWithParameters;
 		std::vector< Inspection::InterpretDescriptor * > _InterpretDescriptors;
 		std::vector< Inspection::PartDescriptor * > _PartDescriptors;
 		std::vector< std::pair< Inspection::ActionType, std::uint32_t > > _Actions;
