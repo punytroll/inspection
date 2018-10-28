@@ -20,12 +20,34 @@ namespace Inspection
 		std::experimental::optional< bool > StructureIsValid;
 	};
 	
+	enum class PathType
+	{
+		Result,
+		Sub
+	};
+	
+	class PathDescriptor
+	{
+	public:
+		Inspection::PathType Type;
+		std::string SubName;
+	};
+	
 	class ParameterDescriptor
 	{
 	public:
+		~ParameterDescriptor(void)
+		{
+			for(auto PathDescriptor : PathDescriptors)
+			{
+				delete PathDescriptor;
+			}
+		}
+		
 		std::string Name;
 		std::experimental::optional< std::string > Type;
 		std::experimental::optional< std::string > Value;
+		std::vector< Inspection::PathDescriptor * > PathDescriptors;
 	};
 	
 	enum class AppendType
@@ -42,10 +64,6 @@ namespace Inspection
 	class PartDescriptor
 	{
 	public:
-		PartDescriptor(void)
-		{
-		}
-		
 		~PartDescriptor(void)
 		{
 			for(auto ParameterDescriptor : ParameterDescriptors)
@@ -55,7 +73,7 @@ namespace Inspection
 		}
 		
 		std::experimental::optional< Inspection::Length > Length;
-		std::vector< ParameterDescriptor * > ParameterDescriptors;
+		std::vector< Inspection::ParameterDescriptor * > ParameterDescriptors;
 		std::vector< std::string > PathParts;
 		Inspection::AppendType ValueAppendType;
 		std::string ValueName;
@@ -269,7 +287,34 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							
 							for(auto ParameterDescriptor : PartDescriptor->ParameterDescriptors)
 							{
-								if(ParameterDescriptor->Type.value() == "string")
+								if(!ParameterDescriptor->Type)
+								{
+									assert(ParameterDescriptor->PathDescriptors.empty() == false);
+									
+									std::shared_ptr< Inspection::Value > Value{nullptr};
+									
+									for(auto PathDescriptor : ParameterDescriptor->PathDescriptors)
+									{
+										switch(PathDescriptor->Type)
+										{
+										case Inspection::PathType::Result:
+											{
+												Value = Result->GetValue();
+												
+												break;
+											}
+										case Inspection::PathType::Sub:
+											{
+												Value = Value->GetValue(PathDescriptor->SubName);
+												
+												break;
+											}
+										}
+									}
+									assert(Value != nullptr);
+									Parameters.emplace(ParameterDescriptor->Name, Value->GetAny());
+								}
+								else if(ParameterDescriptor->Type.value() == "string")
 								{
 									Parameters.emplace(ParameterDescriptor->Name, ParameterDescriptor->Value.value());
 								}
@@ -430,6 +475,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
 				{
 					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ID3_ReplayGainAdjustment")
 				{
@@ -670,14 +719,48 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										
 										assert(PartParametersChildElement->HasAttribute("name") == true);
 										ParameterDescriptor->Name = PartParametersChildElement->GetAttribute("name");
-										assert(PartParametersChildElement->HasAttribute("type") == true);
-										ParameterDescriptor->Type = PartParametersChildElement->GetAttribute("type");
-										assert(PartParametersChildElement->GetChilds().size() == 1);
-										
-										auto ParameterText{dynamic_cast< const XML::Text * >(PartParametersChildElement->GetChild(0))};
-										
-										assert(ParameterText != nullptr);
-										ParameterDescriptor->Value = ParameterText->GetText();
+										if((PartParametersChildElement->GetChilds().size() == 1) && (PartParametersChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text))
+										{
+											assert(PartParametersChildElement->HasAttribute("type") == true);
+											ParameterDescriptor->Type = PartParametersChildElement->GetAttribute("type");
+											
+											auto ParameterText{dynamic_cast< const XML::Text * >(PartParametersChildElement->GetChild(0))};
+											
+											assert(ParameterText != nullptr);
+											ParameterDescriptor->Value = ParameterText->GetText();
+										}
+										else
+										{
+											for(auto PartParametersParameterChildNode : PartParametersChildElement->GetChilds())
+											{
+												if(PartParametersParameterChildNode->GetNodeType() == XML::NodeType::Element)
+												{
+													auto PathDescriptor{new Inspection::PathDescriptor{}};
+													auto PartParametersParameterChildElement{dynamic_cast< const XML::Element * >(PartParametersParameterChildNode)};
+													
+													if(PartParametersParameterChildElement->GetName() == "result")
+													{
+														assert(PartParametersParameterChildElement->GetChilds().size() == 0);
+														PathDescriptor->Type = Inspection::PathType::Result;
+													}
+													else if(PartParametersParameterChildElement->GetName() == "sub")
+													{
+														PathDescriptor->Type = Inspection::PathType::Sub;
+														assert(PartParametersParameterChildElement->GetChilds().size() == 1);
+														
+														auto SubText{dynamic_cast< const XML::Text * >(PartParametersParameterChildElement->GetChild(0))};
+														
+														assert(SubText != nullptr);
+														PathDescriptor->SubName = SubText->GetText();
+													}
+													else
+													{
+														throw std::domain_error{PartParametersParameterChildElement->GetName()};
+													}
+													ParameterDescriptor->PathDescriptors.push_back(PathDescriptor);
+												}
+											}
+										}
 										PartDescriptor->ParameterDescriptors.push_back(ParameterDescriptor);
 									}
 									else

@@ -5119,7 +5119,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_COM(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("ShortContentDescription", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5127,7 +5127,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_COM(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5177,7 +5177,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_PIC(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5215,7 +5215,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_T__(Ins
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Information", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5348,7 +5348,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Inspection::Reader & Reader, std::uint8_t TextEncoding)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -5356,6 +5356,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 	// reading
 	if(Continue == true)
 	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Parameters.at("TextEncoding"))};
+		
 		if(TextEncoding == 0x00)
 		{
 			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
@@ -5383,7 +5385,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, std::uint8_t TextEncoding)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -5391,6 +5393,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccoding
 	// reading
 	if(Continue == true)
 	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Parameters.at("TextEncoding"))};
+		
 		if(TextEncoding == 0x00)
 		{
 			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
@@ -5508,11 +5512,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		}
 		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCOP") || (Identifier == "TDAT") || (Identifier == "TDRC") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIME") || (Identifier == "TIT1") || (Identifier == "TIT2") || (Identifier == "TIT3") || (Identifier == "TLEN") || (Identifier == "TMED") || (Identifier == "TOAL") || (Identifier == "TOFN") || (Identifier == "TOPE") || (Identifier == "TOWN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPE3") || (Identifier == "TPE4") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TRDA") || (Identifier == "TSIZ") || (Identifier == "TSO2") || (Identifier == "TSOA") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TSST") || (Identifier == "TYER"))
 		{
-			Inspection::Reader FieldReader{Reader, ClaimedSize};
-			auto FieldResult{Get_ID3_2_3_Frame_Body_T___(FieldReader)};
+			Inspection::Reader PartReader{Reader, ClaimedSize};
+			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "TCMP")
 		{
@@ -5667,7 +5672,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_APIC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5713,7 +5718,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("ShortContentDescription", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5721,7 +5726,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5759,7 +5764,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("FileName", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5767,7 +5772,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_GEOB(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("ContentDescription", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -6097,36 +6102,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_T___(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "TextEncoding"}, PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
-		auto FieldValue{Result->GetValue()->AppendValue("Information", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -6135,10 +6110,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Body_T___(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6173,10 +6150,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCON(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Body_T___(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -6204,10 +6183,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TFLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Body_T___(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -6250,10 +6231,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TLAN(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Body_T___(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -6287,10 +6270,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TSRC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_Frame_Body_T___(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -6352,7 +6337,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -6360,7 +6345,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Value", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -6398,7 +6383,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_USLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("ContentDescriptor", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -6406,7 +6391,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_USLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Lyrics/Text", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -6456,7 +6441,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_WXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Descriptor", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -6673,7 +6658,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Inspection::Reader & Reader, std::uint8_t TextEncoding)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -6681,6 +6666,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 	// reading
 	if(Continue == true)
 	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Parameters.at("TextEncoding"))};
+		
 		if(TextEncoding == 0x00)
 		{
 			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
@@ -6717,7 +6704,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, std::uint8_t TextEncoding)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -6725,6 +6712,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccoding
 	// reading
 	if(Continue == true)
 	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Parameters.at("TextEncoding"))};
+		
 		if(TextEncoding == 0x00)
 		{
 			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
@@ -6954,7 +6943,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_APIC(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7022,7 +7011,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("ShortContentDescription", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7030,7 +7019,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_COMM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7161,9 +7150,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 	// reading
 	if(Continue == true)
 	{
-		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, std::bind(Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength, std::placeholders::_1, TextEncoding))};
+		auto PartResult{Get_Array_EndedByLength(PartReader, std::bind(Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength, std::placeholders::_1, std::unordered_map< std::string, std::experimental::any >{{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}}))};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Informations", PartResult->GetValue());
@@ -7240,7 +7228,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7248,7 +7236,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Value", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7286,7 +7274,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_USLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("ContentDescriptor", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7294,7 +7282,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_USLT(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Lyrics/Text", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7344,7 +7332,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_WXXX(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Reader, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("TextEncoding")->GetAny()))};
+		auto FieldResult{Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
 		auto FieldValue{Result->GetValue()->AppendValue("Descriptor", FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -7713,7 +7701,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Reader & Reader, std::uint8_t TextEncoding)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -7721,6 +7709,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 	// reading
 	if(Continue == true)
 	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Parameters.at("TextEncoding"))};
+		
 		if(TextEncoding == 0x00)
 		{
 			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
@@ -7781,7 +7771,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, std::uint8_t TextEncoding)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -7789,6 +7779,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccoding
 	// reading
 	if(Continue == true)
 	{
+		auto TextEncoding{std::experimental::any_cast< std::uint8_t >(Parameters.at("TextEncoding"))};
+		
 		if(TextEncoding == 0x00)
 		{
 			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};

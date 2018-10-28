@@ -122,8 +122,8 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Frame_Body_UFI(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Language(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_2_Tag_Header_Flags(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTermination(Inspection::Reader & Reader, std::uint8_t TextEncoding);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, std::uint8_t TextEncoding);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_APIC(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_COMM(Inspection::Reader & Reader);
@@ -133,7 +133,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PCNT(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_POPM(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_PRIV(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_T___(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCMP(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TCON(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Body_TFLT(Inspection::Reader & Reader);
@@ -146,8 +145,8 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Frame_Header_Flags(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Language(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_3_Tag_Header_Flags(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTermination(Inspection::Reader & Reader, std::uint8_t TextEncoding);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, std::uint8_t TextEncoding);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_APIC(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Frame_Body_APIC_MIMEType(Inspection::Reader & Reader);
@@ -167,8 +166,8 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_4_Tag_ExtendedHeader_Flags(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTermination(Inspection::Reader & Reader, std::uint8_t TextEncoding);
-	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccodingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, std::uint8_t TextEncoding);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_ReplayGainAdjustment(Inspection::Reader & Reader);
