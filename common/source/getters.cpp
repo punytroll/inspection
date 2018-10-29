@@ -5019,11 +5019,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		
 		if(Identifier == "COM")
 		{
-			Inspection::Reader FieldReader{Reader, ClaimedSize};
-			auto FieldResult{Get_ID3_2_2_Frame_Body_COM(FieldReader)};
+			Inspection::Reader PartReader{Reader, ClaimedSize};
+			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "COM"}, PartReader, {})};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "PIC")
 		{
@@ -5085,52 +5086,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		Reader.SetPosition(FieldStart + ClaimedSize);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_COM(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "TextEncoding"}, PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("TextEncoding", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_2_Language(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("Language", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
-		auto FieldValue{Result->GetValue()->AppendValue("ShortContentDescription", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength(Reader, {{"TextEncoding", Result->GetValue()->GetValue("TextEncoding")->GetAny()}})};
-		auto FieldValue{Result->GetValue()->AppendValue("Comment", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);

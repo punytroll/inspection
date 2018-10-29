@@ -472,6 +472,18 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Language")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_2_Language;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
 				{
 					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
