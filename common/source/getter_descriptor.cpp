@@ -456,6 +456,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_Data_SetOrUnset_EndedByLength")
+				{
+					_HardcodedGetter = Inspection::Get_Data_SetOrUnset_EndedByLength;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_Data_Unset_EndedByLength")
 				{
 					_HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
