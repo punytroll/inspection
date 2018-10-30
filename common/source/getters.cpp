@@ -3475,8 +3475,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Data_SetOrUnset_EndedByLen
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("any data"s);
-	Reader.AdvancePosition(Reader.GetRemainingLength());
-	AppendLength(Result->GetValue(), Reader.GetConsumedLength());
+	
+	auto RemainingLength{Reader.GetRemainingLength()};
+	
+	Reader.AdvancePosition(RemainingLength);
+	AppendLength(Result->GetValue(), RemainingLength);
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
