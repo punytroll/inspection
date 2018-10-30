@@ -3364,7 +3364,7 @@
 			<argument>../examples/018_id3_2.3_APIC</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/value</argument>
 		</execute>
-		<expected-output>56587.0</expected-output>
+		<expected-output>56573.0</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -4204,7 +4204,7 @@
 			<argument>../examples/025_id3_2.4_APIC</argument>
 			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:PictureData/tag:length/value</argument>
 		</execute>
-		<expected-output>56587.0</expected-output>
+		<expected-output>56573.0</expected-output>
 	</test>
 	<test>
 		<execute>
