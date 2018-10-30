@@ -488,9 +488,17 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Language")
+				{
+					_HardcodedGetter = Inspection::Get_ID3_2_3_Language;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
 				{
 					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 				{
