@@ -1445,21 +1445,213 @@
 			<argument>../examples/asf/002_long.wma</argument>
 			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/value</argument>
 		</execute>
-		<expected-output>01 d5 22 d5 22 01 00 00</expected-output>
+		<expected-output></expected-output>
 	</test>
 	<test>
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/tag:length/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:Span/value</argument>
 		</execute>
-		<expected-output>8.0</expected-output>
+		<expected-output>1</expected-output>
 	</test>
 	<test>
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/tag:length/tag:unit/value</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:Span/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:Span/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:Span/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualPacketLength/value</argument>
+		</execute>
+		<expected-output>8917</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualPacketLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualPacketLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualPacketLength/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualPacketLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualChunkLength/value</argument>
+		</execute>
+		<expected-output>8917</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualChunkLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualChunkLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualChunkLength/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualChunkLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceDataLength/value</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceDataLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceDataLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceDataLength/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceDataLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceData/value</argument>
+		</execute>
+		<expected-output>00</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceData/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceData/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceData/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceData/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceData/tag:length/value</argument>
+		</execute>
+		<expected-output>1.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:SilenceData/tag:length/tag:unit/value</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
@@ -1542,6 +1734,22 @@
 			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:2]/sub:AdditionalExtendedHeaders/sub:AdditionalExtendedHeader:[tag:array index/is-value:2]/sub:DescriptionRecords/sub:DescriptionRecord:[tag:array index/is-value:0]/sub:Data/has-tag:little endian</argument>
 		</execute>
 		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualPacketLength/value</argument>
+		</execute>
+		<expected-output>4459</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualChunkLength/value</argument>
+		</execute>
+		<expected-output>4459</expected-output>
 	</test>
 	<test>
 		<execute>
