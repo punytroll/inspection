@@ -4938,46 +4938,6 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/value</argument>
-		</execute>
-		<expected-output></expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/has-tag:any data</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/has-tag:until 16bit alignment</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/tag:length/value</argument>
-		</execute>
-		<expected-output>0.0</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:0]/sub:Padding/tag:length/tag:unit/value</argument>
-		</execute>
-		<expected-output>bytes and bits</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/031_RIFF_inst_smpl</argument>
 			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/value</argument>
 		</execute>
 		<expected-output></expected-output>
@@ -4986,7 +4946,7 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/031_RIFF_inst_smpl</argument>
-			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/has-tag:any data</argument>
+			<argument>--value=/sub:RIFFChunk/sub:Data/sub:Chunks/sub:Chunk:[tag:array index/is-value:1]/sub:Padding/has-tag:unset data</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>

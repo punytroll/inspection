@@ -3595,6 +3595,44 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Data_SetOrUnset_Until16Bit
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Data_Unset_Until16BitAlignment(Inspection::Reader & Reader)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("unset data"s);
+	Result->GetValue()->AddTag("until 16bit alignment");
+	
+	Inspection::Length LengthUntil16BitAlignment;
+	auto OutOfAlignmentBits{Reader.GetPositionInBuffer().GetTotalBits() % 16};
+	
+	if(OutOfAlignmentBits > 0)
+	{
+		LengthUntil16BitAlignment.Set(0, 16 - OutOfAlignmentBits);
+		if(Reader.Has(LengthUntil16BitAlignment) == true)
+		{
+			while((Continue == true) && (Reader.GetConsumedLength() < LengthUntil16BitAlignment))
+			{
+				Continue = Reader.Get1Bits() == 0x00;
+			}
+			if(Continue == false)
+			{
+				Result->GetValue()->AddTag("error", "Only " + to_string_cast(Reader.GetConsumedLength()) + " bytes and bits could be read as unset data.");
+			}
+		}
+		else
+		{
+			Result->GetValue()->AddTag("error", "The next 16bit alignment is not inside the reader's available data length.");
+		}
+	}
+	AppendLength(Result->GetValue(), LengthUntil16BitAlignment);
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_Data_Unset_EndedByLength(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -11228,6 +11266,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
+		auto PartStart{Reader.GetConsumedLength()};
 		auto ClaimedSize{Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("Header")->GetValue("Size")->GetAny()), 0}};
 		
 		if(Reader.Has(ClaimedSize) == true)
@@ -11279,6 +11318,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 				Result->GetValue()->AppendValue("Data", PartResult->GetValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
+			
+			auto HandledSize{Reader.GetConsumedLength() - PartStart};
+			
+			if(HandledSize < ClaimedSize)
+			{
+				auto OutOfAlignmentBits{Reader.GetPositionInBuffer().GetTotalBits() % 16};
+				
+				if(HandledSize + Inspection::Length{0, OutOfAlignmentBits} == ClaimedSize)
+				{
+					Result->GetValue()->AddTag("error", "The chunk data size is claimed larger than the actually handled size, because the padding was erroneously included in the chunk data size."s);
+				}
+				else
+				{
+					Result->GetValue()->AddTag("error", "The chunk data size is claimed larger than the actually handled size."s);
+				}
+				Result->GetValue()->AddTag("claimed size", ClaimedSize);
+				Result->GetValue()->AddTag("handled size", HandledSize);
+			}
 		}
 		else
 		{
@@ -11289,12 +11346,20 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Data_SetOrUnset_Until16BitAlignment(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
+		if(Reader.HasRemaining() == true)
+		{
+			auto OutOfAlignmentBits{Reader.GetPositionInBuffer().GetTotalBits() % 16};
+			
+			if(OutOfAlignmentBits > 0)
+			{
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{Get_Data_Unset_Until16BitAlignment(PartReader)};
+				
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendValue("Padding", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+			}
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
