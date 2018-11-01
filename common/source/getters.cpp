@@ -10658,9 +10658,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("LayerDescription")->GetAny())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_MPEG_1_FrameHeader_BitRateIndex(PartReader, LayerDescription)};
+		auto PartResult{Get_MPEG_1_FrameHeader_BitRateIndex(PartReader, {{"LayerDescription", Result->GetValue()->GetValue("LayerDescription")->GetAny()}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("BitRateIndex", PartResult->GetValue());
@@ -10699,9 +10698,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("LayerDescription")->GetAny())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_MPEG_1_FrameHeader_Mode(PartReader, LayerDescription)};
+		auto PartResult{Get_MPEG_1_FrameHeader_Mode(PartReader, {{"LayerDescription", Result->GetValue()->GetValue("LayerDescription")->GetAny()}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("Mode", PartResult->GetValue());
@@ -10710,10 +10708,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	// reading
 	if(Continue == true)
 	{
-		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("LayerDescription")->GetAny())};
-		auto Mode{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Mode")->GetAny())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_MPEG_1_FrameHeader_ModeExtension(PartReader, LayerDescription, Mode)};
+		auto PartResult{Get_MPEG_1_FrameHeader_ModeExtension(PartReader, {{"LayerDescription", Result->GetValue()->GetValue("LayerDescription")->GetAny()}, {"Mode", Result->GetValue()->GetValue("Mode")->GetAny()}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("ModeExtension", PartResult->GetValue());
@@ -10756,7 +10752,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRateIndex(Inspection::Reader & Reader, std::uint8_t LayerDescription)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRateIndex(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10772,6 +10768,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 	// interpretation
 	if(Continue == true)
 	{
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Parameters.at("LayerDescription"))};
 		auto BitRateIndex{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(LayerDescription == 0x03)
@@ -11035,7 +11032,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(Inspection::Reader & Reader, std::uint8_t LayerDescription)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11051,6 +11048,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(In
 	// interpretation
 	if(Continue == true)
 	{
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Parameters.at("LayerDescription"))};
 		auto Mode{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(Mode == 0x00)
@@ -11094,7 +11092,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Reader & Reader, std::uint8_t LayerDescription, std::uint8_t Mode)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11110,6 +11108,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 	// interpretation
 	if(Continue == true)
 	{
+		auto Mode{std::experimental::any_cast< std::uint8_t >(Parameters.at("Mode"))};
+		auto LayerDescription{std::experimental::any_cast< std::uint8_t >(Parameters.at("LayerDescription"))};
 		auto ModeExtension{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetAny())};
 		
 		if(Mode == 0x01)
