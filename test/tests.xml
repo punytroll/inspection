@@ -5014,4 +5014,364 @@
 		</execute>
 		<expected-output>bytes and bits</expected-output>
 	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/value</argument>
+		</execute>
+		<expected-output>TXXX</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>User defined text information frame</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Size/value</argument>
+		</execute>
+		<expected-output>25</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/value</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/tag:name/value</argument>
+		</execute>
+		<expected-output>UCS-2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Description/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Description/tag:value/value</argument>
+		</execute>
+		<expected-output>Test</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Description/sub:String/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Information/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Information/tag:value/value</argument>
+		</execute>
+		<expected-output>Test</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/032_ID3_2.3_TXXX_UCS-2_LE</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Information/sub:String/has-tag:ended by termination and length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/value</argument>
+		</execute>
+		<expected-output>USLT</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Unsynchronised lyric/text transcription</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Size/value</argument>
+		</execute>
+		<expected-output>5</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Language/value</argument>
+		</execute>
+		<expected-output>eng</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Language/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>English</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:ContentDescriptor/value</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:ContentDescriptor/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Lyrics\/Text/value</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/033_ID3_2.3_USLT_eng_ISO-8859-1_empty</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Lyrics\/Text/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/value</argument>
+		</execute>
+		<expected-output>WCOM</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>Commercial information</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Size/value</argument>
+		</execute>
+		<expected-output>18</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/value</argument>
+		</execute>
+		<expected-output>http://example.org</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/has-tag:18 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/tag:character set/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/034_ID3_2.3_WCOM</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/tag:encoding/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/value</argument>
+		</execute>
+		<expected-output>WXXX</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:standard/value</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Identifier/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>User defined URL link frame</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Size/value</argument>
+		</execute>
+		<expected-output>20</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:TextEncoding/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:Descriptor/value</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/value</argument>
+		</execute>
+		<expected-output>http://example.org</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/has-tag:18 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/tag:character set/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/035_ID3_2.3_WXXX_ISO-8859-1_without_description</argument>
+			<argument>--value=/sub:ID3v2Tag/sub:Frames/sub:Frame:[tag:array index/is-value:0]/sub:URL/tag:encoding/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
 </tests>
