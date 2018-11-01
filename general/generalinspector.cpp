@@ -38,6 +38,7 @@ std::vector< std::string > SplitString(const std::string & String, char Delimite
 			else
 			{
 				Part += Character;
+				IsEscaped = false;
 			}
 		}
 		else if(Character == '\\')
