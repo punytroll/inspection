@@ -184,7 +184,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_APE_Tags(FieldReader)};
+		auto FieldResult{Get_APE_Tag(FieldReader, {})};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
