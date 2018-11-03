@@ -198,7 +198,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					{
 						Inspection::Reader FieldReader{Buffer};
 						
-						PartialResult = Get_APE_Tags(FieldReader);
+						PartialResult = Get_APE_Tag(FieldReader, {});
 						if(PartialResult->GetSuccess() == true)
 						{
 							Buffer.SetPosition(FieldReader);
@@ -334,7 +334,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			{
 				Inspection::Reader FieldReader{Buffer};
 				
-				PartialResult = Get_APE_Tags(FieldReader);
+				PartialResult = Get_APE_Tag(FieldReader, {});
 				if(PartialResult->GetSuccess() == true)
 				{
 					Buffer.SetPosition(FieldReader);
@@ -419,7 +419,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			
 			Inspection::Reader FieldReader{Buffer};
 			
-			PartialResult = Get_APE_Tags(FieldReader);
+			PartialResult = Get_APE_Tag(FieldReader, {});
 			if(PartialResult->GetSuccess() == true)
 			{
 				Buffer.SetPosition(FieldReader);
@@ -537,7 +537,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							Buffer.SetPosition(Start);
 							
 							Inspection::Reader PartReader{Buffer};
-							auto PartResult{Get_RIFF_Chunk(PartReader)};
+							auto PartResult{Get_RIFF_Chunk(PartReader, {})};
 							
 							if(PartResult->GetSuccess() == true)
 							{
