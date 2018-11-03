@@ -15,7 +15,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Get_RIFF_Chunk(PartReader)};
+		auto PartResult{Get_RIFF_Chunk(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendValue("RIFFChunk", PartResult->GetValue());

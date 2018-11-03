@@ -414,7 +414,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				assert(HardcodedGetterText != nullptr);
 				if(HardcodedGetterText->GetText() == "Get_APE_Flags")
 				{
-					_HardcodedGetter = Inspection::Get_APE_Flags;
+					_HardcodedGetterWithParameters = Inspection::Get_APE_Flags;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_APE_Item")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_APE_Item;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
 				{
@@ -427,6 +431,30 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_CodecList_CodecEntry")
+				{
+					_HardcodedGetterWithParameters = Get_ASF_CodecList_CodecEntry;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor")
+				{
+					_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_LanguageList_LanguageIDRecord")
+				{
+					_HardcodedGetterWithParameters = Get_ASF_LanguageList_LanguageIDRecord;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord")
+				{
+					_HardcodedGetterWithParameters = Get_ASF_Metadata_DescriptionRecord;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord")
+				{
+					_HardcodedGetterWithParameters = Get_ASF_MetadataLibrary_DescriptionRecord;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ASF_Object")
+				{
+					_HardcodedGetterWithParameters = Get_ASF_Object;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
 				{
@@ -516,6 +544,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Track;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
 				{
 					_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength;
@@ -543,6 +575,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
 				{
 					_HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_SignedInteger_32Bit_RiceEncoded")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_32Bit_RiceEncoded;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_SignedInteger_BigEndian")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_BigEndian;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_String_ASCII_Alphabetic_ByTemplate")
 				{
@@ -607,6 +647,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
 				{
 					_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_BigEndian")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_BigEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_Vorbis_CommentHeader_UserComment")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_Vorbis_CommentHeader_UserComment;
 				}
 				else
 				{
