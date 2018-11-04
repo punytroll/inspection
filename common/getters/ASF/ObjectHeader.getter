@@ -5,9 +5,9 @@
 			<part>GUID</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>GUID</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -18,9 +18,9 @@
 			<part>64Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Size</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

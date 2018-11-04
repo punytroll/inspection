@@ -7,9 +7,9 @@
 			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>NumberOfSamples</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

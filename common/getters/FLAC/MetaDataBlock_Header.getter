@@ -5,9 +5,9 @@
 			<part>1Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>LastMetaDataBlock</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -16,9 +16,9 @@
 			<part>MetaDataBlock_Header_BlockType</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>BlockType</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -29,9 +29,9 @@
 			<part>24Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Length</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

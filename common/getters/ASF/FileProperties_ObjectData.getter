@@ -4,9 +4,9 @@
 			<part>GUID_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>FileID</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -17,9 +17,9 @@
 			<part>64Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>FileSize</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -28,9 +28,9 @@
 			<part>CreationDate</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>CreationDate</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -41,9 +41,9 @@
 			<part>64Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>DataPacketsCount</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -54,9 +54,9 @@
 			<part>64Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>PlayDuration</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -67,9 +67,9 @@
 			<part>64Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>SendDuration</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -80,9 +80,9 @@
 			<part>64Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Preroll</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -91,9 +91,9 @@
 			<part>FileProperties_Flags</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Flags</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -104,9 +104,9 @@
 			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MinimumDataPacketSize</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -117,9 +117,9 @@
 			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MaximumDataPacketSize</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -130,9 +130,9 @@
 			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MaximumBitrate</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

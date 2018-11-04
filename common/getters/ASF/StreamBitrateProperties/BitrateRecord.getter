@@ -6,9 +6,9 @@
 			<part>BitrateRecord_Flags</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Flags</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -19,9 +19,9 @@
 			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>AverageBitrate</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

@@ -1,3 +1,30 @@
 <getter>
-	<hardcoded-getter>Get_IEC_60908_1999_TableOfContents</hardcoded-getter>
+	<part>
+		<getter>
+			<part>IEC_60908_1999</part>
+			<part>TableOfContents_Header</part>
+		</getter>
+		<value>
+			<append-sub-values/>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>IEC_60908_1999</part>
+			<part>TableOfContents_Tracks</part>
+		</getter>
+		<parameters>
+			<parameter name="FirstTrackNumber">
+				<result/>
+				<sub>FirstTrackNumber</sub>
+			</parameter>
+			<parameter name="LastTrackNumber">
+				<result/>
+				<sub>LastTrackNumber</sub>
+			</parameter>
+		</parameters>
+		<value>
+			<append-sub-values/>
+		</value>
+	</part>
 </getter>

@@ -6,9 +6,9 @@
 			<part>EndedByTermination</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>OwnerIdentifier</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -17,9 +17,9 @@
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>PrivateData</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

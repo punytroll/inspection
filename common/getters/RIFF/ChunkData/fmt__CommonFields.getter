@@ -4,9 +4,9 @@
 			<part>Microsoft_WaveFormat_FormatTag</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>FormatTag</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -17,9 +17,9 @@
 			<part>16Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>NumberOfChannels</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -30,9 +30,9 @@
 			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>SamplesPerSecond</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -43,9 +43,9 @@
 			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>AverageBytesPerSecond</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -56,9 +56,9 @@
 			<part>16Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>BlockAlign</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

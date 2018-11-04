@@ -5,9 +5,9 @@
 			<part>UnsignedInteger_7Bit_SynchSafe_8Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Size</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

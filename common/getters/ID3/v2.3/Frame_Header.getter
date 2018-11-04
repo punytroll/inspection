@@ -6,9 +6,9 @@
 			<part>Frame_Header_Identifier</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Identifier</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -19,9 +19,9 @@
 			<part>32Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Size</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -31,9 +31,9 @@
 			<part>Frame_Header_Flags</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Flags</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

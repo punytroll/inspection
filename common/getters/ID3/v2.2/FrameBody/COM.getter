@@ -6,9 +6,9 @@
 			<part>TextEncoding</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>TextEncoding</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -18,9 +18,9 @@
 			<part>Language</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Language</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -36,9 +36,9 @@
 			</parameter>
 		</parameters>
 		<value>
-			<append>
+			<append-value>
 				<name>ShortContentDescription</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -54,9 +54,9 @@
 			</parameter>
 		</parameters>
 		<value>
-			<append>
+			<append-value>
 				<name>Comment</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

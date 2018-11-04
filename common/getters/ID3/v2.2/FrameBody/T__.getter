@@ -6,9 +6,9 @@
 			<part>TextEncoding</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>TextEncoding</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -24,9 +24,9 @@
 			</parameter>
 		</parameters>
 		<value>
-			<append>
+			<append-value>
 				<name>Information</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>
