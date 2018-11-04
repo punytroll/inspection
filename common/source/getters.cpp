@@ -1176,103 +1176,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CompatibilityObjectDat
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObjectData(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("TitleLength", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("AuthorLength", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("CopyrightLength", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DescriptionLength", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_16Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendValue("RatingLength", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("TitleLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendValue("Title", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("AuthorLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendValue("Author", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("CopyrightLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendValue("Copyright", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("DescriptionLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("RatingLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CreationDate(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -2680,7 +2583,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_ContentDescriptionObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Get_ASF_ContentDescriptionObjectData(PartReader)};
+			auto PartResult{g_GetterRepository.Get({"ASF", "ObjectData", "ContentDescription"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
