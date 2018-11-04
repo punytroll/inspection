@@ -20,34 +20,40 @@ namespace Inspection
 		std::experimental::optional< bool > StructureIsValid;
 	};
 	
-	enum class PathType
-	{
-		Result,
-		Sub
-	};
-	
-	class PathDescriptor
+	class ReferencePartDescriptor
 	{
 	public:
-		Inspection::PathType Type;
-		std::string SubName;
+		enum class Type
+		{
+			Result,
+			Sub
+		};
+		
+		Inspection::ReferencePartDescriptor::Type Type;
+		std::string DetailName;
+	};
+	
+	class ValueDescriptor
+	{
+	public:
+		~ValueDescriptor(void)
+		{
+			for(auto ReferencePartDescriptor : ReferencePartDescriptors)
+			{
+				delete ReferencePartDescriptor;
+			}
+		}
+		
+		std::experimental::optional< std::string > LiteralValue;
+		std::vector< Inspection::ReferencePartDescriptor * > ReferencePartDescriptors;
 	};
 	
 	class ParameterDescriptor
 	{
 	public:
-		~ParameterDescriptor(void)
-		{
-			for(auto PathDescriptor : PathDescriptors)
-			{
-				delete PathDescriptor;
-			}
-		}
-		
 		std::string Name;
 		std::experimental::optional< std::string > Type;
-		std::experimental::optional< std::string > Value;
-		std::vector< Inspection::PathDescriptor * > PathDescriptors;
+		Inspection::ValueDescriptor ValueDescriptor;
 	};
 	
 	enum class AppendType
@@ -61,19 +67,32 @@ namespace Inspection
 	{
 		ApplyEnumeration
 	};
+	
+	class LengthDescriptor
+	{
+	public:
+		Inspection::ValueDescriptor BytesValueDescriptor;
+		Inspection::ValueDescriptor BitsValueDescriptor;
+	};
 
 	class PartDescriptor
 	{
 	public:
+		PartDescriptor(void) :
+			LengthDescriptor{nullptr}
+		{
+		}
+		
 		~PartDescriptor(void)
 		{
 			for(auto ParameterDescriptor : ParameterDescriptors)
 			{
 				delete ParameterDescriptor;
 			}
+			delete LengthDescriptor;
 		}
 		
-		std::experimental::optional< Inspection::Length > Length;
+		Inspection::LengthDescriptor * LengthDescriptor;
 		std::vector< Inspection::ParameterDescriptor * > ParameterDescriptors;
 		std::vector< std::string > PathParts;
 		Inspection::AppendType ValueAppendType;
@@ -176,6 +195,33 @@ namespace Inspection
 		
 		return Result;
 	}
+	
+	const std::experimental::any & GetAnyByReference(const std::vector< Inspection::ReferencePartDescriptor * > & ReferencePartDescriptors, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	{
+		std::shared_ptr< Inspection::Value > Value{nullptr};
+		
+		for(auto ReferencePartDescriptor : ReferencePartDescriptors)
+		{
+			switch(ReferencePartDescriptor->Type)
+			{
+			case Inspection::ReferencePartDescriptor::Type::Result:
+				{
+					Value = Result->GetValue();
+					
+					break;
+				}
+			case Inspection::ReferencePartDescriptor::Type::Sub:
+				{
+					Value = Value->GetValue(ReferencePartDescriptor->DetailName);
+					
+					break;
+				}
+			}
+		}
+		assert(Value != nullptr);
+		
+		return Value->GetAny();
+	}
 }
 
 Inspection::GetterDescriptor::GetterDescriptor(Inspection::GetterRepository * GetterRepository) :
@@ -266,15 +312,57 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						auto PartDescriptor{_PartDescriptors[Action.second]};
 						Inspection::Reader * PartReader{nullptr};
 						
-						if(PartDescriptor->Length)
+						if(PartDescriptor->LengthDescriptor != nullptr)
 						{
-							if(Reader.Has(PartDescriptor->Length.value()) == true)
+							std::uint64_t Bytes{0};
+							
+							if(PartDescriptor->LengthDescriptor->BytesValueDescriptor.LiteralValue)
 							{
-								PartReader = new Inspection::Reader{Reader, PartDescriptor->Length.value()};
+								Bytes = from_string_cast< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor.LiteralValue.value());
+							}
+							else if(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferencePartDescriptors.size() > 0)
+							{
+								auto & BytesAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
+								
+								if(BytesAny.type() == typeid(std::uint16_t))
+								{
+									Bytes = std::experimental::any_cast< std::uint16_t >(BytesAny);
+								}
+								else
+								{
+									assert(false);
+								}
+							}
+							
+							std::uint64_t Bits{0};
+							
+							if(PartDescriptor->LengthDescriptor->BitsValueDescriptor.LiteralValue)
+							{
+								Bits = from_string_cast< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor.LiteralValue.value());
+							}
+							else if(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferencePartDescriptors.size() > 0)
+							{
+								auto & BitsAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
+								
+								if(BitsAny.type() == typeid(std::uint16_t))
+								{
+									Bits = std::experimental::any_cast< std::uint16_t >(BitsAny);
+								}
+								else
+								{
+									assert(false);
+								}
+							}
+							
+							Inspection::Length Length{Bytes, Bits};
+							
+							if(Reader.Has(Length) == true)
+							{
+								PartReader = new Inspection::Reader{Reader, Length};
 							}
 							else
 							{
-								Result->GetValue()->AddTag("error", "At least " + to_string_cast(PartDescriptor->Length.value()) + " bytes and bits are necessary to read this part.");
+								Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
 								Continue = false;
 							}
 						}
@@ -290,34 +378,17 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							{
 								if(!ParameterDescriptor->Type)
 								{
-									assert(ParameterDescriptor->PathDescriptors.empty() == false);
+									assert(ParameterDescriptor->ValueDescriptor.ReferencePartDescriptors.empty() == false);
 									
-									std::shared_ptr< Inspection::Value > Value{nullptr};
+									auto & ValueAny{GetAnyByReference(ParameterDescriptor->ValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
 									
-									for(auto PathDescriptor : ParameterDescriptor->PathDescriptors)
-									{
-										switch(PathDescriptor->Type)
-										{
-										case Inspection::PathType::Result:
-											{
-												Value = Result->GetValue();
-												
-												break;
-											}
-										case Inspection::PathType::Sub:
-											{
-												Value = Value->GetValue(PathDescriptor->SubName);
-												
-												break;
-											}
-										}
-									}
-									assert(Value != nullptr);
-									Parameters.emplace(ParameterDescriptor->Name, Value->GetAny());
+									Parameters.emplace(ParameterDescriptor->Name, ValueAny);
 								}
 								else if(ParameterDescriptor->Type.value() == "string")
 								{
-									Parameters.emplace(ParameterDescriptor->Name, ParameterDescriptor->Value.value());
+									assert(ParameterDescriptor->ValueDescriptor.LiteralValue);
+									
+									Parameters.emplace(ParameterDescriptor->Name, ParameterDescriptor->ValueDescriptor.LiteralValue.value());
 								}
 								else
 								{
@@ -583,6 +654,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary32")
 				{
 					_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
@@ -769,9 +844,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 						}
 						else if(PartChildElement->GetName() == "length")
 						{
-							std::uint64_t Bytes;
-							std::uint8_t Bits;
-							
+							PartDescriptor->LengthDescriptor = new Inspection::LengthDescriptor{};
 							for(auto PartLengthChildNode : PartChildElement->GetChilds())
 							{
 								if(PartLengthChildNode->GetNodeType() == XML::NodeType::Element)
@@ -780,21 +853,91 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									
 									if(PartLengthChildElement->GetName() == "bytes")
 									{
-										assert(PartLengthChildElement->GetChilds().size() == 1);
-										
-										auto BytesText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
-										
-										assert(BytesText != nullptr);
-										Bytes = from_string_cast< std::uint64_t >(BytesText->GetText());
+										if((PartLengthChildElement->GetChilds().size() == 1) && (PartLengthChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text))
+										{
+											assert(PartLengthChildElement->GetChilds().size() == 1);
+											
+											auto BytesText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
+											
+											assert(BytesText != nullptr);
+											PartDescriptor->LengthDescriptor->BytesValueDescriptor.LiteralValue = BytesText->GetText();
+										}
+										else
+										{
+											for(auto PartLengthBytesChildNode : PartLengthChildElement->GetChilds())
+											{
+												if(PartLengthBytesChildNode->GetNodeType() == XML::NodeType::Element)
+												{
+													auto ReferencePartDescriptor{new Inspection::ReferencePartDescriptor{}};
+													auto PartLengthBytesChildElement{dynamic_cast< const XML::Element * >(PartLengthBytesChildNode)};
+													
+													if(PartLengthBytesChildElement->GetName() == "result")
+													{
+														assert(PartLengthBytesChildElement->GetChilds().size() == 0);
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Result;
+													}
+													else if(PartLengthBytesChildElement->GetName() == "sub")
+													{
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Sub;
+														assert(PartLengthBytesChildElement->GetChilds().size() == 1);
+														
+														auto SubText{dynamic_cast< const XML::Text * >(PartLengthBytesChildElement->GetChild(0))};
+														
+														assert(SubText != nullptr);
+														ReferencePartDescriptor->DetailName = SubText->GetText();
+													}
+													else
+													{
+														throw std::domain_error{PartLengthBytesChildElement->GetName()};
+													}
+													PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferencePartDescriptors.push_back(ReferencePartDescriptor);
+												}
+											}
+										}
 									}
 									else if(PartLengthChildElement->GetName() == "bits")
 									{
-										assert(PartLengthChildElement->GetChilds().size() == 1);
-										
-										auto BitsText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
-										
-										assert(BitsText != nullptr);
-										Bits = from_string_cast< std::uint8_t >(BitsText->GetText());
+										if((PartLengthChildElement->GetChilds().size() == 1) && (PartLengthChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text))
+										{
+											assert(PartLengthChildElement->GetChilds().size() == 1);
+											
+											auto BitsText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
+											
+											assert(BitsText != nullptr);
+											PartDescriptor->LengthDescriptor->BitsValueDescriptor.LiteralValue = BitsText->GetText();
+										}
+										else
+										{
+											for(auto PartLengthBitsChildNode : PartLengthChildElement->GetChilds())
+											{
+												if(PartLengthBitsChildNode->GetNodeType() == XML::NodeType::Element)
+												{
+													auto ReferencePartDescriptor{new Inspection::ReferencePartDescriptor{}};
+													auto PartLengthBitsChildElement{dynamic_cast< const XML::Element * >(PartLengthBitsChildNode)};
+													
+													if(PartLengthBitsChildElement->GetName() == "result")
+													{
+														assert(PartLengthBitsChildElement->GetChilds().size() == 0);
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Result;
+													}
+													else if(PartLengthBitsChildElement->GetName() == "sub")
+													{
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Sub;
+														assert(PartLengthBitsChildElement->GetChilds().size() == 1);
+														
+														auto SubText{dynamic_cast< const XML::Text * >(PartLengthBitsChildElement->GetChild(0))};
+														
+														assert(SubText != nullptr);
+														ReferencePartDescriptor->DetailName = SubText->GetText();
+													}
+													else
+													{
+														throw std::domain_error{PartLengthBitsChildElement->GetName()};
+													}
+													PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferencePartDescriptors.push_back(ReferencePartDescriptor);
+												}
+											}
+										}
 									}
 									else
 									{
@@ -802,7 +945,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									}
 								}
 							}
-							PartDescriptor->Length = Inspection::Length{Bytes, Bits};
 						}
 						else if(PartChildElement->GetName() == "parameters")
 						{
@@ -826,7 +968,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											auto ParameterText{dynamic_cast< const XML::Text * >(PartParametersChildElement->GetChild(0))};
 											
 											assert(ParameterText != nullptr);
-											ParameterDescriptor->Value = ParameterText->GetText();
+											ParameterDescriptor->ValueDescriptor.LiteralValue = ParameterText->GetText();
 										}
 										else
 										{
@@ -834,29 +976,29 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											{
 												if(PartParametersParameterChildNode->GetNodeType() == XML::NodeType::Element)
 												{
-													auto PathDescriptor{new Inspection::PathDescriptor{}};
+													auto ReferencePartDescriptor{new Inspection::ReferencePartDescriptor{}};
 													auto PartParametersParameterChildElement{dynamic_cast< const XML::Element * >(PartParametersParameterChildNode)};
 													
 													if(PartParametersParameterChildElement->GetName() == "result")
 													{
 														assert(PartParametersParameterChildElement->GetChilds().size() == 0);
-														PathDescriptor->Type = Inspection::PathType::Result;
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Result;
 													}
 													else if(PartParametersParameterChildElement->GetName() == "sub")
 													{
-														PathDescriptor->Type = Inspection::PathType::Sub;
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Sub;
 														assert(PartParametersParameterChildElement->GetChilds().size() == 1);
 														
 														auto SubText{dynamic_cast< const XML::Text * >(PartParametersParameterChildElement->GetChild(0))};
 														
 														assert(SubText != nullptr);
-														PathDescriptor->SubName = SubText->GetText();
+														ReferencePartDescriptor->DetailName = SubText->GetText();
 													}
 													else
 													{
 														throw std::domain_error{PartParametersParameterChildElement->GetName()};
 													}
-													ParameterDescriptor->PathDescriptors.push_back(PathDescriptor);
+													ParameterDescriptor->ValueDescriptor.ReferencePartDescriptors.push_back(ReferencePartDescriptor);
 												}
 											}
 										}
