@@ -1225,7 +1225,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("TitleLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
 		auto FieldValue{Result->GetValue()->AppendValue("Title", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -1234,7 +1234,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("AuthorLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
 		auto FieldValue{Result->GetValue()->AppendValue("Author", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -1243,7 +1243,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("CopyrightLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
 		auto FieldValue{Result->GetValue()->AppendValue("Copyright", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -1252,7 +1252,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("DescriptionLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
 		auto FieldValue{Result->GetValue()->AppendValue("Description", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -1261,7 +1261,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ContentDescriptionObje
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetValue("RatingLength")->GetAny()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader)};
+		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(FieldReader, {})};
 		auto FieldValue{Result->GetValue()->AppendValue("Rating", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -2581,7 +2581,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_FilePropertiesObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{g_GetterRepository.Get({"ASF", "FileProperties_ObjectData"}, PartReader, {})};
+			auto PartResult{g_GetterRepository.Get({"ASF", "ObjectData", "FileProperties"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
@@ -9509,7 +9509,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		else if(ByteOrderMark == "LittleEndian")
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(PartReader)};
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(PartReader, {})};
 		
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendValue("String", PartResult->GetValue());
@@ -10013,7 +10013,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
