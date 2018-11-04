@@ -1738,6 +1738,550 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:GUID/value</argument>
+		</execute>
+		<expected-output>75b22633-668e-11cf-a6d9-00aa0062ce6c</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:GUID/tag:interpretation/value</argument>
+		</execute>
+		<expected-output>ASF_Content_Description_Object</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Size/value</argument>
+		</execute>
+		<expected-output>82</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:TitleLength/value</argument>
+		</execute>
+		<expected-output>18</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:TitleLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:TitleLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:TitleLength/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:TitleLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:AuthorLength/value</argument>
+		</execute>
+		<expected-output>30</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:AuthorLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:AuthorLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:AuthorLength/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:AuthorLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:CopyrightLength/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:CopyrightLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:CopyrightLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:CopyrightLength/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:CopyrightLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:DescriptionLength/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:DescriptionLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:DescriptionLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:DescriptionLength/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:DescriptionLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:RatingLength/value</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:RatingLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:RatingLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:RatingLength/has-tag:16bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:RatingLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Title/value</argument>
+		</execute>
+		<expected-output>Nummer 1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Title/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Title/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Title/has-tag:without byte order mark</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Title/has-tag:8 code points + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Title/has-tag:ended by termination and length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Title/tag:character set/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Title/tag:encoding/value</argument>
+		</execute>
+		<expected-output>UTF-16</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Author/value</argument>
+		</execute>
+		<expected-output>Simon Phillips</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Author/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Author/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Author/has-tag:without byte order mark</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Author/has-tag:14 code points + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Author/has-tag:ended by termination and length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Author/tag:character set/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Author/tag:encoding/value</argument>
+		</execute>
+		<expected-output>UTF-16</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Copyright/value</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Copyright/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Copyright/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Copyright/has-tag:without byte order mark</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Copyright/has-tag:0 code points</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Copyright/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Copyright/tag:character set/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Copyright/tag:encoding/value</argument>
+		</execute>
+		<expected-output>UTF-16</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Description/value</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Description/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Description/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Description/has-tag:without byte order mark</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Description/has-tag:0 code points</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Description/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Description/tag:character set/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Description/tag:encoding/value</argument>
+		</execute>
+		<expected-output>UTF-16</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Rating/value</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Rating/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Rating/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Rating/has-tag:without byte order mark</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Rating/has-tag:0 code points</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Rating/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Rating/tag:character set/value</argument>
+		</execute>
+		<expected-output>ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/002_long.wma</argument>
+			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:6]/sub:Rating/tag:encoding/value</argument>
+		</execute>
+		<expected-output>UTF-16</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/asf/001_short.wma</argument>
 			<argument>--value=/sub:ASFFile/sub:HeaderObject/sub:HeaderObjects/sub:HeaderObject:[tag:array index/is-value:4]/sub:ErrorCorrectionData/sub:VirtualPacketLength/value</argument>
 		</execute>
