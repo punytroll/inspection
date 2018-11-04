@@ -1,0 +1,44 @@
+<getter>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>v2.4</part>
+			<part>TextEncoding</part>
+		</getter>
+		<value>
+			<append>
+				<name>TextEncoding</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>v2.4</part>
+			<part>TextStringAccordingToEncoding_EndedByTermination</part>
+		</getter>
+		<parameters>
+			<parameter name="TextEncoding">
+				<result/>
+				<sub>TextEncoding</sub>
+			</parameter>
+		</parameters>
+		<value>
+			<append>
+				<name>Descriptor</name>
+			</append>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>String</part>
+			<part>ISO_IEC_8859_1_1998</part>
+			<part>EndedByTerminationOrLength</part>
+		</getter>
+		<value>
+			<append>
+				<name>URL</name>
+			</append>
+		</value>
+	</part>
+</getter>

@@ -1,0 +1,14 @@
+<getter>
+	<part>
+		<getter>
+			<part>String</part>
+			<part>ISO_IEC_8859_1_1998</part>
+			<part>EndedByTerminationOrLength</part>
+		</getter>
+		<value>
+			<append>
+				<name>URL</name>
+			</append>
+		</value>
+	</part>
+</getter>
