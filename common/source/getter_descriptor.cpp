@@ -532,6 +532,18 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Language")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_Language;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ID3_ReplayGainAdjustment")
 				{
 					_HardcodedGetter = Inspection::Get_ID3_ReplayGainAdjustment;
@@ -543,6 +555,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
 				{
 					_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
 				{
