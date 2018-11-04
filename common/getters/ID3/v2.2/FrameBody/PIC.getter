@@ -6,9 +6,9 @@
 			<part>TextEncoding</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>TextEncoding</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -19,9 +19,9 @@
 			<part>PIC_ImageFormat</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>ImageFormat</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -32,9 +32,9 @@
 			<part>PIC_PictureType</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>PictureType</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -50,9 +50,9 @@
 			</parameter>
 		</parameters>
 		<value>
-			<append>
+			<append-value>
 				<name>Description</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -61,9 +61,9 @@
 			<part>SetOrUnset_EndedByLength</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>PictureData</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

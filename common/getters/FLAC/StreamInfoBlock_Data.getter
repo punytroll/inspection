@@ -7,9 +7,9 @@
 			<part>16Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MinimumBlockSize</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -20,9 +20,9 @@
 			<part>16Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MaximumBlockSize</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -33,9 +33,9 @@
 			<part>24Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MinimumFrameSize</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -46,9 +46,9 @@
 			<part>24Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MaximumFrameSize</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -59,9 +59,9 @@
 			<part>20Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>SampleRate</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -70,9 +70,9 @@
 			<part>StreamInfoBlock_NumberOfChannels</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>NumberOfChannels</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -81,9 +81,9 @@
 			<part>StreamInfoBlock_BitsPerSample</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>BitsPerSample</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -94,9 +94,9 @@
 			<part>36Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>TotalSamplesPerChannel</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -109,9 +109,9 @@
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MD5SignatureOfUnencodedAudioData</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

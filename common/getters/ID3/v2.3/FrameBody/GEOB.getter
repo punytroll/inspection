@@ -6,9 +6,9 @@
 			<part>TextEncoding</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>TextEncoding</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -18,9 +18,9 @@
 			<part>Printable_EndedByTermination</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>MIMEType</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -36,9 +36,9 @@
 			</parameter>
 		</parameters>
 		<value>
-			<append>
+			<append-value>
 				<name>FileName</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -54,9 +54,9 @@
 			</parameter>
 		</parameters>
 		<value>
-			<append>
+			<append-value>
 				<name>ContentDescription</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -65,9 +65,9 @@
 			<part>SetOrUnset_EndedByLength</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>EncapsulatedObject</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

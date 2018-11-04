@@ -7,9 +7,9 @@
 			<part>16Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>CRC-16</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

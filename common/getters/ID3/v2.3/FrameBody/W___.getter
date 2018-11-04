@@ -6,9 +6,9 @@
 			<part>EndedByTerminationOrLength</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>URL</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

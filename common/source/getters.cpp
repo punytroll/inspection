@@ -5636,7 +5636,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(In
 	if(Continue == true)
 	{
 		Inspection::Reader Alternative1Reader{Reader};
-		auto Alternative1Result{Get_IEC_60908_1999_TableOfContents(Alternative1Reader, {})};
+		auto Alternative1Result{g_GetterRepository.Get({"IEC_60908_1999", "TableOfContents"}, Alternative1Reader, {})};
 		
 		UpdateState(Continue, Alternative1Result);
 		if(Continue == true)
@@ -6970,22 +6970,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
-	// reading
+	// verification
 	if(Continue == true)
 	{
-		if(std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Size")->GetAny()) == 0x01)
-		{
-			auto FieldResult{Get_BitSet_8Bit(Reader)};
-			auto FieldValue{Result->GetValue()->AppendValue("Restrictions", FieldResult->GetValue())};
-			
-			FieldValue->AddTag("error", "This program is missing the interpretation of the tag restriction flags."s); 
-			UpdateState(Continue, FieldResult);
-		}
-		else
+		if(std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("Size")->GetAny()) != 0x01)
 		{
 			Result->GetValue()->AddTag("error", "The size of the tag restriction flags is not equal to 1."s); 
 			Continue = false;
 		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto FieldResult{Get_BitSet_8Bit(Reader)};
+		auto FieldValue{Result->GetValue()->AppendValue("Restrictions", FieldResult->GetValue())};
+		
+		FieldValue->AddTag("error", "This program is missing the interpretation of the tag restriction flags."s); 
+		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -7835,77 +7836,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	Result->GetValue()->AddTag("standard", "IEC 60908:1999"s);
-	Result->GetValue()->AddTag("name", "Compact Disc Digital Audio"s);
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Header(Reader)};
-		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FirstTrackNumber{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("FirstTrackNumber")->GetAny())};
-		auto LastTrackNumber{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetValue("LastTrackNumber")->GetAny())};
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Tracks(Reader, FirstTrackNumber, LastTrackNumber)};
-		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
-		UpdateState(Continue, FieldResult);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Header(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
-		auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("DataLength", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("FirstTrackNumber", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendValue("LastTrackNumber", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -8073,7 +8003,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Reader & Reader, std::uint8_t FirstTrackNumber, std::uint8_t LastTrackNumber)
+std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -8081,6 +8011,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
+		auto FirstTrackNumber{std::experimental::any_cast< std::uint8_t >(Parameters.at("FirstTrackNumber"))};
+		auto LastTrackNumber{std::experimental::any_cast< std::uint8_t >(Parameters.at("LastTrackNumber"))};
 		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"IEC_60908_1999", "TableOfContents_Track"}}, {"ElementName", "Track"s}, {"NumberOfElements", static_cast< std::uint64_t >(LastTrackNumber - FirstTrackNumber + 1)}})};
 		

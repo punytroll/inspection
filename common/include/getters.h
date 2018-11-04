@@ -158,12 +158,10 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_GUID(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Track_Control(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Reader & Reader, std::uint8_t FirstTrackNumber, std::uint8_t LastTrackNumber);
+	std::unique_ptr< Inspection::Result > Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ISO_639_2_1998_Code(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ISO_IEC_8859_1_1998_Character(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ISO_IEC_8859_1_1998_String_EndedByLength(Inspection::Reader & Reader);

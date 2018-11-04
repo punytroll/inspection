@@ -7,9 +7,9 @@
 			<part>8Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>UnshiftedNote</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -20,9 +20,9 @@
 			<part>8Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>FineTune</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -33,9 +33,9 @@
 			<part>8Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Gain</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -46,9 +46,9 @@
 			<part>8Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>LowNote</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -59,9 +59,9 @@
 			<part>8Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>HighNote</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -72,9 +72,9 @@
 			<part>8Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>LowVelocity</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -85,9 +85,9 @@
 			<part>8Bit</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>HighVelocity</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

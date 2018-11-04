@@ -10,9 +10,9 @@
 			<bits>0</bits>
 		</length>
 		<value>
-			<append>
+			<append-value>
 				<name>Identifier</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -23,9 +23,9 @@
 			<part>32Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>Size</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

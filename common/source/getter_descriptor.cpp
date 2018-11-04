@@ -52,7 +52,8 @@ namespace Inspection
 	
 	enum class AppendType
 	{
-		Append,
+		AppendValue,
+		AppendSubValues,
 		Set
 	};
 	
@@ -329,9 +330,15 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							Continue = PartResult->GetSuccess();
 							switch(PartDescriptor->ValueAppendType)
 							{
-							case Inspection::AppendType::Append:
+							case Inspection::AppendType::AppendValue:
 								{
 									Result->GetValue()->AppendValue(PartDescriptor->ValueName, PartResult->GetValue());
+									
+									break;
+								}
+							case Inspection::AppendType::AppendSubValues:
+								{
+									Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
 									
 									break;
 								}
@@ -556,13 +563,13 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
 				}
-				else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents;
-				}
 				else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
 				{
 					_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Track;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Tracks")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Tracks;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
 				{
@@ -870,9 +877,9 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 								{
 									auto PartValueChildElement{dynamic_cast< const XML::Element * >(PartValueChildNode)};
 									
-									if(PartValueChildElement->GetName() == "append")
+									if(PartValueChildElement->GetName() == "append-value")
 									{
-										PartDescriptor->ValueAppendType = Inspection::AppendType::Append;
+										PartDescriptor->ValueAppendType = Inspection::AppendType::AppendValue;
 										for(auto PartValueAppendChildNode : PartValueChildElement->GetChilds())
 										{
 											if(PartValueAppendChildNode->GetNodeType() == XML::NodeType::Element)
@@ -894,6 +901,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 												}
 											}
 										}
+									}
+									else if(PartValueChildElement->GetName() == "append-sub-values")
+									{
+										assert(PartValueChildElement->GetChilds().size() == 0);
+										PartDescriptor->ValueAppendType = Inspection::AppendType::AppendSubValues;
 									}
 									else if(PartValueChildElement->GetName() == "set")
 									{

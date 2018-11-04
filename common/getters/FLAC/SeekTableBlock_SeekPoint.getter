@@ -7,9 +7,9 @@
 			<part>64Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>SampleNumberOfFirstSampleInTargetFrame</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -20,9 +20,9 @@
 			<part>64Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>ByteOffsetOfTargetFrame</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -33,9 +33,9 @@
 			<part>16Bit_BigEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>NumberOfSamplesInTargetFrame</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

@@ -4,11 +4,11 @@
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
+			<part>16Bit_BigEndian</part>
 		</getter>
 		<value>
 			<append-value>
-				<name>SamplesPerBlock</name>
+				<name>DataLength</name>
 			</append-value>
 		</value>
 	</part>
@@ -17,11 +17,11 @@
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
+			<part>8Bit</part>
 		</getter>
 		<value>
 			<append-value>
-				<name>EncodeOptions</name>
+				<name>FirstTrackNumber</name>
 			</append-value>
 		</value>
 	</part>
@@ -30,13 +30,12 @@
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
+			<part>8Bit</part>
 		</getter>
 		<value>
 			<append-value>
-				<name>SuperBlockAlign</name>
+				<name>LastTrackNumber</name>
 			</append-value>
 		</value>
 	</part>
 </getter>
- 

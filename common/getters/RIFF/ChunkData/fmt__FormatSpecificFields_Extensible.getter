@@ -7,9 +7,9 @@
 			<part>16Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>BitsPerSample</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -20,9 +20,9 @@
 			<part>16Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>ExtensionSize</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -33,9 +33,9 @@
 			<part>16Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>ValidBitsPerSample</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -45,9 +45,9 @@
 			<part>fmt__FormatSpecificFields_Extensible_ChannelMask</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>ChannelMask</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -57,9 +57,9 @@
 			<part>fmt__FormatSpecificFields_Extensible_SubFormat</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>SubFormat</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

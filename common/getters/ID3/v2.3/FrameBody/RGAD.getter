@@ -6,9 +6,9 @@
 			<part>ISO_IEC_IEEE_60559_2011_binary32</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>PeakAmplitude</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -17,9 +17,9 @@
 			<part>ReplayGainAdjustment</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>TrackReplayGainAdjustment</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 	<part>
@@ -28,9 +28,9 @@
 			<part>ReplayGainAdjustment</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>AlbumReplayGainAdjustment</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>

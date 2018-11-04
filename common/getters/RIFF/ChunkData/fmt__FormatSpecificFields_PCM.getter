@@ -7,9 +7,9 @@
 			<part>16Bit_LittleEndian</part>
 		</getter>
 		<value>
-			<append>
+			<append-value>
 				<name>BitsPerSample</name>
-			</append>
+			</append-value>
 		</value>
 	</part>
 </getter>
