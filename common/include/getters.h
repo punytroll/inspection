@@ -59,8 +59,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Reader & Reader, const std::string & DataType);
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibraryObjectData(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASF_Metadata_DescriptionRecord(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_ASF_Metadata_DescriptionRecord_Data(Inspection::Reader & Reader, const std::string & DataType);
+	std::unique_ptr< Inspection::Result > Get_ASF_Metadata_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_Object(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Reader & Reader);

@@ -26,7 +26,8 @@ namespace Inspection
 		enum class Type
 		{
 			Result,
-			Sub
+			Sub,
+			Tag
 		};
 		
 		Inspection::ReferencePartDescriptor::Type Type;
@@ -216,6 +217,12 @@ namespace Inspection
 					
 					break;
 				}
+			case Inspection::ReferencePartDescriptor::Type::Tag:
+				{
+					Value = Value->GetTag(ReferencePartDescriptor->DetailName);
+					
+					break;
+				}
 			}
 		}
 		assert(Value != nullptr);
@@ -332,6 +339,10 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								{
 									Bytes = std::experimental::any_cast< std::uint16_t >(BytesAny);
 								}
+								else if(BytesAny.type() == typeid(std::uint32_t))
+								{
+									Bytes = std::experimental::any_cast< std::uint32_t >(BytesAny);
+								}
 								else
 								{
 									assert(false);
@@ -348,9 +359,17 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							{
 								auto & BitsAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
 								
-								if(BitsAny.type() == typeid(std::uint16_t))
+								if(BitsAny.type() == typeid(std::uint8_t))
+								{
+									Bits = std::experimental::any_cast< std::uint8_t >(BitsAny);
+								}
+								else if(BitsAny.type() == typeid(std::uint16_t))
 								{
 									Bits = std::experimental::any_cast< std::uint16_t >(BitsAny);
+								}
+								else if(BitsAny.type() == typeid(std::uint32_t))
+								{
+									Bits = std::experimental::any_cast< std::uint32_t >(BitsAny);
 								}
 								else
 								{
@@ -538,9 +557,9 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor;
 				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord")
+				else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord_Data")
 				{
-					_HardcodedGetterWithParameters = Get_ASF_Metadata_DescriptionRecord;
+					_HardcodedGetterWithParameters = Get_ASF_Metadata_DescriptionRecord_Data;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord")
 				{
@@ -910,6 +929,16 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 														assert(SubText != nullptr);
 														ReferencePartDescriptor->DetailName = SubText->GetText();
 													}
+													else if(PartLengthBytesChildElement->GetName() == "tag")
+													{
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Tag;
+														assert(PartLengthBytesChildElement->GetChilds().size() == 1);
+														
+														auto TagText{dynamic_cast< const XML::Text * >(PartLengthBytesChildElement->GetChild(0))};
+														
+														assert(TagText != nullptr);
+														ReferencePartDescriptor->DetailName = TagText->GetText();
+													}
 													else
 													{
 														throw std::domain_error{PartLengthBytesChildElement->GetName()};
@@ -953,6 +982,16 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 														
 														assert(SubText != nullptr);
 														ReferencePartDescriptor->DetailName = SubText->GetText();
+													}
+													else if(PartLengthBitsChildElement->GetName() == "tag")
+													{
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Tag;
+														assert(PartLengthBitsChildElement->GetChilds().size() == 1);
+														
+														auto TagText{dynamic_cast< const XML::Text * >(PartLengthBitsChildElement->GetChild(0))};
+														
+														assert(TagText != nullptr);
+														ReferencePartDescriptor->DetailName = TagText->GetText();
 													}
 													else
 													{
@@ -1021,6 +1060,16 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 														
 														assert(SubText != nullptr);
 														ReferencePartDescriptor->DetailName = SubText->GetText();
+													}
+													else if(PartParametersParameterChildElement->GetName() == "tag")
+													{
+														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Tag;
+														assert(PartParametersParameterChildElement->GetChilds().size() == 1);
+														
+														auto TagText{dynamic_cast< const XML::Text * >(PartParametersParameterChildElement->GetChild(0))};
+														
+														assert(TagText != nullptr);
+														ReferencePartDescriptor->DetailName = TagText->GetText();
 													}
 													else
 													{
