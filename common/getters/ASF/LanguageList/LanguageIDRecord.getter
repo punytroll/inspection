@@ -1,3 +1,35 @@
 <getter>
-	<hardcoded-getter>Get_ASF_LanguageList_LanguageIDRecord</hardcoded-getter>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>8Bit</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>LanguageIDLength</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>String</part>
+			<part>ISO_IEC_10646_1_1993</part>
+			<part>UTF-16</part>
+			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndLength</part>
+		</getter>
+		<length>
+			<bytes>
+				<result/>
+				<sub>LanguageIDLength</sub>
+			</bytes>
+			<bits>0</bits>
+		</length>
+		<value>
+			<append-value>
+				<name>LanguageID</name>
+			</append-value>
+		</value>
+	</part>
 </getter>
