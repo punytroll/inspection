@@ -324,7 +324,11 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							{
 								auto & BytesAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
 								
-								if(BytesAny.type() == typeid(std::uint16_t))
+								if(BytesAny.type() == typeid(std::uint8_t))
+								{
+									Bytes = std::experimental::any_cast< std::uint8_t >(BytesAny);
+								}
+								else if(BytesAny.type() == typeid(std::uint16_t))
 								{
 									Bytes = std::experimental::any_cast< std::uint16_t >(BytesAny);
 								}
@@ -534,10 +538,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor;
 				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_LanguageList_LanguageIDRecord")
-				{
-					_HardcodedGetterWithParameters = Get_ASF_LanguageList_LanguageIDRecord;
-				}
 				else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord")
 				{
 					_HardcodedGetterWithParameters = Get_ASF_Metadata_DescriptionRecord;
@@ -669,6 +669,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
 				{
 					_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints")
 				{
