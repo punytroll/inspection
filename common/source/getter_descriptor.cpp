@@ -376,23 +376,43 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							
 							for(auto ParameterDescriptor : PartDescriptor->ParameterDescriptors)
 							{
-								if(!ParameterDescriptor->Type)
+								if(ParameterDescriptor->ValueDescriptor.LiteralValue)
+								{
+									assert(ParameterDescriptor->Type);
+									if(ParameterDescriptor->Type.value() == "string")
+									{
+										Parameters.emplace(ParameterDescriptor->Name, ParameterDescriptor->ValueDescriptor.LiteralValue.value());
+									}
+									else
+									{
+										assert(false);
+									}
+								}
+								else
 								{
 									assert(ParameterDescriptor->ValueDescriptor.ReferencePartDescriptors.empty() == false);
 									
 									auto & ValueAny{GetAnyByReference(ParameterDescriptor->ValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
 									
-									Parameters.emplace(ParameterDescriptor->Name, ValueAny);
-								}
-								else if(ParameterDescriptor->Type.value() == "string")
-								{
-									assert(ParameterDescriptor->ValueDescriptor.LiteralValue);
-									
-									Parameters.emplace(ParameterDescriptor->Name, ParameterDescriptor->ValueDescriptor.LiteralValue.value());
-								}
-								else
-								{
-									assert(false);
+									if(!ParameterDescriptor->Type)
+									{
+										Parameters.emplace(ParameterDescriptor->Name, ValueAny);
+									}
+									else if(ParameterDescriptor->Type.value() == "unsigned integer 64bit")
+									{
+										if(ValueAny.type() == typeid(std::uint16_t))
+										{
+											Parameters.emplace(ParameterDescriptor->Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint16_t >(ValueAny)));
+										}
+										else
+										{
+											assert(false);
+										}
+									}
+									else
+									{
+										assert(false);
+									}
 								}
 							}
 							
@@ -509,10 +529,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_CodecList_CodecEntry")
-				{
-					_HardcodedGetterWithParameters = Get_ASF_CodecList_CodecEntry;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor")
 				{
@@ -653,6 +669,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
 				{
 					_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength")
 				{
@@ -972,6 +992,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
+											if(PartParametersChildElement->HasAttribute("type") == true)
+											{
+												ParameterDescriptor->Type = PartParametersChildElement->GetAttribute("type");
+											}
 											for(auto PartParametersParameterChildNode : PartParametersChildElement->GetChilds())
 											{
 												if(PartParametersParameterChildNode->GetNodeType() == XML::NodeType::Element)
