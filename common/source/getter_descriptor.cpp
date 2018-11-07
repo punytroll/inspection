@@ -549,6 +549,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByLength")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_Printable_EndedByLength;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
 				{
 					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
@@ -561,9 +565,9 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetterWithParameters = Get_ASF_Metadata_DescriptionRecord_Data;
 				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord")
+				else if(HardcodedGetterText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord_Data")
 				{
-					_HardcodedGetterWithParameters = Get_ASF_MetadataLibrary_DescriptionRecord;
+					_HardcodedGetterWithParameters = Get_ASF_MetadataLibrary_DescriptionRecord_Data;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ASF_Object")
 				{
@@ -688,6 +692,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
 				{
 					_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength")
 				{
