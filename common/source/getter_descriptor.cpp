@@ -51,7 +51,7 @@ namespace Inspection
 	class ValueDescriptor
 	{
 	public:
-		
+		std::experimental::optional< std::string > Type;
 		std::experimental::optional< std::string > LiteralValue;
 		std::experimental::optional< Inspection::ReferenceDescriptor > ReferenceDescriptor;
 	};
@@ -60,7 +60,6 @@ namespace Inspection
 	{
 	public:
 		std::string Name;
-		std::experimental::optional< std::string > Type;
 		Inspection::ValueDescriptor ValueDescriptor;
 	};
 	
@@ -328,6 +327,9 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						
 						if(PartDescriptor->LengthDescriptor != nullptr)
 						{
+							assert(!PartDescriptor->LengthDescriptor->BytesValueDescriptor.Type);
+							assert(!PartDescriptor->LengthDescriptor->BitsValueDescriptor.Type);
+							
 							std::uint64_t Bytes{0};
 							
 							if(PartDescriptor->LengthDescriptor->BytesValueDescriptor.LiteralValue)
@@ -408,8 +410,8 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							{
 								if(ParameterDescriptor->ValueDescriptor.LiteralValue)
 								{
-									assert(ParameterDescriptor->Type);
-									if(ParameterDescriptor->Type.value() == "string")
+									assert(ParameterDescriptor->ValueDescriptor.Type);
+									if(ParameterDescriptor->ValueDescriptor.Type.value() == "string")
 									{
 										Parameters.emplace(ParameterDescriptor->Name, ParameterDescriptor->ValueDescriptor.LiteralValue.value());
 									}
@@ -424,11 +426,11 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 									
 									auto & ValueAny{GetAnyByReference(ParameterDescriptor->ValueDescriptor.ReferenceDescriptor.value(), Result, Parameters)};
 									
-									if(!ParameterDescriptor->Type)
+									if(!ParameterDescriptor->ValueDescriptor.Type)
 									{
 										Parameters.emplace(ParameterDescriptor->Name, ValueAny);
 									}
-									else if(ParameterDescriptor->Type.value() == "unsigned integer 64bit")
+									else if(ParameterDescriptor->ValueDescriptor.Type.value() == "unsigned integer 64bit")
 									{
 										if(ValueAny.type() == typeid(std::uint16_t))
 										{
@@ -1043,7 +1045,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										if((PartParametersChildElement->GetChilds().size() == 1) && (PartParametersChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text))
 										{
 											assert(PartParametersChildElement->HasAttribute("type") == true);
-											ParameterDescriptor->Type = PartParametersChildElement->GetAttribute("type");
+											ParameterDescriptor->ValueDescriptor.Type = PartParametersChildElement->GetAttribute("type");
 											
 											auto ParameterText{dynamic_cast< const XML::Text * >(PartParametersChildElement->GetChild(0))};
 											
@@ -1055,7 +1057,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											ParameterDescriptor->ValueDescriptor.ReferenceDescriptor.emplace();
 											if(PartParametersChildElement->HasAttribute("type") == true)
 											{
-												ParameterDescriptor->Type = PartParametersChildElement->GetAttribute("type");
+												ParameterDescriptor->ValueDescriptor.Type = PartParametersChildElement->GetAttribute("type");
 											}
 											for(auto PartParametersParameterChildNode : PartParametersChildElement->GetChilds())
 											{
