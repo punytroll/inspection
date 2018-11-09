@@ -20,33 +20,40 @@ namespace Inspection
 		std::experimental::optional< bool > StructureIsValid;
 	};
 	
-	class ReferencePartDescriptor
+	class ReferenceDescriptor
 	{
 	public:
-		enum class Type
+		class PartDescriptor
 		{
-			Result,
-			Sub,
-			Tag
+		public:
+			enum class Type
+			{
+				Result,
+				Sub,
+				Tag
+			};
+			
+			Inspection::ReferenceDescriptor::PartDescriptor::Type Type;
+			std::string DetailName;
 		};
 		
-		Inspection::ReferencePartDescriptor::Type Type;
-		std::string DetailName;
+		~ReferenceDescriptor(void)
+		{
+			for(auto PartDescriptor : PartDescriptors)
+			{
+				delete PartDescriptor;
+			}
+		}
+		
+		std::vector< Inspection::ReferenceDescriptor::PartDescriptor * > PartDescriptors;
 	};
 	
 	class ValueDescriptor
 	{
 	public:
-		~ValueDescriptor(void)
-		{
-			for(auto ReferencePartDescriptor : ReferencePartDescriptors)
-			{
-				delete ReferencePartDescriptor;
-			}
-		}
 		
 		std::experimental::optional< std::string > LiteralValue;
-		std::vector< Inspection::ReferencePartDescriptor * > ReferencePartDescriptors;
+		std::experimental::optional< Inspection::ReferenceDescriptor > ReferenceDescriptor;
 	};
 	
 	class ParameterDescriptor
@@ -197,29 +204,29 @@ namespace Inspection
 		return Result;
 	}
 	
-	const std::experimental::any & GetAnyByReference(const std::vector< Inspection::ReferencePartDescriptor * > & ReferencePartDescriptors, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	const std::experimental::any & GetAnyByReference(Inspection::ReferenceDescriptor & ReferenceDescriptor, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		std::shared_ptr< Inspection::Value > Value{nullptr};
 		
-		for(auto ReferencePartDescriptor : ReferencePartDescriptors)
+		for(auto PartDescriptor : ReferenceDescriptor.PartDescriptors)
 		{
-			switch(ReferencePartDescriptor->Type)
+			switch(PartDescriptor->Type)
 			{
-			case Inspection::ReferencePartDescriptor::Type::Result:
+			case Inspection::ReferenceDescriptor::PartDescriptor::Type::Result:
 				{
 					Value = Result->GetValue();
 					
 					break;
 				}
-			case Inspection::ReferencePartDescriptor::Type::Sub:
+			case Inspection::ReferenceDescriptor::PartDescriptor::Type::Sub:
 				{
-					Value = Value->GetValue(ReferencePartDescriptor->DetailName);
+					Value = Value->GetValue(PartDescriptor->DetailName);
 					
 					break;
 				}
-			case Inspection::ReferencePartDescriptor::Type::Tag:
+			case Inspection::ReferenceDescriptor::PartDescriptor::Type::Tag:
 				{
-					Value = Value->GetTag(ReferencePartDescriptor->DetailName);
+					Value = Value->GetTag(PartDescriptor->DetailName);
 					
 					break;
 				}
@@ -327,9 +334,9 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							{
 								Bytes = from_string_cast< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor.LiteralValue.value());
 							}
-							else if(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferencePartDescriptors.size() > 0)
+							else if(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor)
 							{
-								auto & BytesAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
+								auto & BytesAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor.value(), Result, Parameters)};
 								
 								if(BytesAny.type() == typeid(std::uint8_t))
 								{
@@ -355,9 +362,9 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							{
 								Bits = from_string_cast< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor.LiteralValue.value());
 							}
-							else if(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferencePartDescriptors.size() > 0)
+							else if(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor)
 							{
-								auto & BitsAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
+								auto & BitsAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor.value(), Result, Parameters)};
 								
 								if(BitsAny.type() == typeid(std::uint8_t))
 								{
@@ -413,9 +420,9 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								}
 								else
 								{
-									assert(ParameterDescriptor->ValueDescriptor.ReferencePartDescriptors.empty() == false);
+									assert(ParameterDescriptor->ValueDescriptor.ReferenceDescriptor);
 									
-									auto & ValueAny{GetAnyByReference(ParameterDescriptor->ValueDescriptor.ReferencePartDescriptors, Result, Parameters)};
+									auto & ValueAny{GetAnyByReference(ParameterDescriptor->ValueDescriptor.ReferenceDescriptor.value(), Result, Parameters)};
 									
 									if(!ParameterDescriptor->Type)
 									{
@@ -915,21 +922,22 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
+											PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor.emplace();
 											for(auto PartLengthBytesChildNode : PartLengthChildElement->GetChilds())
 											{
 												if(PartLengthBytesChildNode->GetNodeType() == XML::NodeType::Element)
 												{
-													auto ReferencePartDescriptor{new Inspection::ReferencePartDescriptor{}};
+													auto ReferencePartDescriptor{new Inspection::ReferenceDescriptor::PartDescriptor{}};
 													auto PartLengthBytesChildElement{dynamic_cast< const XML::Element * >(PartLengthBytesChildNode)};
 													
 													if(PartLengthBytesChildElement->GetName() == "result")
 													{
 														assert(PartLengthBytesChildElement->GetChilds().size() == 0);
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Result;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Result;
 													}
 													else if(PartLengthBytesChildElement->GetName() == "sub")
 													{
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Sub;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Sub;
 														assert(PartLengthBytesChildElement->GetChilds().size() == 1);
 														
 														auto SubText{dynamic_cast< const XML::Text * >(PartLengthBytesChildElement->GetChild(0))};
@@ -939,7 +947,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													}
 													else if(PartLengthBytesChildElement->GetName() == "tag")
 													{
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Tag;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Tag;
 														assert(PartLengthBytesChildElement->GetChilds().size() == 1);
 														
 														auto TagText{dynamic_cast< const XML::Text * >(PartLengthBytesChildElement->GetChild(0))};
@@ -951,7 +959,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													{
 														throw std::domain_error{PartLengthBytesChildElement->GetName()};
 													}
-													PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferencePartDescriptors.push_back(ReferencePartDescriptor);
+													PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 												}
 											}
 										}
@@ -969,21 +977,22 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
+											PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor.emplace();
 											for(auto PartLengthBitsChildNode : PartLengthChildElement->GetChilds())
 											{
 												if(PartLengthBitsChildNode->GetNodeType() == XML::NodeType::Element)
 												{
-													auto ReferencePartDescriptor{new Inspection::ReferencePartDescriptor{}};
+													auto ReferencePartDescriptor{new Inspection::ReferenceDescriptor::PartDescriptor{}};
 													auto PartLengthBitsChildElement{dynamic_cast< const XML::Element * >(PartLengthBitsChildNode)};
 													
 													if(PartLengthBitsChildElement->GetName() == "result")
 													{
 														assert(PartLengthBitsChildElement->GetChilds().size() == 0);
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Result;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Result;
 													}
 													else if(PartLengthBitsChildElement->GetName() == "sub")
 													{
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Sub;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Sub;
 														assert(PartLengthBitsChildElement->GetChilds().size() == 1);
 														
 														auto SubText{dynamic_cast< const XML::Text * >(PartLengthBitsChildElement->GetChild(0))};
@@ -993,7 +1002,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													}
 													else if(PartLengthBitsChildElement->GetName() == "tag")
 													{
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Tag;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Tag;
 														assert(PartLengthBitsChildElement->GetChilds().size() == 1);
 														
 														auto TagText{dynamic_cast< const XML::Text * >(PartLengthBitsChildElement->GetChild(0))};
@@ -1005,7 +1014,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													{
 														throw std::domain_error{PartLengthBitsChildElement->GetName()};
 													}
-													PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferencePartDescriptors.push_back(ReferencePartDescriptor);
+													PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 												}
 											}
 										}
@@ -1043,6 +1052,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
+											ParameterDescriptor->ValueDescriptor.ReferenceDescriptor.emplace();
 											if(PartParametersChildElement->HasAttribute("type") == true)
 											{
 												ParameterDescriptor->Type = PartParametersChildElement->GetAttribute("type");
@@ -1051,17 +1061,17 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											{
 												if(PartParametersParameterChildNode->GetNodeType() == XML::NodeType::Element)
 												{
-													auto ReferencePartDescriptor{new Inspection::ReferencePartDescriptor{}};
+													auto ReferencePartDescriptor{new Inspection::ReferenceDescriptor::PartDescriptor{}};
 													auto PartParametersParameterChildElement{dynamic_cast< const XML::Element * >(PartParametersParameterChildNode)};
 													
 													if(PartParametersParameterChildElement->GetName() == "result")
 													{
 														assert(PartParametersParameterChildElement->GetChilds().size() == 0);
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Result;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Result;
 													}
 													else if(PartParametersParameterChildElement->GetName() == "sub")
 													{
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Sub;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Sub;
 														assert(PartParametersParameterChildElement->GetChilds().size() == 1);
 														
 														auto SubText{dynamic_cast< const XML::Text * >(PartParametersParameterChildElement->GetChild(0))};
@@ -1071,7 +1081,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													}
 													else if(PartParametersParameterChildElement->GetName() == "tag")
 													{
-														ReferencePartDescriptor->Type = Inspection::ReferencePartDescriptor::Type::Tag;
+														ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Tag;
 														assert(PartParametersParameterChildElement->GetChilds().size() == 1);
 														
 														auto TagText{dynamic_cast< const XML::Text * >(PartParametersParameterChildElement->GetChild(0))};
@@ -1083,7 +1093,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													{
 														throw std::domain_error{PartParametersParameterChildElement->GetName()};
 													}
-													ParameterDescriptor->ValueDescriptor.ReferencePartDescriptors.push_back(ReferencePartDescriptor);
+													ParameterDescriptor->ValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 												}
 											}
 										}
