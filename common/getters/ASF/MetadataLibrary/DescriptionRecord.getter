@@ -94,6 +94,7 @@
 				<result/>
 				<sub>DataLength</sub>
 			</bytes>
+			<bits>0</bits>
 		</length>
 		<parameters>
 			<parameter name="DataType">

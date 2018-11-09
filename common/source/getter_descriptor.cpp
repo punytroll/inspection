@@ -235,6 +235,44 @@ namespace Inspection
 		
 		return Value->GetAny();
 	}
+	
+	template< typename Type >
+	Type GetValueFromValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const std::unique_ptr< Inspection::Result > & GetterResult, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	{
+		Type Result{};
+		
+		if(ValueDescriptor.LiteralValue)
+		{
+			Result = from_string_cast< Type >(ValueDescriptor.LiteralValue.value());
+		}
+		else if(ValueDescriptor.ReferenceDescriptor)
+		{
+			auto & Any{GetAnyByReference(ValueDescriptor.ReferenceDescriptor.value(), GetterResult, Parameters)};
+			
+			if(Any.type() == typeid(std::uint8_t))
+			{
+				Result = std::experimental::any_cast< std::uint8_t >(Any);
+			}
+			else if(Any.type() == typeid(std::uint16_t))
+			{
+				Result = std::experimental::any_cast< std::uint16_t >(Any);
+			}
+			else if(Any.type() == typeid(std::uint32_t))
+			{
+				Result = std::experimental::any_cast< std::uint32_t >(Any);
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+		else
+		{
+			assert(false);
+		}
+		
+		return Result;
+	}
 }
 
 Inspection::GetterDescriptor::GetterDescriptor(Inspection::GetterRepository * GetterRepository) :
@@ -330,62 +368,8 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							assert(!PartDescriptor->LengthDescriptor->BytesValueDescriptor.Type);
 							assert(!PartDescriptor->LengthDescriptor->BitsValueDescriptor.Type);
 							
-							std::uint64_t Bytes{0};
-							
-							if(PartDescriptor->LengthDescriptor->BytesValueDescriptor.LiteralValue)
-							{
-								Bytes = from_string_cast< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor.LiteralValue.value());
-							}
-							else if(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor)
-							{
-								auto & BytesAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor.value(), Result, Parameters)};
-								
-								if(BytesAny.type() == typeid(std::uint8_t))
-								{
-									Bytes = std::experimental::any_cast< std::uint8_t >(BytesAny);
-								}
-								else if(BytesAny.type() == typeid(std::uint16_t))
-								{
-									Bytes = std::experimental::any_cast< std::uint16_t >(BytesAny);
-								}
-								else if(BytesAny.type() == typeid(std::uint32_t))
-								{
-									Bytes = std::experimental::any_cast< std::uint32_t >(BytesAny);
-								}
-								else
-								{
-									assert(false);
-								}
-							}
-							
-							std::uint64_t Bits{0};
-							
-							if(PartDescriptor->LengthDescriptor->BitsValueDescriptor.LiteralValue)
-							{
-								Bits = from_string_cast< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor.LiteralValue.value());
-							}
-							else if(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor)
-							{
-								auto & BitsAny{GetAnyByReference(PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor.value(), Result, Parameters)};
-								
-								if(BitsAny.type() == typeid(std::uint8_t))
-								{
-									Bits = std::experimental::any_cast< std::uint8_t >(BitsAny);
-								}
-								else if(BitsAny.type() == typeid(std::uint16_t))
-								{
-									Bits = std::experimental::any_cast< std::uint16_t >(BitsAny);
-								}
-								else if(BitsAny.type() == typeid(std::uint32_t))
-								{
-									Bits = std::experimental::any_cast< std::uint32_t >(BitsAny);
-								}
-								else
-								{
-									assert(false);
-								}
-							}
-							
+							auto Bytes{GetValueFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor, Result, Parameters)};
+							auto Bits{GetValueFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor, Result, Parameters)};
 							Inspection::Length Length{Bytes, Bits};
 							
 							if(Reader.Has(Length) == true)
