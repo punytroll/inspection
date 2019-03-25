@@ -5722,29 +5722,36 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader Alternative1Reader{Reader, Inspection::Length{3, 0}};
-		auto Alternative1Result{Get_ISO_639_2_1998_Code(Alternative1Reader)};
+		Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
+		auto PartResult{Get_ISO_639_2_1998_Code(PartReader)};
 		
-		UpdateState(Continue, Alternative1Result);
+		Continue = PartResult->GetSuccess();
 		if(Continue == true)
 		{
-			Result->SetValue(Alternative1Result->GetValue());
-			Reader.AdvancePosition(Alternative1Reader.GetConsumedLength());
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
-			Inspection::Reader Alternative2Reader{Reader, Inspection::Length{3, 0}};
-			auto Alternative2Result{Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Alternative2Reader)};
+			Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
+			auto PartResult{Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(PartReader)};
 			
-			UpdateState(Continue, Reader, Alternative2Result, Alternative2Reader);
+			Continue = PartResult->GetSuccess();
 			if(Continue == true)
 			{
-				Result->SetValue(Alternative2Result->GetValue());
+				Result->SetValue(PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Result->GetValue()->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
 				Result->GetValue()->AddTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
 			}
 			else
 			{
+				Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
+				auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
+				
+				Continue = PartResult->GetSuccess();
+				Result->SetValue(PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Result->GetValue()->AddTag("error", "Could not read a language for ID3v2.3."s);
 			}
 		}
