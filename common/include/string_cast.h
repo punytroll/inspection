@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.1.8 of the string cast.
+ * This is part of version 1.1.9 of the source library "string_cast".
  **/
 
 #ifndef STRING_CAST_H
