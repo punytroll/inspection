@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.1.8 of the string cast.
+ * This is part of version 1.1.9 of the source library "string_cast".
  **/
 
 #include <iomanip>
@@ -36,7 +36,7 @@ std::uint8_t from_string_cast< std::uint8_t >(const std::string & String)
 	return static_cast< std::uint8_t >(Result);
 }
 
-template < >
+template< >
 int from_string_cast< int >(const std::string & String)
 {
 	std::istringstream StringStream(String);
@@ -47,7 +47,7 @@ int from_string_cast< int >(const std::string & String)
 	return Result;
 }
 
-template < >
+template< >
 unsigned int from_string_cast< unsigned int >(const std::string & String)
 {
 	std::istringstream StringStream(String);
@@ -58,7 +58,7 @@ unsigned int from_string_cast< unsigned int >(const std::string & String)
 	return Result;
 }
 
-template < >
+template< >
 unsigned long from_string_cast< unsigned long >(const std::string & String)
 {
 	std::istringstream StringStream(String);
@@ -69,7 +69,7 @@ unsigned long from_string_cast< unsigned long >(const std::string & String)
 	return Result;
 }
 
-template < >
+template< >
 float from_string_cast< float >(const std::string & String)
 {
 	std::istringstream StringStream(String);
@@ -80,7 +80,7 @@ float from_string_cast< float >(const std::string & String)
 	return Result;
 }
 
-template < >
+template< >
 double from_string_cast< double >(const std::string & String)
 {
 	std::istringstream StringStream(String);
@@ -91,13 +91,19 @@ double from_string_cast< double >(const std::string & String)
 	return Result;
 }
 
-template < >
+template< >
 bool from_string_cast< bool >(const std::string & String)
 {
 	return String == "true";
 }
 
-template < >
+template< >
+std::string from_string_cast< std::string >(const std::string & Value)
+{
+	return Value;
+}
+
+template< >
 std::string to_string_cast< int >(const int & Value)
 {
 	std::ostringstream StringStream;
@@ -107,7 +113,7 @@ std::string to_string_cast< int >(const int & Value)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast< std::uint8_t >(const std::uint8_t & Value)
 {
 	std::ostringstream StringStream;
@@ -117,7 +123,7 @@ std::string to_string_cast< std::uint8_t >(const std::uint8_t & Value)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast< std::uint16_t >(const std::uint16_t & Value)
 {
 	std::ostringstream StringStream;
@@ -127,7 +133,7 @@ std::string to_string_cast< std::uint16_t >(const std::uint16_t & Value)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast< unsigned int >(const unsigned int & Value)
 {
 	std::ostringstream StringStream;
@@ -137,7 +143,7 @@ std::string to_string_cast< unsigned int >(const unsigned int & Value)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast< unsigned long int >(const unsigned long int & Value)
 {
 	std::ostringstream StringStream;
@@ -147,7 +153,7 @@ std::string to_string_cast< unsigned long int >(const unsigned long int & Value)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast< float >(const float & Value)
 {
 	std::ostringstream StringStream;
@@ -157,7 +163,7 @@ std::string to_string_cast< float >(const float & Value)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast(const float & Value, int Precision)
 {
 	std::ostringstream StringStream;
@@ -167,7 +173,7 @@ std::string to_string_cast(const float & Value, int Precision)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast(const double & Value, int Precision)
 {
 	std::ostringstream StringStream;
@@ -177,7 +183,7 @@ std::string to_string_cast(const double & Value, int Precision)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast< double >(const double & Value)
 {
 	std::ostringstream StringStream;
@@ -187,7 +193,7 @@ std::string to_string_cast< double >(const double & Value)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast< void * >(void * const & Value)
 {
 	std::ostringstream StringStream;
@@ -197,7 +203,7 @@ std::string to_string_cast< void * >(void * const & Value)
 	return StringStream.str();
 }
 
-template < >
+template< >
 std::string to_string_cast< bool >(const bool & Value)
 {
 	if(Value == true)
