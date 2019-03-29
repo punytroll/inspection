@@ -51,9 +51,20 @@ namespace Inspection
 	class ValueDescriptor
 	{
 	public:
-		std::experimental::optional< std::string > Type;
-		std::experimental::optional< std::string > LiteralValue;
-		std::experimental::optional< Inspection::ReferenceDescriptor > ReferenceDescriptor;
+		ValueDescriptor(void)
+		{
+		}
+		
+		~ValueDescriptor(void)
+		{
+		}
+		
+		std::string Type;
+		union
+		{
+			std::experimental::optional< std::string > LiteralValue;
+			std::experimental::optional< Inspection::ReferenceDescriptor > ReferenceDescriptor;
+		};
 	};
 	
 	class ActualParameterDescriptor
@@ -242,12 +253,15 @@ namespace Inspection
 	{
 		Type Result{};
 		
-		if(ValueDescriptor.LiteralValue)
+		if(ValueDescriptor.Type == "literal")
 		{
+			assert(ValueDescriptor.LiteralValue);
 			Result = from_string_cast< Type >(ValueDescriptor.LiteralValue.value());
 		}
-		else if(ValueDescriptor.ReferenceDescriptor)
+		else if(ValueDescriptor.Type == "reference")
 		{
+			assert(ValueDescriptor.ReferenceDescriptor);
+			
 			auto & Any{GetAnyByReference(ValueDescriptor.ReferenceDescriptor.value(), GetterResult, Parameters)};
 			
 			if(Any.type() == typeid(std::uint8_t))
@@ -366,9 +380,6 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						
 						if(PartDescriptor->LengthDescriptor != nullptr)
 						{
-							assert(!PartDescriptor->LengthDescriptor->BytesValueDescriptor.Type);
-							assert(!PartDescriptor->LengthDescriptor->BitsValueDescriptor.Type);
-							
 							auto Bytes{GetValueFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor, Result, Parameters)};
 							auto Bits{GetValueFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor, Result, Parameters)};
 							Inspection::Length Length{Bytes, Bits};
@@ -393,8 +404,9 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							
 							for(auto ActualParameterDescriptor : PartDescriptor->ActualParameterDescriptors)
 							{
-								if(ActualParameterDescriptor->ValueDescriptor.LiteralValue)
+								if(ActualParameterDescriptor->ValueDescriptor.Type == "literal")
 								{
+									assert(ActualParameterDescriptor->ValueDescriptor.LiteralValue);
 									assert(ActualParameterDescriptor->CastToType);
 									if(ActualParameterDescriptor->CastToType.value() == "string")
 									{
@@ -405,7 +417,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 										assert(false);
 									}
 								}
-								else
+								else if(ActualParameterDescriptor->ValueDescriptor.Type == "reference")
 								{
 									assert(ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor);
 									
@@ -900,6 +912,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									{
 										if((PartLengthChildElement->GetChilds().size() == 1) && (PartLengthChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text))
 										{
+											PartDescriptor->LengthDescriptor->BytesValueDescriptor.Type = "literal";
 											assert(PartLengthChildElement->GetChilds().size() == 1);
 											
 											auto BytesText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
@@ -909,6 +922,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
+											PartDescriptor->LengthDescriptor->BytesValueDescriptor.Type = "reference";
 											PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor.emplace();
 											for(auto PartLengthBytesChildNode : PartLengthChildElement->GetChilds())
 											{
@@ -955,6 +969,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									{
 										if((PartLengthChildElement->GetChilds().size() == 1) && (PartLengthChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text))
 										{
+											PartDescriptor->LengthDescriptor->BitsValueDescriptor.Type = "literal";
 											assert(PartLengthChildElement->GetChilds().size() == 1);
 											
 											auto BitsText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
@@ -964,6 +979,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
+											PartDescriptor->LengthDescriptor->BitsValueDescriptor.Type = "reference";
 											PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor.emplace();
 											for(auto PartLengthBitsChildNode : PartLengthChildElement->GetChilds())
 											{
@@ -1031,6 +1047,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										{
 											assert(PartParametersChildElement->HasAttribute("cast-to-type") == true);
 											ActualParameterDescriptor->CastToType = PartParametersChildElement->GetAttribute("cast-to-type");
+											ActualParameterDescriptor->ValueDescriptor.Type = "literal";
 											
 											auto ParameterText{dynamic_cast< const XML::Text * >(PartParametersChildElement->GetChild(0))};
 											
@@ -1039,6 +1056,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
+											ActualParameterDescriptor->ValueDescriptor.Type = "reference";
 											ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor.emplace();
 											if(PartParametersChildElement->HasAttribute("cast-to-type") == true)
 											{
