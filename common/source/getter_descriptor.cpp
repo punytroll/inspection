@@ -838,14 +838,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									}
 									else
 									{
-										throw std::domain_error{ApplyEnumerationChildElement->GetName()};
+										throw std::domain_error{"/getter/interpret/apply-enumeration/" + ApplyEnumerationChildElement->GetName() + " not allowed."};
 									}
 								}
 							}
 						}
 						else
 						{
-							throw std::domain_error{InterpretChildElement->GetName()};
+							throw std::domain_error{"/getter/interpret/" + InterpretChildElement->GetName() + " not allowed."};
 						}
 					}
 				}
@@ -881,7 +881,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									}
 									else
 									{
-										throw std::domain_error{PartGetterChildElement->GetName()};
+										throw std::domain_error{"/getter/part/getter/" + PartGetterChildElement->GetName() + " not allowed."};
 									}
 								}
 							}
@@ -943,7 +943,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													}
 													else
 													{
-														throw std::domain_error{PartLengthBytesChildElement->GetName()};
+														throw std::domain_error{"/getter/part/length/bytes/" + PartLengthBytesChildElement->GetName() + " not allowed."};
 													}
 													PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 												}
@@ -998,7 +998,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													}
 													else
 													{
-														throw std::domain_error{PartLengthBitsChildElement->GetName()};
+														throw std::domain_error{"/getter/part/length/bits/" + PartLengthBitsChildElement->GetName() + " not allowed."};
 													}
 													PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 												}
@@ -1007,7 +1007,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									}
 									else
 									{
-										throw std::domain_error{PartLengthChildElement->GetName()};
+										throw std::domain_error{"/getter/part/length/" + PartLengthChildElement->GetName() + " not allowed."};
 									}
 								}
 							}
@@ -1077,7 +1077,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													}
 													else
 													{
-														throw std::domain_error{PartParametersParameterChildElement->GetName()};
+														throw std::domain_error{"/getter/part/parameters/parameter/" + PartParametersParameterChildElement->GetName() + " not allowed."};
 													}
 													ParameterDescriptor->ValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 												}
@@ -1087,7 +1087,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									}
 									else
 									{
-										throw std::domain_error{PartParametersChildElement->GetName()};
+										throw std::domain_error{"/getter/part/parameters/" + PartParametersChildElement->GetName() + " not allowed."};
 									}
 								}
 							}
@@ -1120,7 +1120,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 												}
 												else
 												{
-													throw std::domain_error{PartValueAppendChildElement->GetName()};
+													throw std::domain_error{"/getter/part/value/append-value/" + PartValueAppendChildElement->GetName() + " not allowed."};
 												}
 											}
 										}
@@ -1137,14 +1137,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									}
 									else
 									{
-										throw std::domain_error{PartValueChildElement->GetName()};
+										throw std::domain_error{"/getter/part/value/" + PartValueChildElement->GetName() + " not allowed."};
 									}
 								}
 							}
 						}
 						else
 						{
-							throw std::domain_error{PartChildElement->GetName()};
+							throw std::domain_error{"/getter/part/" + PartChildElement->GetName() + " not allowed."};
 						}
 					}
 				}
@@ -1153,7 +1153,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 			}
 			else
 			{
-				throw std::domain_error{GetterChildElement->GetName()};
+				throw std::domain_error{"/getter/" + GetterChildElement->GetName() + " not allowed."};
 			}
 		}
 	}
