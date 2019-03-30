@@ -100,9 +100,11 @@
 		</length>
 		<parameters>
 			<parameter name="DataType">
-				<result/>
-				<sub>DataType</sub>
-				<tag>interpretation</tag>
+				<reference>
+					<result/>
+					<sub>DataType</sub>
+					<tag>interpretation</tag>
+				</reference>
 			</parameter>
 		</parameters>
 		<value>

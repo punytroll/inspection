@@ -6,7 +6,9 @@
 			<part>Alphabetic_ByTemplate</part>
 		</getter>
 		<parameters>
-			<parameter name="Template" cast-to-type="string">APETAGEX</parameter>
+			<parameter name="Template">
+				<string>APETAGEX</string>
+			</parameter>
 		</parameters>
 		<value>
 			<append-value>
