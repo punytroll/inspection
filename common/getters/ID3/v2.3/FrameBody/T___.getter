@@ -19,8 +19,10 @@
 		</getter>
 		<parameters>
 			<parameter name="TextEncoding">
-				<result/>
-				<sub>TextEncoding</sub>
+				<reference>
+					<result/>
+					<sub>TextEncoding</sub>
+				</reference>
 			</parameter>
 		</parameters>
 		<value>
