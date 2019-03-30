@@ -4,6 +4,7 @@
 
 #include <common/buffer.h>
 #include <common/file_handling.h>
+#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
 
@@ -183,11 +184,12 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_APE_Tag(FieldReader, {})};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 		Result->GetValue()->SetName("APEv2 Tag");
 	}
 	// finalization

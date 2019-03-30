@@ -196,14 +196,14 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					}
 					else
 					{
-						Inspection::Reader FieldReader{Buffer};
+						Inspection::Reader PartReader{Buffer};
+						auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
 						
-						PartialResult = Get_APE_Tag(FieldReader, {});
-						if(PartialResult->GetSuccess() == true)
+						if(PartResult->GetSuccess() == true)
 						{
-							Buffer.SetPosition(FieldReader);
+							Buffer.SetPosition(PartReader);
 							Start = Buffer.GetPosition();
-							Result->GetValue()->AppendValue("APEv2Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendValue("APEv2Tag", PartResult->GetValue());
 							if(Buffer.GetPosition() == Buffer.GetLength())
 							{
 								Result->SetSuccess(true);
@@ -332,14 +332,14 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			}
 			else
 			{
-				Inspection::Reader FieldReader{Buffer};
+				Inspection::Reader PartReader{Buffer};
+				auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
 				
-				PartialResult = Get_APE_Tag(FieldReader, {});
-				if(PartialResult->GetSuccess() == true)
+				if(PartResult->GetSuccess() == true)
 				{
-					Buffer.SetPosition(FieldReader);
+					Buffer.SetPosition(PartReader);
 					Start = Buffer.GetPosition();
-					Result->GetValue()->AppendValue("APEv2Tag", PartialResult->GetValue());
+					Result->GetValue()->AppendValue("APEv2Tag", PartResult->GetValue());
 					if(Buffer.GetPosition() == Buffer.GetLength())
 					{
 						Result->SetSuccess(true);
@@ -417,14 +417,14 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		{
 			Buffer.SetPosition(Start);
 			
-			Inspection::Reader FieldReader{Buffer};
+			Inspection::Reader PartReader{Buffer};
+			auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
 			
-			PartialResult = Get_APE_Tag(FieldReader, {});
-			if(PartialResult->GetSuccess() == true)
+			if(PartResult->GetSuccess() == true)
 			{
-				Buffer.SetPosition(FieldReader);
+				Buffer.SetPosition(PartReader);
 				Start = Buffer.GetPosition();
-				Result->GetValue()->AppendValue("APEv2Tag", PartialResult->GetValue());
+				Result->GetValue()->AppendValue("APEv2Tag", PartResult->GetValue());
 				if(Buffer.GetPosition() == Buffer.GetLength())
 				{
 					Result->SetSuccess(true);

@@ -142,49 +142,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Flags(Inspection::Read
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_APE_Tag(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"APE", "HeaderOrFooter"}, PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("APETagsHeader", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto PartReader{Reader};
-		auto ItemCount{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetValue("APETagsHeader")->GetValue("ItemCount")->GetAny())};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"APE", "Item"}}, {"ElementName", "APETagsItem"s}, {"NumberOfElements", static_cast< std::uint64_t >(ItemCount)}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("APETagsItems", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"APE", "HeaderOrFooter"}, PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("APETagsFooter", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_APE_Item(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};

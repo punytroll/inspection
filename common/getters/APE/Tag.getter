@@ -1,0 +1,53 @@
+<getter>
+	<part>
+		<getter>
+			<part>APE</part>
+			<part>HeaderOrFooter</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>APETagsHeader</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Array</part>
+			<part>EndedByNumberOfElements</part>
+		</getter>
+		<parameters>
+			<parameter name="Getter">
+				<getter-reference>
+					<part>APE</part>
+					<part>Item</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>APETagsItem</string>
+			</parameter>
+			<parameter name="NumberOfElements" cast-to-type="unsigned integer 64bit">
+				<reference>
+					<result/>
+					<sub>APETagsHeader</sub>
+					<sub>ItemCount</sub>
+				</reference>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>APETagsItems</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>APE</part>
+			<part>HeaderOrFooter</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>APETagsFooter</name>
+			</append-value>
+		</value>
+	</part>
+</getter>

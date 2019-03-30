@@ -48,6 +48,12 @@ namespace Inspection
 		std::vector< Inspection::ReferenceDescriptor::PartDescriptor * > PartDescriptors;
 	};
 	
+	class GetterReferenceDescriptor
+	{
+	public:
+		std::vector< std::string > Parts;
+	};
+	
 	class ValueDescriptor
 	{
 	public:
@@ -62,6 +68,7 @@ namespace Inspection
 		std::string Type;
 		union
 		{
+			Inspection::GetterReferenceDescriptor GetterReferenceDescriptor;
 			std::experimental::optional< std::string > LiteralValue;
 			std::experimental::optional< Inspection::ReferenceDescriptor > ReferenceDescriptor;
 		};
@@ -429,6 +436,10 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 										{
 											Parameters.emplace(ActualParameterDescriptor->Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint16_t >(ValueAny)));
 										}
+										else if(ValueAny.type() == typeid(std::uint32_t))
+										{
+											Parameters.emplace(ActualParameterDescriptor->Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint32_t >(ValueAny)));
+										}
 										else
 										{
 											assert(false);
@@ -438,6 +449,10 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 									{
 										assert(false);
 									}
+								}
+								else if(ActualParameterDescriptor->ValueDescriptor.Type == "getter-reference")
+								{
+									Parameters.emplace(ActualParameterDescriptor->Name, ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor.Parts);
 								}
 								else
 								{
@@ -546,6 +561,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				else if(HardcodedGetterText->GetText() == "Get_APE_Item")
 				{
 					_HardcodedGetterWithParameters = Inspection::Get_APE_Item;
+				}
+				else if(HardcodedGetterText->GetText() == "Get_Array_EndedByNumberOfElements")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByNumberOfElements;
 				}
 				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
 				{
@@ -1106,6 +1125,32 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 																throw std::domain_error{"/getter/part/parameters/parameter/reference/" + PartParametersParameterChildElement->GetName() + " not allowed."};
 															}
 															ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
+														}
+													}
+												}
+												else if(GetterPartParametersParameterElement->GetName() == "getter-reference")
+												{
+													assert(ActualParameterDescriptor->ValueDescriptor.Type == "");
+													ActualParameterDescriptor->ValueDescriptor.Type = "getter-reference";
+													for(auto GetterPartParametersParameterGetterNode : GetterPartParametersParameterElement->GetChilds())
+													{
+														if(GetterPartParametersParameterGetterNode->GetNodeType() == XML::NodeType::Element)
+														{
+															auto GetterPartParametersParameterGetterElement{dynamic_cast< const XML::Element * >(GetterPartParametersParameterGetterNode)};
+															
+															if(GetterPartParametersParameterGetterElement->GetName() == "part")
+															{
+																assert(GetterPartParametersParameterGetterElement->GetChilds().size() == 1);
+																
+																auto PartText{dynamic_cast< const XML::Text * >(GetterPartParametersParameterGetterElement->GetChild(0))};
+																
+																assert(PartText != nullptr);
+																ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor.Parts.push_back(PartText->GetText());
+															}
+															else
+															{
+																throw std::domain_error{"/getter/part/parameters/parameter/getter/" + GetterPartParametersParameterGetterElement->GetName() + " not allowed."};
+															}
 														}
 													}
 												}
