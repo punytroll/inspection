@@ -1,0 +1,24 @@
+<getter>
+	<part>
+		<getter>
+			<part>Apple</part>
+			<part>AppleSingle_Header</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>Header</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Data</part>
+			<part>SetOrUnset_EndedByLength</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>Data</name>
+			</append-value>
+		</value>
+	</part>
+</getter>

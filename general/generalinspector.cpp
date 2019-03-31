@@ -111,7 +111,8 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 // - ID3v1Tag                                                                                    //
 // - FLACStream                                                                                  //
 // - ASFFile                                                                                     //
-// - RIFFFile
+// - RIFFFile                                                                                    //
+// - AppleSingle                                                                                 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
@@ -555,8 +556,28 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							}
 							else
 							{
-								Buffer.SetPosition(FieldReader);
-								AppendUnkownContinuation(Result->GetValue(), Buffer);
+								Buffer.SetPosition(Start);
+								
+								Inspection::Reader PartReader{Buffer};
+								auto PartResult{Inspection::g_GetterRepository.Get({"Apple", "AppleSingle_File"}, PartReader, {})};
+								
+								if(PartResult->GetSuccess() == true)
+								{
+									Result->GetValue()->AppendValue("AppleSingleFile", PartResult->GetValue());
+									Buffer.SetPosition(PartReader);
+									if(Buffer.GetPosition() == Buffer.GetLength())
+									{
+										Result->SetSuccess(true);
+									}
+									else
+									{
+										AppendUnkownContinuation(Result->GetValue(), Buffer);
+									}
+								}
+								else
+								{
+									AppendUnkownContinuation(Result->GetValue(), Buffer);
+								}
 							}
 						}
 					}
