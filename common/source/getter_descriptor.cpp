@@ -101,30 +101,6 @@ namespace Inspection
 		Inspection::ValueDescriptor BitsValueDescriptor;
 	};
 
-	class PartDescriptor
-	{
-	public:
-		PartDescriptor(void) :
-			LengthDescriptor{nullptr}
-		{
-		}
-		
-		~PartDescriptor(void)
-		{
-			for(auto ActualParameterDescriptor : ActualParameterDescriptors)
-			{
-				delete ActualParameterDescriptor;
-			}
-			delete LengthDescriptor;
-		}
-		
-		Inspection::LengthDescriptor * LengthDescriptor;
-		std::vector< Inspection::ActualParameterDescriptor * > ActualParameterDescriptors;
-		std::vector< std::string > PathParts;
-		Inspection::AppendType ValueAppendType;
-		std::string ValueName;
-	};
-
 	class InterpretDescriptor
 	{
 	public:
@@ -142,6 +118,24 @@ namespace Inspection
 		std::vector< std::string > PathParts;
 		Inspection::InterpretType Type;
 		Inspection::Enumeration * Enumeration;
+	};
+
+	class PartDescriptor
+	{
+	public:
+		~PartDescriptor(void)
+		{
+			for(auto ActualParameterDescriptor : ActualParameterDescriptors)
+			{
+				delete ActualParameterDescriptor;
+			}
+		}
+		
+		std::vector< Inspection::ActualParameterDescriptor * > ActualParameterDescriptors;
+		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
+		std::vector< std::string > PathParts;
+		Inspection::AppendType ValueAppendType;
+		std::string ValueName;
 	};
 	
 	void ApplyTags(const std::vector< Inspection::Enumeration::Element::Tag * > & Tags, std::shared_ptr< Inspection::Value > Target)
@@ -390,7 +384,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						auto PartDescriptor{_PartDescriptors[Action.second]};
 						Inspection::Reader * PartReader{nullptr};
 						
-						if(PartDescriptor->LengthDescriptor != nullptr)
+						if(PartDescriptor->LengthDescriptor)
 						{
 							auto Bytes{GetValueFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor, Result, Parameters)};
 							auto Bits{GetValueFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor, Result, Parameters)};
@@ -920,7 +914,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 						}
 						else if(PartChildElement->GetName() == "length")
 						{
-							PartDescriptor->LengthDescriptor = new Inspection::LengthDescriptor{};
+							PartDescriptor->LengthDescriptor.emplace();
 							for(auto PartLengthChildNode : PartChildElement->GetChilds())
 							{
 								if(PartLengthChildNode->GetNodeType() == XML::NodeType::Element)
