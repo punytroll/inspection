@@ -559,11 +559,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 								Buffer.SetPosition(Start);
 								
 								Inspection::Reader PartReader{Buffer};
-								auto PartResult{Inspection::g_GetterRepository.Get({"Apple", "AppleSingle_File"}, PartReader, {})};
+								auto PartResult{Inspection::g_GetterRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {})};
 								
 								if(PartResult->GetSuccess() == true)
 								{
-									Result->GetValue()->AppendValue("AppleSingleFile", PartResult->GetValue());
+									Result->GetValue()->AppendValue("AppleDoubleFile", PartResult->GetValue());
 									Buffer.SetPosition(PartReader);
 									if(Buffer.GetPosition() == Buffer.GetLength())
 									{

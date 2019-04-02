@@ -2,7 +2,7 @@
 	<part>
 		<getter>
 			<part>Apple</part>
-			<part>AppleSingle_Header</part>
+			<part>AppleDouble_Header</part>
 		</getter>
 		<value>
 			<append-value>

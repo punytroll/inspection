@@ -62,7 +62,7 @@
 			<parameter name="Getter">
 				<getter-reference>
 					<part>Apple</part>
-					<part>AppleSingleDouble_EntryDescriptor</part>
+					<part>AppleDouble_EntryDescriptor</part>
 				</getter-reference>
 			</parameter>
 			<parameter name="ElementName">
