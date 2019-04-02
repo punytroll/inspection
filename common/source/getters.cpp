@@ -9671,9 +9671,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_bi
 	// verification
 	if(Continue == true)
 	{
-		if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
+		if(Reader.Has(Inspection::Length{4, 0}) == false)
 		{
-			Result->GetValue()->AddTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{4, 0}) + ".");
+			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{4, 0}) + ".");
 			Continue = false;
 		}
 	}
