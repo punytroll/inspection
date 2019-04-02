@@ -37,6 +37,7 @@ namespace Inspection
 			std::string DetailName;
 		};
 		
+		std::experimental::optional< std::string > CastToType;
 		std::vector< Inspection::ReferenceDescriptor::PartDescriptor > PartDescriptors;
 	};
 	
@@ -70,7 +71,6 @@ namespace Inspection
 	{
 	public:
 		std::string Name;
-		std::experimental::optional< std::string > CastToType;
 		Inspection::ValueDescriptor ValueDescriptor;
 	};
 	
@@ -412,11 +412,11 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 									
 									auto & ValueAny{GetAnyByReference(ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor.value(), Result, Parameters)};
 									
-									if(!ActualParameterDescriptor->CastToType)
+									if(!ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor->CastToType)
 									{
 										Parameters.emplace(ActualParameterDescriptor->Name, ValueAny);
 									}
-									else if(ActualParameterDescriptor->CastToType.value() == "unsigned integer 64bit")
+									else if(ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor->CastToType.value() == "unsigned integer 64bit")
 									{
 										if(ValueAny.type() == typeid(std::uint16_t))
 										{
@@ -1048,33 +1048,33 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										
 										assert(PartParametersChildElement->HasAttribute("name") == true);
 										ActualParameterDescriptor->Name = PartParametersChildElement->GetAttribute("name");
-										for(auto GetterPartParametersParameterNode : PartParametersChildElement->GetChilds())
+										for(auto GetterPartParametersParameterChildNode : PartParametersChildElement->GetChilds())
 										{
-											if(GetterPartParametersParameterNode->GetNodeType() == XML::NodeType::Element)
+											if(GetterPartParametersParameterChildNode->GetNodeType() == XML::NodeType::Element)
 											{
-												auto GetterPartParametersParameterElement{dynamic_cast< const XML::Element * >(GetterPartParametersParameterNode)};
+												auto GetterPartParametersParameterChildElement{dynamic_cast< const XML::Element * >(GetterPartParametersParameterChildNode)};
 												
-												if(GetterPartParametersParameterElement->GetName() == "string")
+												if(GetterPartParametersParameterChildElement->GetName() == "string")
 												{
 													assert(ActualParameterDescriptor->ValueDescriptor.Type == "");
 													ActualParameterDescriptor->ValueDescriptor.Type = "string";
-													assert((GetterPartParametersParameterElement->GetChilds().size() == 1) && (GetterPartParametersParameterElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+													assert((GetterPartParametersParameterChildElement->GetChilds().size() == 1) && (GetterPartParametersParameterChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 													
-													auto ParameterText{dynamic_cast< const XML::Text * >(GetterPartParametersParameterElement->GetChild(0))};
+													auto ParameterText{dynamic_cast< const XML::Text * >(GetterPartParametersParameterChildElement->GetChild(0))};
 													
 													assert(ParameterText != nullptr);
 													ActualParameterDescriptor->ValueDescriptor.LiteralValue = ParameterText->GetText();
 												}
-												else if(GetterPartParametersParameterElement->GetName() == "reference")
+												else if(GetterPartParametersParameterChildElement->GetName() == "reference")
 												{
 													assert(ActualParameterDescriptor->ValueDescriptor.Type == "");
 													ActualParameterDescriptor->ValueDescriptor.Type = "reference";
 													ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor.emplace();
-													if(PartParametersChildElement->HasAttribute("cast-to-type") == true)
+													if(GetterPartParametersParameterChildElement->HasAttribute("cast-to-type") == true)
 													{
-														ActualParameterDescriptor->CastToType = PartParametersChildElement->GetAttribute("cast-to-type");
+														ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor->CastToType = GetterPartParametersParameterChildElement->GetAttribute("cast-to-type");
 													}
-													for(auto PartParametersParameterChildNode : GetterPartParametersParameterElement->GetChilds())
+													for(auto PartParametersParameterChildNode : GetterPartParametersParameterChildElement->GetChilds())
 													{
 														if(PartParametersParameterChildNode->GetNodeType() == XML::NodeType::Element)
 														{
@@ -1114,35 +1114,35 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 														}
 													}
 												}
-												else if(GetterPartParametersParameterElement->GetName() == "getter-reference")
+												else if(GetterPartParametersParameterChildElement->GetName() == "getter-reference")
 												{
 													assert(ActualParameterDescriptor->ValueDescriptor.Type == "");
 													ActualParameterDescriptor->ValueDescriptor.Type = "getter-reference";
-													for(auto GetterPartParametersParameterGetterNode : GetterPartParametersParameterElement->GetChilds())
+													for(auto GetterPartParametersParameterGetterChildNode : GetterPartParametersParameterChildElement->GetChilds())
 													{
-														if(GetterPartParametersParameterGetterNode->GetNodeType() == XML::NodeType::Element)
+														if(GetterPartParametersParameterGetterChildNode->GetNodeType() == XML::NodeType::Element)
 														{
-															auto GetterPartParametersParameterGetterElement{dynamic_cast< const XML::Element * >(GetterPartParametersParameterGetterNode)};
+															auto GetterPartParametersParameterGetterChildElement{dynamic_cast< const XML::Element * >(GetterPartParametersParameterGetterChildNode)};
 															
-															if(GetterPartParametersParameterGetterElement->GetName() == "part")
+															if(GetterPartParametersParameterGetterChildElement->GetName() == "part")
 															{
-																assert(GetterPartParametersParameterGetterElement->GetChilds().size() == 1);
+																assert(GetterPartParametersParameterGetterChildElement->GetChilds().size() == 1);
 																
-																auto PartText{dynamic_cast< const XML::Text * >(GetterPartParametersParameterGetterElement->GetChild(0))};
+																auto PartText{dynamic_cast< const XML::Text * >(GetterPartParametersParameterGetterChildElement->GetChild(0))};
 																
 																assert(PartText != nullptr);
 																ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor.Parts.push_back(PartText->GetText());
 															}
 															else
 															{
-																throw std::domain_error{"/getter/part/parameters/parameter/getter/" + GetterPartParametersParameterGetterElement->GetName() + " not allowed."};
+																throw std::domain_error{"/getter/part/parameters/parameter/getter/" + GetterPartParametersParameterGetterChildElement->GetName() + " not allowed."};
 															}
 														}
 													}
 												}
 												else
 												{
-													throw std::domain_error{"/getter/part/parameters/parameter/" + GetterPartParametersParameterElement->GetName() + " not allowed."};
+													throw std::domain_error{"/getter/part/parameters/parameter/" + GetterPartParametersParameterChildElement->GetName() + " not allowed."};
 												}
 											}
 										}

@@ -32,8 +32,8 @@
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints</part>
 		</getter>
 		<parameters>
-			<parameter name="NumberOfCodePoints" cast-to-type="unsigned integer 64bit">
-				<reference>
+			<parameter name="NumberOfCodePoints">
+				<reference cast-to-type="unsigned integer 64bit">
 					<result/>
 					<sub>CodecNameLength</sub>
 				</reference>
@@ -66,8 +66,8 @@
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints</part>
 		</getter>
 		<parameters>
-			<parameter name="NumberOfCodePoints" cast-to-type="unsigned integer 64bit">
-				<reference>
+			<parameter name="NumberOfCodePoints">
+				<reference cast-to-type="unsigned integer 64bit">
 					<result/>
 					<sub>CodecDescriptionLength</sub>
 				</reference>
