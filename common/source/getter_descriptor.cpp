@@ -37,15 +37,7 @@ namespace Inspection
 			std::string DetailName;
 		};
 		
-		~ReferenceDescriptor(void)
-		{
-			for(auto PartDescriptor : PartDescriptors)
-			{
-				delete PartDescriptor;
-			}
-		}
-		
-		std::vector< Inspection::ReferenceDescriptor::PartDescriptor * > PartDescriptors;
+		std::vector< Inspection::ReferenceDescriptor::PartDescriptor > PartDescriptors;
 	};
 	
 	class GetterReferenceDescriptor
@@ -220,9 +212,9 @@ namespace Inspection
 	{
 		std::shared_ptr< Inspection::Value > Value{nullptr};
 		
-		for(auto PartDescriptor : ReferenceDescriptor.PartDescriptors)
+		for(auto & PartDescriptor : ReferenceDescriptor.PartDescriptors)
 		{
-			switch(PartDescriptor->Type)
+			switch(PartDescriptor.Type)
 			{
 			case Inspection::ReferenceDescriptor::PartDescriptor::Type::Result:
 				{
@@ -232,13 +224,13 @@ namespace Inspection
 				}
 			case Inspection::ReferenceDescriptor::PartDescriptor::Type::Sub:
 				{
-					Value = Value->GetValue(PartDescriptor->DetailName);
+					Value = Value->GetValue(PartDescriptor.DetailName);
 					
 					break;
 				}
 			case Inspection::ReferenceDescriptor::PartDescriptor::Type::Tag:
 				{
-					Value = Value->GetTag(PartDescriptor->DetailName);
+					Value = Value->GetTag(PartDescriptor.DetailName);
 					
 					break;
 				}
@@ -941,7 +933,8 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											{
 												if(PartLengthBytesChildNode->GetNodeType() == XML::NodeType::Element)
 												{
-													auto ReferencePartDescriptor{new Inspection::ReferenceDescriptor::PartDescriptor{}};
+													auto & ReferencePartDescriptors{PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor->PartDescriptors};
+													auto ReferencePartDescriptor{ReferencePartDescriptors.emplace(ReferencePartDescriptors.end())};
 													auto PartLengthBytesChildElement{dynamic_cast< const XML::Element * >(PartLengthBytesChildNode)};
 													
 													if(PartLengthBytesChildElement->GetName() == "result")
@@ -973,7 +966,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													{
 														throw std::domain_error{"/getter/part/length/bytes/" + PartLengthBytesChildElement->GetName() + " not allowed."};
 													}
-													PartDescriptor->LengthDescriptor->BytesValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 												}
 											}
 										}
@@ -998,7 +990,8 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											{
 												if(PartLengthBitsChildNode->GetNodeType() == XML::NodeType::Element)
 												{
-													auto ReferencePartDescriptor{new Inspection::ReferenceDescriptor::PartDescriptor{}};
+													auto & ReferencePartDescriptors{PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor->PartDescriptors};
+													auto ReferencePartDescriptor{ReferencePartDescriptors.emplace(ReferencePartDescriptors.end())};
 													auto PartLengthBitsChildElement{dynamic_cast< const XML::Element * >(PartLengthBitsChildNode)};
 													
 													if(PartLengthBitsChildElement->GetName() == "result")
@@ -1030,7 +1023,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													{
 														throw std::domain_error{"/getter/part/length/bits/" + PartLengthBitsChildElement->GetName() + " not allowed."};
 													}
-													PartDescriptor->LengthDescriptor->BitsValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 												}
 											}
 										}
@@ -1086,7 +1078,8 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													{
 														if(PartParametersParameterChildNode->GetNodeType() == XML::NodeType::Element)
 														{
-															auto ReferencePartDescriptor{new Inspection::ReferenceDescriptor::PartDescriptor{}};
+															auto & ReferencePartDescriptors{ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor->PartDescriptors};
+															auto ReferencePartDescriptor{ReferencePartDescriptors.emplace(ReferencePartDescriptors.end())};
 															auto PartParametersParameterChildElement{dynamic_cast< const XML::Element * >(PartParametersParameterChildNode)};
 															
 															if(PartParametersParameterChildElement->GetName() == "result")
@@ -1118,7 +1111,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 															{
 																throw std::domain_error{"/getter/part/parameters/parameter/reference/" + PartParametersParameterChildElement->GetName() + " not allowed."};
 															}
-															ActualParameterDescriptor->ValueDescriptor.ReferenceDescriptor.value().PartDescriptors.push_back(ReferencePartDescriptor);
 														}
 													}
 												}
