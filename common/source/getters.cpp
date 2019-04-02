@@ -5704,12 +5704,35 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 			else
 			{
 				Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
-				auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
+				auto PartResult{Get_ASCII_String_Printable_EndedByLength(PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				Result->GetValue()->AddTag("error", "Could not read a language for ID3v2.3."s);
+				if(Continue == true)
+				{
+					auto & Code{std::experimental::any_cast< const std::string & >(PartResult->GetValue()->GetAny())};
+					
+					Result->SetValue(PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					if(Code == "XXX")
+					{
+						Result->GetValue()->AddTag("standard", "ID3v2.4"s);
+						Result->GetValue()->AddTag("error", "The language code 'XXX' is only valid in ID3v2.4 to indicate an unknown language."s);
+					}
+					else
+					{
+						Result->GetValue()->AddTag("error", "The language code consists of three ASCII characters, but they don't make up a valid language code."s);
+					}
+				}
+				else
+				{
+					Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
+					auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
+					
+					Continue = PartResult->GetSuccess();
+					Result->SetValue(PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Result->GetValue()->AddTag("error", "Could not read a language for ID3v2.3."s);
+				}
 			}
 		}
 	}
