@@ -50,21 +50,10 @@ namespace Inspection
 	class ValueDescriptor
 	{
 	public:
-		ValueDescriptor(void)
-		{
-		}
-		
-		~ValueDescriptor(void)
-		{
-		}
-		
 		std::string Type;
-		union
-		{
-			Inspection::GetterReferenceDescriptor GetterReferenceDescriptor;
-			std::experimental::optional< std::string > LiteralValue;
-			std::experimental::optional< Inspection::ReferenceDescriptor > ReferenceDescriptor;
-		};
+		std::experimental::optional< Inspection::GetterReferenceDescriptor > GetterReferenceDescriptor;
+		std::experimental::optional< std::string > LiteralValue;
+		std::experimental::optional< Inspection::ReferenceDescriptor > ReferenceDescriptor;
 	};
 	
 	class ActualParameterDescriptor
@@ -438,7 +427,8 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								}
 								else if(ActualParameterDescriptor->ValueDescriptor.Type == "getter-reference")
 								{
-									Parameters.emplace(ActualParameterDescriptor->Name, ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor.Parts);
+									assert(ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor);
+									Parameters.emplace(ActualParameterDescriptor->Name, ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor->Parts);
 								}
 								else
 								{
@@ -1118,6 +1108,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 												{
 													assert(ActualParameterDescriptor->ValueDescriptor.Type == "");
 													ActualParameterDescriptor->ValueDescriptor.Type = "getter-reference";
+													ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor.emplace();
 													for(auto GetterPartParametersParameterGetterChildNode : GetterPartParametersParameterChildElement->GetChilds())
 													{
 														if(GetterPartParametersParameterGetterChildNode->GetNodeType() == XML::NodeType::Element)
@@ -1131,7 +1122,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 																auto PartText{dynamic_cast< const XML::Text * >(GetterPartParametersParameterGetterChildElement->GetChild(0))};
 																
 																assert(PartText != nullptr);
-																ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor.Parts.push_back(PartText->GetText());
+																ActualParameterDescriptor->ValueDescriptor.GetterReferenceDescriptor->Parts.push_back(PartText->GetText());
 															}
 															else
 															{
