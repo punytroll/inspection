@@ -52,7 +52,8 @@ namespace Inspection
 	public:
 		std::string Type;
 		std::experimental::optional< Inspection::GetterReferenceDescriptor > GetterReferenceDescriptor;
-		std::experimental::optional< std::string > LiteralValue;
+		std::experimental::optional< std::string > StringValue;
+		std::experimental::optional< std::uint32_t > UnsignedInteger32BitValue;
 		std::experimental::optional< Inspection::ReferenceDescriptor > ReferenceDescriptor;
 	};
 	
@@ -100,7 +101,25 @@ namespace Inspection
 		Inspection::InterpretType Type;
 		Inspection::Enumeration * Enumeration;
 	};
-
+	
+	class ValueEqualsDescriptor
+	{
+	public:
+		Inspection::ValueDescriptor ValueDescriptor;
+	};
+	
+	class VerificationDescriptor
+	{
+	public:
+		enum class Type
+		{
+			ValueEquals
+		};
+		
+		Inspection::VerificationDescriptor::Type Type;
+		std::experimental::optional< Inspection::ValueEqualsDescriptor > ValueEqualsDescriptor;
+	};
+	
 	class PartDescriptor
 	{
 	public:
@@ -114,6 +133,7 @@ namespace Inspection
 		
 		std::vector< Inspection::ActualParameterDescriptor * > ActualParameterDescriptors;
 		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
+		std::vector< Inspection::VerificationDescriptor > VerificationDescriptors;
 		std::vector< std::string > PathParts;
 		Inspection::AppendType ValueAppendType;
 		std::string ValueName;
@@ -237,8 +257,8 @@ namespace Inspection
 		
 		if(ValueDescriptor.Type == "literal")
 		{
-			assert(ValueDescriptor.LiteralValue);
-			Result = from_string_cast< Type >(ValueDescriptor.LiteralValue.value());
+			assert(ValueDescriptor.StringValue);
+			Result = from_string_cast< Type >(ValueDescriptor.StringValue.value());
 		}
 		else if(ValueDescriptor.Type == "reference")
 		{
@@ -265,8 +285,8 @@ namespace Inspection
 		}
 		else if(ValueDescriptor.Type == "string")
 		{
-			assert(ValueDescriptor.LiteralValue);
-			Result = from_string_cast< Type >(ValueDescriptor.LiteralValue.value());
+			assert(ValueDescriptor.StringValue);
+			Result = from_string_cast< Type >(ValueDescriptor.StringValue.value());
 		}
 		else
 		{
@@ -461,6 +481,35 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								}
 							}
 							Reader.AdvancePosition(PartReader->GetConsumedLength());
+							// verification
+							if(Continue == true)
+							{
+								for(auto & VerificationDescriptor : PartDescriptor->VerificationDescriptors)
+								{
+									switch(VerificationDescriptor.Type)
+									{
+									case Inspection::VerificationDescriptor::Type::ValueEquals:
+										{
+											assert(VerificationDescriptor.ValueEqualsDescriptor);
+											if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == "unsigned integer 32bit")
+											{
+												assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue);
+												Continue = std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetAny()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue.value();
+											}
+											else
+											{
+												assert(false);
+											}
+											
+											break;
+										}
+									default:
+										{
+											assert(false);
+										}
+									}
+								}
+							}
 						}
 						delete PartReader;
 						
@@ -913,7 +962,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											auto BytesText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
 											
 											assert(BytesText != nullptr);
-											PartDescriptor->LengthDescriptor->BytesValueDescriptor.LiteralValue = BytesText->GetText();
+											PartDescriptor->LengthDescriptor->BytesValueDescriptor.StringValue = BytesText->GetText();
 										}
 										else
 										{
@@ -970,7 +1019,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											auto BitsText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
 											
 											assert(BitsText != nullptr);
-											PartDescriptor->LengthDescriptor->BitsValueDescriptor.LiteralValue = BitsText->GetText();
+											PartDescriptor->LengthDescriptor->BitsValueDescriptor.StringValue = BitsText->GetText();
 										}
 										else
 										{
@@ -1053,7 +1102,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 													auto ParameterText{dynamic_cast< const XML::Text * >(GetterPartParametersParameterChildElement->GetChild(0))};
 													
 													assert(ParameterText != nullptr);
-													ActualParameterDescriptor->ValueDescriptor.LiteralValue = ParameterText->GetText();
+													ActualParameterDescriptor->ValueDescriptor.StringValue = ParameterText->GetText();
 												}
 												else if(GetterPartParametersParameterChildElement->GetName() == "reference")
 												{
@@ -1196,6 +1245,29 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 								}
 							}
 						}
+						else if(PartChildElement->GetName() == "verification")
+						{
+							auto VerificationDescriptor{PartDescriptor->VerificationDescriptors.emplace(PartDescriptor->VerificationDescriptors.end())};
+							
+							for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
+							{
+								if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
+								{
+									auto GetterPartVerificationChildElement{dynamic_cast< const XML::Element * >(GetterPartVerificationChildNode)};
+									
+									if(GetterPartVerificationChildElement->GetName() == "value-equals")
+									{
+										VerificationDescriptor->Type = Inspection::VerificationDescriptor::Type::ValueEquals;
+										VerificationDescriptor->ValueEqualsDescriptor.emplace();
+										_LoadValueDescriptor(VerificationDescriptor->ValueEqualsDescriptor->ValueDescriptor, GetterPartVerificationChildElement);
+									}
+									else
+									{
+										throw std::domain_error{"/getter/part/verification/" + GetterPartVerificationChildElement->GetName() + " not allowed."};
+									}
+								}
+							}
+						}
 						else
 						{
 							throw std::domain_error{"/getter/part/" + PartChildElement->GetName() + " not allowed."};
@@ -1208,6 +1280,120 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 			else
 			{
 				throw std::domain_error{"/getter/" + GetterChildElement->GetName() + " not allowed."};
+			}
+		}
+	}
+}
+
+void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement)
+{
+	for(auto ChildNode : ParentElement->GetChilds())
+	{
+		if(ChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto ChildElement{dynamic_cast< const XML::Element * >(ChildNode)};
+			
+			if(ChildElement->GetName() == "getter-reference")
+			{
+				assert(ValueDescriptor.Type == "");
+				ValueDescriptor.Type = "getter-reference";
+				ValueDescriptor.GetterReferenceDescriptor.emplace();
+				for(auto GetterReferenceChildNode : ChildElement->GetChilds())
+				{
+					if(GetterReferenceChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						auto GetterReferenceChildElement{dynamic_cast< const XML::Element * >(GetterReferenceChildNode)};
+						
+						if(GetterReferenceChildElement->GetName() == "part")
+						{
+							assert(GetterReferenceChildElement->GetChilds().size() == 1);
+							
+							auto PartText{dynamic_cast< const XML::Text * >(GetterReferenceChildElement->GetChild(0))};
+							
+							assert(PartText != nullptr);
+							ValueDescriptor.GetterReferenceDescriptor->Parts.push_back(PartText->GetText());
+						}
+						else
+						{
+							throw std::domain_error{GetterReferenceChildElement->GetName() + " not allowed."};
+						}
+					}
+				}
+			}
+			else if(ChildElement->GetName() == "reference")
+			{
+				assert(ValueDescriptor.Type == "");
+				ValueDescriptor.Type = "reference";
+				ValueDescriptor.ReferenceDescriptor.emplace();
+				if(ChildElement->HasAttribute("cast-to-type") == true)
+				{
+					ValueDescriptor.ReferenceDescriptor->CastToType = ChildElement->GetAttribute("cast-to-type");
+				}
+				for(auto ReferenceChildNode : ChildElement->GetChilds())
+				{
+					if(ReferenceChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						auto & ReferencePartDescriptors{ValueDescriptor.ReferenceDescriptor->PartDescriptors};
+						auto ReferencePartDescriptor{ReferencePartDescriptors.emplace(ReferencePartDescriptors.end())};
+						auto ReferenceChildElement{dynamic_cast< const XML::Element * >(ReferenceChildNode)};
+						
+						if(ReferenceChildElement->GetName() == "result")
+						{
+							assert(ReferenceChildElement->GetChilds().size() == 0);
+							ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Result;
+						}
+						else if(ReferenceChildElement->GetName() == "sub")
+						{
+							ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Sub;
+							assert(ReferenceChildElement->GetChilds().size() == 1);
+							
+							auto SubText{dynamic_cast< const XML::Text * >(ReferenceChildElement->GetChild(0))};
+							
+							assert(SubText != nullptr);
+							ReferencePartDescriptor->DetailName = SubText->GetText();
+						}
+						else if(ReferenceChildElement->GetName() == "tag")
+						{
+							ReferencePartDescriptor->Type = Inspection::ReferenceDescriptor::PartDescriptor::Type::Tag;
+							assert(ReferenceChildElement->GetChilds().size() == 1);
+							
+							auto TagText{dynamic_cast< const XML::Text * >(ReferenceChildElement->GetChild(0))};
+							
+							assert(TagText != nullptr);
+							ReferencePartDescriptor->DetailName = TagText->GetText();
+						}
+						else
+						{
+							throw std::domain_error{ReferenceChildElement->GetName() + " not allowed."};
+						}
+					}
+				}
+			}
+			else if(ChildElement->GetName() == "string")
+			{
+				assert(ValueDescriptor.Type == "");
+				ValueDescriptor.Type = "string";
+				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+				
+				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
+				
+				assert(TextNode != nullptr);
+				ValueDescriptor.StringValue = TextNode->GetText();
+			}
+			else if(ChildElement->GetName() == "unsigned-integer-32bit")
+			{
+				assert(ValueDescriptor.Type == "");
+				ValueDescriptor.Type = "unsigned integer 32bit";
+				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+				
+				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
+				
+				assert(TextNode != nullptr);
+				ValueDescriptor.UnsignedInteger32BitValue = from_string_cast< std::uint32_t >(TextNode->GetText());
+			}
+			else
+			{
+				throw std::domain_error{ChildElement->GetName() + " not allowed."};
 			}
 		}
 	}
