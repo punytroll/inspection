@@ -495,6 +495,10 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 											{
 												assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue);
 												Continue = std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetAny()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue.value();
+												if(Continue == false)
+												{
+													PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue.value()) + "\".");
+												}
 											}
 											else
 											{
