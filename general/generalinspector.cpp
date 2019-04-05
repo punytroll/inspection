@@ -590,6 +590,31 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > ProcessBufferWithSpecificGetter(Inspection::Buffer & Buffer, const std::string & Getter)
+{
+	auto Result{Inspection::InitializeResult(Buffer)};
+	Inspection::Reader PartReader{Buffer};
+	std::unique_ptr< Inspection::Result > PartResult;
+	
+	if(Getter == "AppleDouble")
+	{
+		PartResult = Inspection::g_GetterRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {});
+	}
+	else
+	{
+		assert(false);
+	}
+	Result->GetValue()->AppendValue("AppleDoubleFile", PartResult->GetValue());
+	if(PartResult->GetSuccess() == true)
+	{
+		Buffer.SetPosition(PartReader);
+		Result->SetSuccess(true);
+	}
+	Inspection::FinalizeResult(Result, Buffer);
+	
+	return Result;
+}
+
 bool EvaluateTestPath(std::shared_ptr< Inspection::Value > Value, const std::string & TestPath)
 {
 	auto FilterParts{SplitString(TestPath, '/')};
@@ -773,6 +798,8 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 
 int main(int argc, char ** argv)
 {
+	std::string GetterPrefix{"--getter="};
+	std::string Getter;
 	std::string ValuePrefix{"--value="};
 	std::string ValuePath;
 	std::deque< std::string > Paths;
@@ -797,6 +824,10 @@ int main(int argc, char ** argv)
 		{
 			g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples = true;
 		}
+		else if(Argument.compare(0, GetterPrefix.size(), GetterPrefix) == 0)
+		{
+			Getter = Argument.substr(GetterPrefix.size());
+		}
 		else
 		{
 			Paths.push_back(Argument);
@@ -810,14 +841,18 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
+		std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer{DefaultWriter};
+		std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor{ProcessBuffer};
+		
 		if(ValuePath != "")
 		{
-			ReadItem(Paths.front(), ProcessBuffer, std::bind(FilterWriter, std::placeholders::_1, ValuePath));
+			Writer = std::bind(FilterWriter, std::placeholders::_1, ValuePath);
 		}
-		else
+		if(Getter != "")
 		{
-			ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
+			Processor = std::bind(ProcessBufferWithSpecificGetter, std::placeholders::_1, Getter);
 		}
+		ReadItem(Paths.front(), Processor, Writer);
 		Paths.pop_front();
 	}
 	
