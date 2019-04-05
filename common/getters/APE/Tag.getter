@@ -26,11 +26,11 @@
 				<string>APETagsItem</string>
 			</parameter>
 			<parameter name="NumberOfElements">
-				<reference cast-to-type="unsigned integer 64bit">
+				<value-reference cast-to-type="unsigned integer 64bit">
 					<result/>
 					<sub>APETagsHeader</sub>
 					<sub>ItemCount</sub>
-				</reference>
+				</value-reference>
 			</parameter>
 		</parameters>
 		<value>

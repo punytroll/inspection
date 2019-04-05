@@ -15,16 +15,16 @@
 		</getter>
 		<parameters>
 			<parameter name="FirstTrackNumber">
-				<reference>
+				<value-reference>
 					<result/>
 					<sub>FirstTrackNumber</sub>
-				</reference>
+				</value-reference>
 			</parameter>
 			<parameter name="LastTrackNumber">
-				<reference>
+				<value-reference>
 					<result/>
 					<sub>LastTrackNumber</sub>
-				</reference>
+				</value-reference>
 			</parameter>
 		</parameters>
 		<value>

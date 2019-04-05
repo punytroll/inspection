@@ -98,11 +98,11 @@
 		</length>
 		<parameters>
 			<parameter name="DataType">
-				<reference>
+				<value-reference>
 					<result/>
 					<sub>DataType</sub>
 					<tag>interpretation</tag>
-				</reference>
+				</value-reference>
 			</parameter>
 		</parameters>
 		<value>

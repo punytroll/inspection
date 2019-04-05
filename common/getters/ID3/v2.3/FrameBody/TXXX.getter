@@ -19,10 +19,10 @@
 		</getter>
 		<parameters>
 			<parameter name="TextEncoding">
-				<reference>
+				<value-reference>
 					<result/>
 					<sub>TextEncoding</sub>
-				</reference>
+				</value-reference>
 			</parameter>
 		</parameters>
 		<value>
@@ -39,10 +39,10 @@
 		</getter>
 		<parameters>
 			<parameter name="TextEncoding">
-				<reference>
+				<value-reference>
 					<result/>
 					<sub>TextEncoding</sub>
-				</reference>
+				</value-reference>
 			</parameter>
 		</parameters>
 		<value>
