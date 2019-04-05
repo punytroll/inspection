@@ -11,6 +11,11 @@
 				<name>MagicNumber</name>
 			</append-value>
 		</value>
+		<verification>
+			<value-equals>
+				<unsigned-integer-32bit>333319</unsigned-integer-32bit>
+			</value-equals>
+		</verification>
 	</part>
 	<part>
 		<getter>
@@ -24,6 +29,11 @@
 				<name>VersionNumber</name>
 			</append-value>
 		</value>
+		<verification>
+			<value-equals>
+				<unsigned-integer-32bit>131072</unsigned-integer-32bit>
+			</value-equals>
+		</verification>
 	</part>
 	<part>
 		<getter>
