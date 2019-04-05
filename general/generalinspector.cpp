@@ -590,21 +590,14 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > ProcessBufferWithSpecificGetter(Inspection::Buffer & Buffer, const std::string & Getter)
+std::unique_ptr< Inspection::Result > ProcessBufferWithSpecificGetter(Inspection::Buffer & Buffer, const std::vector< std::string > & Getter)
 {
 	auto Result{Inspection::InitializeResult(Buffer)};
 	Inspection::Reader PartReader{Buffer};
 	std::unique_ptr< Inspection::Result > PartResult;
 	
-	if(Getter == "AppleDouble")
-	{
-		PartResult = Inspection::g_GetterRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {});
-	}
-	else
-	{
-		assert(false);
-	}
-	Result->GetValue()->AppendValue("AppleDoubleFile", PartResult->GetValue());
+	PartResult = Inspection::g_GetterRepository.Get(Getter, PartReader, {});
+	Result->GetValue()->AppendValue(Getter.back(), PartResult->GetValue());
 	if(PartResult->GetSuccess() == true)
 	{
 		Buffer.SetPosition(PartReader);
@@ -850,7 +843,9 @@ int main(int argc, char ** argv)
 		}
 		if(Getter != "")
 		{
-			Processor = std::bind(ProcessBufferWithSpecificGetter, std::placeholders::_1, Getter);
+			auto GetterParts{SplitString(Getter, '/')};
+			
+			Processor = std::bind(ProcessBufferWithSpecificGetter, std::placeholders::_1, GetterParts);
 		}
 		ReadItem(Paths.front(), Processor, Writer);
 		Paths.pop_front();
