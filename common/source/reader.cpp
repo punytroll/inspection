@@ -18,6 +18,11 @@ Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length
 {
 }
 
+Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length) :
+	Inspection::Reader(Reader._Buffer, OffsetInBuffer, Length)
+{
+}
+
 Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length) :
 	_BoundaryInBuffer(OffsetInBuffer + Length),
 	_Buffer(Buffer),
