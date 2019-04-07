@@ -30,7 +30,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		ID3v1TagResult = Get_ID3_1_Tag(FieldReader);
 		if(ID3v1TagResult->GetSuccess() == true)
 		{
-			if(ID3v1TagResult->GetValue()->HasValue("AlbumTrack") == true)
+			if(ID3v1TagResult->GetValue()->HasField("AlbumTrack") == true)
 			{
 				Result->GetValue()->AppendValue("ID3v1.1", ID3v1TagResult->GetValue());
 			}

@@ -15,29 +15,29 @@ namespace Inspection
 		{
 		}
 		
-		std::shared_ptr< Value > AppendValue(std::shared_ptr< Value > Value)
+		std::shared_ptr< Inspection::Value > AppendValue(std::shared_ptr< Inspection::Value > Value)
 		{
-			_Values.push_back(Value);
+			_Fields.push_back(Value);
 			
 			return Value;
 		}
 		
 		template< typename DataType >
-		std::shared_ptr< Value > AppendValue(const std::string & Name, const DataType & Data)
+		std::shared_ptr< Inspection::Value > AppendValue(const std::string & Name, const DataType & Data)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
 			Result->SetName(Name);
 			Result->SetData(Data);
-			_Values.push_back(Result);
+			_Fields.push_back(Result);
 			
 			return Result;
 		}
 		
-		std::shared_ptr< Value > AppendValue(const std::string & Name, std::shared_ptr< Inspection::Value > Value)
+		std::shared_ptr< Inspection::Value > AppendValue(const std::string & Name, std::shared_ptr< Inspection::Value > Value)
 		{
 			Value->SetName(Name);
-			_Values.push_back(Value);
+			_Fields.push_back(Value);
 			
 			return Value;
 		}
@@ -46,7 +46,7 @@ namespace Inspection
 		{
 			for(auto Value : Values)
 			{
-				_Values.push_back(Value);
+				_Fields.push_back(Value);
 			}
 		}
 		
@@ -86,7 +86,7 @@ namespace Inspection
 		
 		std::uint32_t GetCount(void) const
 		{
-			return _Values.size();
+			return _Fields.size();
 		}
 		
 		const std::string & GetName(void) const
@@ -113,19 +113,19 @@ namespace Inspection
 		
 		std::shared_ptr< Inspection::Value > GetValue(const std::string & Name)
 		{
-			for(auto & Value : _Values)
+			for(auto & Field : _Fields)
 			{
-				if(Value->GetName() == Name)
+				if(Field->GetName() == Name)
 				{
-					return Value;
+					return Field;
 				}
 			}
-			throw std::invalid_argument("Could not find a value named \"" + Name + "\".");
+			throw std::invalid_argument("Could not find a field named \"" + Name + "\".");
 		}
 		
 		const std::list< std::shared_ptr< Inspection::Value > > & GetValues(void)
 		{
-			return _Values;
+			return _Fields;
 		}
 		
 		bool HasTag(const std::string & Name)
@@ -133,9 +133,9 @@ namespace Inspection
 			return std::find_if(std::begin(_Tags), std::end(_Tags), [&Name](const std::shared_ptr< Inspection::Value > & Tag) { return Tag->GetName() == Name; }) != std::end(_Tags);
 		}
 		
-		bool HasValue(const std::string & Name)
+		bool HasField(const std::string & Name)
 		{
-			return std::find_if(std::begin(_Values), std::end(_Values), [&Name](const std::shared_ptr< Value > & Value) { return Value->GetName() == Name; }) != std::end(_Values);
+			return std::find_if(std::begin(_Fields), std::end(_Fields), [&Name](const std::shared_ptr< Inspection::Value > & Field) { return Field->GetName() == Name; }) != std::end(_Fields);
 		}
 		
 		void SetData(const std::experimental::any & Data)
@@ -151,7 +151,7 @@ namespace Inspection
 		std::experimental::any _Data;
 		std::string _Name;
 		std::list< std::shared_ptr< Inspection::Value > > _Tags;
-		std::list< std::shared_ptr< Inspection::Value > > _Values;
+		std::list< std::shared_ptr< Inspection::Value > > _Fields;
 	};
 }
 
