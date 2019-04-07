@@ -32,11 +32,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		{
 			if(ID3v1TagResult->GetValue()->HasField("AlbumTrack") == true)
 			{
-				Result->GetValue()->AppendValue("ID3v1.1", ID3v1TagResult->GetValue());
+				Result->GetValue()->AppendField("ID3v1.1", ID3v1TagResult->GetValue());
 			}
 			else
 			{
-				Result->GetValue()->AppendValue("ID3v1", ID3v1TagResult->GetValue());
+				Result->GetValue()->AppendField("ID3v1", ID3v1TagResult->GetValue());
 			}
 		}
 	}
@@ -45,7 +45,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	Inspection::Reader FieldReader{Buffer};
 	auto ID3v2TagResult{Get_ID3_2_Tag(FieldReader)};
 	
-	Result->GetValue()->AppendValue("ID3v2", ID3v2TagResult->GetValue());
+	Result->GetValue()->AppendField("ID3v2", ID3v2TagResult->GetValue());
 	Result->SetSuccess(((ID3v1TagResult != nullptr) && (ID3v1TagResult->GetSuccess() == true)) || ID3v2TagResult->GetSuccess());
 	Buffer.SetPosition(Buffer.GetLength());
 	Inspection::FinalizeResult(Result, Buffer);

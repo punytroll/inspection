@@ -18,7 +18,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		auto PartResult{Get_RIFF_Chunk(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValue("RIFFChunk", PartResult->GetValue());
+		Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
 		Result->GetValue()->SetName("RIFFFile");
 		Buffer.SetPosition(PartReader);
 	}
