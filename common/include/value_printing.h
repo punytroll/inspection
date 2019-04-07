@@ -101,7 +101,7 @@ namespace Inspection
 					}
 					std::cout << Tag->GetData();
 				}
-				if(Tag->GetValues().size() > 0)
+				if(Tag->GetFields().size() > 0)
 				{
 					throw std::exception();
 				}
@@ -134,7 +134,7 @@ namespace Inspection
 						{
 							std::cout << SubTag->GetData();
 						}
-						if((SubTag->GetValues().size() > 0) || (SubTag->GetTags().size() > 0))
+						if((SubTag->GetFields().size() > 0) || (SubTag->GetTags().size() > 0))
 						{
 							throw std::exception();
 						}
@@ -156,7 +156,7 @@ namespace Inspection
 		}
 		if(Value->GetCount() > 0)
 		{
-			for(auto & SubValue : Value->GetValues())
+			for(auto & SubValue : Value->GetFields())
 			{
 				PrintValue(SubValue, SubIndentation);
 			}

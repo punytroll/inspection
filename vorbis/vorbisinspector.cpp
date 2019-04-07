@@ -209,7 +209,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 		auto PacketStart{Buffer.GetPosition()};
 		auto PacketLength{0ull};
 		
-		for(auto SegmentTableEntryValue : Result->GetValue()->GetValue("SegmentTable")->GetValues())
+		for(auto SegmentTableEntryValue : Result->GetValue()->GetValue("SegmentTable")->GetFields())
 		{
 			auto SegmentTableEntry{std::experimental::any_cast< std::uint8_t >(SegmentTableEntryValue->GetData())};
 			
@@ -368,14 +368,14 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 		{
 			auto FieldResult{Get_Vorbis_IdentificationHeader(Buffer)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, FieldResult);
 		}
 		else if(PacketType == 0x03)
 		{
 			auto FieldResult{Get_Vorbis_CommentHeader(Buffer)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, FieldResult);
 		}
 		else if(PacketType == 0x05)

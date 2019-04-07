@@ -39,11 +39,11 @@ namespace Inspection
 			return AppendField(Name, Field);
 		}
 		
-		void AppendValues(const std::list< std::shared_ptr< Inspection::Value > > & Values)
+		void AppendFields(const std::list< std::shared_ptr< Inspection::Value > > & Fields)
 		{
-			for(auto Value : Values)
+			for(auto Field : Fields)
 			{
-				_Fields.push_back(Value);
+				_Fields.push_back(Field);
 			}
 		}
 		
@@ -120,7 +120,7 @@ namespace Inspection
 			throw std::invalid_argument("Could not find a field named \"" + Name + "\".");
 		}
 		
-		const std::list< std::shared_ptr< Inspection::Value > > & GetValues(void)
+		const std::list< std::shared_ptr< Inspection::Value > > & GetFields(void)
 		{
 			return _Fields;
 		}

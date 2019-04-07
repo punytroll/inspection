@@ -469,7 +469,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								}
 							case Inspection::AppendType::AppendSubValues:
 								{
-									Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+									Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 									
 									break;
 								}

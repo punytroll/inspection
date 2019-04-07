@@ -1105,7 +1105,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
@@ -1625,7 +1625,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("AdditionalExtendedHeaders", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("AdditionalExtendedHeader");
 		}
@@ -1669,7 +1669,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Reade
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Objects", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("Object");
 		}
@@ -1727,7 +1727,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspectio
 		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
@@ -1742,7 +1742,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspectio
 		auto PartResult{Get_ASF_HeaderObjectData(PartReader)};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
@@ -2183,7 +2183,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_CompatibilityObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_HeaderObjectGUID)
@@ -2192,7 +2192,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_HeaderObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_FilePropertiesObjectGUID)
@@ -2201,7 +2201,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{g_GetterRepository.Get({"ASF", "ObjectData", "FileProperties"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_StreamPropertiesObjectGUID)
@@ -2210,7 +2210,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_StreamPropertiesObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_CodecListObjectGUID)
@@ -2219,7 +2219,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_CodecListObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_HeaderExtensionObjectGUID)
@@ -2228,7 +2228,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_HeaderExtensionObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_LanguageListObjectGUID)
@@ -2237,7 +2237,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_LanguageListObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_ExtendedStreamPropertiesObjectGUID)
@@ -2246,7 +2246,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_ExtendedStreamPropertiesObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_MetadataObjectGUID)
@@ -2255,7 +2255,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_MetadataObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_IndexPlaceholderObjectGUID)
@@ -2264,7 +2264,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_IndexPlaceholderObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_PaddingObjectGUID)
@@ -2282,7 +2282,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_ExtendedContentDescriptionObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_StreamBitratePropertiesObjectGUID)
@@ -2291,7 +2291,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_StreamBitratePropertiesObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_ContentDescriptionObjectGUID)
@@ -2300,7 +2300,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{g_GetterRepository.Get({"ASF", "ObjectData", "ContentDescription"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(GUID == Inspection::g_ASF_MetadataLibraryObjectGUID)
@@ -2309,7 +2309,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 			auto PartResult{Get_ASF_MetadataLibraryObjectData(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
@@ -2565,7 +2565,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
@@ -2580,7 +2580,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 		auto PartResult{Get_ASF_StreamPropertiesObjectData(PartReader)};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
@@ -3326,7 +3326,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Subframes", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("Subframe");
 		}
@@ -3684,7 +3684,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(I
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SeekPoints", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("SeekPoint");
 		}
@@ -3721,7 +3721,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("Frame");
 		}
@@ -3769,7 +3769,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspect
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("MetaDataBlocks", PartResult->GetValue());
-			for(auto PartValue : PartResult->GetValue()->GetValues())
+			for(auto PartValue : PartResult->GetValue()->GetFields())
 			{
 				PartValue->SetName("MetaDataBlock");
 			}
@@ -4188,7 +4188,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Partitions", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("Partition");
 		}
@@ -4574,7 +4574,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "COM"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "PIC")
@@ -4583,7 +4583,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "PIC"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if((Identifier == "TAL") || (Identifier == "TCM") || (Identifier == "TCP") || (Identifier == "TEN") || (Identifier == "TP1") || (Identifier == "TP2") || (Identifier == "TPA") || (Identifier == "TRK") || (Identifier == "TT1") || (Identifier == "TT2") || (Identifier == "TYE"))
@@ -4592,7 +4592,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "T__"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "TCO")
@@ -4601,7 +4601,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 			auto PartResult{Get_ID3_2_2_Frame_Body_TCO(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "UFI")
@@ -4610,7 +4610,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "UFI"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
@@ -4870,7 +4870,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "APIC"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "COMM")
@@ -4879,7 +4879,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "COMM"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "GEOB")
@@ -4888,7 +4888,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "GEOB"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "MCDI")
@@ -4896,7 +4896,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_MCDI(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "PCNT")
@@ -4904,7 +4904,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_PCNT(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "POPM")
@@ -4912,7 +4912,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_POPM(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "PRIV")
@@ -4920,7 +4920,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_PRIV(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 
@@ -4930,7 +4930,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "RGAD"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCOP") || (Identifier == "TDAT") || (Identifier == "TDRC") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIME") || (Identifier == "TIT1") || (Identifier == "TIT2") || (Identifier == "TIT3") || (Identifier == "TLEN") || (Identifier == "TMED") || (Identifier == "TOAL") || (Identifier == "TOFN") || (Identifier == "TOPE") || (Identifier == "TOWN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPE3") || (Identifier == "TPE4") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TRDA") || (Identifier == "TSIZ") || (Identifier == "TSO2") || (Identifier == "TSOA") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TSST") || (Identifier == "TYER"))
@@ -4939,7 +4939,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "TCMP")
@@ -4947,7 +4947,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TCMP(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TCON")
@@ -4955,7 +4955,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TCON(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TFLT")
@@ -4963,7 +4963,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TFLT(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TLAN")
@@ -4971,7 +4971,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TLAN(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TSRC")
@@ -4979,7 +4979,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_3_Frame_Body_TSRC(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TXXX")
@@ -4988,7 +4988,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "TXXX"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "UFID")
@@ -4997,7 +4997,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "UFID"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "USLT")
@@ -5006,7 +5006,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "USLT"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if((Identifier == "WCOM") || (Identifier == "WOAF") || (Identifier == "WOAR"))
@@ -5015,7 +5015,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "W___"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "WXXX")
@@ -5024,7 +5024,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "WXXX"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
@@ -5911,7 +5911,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "APIC"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "COMM")
@@ -5920,7 +5920,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "COMM"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "MCDI")
@@ -5929,7 +5929,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "MCDI"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "POPM")
@@ -5937,7 +5937,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_4_Frame_Body_POPM(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "PRIV")
@@ -5946,7 +5946,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "PRIV"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCON") || (Identifier == "TCOP") || (Identifier == "TDRC") || (Identifier == "TDRL") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIT2") || (Identifier == "TLAN") || (Identifier == "TLEN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TYER"))
@@ -5954,7 +5954,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
 			auto FieldResult{Get_ID3_2_4_Frame_Body_T___(FieldReader)};
 			
-			Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
 		}
 		else if(Identifier == "TCMP")
@@ -5963,7 +5963,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{Get_ID3_2_4_Frame_Body_TCMP(PartReader)};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "TXXX")
@@ -5972,7 +5972,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "TXXX"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "UFID")
@@ -5981,7 +5981,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "UFID"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "USLT")
@@ -5990,7 +5990,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "USLT"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "WCOM")
@@ -5999,7 +5999,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "W___"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "WXXX")
@@ -6008,7 +6008,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "WXXX"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
@@ -6149,7 +6149,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Informations", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("Information");
 		}
@@ -6178,7 +6178,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TCMP(In
 	// reading
 	if(Continue == true)
 	{
-		for(auto PartValue : Result->GetValue()->GetValue("Informations")->GetValues())
+		for(auto PartValue : Result->GetValue()->GetValue("Informations")->GetFields())
 		{
 			auto Information{std::experimental::any_cast< const std::string & >(PartValue->GetTag("value")->GetData())};
 			
@@ -6369,7 +6369,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
@@ -6404,7 +6404,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
@@ -6431,7 +6431,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
@@ -6723,7 +6723,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				for(auto PartValue : PartResult->GetValue()->GetValues())
+				for(auto PartValue : PartResult->GetValue()->GetFields())
 				{
 					PartValue->SetName("Frame");
 				}
@@ -6780,7 +6780,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				for(auto PartValue : PartResult->GetValue()->GetValues())
+				for(auto PartValue : PartResult->GetValue()->GetFields())
 				{
 					PartValue->SetName("Frame");
 				}
@@ -6842,7 +6842,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				for(auto PartValue : PartResult->GetValue()->GetValues())
+				for(auto PartValue : PartResult->GetValue()->GetFields())
 				{
 					PartValue->SetName("Frame");
 				}
@@ -10340,7 +10340,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("MPEGFrames", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("MPEGFrame");
 		}
@@ -10485,7 +10485,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt_(Inspec
 		auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "fmt__CommonFields"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
@@ -10499,7 +10499,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt_(Inspec
 			auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "fmt__FormatSpecificFields_PCM"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(FormatTag == "WAVE_FORMAT_EXTENSIBLE")
@@ -10508,7 +10508,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt_(Inspec
 			auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "fmt__FormatSpecificFields_Extensible"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendValues(PartResult->GetValue()->GetValues());
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
@@ -10707,7 +10707,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_RIFF_ChunkData(Inspec
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Chunks", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetValues())
+		for(auto PartValue : PartResult->GetValue()->GetFields())
 		{
 			PartValue->SetName("Chunk");
 		}
@@ -12526,7 +12526,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 		Inspection::Reader FieldReader{Buffer};
 		auto FieldResult{Get_Vorbis_CommentHeader_WithoutFramingFlag(FieldReader)};
 		
-		Result->GetValue()->AppendValues(FieldResult->GetValue()->GetValues());
+		Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);
 	}
 	// reading
