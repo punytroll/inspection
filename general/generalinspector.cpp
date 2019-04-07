@@ -86,7 +86,7 @@ std::vector< std::string > SplitString(const std::string & String, char Delimite
 
 void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspection::Buffer & Buffer)
 {
-	auto ErrorValue{Value->AppendValue("error", "Unknown continuation."s)};
+	auto ErrorValue{Value->AppendField("error", "Unknown continuation."s)};
 	
 	ErrorValue->AddTag("position", to_string_cast(Buffer.GetPosition()));
 	ErrorValue->AddTag("length", to_string_cast(Buffer.GetLength()));
@@ -127,7 +127,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	{
 		Buffer.SetPosition(FieldReader);
 		Start = Buffer.GetPosition();
-		Result->GetValue()->AppendValue("ID3v2Tag", PartialResult->GetValue());
+		Result->GetValue()->AppendField("ID3v2Tag", PartialResult->GetValue());
 		if(Buffer.GetPosition() == Buffer.GetLength())
 		{
 			Result->SetSuccess(true);
@@ -141,7 +141,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			{
 				Buffer.SetPosition(FieldReader);
 				Start = Buffer.GetPosition();
-				Result->GetValue()->AppendValue("FLACStream", PartialResult->GetValue());
+				Result->GetValue()->AppendField("FLACStream", PartialResult->GetValue());
 				if(Buffer.GetPosition() == Buffer.GetLength())
 				{
 					Result->SetSuccess(true);
@@ -157,11 +157,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
 						}
 						if(Buffer.GetPosition() == Buffer.GetLength())
 						{
@@ -190,7 +190,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				{
 					Buffer.SetPosition(FieldReader);
 					Start = Buffer.GetPosition();
-					Result->GetValue()->AppendValue("MPEG1Stream", PartialResult->GetValue());
+					Result->GetValue()->AppendField("MPEG1Stream", PartialResult->GetValue());
 					if(Buffer.GetPosition() == Buffer.GetLength())
 					{
 						Result->SetSuccess(true);
@@ -204,7 +204,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						{
 							Buffer.SetPosition(PartReader);
 							Start = Buffer.GetPosition();
-							Result->GetValue()->AppendValue("APEv2Tag", PartResult->GetValue());
+							Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
 							if(Buffer.GetPosition() == Buffer.GetLength())
 							{
 								Result->SetSuccess(true);
@@ -220,11 +220,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 									Start = Buffer.GetPosition();
 									if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 									{
-										Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+										Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
 									}
 									else
 									{
-										Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+										Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
 									}
 									if(Buffer.GetPosition() == Buffer.GetLength())
 									{
@@ -255,11 +255,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 								Start = Buffer.GetPosition();
 								if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 								{
-									Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+									Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
 								}
 								else
 								{
-									Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+									Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
 								}
 								if(Buffer.GetPosition() == Buffer.GetLength())
 								{
@@ -291,11 +291,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
 						}
 						if(Buffer.GetPosition() == Buffer.GetLength())
 						{
@@ -326,7 +326,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		{
 			Buffer.SetPosition(FieldReader);
 			Start = Buffer.GetPosition();
-			Result->GetValue()->AppendValue("MPEG1Stream", PartialResult->GetValue());
+			Result->GetValue()->AppendField("MPEG1Stream", PartialResult->GetValue());
 			if(Buffer.GetPosition() == Buffer.GetLength())
 			{
 				Result->SetSuccess(true);
@@ -340,7 +340,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				{
 					Buffer.SetPosition(PartReader);
 					Start = Buffer.GetPosition();
-					Result->GetValue()->AppendValue("APEv2Tag", PartResult->GetValue());
+					Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
 					if(Buffer.GetPosition() == Buffer.GetLength())
 					{
 						Result->SetSuccess(true);
@@ -356,11 +356,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							Start = Buffer.GetPosition();
 							if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 							{
-								Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+								Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
 							}
 							else
 							{
-								Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+								Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
 							}
 							if(Buffer.GetPosition() == Buffer.GetLength())
 							{
@@ -391,11 +391,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
 						}
 						if(Buffer.GetPosition() == Buffer.GetLength())
 						{
@@ -425,7 +425,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			{
 				Buffer.SetPosition(PartReader);
 				Start = Buffer.GetPosition();
-				Result->GetValue()->AppendValue("APEv2Tag", PartResult->GetValue());
+				Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
 				if(Buffer.GetPosition() == Buffer.GetLength())
 				{
 					Result->SetSuccess(true);
@@ -441,11 +441,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						Start = Buffer.GetPosition();
 						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
 						}
 						if(Buffer.GetPosition() == Buffer.GetLength())
 						{
@@ -476,11 +476,11 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					Start = Buffer.GetPosition();
 					if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 					{
-						Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
+						Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
 					}
 					else
 					{
-						Result->GetValue()->AppendValue("ID3v1Tag", PartialResult->GetValue());
+						Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
 					}
 					if(Buffer.GetPosition() == Buffer.GetLength())
 					{
@@ -502,7 +502,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					{
 						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
-						Result->GetValue()->AppendValue("FLACStream", PartialResult->GetValue());
+						Result->GetValue()->AppendField("FLACStream", PartialResult->GetValue());
 						if(Buffer.GetPosition() == Buffer.GetLength())
 						{
 							Result->SetSuccess(true);
@@ -523,7 +523,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						{
 							Buffer.SetPosition(FieldReader);
 							Start = Buffer.GetPosition();
-							Result->GetValue()->AppendValue("ASFFile", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ASFFile", PartialResult->GetValue());
 							if(Buffer.GetPosition() == Buffer.GetLength())
 							{
 								Result->SetSuccess(true);
@@ -542,7 +542,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								Result->GetValue()->AppendValue("RIFFChunk", PartResult->GetValue());
+								Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
 								Result->GetValue()->SetName("RIFFFile");
 								Buffer.SetPosition(PartReader);
 								if(Buffer.GetPosition() == Buffer.GetLength())
@@ -563,7 +563,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 								
 								if(PartResult->GetSuccess() == true)
 								{
-									Result->GetValue()->AppendValue("AppleDoubleFile", PartResult->GetValue());
+									Result->GetValue()->AppendField("AppleDoubleFile", PartResult->GetValue());
 									Buffer.SetPosition(PartReader);
 									if(Buffer.GetPosition() == Buffer.GetLength())
 									{
@@ -597,7 +597,7 @@ std::unique_ptr< Inspection::Result > ProcessBufferWithSpecificGetter(Inspection
 	std::unique_ptr< Inspection::Result > PartResult;
 	
 	PartResult = Inspection::g_GetterRepository.Get(Getter, PartReader, {});
-	Result->GetValue()->AppendValue(Getter.back(), PartResult->GetValue());
+	Result->GetValue()->AppendField(Getter.back(), PartResult->GetValue());
 	if(PartResult->GetSuccess() == true)
 	{
 		Buffer.SetPosition(PartReader);
