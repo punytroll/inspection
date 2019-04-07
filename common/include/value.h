@@ -15,11 +15,11 @@ namespace Inspection
 		{
 		}
 		
-		std::shared_ptr< Inspection::Value > AppendValue(std::shared_ptr< Inspection::Value > Value)
+		std::shared_ptr< Inspection::Value > AppendField(std::shared_ptr< Inspection::Value > Field)
 		{
-			_Fields.push_back(Value);
+			_Fields.push_back(Field);
 			
-			return Value;
+			return Field;
 		}
 		
 		template< typename DataType >

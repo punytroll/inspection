@@ -217,7 +217,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 			if(Continue == true)
 			{
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				Result->GetValue()->AppendValue(PartResult->GetValue());
+				Result->GetValue()->AppendField(PartResult->GetValue());
 				PartResult->GetValue()->AddTag("array index", ElementIndex++);
 			}
 			else
@@ -270,7 +270,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 			{
 				Reader.AdvancePosition(FieldReader.GetConsumedLength());
 				
-				auto FieldValue{Result->GetValue()->AppendValue(FieldResult->GetValue())};
+				auto FieldValue{Result->GetValue()->AppendField(FieldResult->GetValue())};
 				
 				FieldValue->AddTag("array index", ElementIndex++);
 			}
@@ -310,7 +310,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 			
 			Continue = ElementResult->GetSuccess();
 			
-			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+			auto ElementValue{Result->GetValue()->AppendField(ElementResult->GetValue())};
 			
 			ElementValue->AddTag("array index", ElementIndex++);
 			Reader.AdvancePosition(ElementReader.GetConsumedLength());
@@ -376,7 +376,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 				}
 				else
 				{
-					ElementValue = Result->GetValue()->AppendValue(ElementResult->GetValue());
+					ElementValue = Result->GetValue()->AppendField(ElementResult->GetValue());
 				}
 				
 				ElementValue->AddTag("array index", ElementIndex++);
@@ -420,7 +420,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 			if(ElementIndex < NumberOfElements)
 			{
 				auto FieldResult{Getter(Reader, ElementIndex)};
-				auto FieldValue{Result->GetValue()->AppendValue(FieldResult->GetValue())};
+				auto FieldValue{Result->GetValue()->AppendField(FieldResult->GetValue())};
 				
 				UpdateState(Continue, FieldResult);
 				FieldValue->AddTag("array index", ElementIndex++);
@@ -466,7 +466,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByPredicate(Ins
 			
 			Continue = ElementResult->GetSuccess();
 			
-			auto ElementValue{Result->GetValue()->AppendValue(ElementResult->GetValue())};
+			auto ElementValue{Result->GetValue()->AppendField(ElementResult->GetValue())};
 			
 			ElementValue->AddTag("array index", ElementIndex++);
 			Reader.AdvancePosition(ElementReader.GetConsumedLength());
@@ -5185,7 +5185,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			
 			FieldValue->SetName("Counter");
 			FieldValue->AddTag("omitted"s);
-			Result->GetValue()->AppendValue(FieldValue);
+			Result->GetValue()->AppendField(FieldValue);
 		}
 		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
@@ -6090,7 +6090,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			
 			CounterValue->SetName("Counter");
 			CounterValue->AddTag("omitted"s);
-			Result->GetValue()->AppendValue(CounterValue);
+			Result->GetValue()->AppendField(CounterValue);
 		}
 		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
