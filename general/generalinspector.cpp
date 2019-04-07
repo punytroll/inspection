@@ -155,7 +155,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					{
 						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
-						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 						{
 							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 						}
@@ -218,7 +218,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 								{
 									Buffer.SetPosition(FieldReader);
 									Start = Buffer.GetPosition();
-									if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+									if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 									{
 										Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 									}
@@ -253,7 +253,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 							{
 								Buffer.SetPosition(FieldReader);
 								Start = Buffer.GetPosition();
-								if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+								if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 								{
 									Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 								}
@@ -289,7 +289,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					{
 						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
-						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 						{
 							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 						}
@@ -354,7 +354,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						{
 							Buffer.SetPosition(FieldReader);
 							Start = Buffer.GetPosition();
-							if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+							if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 							{
 								Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 							}
@@ -389,7 +389,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					{
 						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
-						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 						{
 							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 						}
@@ -439,7 +439,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					{
 						Buffer.SetPosition(FieldReader);
 						Start = Buffer.GetPosition();
-						if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 						{
 							Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 						}
@@ -474,7 +474,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 				{
 					Buffer.SetPosition(FieldReader);
 					Start = Buffer.GetPosition();
-					if(PartialResult->GetValue()->HasValue("AlbumTrack") == true)
+					if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
 					{
 						Result->GetValue()->AppendValue("ID3v1.1Tag", PartialResult->GetValue());
 					}
@@ -645,7 +645,7 @@ bool EvaluateTestPath(std::shared_ptr< Inspection::Value > Value, const std::str
 		}
 		else if(FilterPartSpecifications[0] == "has-sub")
 		{
-			Result = Value->HasValue(FilterPartSpecifications[1]);
+			Result = Value->HasField(FilterPartSpecifications[1]);
 		}
 		else if(FilterPartSpecifications[0] == "has-value")
 		{
@@ -743,7 +743,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 		}
 		else if(FilterPartSpecifications[0] == "has-sub")
 		{
-			if(Value->HasValue(FilterPartSpecifications[1]) == true)
+			if(Value->HasField(FilterPartSpecifications[1]) == true)
 			{
 				std::cout << "true";
 			}
