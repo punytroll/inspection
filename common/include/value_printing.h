@@ -24,7 +24,7 @@ namespace Inspection
 	
 	inline void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 	{
-		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetAny().empty() == false) || (Value->GetTags().empty() == false)};
+		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetData().empty() == false) || (Value->GetTags().empty() == false)};
 		
 		if(HeaderLine == true)
 		{
@@ -42,11 +42,11 @@ namespace Inspection
 			}
 			std::cout << Value->GetName();
 		}
-		if((Value->GetName().empty() == false) && (Value->GetAny().empty() == false))
+		if((Value->GetName().empty() == false) && (Value->GetData().empty() == false))
 		{
 			std::cout << g_LightGray << ": ";
 		}
-		if(Value->GetAny().empty() == false)
+		if(Value->GetData().empty() == false)
 		{
 			if((Value->GetName().empty() == false) && (Value->GetName() == "error"))
 			{
@@ -56,7 +56,7 @@ namespace Inspection
 			{
 				std::cout << g_LightCyan;
 			}
-			std::cout << Value->GetAny();
+			std::cout << Value->GetData();
 		}
 		if(Value->GetTags().empty() == false)
 		{
@@ -75,7 +75,7 @@ namespace Inspection
 					{
 						std::cout << g_LightRed;
 					}
-					else if(Tag->GetAny().empty() == true)
+					else if(Tag->GetData().empty() == true)
 					{
 						std::cout << g_DarkGray;
 					}
@@ -85,13 +85,13 @@ namespace Inspection
 					}
 					std::cout << Tag->GetName();
 				}
-				if((Tag->GetName().empty() == false) && (Tag->GetAny().empty() == false))
+				if((Tag->GetName().empty() == false) && (Tag->GetData().empty() == false))
 				{
 					std::cout << g_LightGray << '=';
 				}
-				if(Tag->GetAny().empty() == false)
+				if(Tag->GetData().empty() == false)
 				{
-					if(Tag->GetAny().type() == typeid(nullptr))
+					if(Tag->GetData().type() == typeid(nullptr))
 					{
 						std::cout << g_DarkGreen;
 					}
@@ -99,7 +99,7 @@ namespace Inspection
 					{
 						std::cout << g_DarkGray;
 					}
-					std::cout << Tag->GetAny();
+					std::cout << Tag->GetData();
 				}
 				if(Tag->GetValues().size() > 0)
 				{
@@ -126,13 +126,13 @@ namespace Inspection
 							std::cout << SubTag->GetName();
 						}
 						std::cout << g_DarkGray;
-						if((SubTag->GetName().empty() == false) && (SubTag->GetAny().empty() == false))
+						if((SubTag->GetName().empty() == false) && (SubTag->GetData().empty() == false))
 						{
 							std::cout << '=';
 						}
-						if(SubTag->GetAny().empty() == false)
+						if(SubTag->GetData().empty() == false)
 						{
-							std::cout << SubTag->GetAny();
+							std::cout << SubTag->GetData();
 						}
 						if((SubTag->GetValues().size() > 0) || (SubTag->GetTags().size() > 0))
 						{

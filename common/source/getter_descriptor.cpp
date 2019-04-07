@@ -187,11 +187,11 @@ namespace Inspection
 		}
 	}
 	
-	template< typename Type >
+	template< typename DataType >
 	bool ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target)
 	{
 		bool Result{false};
-		auto BaseValueString{to_string_cast(std::experimental::any_cast< const Type & >(Target->GetAny()))};
+		auto BaseValueString{to_string_cast(std::experimental::any_cast< const DataType & >(Target->GetData()))};
 		auto ElementIterator{std::find_if(Enumeration->Elements.begin(), Enumeration->Elements.end(), [BaseValueString](auto Element){ return Element->BaseValue == BaseValueString; })};
 		
 		if(ElementIterator != Enumeration->Elements.end())
@@ -247,7 +247,7 @@ namespace Inspection
 		}
 		assert(Value != nullptr);
 		
-		return Value->GetAny();
+		return Value->GetData();
 	}
 	
 	template< typename Type >
@@ -494,7 +494,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 											if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == "unsigned integer 32bit")
 											{
 												assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue);
-												Continue = std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetAny()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue.value();
+												Continue = std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue.value();
 												if(Continue == false)
 												{
 													PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32BitValue.value()) + "\".");
