@@ -137,7 +137,7 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
 				auto ParseResult{Processor(Buffer)};
 				
-				ParseResult->GetValue()->SetAny(g_LightGreen + Path + g_White);
+				ParseResult->GetValue()->SetData(g_LightGreen + Path + g_White);
 				Writer(ParseResult, Buffer);
 				munmap(Address, FileSize);
 			}

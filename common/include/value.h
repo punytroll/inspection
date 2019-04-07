@@ -22,13 +22,13 @@ namespace Inspection
 			return Value;
 		}
 		
-		template< typename AnyType >
-		std::shared_ptr< Value > AppendValue(const std::string & Name, const AnyType & Any)
+		template< typename DataType >
+		std::shared_ptr< Value > AppendValue(const std::string & Name, const DataType & Data)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
 			Result->SetName(Name);
-			Result->SetAny(Any);
+			Result->SetData(Data);
 			_Values.push_back(Result);
 			
 			return Result;
@@ -67,20 +67,21 @@ namespace Inspection
 			return Result;
 		}
 		
-		std::shared_ptr< Value > AddTag(const std::string & Name, const std::experimental::any & Any)
+		template< typename DataType >
+		std::shared_ptr< Value > AddTag(const std::string & Name, const DataType & Data)
 		{
 			auto Result{std::make_shared< Inspection::Value >()};
 			
-			Result->SetAny(Any);
+			Result->SetData(Data);
 			Result->SetName(Name);
 			_Tags.push_back(Result);
 			
 			return Result;
 		}
 		
-		const std::experimental::any & GetAny(void)
+		const std::experimental::any & GetData(void)
 		{
-			return _Any;
+			return _Data;
 		}
 		
 		std::uint32_t GetCount(void) const
@@ -137,9 +138,9 @@ namespace Inspection
 			return std::find_if(std::begin(_Values), std::end(_Values), [&Name](const std::shared_ptr< Value > & Value) { return Value->GetName() == Name; }) != std::end(_Values);
 		}
 		
-		void SetAny(const std::experimental::any & Any)
+		void SetData(const std::experimental::any & Data)
 		{
-			_Any = Any;
+			_Data = Data;
 		}
 		
 		void SetName(const std::string & Name)
@@ -147,7 +148,7 @@ namespace Inspection
 			_Name = Name;
 		}
 	private:
-		std::experimental::any _Any;
+		std::experimental::any _Data;
 		std::string _Name;
 		std::list< std::shared_ptr< Inspection::Value > > _Tags;
 		std::list< std::shared_ptr< Inspection::Value > > _Values;

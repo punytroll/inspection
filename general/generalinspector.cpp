@@ -629,7 +629,7 @@ bool EvaluateTestPath(std::shared_ptr< Inspection::Value > Value, const std::str
 		{
 			std::stringstream Output;
 			
-			Output << Value->GetAny();
+			Output << Value->GetData();
 			Result = Output.str() == "true";
 		}
 		else if(FilterPartSpecifications[0] == "tag")
@@ -649,13 +649,13 @@ bool EvaluateTestPath(std::shared_ptr< Inspection::Value > Value, const std::str
 		}
 		else if(FilterPartSpecifications[0] == "has-value")
 		{
-			return Value->GetAny().empty() == false;
+			return Value->GetData().empty() == false;
 		}
 		else if(FilterPartSpecifications[0] == "is-value")
 		{
 			std::stringstream Output;
 			
-			Output << Value->GetAny();
+			Output << Value->GetData();
 			Result = Output.str() == FilterPartSpecifications[1];
 		}
 		else
@@ -715,7 +715,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 		{
 			if(FilterPartSpecifications.size() == 1)
 			{
-				std::cout << Value->GetAny();
+				std::cout << Value->GetData();
 			}
 			else
 			{
@@ -754,7 +754,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 		}
 		else if(FilterPartSpecifications[0] == "has-value")
 		{
-			if(Value->GetAny().empty() == false)
+			if(Value->GetData().empty() == false)
 			{
 				std::cout << "true";
 			}
@@ -767,7 +767,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 		{
 			std::stringstream Output;
 			
-			Output << Value->GetAny();
+			Output << Value->GetData();
 			if(Output.str() == FilterPartSpecifications[1])
 			{
 				std::cout << "true";
@@ -780,7 +780,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 		else if(FilterPartSpecifications[0] == "type")
 		{
 			assert(FilterPartSpecifications.size() == 1);
-			std::cout << GetTypeName(Value->GetAny().type());
+			std::cout << GetTypeName(Value->GetData().type());
 		}
 		else
 		{
