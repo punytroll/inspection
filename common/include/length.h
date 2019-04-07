@@ -14,19 +14,19 @@ namespace Inspection
 	{
 	public:
 		Length(void) :
-			Length(0, 0)
+			Length{0, 0}
 		{
 		}
 		
 		Length(const Length & Length) :
-			_Bits(Length._Bits),
-			_Bytes(Length._Bytes)
+			_Bits{Length._Bits},
+			_Bytes{Length._Bytes}
 		{
 		}
 		
 		Length(std::uint64_t Bytes, std::uint64_t Bits) :
-			_Bits(Bits),
-			_Bytes(Bytes)
+			_Bits{Bits},
+			_Bytes{Bytes}
 		{
 			_Normalize();
 		}
@@ -76,7 +76,7 @@ namespace Inspection
 				Bytes -= 1;
 			}
 			
-			return Inspection::Length(Bytes, Bits);
+			return Inspection::Length{Bytes, Bits};
 		}
 		
 		Length & operator-=(const Length & Length)
@@ -97,7 +97,7 @@ namespace Inspection
 		
 		Length operator+(const Length & Length) const
 		{
-			return Inspection::Length(_Bytes + Length._Bytes, _Bits + Length._Bits);
+			return Inspection::Length{_Bytes + Length._Bytes, _Bits + Length._Bits};
 		}
 		
 		Length & operator+=(const Length & Length)
