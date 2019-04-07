@@ -686,24 +686,24 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 			else if(FilterPartSpecifications.size() == 3)
 			{
 				auto TestPath{FilterPartSpecifications[2].substr(1, FilterPartSpecifications[2].size() - 2)};
-				std::shared_ptr< Inspection::Value > MatchingValue;
+				std::shared_ptr< Inspection::Value > MatchingField;
 				
-				for(auto PartValue : Value->GetValues())
+				for(auto Field : Value->GetFields())
 				{
-					if((PartValue->GetName() == FilterPartSpecifications[1]) && (EvaluateTestPath(PartValue, TestPath) == true))
+					if((Field->GetName() == FilterPartSpecifications[1]) && (EvaluateTestPath(Field, TestPath) == true))
 					{
-						MatchingValue = PartValue;
+						MatchingField = Field;
 						
 						break;
 					}
 				}
-				if(MatchingValue == nullptr)
+				if(MatchingField == nullptr)
 				{
-					throw std::invalid_argument("The test \"" + TestPath + "\" could not be satisfied by any sub value.");
+					throw std::invalid_argument("The test \"" + TestPath + "\" could not be satisfied by any field.");
 				}
 				else
 				{
-					Value = MatchingValue;
+					Value = MatchingField;
 				}
 			}
 			if(Index + 1 == FilterParts.size())
