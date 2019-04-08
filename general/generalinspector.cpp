@@ -608,55 +608,55 @@ std::unique_ptr< Inspection::Result > ProcessBufferWithSpecificGetter(Inspection
 	return Result;
 }
 
-bool EvaluateTestPath(std::shared_ptr< Inspection::Value > Value, const std::string & TestPath)
+bool EvaluateTestQuery(std::shared_ptr< Inspection::Value > Value, const std::string & Query)
 {
-	auto FilterParts{SplitString(TestPath, '/')};
+	auto QueryParts{SplitString(Query, '/')};
 	auto Result{false};
 	
-	for(auto Index = 0ul; Index < FilterParts.size(); ++Index)
+	for(auto Index = 0ul; Index < QueryParts.size(); ++Index)
 	{
-		auto FilterPart{FilterParts[Index]};
-		auto FilterPartSpecifications{SplitString(FilterPart, ':')};
+		auto QueryPart{QueryParts[Index]};
+		auto QueryPartSpecifications{SplitString(QueryPart, ':')};
 		
-		if(FilterPartSpecifications[0] == "sub")
+		if(QueryPartSpecifications[0] == "field")
 		{
-			if(FilterPartSpecifications.size() == 2)
+			if(QueryPartSpecifications.size() == 2)
 			{
-				Value = Value->GetValue(FilterPartSpecifications[1]);
+				Value = Value->GetValue(QueryPartSpecifications[1]);
 			}
 		}
-		else if(FilterPartSpecifications[0] == "value")
+		else if(QueryPartSpecifications[0] == "data")
 		{
 			std::stringstream Output;
 			
 			Output << Value->GetData();
 			Result = Output.str() == "true";
 		}
-		else if(FilterPartSpecifications[0] == "tag")
+		else if(QueryPartSpecifications[0] == "tag")
 		{
-			if(FilterPartSpecifications.size() == 2)
+			if(QueryPartSpecifications.size() == 2)
 			{
-				Value = Value->GetTag(FilterPartSpecifications[1]);
+				Value = Value->GetTag(QueryPartSpecifications[1]);
 			}
 		}
-		else if(FilterPartSpecifications[0] == "has-tag")
+		else if(QueryPartSpecifications[0] == "has-tag")
 		{
-			Result = Value->HasTag(FilterPartSpecifications[1]);
+			Result = Value->HasTag(QueryPartSpecifications[1]);
 		}
-		else if(FilterPartSpecifications[0] == "has-sub")
+		else if(QueryPartSpecifications[0] == "has-field")
 		{
-			Result = Value->HasField(FilterPartSpecifications[1]);
+			Result = Value->HasField(QueryPartSpecifications[1]);
 		}
-		else if(FilterPartSpecifications[0] == "has-value")
+		else if(QueryPartSpecifications[0] == "has-data")
 		{
 			return Value->GetData().empty() == false;
 		}
-		else if(FilterPartSpecifications[0] == "is-value")
+		else if(QueryPartSpecifications[0] == "is-data")
 		{
 			std::stringstream Output;
 			
 			Output << Value->GetData();
-			Result = Output.str() == FilterPartSpecifications[1];
+			Result = Output.str() == QueryPartSpecifications[1];
 		}
 		else
 		{
@@ -667,30 +667,30 @@ bool EvaluateTestPath(std::shared_ptr< Inspection::Value > Value, const std::str
 	return Result;
 }
 
-void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::string & FilterPath)
+void QueryWriter(std::unique_ptr< Inspection::Result > & Result, const std::string & Query)
 {
-	auto FilterParts{SplitString(FilterPath.substr(1), '/')};
+	auto QueryParts{SplitString(Query.substr(1), '/')};
 	auto Value{Result->GetValue()};
 	
-	for(auto Index = 0ul; Index < FilterParts.size(); ++Index)
+	for(auto Index = 0ul; Index < QueryParts.size(); ++Index)
 	{
-		auto FilterPart{FilterParts[Index]};
-		auto FilterPartSpecifications{SplitString(FilterPart, ':')};
+		auto QueryPart{QueryParts[Index]};
+		auto QueryPartSpecifications{SplitString(QueryPart, ':')};
 		
-		if(FilterPartSpecifications[0] == "sub")
+		if(QueryPartSpecifications[0] == "field")
 		{
-			if(FilterPartSpecifications.size() == 2)
+			if(QueryPartSpecifications.size() == 2)
 			{
-				Value = Value->GetValue(FilterPartSpecifications[1]);
+				Value = Value->GetValue(QueryPartSpecifications[1]);
 			}
-			else if(FilterPartSpecifications.size() == 3)
+			else if(QueryPartSpecifications.size() == 3)
 			{
-				auto TestPath{FilterPartSpecifications[2].substr(1, FilterPartSpecifications[2].size() - 2)};
+				auto TestQuery{QueryPartSpecifications[2].substr(1, QueryPartSpecifications[2].size() - 2)};
 				std::shared_ptr< Inspection::Value > MatchingField;
 				
 				for(auto Field : Value->GetFields())
 				{
-					if((Field->GetName() == FilterPartSpecifications[1]) && (EvaluateTestPath(Field, TestPath) == true))
+					if((Field->GetName() == QueryPartSpecifications[1]) && (EvaluateTestQuery(Field, TestQuery) == true))
 					{
 						MatchingField = Field;
 						
@@ -699,40 +699,40 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 				}
 				if(MatchingField == nullptr)
 				{
-					throw std::invalid_argument("The test \"" + TestPath + "\" could not be satisfied by any field.");
+					throw std::invalid_argument("The test \"" + TestQuery + "\" could not be satisfied by any field.");
 				}
 				else
 				{
 					Value = MatchingField;
 				}
 			}
-			if(Index + 1 == FilterParts.size())
+			if(Index + 1 == QueryParts.size())
 			{
 				PrintValue(Value);
 			}
 		}
-		else if(FilterPartSpecifications[0] == "value")
+		else if(QueryPartSpecifications[0] == "data")
 		{
-			if(FilterPartSpecifications.size() == 1)
+			if(QueryPartSpecifications.size() == 1)
 			{
 				std::cout << Value->GetData();
 			}
 			else
 			{
-				throw std::invalid_argument("The \"value\" part specification does not accept any arguments.");
+				throw std::invalid_argument("The \"data\" query part specification does not accept any arguments.");
 			}
 		}
-		else if(FilterPartSpecifications[0] == "tag")
+		else if(QueryPartSpecifications[0] == "tag")
 		{
-			Value = Value->GetTag(FilterPartSpecifications[1]);
-			if(Index + 1 == FilterParts.size())
+			Value = Value->GetTag(QueryPartSpecifications[1]);
+			if(Index + 1 == QueryParts.size())
 			{
 				PrintValue(Value);
 			}
 		}
-		else if(FilterPartSpecifications[0] == "has-tag")
+		else if(QueryPartSpecifications[0] == "has-tag")
 		{
-			if(Value->HasTag(FilterPartSpecifications[1]) == true)
+			if(Value->HasTag(QueryPartSpecifications[1]) == true)
 			{
 				std::cout << "true";
 			}
@@ -741,9 +741,9 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 				std::cout << "false";
 			}
 		}
-		else if(FilterPartSpecifications[0] == "has-sub")
+		else if(QueryPartSpecifications[0] == "has-field")
 		{
-			if(Value->HasField(FilterPartSpecifications[1]) == true)
+			if(Value->HasField(QueryPartSpecifications[1]) == true)
 			{
 				std::cout << "true";
 			}
@@ -752,7 +752,7 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 				std::cout << "false";
 			}
 		}
-		else if(FilterPartSpecifications[0] == "has-value")
+		else if(QueryPartSpecifications[0] == "has-data")
 		{
 			if(Value->GetData().empty() == false)
 			{
@@ -763,12 +763,12 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 				std::cout << "false";
 			}
 		}
-		else if(FilterPartSpecifications[0] == "is-value")
+		else if(QueryPartSpecifications[0] == "is-value")
 		{
 			std::stringstream Output;
 			
 			Output << Value->GetData();
-			if(Output.str() == FilterPartSpecifications[1])
+			if(Output.str() == QueryPartSpecifications[1])
 			{
 				std::cout << "true";
 			}
@@ -777,9 +777,9 @@ void FilterWriter(std::unique_ptr< Inspection::Result > & Result, const std::str
 				std::cout << "false";
 			}
 		}
-		else if(FilterPartSpecifications[0] == "type")
+		else if(QueryPartSpecifications[0] == "type")
 		{
-			assert(FilterPartSpecifications.size() == 1);
+			assert(QueryPartSpecifications.size() == 1);
 			std::cout << GetTypeName(Value->GetData().type());
 		}
 		else
@@ -793,8 +793,8 @@ int main(int argc, char ** argv)
 {
 	std::string GetterPrefix{"--getter="};
 	std::string Getter;
-	std::string ValuePrefix{"--value="};
-	std::string ValuePath;
+	std::string QueryPrefix{"--query="};
+	std::string Query;
 	std::deque< std::string > Paths;
 	auto Arguments{argc};
 	auto ArgumentIndex{0};
@@ -803,12 +803,12 @@ int main(int argc, char ** argv)
 	{
 		std::string Argument{argv[ArgumentIndex]};
 		
-		if(Argument.compare(0, ValuePrefix.size(), ValuePrefix) == 0)
+		if(Argument.compare(0, QueryPrefix.size(), QueryPrefix) == 0)
 		{
-			ValuePath = Argument.substr(ValuePrefix.size());
-			if((ValuePath.size() > 0) && (ValuePath[0] != '/'))
+			Query = Argument.substr(QueryPrefix.size());
+			if((Query.size() > 0) && (Query[0] != '/'))
 			{
-				std::cerr << "A --value has to be given as an absolute path." << std::endl;
+				std::cerr << "A --query has to be given as an absolute path." << std::endl;
 				
 				return 1;
 			}
@@ -837,9 +837,9 @@ int main(int argc, char ** argv)
 		std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer{DefaultWriter};
 		std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor{ProcessBuffer};
 		
-		if(ValuePath != "")
+		if(Query != "")
 		{
-			Writer = std::bind(FilterWriter, std::placeholders::_1, ValuePath);
+			Writer = std::bind(QueryWriter, std::placeholders::_1, Query);
 		}
 		if(Getter != "")
 		{
