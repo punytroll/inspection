@@ -233,7 +233,7 @@ namespace Inspection
 				}
 			case Inspection::ValueReferenceDescriptor::PartDescriptor::Type::Sub:
 				{
-					Value = Value->GetValue(PartDescriptor.DetailName);
+					Value = Value->GetField(PartDescriptor.DetailName);
 					
 					break;
 				}
