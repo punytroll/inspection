@@ -154,7 +154,7 @@ namespace Inspection
 			std::cout << std::endl;
 			SubIndentation += "    ";
 		}
-		if(Value->GetCount() > 0)
+		if(Value->GetFieldCount() > 0)
 		{
 			for(auto & SubValue : Value->GetFields())
 			{
