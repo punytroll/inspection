@@ -47,33 +47,30 @@ namespace Inspection
 			}
 		}
 		
-		std::shared_ptr< Value > AddTag(std::shared_ptr< Value > Value)
+		std::shared_ptr< Inspection::Value > AddTag(std::shared_ptr< Inspection::Value > Tag)
 		{
-			_Tags.push_back(Value);
+			_Tags.push_back(Tag);
 			
-			return Value;
+			return Tag;
 		}
 		
-		std::shared_ptr< Value > AddTag(const std::string & Name)
+		std::shared_ptr< Inspection::Value > AddTag(const std::string & Name)
 		{
-			auto Result{std::make_shared< Inspection::Value >()};
+			auto Tag{std::make_shared< Inspection::Value >()};
 			
-			Result->SetName(Name);
-			_Tags.push_back(Result);
+			Tag->SetName(Name);
 			
-			return Result;
+			return AddTag(Tag);
 		}
 		
 		template< typename DataType >
-		std::shared_ptr< Value > AddTag(const std::string & Name, const DataType & Data)
+		std::shared_ptr< Inspection::Value > AddTag(const std::string & Name, const DataType & Data)
 		{
-			auto Result{std::make_shared< Inspection::Value >()};
+			auto Tag{AddTag(Name)};
 			
-			Result->SetData(Data);
-			Result->SetName(Name);
-			_Tags.push_back(Result);
+			Tag->SetData(Data);
 			
-			return Result;
+			return Tag;
 		}
 		
 		const std::experimental::any & GetData(void)
@@ -81,7 +78,7 @@ namespace Inspection
 			return _Data;
 		}
 		
-		std::uint32_t GetCount(void) const
+		std::uint32_t GetFieldCount(void) const
 		{
 			return _Fields.size();
 		}
