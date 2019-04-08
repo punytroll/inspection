@@ -622,7 +622,7 @@ bool EvaluateTestQuery(std::shared_ptr< Inspection::Value > Value, const std::st
 		{
 			if(QueryPartSpecifications.size() == 2)
 			{
-				Value = Value->GetValue(QueryPartSpecifications[1]);
+				Value = Value->GetField(QueryPartSpecifications[1]);
 			}
 		}
 		else if(QueryPartSpecifications[0] == "data")
@@ -681,7 +681,7 @@ void QueryWriter(std::unique_ptr< Inspection::Result > & Result, const std::stri
 		{
 			if(QueryPartSpecifications.size() == 2)
 			{
-				Value = Value->GetValue(QueryPartSpecifications[1]);
+				Value = Value->GetField(QueryPartSpecifications[1]);
 			}
 			else if(QueryPartSpecifications.size() == 3)
 			{

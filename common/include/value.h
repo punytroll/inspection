@@ -105,7 +105,7 @@ namespace Inspection
 			throw std::invalid_argument("Could not find a tag named \"" + Name + "\".");
 		}
 		
-		std::shared_ptr< Inspection::Value > GetValue(const std::string & Name)
+		std::shared_ptr< Inspection::Value > GetField(const std::string & Name)
 		{
 			for(auto & Field : _Fields)
 			{
