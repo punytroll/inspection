@@ -591,6 +591,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					_HardcodedGetterWithParameters = Inspection::Get_APE_Item;
 				}
+				else if(HardcodedGetterText->GetText() == "Get_Apple_AppleDouble_File")
+				{
+					_HardcodedGetterWithParameters = Inspection::Get_Apple_AppleDouble_File;
+				}
 				else if(HardcodedGetterText->GetText() == "Get_Array_EndedByNumberOfElements")
 				{
 					_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByNumberOfElements;

@@ -1,24 +1,3 @@
 <getter>
-	<part>
-		<getter>
-			<part>Apple</part>
-			<part>AppleDouble_Header</part>
-		</getter>
-		<value>
-			<append-value>
-				<name>Header</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
-		<getter>
-			<part>Data</part>
-			<part>SetOrUnset_EndedByLength</part>
-		</getter>
-		<value>
-			<append-value>
-				<name>Data</name>
-			</append-value>
-		</value>
-	</part>
+	<hardcoded-getter>Get_Apple_AppleDouble_File</hardcoded-getter>
 </getter>

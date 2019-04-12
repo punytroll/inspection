@@ -196,6 +196,74 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Item(Inspection::Reade
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::Get_Apple_AppleDouble_File(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader FieldReader{Reader};
+		auto FieldResult{Inspection::g_GetterRepository.Get({"Apple", "AppleDouble_Header"}, FieldReader, {})};
+		
+		Continue = FieldResult->GetSuccess();
+		Result->GetValue()->AppendField("Header", FieldResult->GetValue());
+		Reader.AdvancePosition(FieldReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto & EntryDescriptorFields{Result->GetValue()->GetField("Header")->GetField("EntryDescriptors")->GetFields()};
+		
+		if(EntryDescriptorFields.size() > 0)
+		{
+			auto StartPosition{Reader.GetPositionInBuffer()};
+			auto EntriesField{Result->GetValue()->AppendField("Entries")};
+			
+			EntriesField->AddTag("array"s);
+			
+			auto EntryDescriptorFieldIterator{std::begin(EntryDescriptorFields)};
+			Inspection::Length FurthestPosition{Reader.GetPositionInBuffer()};
+			auto EntryIndex{0};
+			
+			while((Continue == true) && (EntryDescriptorFieldIterator != std::end(EntryDescriptorFields)))
+			{
+				auto EntryDescriptorField{*EntryDescriptorFieldIterator};
+				Inspection::Reader EntryReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(EntryDescriptorField->GetField("Offset")->GetData()), 0}, Inspection::Length{std::experimental::any_cast< std::uint32_t >(EntryDescriptorField->GetField("Length")->GetData()), 0}};
+				auto EntryResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(EntryReader)};
+				
+				Continue = EntryResult->GetSuccess();
+				
+				auto EntryField{EntriesField->AppendField("Entry", EntryResult->GetValue())};
+				
+				EntryField->AddTag("array index", EntryIndex);
+				if((Continue == true) && (EntryReader.GetPositionInBuffer() > FurthestPosition))
+				{
+					FurthestPosition = EntryReader.GetPositionInBuffer();
+				}
+				++EntryDescriptorFieldIterator;
+				++EntryIndex;
+			}
+			if(Continue == true)
+			{
+				EntriesField->AddTag("ended by number of elements"s);
+			}
+			else
+			{
+				EntriesField->AddTag("ended by failure"s);
+			}
+			EntriesField->AddTag("number of elements", EntryIndex);
+			Reader.AdvancePosition(FurthestPosition - StartPosition);
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter)
 {
 	auto Result{Inspection::InitializeResult(Reader)};

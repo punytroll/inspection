@@ -29,14 +29,23 @@ namespace Inspection
 			return AppendField(Field);
 		}
 		
-		template< typename DataType >
-		std::shared_ptr< Inspection::Value > AppendField(const std::string & Name, const DataType & Data)
+		std::shared_ptr< Inspection::Value > AppendField(const std::string & Name)
 		{
 			auto Field{std::make_shared< Inspection::Value >()};
 			
-			Field->SetData(Data);
+			Field->SetName(Name);
 			
-			return AppendField(Name, Field);
+			return AppendField(Field);
+		}
+		
+		template< typename DataType >
+		std::shared_ptr< Inspection::Value > AppendField(const std::string & Name, const DataType & Data)
+		{
+			auto Result{AppendField(Name)};
+			
+			Result->SetData(Data);
+			
+			return Result;
 		}
 		
 		void AppendFields(const std::list< std::shared_ptr< Inspection::Value > > & Fields)
