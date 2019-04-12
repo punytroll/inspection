@@ -22,6 +22,7 @@ namespace Inspection
 	
 	std::unique_ptr< Inspection::Result > Get_APE_Flags(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_APE_Item(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Apple_AppleDouble_File(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByLength(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::experimental::any > &) > Getter);
