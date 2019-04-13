@@ -70,8 +70,12 @@
 			<part>Unset_EndedByLength</part>
 		</getter>
 		<length>
-			<bytes>8</bytes>
-			<bits>0</bits>
+			<bytes>
+				<unsigned-integer-64bit>8</unsigned-integer-64bit>
+			</bytes>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<value>
 			<append-value>
