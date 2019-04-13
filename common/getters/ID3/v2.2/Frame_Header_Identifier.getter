@@ -6,8 +6,12 @@
 			<part>AlphaNumeric_EndedByLength</part>
 		</getter>
 		<length>
-			<bytes>3</bytes>
-			<bits>0</bits>
+			<bytes>
+				<unsigned-integer-64bit>3</unsigned-integer-64bit>
+			</bytes>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<value>
 			<set/>

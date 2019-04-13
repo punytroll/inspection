@@ -31,10 +31,14 @@
 		</getter>
 		<length>
 			<bytes>
-				<result/>
-				<sub>MIMETypeLength</sub>
+				<value-reference>
+					<result/>
+					<sub>MIMETypeLength</sub>
+				</value-reference>
 			</bytes>
-			<bits>0</bits>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<value>
 			<append-value>
@@ -64,10 +68,14 @@
 		</getter>
 		<length>
 			<bytes>
-				<result/>
-				<sub>DescriptionLength</sub>
+				<value-reference>
+					<result/>
+					<sub>DescriptionLength</sub>
+				</value-reference>
 			</bytes>
-			<bits>0</bits>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<value>
 			<append-value>
@@ -147,10 +155,14 @@
 		</getter>
 		<length>
 			<bytes>
-				<result/>
-				<sub>PictureDataLength</sub>
+				<value-reference>
+					<result/>
+					<sub>PictureDataLength</sub>
+				</value-reference>
 			</bytes>
-			<bits>0</bits>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<value>
 			<append-value>

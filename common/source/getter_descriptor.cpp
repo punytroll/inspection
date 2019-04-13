@@ -54,6 +54,7 @@ namespace Inspection
 		std::experimental::optional< Inspection::GetterReferenceDescriptor > GetterReferenceDescriptor;
 		std::experimental::optional< std::string > StringValue;
 		std::experimental::optional< std::uint32_t > UnsignedInteger32BitValue;
+		std::experimental::optional< std::uint64_t > UnsignedInteger64BitValue;
 		std::experimental::optional< Inspection::ValueReferenceDescriptor > ValueReferenceDescriptor;
 	};
 	
@@ -287,6 +288,11 @@ namespace Inspection
 		{
 			assert(ValueDescriptor.StringValue);
 			Result = from_string_cast< Type >(ValueDescriptor.StringValue.value());
+		}
+		else if(ValueDescriptor.Type == "unsigned integer 64bit")
+		{
+			assert(ValueDescriptor.UnsignedInteger64BitValue);
+			Result = ValueDescriptor.UnsignedInteger64BitValue.value();
 		}
 		else
 		{
@@ -564,634 +570,535 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 
 void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & GetterPath)
 {
-	std::ifstream InputFileStream{GetterPath};
-	XML::Document Document{InputFileStream};
-	auto DocumentElement{Document.GetDocumentElement()};
-	
-	assert(DocumentElement != nullptr);
-	assert(DocumentElement->GetName() == "getter");
-	for(auto GetterChildNode : DocumentElement->GetChilds())
+	try
 	{
-		if(GetterChildNode->GetNodeType() == XML::NodeType::Element)
+		std::ifstream InputFileStream{GetterPath};
+		XML::Document Document{InputFileStream};
+		auto DocumentElement{Document.GetDocumentElement()};
+		
+		assert(DocumentElement != nullptr);
+		assert(DocumentElement->GetName() == "getter");
+		for(auto GetterChildNode : DocumentElement->GetChilds())
 		{
-			auto GetterChildElement{dynamic_cast< const XML::Element * >(GetterChildNode)};
-			
-			if(GetterChildElement->GetName() == "hardcoded-getter")
+			if(GetterChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				assert(GetterChildElement->GetChilds().size() == 1);
+				auto GetterChildElement{dynamic_cast< const XML::Element * >(GetterChildNode)};
 				
-				auto HardcodedGetterText{dynamic_cast< const XML::Text * >(GetterChildElement->GetChild(0))};
-				
-				assert(HardcodedGetterText != nullptr);
-				if(HardcodedGetterText->GetText() == "Get_APE_Flags")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_APE_Flags;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_APE_Item")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_APE_Item;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_Apple_AppleDouble_File")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_Apple_AppleDouble_File;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_Array_EndedByNumberOfElements")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByNumberOfElements;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
-				{
-					_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumericOrSpace_EndedByLength")
-				{
-					_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByLength")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_Printable_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
-				{
-					_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor")
-				{
-					_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord_Data")
-				{
-					_HardcodedGetterWithParameters = Get_ASF_Metadata_DescriptionRecord_Data;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord_Data")
-				{
-					_HardcodedGetterWithParameters = Get_ASF_MetadataLibrary_DescriptionRecord_Data;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_Object")
-				{
-					_HardcodedGetterWithParameters = Get_ASF_Object;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
-				{
-					_HardcodedGetter = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
-				{
-					_HardcodedGetter = Inspection::Get_ASF_CreationDate;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_GUID")
-				{
-					_HardcodedGetter = Inspection::Get_ASF_GUID;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
-				{
-					_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_BitSet_16Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_Boolean_1Bit")
-				{
-					_HardcodedGetter = Inspection::Get_Boolean_1Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
-				{
-					_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_Data_SetOrUnset_EndedByLength")
-				{
-					_HardcodedGetter = Inspection::Get_Data_SetOrUnset_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_Data_Unset_EndedByLength")
-				{
-					_HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
-				{
-					_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
-				{
-					_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
-				{
-					_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Language")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_2_Language;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Language")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_3_Language;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Language")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_Language;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_ReplayGainAdjustment")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_ReplayGainAdjustment;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Track;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Tracks")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Tracks;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
-				{
-					_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTermination")
-				{
-					_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
-				{
-					_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary32")
-				{
-					_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask")
-				{
-					_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat")
-				{
-					_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
-				{
-					_HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_SignedInteger_32Bit_RiceEncoded")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_32Bit_RiceEncoded;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_SignedInteger_BigEndian")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_String_ASCII_Alphabetic_ByTemplate")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_String_ASCII_Alphabetic_ByTemplate;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_1Bit")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_1Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_2Bit")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_2Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_3Bit")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_4Bit")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_4Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_7Bit")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_7Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_8Bit;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_LittleEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_LittleEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_20Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_20Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_36Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_36Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_BigEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
-				{
-					_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_BigEndian")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_BigEndian;
-				}
-				else if(HardcodedGetterText->GetText() == "Get_Vorbis_CommentHeader_UserComment")
-				{
-					_HardcodedGetterWithParameters = Inspection::Get_Vorbis_CommentHeader_UserComment;
+				if(GetterChildElement->GetName() == "hardcoded-getter")
+				{
+					assert(GetterChildElement->GetChilds().size() == 1);
+					
+					auto HardcodedGetterText{dynamic_cast< const XML::Text * >(GetterChildElement->GetChild(0))};
+					
+					assert(HardcodedGetterText != nullptr);
+					if(HardcodedGetterText->GetText() == "Get_APE_Flags")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_APE_Flags;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_APE_Item")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_APE_Item;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_Apple_AppleDouble_File")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_Apple_AppleDouble_File;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByNumberOfElements")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByNumberOfElements;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
+					{
+						_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumericOrSpace_EndedByLength")
+					{
+						_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByLength")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_Printable_EndedByLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
+					{
+						_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor")
+					{
+						_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord_Data")
+					{
+						_HardcodedGetterWithParameters = Get_ASF_Metadata_DescriptionRecord_Data;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord_Data")
+					{
+						_HardcodedGetterWithParameters = Get_ASF_MetadataLibrary_DescriptionRecord_Data;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_Object")
+					{
+						_HardcodedGetterWithParameters = Get_ASF_Object;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
+					{
+						_HardcodedGetter = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
+					{
+						_HardcodedGetter = Inspection::Get_ASF_CreationDate;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_GUID")
+					{
+						_HardcodedGetter = Inspection::Get_ASF_GUID;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
+					{
+						_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_BitSet_16Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_Boolean_1Bit")
+					{
+						_HardcodedGetter = Inspection::Get_Boolean_1Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
+					{
+						_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_Data_SetOrUnset_EndedByLength")
+					{
+						_HardcodedGetter = Inspection::Get_Data_SetOrUnset_EndedByLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_Data_Unset_EndedByLength")
+					{
+						_HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
+					{
+						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
+					{
+						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
+					{
+						_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Language")
+					{
+						_HardcodedGetter = Inspection::Get_ID3_2_2_Language;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Language")
+					{
+						_HardcodedGetter = Inspection::Get_ID3_2_3_Language;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
+					{
+						_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Language")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_Language;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_ReplayGainAdjustment")
+					{
+						_HardcodedGetter = Inspection::Get_ID3_ReplayGainAdjustment;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit")
+					{
+						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Track;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Tracks")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Tracks;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
+					{
+						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTermination")
+					{
+						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
+					{
+						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary32")
+					{
+						_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask")
+					{
+						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat")
+					{
+						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
+					{
+						_HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_32Bit_RiceEncoded")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_32Bit_RiceEncoded;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_BigEndian")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_String_ASCII_Alphabetic_ByTemplate")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_String_ASCII_Alphabetic_ByTemplate;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_1Bit")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_1Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_2Bit")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_2Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_3Bit")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_4Bit")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_4Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_7Bit")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_7Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_8Bit;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_LittleEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_LittleEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_20Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_20Bit_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_36Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_36Bit_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_BigEndian")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_BigEndian;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_Vorbis_CommentHeader_UserComment")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_Vorbis_CommentHeader_UserComment;
+					}
+					else
+					{
+						throw std::domain_error{HardcodedGetterText->GetText()};
+					}
+				}
+				else if(GetterChildElement->GetName() == "interpret")
+				{
+					auto InterpretDescriptor{new Inspection::InterpretDescriptor{}};
+					
+					for(auto InterpretChildNode : GetterChildElement->GetChilds())
+					{
+						if(InterpretChildNode->GetNodeType() == XML::NodeType::Element)
+						{
+							auto InterpretChildElement{dynamic_cast< const XML::Element * >(InterpretChildNode)};
+							
+							if(InterpretChildElement->GetName() == "apply-enumeration")
+							{
+								InterpretDescriptor->Type = Inspection::InterpretType::ApplyEnumeration;
+								for(auto ApplyEnumerationChildNode : InterpretChildElement->GetChilds())
+								{
+									if(ApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
+									{
+										auto ApplyEnumerationChildElement{dynamic_cast< const XML::Element * >(ApplyEnumerationChildNode)};
+										
+										if(ApplyEnumerationChildElement->GetName() == "part")
+										{
+											assert(ApplyEnumerationChildElement->GetChilds().size() == 1);
+											
+											auto PartText{dynamic_cast< const XML::Text * >(ApplyEnumerationChildElement->GetChild(0))};
+											
+											assert(PartText != nullptr);
+											InterpretDescriptor->PathParts.push_back(PartText->GetText());
+										}
+										else if(ApplyEnumerationChildElement->GetName() == "enumeration")
+										{
+											InterpretDescriptor->Enumeration = new Enumeration{};
+											InterpretDescriptor->Enumeration->Load(ApplyEnumerationChildElement);
+										}
+										else
+										{
+											throw std::domain_error{"/getter/interpret/apply-enumeration/" + ApplyEnumerationChildElement->GetName() + " not allowed."};
+										}
+									}
+								}
+							}
+							else
+							{
+								throw std::domain_error{"/getter/interpret/" + InterpretChildElement->GetName() + " not allowed."};
+							}
+						}
+					}
+					_Actions.push_back(std::make_pair(Inspection::ActionType::Interpret, _InterpretDescriptors.size()));
+					_InterpretDescriptors.push_back(InterpretDescriptor);
+				}
+				else if(GetterChildElement->GetName() == "part")
+				{
+					auto PartDescriptor{new Inspection::PartDescriptor{}};
+					
+					for(auto PartChildNode : GetterChildElement->GetChilds())
+					{
+						if(PartChildNode->GetNodeType() == XML::NodeType::Element)
+						{
+							auto PartChildElement{dynamic_cast< const XML::Element * >(PartChildNode)};
+							
+							if(PartChildElement->GetName() == "getter")
+							{
+								for(auto PartGetterChildNode : PartChildElement->GetChilds())
+								{
+									if(PartGetterChildNode->GetNodeType() == XML::NodeType::Element)
+									{
+										auto PartGetterChildElement{dynamic_cast< const XML::Element * >(PartGetterChildNode)};
+										
+										if(PartGetterChildElement->GetName() == "part")
+										{
+											assert(PartGetterChildElement->GetChilds().size() == 1);
+											
+											auto PartText{dynamic_cast< const XML::Text * >(PartGetterChildElement->GetChild(0))};
+											
+											assert(PartText != nullptr);
+											PartDescriptor->PathParts.push_back(PartText->GetText());
+										}
+										else
+										{
+											throw std::domain_error{"/getter/part/getter/" + PartGetterChildElement->GetName() + " not allowed."};
+										}
+									}
+								}
+							}
+							else if(PartChildElement->GetName() == "length")
+							{
+								PartDescriptor->LengthDescriptor.emplace();
+								for(auto PartLengthChildNode : PartChildElement->GetChilds())
+								{
+									if(PartLengthChildNode->GetNodeType() == XML::NodeType::Element)
+									{
+										auto PartLengthChildElement{dynamic_cast< const XML::Element * >(PartLengthChildNode)};
+										
+										if(PartLengthChildElement->GetName() == "bytes")
+										{
+											_LoadValueDescriptor(PartDescriptor->LengthDescriptor->BytesValueDescriptor, PartLengthChildElement);
+										}
+										else if(PartLengthChildElement->GetName() == "bits")
+										{
+											_LoadValueDescriptor(PartDescriptor->LengthDescriptor->BitsValueDescriptor, PartLengthChildElement);
+										}
+										else
+										{
+											throw std::domain_error{"/getter/part/length/" + PartLengthChildElement->GetName() + " not allowed."};
+										}
+									}
+								}
+							}
+							else if(PartChildElement->GetName() == "parameters")
+							{
+								for(auto PartParametersChildNode : PartChildElement->GetChilds())
+								{
+									if(PartParametersChildNode->GetNodeType() == XML::NodeType::Element)
+									{
+										auto PartParametersChildElement{dynamic_cast< const XML::Element * >(PartParametersChildNode)};
+										
+										if(PartParametersChildElement->GetName() == "parameter")
+										{
+											auto ActualParameterDescriptor{new Inspection::ActualParameterDescriptor{}};
+											
+											assert(PartParametersChildElement->HasAttribute("name") == true);
+											ActualParameterDescriptor->Name = PartParametersChildElement->GetAttribute("name");
+											_LoadValueDescriptor(ActualParameterDescriptor->ValueDescriptor, PartParametersChildElement);
+											PartDescriptor->ActualParameterDescriptors.push_back(ActualParameterDescriptor);
+										}
+										else
+										{
+											throw std::domain_error{"/getter/part/parameters/" + PartParametersChildElement->GetName() + " not allowed."};
+										}
+									}
+								}
+							}
+							else if(PartChildElement->GetName() == "value")
+							{
+								for(auto PartValueChildNode : PartChildElement->GetChilds())
+								{
+									if(PartValueChildNode->GetNodeType() == XML::NodeType::Element)
+									{
+										auto PartValueChildElement{dynamic_cast< const XML::Element * >(PartValueChildNode)};
+										
+										if(PartValueChildElement->GetName() == "append-value")
+										{
+											PartDescriptor->ValueAppendType = Inspection::AppendType::AppendValue;
+											for(auto PartValueAppendChildNode : PartValueChildElement->GetChilds())
+											{
+												if(PartValueAppendChildNode->GetNodeType() == XML::NodeType::Element)
+												{
+													auto PartValueAppendChildElement{dynamic_cast< const XML::Element * >(PartValueAppendChildNode)};
+													
+													if(PartValueAppendChildElement->GetName() == "name")
+													{
+														assert(PartValueAppendChildElement->GetChilds().size() == 1);
+														
+														auto NameText{dynamic_cast< const XML::Text * >(PartValueAppendChildElement->GetChild(0))};
+														
+														assert(NameText != nullptr);
+														PartDescriptor->ValueName = NameText->GetText();
+													}
+													else
+													{
+														throw std::domain_error{"/getter/part/value/append-value/" + PartValueAppendChildElement->GetName() + " not allowed."};
+													}
+												}
+											}
+										}
+										else if(PartValueChildElement->GetName() == "append-sub-values")
+										{
+											assert(PartValueChildElement->GetChilds().size() == 0);
+											PartDescriptor->ValueAppendType = Inspection::AppendType::AppendSubValues;
+										}
+										else if(PartValueChildElement->GetName() == "set")
+										{
+											assert(PartValueChildElement->GetChilds().size() == 0);
+											PartDescriptor->ValueAppendType = Inspection::AppendType::Set;
+										}
+										else
+										{
+											throw std::domain_error{"/getter/part/value/" + PartValueChildElement->GetName() + " not allowed."};
+										}
+									}
+								}
+							}
+							else if(PartChildElement->GetName() == "verification")
+							{
+								auto VerificationDescriptor{PartDescriptor->VerificationDescriptors.emplace(PartDescriptor->VerificationDescriptors.end())};
+								
+								for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
+								{
+									if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
+									{
+										auto GetterPartVerificationChildElement{dynamic_cast< const XML::Element * >(GetterPartVerificationChildNode)};
+										
+										if(GetterPartVerificationChildElement->GetName() == "value-equals")
+										{
+											VerificationDescriptor->Type = Inspection::VerificationDescriptor::Type::ValueEquals;
+											VerificationDescriptor->ValueEqualsDescriptor.emplace();
+											_LoadValueDescriptor(VerificationDescriptor->ValueEqualsDescriptor->ValueDescriptor, GetterPartVerificationChildElement);
+										}
+										else
+										{
+											throw std::domain_error{"/getter/part/verification/" + GetterPartVerificationChildElement->GetName() + " not allowed."};
+										}
+									}
+								}
+							}
+							else
+							{
+								throw std::domain_error{"/getter/part/" + PartChildElement->GetName() + " not allowed."};
+							}
+						}
+					}
+					_Actions.push_back(std::make_pair(Inspection::ActionType::Read, _PartDescriptors.size()));
+					_PartDescriptors.push_back(PartDescriptor);
 				}
 				else
 				{
-					throw std::domain_error{HardcodedGetterText->GetText()};
+					throw std::domain_error{"/getter/" + GetterChildElement->GetName() + " not allowed."};
 				}
-			}
-			else if(GetterChildElement->GetName() == "interpret")
-			{
-				auto InterpretDescriptor{new Inspection::InterpretDescriptor{}};
-				
-				for(auto InterpretChildNode : GetterChildElement->GetChilds())
-				{
-					if(InterpretChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto InterpretChildElement{dynamic_cast< const XML::Element * >(InterpretChildNode)};
-						
-						if(InterpretChildElement->GetName() == "apply-enumeration")
-						{
-							InterpretDescriptor->Type = Inspection::InterpretType::ApplyEnumeration;
-							for(auto ApplyEnumerationChildNode : InterpretChildElement->GetChilds())
-							{
-								if(ApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
-								{
-									auto ApplyEnumerationChildElement{dynamic_cast< const XML::Element * >(ApplyEnumerationChildNode)};
-									
-									if(ApplyEnumerationChildElement->GetName() == "part")
-									{
-										assert(ApplyEnumerationChildElement->GetChilds().size() == 1);
-										
-										auto PartText{dynamic_cast< const XML::Text * >(ApplyEnumerationChildElement->GetChild(0))};
-										
-										assert(PartText != nullptr);
-										InterpretDescriptor->PathParts.push_back(PartText->GetText());
-									}
-									else if(ApplyEnumerationChildElement->GetName() == "enumeration")
-									{
-										InterpretDescriptor->Enumeration = new Enumeration{};
-										InterpretDescriptor->Enumeration->Load(ApplyEnumerationChildElement);
-									}
-									else
-									{
-										throw std::domain_error{"/getter/interpret/apply-enumeration/" + ApplyEnumerationChildElement->GetName() + " not allowed."};
-									}
-								}
-							}
-						}
-						else
-						{
-							throw std::domain_error{"/getter/interpret/" + InterpretChildElement->GetName() + " not allowed."};
-						}
-					}
-				}
-				_Actions.push_back(std::make_pair(Inspection::ActionType::Interpret, _InterpretDescriptors.size()));
-				_InterpretDescriptors.push_back(InterpretDescriptor);
-			}
-			else if(GetterChildElement->GetName() == "part")
-			{
-				auto PartDescriptor{new Inspection::PartDescriptor{}};
-				
-				for(auto PartChildNode : GetterChildElement->GetChilds())
-				{
-					if(PartChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto PartChildElement{dynamic_cast< const XML::Element * >(PartChildNode)};
-						
-						if(PartChildElement->GetName() == "getter")
-						{
-							for(auto PartGetterChildNode : PartChildElement->GetChilds())
-							{
-								if(PartGetterChildNode->GetNodeType() == XML::NodeType::Element)
-								{
-									auto PartGetterChildElement{dynamic_cast< const XML::Element * >(PartGetterChildNode)};
-									
-									if(PartGetterChildElement->GetName() == "part")
-									{
-										assert(PartGetterChildElement->GetChilds().size() == 1);
-										
-										auto PartText{dynamic_cast< const XML::Text * >(PartGetterChildElement->GetChild(0))};
-										
-										assert(PartText != nullptr);
-										PartDescriptor->PathParts.push_back(PartText->GetText());
-									}
-									else
-									{
-										throw std::domain_error{"/getter/part/getter/" + PartGetterChildElement->GetName() + " not allowed."};
-									}
-								}
-							}
-						}
-						else if(PartChildElement->GetName() == "length")
-						{
-							PartDescriptor->LengthDescriptor.emplace();
-							for(auto PartLengthChildNode : PartChildElement->GetChilds())
-							{
-								if(PartLengthChildNode->GetNodeType() == XML::NodeType::Element)
-								{
-									auto PartLengthChildElement{dynamic_cast< const XML::Element * >(PartLengthChildNode)};
-									
-									if(PartLengthChildElement->GetName() == "bytes")
-									{
-										if((PartLengthChildElement->GetChilds().size() == 1) && (PartLengthChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text))
-										{
-											PartDescriptor->LengthDescriptor->BytesValueDescriptor.Type = "literal";
-											assert(PartLengthChildElement->GetChilds().size() == 1);
-											
-											auto BytesText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
-											
-											assert(BytesText != nullptr);
-											PartDescriptor->LengthDescriptor->BytesValueDescriptor.StringValue = BytesText->GetText();
-										}
-										else
-										{
-											PartDescriptor->LengthDescriptor->BytesValueDescriptor.Type = "value-reference";
-											PartDescriptor->LengthDescriptor->BytesValueDescriptor.ValueReferenceDescriptor.emplace();
-											for(auto PartLengthBytesChildNode : PartLengthChildElement->GetChilds())
-											{
-												if(PartLengthBytesChildNode->GetNodeType() == XML::NodeType::Element)
-												{
-													auto & ValueReferencePartDescriptors{PartDescriptor->LengthDescriptor->BytesValueDescriptor.ValueReferenceDescriptor->PartDescriptors};
-													auto ValueReferencePartDescriptor{ValueReferencePartDescriptors.emplace(ValueReferencePartDescriptors.end())};
-													auto PartLengthBytesChildElement{dynamic_cast< const XML::Element * >(PartLengthBytesChildNode)};
-													
-													if(PartLengthBytesChildElement->GetName() == "result")
-													{
-														assert(PartLengthBytesChildElement->GetChilds().size() == 0);
-														ValueReferencePartDescriptor->Type = Inspection::ValueReferenceDescriptor::PartDescriptor::Type::Result;
-													}
-													else if(PartLengthBytesChildElement->GetName() == "sub")
-													{
-														ValueReferencePartDescriptor->Type = Inspection::ValueReferenceDescriptor::PartDescriptor::Type::Sub;
-														assert(PartLengthBytesChildElement->GetChilds().size() == 1);
-														
-														auto SubText{dynamic_cast< const XML::Text * >(PartLengthBytesChildElement->GetChild(0))};
-														
-														assert(SubText != nullptr);
-														ValueReferencePartDescriptor->DetailName = SubText->GetText();
-													}
-													else if(PartLengthBytesChildElement->GetName() == "tag")
-													{
-														ValueReferencePartDescriptor->Type = Inspection::ValueReferenceDescriptor::PartDescriptor::Type::Tag;
-														assert(PartLengthBytesChildElement->GetChilds().size() == 1);
-														
-														auto TagText{dynamic_cast< const XML::Text * >(PartLengthBytesChildElement->GetChild(0))};
-														
-														assert(TagText != nullptr);
-														ValueReferencePartDescriptor->DetailName = TagText->GetText();
-													}
-													else
-													{
-														throw std::domain_error{"/getter/part/length/bytes/" + PartLengthBytesChildElement->GetName() + " not allowed."};
-													}
-												}
-											}
-										}
-									}
-									else if(PartLengthChildElement->GetName() == "bits")
-									{
-										if((PartLengthChildElement->GetChilds().size() == 1) && (PartLengthChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text))
-										{
-											PartDescriptor->LengthDescriptor->BitsValueDescriptor.Type = "literal";
-											assert(PartLengthChildElement->GetChilds().size() == 1);
-											
-											auto BitsText{dynamic_cast< const XML::Text * >(PartLengthChildElement->GetChild(0))};
-											
-											assert(BitsText != nullptr);
-											PartDescriptor->LengthDescriptor->BitsValueDescriptor.StringValue = BitsText->GetText();
-										}
-										else
-										{
-											PartDescriptor->LengthDescriptor->BitsValueDescriptor.Type = "value-reference";
-											PartDescriptor->LengthDescriptor->BitsValueDescriptor.ValueReferenceDescriptor.emplace();
-											for(auto PartLengthBitsChildNode : PartLengthChildElement->GetChilds())
-											{
-												if(PartLengthBitsChildNode->GetNodeType() == XML::NodeType::Element)
-												{
-													auto & ValueReferencePartDescriptors{PartDescriptor->LengthDescriptor->BitsValueDescriptor.ValueReferenceDescriptor->PartDescriptors};
-													auto ValueReferencePartDescriptor{ValueReferencePartDescriptors.emplace(ValueReferencePartDescriptors.end())};
-													auto PartLengthBitsChildElement{dynamic_cast< const XML::Element * >(PartLengthBitsChildNode)};
-													
-													if(PartLengthBitsChildElement->GetName() == "result")
-													{
-														assert(PartLengthBitsChildElement->GetChilds().size() == 0);
-														ValueReferencePartDescriptor->Type = Inspection::ValueReferenceDescriptor::PartDescriptor::Type::Result;
-													}
-													else if(PartLengthBitsChildElement->GetName() == "sub")
-													{
-														assert(PartLengthBitsChildElement->GetChilds().size() == 1);
-														ValueReferencePartDescriptor->Type = Inspection::ValueReferenceDescriptor::PartDescriptor::Type::Sub;
-														
-														auto SubText{dynamic_cast< const XML::Text * >(PartLengthBitsChildElement->GetChild(0))};
-														
-														assert(SubText != nullptr);
-														ValueReferencePartDescriptor->DetailName = SubText->GetText();
-													}
-													else if(PartLengthBitsChildElement->GetName() == "tag")
-													{
-														assert(PartLengthBitsChildElement->GetChilds().size() == 1);
-														ValueReferencePartDescriptor->Type = Inspection::ValueReferenceDescriptor::PartDescriptor::Type::Tag;
-														
-														auto TagText{dynamic_cast< const XML::Text * >(PartLengthBitsChildElement->GetChild(0))};
-														
-														assert(TagText != nullptr);
-														ValueReferencePartDescriptor->DetailName = TagText->GetText();
-													}
-													else
-													{
-														throw std::domain_error{"/getter/part/length/bits/" + PartLengthBitsChildElement->GetName() + " not allowed."};
-													}
-												}
-											}
-										}
-									}
-									else
-									{
-										throw std::domain_error{"/getter/part/length/" + PartLengthChildElement->GetName() + " not allowed."};
-									}
-								}
-							}
-						}
-						else if(PartChildElement->GetName() == "parameters")
-						{
-							for(auto PartParametersChildNode : PartChildElement->GetChilds())
-							{
-								if(PartParametersChildNode->GetNodeType() == XML::NodeType::Element)
-								{
-									auto PartParametersChildElement{dynamic_cast< const XML::Element * >(PartParametersChildNode)};
-									
-									if(PartParametersChildElement->GetName() == "parameter")
-									{
-										auto ActualParameterDescriptor{new Inspection::ActualParameterDescriptor{}};
-										
-										assert(PartParametersChildElement->HasAttribute("name") == true);
-										ActualParameterDescriptor->Name = PartParametersChildElement->GetAttribute("name");
-										_LoadValueDescriptor(ActualParameterDescriptor->ValueDescriptor, PartParametersChildElement);
-										PartDescriptor->ActualParameterDescriptors.push_back(ActualParameterDescriptor);
-									}
-									else
-									{
-										throw std::domain_error{"/getter/part/parameters/" + PartParametersChildElement->GetName() + " not allowed."};
-									}
-								}
-							}
-						}
-						else if(PartChildElement->GetName() == "value")
-						{
-							for(auto PartValueChildNode : PartChildElement->GetChilds())
-							{
-								if(PartValueChildNode->GetNodeType() == XML::NodeType::Element)
-								{
-									auto PartValueChildElement{dynamic_cast< const XML::Element * >(PartValueChildNode)};
-									
-									if(PartValueChildElement->GetName() == "append-value")
-									{
-										PartDescriptor->ValueAppendType = Inspection::AppendType::AppendValue;
-										for(auto PartValueAppendChildNode : PartValueChildElement->GetChilds())
-										{
-											if(PartValueAppendChildNode->GetNodeType() == XML::NodeType::Element)
-											{
-												auto PartValueAppendChildElement{dynamic_cast< const XML::Element * >(PartValueAppendChildNode)};
-												
-												if(PartValueAppendChildElement->GetName() == "name")
-												{
-													assert(PartValueAppendChildElement->GetChilds().size() == 1);
-													
-													auto NameText{dynamic_cast< const XML::Text * >(PartValueAppendChildElement->GetChild(0))};
-													
-													assert(NameText != nullptr);
-													PartDescriptor->ValueName = NameText->GetText();
-												}
-												else
-												{
-													throw std::domain_error{"/getter/part/value/append-value/" + PartValueAppendChildElement->GetName() + " not allowed."};
-												}
-											}
-										}
-									}
-									else if(PartValueChildElement->GetName() == "append-sub-values")
-									{
-										assert(PartValueChildElement->GetChilds().size() == 0);
-										PartDescriptor->ValueAppendType = Inspection::AppendType::AppendSubValues;
-									}
-									else if(PartValueChildElement->GetName() == "set")
-									{
-										assert(PartValueChildElement->GetChilds().size() == 0);
-										PartDescriptor->ValueAppendType = Inspection::AppendType::Set;
-									}
-									else
-									{
-										throw std::domain_error{"/getter/part/value/" + PartValueChildElement->GetName() + " not allowed."};
-									}
-								}
-							}
-						}
-						else if(PartChildElement->GetName() == "verification")
-						{
-							auto VerificationDescriptor{PartDescriptor->VerificationDescriptors.emplace(PartDescriptor->VerificationDescriptors.end())};
-							
-							for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
-							{
-								if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
-								{
-									auto GetterPartVerificationChildElement{dynamic_cast< const XML::Element * >(GetterPartVerificationChildNode)};
-									
-									if(GetterPartVerificationChildElement->GetName() == "value-equals")
-									{
-										VerificationDescriptor->Type = Inspection::VerificationDescriptor::Type::ValueEquals;
-										VerificationDescriptor->ValueEqualsDescriptor.emplace();
-										_LoadValueDescriptor(VerificationDescriptor->ValueEqualsDescriptor->ValueDescriptor, GetterPartVerificationChildElement);
-									}
-									else
-									{
-										throw std::domain_error{"/getter/part/verification/" + GetterPartVerificationChildElement->GetName() + " not allowed."};
-									}
-								}
-							}
-						}
-						else
-						{
-							throw std::domain_error{"/getter/part/" + PartChildElement->GetName() + " not allowed."};
-						}
-					}
-				}
-				_Actions.push_back(std::make_pair(Inspection::ActionType::Read, _PartDescriptors.size()));
-				_PartDescriptors.push_back(PartDescriptor);
-			}
-			else
-			{
-				throw std::domain_error{"/getter/" + GetterChildElement->GetName() + " not allowed."};
 			}
 		}
+	}
+	catch(std::domain_error & Exception)
+	{
+		std::throw_with_nested(std::runtime_error("Getter path: " + GetterPath));
 	}
 }
 
@@ -1301,10 +1208,25 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 				assert(TextNode != nullptr);
 				ValueDescriptor.UnsignedInteger32BitValue = from_string_cast< std::uint32_t >(TextNode->GetText());
 			}
+			else if(ChildElement->GetName() == "unsigned-integer-64bit")
+			{
+				assert(ValueDescriptor.Type == "");
+				ValueDescriptor.Type = "unsigned integer 64bit";
+				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+				
+				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
+				
+				assert(TextNode != nullptr);
+				ValueDescriptor.UnsignedInteger64BitValue = from_string_cast< std::uint64_t >(TextNode->GetText());
+			}
 			else
 			{
 				throw std::domain_error{ChildElement->GetName() + " not allowed."};
 			}
 		}
+	}
+	if(ValueDescriptor.Type == "")
+	{
+		throw std::domain_error{"No valid value description."};
 	}
 }

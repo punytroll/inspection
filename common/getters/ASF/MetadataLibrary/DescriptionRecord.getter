@@ -72,10 +72,14 @@
 		</getter>
 		<length>
 			<bytes>
-				<result/>
-				<sub>NameLength</sub>
+				<value-reference>
+					<result/>
+					<sub>NameLength</sub>
+				</value-reference>
 			</bytes>
-			<bits>0</bits>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<value>
 			<append-value>
@@ -91,10 +95,14 @@
 		</getter>
 		<length>
 			<bytes>
-				<result/>
-				<sub>DataLength</sub>
+				<value-reference>
+					<result/>
+					<sub>DataLength</sub>
+				</value-reference>
 			</bytes>
-			<bits>0</bits>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<parameters>
 			<parameter name="DataType">

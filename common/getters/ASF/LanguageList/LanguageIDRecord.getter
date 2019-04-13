@@ -21,10 +21,14 @@
 		</getter>
 		<length>
 			<bytes>
-				<result/>
-				<sub>LanguageIDLength</sub>
+				<value-reference>
+					<result/>
+					<sub>LanguageIDLength</sub>
+				</value-reference>
 			</bytes>
-			<bits>0</bits>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<value>
 			<append-value>

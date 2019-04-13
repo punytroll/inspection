@@ -101,8 +101,12 @@
 	</part>
 	<part>
 		<length>
-			<bytes>16</bytes>
-			<bits>0</bits>
+			<bytes>
+				<unsigned-integer-64bit>16</unsigned-integer-64bit>
+			</bytes>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
 		</length>
 		<getter>
 			<part>Buffer</part>
