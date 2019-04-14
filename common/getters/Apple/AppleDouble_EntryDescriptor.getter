@@ -11,6 +11,73 @@
 				<name>EntryID</name>
 			</append-value>
 		</value>
+		<interpret>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 32bit">
+					<element base-value="0" valid="false"/>
+					<element base-value="1" valid="true">
+						<tag name="interpretation" type="string">Data Fork</tag>
+						<tag name="description" type="string">Data fork</tag>
+					</element>
+					<element base-value="2" valid="true">
+						<tag name="interpretation" type="string">Resource Fork</tag>
+						<tag name="description" type="string">Resource fork</tag>
+					</element>
+					<element base-value="3" valid="true">
+						<tag name="interpretation" type="string">Real Name</tag>
+						<tag name="description" type="string">File's name as created on home file system</tag>
+					</element>
+					<element base-value="4" valid="true">
+						<tag name="interpretation" type="string">Comment</tag>
+						<tag name="description" type="string">Standard Macintosh comment</tag>
+					</element>
+					<element base-value="5" valid="true">
+						<tag name="interpretation" type="string">Icon, B&W</tag>
+						<tag name="description" type="string">Standard Macintosh black and white icon</tag>
+					</element>
+					<element base-value="6" valid="true">
+						<tag name="interpretation" type="string">Icon, Color</tag>
+						<tag name="description" type="string">Macintosh color icon</tag>
+					</element>
+					<element base-value="7" valid="false"/>
+					<element base-value="8" valid="true">
+						<tag name="interpretation" type="string">File Dates Info</tag>
+						<tag name="description" type="string">File creation data, modification data, and so on</tag>
+					</element>
+					<element base-value="9" valid="true">
+						<tag name="interpretation" type="string">Finder Info</tag>
+						<tag name="description" type="string">Standard Macintosh Finder information</tag>
+					</element>
+					<element base-value="10" valid="true">
+						<tag name="interpretation" type="string">Macintosh File Info</tag>
+						<tag name="description" type="string">Macintosh file information, attributes, and so on</tag>
+					</element>
+					<element base-value="11" valid="true">
+						<tag name="interpretation" type="string">ProDOS File Info</tag>
+						<tag name="description" type="string">ProDOS file information, attributes, and so on</tag>
+					</element>
+					<element base-value="12" valid="true">
+						<tag name="interpretation" type="string">MS-DOS File Info</tag>
+						<tag name="description" type="string">MS-DOS file information, attributes, and so on</tag>
+					</element>
+					<element base-value="13" valid="true">
+						<tag name="interpretation" type="string">Short Name</tag>
+						<tag name="description" type="string">AFP short name</tag>
+					</element>
+					<element base-value="14" valid="true">
+						<tag name="interpretation" type="string">AFP File Info</tag>
+						<tag name="description" type="string">AFP file information, attributes, and so on</tag>
+					</element>
+					<element base-value="15" valid="true">
+						<tag name="interpretation" type="string">Directory ID</tag>
+						<tag name="description" type="string">AFP directory ID</tag>
+					</element>
+					<fallback-element valid="true">
+						<tag name="interpretation" type="nothing"/>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
+		</interpret>
 	</part>
 	<part>
 		<getter>

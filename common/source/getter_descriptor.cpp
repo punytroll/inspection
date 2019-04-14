@@ -72,11 +72,6 @@ namespace Inspection
 		Set
 	};
 	
-	enum class InterpretType
-	{
-		ApplyEnumeration
-	};
-	
 	class LengthDescriptor
 	{
 	public:
@@ -87,6 +82,11 @@ namespace Inspection
 	class InterpretDescriptor
 	{
 	public:
+		enum class Type
+		{
+			ApplyEnumeration
+		};
+		
 		InterpretDescriptor(void) :
 			Enumeration{nullptr}
 		{
@@ -99,7 +99,7 @@ namespace Inspection
 		}
 		
 		std::vector< std::string > PathParts;
-		Inspection::InterpretType Type;
+		Inspection::InterpretDescriptor::Type Type;
 		Inspection::Enumeration * Enumeration;
 	};
 	
@@ -135,6 +135,7 @@ namespace Inspection
 		std::vector< Inspection::ActualParameterDescriptor * > ActualParameterDescriptors;
 		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
 		std::vector< Inspection::VerificationDescriptor > VerificationDescriptors;
+		std::experimental::optional< Inspection::InterpretDescriptor > InterpretDescriptor;
 		std::vector< std::string > PathParts;
 		Inspection::AppendType ValueAppendType;
 		std::string ValueName;
@@ -356,7 +357,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						
 						switch(InterpretDescriptor->Type)
 						{
-						case Inspection::InterpretType::ApplyEnumeration:
+						case Inspection::InterpretDescriptor::Type::ApplyEnumeration:
 							{
 								Inspection::Enumeration * Enumeration{nullptr};
 								
@@ -381,6 +382,10 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								}
 								
 								break;
+							}
+						default:
+							{
+								assert(false);
 							}
 						}
 						
@@ -487,6 +492,46 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								}
 							}
 							Reader.AdvancePosition(PartReader->GetConsumedLength());
+							// interpretation
+							if(Continue == true)
+							{
+								if(PartDescriptor->InterpretDescriptor)
+								{
+									switch(PartDescriptor->InterpretDescriptor->Type)
+									{
+									case Inspection::InterpretDescriptor::Type::ApplyEnumeration:
+										{
+											Inspection::Enumeration * Enumeration{nullptr};
+											
+											if(PartDescriptor->InterpretDescriptor->Enumeration != nullptr)
+											{
+												Enumeration = PartDescriptor->InterpretDescriptor->Enumeration;
+											}
+											else
+											{
+												Enumeration = _GetterRepository->GetEnumeration(PartDescriptor->InterpretDescriptor->PathParts);
+											}
+											
+											auto Target{PartResult->GetValue()};
+											auto EvaluationResult{_ApplyEnumeration(Enumeration, Target)};
+											
+											if(EvaluationResult.AbortEvaluation)
+											{
+												if(EvaluationResult.AbortEvaluation.value() == true)
+												{
+													Continue = false;
+												}
+											}
+											
+											break;
+										}
+									default:
+										{
+											assert(false);
+										}
+									}
+								}
+							}
 							// verification
 							if(Continue == true)
 							{
@@ -880,48 +925,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				{
 					auto InterpretDescriptor{new Inspection::InterpretDescriptor{}};
 					
-					for(auto InterpretChildNode : GetterChildElement->GetChilds())
-					{
-						if(InterpretChildNode->GetNodeType() == XML::NodeType::Element)
-						{
-							auto InterpretChildElement{dynamic_cast< const XML::Element * >(InterpretChildNode)};
-							
-							if(InterpretChildElement->GetName() == "apply-enumeration")
-							{
-								InterpretDescriptor->Type = Inspection::InterpretType::ApplyEnumeration;
-								for(auto ApplyEnumerationChildNode : InterpretChildElement->GetChilds())
-								{
-									if(ApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
-									{
-										auto ApplyEnumerationChildElement{dynamic_cast< const XML::Element * >(ApplyEnumerationChildNode)};
-										
-										if(ApplyEnumerationChildElement->GetName() == "part")
-										{
-											assert(ApplyEnumerationChildElement->GetChilds().size() == 1);
-											
-											auto PartText{dynamic_cast< const XML::Text * >(ApplyEnumerationChildElement->GetChild(0))};
-											
-											assert(PartText != nullptr);
-											InterpretDescriptor->PathParts.push_back(PartText->GetText());
-										}
-										else if(ApplyEnumerationChildElement->GetName() == "enumeration")
-										{
-											InterpretDescriptor->Enumeration = new Enumeration{};
-											InterpretDescriptor->Enumeration->Load(ApplyEnumerationChildElement);
-										}
-										else
-										{
-											throw std::domain_error{"/getter/interpret/apply-enumeration/" + ApplyEnumerationChildElement->GetName() + " not allowed."};
-										}
-									}
-								}
-							}
-							else
-							{
-								throw std::domain_error{"/getter/interpret/" + InterpretChildElement->GetName() + " not allowed."};
-							}
-						}
-					}
+					_LoadInterpretDescriptor(*InterpretDescriptor, GetterChildElement);
 					_Actions.push_back(std::make_pair(Inspection::ActionType::Interpret, _InterpretDescriptors.size()));
 					_InterpretDescriptors.push_back(InterpretDescriptor);
 				}
@@ -958,6 +962,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 									}
 								}
+							}
+							else if(PartChildElement->GetName() == "interpret")
+							{
+								PartDescriptor->InterpretDescriptor.emplace();
+								_LoadInterpretDescriptor(PartDescriptor->InterpretDescriptor.value(), PartChildElement);
 							}
 							else if(PartChildElement->GetName() == "length")
 							{
@@ -1099,6 +1108,52 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 	catch(std::domain_error & Exception)
 	{
 		std::throw_with_nested(std::runtime_error("Getter path: " + GetterPath));
+	}
+}
+
+void Inspection::GetterDescriptor::_LoadInterpretDescriptor(Inspection::InterpretDescriptor & InterpretDescriptor, const XML::Element * InterpretElement)
+{
+	for(auto InterpretChildNode : InterpretElement->GetChilds())
+	{
+		if(InterpretChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto InterpretChildElement{dynamic_cast< const XML::Element * >(InterpretChildNode)};
+			
+			if(InterpretChildElement->GetName() == "apply-enumeration")
+			{
+				InterpretDescriptor.Type = Inspection::InterpretDescriptor::Type::ApplyEnumeration;
+				for(auto ApplyEnumerationChildNode : InterpretChildElement->GetChilds())
+				{
+					if(ApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						auto ApplyEnumerationChildElement{dynamic_cast< const XML::Element * >(ApplyEnumerationChildNode)};
+						
+						if(ApplyEnumerationChildElement->GetName() == "part")
+						{
+							assert(ApplyEnumerationChildElement->GetChilds().size() == 1);
+							
+							auto PartText{dynamic_cast< const XML::Text * >(ApplyEnumerationChildElement->GetChild(0))};
+							
+							assert(PartText != nullptr);
+							InterpretDescriptor.PathParts.push_back(PartText->GetText());
+						}
+						else if(ApplyEnumerationChildElement->GetName() == "enumeration")
+						{
+							InterpretDescriptor.Enumeration = new Enumeration{};
+							InterpretDescriptor.Enumeration->Load(ApplyEnumerationChildElement);
+						}
+						else
+						{
+							throw std::domain_error{ApplyEnumerationChildElement->GetName() + " not allowed."};
+						}
+					}
+				}
+			}
+			else
+			{
+				throw std::domain_error{InterpretChildElement->GetName() + " not allowed."};
+			}
+		}
 	}
 }
 

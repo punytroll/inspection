@@ -33,6 +33,7 @@ namespace Inspection
 		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void LoadGetterDescription(const std::string & GetterPath);
 	private:
+		void _LoadInterpretDescriptor(Inspection::InterpretDescriptor & InterpretDescriptor, const XML::Element * InterpretElement);
 		void _LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
 		EvaluationResult _ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target);
 		Inspection::GetterRepository * _GetterRepository;
