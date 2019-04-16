@@ -231,8 +231,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Apple_AppleDouble_File(Ins
 			{
 				auto EntryDescriptorField{*EntryDescriptorFieldIterator};
 				Inspection::Reader EntryReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(EntryDescriptorField->GetField("Offset")->GetData()), 0}, Inspection::Length{std::experimental::any_cast< std::uint32_t >(EntryDescriptorField->GetField("Length")->GetData()), 0}};
-				auto EntryResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(EntryReader)};
+				std::unique_ptr< Inspection::Result > EntryResult;
 				
+				switch(std::experimental::any_cast< std::uint32_t >(EntryDescriptorField->GetField("EntryID")->GetData()))
+				{
+				case 9:
+					{
+						EntryResult = Inspection::g_GetterRepository.Get({"Apple", "AppleSingleDouble_Entry_FinderInfo"}, EntryReader, {});
+						
+						break;
+					}
+				default:
+					{
+						EntryResult = Get_Buffer_UnsignedInteger_8Bit_EndedByLength(EntryReader);
+						
+						break;
+					}
+				}
 				Continue = EntryResult->GetSuccess();
 				
 				auto EntryField{EntriesField->AppendField("Entry", EntryResult->GetValue())};

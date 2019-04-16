@@ -1,0 +1,24 @@
+<getter>
+	<part>
+		<getter>
+			<part>Apple</part>
+			<part>FInfo</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>FInfo</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Apple</part>
+			<part>FXInfo</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>FXInfo</name>
+			</append-value>
+		</value>
+	</part>
+</getter>
