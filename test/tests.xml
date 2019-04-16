@@ -2,6 +2,78 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:MagicNumber/data</argument>
+		</execute>
+		<expected-output>333319</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:VersionNumber/data</argument>
+		</execute>
+		<expected-output>131072</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:NumberOfEntries/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:EntryDescriptors/field:EntryDescriptor:[tag:array index/is-data:0]/field:EntryID/data</argument>
+		</execute>
+		<expected-output>9</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:EntryDescriptors/field:EntryDescriptor:[tag:array index/is-data:0]/field:Offset/data</argument>
+		</execute>
+		<expected-output>50</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:EntryDescriptors/field:EntryDescriptor:[tag:array index/is-data:0]/field:Length/data</argument>
+		</execute>
+		<expected-output>32</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:EntryDescriptors/field:EntryDescriptor:[tag:array index/is-data:1]/field:EntryID/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:EntryDescriptors/field:EntryDescriptor:[tag:array index/is-data:1]/field:Offset/data</argument>
+		</execute>
+		<expected-output>82</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/036_AppleDouble_resource_fork</argument>
+			<argument>--query=/field:AppleDoubleFile/field:Header/field:EntryDescriptors/field:EntryDescriptor:[tag:array index/is-data:1]/field:Length/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/id3/017_2.3_COMM_bul_UCS-2_bom_be.mp3</argument>
 			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:MajorVersion/data</argument>
 		</execute>
