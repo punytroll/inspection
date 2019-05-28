@@ -4992,11 +4992,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		}
 		else if(Identifier == "POPM")
 		{
-			Inspection::Reader FieldReader{Reader, ClaimedSize};
-			auto FieldResult{Get_ID3_2_3_Frame_Body_POPM(FieldReader)};
+			Inspection::Reader PartReader{Reader, ClaimedSize};
+			auto PartResult{Get_ID3_2_3_Frame_Body_POPM(PartReader)};
 			
-			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "PRIV")
 		{
@@ -5231,19 +5232,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("EMailToUser", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("EMailToUser", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Rating", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader)};
 		
-		FieldValue->AddTag("standard", "ID3 2.3"s);
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Rating", PartResult->GetValue());
+		Result->GetValue()->GetField("Rating")->AddTag("standard", "ID3 2.3"s);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -5272,29 +5277,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		}
 		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
 			
+			Continue = false;
+			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Result->GetValue()->GetField("Counter")->AddTag("standard", "ID3 2.3"s);
 			Result->GetValue()->GetField("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
-			UpdateState(Continue, FieldResult);
-			Continue = false;
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 		{
-			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
 		{
-			auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader)};
 			
+			//~ Continue = false;
+			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Result->GetValue()->GetField("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
-			UpdateState(Continue, FieldResult);
-			Continue = false;
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
