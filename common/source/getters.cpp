@@ -3869,14 +3869,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 		ElementParameters.insert({{"NumberOfChannelsByStream", NumberOfChannels}});
 		
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Frame"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"NumberOfChannelsByStream", NumberOfChannels}}}})};
+		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Frame"}}, {"ElementName", "Frame"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"NumberOfChannelsByStream", NumberOfChannels}}}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetFields())
-		{
-			PartValue->SetName("Frame");
-		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
