@@ -15,6 +15,7 @@ These patterns need to spread to all getter implementations:
 12. "NoLengthExceptFromData": Don't try to restrict a sub readers range based on programmer knowledge, how long it will be. (Like 4 byte for an unsigned 32bit integer.) Only use length restrictions from data.
 13. "InterpretationAlwaysContinues": Just because an interpretation (like looking up an enum) fails, doesn't mean, that reading should discontinue. This program is intended extract as much data as possible from the whole file, so it should just abruptly stop if it finds a value that doesn't belong there. Instead, an error message should be appended, and maybe also a "null"-interpretation.
 14. "Parameters": All hardcoded getters should be implemented with a Parameters parameter, an unordered map from string to any.
+15. "Elements": In all array reading getters, the parts that constitute the array are called Elements.
 
 On the history of getters:
 ================================
