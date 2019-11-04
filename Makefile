@@ -13,6 +13,7 @@ all:
 	$(MAKE) -C vorbis
 
 check: all
+	$(MAKE) $@ -C common
 	$(MAKE) $@ -C test
 
 clean:

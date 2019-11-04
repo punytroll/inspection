@@ -1,11 +1,11 @@
-CXXFLAGS = -std=c++14 -Wall -Werror -g -O0
+CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
 LDFLAGS = -g
 
 default: all
 
 HEADER_DIRECTORIES := $(patsubst %/,%,$(sort $(dir $(shell find . -name '*.h'))))
 HEADER_FILES := $(patsubst ./%,%,$(foreach HEADER_DIRECTORY,$(HEADER_DIRECTORIES),$(wildcard $(HEADER_DIRECTORY)/*.h)))
-SOURCE_DIRECTORIES := $(patsubst %/,%,$(sort $(dir $(shell find . -name '*.cpp'))))
+SOURCE_DIRECTORIES := $(patsubst %/,%,$(sort $(dir $(shell find source -name '*.cpp'))))
 SOURCE_FILES := $(patsubst ./%,%,$(foreach SOURCE_DIRECTORY,$(SOURCE_DIRECTORIES),$(wildcard $(SOURCE_DIRECTORY)/*.cpp)))
 OBJECT_DIRECTORY := .object-files
 OBJECT_DIRECTORIES := $(patsubst .%, $(OBJECT_DIRECTORY)%, $(SOURCE_DIRECTORIES))
@@ -23,6 +23,9 @@ all: all-recursive
 all-here: libcommon.a
 
 all-recursive: all-here
+
+check: libcommon.a test/test
+	./test/test
 
 clean: clean-recursive
 
@@ -53,5 +56,11 @@ $(OBJECT_DIRECTORY)/%.o: %.cpp
 
 libcommon.a: $(OBJECT_FILES)
 	ar rcs $@ $(OBJECT_FILES)
+
+test/test: test/test.o
+	$(CXX) $(LDFLAGS) $^ -o $@ libcommon.a
+
+test/test.o: test/test.cpp
+	$(CXX) $(CXXFLAGS) -Iinclude -c $< -o $@
 
 .PHONY: default all all-here all-recursive check clean clean-here clean-recursive

@@ -19,5 +19,7 @@
 /generalinspector
 /common/libcommon.a
 /common/.dependency-files/
+/common/test/test
+/common/test/test.o
 /examples/preparations/
 /examples/ideas/

@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++14 -Wall -Werror -g -O0
+CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
 
 default: all
 

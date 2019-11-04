@@ -5,7 +5,8 @@ default: all
 
 all: common test
 
-check:
+check: all
+	./test
 	python3 test.py --in=tests.xml
 
 clean:
@@ -21,4 +22,4 @@ test: test.o common/libcommon.a
 test.o: test.cpp common/include/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
 
-.PHONY: common
+.PHONY: all common default
