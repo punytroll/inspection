@@ -136,7 +136,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		{
 			Inspection::Reader FieldReader{Buffer};
 			
-			PartialResult = Get_FLAC_Stream(FieldReader);
+			PartialResult = Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, FieldReader, {});
 			if(PartialResult->GetSuccess() == true)
 			{
 				Buffer.SetPosition(FieldReader);
@@ -497,7 +497,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 					
 					Inspection::Reader FieldReader{Buffer};
 					
-					PartialResult = Get_FLAC_Stream(FieldReader);
+					PartialResult = Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, FieldReader, {});
 					if(PartialResult->GetSuccess() == true)
 					{
 						Buffer.SetPosition(FieldReader);

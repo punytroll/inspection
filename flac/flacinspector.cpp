@@ -3,6 +3,7 @@
 
 #include <common/buffer.h>
 #include <common/file_handling.h>
+#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
 
@@ -19,7 +20,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		if(g_WithFrames == true)
 		{
 			Inspection::Reader PartReader{Buffer};
-			auto PartResult{Get_FLAC_Stream(PartReader)};
+			auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());

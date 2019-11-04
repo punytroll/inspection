@@ -1,9 +1,22 @@
 #include <experimental/iterator>
+#include <numeric>
 
 #include "enumeration.h"
 #include "file_handling.h"
 #include "getter_descriptor.h"
 #include "getter_repository.h"
+
+std::string JoinSeparated(const std::vector< std::string > & Strings, const std::string & Separator)
+{
+	if(Strings.empty() == true)
+	{
+		return std::string();
+	}
+	else
+	{
+		return std::accumulate(Strings.begin() + 1, Strings.end(), Strings[0], [](const std::string & Start, const std::string & String) { return Start + "/" + String; } );
+	}
+}
 
 namespace Inspection
 {
@@ -61,7 +74,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const st
 	else
 	{
 		auto Result{Inspection::InitializeResult(Reader)};
-		Result->GetValue()->AddTag("error", "Could not find/load the getter \"" + PathParts.back() + "\".");
+		Result->GetValue()->AddTag("error", "Could not find/load the getter \"" + JoinSeparated(PathParts, "/") + "\".");
 		Inspection::FinalizeResult(Result, Reader);
 		
 		return Result;

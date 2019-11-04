@@ -724,6 +724,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Frame;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_Stream")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Stream;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
@@ -731,6 +735,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_CalculateBitsPerSample")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Subframe_CalculateBitsPerSample;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_Residual_Rice_Partition")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Subframe_Residual_Rice_Partition;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
 					{
