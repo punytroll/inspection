@@ -736,6 +736,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Frame")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_Frame;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Language")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_2_Language;
@@ -747,6 +751,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_Frame;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Language")
 					{
@@ -763,6 +771,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Frame")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_Frame;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Language")
 					{
@@ -827,6 +839,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary32")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_MPEG_1_Frame")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_MPEG_1_Frame;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask")
 					{
@@ -922,7 +938,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else
 					{
-						throw std::domain_error{HardcodedGetterText->GetText()};
+						throw std::domain_error{"Invalid reference to hardcoded getter \"" + HardcodedGetterText->GetText() + "\"."};
 					}
 				}
 				else if(GetterChildElement->GetName() == "interpret")

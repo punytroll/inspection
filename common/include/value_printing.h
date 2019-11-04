@@ -5,56 +5,44 @@
 #include <string>
 
 #include "any_printing.h"
+#include "colors.h"
 #include "value.h"
 
 namespace Inspection
 {
-	const std::string g_DarkBlue{"\033[34m"};
-	const std::string g_DarkCyan{"\033[36m"};
-	const std::string g_DarkGray{"\033[90m"};
-	const std::string g_DarkGreen{"\033[32m"};
-	const std::string g_DarkYellow{"\033[33m"};
-	const std::string g_LightBlue{"\033[94m"};
-	const std::string g_LightCyan{"\033[96m"};
-	const std::string g_LightGray{"\033[37m"};
-	const std::string g_LightRed{"\033[91m"};
-	const std::string g_LightYellow{"\033[93m"};
-	const std::string g_White{"\033[97m"};
-	const std::string g_Reset{"\033[0m"};
-	
 	inline void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 	{
 		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetData().empty() == false) || (Value->GetTags().empty() == false)};
 		
 		if(HeaderLine == true)
 		{
-			std::cout << g_LightGray << Indentation;
+			std::cout << g_White << Indentation;
 		}
 		if(Value->GetName().empty() == false)
 		{
 			if(Value->GetName() == "error")
 			{
-				std::cout << g_LightRed;
+				std::cout << g_BrightRed;
 			}
 			else
 			{
-				std::cout << g_White;
+				std::cout << g_BrightWhite;
 			}
 			std::cout << Value->GetName();
 		}
 		if((Value->GetName().empty() == false) && (Value->GetData().empty() == false))
 		{
-			std::cout << g_LightGray << ": ";
+			std::cout << g_White << ": ";
 		}
 		if(Value->GetData().empty() == false)
 		{
 			if((Value->GetName().empty() == false) && (Value->GetName() == "error"))
 			{
-				std::cout << g_White;
+				std::cout << g_BrightWhite;
 			}
 			else
 			{
-				std::cout << g_LightCyan;
+				std::cout << g_BrightCyan;
 			}
 			std::cout << Value->GetData();
 		}
@@ -62,42 +50,42 @@ namespace Inspection
 		{
 			auto First{true};
 			
-			std::cout << g_LightGray <<" {" << g_DarkGray;
+			std::cout << g_White <<" {" << g_BrightBlack;
 			for(auto & Tag : Value->GetTags())
 			{
 				if(First == false)
 				{
-					std::cout << g_LightGray << ", " << g_DarkGray;
+					std::cout << g_White << ", " << g_BrightBlack;
 				}
 				if(Tag->GetName().empty() == false)
 				{
 					if(Tag->GetName() == "error")
 					{
-						std::cout << g_LightRed;
+						std::cout << g_BrightRed;
 					}
 					else if(Tag->GetData().empty() == true)
 					{
-						std::cout << g_DarkGray;
+						std::cout << g_BrightBlack;
 					}
 					else
 					{
-						std::cout << g_DarkYellow;
+						std::cout << g_Yellow;
 					}
 					std::cout << Tag->GetName();
 				}
 				if((Tag->GetName().empty() == false) && (Tag->GetData().empty() == false))
 				{
-					std::cout << g_LightGray << '=';
+					std::cout << g_White << '=';
 				}
 				if(Tag->GetData().empty() == false)
 				{
 					if(Tag->GetData().type() == typeid(nullptr))
 					{
-						std::cout << g_DarkGreen;
+						std::cout << g_Green;
 					}
 					else
 					{
-						std::cout << g_DarkGray;
+						std::cout << g_BrightBlack;
 					}
 					std::cout << Tag->GetData();
 				}
@@ -107,7 +95,7 @@ namespace Inspection
 				}
 				if(Tag->GetTags().size() > 0)
 				{
-					std::cout << g_LightGray << " {" << g_DarkGray;
+					std::cout << g_White << " {" << g_BrightBlack;
 					
 					auto FirstSubTag{true};
 					
@@ -121,11 +109,11 @@ namespace Inspection
 						{
 							if(SubTag->GetName() == "error")
 							{
-								std::cout << g_LightRed;
+								std::cout << g_BrightRed;
 							}
 							std::cout << SubTag->GetName();
 						}
-						std::cout << g_DarkGray;
+						std::cout << g_BrightBlack;
 						if((SubTag->GetName().empty() == false) && (SubTag->GetData().empty() == false))
 						{
 							std::cout << '=';
@@ -140,11 +128,11 @@ namespace Inspection
 						}
 						FirstSubTag = false;
 					}
-					std::cout << g_LightGray << '}' << g_DarkGray;
+					std::cout << g_White << '}' << g_BrightBlack;
 				}
 				First = false;
 			}
-			std::cout << g_LightGray << '}';
+			std::cout << g_White << '}';
 		}
 		
 		auto SubIndentation{Indentation};

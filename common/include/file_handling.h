@@ -10,14 +10,9 @@
 #include <functional>
 #include <iostream>
 
+#include "colors.h"
 #include "result.h"
 #include "value_printing.h"
-
-const std::string g_DarkGray{"\033[90m"};
-const std::string g_LightRed{"\033[91m"};
-const std::string g_LightGreen{"\033[92m"};
-const std::string g_White{"\033[97m"};
-const std::string g_DarkYellow{"\033[33m"};
 
 void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer);
 void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer);
@@ -62,6 +57,27 @@ inline bool IsRegularFile(const std::string & Path)
 	stat(Path.c_str(), &Stat);
 	
 	return S_ISREG(Stat.st_mode);
+}
+
+inline void PrintException(const std::exception & Exception)
+{
+	std::cerr << Inspection::g_Yellow << Exception.what() << Inspection::g_Reset << std::endl;
+	try
+	{
+		std::rethrow_if_nested(Exception);
+	}
+	catch(const std::exception & NestedException)
+	{
+		std::cerr << Inspection::g_Red << "Nested exception" << Inspection::g_Reset << ":" << std::endl;
+		PrintException(NestedException);
+	}
+}
+
+inline void PrintExceptions(const std::exception & Exception)
+{
+	std::cerr << Inspection::g_Red << "Caught an exception while processing" << Inspection::g_Reset << ":" << std::endl;
+	PrintException(Exception);
+	std::cerr << std::endl;
 }
 
 inline void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer)
@@ -134,11 +150,18 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 			}
 			else
 			{
-				Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
-				auto ParseResult{Processor(Buffer)};
-				
-				ParseResult->GetValue()->SetData(g_LightGreen + Path + g_White);
-				Writer(ParseResult, Buffer);
+				try
+				{
+					Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
+					auto ParseResult{Processor(Buffer)};
+					
+					ParseResult->GetValue()->SetData(Inspection::g_BrightGreen + Path + Inspection::g_BrightWhite);
+					Writer(ParseResult, Buffer);
+				}
+				catch(const std::exception & Exception)
+				{
+					PrintExceptions(Exception);
+				}
 				munmap(Address, FileSize);
 			}
 		}
@@ -153,11 +176,11 @@ inline void DefaultWriter(std::unique_ptr< Inspection::Result > & Result, Inspec
 	{
 		if(Result->GetValue()->GetName() == "")
 		{
-			std::cout << g_LightRed << "Parsing does not give valid and complete result." << g_White << std::endl;
+			std::cout << Inspection::g_BrightRed << "Parsing does not give valid and complete result." << Inspection::g_BrightWhite << std::endl;
 		}
 		else
 		{
-			std::cout << g_LightRed << "Parsing does not give valid " << Result->GetValue()->GetName() << '.' << g_White << std::endl;
+			std::cout << Inspection::g_BrightRed << "Parsing does not give valid " << Result->GetValue()->GetName() << '.' << Inspection::g_BrightWhite << std::endl;
 		}
 	}
 	
@@ -165,7 +188,7 @@ inline void DefaultWriter(std::unique_ptr< Inspection::Result > & Result, Inspec
 	
 	if(Rest > Inspection::Length{0, 0})
 	{
-		std::cout << g_DarkGray << "There are " << g_DarkYellow << to_string_cast(Rest) << g_DarkGray << " bytes and bits after the data." << std::endl;
+		std::cout << Inspection::g_BrightBlack << "There are " << Inspection::g_Yellow << to_string_cast(Rest) << Inspection::g_BrightBlack << " bytes and bits after the data." << std::endl;
 	}
 }
 

@@ -288,8 +288,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Apple_AppleDouble_File(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter)
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
+	static const std::unordered_map< std::string, std::experimental::any > DefaultElementParameters{};
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -298,19 +299,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 	// reading
 	if(Continue == true)
 	{
+		std::experimental::optional< std::string > ElementName;
+		const auto * ElementParameters{&DefaultElementParameters};
+		auto ElementParametersIterator{Parameters.find("ElementParameters")};
+		
+		if(ElementParametersIterator != Parameters.end())
+		{
+			ElementParameters = &(std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second));
+		}
+		
+		auto ElementNameIterator{Parameters.find("ElementName")};
+		
+		if(ElementNameIterator != Parameters.end())
+		{
+			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
+		}
+		
+		auto & ElementGetter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("ElementGetter"))};
 		std::uint64_t ElementIndex{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			Inspection::Reader PartReader{Reader};
-			auto PartResult{Getter(PartReader)};
+			Inspection::Reader ElementReader{Reader};
+			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, *ElementParameters)};
 			
-			Continue = PartResult->GetSuccess();
+			Continue = ElementResult->GetSuccess();
 			if(Continue == true)
 			{
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				Result->GetValue()->AppendField(PartResult->GetValue());
-				PartResult->GetValue()->AddTag("array index", ElementIndex++);
+				std::shared_ptr< Inspection::Value > ElementValue;
+				
+				if(ElementName)
+				{
+					ElementValue = Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
+				}
+				else
+				{
+					ElementValue = Result->GetValue()->AppendField(ElementResult->GetValue());
+				}
+				ElementResult->GetValue()->AddTag("array index", ElementIndex++);
+				Reader.AdvancePosition(ElementReader.GetConsumedLength());
 			}
 			else
 			{
@@ -388,7 +415,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 				{
 					ElementValue = Result->GetValue()->AppendField(ElementResult->GetValue());
 				}
-				
 				ElementValue->AddTag("array index", ElementIndex++);
 				Reader.AdvancePosition(ElementReader.GetConsumedLength());
 			}
@@ -4694,7 +4720,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -4990,7 +5016,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccordin
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -6038,7 +6064,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccordin
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -6876,14 +6902,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			if(Continue == true)
 			{
 				Inspection::Reader PartReader{Reader, Size};
-				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_2_Frame)};
+				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"ID3", "v2.2", "Frame"}}, {"ElementName", "Frame"s}})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				for(auto PartValue : PartResult->GetValue()->GetFields())
-				{
-					PartValue->SetName("Frame");
-				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
 			}
@@ -6910,7 +6932,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				if(Size > Inspection::Length{0, 0})
 				{
 					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Get_ID3_2_2_Frame(PartReader)};
+					auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "Frame"}, PartReader, {})};
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
@@ -6933,14 +6955,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			if(Continue == true)
 			{
 				Inspection::Reader PartReader{Reader, Size};
-				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_3_Frame)};
+				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"ID3", "v2.3", "Frame"}}, {"ElementName", "Frame"s}})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				for(auto PartValue : PartResult->GetValue()->GetFields())
-				{
-					PartValue->SetName("Frame");
-				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
 			}
@@ -6967,7 +6985,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				if(Size > Inspection::Length{0, 0})
 				{
 					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Get_ID3_2_3_Frame(PartReader)};
+					auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "Frame"}, PartReader, {})};
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
@@ -6995,14 +7013,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			if(Continue == true)
 			{
 				Inspection::Reader PartReader{Reader, Size};
-				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_ID3_2_4_Frame)};
+				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"ID3", "v2.4", "Frame"}}, {"ElementName", "Frame"s}})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				for(auto PartValue : PartResult->GetValue()->GetFields())
-				{
-					PartValue->SetName("Frame");
-				}
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				Size -= PartReader.GetConsumedLength();
 			}
@@ -7029,7 +7043,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				if(Size > Inspection::Length{0, 0})
 				{
 					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Get_ID3_2_4_Frame(PartReader)};
+					auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Frame"}, PartReader, {})};
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
@@ -9852,7 +9866,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10484,7 +10498,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10493,14 +10507,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, Get_MPEG_1_Frame)};
+		auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"MPEG", "1", "Frame"}}, {"ElementName", "MPEGFrame"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("MPEGFrames", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetFields())
-		{
-			PartValue->SetName("MPEGFrame");
-		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
