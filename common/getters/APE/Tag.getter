@@ -16,7 +16,7 @@
 			<part>EndedByNumberOfElements</part>
 		</getter>
 		<parameters>
-			<parameter name="Getter">
+			<parameter name="ElementGetter">
 				<getter-reference>
 					<part>APE</part>
 					<part>Item</part>

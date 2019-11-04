@@ -73,7 +73,7 @@
 			<part>EndedByNumberOfElements</part>
 		</getter>
 		<parameters>
-			<parameter name="Getter">
+			<parameter name="ElementGetter">
 				<getter-reference>
 					<part>Apple</part>
 					<part>AppleDouble_EntryDescriptor</part>

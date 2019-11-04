@@ -720,6 +720,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_Frame")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Frame;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;

@@ -341,8 +341,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter)
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
+	static const std::unordered_map< std::string, std::experimental::any > DefaultElementParameters{};
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -350,21 +351,46 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 	// reading
 	if(Continue == true)
 	{
+		std::experimental::optional< std::string > ElementName;
+		const auto * ElementParameters{&DefaultElementParameters};
+		auto ElementParametersIterator{Parameters.find("ElementParameters")};
+		
+		if(ElementParametersIterator != Parameters.end())
+		{
+			ElementParameters = &(std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second));
+		}
+		
+		auto ElementNameIterator{Parameters.find("ElementName")};
+		
+		if(ElementNameIterator != Parameters.end())
+		{
+			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
+		}
+		
+		auto & ElementGetter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("ElementGetter"))};
 		std::uint64_t ElementIndex{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			Inspection::Reader FieldReader{Reader};
-			auto FieldResult{Getter(FieldReader)};
+			Inspection::Reader ElementReader{Reader};
+			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, *ElementParameters)};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = ElementResult->GetSuccess();
 			if(Continue == true)
 			{
-				Reader.AdvancePosition(FieldReader.GetConsumedLength());
+				std::shared_ptr< Inspection::Value > ElementValue;
 				
-				auto FieldValue{Result->GetValue()->AppendField(FieldResult->GetValue())};
+				if(ElementName)
+				{
+					ElementValue = Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
+				}
+				else
+				{
+					ElementValue = Result->GetValue()->AppendField(ElementResult->GetValue());
+				}
 				
-				FieldValue->AddTag("array index", ElementIndex++);
+				ElementValue->AddTag("array index", ElementIndex++);
+				Reader.AdvancePosition(ElementReader.GetConsumedLength());
 			}
 		}
 		if(Reader.IsAtEnd() == true)
@@ -450,7 +476,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
 		}
 		
-		auto & Getter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("Getter"))};
+		auto & Getter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("ElementGetter"))};
 		auto NumberOfElements{std::experimental::any_cast< std::uint64_t >(Parameters.at("NumberOfElements"))};
 		std::uint64_t ElementIndex{0};
 		
@@ -460,6 +486,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 			{
 				Inspection::Reader ElementReader{Reader};
 				auto ElementResult{g_GetterRepository.Get(Getter, ElementReader, *ElementParameters)};
+				
+				Continue = ElementResult->GetSuccess();
+				
 				std::shared_ptr< Inspection::Value > ElementValue;
 				
 				if(ElementName)
@@ -472,7 +501,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 				}
 				
 				ElementValue->AddTag("array index", ElementIndex++);
-				UpdateState(Continue, Reader, ElementResult, ElementReader);
+				Reader.AdvancePosition(ElementReader.GetConsumedLength());
 				if(Continue == false)
 				{
 					Result->GetValue()->AddTag("ended by failure"s);
@@ -1103,7 +1132,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 	{
 		Inspection::Reader PartReader{Reader};
 		auto CodecEntriesCount{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("CodecEntriesCount")->GetData())};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"ASF", "CodecList", "CodecEntry"}}, {"ElementName", "CodecEntry"s}, {"NumberOfElements", static_cast< std::uint64_t >(CodecEntriesCount)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "CodecList", "CodecEntry"}}, {"ElementName", "CodecEntry"s}, {"NumberOfElements", static_cast< std::uint64_t >(CodecEntriesCount)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("CodecEntries", PartResult->GetValue());
@@ -1447,7 +1476,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	{
 		auto ContentDescriptorsCount{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("ContentDescriptorsCount")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(Reader, {{"Getter", std::vector< std::string >{"ASF", "ExtendedContentDescription", "ContentDescriptor"s}}, {"ElementName", "ContentDescriptor"s}, {"NumberOfElements", static_cast< std::uint64_t >(ContentDescriptorsCount)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(Reader, {{"ElementGetter", std::vector< std::string >{"ASF", "ExtendedContentDescription", "ContentDescriptor"s}}, {"ElementName", "ContentDescriptor"s}, {"NumberOfElements", static_cast< std::uint64_t >(ContentDescriptorsCount)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ContentDescriptors", PartResult->GetValue());
@@ -1910,7 +1939,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObjectData(Inspe
 	{
 		auto NumberOfHeaderObjects{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("NumberOfHeaderObjects")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"ASF", "Object"}}, {"ElementName", "HeaderObject"s}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfHeaderObjects)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "Object"}}, {"ElementName", "HeaderObject"s}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfHeaderObjects)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("HeaderObjects", PartResult->GetValue());
@@ -1972,7 +2001,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_LanguageListObjectData
 	{
 		auto LanguageIDRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("LanguageIDRecordsCount")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"ASF", "LanguageList", "LanguageIDRecord"}}, {"ElementName", "LanguageIDRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(LanguageIDRecordsCount)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "LanguageList", "LanguageIDRecord"}}, {"ElementName", "LanguageIDRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(LanguageIDRecordsCount)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("LanguageIDRecords", PartResult->GetValue());
@@ -2126,7 +2155,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibraryObjectD
 	{
 		auto DescriptionRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("DescriptionRecordsCount")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"ASF", "MetadataLibrary", "DescriptionRecord"}}, {"ElementName", "DescriptionRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(DescriptionRecordsCount)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "MetadataLibrary", "DescriptionRecord"}}, {"ElementName", "DescriptionRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(DescriptionRecordsCount)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("DescriptionRecords", PartResult->GetValue());
@@ -2257,7 +2286,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataObjectData(Ins
 	{
 		auto DescriptionRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("DescriptionRecordsCount")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"ASF", "Metadata", "DescriptionRecord"}}, {"ElementName", "DescriptionRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(DescriptionRecordsCount)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "Metadata", "DescriptionRecord"}}, {"ElementName", "DescriptionRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(DescriptionRecordsCount)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("DescriptionRecords", PartResult->GetValue());
@@ -2501,7 +2530,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 	{
 		auto BitrateRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("BitrateRecordsCount")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"ASF", "StreamBitrateProperties", "BitrateRecord"}}, {"ElementName", "BitrateRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(BitrateRecordsCount)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "StreamBitrateProperties", "BitrateRecord"}}, {"ElementName", "BitrateRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(BitrateRecordsCount)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("BitrateRecords", PartResult->GetValue());
@@ -3405,7 +3434,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Reader & Reader, std::uint8_t NumberOfChannelsByStream)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -3413,15 +3442,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Frame_Header(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Header", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_FLAC_Frame_Header(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Header", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// inspect
 	if(Continue == true)
 	{
 		auto NumberOfChannelsByFrame{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("ChannelAssignment")->GetTag("value")->GetData())};
+		auto NumberOfChannelsByStream{std::experimental::any_cast< std::uint8_t >(Parameters.at("NumberOfChannelsByStream"))};
 		
 		if(NumberOfChannelsByStream != NumberOfChannelsByFrame)
 		{
@@ -3432,6 +3464,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
+		auto NumberOfChannelsByStream{std::experimental::any_cast< std::uint8_t >(Parameters.at("NumberOfChannelsByStream"))};
 		auto BlockSize{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("Header")->GetField("BlockSize")->GetTag("value")->GetData())};
 		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("SampleSize")->GetTag("value")->GetData())};
 		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("ChannelAssignment")->GetData())};
@@ -3449,11 +3482,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_Data_Unset_Until8BitAlignment(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("Padding", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Data_Unset_Until8BitAlignment(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Padding", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -3830,8 +3864,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 	if(Continue == true)
 	{
 		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("StreamInfoBlock")->GetField("Data")->GetField("NumberOfChannels")->GetTag("value")->GetData())};
+		std::unordered_map< std::string, std::experimental::any > ElementParameters;
+		
+		ElementParameters.insert({{"NumberOfChannelsByStream", NumberOfChannels}});
+		
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, std::bind(Get_FLAC_Frame, std::placeholders::_1, NumberOfChannels))};
+		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Frame"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"NumberOfChannelsByStream", NumberOfChannels}}}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Frames", PartResult->GetValue());
@@ -4338,7 +4376,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		if(ArrayIndex == 0)
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"Number", "Integer", "Signed", "32Bit_RiceEncoded"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Rice", Rice}}}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfSamples - PredictorOrder)}})};
+			auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Signed", "32Bit_RiceEncoded"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Rice", Rice}}}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfSamples - PredictorOrder)}})};
 			
 			Continue = PartResult->GetSuccess();
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
@@ -4350,7 +4388,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 		else
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"Number", "Integer", "Signed", "32Bit_RiceEncoded"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Rice", Rice}}}, {"NumberOfElements", static_cast< std::uint64_t > (NumberOfSamples)}})};
+			auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Signed", "32Bit_RiceEncoded"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Rice", Rice}}}, {"NumberOfElements", static_cast< std::uint64_t > (NumberOfSamples)}})};
 			
 			Continue = PartResult->GetSuccess();
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
@@ -7601,7 +7639,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 		auto FirstTrackNumber{std::experimental::any_cast< std::uint8_t >(Parameters.at("FirstTrackNumber"))};
 		auto LastTrackNumber{std::experimental::any_cast< std::uint8_t >(Parameters.at("LastTrackNumber"))};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"IEC_60908_1999", "TableOfContents_Track"}}, {"ElementName", "Track"s}, {"NumberOfElements", static_cast< std::uint64_t >(LastTrackNumber - FirstTrackNumber + 1)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"IEC_60908_1999", "TableOfContents_Track"}}, {"ElementName", "Track"s}, {"NumberOfElements", static_cast< std::uint64_t >(LastTrackNumber - FirstTrackNumber + 1)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Tracks", PartResult->GetValue());
@@ -11142,7 +11180,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEn
 
 std::unique_ptr< Inspection::Result > Inspection::Get_SignedIntegers_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits, std::uint64_t NumberOfElements)
 {
-	return Get_Array_EndedByNumberOfElements(Reader, {{"Getter", std::vector< std::string >{"Number", "Integer", "Signed", "BigEndian"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", Bits}}}, {"NumberOfElements", NumberOfElements}});
+	return Get_Array_EndedByNumberOfElements(Reader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Signed", "BigEndian"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", Bits}}}, {"NumberOfElements", NumberOfElements}});
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_String_ASCII_Alphabetic_ByTemplate(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -12628,12 +12666,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedIntegers_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits, std::uint64_t NumberOfElements)
 {
-	return Get_Array_EndedByNumberOfElements(Reader, {{"Getter", std::vector< std::string >{"Number", "Integer", "Unsigned", "BigEndian"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", Bits}}}, {"NumberOfElements", NumberOfElements}});
+	return Get_Array_EndedByNumberOfElements(Reader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Unsigned", "BigEndian"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", Bits}}}, {"NumberOfElements", NumberOfElements}});
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedIntegers_16Bit_BigEndian(Inspection::Reader & Reader, std::uint64_t NumberOfElements)
 {
-	return Get_Array_EndedByNumberOfElements(Reader, {{"Getter", std::vector< std::string >{"Number", "Integer", "Unsigned", "16Bit_BigEndian"}}, {"NumberOfElements", NumberOfElements}});
+	return Get_Array_EndedByNumberOfElements(Reader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Unsigned", "16Bit_BigEndian"}}, {"NumberOfElements", NumberOfElements}});
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer)
@@ -12744,7 +12782,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	{
 		auto UserCommentListLength{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("UserCommentListLength")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"Getter", std::vector< std::string >{"Vorbis", "CommentHeader_UserComment"}}, {"ElementName", "UserComment"s}, {"NumberOfElements", static_cast< std::uint64_t >(UserCommentListLength)}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"Vorbis", "CommentHeader_UserComment"}}, {"ElementName", "UserComment"s}, {"NumberOfElements", static_cast< std::uint64_t >(UserCommentListLength)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("UserCommentList", PartResult->GetValue());
