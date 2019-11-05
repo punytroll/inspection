@@ -92,7 +92,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_CalculateBitsPerSample(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);
+	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Data_LPC(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder);

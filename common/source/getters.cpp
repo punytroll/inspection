@@ -4041,7 +4041,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 		else if(SubframeType == "SUBFRAME_FIXED")
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_FLAC_Subframe_Data_Fixed(PartReader, FrameBlockSize, BitsPerSample, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()))};
+			auto PartResult{Get_FLAC_Subframe_Data_Fixed(PartReader, {{"FrameBlockSize", FrameBlockSize}, {"BitsPerSample", BitsPerSample}, {"PredictorOrder", Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()}})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -4107,7 +4107,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_CalculateBit
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -4115,6 +4115,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(I
 	// reading
 	if(Continue == true)
 	{
+		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Parameters.at("BitsPerSample"))};
+		auto PredictorOrder{std::experimental::any_cast< std::uint8_t >(Parameters.at("PredictorOrder"))};
 		Inspection::Reader PartReader{Reader};
 		auto PartResult{Inspection::g_GetterRepository.Get({"Array", "EndedByNumberOfElements"}, PartReader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Unsigned", "BigEndian"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", BitsPerSample}}}, {"NumberOfElements", static_cast< std::uint64_t >(PredictorOrder)}})};
 		
@@ -4125,6 +4127,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(I
 	// reading
 	if(Continue == true)
 	{
+		auto FrameBlockSize{std::experimental::any_cast< std::uint16_t >(Parameters.at("FrameBlockSize"))};
+		auto PredictorOrder{std::experimental::any_cast< std::uint8_t >(Parameters.at("PredictorOrder"))};
 		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_FLAC_Subframe_Residual(PartReader, FrameBlockSize, PredictorOrder)};
 		
