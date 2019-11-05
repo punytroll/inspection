@@ -4018,10 +4018,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_FLAC_Subframe_Header(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Header", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_FLAC_Subframe_Header(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Header", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	if(Continue == true)
 	{
@@ -4029,24 +4031,30 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 		
 		if(SubframeType == "SUBFRAME_CONSTANT")
 		{
-			auto FieldResult{Get_FLAC_Subframe_Data_Constant(Reader, BitsPerSample)};
-			auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "BigEndian"}, PartReader, {{"Bits", BitsPerSample}})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Data", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(SubframeType == "SUBFRAME_FIXED")
 		{
-			auto FieldResult{Get_FLAC_Subframe_Data_Fixed(Reader, FrameBlockSize, BitsPerSample, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()))};
-			auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_FLAC_Subframe_Data_Fixed(PartReader, FrameBlockSize, BitsPerSample, std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()))};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Data", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(SubframeType == "SUBFRAME_LPC")
 		{
-			auto FieldResult{Get_FLAC_Subframe_Data_LPC(Reader, FrameBlockSize, BitsPerSample, static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()) + 1))};
-			auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_FLAC_Subframe_Data_LPC(PartReader, FrameBlockSize, BitsPerSample, static_cast< std::uint8_t >(std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()) + 1))};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Data", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
@@ -4097,11 +4105,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_CalculateBit
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Constant(Inspection::Reader & Reader, std::uint8_t BitsPerSample)
-{
-	return Get_UnsignedInteger_BigEndian(Reader, {{"Bits", BitsPerSample}});
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
