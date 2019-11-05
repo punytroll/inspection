@@ -1,0 +1,47 @@
+<getter>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>v2.4</part>
+			<part>TextEncoding</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>TextEncoding</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Array</part>
+			<part>EndedByLength</part>
+		</getter>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>ID3</part>
+					<part>v2.4</part>
+					<part>TextStringAccordingToEncoding_EndedByTerminationOrLength</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>Information</string>
+			</parameter>
+			<parameter name="ElementParameters">
+				<parameters>
+					<parameter name="TextEncoding">
+						<value-reference>
+							<result/>
+							<sub>TextEncoding</sub>
+						</value-reference>
+					</parameter>
+				</parameters>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>Informations</name>
+			</append-value>
+		</value>
+	</part>
+</getter>
