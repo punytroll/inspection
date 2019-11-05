@@ -4130,7 +4130,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(I
 		auto FrameBlockSize{std::experimental::any_cast< std::uint16_t >(Parameters.at("FrameBlockSize"))};
 		auto PredictorOrder{std::experimental::any_cast< std::uint8_t >(Parameters.at("PredictorOrder"))};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_FLAC_Subframe_Residual(PartReader, FrameBlockSize, PredictorOrder)};
+		auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Subframe_Residual"}, PartReader, {{"FrameBlockSize", FrameBlockSize}, {"PredictorOrder", PredictorOrder}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Residual", PartResult->GetValue());
@@ -4207,7 +4207,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_FLAC_Subframe_Residual(PartReader, FrameBlockSize, PredictorOrder)};
+		auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Subframe_Residual"}, PartReader, {{"FrameBlockSize", FrameBlockSize}, {"PredictorOrder", PredictorOrder}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Residual", PartResult->GetValue());
@@ -4272,7 +4272,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Header(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -4291,28 +4291,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 	if(Continue == true)
 	{
 		auto CodingMethod{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("CodingMethod")->GetData())};
+		auto FrameBlockSize{std::experimental::any_cast< std::uint16_t >(Parameters.at("FrameBlockSize"))};
+		auto PredictorOrder{std::experimental::any_cast< std::uint8_t >(Parameters.at("PredictorOrder"))};
 		
 		if(CodingMethod == 0x00)
 		{
-			auto FieldResult{Get_FLAC_Subframe_Residual_Rice(Reader, FrameBlockSize, PredictorOrder)};
-			auto FieldValue{Result->GetValue()->AppendField("CodedResidual", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_FLAC_Subframe_Residual_Rice(PartReader, FrameBlockSize, PredictorOrder)};
 			
-			UpdateState(Continue, FieldResult);
-			if(Continue == true)
-			{
-				FieldValue->AddTag("Rice"s);
-			}
+			Continue = PartResult->GetSuccess();
+			PartResult->GetValue()->AddTag("Rice"s);
+			Result->GetValue()->AppendField("CodedResidual", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(CodingMethod == 0x01)
 		{
-			auto FieldResult{Get_FLAC_Subframe_Residual_Rice2(Reader, FrameBlockSize, PredictorOrder)};
-			auto FieldValue{Result->GetValue()->AppendField("CodedResidual", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_FLAC_Subframe_Residual_Rice2(PartReader, FrameBlockSize, PredictorOrder)};
 			
-			UpdateState(Continue, FieldResult);
-			if(Continue == true)
-			{
-				FieldValue->AddTag("Rice2"s);
-			}
+			Continue = PartResult->GetSuccess();
+			PartResult->GetValue()->AddTag("Rice2"s);
+			Result->GetValue()->AppendField("CodedResidual", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{

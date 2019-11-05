@@ -756,6 +756,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Subframe_CalculateBitsPerSample;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_Residual")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Subframe_Residual;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_Residual_Rice_Partition")
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Subframe_Residual_Rice_Partition;
