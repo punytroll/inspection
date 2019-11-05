@@ -31,10 +31,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>MIMETypeLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -68,10 +68,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>DescriptionLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -155,10 +155,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>PictureDataLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>

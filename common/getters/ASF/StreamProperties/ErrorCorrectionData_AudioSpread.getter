@@ -58,10 +58,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>SilenceDataLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>

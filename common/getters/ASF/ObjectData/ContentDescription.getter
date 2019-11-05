@@ -73,10 +73,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>TitleLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -97,10 +97,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>AuthorLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -121,10 +121,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>CopyrightLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -145,10 +145,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>DescriptionLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -169,10 +169,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>RatingLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>

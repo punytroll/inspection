@@ -83,10 +83,10 @@
 				<string>EntryDescriptor</string>
 			</parameter>
 			<parameter name="NumberOfElements">
-				<value-reference cast-to-type="unsigned integer 64bit">
+				<data-reference cast-to-type="unsigned integer 64bit">
 					<result/>
 					<sub>NumberOfEntries</sub>
-				</value-reference>
+				</data-reference>
 			</parameter>
 		</parameters>
 		<value>

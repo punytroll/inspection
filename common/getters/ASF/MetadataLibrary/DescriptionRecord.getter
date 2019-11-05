@@ -72,10 +72,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>NameLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -95,10 +95,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>DataLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -106,11 +106,11 @@
 		</length>
 		<parameters>
 			<parameter name="DataType">
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>DataType</sub>
 					<tag>interpretation</tag>
-				</value-reference>
+				</data-reference>
 			</parameter>
 		</parameters>
 		<value>

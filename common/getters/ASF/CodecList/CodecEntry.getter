@@ -33,10 +33,10 @@
 		</getter>
 		<parameters>
 			<parameter name="NumberOfCodePoints">
-				<value-reference cast-to-type="unsigned integer 64bit">
+				<data-reference cast-to-type="unsigned integer 64bit">
 					<result/>
 					<sub>CodecNameLength</sub>
-				</value-reference>
+				</data-reference>
 			</parameter>
 		</parameters>
 		<value>
@@ -67,10 +67,10 @@
 		</getter>
 		<parameters>
 			<parameter name="NumberOfCodePoints">
-				<value-reference cast-to-type="unsigned integer 64bit">
+				<data-reference cast-to-type="unsigned integer 64bit">
 					<result/>
 					<sub>CodecDescriptionLength</sub>
-				</value-reference>
+				</data-reference>
 			</parameter>
 		</parameters>
 		<value>
@@ -99,10 +99,10 @@
 		</getter>
 		<length>
 			<bytes>
-				<value-reference>
+				<data-reference>
 					<result/>
 					<sub>CodecInformationLength</sub>
-				</value-reference>
+				</data-reference>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
