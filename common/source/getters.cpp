@@ -6287,7 +6287,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "TextEncoding"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"ID3", "v2.4", "TextEncoding"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("TextEncoding", PartResult->GetValue());
@@ -6297,7 +6297,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"ID3", "v2.4", "TextStringAccordingToEncoding_EndedByTerminationOrLength"}}, {"ElementName", "Information"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"TextEncoding", Result->GetValue()->GetField("TextEncoding")->GetData()}}}})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Array", "EndedByLength"}, PartReader, {{"ElementGetter", std::vector< std::string >{"ID3", "v2.4", "TextStringAccordingToEncoding_EndedByTerminationOrLength"}}, {"ElementName", "Information"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"TextEncoding", Result->GetValue()->GetField("TextEncoding")->GetData()}}}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Informations", PartResult->GetValue());
