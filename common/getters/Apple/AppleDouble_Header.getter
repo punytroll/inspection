@@ -6,16 +6,16 @@
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
 		</getter>
-		<value>
-			<append-value>
-				<name>MagicNumber</name>
-			</append-value>
-		</value>
 		<verification>
 			<value-equals>
 				<unsigned-integer-32bit>333319</unsigned-integer-32bit>
 			</value-equals>
 		</verification>
+		<value>
+			<append-value>
+				<name>MagicNumber</name>
+			</append-value>
+		</value>
 	</part>
 	<part>
 		<getter>
@@ -24,16 +24,16 @@
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
 		</getter>
-		<value>
-			<append-value>
-				<name>VersionNumber</name>
-			</append-value>
-		</value>
 		<verification>
 			<value-equals>
 				<unsigned-integer-32bit>131072</unsigned-integer-32bit>
 			</value-equals>
 		</verification>
+		<value>
+			<append-value>
+				<name>VersionNumber</name>
+			</append-value>
+		</value>
 	</part>
 	<part>
 		<getter>

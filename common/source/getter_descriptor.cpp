@@ -57,6 +57,7 @@ namespace Inspection
 		std::experimental::optional< Inspection::GetterReference> GetterReference;
 		std::experimental::optional< std::vector< Inspection::ActualParameterDescriptor > > Parameters;
 		std::experimental::optional< std::string > String;
+		std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
 		std::experimental::optional< std::uint32_t > UnsignedInteger32Bit;
 		std::experimental::optional< std::uint64_t > UnsignedInteger64Bit;
 	};
@@ -546,7 +547,20 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 									case Inspection::VerificationDescriptor::Type::ValueEquals:
 										{
 											assert(VerificationDescriptor.ValueEqualsDescriptor);
-											if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == "unsigned integer 32bit")
+											if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == "unsigned integer 8bit")
+											{
+												assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit);
+												Continue = std::experimental::any_cast< std::uint8_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value();
+												if(Continue == false)
+												{
+													PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value()) + "\".");
+												}
+												else
+												{
+													PartResult->GetValue()->AddTag("verified", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value()) + "\".");
+												}
+											}
+											else if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == "unsigned integer 32bit")
 											{
 												assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit);
 												Continue = std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit.value();
@@ -1312,6 +1326,17 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 				
 				assert(TextNode != nullptr);
 				ValueDescriptor.String = TextNode->GetText();
+			}
+			else if(ChildElement->GetName() == "unsigned-integer-8bit")
+			{
+				assert(ValueDescriptor.Type == "");
+				ValueDescriptor.Type = "unsigned integer 8bit";
+				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+				
+				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
+				
+				assert(TextNode != nullptr);
+				ValueDescriptor.UnsignedInteger8Bit = from_string_cast< std::uint8_t >(TextNode->GetText());
 			}
 			else if(ChildElement->GetName() == "unsigned-integer-32bit")
 			{

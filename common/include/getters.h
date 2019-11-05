@@ -39,7 +39,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_Printable_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_Printable_EndedByTermination(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_CodecListObjectData(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASF_CompatibilityObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_CreationDate(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_DataObject(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASF_ExtendedContentDescription_ContentDescriptor(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
