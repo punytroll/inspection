@@ -648,6 +648,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_Apple_AppleDouble_File;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByLength")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByLength;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByNumberOfElements")
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByNumberOfElements;
@@ -671,6 +675,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor")
 					{
 						_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_DataObject")
+					{
+						_HardcodedGetterWithParameters = Get_ASF_DataObject;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_HeaderObject")
+					{
+						_HardcodedGetterWithParameters = Get_ASF_HeaderObject;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord_Data")
 					{

@@ -1,0 +1,46 @@
+<getter>
+	<part>
+		<getter>
+			<part>ASF</part>
+			<part>HeaderObject</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>HeaderObject</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>ASF</part>
+			<part>DataObject</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>DataObject</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Array</part>
+			<part>EndedByLength</part>
+		</getter>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>ASF</part>
+					<part>Object</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>Object</string>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>Objects</name>
+			</append-value>
+		</value>
+	</part>
+</getter>

@@ -518,7 +518,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 						
 						Inspection::Reader FieldReader{Buffer};
 						
-						PartialResult = Get_ASF_File(FieldReader);
+						PartialResult = Inspection::g_GetterRepository.Get({"ASF", "File"}, FieldReader, {});
 						if(PartialResult->GetSuccess() == true)
 						{
 							Buffer.SetPosition(FieldReader);

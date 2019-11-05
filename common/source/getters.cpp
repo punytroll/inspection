@@ -1268,7 +1268,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CreationDate(Inspectio
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -1827,48 +1827,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ASF_HeaderObject(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("HeaderObject", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ASF_DataObject(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("DataObject", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "Object"}}, {"ElementName", "Object"s}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Objects", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FileProperties_Flags(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -1902,7 +1860,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FileProperties_Flags(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
