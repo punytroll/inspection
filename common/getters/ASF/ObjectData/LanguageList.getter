@@ -1,0 +1,44 @@
+<getter>
+	<part>
+		<getter>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_LittleEndian</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>LanguageIDRecordsCount</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Array</part>
+			<part>EndedByNumberOfElements</part>
+		</getter>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>ASF</part>
+					<part>LanguageList</part>
+					<part>LanguageIDRecord</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>LanguageIDRecord</string>
+			</parameter>
+			<parameter name="NumberOfElements">
+				<data-reference cast-to-type="unsigned integer 64bit">
+					<result/>
+					<sub>LanguageIDRecordsCount</sub>
+				</data-reference>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>LanguageIDRecords</name>
+			</append-value>
+		</value>
+	</part>
+</getter>
