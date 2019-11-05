@@ -1809,67 +1809,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspectio
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetField("Size")->GetData()), 0} - Reader.GetConsumedLength()};
-		auto PartResult{Get_ASF_HeaderObjectData(PartReader)};
+		auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObjectData(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("NumberOfHeaderObjects", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Reserved1", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Reserved1")->GetData()) == 0x01;
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Reserved2", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Reserved2")->GetData()) == 0x02;
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto NumberOfHeaderObjects{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("NumberOfHeaderObjects")->GetData())};
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "Object"}}, {"ElementName", "HeaderObject"s}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfHeaderObjects)}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("HeaderObjects", PartResult->GetValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
@@ -2160,7 +2103,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_HeaderObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Get_ASF_HeaderObjectData(PartReader)};
+			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "Header"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
