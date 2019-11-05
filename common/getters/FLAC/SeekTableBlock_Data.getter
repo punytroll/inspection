@@ -1,0 +1,24 @@
+<getter>
+	<part>
+		<getter>
+			<part>Array</part>
+			<part>EndedByLength</part>
+		</getter>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>FLAC</part>
+					<part>SeekTableBlock_SeekPoint</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>SeekPoint</string>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>SeekPoints</name>
+			</append-value>
+		</value>
+	</part>
+</getter>

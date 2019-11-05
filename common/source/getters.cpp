@@ -3781,7 +3781,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
 				Inspection::Reader PartReader{Reader, Inspection::Length{MetaDataBlockDataLength, 0}};
-				auto PartResult{Get_FLAC_SeekTableBlock_Data(PartReader)};
+				auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "SeekTableBlock_Data"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -3817,28 +3817,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "SeekTableBlock_SeekPoint"}}, {"ElementName", "SeekPoint"s}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("SeekPoints", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -3858,10 +3836,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Re
 	if(Continue == true)
 	{
 		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("StreamInfoBlock")->GetField("Data")->GetField("NumberOfChannels")->GetTag("value")->GetData())};
-		std::unordered_map< std::string, std::experimental::any > ElementParameters;
-		
-		ElementParameters.insert({{"NumberOfChannelsByStream", NumberOfChannels}});
-		
 		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Frame"}}, {"ElementName", "Frame"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"NumberOfChannelsByStream", NumberOfChannels}}}})};
 		
