@@ -860,6 +860,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_MPEG_1_Frame;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_RIFF_Chunk")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_RIFF_Chunk;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask")
 					{
 						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask;

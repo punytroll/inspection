@@ -294,7 +294,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("array"s);
-	Result->GetValue()->AddTag("at least one element"s);
 	// reading
 	if(Continue == true)
 	{
@@ -356,7 +355,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 		{
 			Result->GetValue()->AddTag("ended by failure"s);
 		}
-		if(ElementIndexInArray == 0)
+		if(ElementIndexInArray > 0)
+		{
+			Result->GetValue()->AddTag("at least one element"s);
+		}
+		else
 		{
 			Result->GetValue()->AddTag("error", "The array contains no elements, although at least one is required."s);
 			Continue = false;
@@ -440,7 +443,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::experimental::any > &) > Getter)
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -449,18 +452,45 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 	// reading
 	if(Continue == true)
 	{
+		std::experimental::optional< std::string > ElementName;
+		std::unordered_map< std::string, std::experimental::any > ElementParameters;
+		auto ElementParametersIterator{Parameters.find("ElementParameters")};
+		
+		if(ElementParametersIterator != Parameters.end())
+		{
+			const auto & ElementParametersFromParameter{std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second)};
+			
+			ElementParameters.insert(std::begin(ElementParametersFromParameter), std::end(ElementParametersFromParameter));
+		}
+		
+		auto ElementNameIterator{Parameters.find("ElementName")};
+		
+		if(ElementNameIterator != Parameters.end())
+		{
+			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
+		}
+		
+		auto & ElementGetter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("ElementGetter"))};
 		std::uint64_t ElementIndexInArray{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
 			Inspection::Reader ElementReader{Reader};
-			auto ElementResult{Getter(ElementReader, {})};
+			
+			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+			
+			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 			
 			Continue = ElementResult->GetSuccess();
-			
-			auto ElementValue{Result->GetValue()->AppendField(ElementResult->GetValue())};
-			
-			ElementValue->AddTag("element index in array", ElementIndexInArray++);
+			ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+			if(ElementName)
+			{
+				Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
+			}
+			else
+			{
+				Result->GetValue()->AppendField(ElementResult->GetValue());
+			}
 			Reader.AdvancePosition(ElementReader.GetConsumedLength());
 		}
 		if(Reader.IsAtEnd() == true)
@@ -1784,14 +1814,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("HeaderExtensionDataSize")->GetData()), 0}};
-		auto PartResult{Get_Array_EndedByLength(PartReader, Get_ASF_Object)};
+		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "Object"}}, {"ElementName", "AdditionalExtendedHeader"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("AdditionalExtendedHeaders", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetFields())
-		{
-			PartValue->SetName("AdditionalExtendedHeader");
-		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
@@ -1809,33 +1835,31 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_File(Inspection::Reade
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_ASF_HeaderObject(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("HeaderObject", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ASF_HeaderObject(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_ASF_DataObject(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("DataObject", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("HeaderObject", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, Get_ASF_Object)};
+		auto PartResult{Get_ASF_DataObject(PartReader)};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("DataObject", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "Object"}}, {"ElementName", "Object"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Objects", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetFields())
-		{
-			PartValue->SetName("Object");
-		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
@@ -3844,14 +3868,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_SeekTableBlock_Data(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, std::bind(&Inspection::GetterRepository::Get, &g_GetterRepository, std::vector< std::string >({"FLAC", "SeekTableBlock_SeekPoint"}), std::placeholders::_1, std::unordered_map< std::string, std::experimental::any >()))};
+		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "SeekTableBlock_SeekPoint"}}, {"ElementName", "SeekPoint"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SeekPoints", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetFields())
-		{
-			PartValue->SetName("SeekPoint");
-		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
@@ -6323,14 +6343,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_T___(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, std::bind(Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength, std::placeholders::_1, std::unordered_map< std::string, std::experimental::any >{{"TextEncoding", Result->GetValue()->GetField("TextEncoding")->GetData()}}))};
+		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"ID3", "v2.4", "TextStringAccordingToEncoding_EndedByTerminationOrLength"}}, {"ElementName", "Information"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"TextEncoding", Result->GetValue()->GetField("TextEncoding")->GetData()}}}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Informations", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetFields())
-		{
-			PartValue->SetName("Information");
-		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
@@ -10865,14 +10881,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_RIFF_ChunkData(Inspec
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, Get_RIFF_Chunk)};
+		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"RIFF", "Chunk"}}, {"ElementName", "Chunk"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Chunks", PartResult->GetValue());
-		for(auto PartValue : PartResult->GetValue()->GetFields())
-		{
-			PartValue->SetName("Chunk");
-		}
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
