@@ -47,6 +47,13 @@ namespace Inspection
 		std::vector< std::string > Parts;
 	};
 	
+	class ParameterReference
+	{
+	public:
+		std::experimental::optional< std::string > CastToType;
+		std::string Name;
+	};
+	
 	class ActualParameterDescriptor;
 	
 	class ValueDescriptor
@@ -55,6 +62,7 @@ namespace Inspection
 		std::string Type;
 		std::experimental::optional< Inspection::DataReference > DataReference;
 		std::experimental::optional< Inspection::GetterReference> GetterReference;
+		std::experimental::optional< Inspection::ParameterReference> ParameterReference;
 		std::experimental::optional< std::vector< Inspection::ActualParameterDescriptor > > Parameters;
 		std::experimental::optional< std::string > String;
 		std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
@@ -345,6 +353,35 @@ namespace Inspection
 				
 				FillNewParameters(InnerParameters, ParameterDescriptor.ValueDescriptor.Parameters.value(), Result, Parameters);
 				NewParameters.emplace(ParameterDescriptor.Name, InnerParameters);
+			}
+			else if(ParameterDescriptor.ValueDescriptor.Type == "parameter-reference")
+			{
+				assert(ParameterDescriptor.ValueDescriptor.ParameterReference);
+				
+				auto & Any{Parameters.at(ParameterDescriptor.ValueDescriptor.ParameterReference->Name)};
+				
+				if(!ParameterDescriptor.ValueDescriptor.ParameterReference->CastToType)
+				{
+					NewParameters.emplace(ParameterDescriptor.Name, Any);
+				}
+				else
+				{
+					if(ParameterDescriptor.ValueDescriptor.ParameterReference->CastToType.value() == "unsigned integer 64bit")
+					{
+						if(Any.type() == typeid(std::uint8_t))
+						{
+							NewParameters.emplace(ParameterDescriptor.Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint8_t >(Any)));
+						}
+						else
+						{
+							assert(false);
+						}
+					}
+					else
+					{
+						assert(false);
+					}
+				}
 			}
 			else
 			{
@@ -1315,6 +1352,22 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 						}
 					}
 				}
+			}
+			else if(ChildElement->GetName() == "parameter-reference")
+			{
+				assert(ValueDescriptor.Type == "");
+				ValueDescriptor.Type = "parameter-reference";
+				ValueDescriptor.ParameterReference.emplace();
+				if(ChildElement->HasAttribute("cast-to-type") == true)
+				{
+					ValueDescriptor.ParameterReference->CastToType = ChildElement->GetAttribute("cast-to-type");
+				}
+				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+				
+				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
+				
+				assert(TextNode != nullptr);
+				ValueDescriptor.ParameterReference->Name = TextNode->GetText();
 			}
 			else if(ChildElement->GetName() == "string")
 			{

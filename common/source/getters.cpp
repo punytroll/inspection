@@ -2202,7 +2202,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_StreamBitratePropertiesObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Get_ASF_StreamBitratePropertiesObjectData(PartReader)};
+			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "StreamBitrateProperties"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2274,39 +2274,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 		//~ Continue = ReservedResult->GetSuccess();
 	//~ }
 	//~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertiesObjectData(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("BitrateRecordsCount", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto BitrateRecordsCount{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("BitrateRecordsCount")->GetData())};
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"ASF", "StreamBitrateProperties", "BitrateRecord"}}, {"ElementName", "BitrateRecord"s}, {"NumberOfElements", static_cast< std::uint64_t >(BitrateRecordsCount)}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("BitrateRecords", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -3784,7 +3751,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 		else if(SubframeType == "SUBFRAME_FIXED")
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_FLAC_Subframe_Data_Fixed(PartReader, {{"FrameBlockSize", FrameBlockSize}, {"BitsPerSample", BitsPerSample}, {"PredictorOrder", Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()}})};
+			auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Subframe_Data_Fixed"}, PartReader, {{"FrameBlockSize", FrameBlockSize}, {"BitsPerSample", BitsPerSample}, {"PredictorOrder", Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()}})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -3842,42 +3809,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_CalculateBit
 			Result->SetValue(PartResult->GetValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_Fixed(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Parameters.at("BitsPerSample"))};
-		auto PredictorOrder{std::experimental::any_cast< std::uint8_t >(Parameters.at("PredictorOrder"))};
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Array", "EndedByNumberOfElements"}, PartReader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Unsigned", "BigEndian"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", BitsPerSample}}}, {"NumberOfElements", static_cast< std::uint64_t >(PredictorOrder)}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("WarmUpSamples", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FrameBlockSize{std::experimental::any_cast< std::uint16_t >(Parameters.at("FrameBlockSize"))};
-		auto PredictorOrder{std::experimental::any_cast< std::uint8_t >(Parameters.at("PredictorOrder"))};
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Subframe_Residual"}, PartReader, {{"FrameBlockSize", FrameBlockSize}, {"PredictorOrder", PredictorOrder}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Residual", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);

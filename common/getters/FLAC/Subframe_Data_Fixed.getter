@@ -1,0 +1,52 @@
+<getter>
+	<part>
+		<getter>
+			<part>Array</part>
+			<part>EndedByNumberOfElements</part>
+		</getter>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>BigEndian</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="NumberOfElements">
+				<parameter-reference cast-to-type="unsigned integer 64bit">PredictorOrder</parameter-reference>
+			</parameter>
+			<parameter name="ElementParameters">
+				<parameters>
+					<parameter name="Bits">
+						<parameter-reference>BitsPerSample</parameter-reference>
+					</parameter>
+				</parameters>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>WarmUpSamples</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>FLAC</part>
+			<part>Subframe_Residual</part>
+		</getter>
+		<parameters>
+			<parameter name="FrameBlockSize">
+				<parameter-reference>FrameBlockSize</parameter-reference>
+			</parameter>
+			<parameter name="PredictorOrder">
+				<parameter-reference>PredictorOrder</parameter-reference>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>Residual</name>
+			</append-value>
+		</value>
+	</part>
+</getter>
