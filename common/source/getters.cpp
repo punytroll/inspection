@@ -290,7 +290,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Apple_AppleDouble_File(Ins
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	static const std::unordered_map< std::string, std::experimental::any > DefaultElementParameters{};
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -300,12 +299,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 	if(Continue == true)
 	{
 		std::experimental::optional< std::string > ElementName;
-		const auto * ElementParameters{&DefaultElementParameters};
+		std::unordered_map< std::string, std::experimental::any > ElementParameters;
 		auto ElementParametersIterator{Parameters.find("ElementParameters")};
 		
 		if(ElementParametersIterator != Parameters.end())
 		{
-			ElementParameters = &(std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second));
+			const auto & ElementParametersFromParameter{std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second)};
+			
+			ElementParameters.insert(std::begin(ElementParametersFromParameter), std::end(ElementParametersFromParameter));
 		}
 		
 		auto ElementNameIterator{Parameters.find("ElementName")};
@@ -316,27 +317,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 		}
 		
 		auto & ElementGetter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("ElementGetter"))};
-		std::uint64_t ElementIndex{0};
+		std::uint64_t ElementIndexInArray{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
 			Inspection::Reader ElementReader{Reader};
-			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, *ElementParameters)};
+			
+			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+			
+			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 			
 			Continue = ElementResult->GetSuccess();
 			if(Continue == true)
 			{
-				std::shared_ptr< Inspection::Value > ElementValue;
-				
+				ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
 				if(ElementName)
 				{
-					ElementValue = Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
+					Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
 				}
 				else
 				{
-					ElementValue = Result->GetValue()->AppendField(ElementResult->GetValue());
+					Result->GetValue()->AppendField(ElementResult->GetValue());
 				}
-				ElementResult->GetValue()->AddTag("element index in array", ElementIndex++);
 				Reader.AdvancePosition(ElementReader.GetConsumedLength());
 			}
 			else
@@ -354,12 +356,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 		{
 			Result->GetValue()->AddTag("ended by failure"s);
 		}
-		if(ElementIndex == 0)
+		if(ElementIndexInArray == 0)
 		{
 			Result->GetValue()->AddTag("error", "The array contains no elements, although at least one is required."s);
 			Continue = false;
 		}
-		Result->GetValue()->AddTag("number of elements", ElementIndex);
+		Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -370,7 +372,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	static const std::unordered_map< std::string, std::experimental::any > DefaultElementParameters{};
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -379,12 +380,14 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 	if(Continue == true)
 	{
 		std::experimental::optional< std::string > ElementName;
-		const auto * ElementParameters{&DefaultElementParameters};
+		std::unordered_map< std::string, std::experimental::any > ElementParameters;
 		auto ElementParametersIterator{Parameters.find("ElementParameters")};
 		
 		if(ElementParametersIterator != Parameters.end())
 		{
-			ElementParameters = &(std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second));
+			const auto & ElementParametersFromParameter{std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second)};
+			
+			ElementParameters.insert(std::begin(ElementParametersFromParameter), std::end(ElementParametersFromParameter));
 		}
 		
 		auto ElementNameIterator{Parameters.find("ElementName")};
@@ -395,27 +398,28 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 		}
 		
 		auto & ElementGetter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("ElementGetter"))};
-		std::uint64_t ElementIndex{0};
+		std::uint64_t ElementIndexInArray{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
 			Inspection::Reader ElementReader{Reader};
-			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, *ElementParameters)};
+			
+			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+			
+			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 			
 			Continue = ElementResult->GetSuccess();
 			if(Continue == true)
 			{
-				std::shared_ptr< Inspection::Value > ElementValue;
-				
+				ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
 				if(ElementName)
 				{
-					ElementValue = Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
+					Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
 				}
 				else
 				{
-					ElementValue = Result->GetValue()->AppendField(ElementResult->GetValue());
+					Result->GetValue()->AppendField(ElementResult->GetValue());
 				}
-				ElementValue->AddTag("element index in array", ElementIndex++);
 				Reader.AdvancePosition(ElementReader.GetConsumedLength());
 			}
 		}
@@ -427,7 +431,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 		{
 			Result->GetValue()->AddTag("ended by failure"s);
 		}
-		Result->GetValue()->AddTag("number of elements", ElementIndex);
+		Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -445,7 +449,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 	// reading
 	if(Continue == true)
 	{
-		std::uint64_t ElementIndex{0};
+		std::uint64_t ElementIndexInArray{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
@@ -456,7 +460,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 			
 			auto ElementValue{Result->GetValue()->AppendField(ElementResult->GetValue())};
 			
-			ElementValue->AddTag("element index in array", ElementIndex++);
+			ElementValue->AddTag("element index in array", ElementIndexInArray++);
 			Reader.AdvancePosition(ElementReader.GetConsumedLength());
 		}
 		if(Reader.IsAtEnd() == true)
@@ -467,7 +471,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 		{
 			Result->GetValue()->AddTag("ended by failure"s);
 		}
-		Result->GetValue()->AddTag("number of elements", ElementIndex);
+		Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -477,81 +481,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	static const std::unordered_map< std::string, std::experimental::any > DefaultElementParameters{};
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	Result->GetValue()->AddTag("array"s);
-	// reading
-	if(Continue == true)
-	{
-		std::experimental::optional< std::string > ElementName;
-		const auto * ElementParameters{&DefaultElementParameters};
-		auto ElementParametersIterator{Parameters.find("ElementParameters")};
-		
-		if(ElementParametersIterator != Parameters.end())
-		{
-			ElementParameters = &(std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second));
-		}
-		
-		auto ElementNameIterator{Parameters.find("ElementName")};
-		
-		if(ElementNameIterator != Parameters.end())
-		{
-			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
-		}
-		
-		auto & ElementGetter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("ElementGetter"))};
-		auto NumberOfElements{std::experimental::any_cast< std::uint64_t >(Parameters.at("NumberOfElements"))};
-		std::uint64_t ElementIndex{0};
-		
-		while(true)
-		{
-			if(ElementIndex < NumberOfElements)
-			{
-				Inspection::Reader ElementReader{Reader};
-				auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, *ElementParameters)};
-				
-				Continue = ElementResult->GetSuccess();
-				
-				std::shared_ptr< Inspection::Value > ElementValue;
-				
-				if(ElementName)
-				{
-					ElementValue = Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
-				}
-				else
-				{
-					ElementValue = Result->GetValue()->AppendField(ElementResult->GetValue());
-				}
-				
-				ElementValue->AddTag("element index in array", ElementIndex++);
-				Reader.AdvancePosition(ElementReader.GetConsumedLength());
-				if(Continue == false)
-				{
-					Result->GetValue()->AddTag("ended by failure"s);
-					
-					break;
-				}
-			}
-			else
-			{
-				Result->GetValue()->AddTag("ended by number of elements"s);
-				
-				break;
-			}
-		}
-		Result->GetValue()->AddTag("number of elements", NumberOfElements);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfElements_PassElementIndexInArray(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -586,9 +515,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 		{
 			if(ElementIndexInArray < NumberOfElements)
 			{
+				Inspection::Reader ElementReader{Reader};
+				
 				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 				
-				Inspection::Reader ElementReader{Reader};
 				auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 				
 				Continue = ElementResult->GetSuccess();
@@ -625,38 +555,71 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByPredicate(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::function< bool (std::shared_ptr< Inspection::Value > PartValue) > EndedPredicate)
+std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByPredicate(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("array"s);
-	Result->GetValue()->AddTag("ended by predicate"s);
 	// reading
 	if(Continue == true)
 	{
-		std::uint64_t ElementIndex{0};
+		std::experimental::optional< std::string > ElementName;
+		std::unordered_map< std::string, std::experimental::any > ElementParameters;
+		auto ElementParametersIterator{Parameters.find("ElementParameters")};
+		
+		if(ElementParametersIterator != Parameters.end())
+		{
+			const auto & ElementParametersFromParameter{std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second)};
+			
+			ElementParameters.insert(std::begin(ElementParametersFromParameter), std::end(ElementParametersFromParameter));
+		}
+		
+		auto ElementNameIterator{Parameters.find("ElementName")};
+		
+		if(ElementNameIterator != Parameters.end())
+		{
+			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
+		}
+		
+		auto EndPredicate{std::experimental::any_cast< std::function< bool (std::shared_ptr< Inspection::Value >) > >(Parameters.at("EndPredicate"))};
+		auto & ElementGetter{std::experimental::any_cast< const std::vector< std::string > & >(Parameters.at("ElementGetter"))};
+		std::uint64_t ElementIndexInArray{0};
 		
 		while(Continue == true)
 		{
 			Inspection::Reader ElementReader{Reader};
-			auto ElementResult{Getter(ElementReader)};
+			
+			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+			
+			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 			
 			Continue = ElementResult->GetSuccess();
-			
-			auto ElementValue{Result->GetValue()->AppendField(ElementResult->GetValue())};
-			
-			ElementValue->AddTag("element index in array", ElementIndex++);
+			ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+			if(ElementName)
+			{
+				Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
+			}
+			else
+			{
+				Result->GetValue()->AppendField(ElementResult->GetValue());
+			}
 			Reader.AdvancePosition(ElementReader.GetConsumedLength());
 			if(Continue == true)
 			{
-				if(EndedPredicate(ElementValue) == true)
+				if(EndPredicate(ElementResult->GetValue()) == true)
 				{
+					Result->GetValue()->AddTag("ended by predicate"s);
+					
 					break;
 				}
 			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by failure"s);
+			}
 		}
-		Result->GetValue()->AddTag("number of elements", ElementIndex);
+		Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -3526,7 +3489,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("SampleSize")->GetTag("value")->GetData())};
 		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("ChannelAssignment")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements_PassElementIndexInArray(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Subframe_CalculateBitsPerSample"}}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfChannelsByStream)}, {"ElementName", "Subframe"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"BlockSize", BlockSize}, {"BitsPerSample", BitsPerSample}, {"ChannelAssignment", ChannelAssignment}}}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Subframe_CalculateBitsPerSample"}}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfChannelsByStream)}, {"ElementName", "Subframe"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"BlockSize", BlockSize}, {"BitsPerSample", BitsPerSample}, {"ChannelAssignment", ChannelAssignment}}}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Subframes", PartResult->GetValue());
@@ -3784,7 +3747,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -3966,14 +3929,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspect
 		if(LastMetaDataBlock == false)
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_Array_EndedByPredicate(PartReader, Get_FLAC_MetaDataBlock, [](std::shared_ptr< Inspection::Value > PartValue) { return std::experimental::any_cast< bool >(PartValue->GetField("Header")->GetField("LastMetaDataBlock")->GetData()); })};
+			auto PartResult{Get_Array_EndedByPredicate(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "MetaDataBlock"}}, {"ElementName", "MetaDataBlock"s}, {"EndPredicate", std::function< bool (std::shared_ptr< Inspection::Value >) >{[](std::shared_ptr< Inspection::Value > PartValue) { return std::experimental::any_cast< bool >(PartValue->GetField("Header")->GetField("LastMetaDataBlock")->GetData()); }}}})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("MetaDataBlocks", PartResult->GetValue());
-			for(auto PartValue : PartResult->GetValue()->GetFields())
-			{
-				PartValue->SetName("MetaDataBlock");
-			}
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
@@ -4395,7 +4354,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	{
 		auto NumberOfPartitions{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("PartitionOrder")->GetTag("number of partitions")->GetData())};
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByNumberOfElements_PassElementIndexInArray(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Subframe_Residual_Rice_Partition"}}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfPartitions)}, {"ElementName", "Partition"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"NumberOfSamples", static_cast< std::uint32_t >(FrameBlockSize / NumberOfPartitions)}, {"PredictorOrder", PredictorOrder}}}})};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Subframe_Residual_Rice_Partition"}}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfPartitions)}, {"ElementName", "Partition"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"NumberOfSamples", static_cast< std::uint32_t >(FrameBlockSize / NumberOfPartitions)}, {"PredictorOrder", PredictorOrder}}}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Partitions", PartResult->GetValue());

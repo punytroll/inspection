@@ -27,8 +27,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByLength(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::experimental::any > &) > Parameters);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Array_EndedByNumberOfElements_PassElementIndexInArray(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Array_EndedByPredicate(Inspection::Reader & Reader, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Getter, std::function< bool (std::shared_ptr< Inspection::Value > PartValue) > EndedPredicate);
+	std::unique_ptr< Inspection::Result > Get_Array_EndedByPredicate(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader);
@@ -85,7 +84,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame_Footer(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame_Header(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_FLAC_MetaDataBlock(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_FLAC_SeekTableBlock_Data(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Stream_Header(Inspection::Reader & Reader);

@@ -724,6 +724,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Frame;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_MetaDataBlock")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_MetaDataBlock;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Stream")
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Stream;

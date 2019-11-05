@@ -17,6 +17,7 @@ These patterns need to spread to all getter implementations:
 14. "Parameters": All hardcoded getters should be implemented with a Parameters parameter, an unordered map from string to any.
 15. "Elements": In all array reading getters, the parts that constitute the array are called Elements.
 16. "ElementGetter": The getter referenced in the parameters for array getters is called "ElementGetter".
+17. "ElementIndexInArray": All array functions must pass a parameter "ElementIndexInArray" to the element getter.
 
 On the history of getters:
 ================================

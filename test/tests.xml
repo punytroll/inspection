@@ -379,6 +379,30 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--query=/field:FLACStream/field:MetaDataBlocks/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--query=/field:FLACStream/field:MetaDataBlocks/has-tag:ended by predicate</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>--query=/field:FLACStream/field:MetaDataBlocks/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/010_flac_with_picture_frame</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Header/field:BlockType/data</argument>
 		</execute>
 		<expected-output>6</expected-output>
