@@ -1314,7 +1314,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("ValueLength")->GetData()), 0}};
-		auto PartResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(PartReader, std::experimental::any_cast< const std::string & >(Result->GetValue()->GetField("ValueDataType")->GetTag("interpretation")->GetData()), std::experimental::any_cast< const std::string & >(Result->GetValue()->GetField("Name")->GetData()))};
+		auto PartResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(PartReader, {{"DataType", Result->GetValue()->GetField("ValueDataType")->GetTag("interpretation")->GetData()}, {"Name", Result->GetValue()->GetField("Name")->GetData()}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Value", PartResult->GetValue());
@@ -1327,7 +1327,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::string & DataType, const std::string & Name)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -1335,6 +1335,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 	// reading
 	if(Continue == true)
 	{
+		auto & DataType{std::experimental::any_cast< const std::string & >(Parameters.at("DataType"))};
+		
 		if(DataType == "Unicode string")
 		{
 			Inspection::Reader PartReader{Reader};
@@ -1346,6 +1348,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 			// interpretation
 			if(Continue == true)
 			{
+				auto & Name{std::experimental::any_cast< const std::string & >(Parameters.at("Name"))};
+		
 				if(Name == "WM/MediaPrimaryClassID")
 				{
 					auto String{std::experimental::any_cast< const std::string & >(Result->GetValue()->GetData())};
@@ -1417,6 +1421,8 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 				// interpretation
 				if(Continue == true)
 				{
+					auto & Name{std::experimental::any_cast< const std::string & >(Parameters.at("Name"))};
+				
 					if(Name == "WM/EncodingTime")
 					{
 						auto UnsignedInteger64Bit{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetData())};
