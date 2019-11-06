@@ -1,3 +1,46 @@
 <getter>
-	<hardcoded-getter>Get_FLAC_Stream</hardcoded-getter>
+	<part>
+		<getter>
+			<part>FLAC</part>
+			<part>Stream_Header</part>
+		</getter>
+		<value>
+			<set/>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Array</part>
+			<part>EndedByFailureOrLength_ResetPositionOnFailure</part>
+		</getter>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>FLAC</part>
+					<part>Frame</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>Frame</string>
+			</parameter>
+			<parameter name="ElementParameters">
+				<parameters>
+					<parameter name="NumberOfChannelsByStream">
+						<data-reference>
+							<result/>
+							<sub>StreamInfoBlock</sub>
+							<sub>Data</sub>
+							<sub>NumberOfChannels</sub>
+							<tag>value</tag>
+						</data-reference>
+					</parameter>
+				</parameters>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>Frames</name>
+			</append-value>
+		</value>
+	</part>
 </getter>

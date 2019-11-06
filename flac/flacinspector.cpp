@@ -30,7 +30,7 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 		else
 		{
 			Inspection::Reader PartReader{Buffer};
-			auto PartResult{Get_FLAC_Stream_Header(PartReader)};
+			auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Stream_Header"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());

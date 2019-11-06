@@ -3497,40 +3497,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_FLAC_Stream_Header(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->SetValue(PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto NumberOfChannels{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("StreamInfoBlock")->GetField("Data")->GetField("NumberOfChannels")->GetTag("value")->GetData())};
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"FLAC", "Frame"}}, {"ElementName", "Frame"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"NumberOfChannelsByStream", NumberOfChannels}}}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

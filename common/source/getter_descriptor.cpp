@@ -703,6 +703,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_Apple_AppleDouble_File;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByFailureOrLength_ResetPositionOnFailure")
+					{
+						_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByLength")
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByLength;
@@ -795,9 +799,9 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_FLAC_MetaDataBlock;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_Stream")
+					else if(HardcodedGetterText->GetText() == "Get_FLAC_Stream_Header")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Stream;
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Stream_Header;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
 					{
