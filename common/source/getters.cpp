@@ -1265,68 +1265,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("NameLength", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("NameLength")->GetData()), 0}};
-		auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Name", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ASF", "ExtendedContentDescription", "ContentDescriptor_ValueDataType"}, PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("ValueDataType", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_16Bit_LittleEndian(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("ValueLength", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("ValueLength")->GetData()), 0}};
-		auto PartResult{Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(PartReader, {{"DataType", Result->GetValue()->GetField("ValueDataType")->GetTag("interpretation")->GetData()}, {"Name", Result->GetValue()->GetField("Name")->GetData()}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Value", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};

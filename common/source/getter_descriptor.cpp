@@ -727,13 +727,13 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor")
-					{
-						_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor;
-					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_DataObject")
 					{
 						_HardcodedGetterWithParameters = Get_ASF_DataObject;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor_Data")
+					{
+						_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor_Data;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_HeaderObject")
 					{
