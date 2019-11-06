@@ -1,0 +1,44 @@
+<getter>
+	<part>
+		<getter>
+			<part>String</part>
+			<part>ASCII</part>
+			<part>AlphaNumericOrSpace_EndedByLength</part>
+		</getter>
+		<length>
+			<bytes>
+				<unsigned-integer-64bit>4</unsigned-integer-64bit>
+			</bytes>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
+		</length>
+		<value>
+			<append-value>
+				<name>FormType</name>
+			</append-value>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>Array</part>
+			<part>EndedByLength</part>
+		</getter>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>RIFF</part>
+					<part>Chunk</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>Chunk</string>
+			</parameter>
+		</parameters>
+		<value>
+			<append-value>
+				<name>Chunks</name>
+			</append-value>
+		</value>
+	</part>
+</getter>

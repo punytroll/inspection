@@ -10127,7 +10127,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 			if(ChunkIdentifier == "RIFF")
 			{
 				Inspection::Reader PartReader{Reader, ClaimedSize};
-				auto PartResult{Get_RIFF_RIFF_ChunkData(PartReader)};
+				auto PartResult{Inspection::g_GetterRepository.Get({"RIFF", "ChunkData", "RIFF"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -10422,38 +10422,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt__Format
 		{
 			Result->GetValue()->AddTag("interpretation", nullptr);
 		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_RIFF_ChunkData(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{4, 0}};
-		auto PartResult{Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("FormType", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Array_EndedByLength(PartReader, {{"ElementGetter", std::vector< std::string >{"RIFF", "Chunk"}}, {"ElementName", "Chunk"s}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Chunks", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);

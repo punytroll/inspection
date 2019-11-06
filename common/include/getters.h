@@ -187,7 +187,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkData_fmt_(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_RIFF_RIFF_ChunkData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_1Bit(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_SignedInteger_5Bit(Inspection::Reader & Reader);
