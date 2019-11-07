@@ -28,7 +28,6 @@ namespace Inspection
 		public:
 			enum class Type
 			{
-				Result,
 				Sub,
 				Tag
 			};
@@ -225,18 +224,12 @@ namespace Inspection
 	
 	const std::experimental::any & GetAnyByReference(Inspection::DataReference & DataReference, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
-		std::shared_ptr< Inspection::Value > Value{nullptr};
+		std::shared_ptr< Inspection::Value > Value{Result->GetValue()};
 		
 		for(auto & PartDescriptor : DataReference.PartDescriptors)
 		{
 			switch(PartDescriptor.Type)
 			{
-			case Inspection::DataReference::PartDescriptor::Type::Result:
-				{
-					Value = Result->GetValue();
-					
-					break;
-				}
 			case Inspection::DataReference::PartDescriptor::Type::Sub:
 				{
 					Value = Value->GetField(PartDescriptor.DetailName);
@@ -1325,12 +1318,7 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 						auto DataReferencePartDescriptor{DataReferencePartDescriptors.emplace(DataReferencePartDescriptors.end())};
 						auto DataReferenceChildElement{dynamic_cast< const XML::Element * >(DataReferenceChildNode)};
 						
-						if(DataReferenceChildElement->GetName() == "result")
-						{
-							assert(DataReferenceChildElement->GetChilds().size() == 0);
-							DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Result;
-						}
-						else if(DataReferenceChildElement->GetName() == "sub")
+						if(DataReferenceChildElement->GetName() == "sub")
 						{
 							assert(DataReferenceChildElement->GetChilds().size() == 1);
 							DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Sub;

@@ -59,7 +59,6 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<result/>
 					<sub>SilenceDataLength</sub>
 				</data-reference>
 			</bytes>

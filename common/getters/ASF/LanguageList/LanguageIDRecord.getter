@@ -22,7 +22,6 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<result/>
 					<sub>LanguageIDLength</sub>
 				</data-reference>
 			</bytes>

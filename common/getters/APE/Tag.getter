@@ -27,7 +27,6 @@
 			</parameter>
 			<parameter name="NumberOfElements">
 				<data-reference cast-to-type="unsigned integer 64bit">
-					<result/>
 					<sub>APETagsHeader</sub>
 					<sub>ItemCount</sub>
 				</data-reference>

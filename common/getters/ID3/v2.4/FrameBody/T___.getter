@@ -31,7 +31,6 @@
 				<parameters>
 					<parameter name="TextEncoding">
 						<data-reference>
-							<result/>
 							<sub>TextEncoding</sub>
 						</data-reference>
 					</parameter>

@@ -73,7 +73,6 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<result/>
 					<sub>NameLength</sub>
 				</data-reference>
 			</bytes>
@@ -96,7 +95,6 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<result/>
 					<sub>DataLength</sub>
 				</data-reference>
 			</bytes>
@@ -107,7 +105,6 @@
 		<parameters>
 			<parameter name="DataType">
 				<data-reference>
-					<result/>
 					<sub>DataType</sub>
 					<tag>interpretation</tag>
 				</data-reference>

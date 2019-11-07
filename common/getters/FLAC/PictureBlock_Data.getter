@@ -32,7 +32,6 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<result/>
 					<sub>MIMETypeLength</sub>
 				</data-reference>
 			</bytes>
@@ -69,7 +68,6 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<result/>
 					<sub>DescriptionLength</sub>
 				</data-reference>
 			</bytes>
@@ -156,7 +154,6 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<result/>
 					<sub>PictureDataLength</sub>
 				</data-reference>
 			</bytes>

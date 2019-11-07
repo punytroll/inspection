@@ -65,7 +65,6 @@
 			</parameter>
 			<parameter name="NumberOfElements">
 				<data-reference cast-to-type="unsigned integer 64bit">
-					<result/>
 					<sub>NumberOfHeaderObjects</sub>
 				</data-reference>
 			</parameter>
