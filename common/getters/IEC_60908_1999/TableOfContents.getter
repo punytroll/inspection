@@ -16,12 +16,12 @@
 		<parameters>
 			<parameter name="FirstTrackNumber">
 				<data-reference>
-					<sub>FirstTrackNumber</sub>
+					<field>FirstTrackNumber</field>
 				</data-reference>
 			</parameter>
 			<parameter name="LastTrackNumber">
 				<data-reference>
-					<sub>LastTrackNumber</sub>
+					<field>LastTrackNumber</field>
 				</data-reference>
 			</parameter>
 		</parameters>

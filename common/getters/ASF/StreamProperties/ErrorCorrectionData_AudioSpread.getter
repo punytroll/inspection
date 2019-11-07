@@ -59,7 +59,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>SilenceDataLength</sub>
+					<field>SilenceDataLength</field>
 				</data-reference>
 			</bytes>
 			<bits>

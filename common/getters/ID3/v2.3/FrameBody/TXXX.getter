@@ -20,7 +20,7 @@
 		<parameters>
 			<parameter name="TextEncoding">
 				<data-reference>
-					<sub>TextEncoding</sub>
+					<field>TextEncoding</field>
 				</data-reference>
 			</parameter>
 		</parameters>
@@ -39,7 +39,7 @@
 		<parameters>
 			<parameter name="TextEncoding">
 				<data-reference>
-					<sub>TextEncoding</sub>
+					<field>TextEncoding</field>
 				</data-reference>
 			</parameter>
 		</parameters>

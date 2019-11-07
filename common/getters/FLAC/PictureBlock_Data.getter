@@ -32,7 +32,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>MIMETypeLength</sub>
+					<field>MIMETypeLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -68,7 +68,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>DescriptionLength</sub>
+					<field>DescriptionLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -154,7 +154,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>PictureDataLength</sub>
+					<field>PictureDataLength</field>
 				</data-reference>
 			</bytes>
 			<bits>

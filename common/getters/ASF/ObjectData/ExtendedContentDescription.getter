@@ -30,7 +30,7 @@
 			</parameter>
 			<parameter name="NumberOfElements">
 				<data-reference cast-to-type="unsigned integer 64bit">
-					<sub>ContentDescriptorsCount</sub>
+					<field>ContentDescriptorsCount</field>
 				</data-reference>
 			</parameter>
 		</parameters>

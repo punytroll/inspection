@@ -22,7 +22,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>LanguageIDLength</sub>
+					<field>LanguageIDLength</field>
 				</data-reference>
 			</bytes>
 			<bits>

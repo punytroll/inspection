@@ -74,7 +74,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>TitleLength</sub>
+					<field>TitleLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -97,7 +97,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>AuthorLength</sub>
+					<field>AuthorLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -120,7 +120,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>CopyrightLength</sub>
+					<field>CopyrightLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -143,7 +143,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>DescriptionLength</sub>
+					<field>DescriptionLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -166,7 +166,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>RatingLength</sub>
+					<field>RatingLength</field>
 				</data-reference>
 			</bytes>
 			<bits>

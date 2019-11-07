@@ -28,7 +28,7 @@ namespace Inspection
 		public:
 			enum class Type
 			{
-				Sub,
+				Field,
 				Tag
 			};
 			
@@ -230,7 +230,7 @@ namespace Inspection
 		{
 			switch(PartDescriptor.Type)
 			{
-			case Inspection::DataReference::PartDescriptor::Type::Sub:
+			case Inspection::DataReference::PartDescriptor::Type::Field:
 				{
 					Value = Value->GetField(PartDescriptor.DetailName);
 					
@@ -1318,10 +1318,10 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 						auto DataReferencePartDescriptor{DataReferencePartDescriptors.emplace(DataReferencePartDescriptors.end())};
 						auto DataReferenceChildElement{dynamic_cast< const XML::Element * >(DataReferenceChildNode)};
 						
-						if(DataReferenceChildElement->GetName() == "sub")
+						if(DataReferenceChildElement->GetName() == "field")
 						{
 							assert(DataReferenceChildElement->GetChilds().size() == 1);
-							DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Sub;
+							DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Field;
 							
 							auto SubText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
 							

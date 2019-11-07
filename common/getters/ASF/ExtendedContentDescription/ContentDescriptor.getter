@@ -22,7 +22,7 @@
 		<length>
 			<bytes>
 				<data-reference cast-to-type="unsigned integer 64bit">
-					<sub>NameLength</sub>
+					<field>NameLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -69,7 +69,7 @@
 		<length>
 			<bytes>
 				<data-reference cast-to-type="unsigned integer 64bit">
-					<sub>ValueLength</sub>
+					<field>ValueLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -79,13 +79,13 @@
 		<parameters>
 			<parameter name="DataType">
 				<data-reference>
-					<sub>ValueDataType</sub>
+					<field>ValueDataType</field>
 					<tag>interpretation</tag>
 				</data-reference>
 			</parameter>
 			<parameter name="Name">
 				<data-reference>
-					<sub>Name</sub>
+					<field>Name</field>
 				</data-reference>
 			</parameter>
 		</parameters>

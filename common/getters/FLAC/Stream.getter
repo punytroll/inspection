@@ -27,9 +27,9 @@
 				<parameters>
 					<parameter name="NumberOfChannelsByStream">
 						<data-reference>
-							<sub>StreamInfoBlock</sub>
-							<sub>Data</sub>
-							<sub>NumberOfChannels</sub>
+							<field>StreamInfoBlock</field>
+							<field>Data</field>
+							<field>NumberOfChannels</field>
 							<tag>value</tag>
 						</data-reference>
 					</parameter>

@@ -73,7 +73,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>NameLength</sub>
+					<field>NameLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -95,7 +95,7 @@
 		<length>
 			<bytes>
 				<data-reference>
-					<sub>DataLength</sub>
+					<field>DataLength</field>
 				</data-reference>
 			</bytes>
 			<bits>
@@ -105,7 +105,7 @@
 		<parameters>
 			<parameter name="DataType">
 				<data-reference>
-					<sub>DataType</sub>
+					<field>DataType</field>
 					<tag>interpretation</tag>
 				</data-reference>
 			</parameter>
