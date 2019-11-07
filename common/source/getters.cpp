@@ -7067,7 +7067,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// verification
 	if(Continue == true)
 	{
-		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("ADR")->GetData());
+		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("ADR")->GetData()) == 1;
 	}
 	// reading
 	if(Continue == true)

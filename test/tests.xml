@@ -3674,17 +3674,17 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:FirstTrackNumber/data</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:DataLength/data</argument>
 		</execute>
-		<expected-output>1</expected-output>
+		<expected-output>154</expected-output>
 	</test>
 	<test>
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/044_2.3_MCDI_binary.mp3</argument>
-			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:DataLength/data</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:FirstTrackNumber/data</argument>
 		</execute>
-		<expected-output>154</expected-output>
+		<expected-output>1</expected-output>
 	</test>
 	<test>
 		<execute>
