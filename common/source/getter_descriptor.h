@@ -19,7 +19,7 @@ namespace Inspection
 	class Value;
 	class ValueDescriptor;
 	
-	enum class ActionType
+	enum class ObjectType
 	{
 		Interpret,
 		Read
@@ -42,7 +42,7 @@ namespace Inspection
 		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) > _HardcodedGetterWithParameters;
 		std::vector< Inspection::InterpretDescriptor * > _InterpretDescriptors;
 		std::vector< Inspection::PartDescriptor * > _PartDescriptors;
-		std::vector< std::pair< Inspection::ActionType, std::uint32_t > > _Actions;
+		std::vector< std::pair< Inspection::ObjectType, std::uint32_t > > _Objects;
 	};
 }
 

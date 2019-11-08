@@ -492,15 +492,15 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 		}
 		else
 		{
-			for(auto ActionIndex = 0ul; (Continue == true) && (ActionIndex < _Actions.size()); ++ActionIndex)
+			for(auto ObjectIndex = 0ul; (Continue == true) && (ObjectIndex < _Objects.size()); ++ObjectIndex)
 			{
-				auto Action{_Actions[ActionIndex]};
+				auto Object{_Objects[ObjectIndex]};
 				
-				switch(Action.first)
+				switch(Object.first)
 				{
-				case Inspection::ActionType::Interpret:
+				case Inspection::ObjectType::Interpret:
 					{
-						auto InterpretDescriptor{_InterpretDescriptors[Action.second]};
+						auto InterpretDescriptor{_InterpretDescriptors[Object.second]};
 						
 						switch(InterpretDescriptor->Type)
 						{
@@ -538,9 +538,9 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						
 						break;
 					}
-				case Inspection::ActionType::Read:
+				case Inspection::ObjectType::Read:
 					{
-						auto PartDescriptor{_PartDescriptors[Action.second]};
+						auto PartDescriptor{_PartDescriptors[Object.second]};
 						Inspection::Reader * PartReader{nullptr};
 						
 						if(PartDescriptor->LengthDescriptor)
@@ -1112,7 +1112,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					auto InterpretDescriptor{new Inspection::InterpretDescriptor{}};
 					
 					_LoadInterpretDescriptor(*InterpretDescriptor, GetterChildElement);
-					_Actions.push_back(std::make_pair(Inspection::ActionType::Interpret, _InterpretDescriptors.size()));
+					_Objects.push_back(std::make_pair(Inspection::ObjectType::Interpret, _InterpretDescriptors.size()));
 					_InterpretDescriptors.push_back(InterpretDescriptor);
 				}
 				else if(GetterChildElement->GetName() == "part")
@@ -1307,7 +1307,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 							}
 						}
 					}
-					_Actions.push_back(std::make_pair(Inspection::ActionType::Read, _PartDescriptors.size()));
+					_Objects.push_back(std::make_pair(Inspection::ObjectType::Read, _PartDescriptors.size()));
 					_PartDescriptors.push_back(PartDescriptor);
 				}
 				else
