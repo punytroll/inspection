@@ -62,8 +62,8 @@ namespace Inspection
 	public:
 		std::string Type;
 		std::experimental::optional< Inspection::DataReference > DataReference;
-		std::experimental::optional< Inspection::GetterReference> GetterReference;
-		std::experimental::optional< Inspection::ParameterReference> ParameterReference;
+		std::experimental::optional< Inspection::GetterReference > GetterReference;
+		std::experimental::optional< Inspection::ParameterReference > ParameterReference;
 		std::experimental::optional< std::vector< Inspection::ActualParameterDescriptor > > Parameters;
 		std::experimental::optional< std::string > String;
 		std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
