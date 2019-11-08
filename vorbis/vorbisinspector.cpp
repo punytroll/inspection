@@ -3,6 +3,7 @@
 
 #include <common/buffer.h>
 #include <common/file_handling.h>
+#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
 
@@ -50,12 +51,13 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer
 				// reset buffer position, so we can try something else
 				Buffer.SetPosition(Start);
 				
-				Inspection::Reader FieldReader{Buffer, Length};
-				auto FieldResult{Get_Data_SetOrUnset_EndedByLength(FieldReader)};
-				auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
+				Inspection::Reader PartReader{Buffer, Length};
+				auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
 				
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendField("Data", PartResult->GetValue());
 				Result->GetValue()->AddTag("interpretation", "OGG unknown"s);
-				UpdateState(Continue, Buffer, FieldResult, FieldReader);
+				Buffer.SetPosition(PartReader);
 			}
 		}
 	}
@@ -231,13 +233,13 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 		}
 		if(PacketLength > 0ull)
 		{
-			Inspection::Reader FieldReader{Buffer, Inspection::Length{PacketLength, 0}};
-			auto FieldResult{Get_Data_SetOrUnset_EndedByLength(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendField("Packet", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Buffer, Inspection::Length{PacketLength, 0}};
+			auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
-			FieldValue->AddTag("error", "The packet spans multiple pages, which is not yet supported."s);
 			Continue = false;
+			Result->GetValue()->AppendField("Packet", PartResult->GetValue());
+			Result->GetValue()->GetField("Packet")->AddTag("error", "The packet spans multiple pages, which is not yet supported."s);
+			Buffer.SetPosition(PartReader);
 		}
 	}
 	// finalization
@@ -322,11 +324,12 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-		auto FieldResult{Get_Data_SetOrUnset_EndedByLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer, Boundary - Buffer.GetPosition()};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Data", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -380,11 +383,12 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 		}
 		else if(PacketType == 0x05)
 		{
-			Inspection::Reader FieldReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto FieldResult{Get_Data_SetOrUnset_EndedByLength(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Buffer, Boundary - Buffer.GetPosition()};
+			auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
 			
-			UpdateState(Continue, Buffer, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Data", PartResult->GetValue());
+			Buffer.SetPosition(PartReader);
 		}
 	}
 	// finalization
@@ -519,7 +523,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
-		auto FieldResult{Get_Boolean_1Bit(FieldReader)};
+		auto FieldResult{Inspection::g_GetterRepository.Get({"Boolean", "1Bit"}, FieldReader, {})};
 		auto FieldValue{Result->GetValue()->AppendField("FramingFlag", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Buffer, FieldResult, FieldReader);

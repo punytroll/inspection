@@ -770,11 +770,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
 					{
-						_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
+						_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumericOrSpace_EndedByLength")
 					{
-						_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
+						_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByLength")
 					{
@@ -782,7 +782,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
 					{
-						_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
+						_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_Printable_EndedByTermination;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_DataObject")
 					{
@@ -810,39 +810,39 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
 					{
-						_HardcodedGetter = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
+						_HardcodedGetterWithParameters = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
 					{
-						_HardcodedGetter = Inspection::Get_ASF_CreationDate;
+						_HardcodedGetterWithParameters = Inspection::Get_ASF_CreationDate;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_GUID")
 					{
-						_HardcodedGetter = Inspection::Get_ASF_GUID;
+						_HardcodedGetterWithParameters = Inspection::Get_ASF_GUID;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
 					{
-						_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
+						_HardcodedGetterWithParameters = Inspection::Get_ASF_FileProperties_Flags;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_BitSet_16Bit_BigEndian")
 					{
-						_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
+						_HardcodedGetterWithParameters = Inspection::Get_BitSet_16Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Boolean_1Bit")
 					{
-						_HardcodedGetter = Inspection::Get_Boolean_1Bit;
+						_HardcodedGetterWithParameters = Inspection::Get_Boolean_1Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
 					{
-						_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
+						_HardcodedGetterWithParameters = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Data_SetOrUnset_EndedByLength")
 					{
-						_HardcodedGetter = Inspection::Get_Data_SetOrUnset_EndedByLength;
+						_HardcodedGetterWithParameters = Inspection::Get_Data_SetOrUnset_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Data_Unset_EndedByLength")
 					{
-						_HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
+						_HardcodedGetterWithParameters = Inspection::Get_Data_Unset_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Frame")
 					{
@@ -858,11 +858,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
 					{
-						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
 					{
-						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
+						_HardcodedGetterWithParameters = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_CalculateBitsPerSample")
 					{
@@ -878,7 +878,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
 					{
-						_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
+						_HardcodedGetterWithParameters = Inspection::Get_GUID_LittleEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Frame")
 					{
@@ -886,7 +886,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Language")
 					{
-						_HardcodedGetter = Inspection::Get_ID3_2_2_Language;
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_Language;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination")
 					{
@@ -902,11 +902,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Language")
 					{
-						_HardcodedGetter = Inspection::Get_ID3_2_3_Language;
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_Language;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
 					{
-						_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_Frame_Header_Flags;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination")
 					{
@@ -934,19 +934,19 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_ReplayGainAdjustment")
 					{
-						_HardcodedGetter = Inspection::Get_ID3_ReplayGainAdjustment;
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_ReplayGainAdjustment;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit")
 					{
-						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit;
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
 					{
-						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian")
 					{
-						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian;
+						_HardcodedGetterWithParameters = Inspection::Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
 					{
