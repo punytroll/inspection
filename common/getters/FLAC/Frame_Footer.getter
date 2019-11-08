@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>CRC-16</name>
@@ -13,4 +13,3 @@
 		</value>
 	</part>
 </getter>
- 

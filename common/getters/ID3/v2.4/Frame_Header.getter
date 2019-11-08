@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>Frame_Header_Identifier</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Identifier</name>
@@ -12,10 +12,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ID3</part>
 			<part>UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Size</name>
@@ -23,10 +23,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>BitSet</part>
 			<part>16Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Flags</name>

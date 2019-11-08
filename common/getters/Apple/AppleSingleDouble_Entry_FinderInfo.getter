@@ -1,9 +1,9 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Apple</part>
 			<part>FInfo</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>FInfo</name>
@@ -11,10 +11,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Apple</part>
 			<part>FXInfo</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>FXInfo</name>

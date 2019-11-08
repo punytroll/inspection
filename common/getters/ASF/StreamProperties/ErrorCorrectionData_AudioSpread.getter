@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Span</name>
@@ -13,12 +13,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>VirtualPacketLength</name>
@@ -26,12 +26,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>VirtualChunkLength</name>
@@ -39,12 +39,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>SilenceDataLength</name>
@@ -52,10 +52,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<length>
 			<bytes>
 				<data-reference>

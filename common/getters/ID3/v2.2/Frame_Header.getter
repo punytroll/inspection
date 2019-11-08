@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ID3</part>
 			<part>v2.2</part>
 			<part>Frame_Header_Identifier</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Identifier</name>
@@ -12,12 +12,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>24Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Size</name>

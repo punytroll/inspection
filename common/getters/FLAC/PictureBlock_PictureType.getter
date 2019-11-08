@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<set/>
 		</value>

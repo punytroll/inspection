@@ -1111,26 +1111,26 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 						{
 							auto PartChildElement{dynamic_cast< const XML::Element * >(PartChildNode)};
 							
-							if(PartChildElement->GetName() == "getter")
+							if(PartChildElement->GetName() == "getter-reference")
 							{
-								for(auto PartGetterChildNode : PartChildElement->GetChilds())
+								for(auto GetterPartGetterRefferenceChildNode : PartChildElement->GetChilds())
 								{
-									if(PartGetterChildNode->GetNodeType() == XML::NodeType::Element)
+									if(GetterPartGetterRefferenceChildNode->GetNodeType() == XML::NodeType::Element)
 									{
-										auto PartGetterChildElement{dynamic_cast< const XML::Element * >(PartGetterChildNode)};
+										auto GetterPartGetterReferenceChildElement{dynamic_cast< const XML::Element * >(GetterPartGetterRefferenceChildNode)};
 										
-										if(PartGetterChildElement->GetName() == "part")
+										if(GetterPartGetterReferenceChildElement->GetName() == "part")
 										{
-											assert(PartGetterChildElement->GetChilds().size() == 1);
+											assert(GetterPartGetterReferenceChildElement->GetChilds().size() == 1);
 											
-											auto PartText{dynamic_cast< const XML::Text * >(PartGetterChildElement->GetChild(0))};
+											auto GetterPartGetterReferenceText{dynamic_cast< const XML::Text * >(GetterPartGetterReferenceChildElement->GetChild(0))};
 											
-											assert(PartText != nullptr);
-											PartDescriptor->GetterReference.Parts.push_back(PartText->GetText());
+											assert(GetterPartGetterReferenceText != nullptr);
+											PartDescriptor->GetterReference.Parts.push_back(GetterPartGetterReferenceText->GetText());
 										}
 										else
 										{
-											throw std::domain_error{"/getter/part/getter/" + PartGetterChildElement->GetName() + " not allowed."};
+											throw std::domain_error{"/getter/part/getter-reference/" + GetterPartGetterReferenceChildElement->GetName() + " not allowed."};
 										}
 									}
 								}

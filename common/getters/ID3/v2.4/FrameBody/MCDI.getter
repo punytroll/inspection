@@ -1,9 +1,9 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ISO_60908_1999</part>
 			<part>TableOfContents</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<set/>
 		</value>

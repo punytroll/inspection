@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>BitsPerSample</name>
@@ -13,12 +13,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>ExtensionSize</name>
@@ -26,12 +26,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>ValidBitsPerSample</name>
@@ -39,11 +39,11 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>RIFF</part>
 			<part>ChunkData</part>
 			<part>fmt__FormatSpecificFields_Extensible_ChannelMask</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>ChannelMask</name>
@@ -51,11 +51,11 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>RIFF</part>
 			<part>ChunkData</part>
 			<part>fmt__FormatSpecificFields_Extensible_SubFormat</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>SubFormat</name>

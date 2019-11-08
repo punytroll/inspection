@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>String</part>
 			<part>ASCII</part>
 			<part>AlphaNumericOrSpace_EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>4</unsigned-integer-64bit>
@@ -20,10 +20,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Array</part>
 			<part>EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="ElementGetter">
 				<getter-reference>

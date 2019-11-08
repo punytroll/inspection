@@ -1,18 +1,18 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>IEC_60908_1999</part>
 			<part>TableOfContents_Header</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-sub-values/>
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>IEC_60908_1999</part>
 			<part>TableOfContents_Tracks</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="FirstTrackNumber">
 				<data-reference>

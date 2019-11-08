@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>LanguageListIndex</name>
@@ -13,12 +13,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>StreamNumber</name>
@@ -26,12 +26,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>NameLength</name>
@@ -39,11 +39,11 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ASF</part>
 			<part>MetadataLibrary</part>
 			<part>DescriptionRecord_DataType</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>DataType</name>
@@ -51,12 +51,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>DataLength</name>
@@ -64,12 +64,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndLength</part>
-		</getter>
+		</getter-reference>
 		<length>
 			<bytes>
 				<data-reference>
@@ -87,11 +87,11 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ASF</part>
 			<part>MetadataLibrary</part>
 			<part>DescriptionRecord_Data</part>
-		</getter>
+		</getter-reference>
 		<length>
 			<bytes>
 				<data-reference>

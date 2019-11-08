@@ -1,9 +1,9 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Boolean</part>
 			<part>1Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>LastMetaDataBlock</name>
@@ -11,10 +11,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>FLAC</part>
 			<part>MetaDataBlock_Header_BlockType</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>BlockType</name>
@@ -22,12 +22,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>24Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Length</name>
@@ -35,5 +35,3 @@
 		</value>
 	</part>
 </getter>
- 
- 

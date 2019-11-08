@@ -1,9 +1,9 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>APE</part>
 			<part>HeaderOrFooter</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>APETagsHeader</name>
@@ -11,10 +11,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="ElementGetter">
 				<getter-reference>
@@ -39,10 +39,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>APE</part>
 			<part>HeaderOrFooter</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>APETagsFooter</name>

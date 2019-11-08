@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>String</part>
 			<part>ASCII</part>
 			<part>Printable_EndedByTermination</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>OwnerIdentifier</name>
@@ -12,10 +12,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Identifier</name>

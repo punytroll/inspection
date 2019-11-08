@@ -1,9 +1,9 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ASF</part>
 			<part>GUID</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>GUID</name>
@@ -11,12 +11,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Size</name>

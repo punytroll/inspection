@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-32bit>333319</unsigned-integer-32bit>
@@ -18,12 +18,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-32bit>131072</unsigned-integer-32bit>
@@ -36,10 +36,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Data</part>
 			<part>Unset_EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>16</unsigned-integer-64bit>
@@ -55,12 +55,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>NumberOfEntries</name>
@@ -68,10 +68,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="ElementGetter">
 				<getter-reference>

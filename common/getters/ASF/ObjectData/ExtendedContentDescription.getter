@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>ContentDescriptorsCount</name>
@@ -13,10 +13,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="ElementGetter">
 				<getter-reference>

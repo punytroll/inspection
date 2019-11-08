@@ -1,9 +1,9 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>16</unsigned-integer-64bit>

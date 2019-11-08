@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>UnshiftedNote</name>
@@ -13,12 +13,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Signed</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>FineTune</name>
@@ -26,12 +26,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Signed</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Gain</name>
@@ -39,12 +39,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>LowNote</name>
@@ -52,12 +52,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>HighNote</name>
@@ -65,12 +65,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>LowVelocity</name>
@@ -78,12 +78,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>HighVelocity</name>
@@ -91,4 +91,3 @@
 		</value>
 	</part>
 </getter>
- 

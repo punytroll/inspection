@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ASF</part>
 			<part>StreamBitrateProperties</part>
 			<part>BitrateRecord_Flags</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Flags</name>
@@ -12,12 +12,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>AverageBitrate</name>

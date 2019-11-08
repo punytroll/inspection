@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>Tag_ExtendedHeader_Flag_Header</part>
-		</getter>
+		</getter-reference>
 		<verification>
 			<equals>
 				<data-reference>
@@ -18,10 +18,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ID3</part>
 			<part>UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>TotalFrameCRC</name>

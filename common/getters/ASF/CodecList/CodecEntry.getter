@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ASF</part>
 			<part>CodecList</part>
 			<part>CodecEntryType</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Type</name>
@@ -12,12 +12,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>CodecNameLength</name>
@@ -25,12 +25,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="NumberOfCodePoints">
 				<data-reference cast-to-type="unsigned integer 64bit">
@@ -45,12 +45,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>CodecDescriptionLength</name>
@@ -58,12 +58,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="NumberOfCodePoints">
 				<data-reference cast-to-type="unsigned integer 64bit">
@@ -78,12 +78,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>CodecInformationLength</name>
@@ -91,10 +91,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<length>
 			<bytes>
 				<data-reference>

@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>TextEncoding</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>TextEncoding</name>
@@ -12,11 +12,11 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>String</part>
 			<part>ASCII</part>
 			<part>Printable_EndedByTermination</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>MIMEType</name>
@@ -24,12 +24,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
@@ -127,11 +127,11 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>TextStringAccordingToEncoding_EndedByTermination</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="TextEncoding">
 				<data-reference>
@@ -146,10 +146,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Data</part>
 			<part>SetOrUnset_EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>PictureData</name>

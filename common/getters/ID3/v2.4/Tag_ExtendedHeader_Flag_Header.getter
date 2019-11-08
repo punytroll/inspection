@@ -1,9 +1,9 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>ID3</part>
 			<part>UnsignedInteger_7Bit_SynchSafe_8Bit</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>Size</name>

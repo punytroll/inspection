@@ -1,11 +1,11 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>NumberOfHeaderObjects</name>
@@ -13,12 +13,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-8bit>1</unsigned-integer-8bit>
@@ -31,12 +31,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter>
+		</getter-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-8bit>2</unsigned-integer-8bit>
@@ -49,10 +49,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="ElementGetter">
 				<getter-reference>

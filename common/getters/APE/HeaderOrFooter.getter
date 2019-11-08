@@ -1,10 +1,10 @@
 <getter>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>String</part>
 			<part>ASCII</part>
 			<part>Alphabetic_ByTemplate</part>
-		</getter>
+		</getter-reference>
 		<parameters>
 			<parameter name="Template">
 				<string>APETAGEX</string>
@@ -17,12 +17,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>VersionNumber</name>
@@ -45,12 +45,12 @@
 		</interpretation>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>TagSize</name>
@@ -58,12 +58,12 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>ItemCount</name>
@@ -71,10 +71,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>APE</part>
 			<part>Flags</part>
-		</getter>
+		</getter-reference>
 		<value>
 			<append-value>
 				<name>TagsFlags</name>
@@ -82,10 +82,10 @@
 		</value>
 	</part>
 	<part>
-		<getter>
+		<getter-reference>
 			<part>Data</part>
 			<part>Unset_EndedByLength</part>
-		</getter>
+		</getter-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>8</unsigned-integer-64bit>
