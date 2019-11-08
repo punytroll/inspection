@@ -34,7 +34,8 @@ namespace Inspection
 		void LoadGetterDescription(const std::string & GetterPath);
 	private:
 		void _LoadInterpretDescriptor(Inspection::InterpretDescriptor & InterpretDescriptor, const XML::Element * InterpretElement);
-		void _LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
+		void _LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
+		void _LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ValueElement);
 		EvaluationResult _ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target);
 		Inspection::GetterRepository * _GetterRepository;
 		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > _HardcodedGetter;

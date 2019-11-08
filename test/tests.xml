@@ -3889,7 +3889,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:Size/data</argument>
 		</execute>
 		<expected-output>12</expected-output>
@@ -3897,7 +3897,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:NumberOfFlagBytes/data</argument>
 		</execute>
 		<expected-output>1</expected-output>
@@ -3905,7 +3905,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:ExtendedFlags/data</argument>
 		</execute>
 		<expected-output>00000100</expected-output>
@@ -3913,7 +3913,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:ExtendedFlags/field:Reserved/data</argument>
 		</execute>
 		<expected-output>false</expected-output>
@@ -3921,7 +3921,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:ExtendedFlags/field:TagIsAnUpdate/data</argument>
 		</execute>
 		<expected-output>false</expected-output>
@@ -3929,7 +3929,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:ExtendedFlags/field:CRCDataPresent/data</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -3937,7 +3937,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:ExtendedFlags/field:TagRestrictions/data</argument>
 		</execute>
 		<expected-output>false</expected-output>
@@ -3945,7 +3945,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:CRCDataPresentData/field:Size/data</argument>
 		</execute>
 		<expected-output>5</expected-output>
@@ -3953,7 +3953,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/043_2.4_extended_header_CRC.mp3</argument>
+			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:CRCDataPresentData/field:TotalFrameCRC/data</argument>
 		</execute>
 		<expected-output>1341088334</expected-output>

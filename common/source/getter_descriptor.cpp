@@ -9,6 +9,8 @@
 #include "result.h"
 #include "xml_puny_dom.h"
 
+using namespace std::string_literals;
+
 namespace Inspection
 {
 	class EvaluationResult
@@ -114,6 +116,13 @@ namespace Inspection
 		Inspection::Enumeration * Enumeration;
 	};
 	
+	class EqualsDescriptor
+	{
+	public:
+		Inspection::ValueDescriptor Value1;
+		Inspection::ValueDescriptor Value2;
+	};
+	
 	class ValueEqualsDescriptor
 	{
 	public:
@@ -125,10 +134,12 @@ namespace Inspection
 	public:
 		enum class Type
 		{
+			Equals,
 			ValueEquals
 		};
 		
 		Inspection::VerificationDescriptor::Type Type;
+		std::experimental::optional< Inspection::EqualsDescriptor > EqualsDescriptor;
 		std::experimental::optional< Inspection::ValueEqualsDescriptor > ValueEqualsDescriptor;
 	};
 	
@@ -222,9 +233,9 @@ namespace Inspection
 		return Result;
 	}
 	
-	const std::experimental::any & GetAnyByReference(Inspection::DataReference & DataReference, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
-		std::shared_ptr< Inspection::Value > Value{Result->GetValue()};
+		std::shared_ptr< Inspection::Value > Value{CurrentValue};
 		
 		for(auto & PartDescriptor : DataReference.PartDescriptors)
 		{
@@ -249,8 +260,40 @@ namespace Inspection
 		return Value->GetData();
 	}
 	
+	std::experimental::any GetAnyFromValueDescriptor(const Inspection::ValueDescriptor & ValueDescriptor, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	{
+		std::experimental::any Result;
+		
+		if(ValueDescriptor.Type == "data-reference")
+		{
+			assert(ValueDescriptor.DataReference);
+			Result = GetAnyReferenceByDataReference(ValueDescriptor.DataReference.value(), CurrentValue, Parameters);
+		}
+		else if(ValueDescriptor.Type == "string")
+		{
+			assert(ValueDescriptor.String);
+			Result = ValueDescriptor.String.value();
+		}
+		else if(ValueDescriptor.Type == "unsigned integer 8bit")
+		{
+			assert(ValueDescriptor.UnsignedInteger8Bit);
+			Result = ValueDescriptor.UnsignedInteger8Bit.value();
+		}
+		else if(ValueDescriptor.Type == "unsigned integer 64bit")
+		{
+			assert(ValueDescriptor.UnsignedInteger64Bit);
+			Result = ValueDescriptor.UnsignedInteger64Bit.value();
+		}
+		else
+		{
+			assert(false);
+		}
+		
+		return Result;
+	}
+	
 	template< typename Type >
-	Type GetValueFromValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const std::unique_ptr< Inspection::Result > & GetterResult, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	Type GetDataFromValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		Type Result{};
 		
@@ -258,7 +301,7 @@ namespace Inspection
 		{
 			assert(ValueDescriptor.DataReference);
 			
-			auto & Any{GetAnyByReference(ValueDescriptor.DataReference.value(), GetterResult, Parameters)};
+			auto & Any{GetAnyReferenceByDataReference(ValueDescriptor.DataReference.value(), CurrentValue, Parameters)};
 			
 			if(Any.type() == typeid(std::uint8_t))
 			{
@@ -295,19 +338,19 @@ namespace Inspection
 		return Result;
 	}
 	
-	void FillNewParameters(std::unordered_map< std::string, std::experimental::any > & NewParameters, std::vector< Inspection::ActualParameterDescriptor > & ParameterDescriptors, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	void FillNewParameters(std::unordered_map< std::string, std::experimental::any > & NewParameters, const std::vector< Inspection::ActualParameterDescriptor > & ParameterDescriptors, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		for(auto ParameterDescriptor : ParameterDescriptors)
 		{
 			if(ParameterDescriptor.ValueDescriptor.Type == "string")
 			{
-				NewParameters.emplace(ParameterDescriptor.Name, GetValueFromValueDescriptor< std::string >(ParameterDescriptor.ValueDescriptor, Result, Parameters));
+				NewParameters.emplace(ParameterDescriptor.Name, GetDataFromValueDescriptor< std::string >(ParameterDescriptor.ValueDescriptor, CurrentValue, Parameters));
 			}
 			else if(ParameterDescriptor.ValueDescriptor.Type == "data-reference")
 			{
 				assert(ParameterDescriptor.ValueDescriptor.DataReference);
 				
-				auto & ValueAny{GetAnyByReference(ParameterDescriptor.ValueDescriptor.DataReference.value(), Result, Parameters)};
+				auto & ValueAny{GetAnyReferenceByDataReference(ParameterDescriptor.ValueDescriptor.DataReference.value(), CurrentValue, Parameters)};
 				
 				if(!ParameterDescriptor.ValueDescriptor.DataReference->CastToType)
 				{
@@ -344,7 +387,7 @@ namespace Inspection
 				
 				std::unordered_map< std::string, std::experimental::any > InnerParameters;
 				
-				FillNewParameters(InnerParameters, ParameterDescriptor.ValueDescriptor.Parameters.value(), Result, Parameters);
+				FillNewParameters(InnerParameters, ParameterDescriptor.ValueDescriptor.Parameters.value(), CurrentValue, Parameters);
 				NewParameters.emplace(ParameterDescriptor.Name, InnerParameters);
 			}
 			else if(ParameterDescriptor.ValueDescriptor.Type == "parameter-reference")
@@ -382,6 +425,30 @@ namespace Inspection
 			}
 		}
 	}
+}
+
+bool Equals(const Inspection::ValueDescriptor & Value1, const Inspection::ValueDescriptor & Value2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+{
+	auto Result{false};
+	auto Any1{GetAnyFromValueDescriptor(Value1, CurrentValue, Parameters)};
+	auto Any2{GetAnyFromValueDescriptor(Value2, CurrentValue, Parameters)};
+	
+	if((Any1.empty() == false) && (Any2.empty() == false))
+	{
+		if(Any1.type() == Any2.type())
+		{
+			if(Any1.type() == typeid(std::uint8_t))
+			{
+				Result = std::experimental::any_cast< std::uint8_t >(Any1) == std::experimental::any_cast< std::uint8_t >(Any2);
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+	}
+	
+	return Result;
 }
 
 Inspection::GetterDescriptor::GetterDescriptor(Inspection::GetterRepository * GetterRepository) :
@@ -478,8 +545,8 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						
 						if(PartDescriptor->LengthDescriptor)
 						{
-							auto Bytes{GetValueFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor, Result, Parameters)};
-							auto Bits{GetValueFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor, Result, Parameters)};
+							auto Bytes{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor, Result->GetValue(), Parameters)};
+							auto Bits{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor, Result->GetValue(), Parameters)};
 							Inspection::Length Length{Bytes, Bits};
 							
 							if(Reader.Has(Length) == true)
@@ -500,7 +567,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						{
 							std::unordered_map< std::string, std::experimental::any > NewParameters;
 							
-							FillNewParameters(NewParameters, PartDescriptor->ActualParameterDescriptors, Result, Parameters);
+							FillNewParameters(NewParameters, PartDescriptor->ActualParameterDescriptors, Result->GetValue(), Parameters);
 							
 							auto PartResult{g_GetterRepository.Get(PartDescriptor->GetterReference.Parts, *PartReader, NewParameters)};
 							
@@ -574,6 +641,17 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								{
 									switch(VerificationDescriptor.Type)
 									{
+									case Inspection::VerificationDescriptor::Type::Equals:
+										{
+											assert(VerificationDescriptor.EqualsDescriptor);
+											Continue = Equals(VerificationDescriptor.EqualsDescriptor->Value1, VerificationDescriptor.EqualsDescriptor->Value2, PartResult->GetValue(), Parameters);
+											if(Continue == false)
+											{
+												Result->GetValue()->AddTag("error", "Failed to verify a value."s);
+											}
+											
+											break;
+										}
 									case Inspection::VerificationDescriptor::Type::ValueEquals:
 										{
 											assert(VerificationDescriptor.ValueEqualsDescriptor);
@@ -584,10 +662,6 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 												if(Continue == false)
 												{
 													PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value()) + "\".");
-												}
-												else
-												{
-													PartResult->GetValue()->AddTag("verified", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value()) + "\".");
 												}
 											}
 											else if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == "unsigned integer 32bit")
@@ -884,6 +958,10 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
 					{
 						_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Track;
@@ -1087,11 +1165,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										
 										if(PartLengthChildElement->GetName() == "bytes")
 										{
-											_LoadValueDescriptor(PartDescriptor->LengthDescriptor->BytesValueDescriptor, PartLengthChildElement);
+											_LoadValueDescriptorFromWithin(PartDescriptor->LengthDescriptor->BytesValueDescriptor, PartLengthChildElement);
 										}
 										else if(PartLengthChildElement->GetName() == "bits")
 										{
-											_LoadValueDescriptor(PartDescriptor->LengthDescriptor->BitsValueDescriptor, PartLengthChildElement);
+											_LoadValueDescriptorFromWithin(PartDescriptor->LengthDescriptor->BitsValueDescriptor, PartLengthChildElement);
 										}
 										else
 										{
@@ -1116,7 +1194,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 											
 											assert(PartParametersChildElement->HasAttribute("name") == true);
 											ActualParameterDescriptor.Name = PartParametersChildElement->GetAttribute("name");
-											_LoadValueDescriptor(ActualParameterDescriptor.ValueDescriptor, PartParametersChildElement);
+											_LoadValueDescriptorFromWithin(ActualParameterDescriptor.ValueDescriptor, PartParametersChildElement);
 										}
 										else
 										{
@@ -1189,7 +1267,32 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										{
 											VerificationDescriptor->Type = Inspection::VerificationDescriptor::Type::ValueEquals;
 											VerificationDescriptor->ValueEqualsDescriptor.emplace();
-											_LoadValueDescriptor(VerificationDescriptor->ValueEqualsDescriptor->ValueDescriptor, GetterPartVerificationChildElement);
+											_LoadValueDescriptorFromWithin(VerificationDescriptor->ValueEqualsDescriptor->ValueDescriptor, GetterPartVerificationChildElement);
+										}
+										else if(GetterPartVerificationChildElement->GetName() == "equals")
+										{
+											VerificationDescriptor->Type = Inspection::VerificationDescriptor::Type::Equals;
+											VerificationDescriptor->EqualsDescriptor.emplace();
+											
+											bool First{true};
+											
+											for(auto GetterPartVerificationEqualsChildNode : GetterPartVerificationChildElement->GetChilds())
+											{
+												if(GetterPartVerificationEqualsChildNode->GetNodeType() == XML::NodeType::Element)
+												{
+													auto GetterPartVerificationEqualsChildElement{dynamic_cast< const XML::Element * >(GetterPartVerificationEqualsChildNode)};
+													
+													if(First == true)
+													{
+														_LoadValueDescriptor(VerificationDescriptor->EqualsDescriptor->Value1, GetterPartVerificationEqualsChildElement);
+														First = false;
+													}
+													else
+													{
+														_LoadValueDescriptor(VerificationDescriptor->EqualsDescriptor->Value2, GetterPartVerificationEqualsChildElement);
+													}
+												}
+											}
 										}
 										else
 										{
@@ -1266,182 +1369,185 @@ void Inspection::GetterDescriptor::_LoadInterpretDescriptor(Inspection::Interpre
 	}
 }
 
-void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement)
+void Inspection::GetterDescriptor::_LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement)
 {
 	for(auto ChildNode : ParentElement->GetChilds())
 	{
 		if(ChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto ChildElement{dynamic_cast< const XML::Element * >(ChildNode)};
-			
-			if(ChildElement->GetName() == "getter-reference")
-			{
-				assert(ValueDescriptor.Type == "");
-				ValueDescriptor.Type = "getter-reference";
-				ValueDescriptor.GetterReference.emplace();
-				for(auto GetterReferenceChildNode : ChildElement->GetChilds())
-				{
-					if(GetterReferenceChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto GetterReferenceChildElement{dynamic_cast< const XML::Element * >(GetterReferenceChildNode)};
-						
-						if(GetterReferenceChildElement->GetName() == "part")
-						{
-							assert(GetterReferenceChildElement->GetChilds().size() == 1);
-							
-							auto PartText{dynamic_cast< const XML::Text * >(GetterReferenceChildElement->GetChild(0))};
-							
-							assert(PartText != nullptr);
-							ValueDescriptor.GetterReference->Parts.push_back(PartText->GetText());
-						}
-						else
-						{
-							throw std::domain_error{GetterReferenceChildElement->GetName() + " not allowed."};
-						}
-					}
-				}
-			}
-			else if(ChildElement->GetName() == "data-reference")
-			{
-				assert(ValueDescriptor.Type == "");
-				ValueDescriptor.Type = "data-reference";
-				ValueDescriptor.DataReference.emplace();
-				if(ChildElement->HasAttribute("cast-to-type") == true)
-				{
-					ValueDescriptor.DataReference->CastToType = ChildElement->GetAttribute("cast-to-type");
-				}
-				for(auto DataReferenceChildNode : ChildElement->GetChilds())
-				{
-					if(DataReferenceChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto & DataReferencePartDescriptors{ValueDescriptor.DataReference->PartDescriptors};
-						auto DataReferencePartDescriptor{DataReferencePartDescriptors.emplace(DataReferencePartDescriptors.end())};
-						auto DataReferenceChildElement{dynamic_cast< const XML::Element * >(DataReferenceChildNode)};
-						
-						if(DataReferenceChildElement->GetName() == "field")
-						{
-							assert(DataReferenceChildElement->GetChilds().size() == 1);
-							DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Field;
-							
-							auto SubText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
-							
-							assert(SubText != nullptr);
-							DataReferencePartDescriptor->DetailName = SubText->GetText();
-						}
-						else if(DataReferenceChildElement->GetName() == "tag")
-						{
-							assert(DataReferenceChildElement->GetChilds().size() == 1);
-							DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Tag;
-							
-							auto TagText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
-							
-							assert(TagText != nullptr);
-							DataReferencePartDescriptor->DetailName = TagText->GetText();
-						}
-						else
-						{
-							throw std::domain_error{DataReferenceChildElement->GetName() + " not allowed."};
-						}
-					}
-				}
-			}
-			else if(ChildElement->GetName() == "parameter-reference")
-			{
-				assert(ValueDescriptor.Type == "");
-				ValueDescriptor.Type = "parameter-reference";
-				ValueDescriptor.ParameterReference.emplace();
-				if(ChildElement->HasAttribute("cast-to-type") == true)
-				{
-					ValueDescriptor.ParameterReference->CastToType = ChildElement->GetAttribute("cast-to-type");
-				}
-				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-				
-				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
-				
-				assert(TextNode != nullptr);
-				ValueDescriptor.ParameterReference->Name = TextNode->GetText();
-			}
-			else if(ChildElement->GetName() == "string")
-			{
-				assert(ValueDescriptor.Type == "");
-				ValueDescriptor.Type = "string";
-				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-				
-				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
-				
-				assert(TextNode != nullptr);
-				ValueDescriptor.String = TextNode->GetText();
-			}
-			else if(ChildElement->GetName() == "unsigned-integer-8bit")
-			{
-				assert(ValueDescriptor.Type == "");
-				ValueDescriptor.Type = "unsigned integer 8bit";
-				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-				
-				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
-				
-				assert(TextNode != nullptr);
-				ValueDescriptor.UnsignedInteger8Bit = from_string_cast< std::uint8_t >(TextNode->GetText());
-			}
-			else if(ChildElement->GetName() == "unsigned-integer-32bit")
-			{
-				assert(ValueDescriptor.Type == "");
-				ValueDescriptor.Type = "unsigned integer 32bit";
-				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-				
-				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
-				
-				assert(TextNode != nullptr);
-				ValueDescriptor.UnsignedInteger32Bit = from_string_cast< std::uint32_t >(TextNode->GetText());
-			}
-			else if(ChildElement->GetName() == "unsigned-integer-64bit")
-			{
-				assert(ValueDescriptor.Type == "");
-				ValueDescriptor.Type = "unsigned integer 64bit";
-				assert((ChildElement->GetChilds().size() == 1) && (ChildElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-				
-				auto TextNode{dynamic_cast< const XML::Text * >(ChildElement->GetChild(0))};
-				
-				assert(TextNode != nullptr);
-				ValueDescriptor.UnsignedInteger64Bit = from_string_cast< std::uint64_t >(TextNode->GetText());
-			}
-			else if(ChildElement->GetName() == "parameters")
-			{
-				assert(ValueDescriptor.Type == "");
-				ValueDescriptor.Type = "parameters";
-				ValueDescriptor.Parameters.emplace();
-				assert(ChildElement->HasAttribute("cast-to-type") == false);
-				for(auto ParametersChildNode : ChildElement->GetChilds())
-				{
-					if(ParametersChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto ParametersChildElement{dynamic_cast< const XML::Element * >(ParametersChildNode)};
-						
-						if(ParametersChildElement->GetName() == "parameter")
-						{
-							ValueDescriptor.Parameters.value().emplace_back();
-							
-							auto & Parameter{ValueDescriptor.Parameters.value().back()};
-							
-							assert(ParametersChildElement->HasAttribute("name") == true);
-							Parameter.Name = ParametersChildElement->GetAttribute("name");
-							_LoadValueDescriptor(Parameter.ValueDescriptor, ParametersChildElement);
-						}
-						else
-						{
-							throw std::domain_error{ParametersChildElement->GetName() + " not allowed."};
-						}
-					}
-				}
-			}
-			else
-			{
-				throw std::domain_error{ChildElement->GetName() + " not allowed."};
-			}
+			_LoadValueDescriptor(ValueDescriptor, dynamic_cast< XML::Element * >(ChildNode));
 		}
 	}
 	if(ValueDescriptor.Type == "")
 	{
 		throw std::domain_error{"No valid value description."};
+	}
+}
+
+void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ValueElement)
+{
+	if(ValueElement->GetName() == "getter-reference")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "getter-reference";
+		ValueDescriptor.GetterReference.emplace();
+		for(auto GetterReferenceChildNode : ValueElement->GetChilds())
+		{
+			if(GetterReferenceChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				auto GetterReferenceChildElement{dynamic_cast< const XML::Element * >(GetterReferenceChildNode)};
+				
+				if(GetterReferenceChildElement->GetName() == "part")
+				{
+					assert(GetterReferenceChildElement->GetChilds().size() == 1);
+					
+					auto PartText{dynamic_cast< const XML::Text * >(GetterReferenceChildElement->GetChild(0))};
+					
+					assert(PartText != nullptr);
+					ValueDescriptor.GetterReference->Parts.push_back(PartText->GetText());
+				}
+				else
+				{
+					throw std::domain_error{GetterReferenceChildElement->GetName() + " not allowed."};
+				}
+			}
+		}
+	}
+	else if(ValueElement->GetName() == "data-reference")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "data-reference";
+		ValueDescriptor.DataReference.emplace();
+		if(ValueElement->HasAttribute("cast-to-type") == true)
+		{
+			ValueDescriptor.DataReference->CastToType = ValueElement->GetAttribute("cast-to-type");
+		}
+		for(auto DataReferenceChildNode : ValueElement->GetChilds())
+		{
+			if(DataReferenceChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				auto & DataReferencePartDescriptors{ValueDescriptor.DataReference->PartDescriptors};
+				auto DataReferencePartDescriptor{DataReferencePartDescriptors.emplace(DataReferencePartDescriptors.end())};
+				auto DataReferenceChildElement{dynamic_cast< const XML::Element * >(DataReferenceChildNode)};
+				
+				if(DataReferenceChildElement->GetName() == "field")
+				{
+					assert(DataReferenceChildElement->GetChilds().size() == 1);
+					DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Field;
+					
+					auto SubText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
+					
+					assert(SubText != nullptr);
+					DataReferencePartDescriptor->DetailName = SubText->GetText();
+				}
+				else if(DataReferenceChildElement->GetName() == "tag")
+				{
+					assert(DataReferenceChildElement->GetChilds().size() == 1);
+					DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Tag;
+					
+					auto TagText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
+					
+					assert(TagText != nullptr);
+					DataReferencePartDescriptor->DetailName = TagText->GetText();
+				}
+				else
+				{
+					throw std::domain_error{DataReferenceChildElement->GetName() + " not allowed."};
+				}
+			}
+		}
+	}
+	else if(ValueElement->GetName() == "parameter-reference")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "parameter-reference";
+		ValueDescriptor.ParameterReference.emplace();
+		if(ValueElement->HasAttribute("cast-to-type") == true)
+		{
+			ValueDescriptor.ParameterReference->CastToType = ValueElement->GetAttribute("cast-to-type");
+		}
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		ValueDescriptor.ParameterReference->Name = TextNode->GetText();
+	}
+	else if(ValueElement->GetName() == "string")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "string";
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		ValueDescriptor.String = TextNode->GetText();
+	}
+	else if(ValueElement->GetName() == "unsigned-integer-8bit")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "unsigned integer 8bit";
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		ValueDescriptor.UnsignedInteger8Bit = from_string_cast< std::uint8_t >(TextNode->GetText());
+	}
+	else if(ValueElement->GetName() == "unsigned-integer-32bit")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "unsigned integer 32bit";
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		ValueDescriptor.UnsignedInteger32Bit = from_string_cast< std::uint32_t >(TextNode->GetText());
+	}
+	else if(ValueElement->GetName() == "unsigned-integer-64bit")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "unsigned integer 64bit";
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		ValueDescriptor.UnsignedInteger64Bit = from_string_cast< std::uint64_t >(TextNode->GetText());
+	}
+	else if(ValueElement->GetName() == "parameters")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "parameters";
+		ValueDescriptor.Parameters.emplace();
+		assert(ValueElement->HasAttribute("cast-to-type") == false);
+		for(auto ParametersChildNode : ValueElement->GetChilds())
+		{
+			if(ParametersChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				auto ParametersChildElement{dynamic_cast< const XML::Element * >(ParametersChildNode)};
+				
+				if(ParametersChildElement->GetName() == "parameter")
+				{
+					ValueDescriptor.Parameters.value().emplace_back();
+					
+					auto & Parameter{ValueDescriptor.Parameters.value().back()};
+					
+					assert(ParametersChildElement->HasAttribute("name") == true);
+					Parameter.Name = ParametersChildElement->GetAttribute("name");
+					_LoadValueDescriptorFromWithin(Parameter.ValueDescriptor, ParametersChildElement);
+				}
+				else
+				{
+					throw std::domain_error{ParametersChildElement->GetName() + " not allowed."};
+				}
+			}
+		}
+	}
+	else
+	{
+		throw std::domain_error{ValueElement->GetName() + " not allowed."};
 	}
 }

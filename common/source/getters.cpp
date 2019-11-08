@@ -6063,10 +6063,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	{
 		if(std::experimental::any_cast< bool >(Result->GetValue()->GetField("ExtendedFlags")->GetField("CRCDataPresent")->GetData()) == true)
 		{
-			auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("CRCDataPresentData", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Data_CRCDataPresent"}, PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("CRCDataPresentData", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	if(Continue == true)
@@ -6078,41 +6080,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 			
 			UpdateState(Continue, FieldResult);
 		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_CRCDataPresent(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Continue = std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Size")->GetData()) == 0x05;
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("TotalFrameCRC", FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -6555,46 +6522,49 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					Size -= FieldReader.GetConsumedLength();
 				}
 			}
-			// reading
 			if(Continue == true)
 			{
-				Inspection::Reader PartReader{Reader, Size};
-				auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"ID3", "v2.4", "Frame"}}, {"ElementName", "Frame"s}})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				Size -= PartReader.GetConsumedLength();
-			}
-			// reading
-			if(Continue == true)
-			{
-				if(Size > Inspection::Length{0, 0})
+				// reading
+				if(Continue == true)
 				{
 					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Get_Data_Unset_EndedByLength(PartReader)};
+					auto PartResult{Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementGetter", std::vector< std::string >{"ID3", "v2.4", "Frame"}}, {"ElementName", "Frame"s}})};
 					
 					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("Padding", PartResult->GetValue());
-					if(Continue == true)
+					Result->GetValue()->AppendField("Frames", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Size -= PartReader.GetConsumedLength();
+				}
+				// reading
+				if(Continue == true)
+				{
+					if(Size > Inspection::Length{0, 0})
 					{
+						Inspection::Reader PartReader{Reader, Size};
+						auto PartResult{Get_Data_Unset_EndedByLength(PartReader)};
+						
+						Continue = PartResult->GetSuccess();
+						Result->GetValue()->AppendField("Padding", PartResult->GetValue());
+						if(Continue == true)
+						{
+							Reader.AdvancePosition(PartReader.GetConsumedLength());
+							Size -= PartReader.GetConsumedLength();
+						}
+					}
+				}
+				// reading
+				if(Continue == false)
+				{
+					if(Size > Inspection::Length{0, 0})
+					{
+						Inspection::Reader PartReader{Reader, Size};
+						auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Frame"}, PartReader, {})};
+						
+						Continue = PartResult->GetSuccess();
+						Result->GetValue()->AppendField("Frame", PartResult->GetValue());
 						Reader.AdvancePosition(PartReader.GetConsumedLength());
 						Size -= PartReader.GetConsumedLength();
 					}
-				}
-			}
-			// reading
-			if(Continue == false)
-			{
-				if(Size > Inspection::Length{0, 0})
-				{
-					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Frame"}, PartReader, {})};
-					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					Size -= PartReader.GetConsumedLength();
 				}
 			}
 		}

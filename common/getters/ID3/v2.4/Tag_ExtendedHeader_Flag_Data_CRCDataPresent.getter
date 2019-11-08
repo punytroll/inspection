@@ -1,0 +1,31 @@
+<getter>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>v2.4</part>
+			<part>Tag_ExtendedHeader_Flag_Header</part>
+		</getter>
+		<verification>
+			<equals>
+				<data-reference>
+					<field>Size</field>
+				</data-reference>
+				<unsigned-integer-8bit>5</unsigned-integer-8bit>
+			</equals>
+		</verification>
+		<value>
+			<append-sub-values/>
+		</value>
+	</part>
+	<part>
+		<getter>
+			<part>ID3</part>
+			<part>UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian</part>
+		</getter>
+		<value>
+			<append-value>
+				<name>TotalFrameCRC</name>
+			</append-value>
+		</value>
+	</part>
+</getter>
