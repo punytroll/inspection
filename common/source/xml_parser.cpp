@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.5.2 of the xml parser.
+ * This is version 1.6 of the xml parser.
  **/
 
 #include <iostream>
@@ -39,8 +39,10 @@ void XMLParser::Parse(void)
 	std::string TagName;
 	std::string AttributeName;
 	std::string Buffer;
+	std::string Entity;
 	char Char;
 	bool InAttributeValue(false);
+	bool InEntity{false};
 	bool InTag(false);
 	bool InIdentifier(false);
 	bool IsEndTag(false);
@@ -170,13 +172,66 @@ void XMLParser::Parse(void)
 				
 				break;
 			}
+		case '&':
+			{
+				InEntity = true;
+				
+				break;
+			}
+		case ';':
+			{
+				if(InEntity == true)
+				{
+					if(Entity == "amp")
+					{
+						Buffer += '&';
+					}
+					else if(Entity == "gt")
+					{
+						Buffer += '>';
+					}
+					else if(Entity == "lt")
+					{
+						Buffer += '<';
+					}
+					else if(Entity == "apos")
+					{
+						Buffer += '\'';
+					}
+					else if(Entity == "quot")
+					{
+						Buffer += '"';
+					}
+					else
+					{
+						Buffer += '&';
+						Buffer += Entity;
+						Buffer += ';';
+					}
+					Entity = "";
+					InEntity = false;
+				}
+				else
+				{
+					Buffer += ';';
+				}
+				
+				break;
+			}
 		default:
 			{
 				if((InTag == true) && (InAttributeValue == false))
 				{
 					InIdentifier = true;
 				}
-				Buffer += Char;
+				if(InEntity == true)
+				{
+					Entity += Char;
+				}
+				else
+				{
+					Buffer += Char;
+				}
 				
 				break;
 			}

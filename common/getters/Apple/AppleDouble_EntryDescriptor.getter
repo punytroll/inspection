@@ -32,7 +32,7 @@
 						<tag name="description" type="string">Standard Macintosh comment</tag>
 					</element>
 					<element base-value="5" valid="true">
-						<tag name="interpretation" type="string">Icon, B&W</tag>
+						<tag name="interpretation" type="string">Icon, B&amp;W</tag>
 						<tag name="description" type="string">Standard Macintosh black and white icon</tag>
 					</element>
 					<element base-value="6" valid="true">
