@@ -9,24 +9,24 @@
 		<value>
 			<set/>
 		</value>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation" type="string">no emphasis</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation" type="string">50/15 microsec. emphasis</tag>
+					</element>
+					<element base-value="2" valid="false">
+						<tag name="error" type="string">This emphasis is reserved and MUST NOT be used.</tag>
+						<tag name="interpretation" type="nothing"/>
+					</element>
+					<element base-value="3" valid="true">
+						<tag name="interpretation" type="string">CCITT J.17</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
 	</part>
-	<interpret>
-		<apply-enumeration>
-			<enumeration base-type="unsigned integer 8bit">
-				<element base-value="0" valid="true">
-					<tag name="interpretation" type="string">no emphasis</tag>
-				</element>
-				<element base-value="1" valid="true">
-					<tag name="interpretation" type="string">50/15 microsec. emphasis</tag>
-				</element>
-				<element base-value="2" valid="false">
-					<tag name="error" type="string">This emphasis is reserved and MUST NOT be used.</tag>
-					<tag name="interpretation" type="nothing"/>
-				</element>
-				<element base-value="3" valid="true">
-					<tag name="interpretation" type="string">CCITT J.17</tag>
-				</element>
-			</enumeration>
-		</apply-enumeration>
-	</interpret>
 </getter>

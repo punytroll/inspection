@@ -9,17 +9,17 @@
 		<value>
 			<set/>
 		</value>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="padding" type="boolean">false</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="padding" type="boolean">true</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
 	</part>
-	<interpret>
-		<apply-enumeration>
-			<enumeration base-type="unsigned integer 8bit">
-				<element base-value="0" valid="true">
-					<tag name="padding" type="boolean">false</tag>
-				</element>
-				<element base-value="1" valid="true">
-					<tag name="padding" type="boolean">true</tag>
-				</element>
-			</enumeration>
-		</apply-enumeration>
-	</interpret>
 </getter>

@@ -6,20 +6,20 @@
 			<part>Unsigned</part>
 			<part>1Bit</part>
 		</getter>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation" type="string">positive gain (boost)</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation" type="string">negative gain (attenuation)</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
 		<value>
 			<set/>
 		</value>
 	</part>
-	<interpret>
-		<apply-enumeration>
-			<enumeration base-type="unsigned integer 8bit">
-				<element base-value="0" valid="true">
-					<tag name="interpretation" type="string">positive gain (boost)</tag>
-				</element>
-				<element base-value="1" valid="true">
-					<tag name="interpretation" type="string">negative gain (attenuation)</tag>
-				</element>
-			</enumeration>
-		</apply-enumeration>
-	</interpret>
 </getter>

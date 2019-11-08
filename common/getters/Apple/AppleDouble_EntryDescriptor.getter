@@ -11,7 +11,7 @@
 				<name>EntryID</name>
 			</append-value>
 		</value>
-		<interpret>
+		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 32bit">
 					<element base-value="0" valid="false"/>
@@ -77,7 +77,7 @@
 					</fallback-element>
 				</enumeration>
 			</apply-enumeration>
-		</interpret>
+		</interpretation>
 	</part>
 	<part>
 		<getter>

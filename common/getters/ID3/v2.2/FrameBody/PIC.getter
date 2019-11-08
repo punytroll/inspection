@@ -25,7 +25,7 @@
 			<part>ISO_IEC_8859_1_1998</part>
 			<part>EndedByLength</part>
 		</getter>
-		<interpret>
+		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="string">
 					<element base-value="--&gt;" valid="true">
@@ -42,7 +42,7 @@
 					</fallback-element>
 				</enumeration>
 			</apply-enumeration>
-		</interpret>
+		</interpretation>
 		<value>
 			<append-value>
 				<name>ImageFormat</name>
@@ -56,7 +56,7 @@
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</getter>
-		<interpret>
+		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
@@ -145,7 +145,7 @@
 					</element>
 				</enumeration>
 			</apply-enumeration>
-		</interpret>
+		</interpretation>
 		<value>
 			<append-value>
 				<name>PictureType</name>

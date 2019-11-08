@@ -28,7 +28,7 @@
 				<name>VersionNumber</name>
 			</append-value>
 		</value>
-		<interpret>
+		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 32bit">
 					<element base-value="1000" valid="true">
@@ -42,7 +42,7 @@
 					</fallback-element>
 				</enumeration>
 			</apply-enumeration>
-		</interpret>
+		</interpretation>
 	</part>
 	<part>
 		<getter>

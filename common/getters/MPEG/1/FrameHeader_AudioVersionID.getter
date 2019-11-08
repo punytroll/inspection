@@ -9,19 +9,19 @@
 		<value>
 			<set/>
 		</value>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="1" valid="true">
+						<tag name="interpretation" type="string">MPEG Version 1</tag>
+						<tag name="standard" type="string">ISO/IEC 11172-3</tag>
+					</element>
+					<element base-value="0" valid="false">
+						<tag name="error" type="string">This audio version ID is reserved and MUST NOT be used.</tag>
+						<tag name="interpretation" type="nothing"/>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
 	</part>
-	<interpret>
-		<apply-enumeration>
-			<enumeration base-type="unsigned integer 8bit">
-				<element base-value="1" valid="true">
-					<tag name="interpretation" type="string">MPEG Version 1</tag>
-					<tag name="standard" type="string">ISO/IEC 11172-3</tag>
-				</element>
-				<element base-value="0" valid="false">
-					<tag name="error" type="string">This audio version ID is reserved and MUST NOT be used.</tag>
-					<tag name="interpretation" type="nothing"/>
-				</element>
-			</enumeration>
-		</apply-enumeration>
-	</interpret>
 </getter>
