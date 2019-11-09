@@ -998,11 +998,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask")
 					{
-						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask;
+						_HardcodedGetterWithParameters = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat")
 					{
-						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat;
+						_HardcodedGetterWithParameters = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
 					{

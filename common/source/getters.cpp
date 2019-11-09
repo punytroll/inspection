@@ -10252,7 +10252,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt_(Inspec
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10371,7 +10371,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt__Format
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
