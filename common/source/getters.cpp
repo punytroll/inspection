@@ -3119,11 +3119,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("RegisteredApplicationIdentifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_BigEndian"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("RegisteredApplicationIdentifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -4924,10 +4925,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 		}
 		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 		{
-			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_BigEndian"}, PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
 		{
@@ -5011,7 +5014,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_UnsignedInteger_32Bit_BigEndian(PartReader)};
+			auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_BigEndian"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
@@ -5927,10 +5930,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		}
 		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 		{
-			auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_BigEndian"}, PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
 		{
@@ -7149,10 +7154,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_32Bit_BigEndian(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("StartAddress", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_BigEndian"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("StartAddress", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11880,7 +11887,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Alte
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
