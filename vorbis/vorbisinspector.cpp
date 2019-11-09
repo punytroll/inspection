@@ -164,29 +164,32 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("BitStreamSerialNumber", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("BitStreamSerialNumber", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("PageSequenceNumber", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("PageSequenceNumber", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("Checksum", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Checksum", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
@@ -451,11 +454,12 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("VorbisVersion", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("VorbisVersion", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
@@ -469,11 +473,12 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_UnsignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("AudioSampleRate", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("AudioSampleRate", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
