@@ -305,11 +305,12 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
-		auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "1Bit"}, PartReader, {})};
 		
-		Result->GetValue()->AppendField("PacketType", FieldResult->GetValue());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("PacketType", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// interpretation
 	if(Continue == true)

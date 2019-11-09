@@ -3253,14 +3253,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Reserved", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "1Bit"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Reserved", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 		// verification
 		if(Continue == true)
 		{
-			Continue = std::experimental::any_cast< std::uint8_t >(FieldValue->GetData()) == 0x00;
+			Continue = std::experimental::any_cast< std::uint8_t >(PartResult->GetValue()->GetData()) == 0x00;
 		}
 	}
 	// reading
@@ -3353,14 +3355,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_1Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Reserved", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "1Bit"}, PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Reserved", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 		// verification
 		if(Continue == true)
 		{
-			Continue = std::experimental::any_cast< std::uint8_t >(FieldValue->GetData()) == 0x00;
+			Continue = std::experimental::any_cast< std::uint8_t >(PartResult->GetValue()->GetData()) == 0x00;
 		}
 	}
 	// reading
@@ -9542,7 +9546,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_AudioVersionID"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_AudioVersionID"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("AudioVersionID", PartResult->GetValue());
@@ -9552,7 +9556,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_LayerDescription"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_LayerDescription"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("LayerDescription", PartResult->GetValue());
@@ -9562,7 +9566,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_ProtectionBit"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_ProtectionBit"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ProtectionBit", PartResult->GetValue());
@@ -9582,7 +9586,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_SamplingFrequency"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_SamplingFrequency"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SamplingFrequency", PartResult->GetValue());
@@ -9592,7 +9596,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_PaddingBit"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_PaddingBit"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PaddingBit", PartResult->GetValue());
@@ -9602,7 +9606,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_1Bit(PartReader)};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "1Bit"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PrivateBit", PartResult->GetValue());
@@ -9632,7 +9636,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_Copyright"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_Copyright"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Copyright", PartResult->GetValue());
@@ -9642,7 +9646,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_OriginalHome"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_OriginalHome"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Original/Home", PartResult->GetValue());
@@ -9652,7 +9656,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"MPEG", "1", "FrameHeader_Emphasis"}, PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_Emphasis"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Emphasis", PartResult->GetValue());
@@ -10819,7 +10823,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 0:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_UnsignedInteger_0Bit(PartReader)};
+			auto PartResult{Get_UnsignedInteger_0Bit(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -10830,7 +10834,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 1:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_UnsignedInteger_1Bit(PartReader)};
+			auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "1Bit"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -11026,7 +11030,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_0Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_0Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11042,7 +11046,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_0Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

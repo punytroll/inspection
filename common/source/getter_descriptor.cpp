@@ -1022,7 +1022,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_1Bit")
 					{
-						_HardcodedGetter = Inspection::Get_UnsignedInteger_1Bit;
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_1Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_2Bit")
 					{
