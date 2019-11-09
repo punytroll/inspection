@@ -1038,7 +1038,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_7Bit")
 					{
-						_HardcodedGetter = Inspection::Get_UnsignedInteger_7Bit;
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_7Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
 					{
@@ -1054,11 +1054,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_20Bit_BigEndian")
 					{
-						_HardcodedGetter = Inspection::Get_UnsignedInteger_20Bit_BigEndian;
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_20Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
 					{
-						_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
 					{

@@ -10818,181 +10818,199 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	{
 	case 0:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 0}};
-			auto FieldResult{Get_UnsignedInteger_0Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_0Bit(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 1:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 1}};
-			auto FieldResult{Get_UnsignedInteger_1Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_1Bit(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 2:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 2}};
-			auto FieldResult{Get_UnsignedInteger_2Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_2Bit(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 3:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 3}};
-			auto FieldResult{Get_UnsignedInteger_3Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_3Bit(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 4:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 4}};
-			auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 5:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 5}};
-			auto FieldResult{Get_UnsignedInteger_5Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_5Bit(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 6:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 6}};
-			auto FieldResult{Get_UnsignedInteger_6Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_6Bit(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 7:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 7}};
-			auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "7Bit"}, PartReader, {})};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 8:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 8}};
-			auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_8Bit(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 9:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 9}};
-			auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_9Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 10:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 10}};
-			auto FieldResult{Get_UnsignedInteger_10Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_10Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 11:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 11}};
-			auto FieldResult{Get_UnsignedInteger_11Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_11Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 12:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 12}};
-			auto FieldResult{Get_UnsignedInteger_12Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_12Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 13:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 13}};
-			auto FieldResult{Get_UnsignedInteger_13Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_13Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 14:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 14}};
-			auto FieldResult{Get_UnsignedInteger_14Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_14Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 15:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 15}};
-			auto FieldResult{Get_UnsignedInteger_15Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_15Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 16:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 16}};
-			auto FieldResult{Get_UnsignedInteger_16Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_16Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 17:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 17}};
-			auto FieldResult{Get_UnsignedInteger_17Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_17Bit_BigEndian(PartReader)};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
@@ -11198,7 +11216,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_6Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11641,7 +11659,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_17Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11676,7 +11694,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_20Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
