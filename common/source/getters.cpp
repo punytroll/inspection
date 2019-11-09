@@ -3341,17 +3341,21 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(BlockingStrategy == 0x00)
 		{
-			auto FieldResult{Get_UnsignedInteger_31Bit_UTF_8_Coded(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("FrameNumber", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_31Bit_UTF_8_Coded(PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("FrameNumber", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(BlockingStrategy == 0x01)
 		{
-			auto FieldResult{Get_UnsignedInteger_36Bit_UTF_8_Coded(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("SampleNumber", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_36Bit_UTF_8_Coded(PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("SampleNumber", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
@@ -11668,7 +11672,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_24Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11916,7 +11920,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_32Bit_Litt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -11953,7 +11957,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_BigE
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

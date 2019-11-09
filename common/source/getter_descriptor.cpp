@@ -1070,7 +1070,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_36Bit_BigEndian")
 					{
-						_HardcodedGetter = Inspection::Get_UnsignedInteger_36Bit_BigEndian;
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_36Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_BigEndian")
 					{
