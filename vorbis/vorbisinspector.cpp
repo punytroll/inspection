@@ -106,11 +106,12 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buff
 	// reading
 	for(auto SegmentTableEntryIndex = 0; (Continue == true) && (SegmentTableEntryIndex < NumberOfEntries); ++SegmentTableEntryIndex)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField(PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -137,11 +138,12 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("StreamStructureVersion", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("StreamStructureVersion", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
@@ -194,11 +196,12 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("PageSegments", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("PageSegments", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
@@ -411,11 +414,12 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::B
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// interpretation
 	if(Continue == true)
@@ -465,11 +469,12 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_UnsignedInteger_8Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("AudioChannels", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("AudioChannels", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)

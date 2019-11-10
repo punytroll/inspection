@@ -3405,10 +3405,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 		
 		if(BlockSize == 0x06)
 		{
-			auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-			auto FieldValue{Result->GetValue()->AppendField("BlockSizeExplicit", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_UnsignedInteger_8Bit(Reader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("BlockSizeExplicit", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			// interpretation
 			if(Continue == true)
 			{
@@ -3455,10 +3457,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("CRC-8", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("CRC-8", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -4293,10 +4297,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Read
 			// reading
 			if(Continue == true)
 			{
-				auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-				auto FieldValue{Result->GetValue()->AppendField("AlbumTrack", FieldResult->GetValue())};
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 				
-				UpdateState(Continue, FieldResult);
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendField("AlbumTrack", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 		}
 	}
@@ -4323,10 +4329,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -4596,10 +4604,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccordin
 		
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(TextEncoding == 0x01)
 		{
@@ -4633,10 +4643,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_TextStringAccordin
 		
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(TextEncoding == 0x01)
 		{
@@ -4968,7 +4980,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader)};
+		auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("EMailToUser", PartResult->GetValue());
@@ -4978,7 +4990,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_8Bit(PartReader)};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Rating", PartResult->GetValue());
@@ -5056,10 +5068,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("OwnerIdentifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("OwnerIdentifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -5634,14 +5648,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccordin
 		
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetData());
+				PartResult->GetValue()->AddTag("value", PartResult->GetValue()->GetData());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -5680,14 +5696,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_TextStringAccordin
 		
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetData());
+				PartResult->GetValue()->AddTag("value", PartResult->GetValue()->GetData());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -5888,19 +5906,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("EMailToUser", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("EMailToUser", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Rating", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		FieldValue->AddTag("standard", "ID3 2.3"s);
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Rating", PartResult->GetValue());
+		Result->GetValue()->GetField("Rating")->AddTag("standard", "ID3 2.3"s);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -6102,10 +6124,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("NumberOfFlagBytes", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("NumberOfFlagBytes", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -6340,14 +6364,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccordin
 		
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetData());
+				PartResult->GetValue()->AddTag("value", PartResult->GetValue()->GetData());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -6410,14 +6436,16 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccordin
 		
 		if(TextEncoding == 0x00)
 		{
-			auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(PartReader, {})};
 			
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			// interpretation
 			if(Continue == true)
 			{
-				Result->GetValue()->AddTag("value", FieldResult->GetValue()->GetData());
+				PartResult->GetValue()->AddTag("value", PartResult->GetValue()->GetData());
 			}
 		}
 		else if(TextEncoding == 0x01)
@@ -7138,10 +7166,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_8Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Number", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Number", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -7364,7 +7394,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_Charac
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -7421,7 +7451,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -7487,7 +7517,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10925,7 +10955,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 8:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_UnsignedInteger_8Bit(PartReader)};
+			auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -11263,7 +11293,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_7Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

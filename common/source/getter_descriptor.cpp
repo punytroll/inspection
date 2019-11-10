@@ -958,15 +958,15 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
 					{
-						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength;
+						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTermination")
 					{
-						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination;
+						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
 					{
-						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
+						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength")
 					{
@@ -1042,7 +1042,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
 					{
-						_HardcodedGetter = Inspection::Get_UnsignedInteger_8Bit;
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_8Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_BigEndian")
 					{
