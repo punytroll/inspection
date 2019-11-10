@@ -478,14 +478,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 	{
 		if(_HardcodedGetter != nullptr)
 		{
-			auto HardcodedResult{_HardcodedGetter(Reader)};
-			
-			Continue = HardcodedResult->GetSuccess();
-			Result->SetValue(HardcodedResult->GetValue());
-		}
-		else if(_HardcodedGetterWithParameters != nullptr)
-		{
-			auto HardcodedResult{_HardcodedGetterWithParameters(Reader, Parameters)};
+			auto HardcodedResult{_HardcodedGetter(Reader, Parameters)};
 			
 			Continue = HardcodedResult->GetSuccess();
 			Result->SetValue(HardcodedResult->GetValue());
@@ -746,303 +739,303 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					assert(HardcodedGetterText != nullptr);
 					if(HardcodedGetterText->GetText() == "Get_APE_Flags")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_APE_Flags;
+						_HardcodedGetter = Inspection::Get_APE_Flags;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_APE_Item")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_APE_Item;
+						_HardcodedGetter = Inspection::Get_APE_Item;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Apple_AppleDouble_File")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Apple_AppleDouble_File;
+						_HardcodedGetter = Inspection::Get_Apple_AppleDouble_File;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByFailureOrLength_ResetPositionOnFailure")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure;
+						_HardcodedGetter = Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByLength;
+						_HardcodedGetter = Inspection::Get_Array_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByNumberOfElements")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Array_EndedByNumberOfElements;
+						_HardcodedGetter = Inspection::Get_Array_EndedByNumberOfElements;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
+						_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumericOrSpace_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
+						_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_Printable_EndedByLength;
+						_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ASCII_String_Printable_EndedByTermination;
+						_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_DataObject")
 					{
-						_HardcodedGetterWithParameters = Get_ASF_DataObject;
+						_HardcodedGetter = Get_ASF_DataObject;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor_Data")
 					{
-						_HardcodedGetterWithParameters = Get_ASF_ExtendedContentDescription_ContentDescriptor_Data;
+						_HardcodedGetter = Get_ASF_ExtendedContentDescription_ContentDescriptor_Data;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_HeaderObject")
 					{
-						_HardcodedGetterWithParameters = Get_ASF_HeaderObject;
+						_HardcodedGetter = Get_ASF_HeaderObject;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord_Data")
 					{
-						_HardcodedGetterWithParameters = Get_ASF_Metadata_DescriptionRecord_Data;
+						_HardcodedGetter = Get_ASF_Metadata_DescriptionRecord_Data;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord_Data")
 					{
-						_HardcodedGetterWithParameters = Get_ASF_MetadataLibrary_DescriptionRecord_Data;
+						_HardcodedGetter = Get_ASF_MetadataLibrary_DescriptionRecord_Data;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_Object")
 					{
-						_HardcodedGetterWithParameters = Get_ASF_Object;
+						_HardcodedGetter = Get_ASF_Object;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
+						_HardcodedGetter = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ASF_CreationDate;
+						_HardcodedGetter = Inspection::Get_ASF_CreationDate;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_GUID")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ASF_GUID;
+						_HardcodedGetter = Inspection::Get_ASF_GUID;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ASF_FileProperties_Flags;
+						_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_BitSet_16Bit_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_BitSet_16Bit_BigEndian;
+						_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Boolean_1Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Boolean_1Bit;
+						_HardcodedGetter = Inspection::Get_Boolean_1Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
+						_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Data_SetOrUnset_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Data_SetOrUnset_EndedByLength;
+						_HardcodedGetter = Inspection::Get_Data_SetOrUnset_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Data_Unset_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Data_Unset_EndedByLength;
+						_HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Frame")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Frame;
+						_HardcodedGetter = Inspection::Get_FLAC_Frame;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_MetaDataBlock")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_MetaDataBlock;
+						_HardcodedGetter = Inspection::Get_FLAC_MetaDataBlock;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Stream_Header")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Stream_Header;
+						_HardcodedGetter = Inspection::Get_FLAC_Stream_Header;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
+						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
+						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_CalculateBitsPerSample")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Subframe_CalculateBitsPerSample;
+						_HardcodedGetter = Inspection::Get_FLAC_Subframe_CalculateBitsPerSample;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_Residual")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Subframe_Residual;
+						_HardcodedGetter = Inspection::Get_FLAC_Subframe_Residual;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_Residual_Rice_Partition")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_FLAC_Subframe_Residual_Rice_Partition;
+						_HardcodedGetter = Inspection::Get_FLAC_Subframe_Residual_Rice_Partition;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_GUID_LittleEndian;
+						_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Frame")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_Frame;
+						_HardcodedGetter = Inspection::Get_ID3_2_2_Frame;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Language")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_Language;
+						_HardcodedGetter = Inspection::Get_ID3_2_2_Language;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination;
+						_HardcodedGetter = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+						_HardcodedGetter = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_Frame;
+						_HardcodedGetter = Inspection::Get_ID3_2_3_Frame;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Language")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_Language;
+						_HardcodedGetter = Inspection::Get_ID3_2_3_Language;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_Frame_Header_Flags;
+						_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination;
+						_HardcodedGetter = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+						_HardcodedGetter = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Frame")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_Frame;
+						_HardcodedGetter = Inspection::Get_ID3_2_4_Frame;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Language")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_Language;
+						_HardcodedGetter = Inspection::Get_ID3_2_4_Language;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination;
+						_HardcodedGetter = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength;
+						_HardcodedGetter = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_ReplayGainAdjustment")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_ReplayGainAdjustment;
+						_HardcodedGetter = Inspection::Get_ID3_ReplayGainAdjustment;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit;
+						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
+						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian;
+						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Track;
+						_HardcodedGetter = Inspection::Get_IEC_60908_1999_TableOfContents_Track;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Tracks")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_IEC_60908_1999_TableOfContents_Tracks;
+						_HardcodedGetter = Inspection::Get_IEC_60908_1999_TableOfContents_Tracks;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength;
+						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTermination")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination;
+						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
+						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength;
+						_HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
+						_HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints;
+						_HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength;
+						_HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary32")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
+						_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_MPEG_1_Frame")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_MPEG_1_Frame;
+						_HardcodedGetter = Inspection::Get_MPEG_1_Frame;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_Chunk")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_RIFF_Chunk;
+						_HardcodedGetter = Inspection::Get_RIFF_Chunk;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask;
+						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat;
+						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_8Bit;
+						_HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_32Bit_RiceEncoded")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_32Bit_RiceEncoded;
+						_HardcodedGetter = Inspection::Get_SignedInteger_32Bit_RiceEncoded;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_BigEndian;
+						_HardcodedGetter = Inspection::Get_SignedInteger_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_String_ASCII_Alphabetic_ByTemplate")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_String_ASCII_Alphabetic_ByTemplate;
+						_HardcodedGetter = Inspection::Get_String_ASCII_Alphabetic_ByTemplate;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_1Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_1Bit;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_1Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_2Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_2Bit;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_2Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_3Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_3Bit;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_4Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_4Bit;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_4Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_7Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_7Bit;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_7Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_8Bit;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_8Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_BigEndian")
 					{
@@ -1054,39 +1047,39 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_20Bit_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_20Bit_BigEndian;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_20Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_36Bit_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_36Bit_BigEndian;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_36Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_64Bit_BigEndian;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_BigEndian")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_BigEndian;
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_BigEndian;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_Vorbis_CommentHeader_UserComment")
 					{
-						_HardcodedGetterWithParameters = Inspection::Get_Vorbis_CommentHeader_UserComment;
+						_HardcodedGetter = Inspection::Get_Vorbis_CommentHeader_UserComment;
 					}
 					else
 					{

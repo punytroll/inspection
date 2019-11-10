@@ -39,8 +39,7 @@ namespace Inspection
 		Inspection::EvaluationResult _ApplyInterpretation(const Inspection::InterpretationDescriptor & InterpretationDescriptor, std::shared_ptr< Inspection::Value > Target);
 		Inspection::EvaluationResult _ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target);
 		Inspection::GetterRepository * _GetterRepository;
-		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader) > _HardcodedGetter;
-		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) > _HardcodedGetterWithParameters;
+		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) > _HardcodedGetter;
 		std::vector< Inspection::InterpretationDescriptor * > _InterpretationDescriptors;
 		std::vector< Inspection::PartDescriptor * > _PartDescriptors;
 		std::vector< std::pair< Inspection::ObjectType, std::uint32_t > > _Objects;
