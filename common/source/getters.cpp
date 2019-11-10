@@ -3672,10 +3672,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock_Numbe
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_3Bit(Reader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -4111,16 +4113,18 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 			{
 				Result->GetValue()->AddTag("interpretation", "SUBFRAME_FIXED"s);
 				
-				auto FieldResult{Get_UnsignedInteger_3Bit(Reader)};
-				auto FieldValue{Result->GetValue()->AppendField("Order", FieldResult->GetValue())};
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{Get_UnsignedInteger_3Bit(Reader, {})};
 				
-				UpdateState(Continue, FieldResult);
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendField("Order", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				// interpretation and verification
 				if(Continue == true)
 				{
-					auto Order{std::experimental::any_cast< std::uint8_t >(FieldResult->GetValue()->GetData())};
+					auto Order{std::experimental::any_cast< std::uint8_t >(PartResult->GetValue()->GetData())};
 					
-					FieldValue->AddTag("value", static_cast< std::uint8_t >(Order));
+					PartResult->GetValue()->AddTag("value", static_cast< std::uint8_t >(Order));
 					if(Order >= 5)
 					{
 						Result->GetValue()->AddTag("reserved");
@@ -10860,7 +10864,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 3:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_UnsignedInteger_3Bit(PartReader)};
+			auto PartResult{Get_UnsignedInteger_3Bit(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -11108,7 +11112,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

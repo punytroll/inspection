@@ -1030,7 +1030,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_3Bit")
 					{
-						_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_3Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_4Bit")
 					{
