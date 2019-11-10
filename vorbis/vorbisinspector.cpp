@@ -511,29 +511,32 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("BlockSize0", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("BlockSize0", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 4}};
-		auto FieldResult{Get_UnsignedInteger_4Bit(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("BlockSize1", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("BlockSize1", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
-		auto FieldResult{Inspection::g_GetterRepository.Get({"Boolean", "1Bit"}, FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendField("FramingFlag", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_Boolean_1Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("FramingFlag", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// verification
 	if(Continue == true)

@@ -986,7 +986,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary32")
 					{
-						_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
+						_HardcodedGetterWithParameters = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_MPEG_1_Frame")
 					{
@@ -1006,7 +1006,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
 					{
-						_HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
+						_HardcodedGetterWithParameters = Inspection::Get_SignedInteger_8Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_32Bit_RiceEncoded")
 					{
@@ -1034,7 +1034,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_4Bit")
 					{
-						_HardcodedGetter = Inspection::Get_UnsignedInteger_4Bit;
+						_HardcodedGetterWithParameters = Inspection::Get_UnsignedInteger_4Bit;
 					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_7Bit")
 					{

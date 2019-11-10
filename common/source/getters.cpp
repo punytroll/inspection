@@ -3254,7 +3254,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "1Bit"}, PartReader, {})};
+		auto PartResult{Get_UnsignedInteger_1Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Reserved", PartResult->GetValue());
@@ -3278,10 +3278,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("BlockSize", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("BlockSize", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -3806,7 +3808,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("QuantizedLinearPredictorCoefficientsPrecision", PartResult->GetValue());
@@ -3979,7 +3981,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PartitionOrder", PartResult->GetValue());
@@ -4019,7 +4021,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual_Ric
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
+		auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("RiceParameter", PartResult->GetValue());
@@ -7104,7 +7106,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{1, 0}};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Data", "Unset_EndedByLength"}, PartReader, {})};
+		auto PartResult{Get_Data_Unset_EndedByLength(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Reserved", PartResult->GetValue());
@@ -7113,10 +7115,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("ADR", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_4Bit(Reader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("ADR", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -9436,7 +9440,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -9681,10 +9685,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_BitRate
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_4Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_4Bit(Reader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -10565,7 +10571,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_8Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_8Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10875,7 +10881,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 4:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_UnsignedInteger_4Bit(PartReader)};
+			auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -11141,7 +11147,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_3Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_4Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
