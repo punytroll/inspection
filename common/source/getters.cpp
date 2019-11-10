@@ -9957,10 +9957,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_Mode(In
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_2Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_2Bit(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -10017,10 +10019,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_2Bit(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_2Bit(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -10834,7 +10838,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 1:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "1Bit"}, PartReader, {})};
+			auto PartResult{Get_UnsignedInteger_1Bit(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -10845,7 +10849,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 2:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_UnsignedInteger_2Bit(PartReader)};
+			auto PartResult{Get_UnsignedInteger_2Bit(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -10900,7 +10904,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 7:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "7Bit"}, PartReader, {})};
+			auto PartResult{Get_UnsignedInteger_7Bit(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -11075,7 +11079,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_1Bit(Inspe
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_2Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

@@ -18,6 +18,7 @@ These patterns need to spread to all getter implementations:
 15. "Elements": In all array reading getters, the parts that constitute the array are called Elements.
 16. "ElementGetter": The getter referenced in the parameters for array getters is called "ElementGetter".
 17. "ElementIndexInArray": All array functions must pass a parameter "ElementIndexInArray" to the element getter.
+18. "HardcodedCalls": Whenever a hardcoded getter calls another hardcoded getter, for performance reasons, it should do so directly, not via the getter repository.
 
 On the history of getters:
 ================================
