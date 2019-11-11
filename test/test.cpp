@@ -12,7 +12,7 @@ int main(void)
 	{
 		// read an unsigned integer with 0 bits from an empty reader
 		Inspection::Buffer Buffer{Buffer0, Inspection::Length{0, 0}};
-		Inspection::Reader Reader{Buffer, Inspection::Length{0, 0}};
+		Inspection::Reader Reader{Buffer};
 		auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
 		
 		assert(Result->GetSuccess() == true);
@@ -23,7 +23,7 @@ int main(void)
 	{
 		// read an unsigned integer with 0 bits from the start of a non-empty reader
 		Inspection::Buffer Buffer{Buffer1, Inspection::Length{1, 0}};
-		Inspection::Reader Reader{Buffer, Inspection::Length{1, 0}};
+		Inspection::Reader Reader{Buffer};
 		auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
 		
 		assert(Result->GetSuccess() == true);

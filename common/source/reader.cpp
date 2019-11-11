@@ -2,7 +2,7 @@
 #include "reader.h"
 
 Inspection::Reader::Reader(Inspection::Buffer & Buffer) :
-	Inspection::Reader(Buffer, Buffer.GetPosition(), Buffer.GetLength() - Buffer.GetPosition())
+	Inspection::Reader(Buffer, Inspection::Length{0, 0}, Buffer.GetLength())
 {
 }
 
@@ -11,11 +11,6 @@ Inspection::Reader::Reader(Inspection::Reader & Reader) :
 {
 	assert(Reader._PositionInBuffer <= Reader._BoundaryInBuffer);
 	assert(_BoundaryInBuffer <= Reader._BoundaryInBuffer);
-}
-
-Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length & Length) :
-	Inspection::Reader(Buffer, Buffer.GetPosition(), Length)
-{
 }
 
 Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length) :
