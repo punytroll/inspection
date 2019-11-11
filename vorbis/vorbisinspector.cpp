@@ -384,7 +384,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 		}
 		else if(PacketType == 0x03)
 		{
-			auto FieldResult{Get_Vorbis_CommentHeader(Buffer)};
+			auto FieldResult{Get_Vorbis_CommentHeader(Buffer, {})};
 			
 			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
 			UpdateState(Continue, FieldResult);

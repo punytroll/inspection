@@ -3559,11 +3559,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		}
 		else if(MetaDataBlockType == "VorbisComment")
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("Header")->GetField("Length")->GetData()), 0}};
-			auto FieldResult{Get_FLAC_VorbisCommentBlock_Data(FieldReader)};
-			auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("Header")->GetField("Length")->GetData()), 0}};
+			auto PartResult{Get_Vorbis_CommentHeader_WithoutFramingFlag(PartReader, {})};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Data", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(MetaDataBlockType == "Picture")
 		{
@@ -4194,11 +4195,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Type(Inspect
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_VorbisCommentBlock_Data(Inspection::Reader & Reader)
-{
-	return Get_Vorbis_CommentHeader_WithoutFramingFlag(Reader);
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -12321,7 +12317,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_64Bit_Litt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	assert(Buffer.GetBitstreamType() == Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 	
@@ -12331,20 +12327,22 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader(Inspe
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_Vorbis_CommentHeader_WithoutFramingFlag(FieldReader)};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_Vorbis_CommentHeader_WithoutFramingFlag(PartReader, {})};
 		
-		Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+		Buffer.SetPosition(PartReader);
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 1}};
-		auto FieldResult{Inspection::g_GetterRepository.Get({"Boolean", "1Bit"}, FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendField("FramingFlag", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer, Inspection::Length{0, 1}};
+		auto PartResult{Get_Boolean_1Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("FramingFlag", PartResult->GetValue());
+		Buffer.SetPosition(PartReader);
 	}
 	// verification
 	if(Continue == true)
@@ -12367,7 +12365,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Length", PartResult->GetValue());
@@ -12377,11 +12375,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("Length")->GetData()), 0}};
-		auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendField("String", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("Length")->GetData()), 0}};
+		auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(PartReader, {})};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("String", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -12390,7 +12389,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_UserC
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -12399,7 +12398,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("VendorLength", PartResult->GetValue());
@@ -12420,7 +12419,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Vorbis_CommentHeader_Witho
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("UserCommentListLength", PartResult->GetValue());

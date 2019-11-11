@@ -90,7 +90,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice2(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t PredictorOrder);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Residual_Rice2_Partition(Inspection::Reader & Reader, std::uint32_t NumberOfSamples);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Subframe_Type(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_FLAC_VorbisCommentBlock_Data(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_GUID_LittleEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ID3_1_Tag(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_1_Genre(Inspection::Reader & Reader);
@@ -226,10 +225,10 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer);
+	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Buffer & Buffer, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 }
 
 #endif
