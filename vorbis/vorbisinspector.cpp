@@ -26,26 +26,17 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Reader & Reader
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// interpretation
-	if(Reader.HasRemaining() == false)
+	// reading
+	if(Continue == true)
 	{
-		Result->GetValue()->AddTag("interpretation", "OGG nil"s);
-	}
-	else
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_Vorbis_AudioPacket(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		if(Continue == true)
+		if(Reader.HasRemaining() == false)
 		{
-			Result->SetValue(PartResult->GetValue());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			Result->GetValue()->AddTag("interpretation", "OGG nil"s);
 		}
 		else
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_Vorbis_HeaderPacket(PartReader, {})};
+			auto PartResult{Get_Vorbis_AudioPacket(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			if(Continue == true)
@@ -56,13 +47,38 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Reader & Reader
 			else
 			{
 				Inspection::Reader PartReader{Reader};
-				auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+				auto PartResult{Get_Vorbis_HeaderPacket(PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("Data", PartResult->GetValue());
-				Result->GetValue()->AddTag("interpretation", "OGG unknown"s);
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				if(Continue == true)
+				{
+					Result->SetValue(PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
+				else
+				{
+					Inspection::Reader PartReader{Reader};
+					auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+					
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendField("Data", PartResult->GetValue());
+					Result->GetValue()->AddTag("interpretation", "OGG unknown"s);
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
 			}
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		if(Reader.GetPositionInBuffer().GetBits() > 0)
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Data_Unset_Until8BitAlignment(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("EndOfPacketAlignment", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
@@ -229,7 +245,7 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Reader & Reader, 
 			auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
 			
 			Result->GetValue()->AppendField("Packet", PartResult->GetValue());
-			Result->GetValue()->GetField("Packet")->AddTag("error", "The packet spans multiple pages, which is not yet supported."s);
+			PartResult->GetValue()->AddTag("error", "The packet spans multiple pages, which is not yet supported."s);
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
@@ -552,6 +568,9 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
 	Inspection::Reader PartReader{Reader};
+	
+	PartReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
+	
 	auto PartResult(Get_Ogg_Stream(PartReader, {}));
 	
 	PartResult->GetValue()->SetName("OggStream");

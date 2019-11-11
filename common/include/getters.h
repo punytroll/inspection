@@ -70,7 +70,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_Data_SetOrUnset_Until16BitAlignment(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_Data_Unset_Until16BitAlignment(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_Data_Unset_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Data_Unset_Until8BitAlignment(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_Data_Unset_Until8BitAlignment(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_FLAC_ApplicationBlock_Data(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_FLAC_Frame_Footer(Inspection::Reader & Reader);

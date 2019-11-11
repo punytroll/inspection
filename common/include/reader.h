@@ -13,6 +13,12 @@ namespace Inspection
 	class Reader
 	{
 	public:
+		enum class BitstreamType
+		{
+			LeastSignificantBitFirst,
+			MostSignificantBitFirst
+		};
+		
 		friend class Inspection::Buffer;
 		
 		explicit Reader(Inspection::Buffer & Buffer);
@@ -88,8 +94,15 @@ namespace Inspection
 		{
 			return _Buffer;
 		}
+		
+		void SetBitstreamType(Inspection::Reader::BitstreamType BitstreamType)
+		{
+			assert(_PositionInBuffer.GetBits() == 0);
+			_BitstreamType = BitstreamType;
+		}
 	private:
-		Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
+		Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length, Inspection::Reader::BitstreamType BitstreamType);
+		Inspection::Reader::BitstreamType _BitstreamType;
 		Inspection::Length _BoundaryInBuffer;
 		Inspection::Buffer & _Buffer;
 		Inspection::Length _OffsetInBuffer;
