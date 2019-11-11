@@ -9,9 +9,9 @@
 
 bool g_WithFrames{false};
 
-std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
@@ -19,28 +19,28 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	{
 		if(g_WithFrames == true)
 		{
-			Inspection::Reader PartReader{Buffer};
+			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
 			Result->GetValue()->SetName("FLACStream");
-			Buffer.SetPosition(PartReader);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
-			Inspection::Reader PartReader{Buffer};
+			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Stream_Header"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
 			Result->GetValue()->SetName("FLACStream");
-			Buffer.SetPosition(PartReader);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -72,7 +72,7 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
+		ReadItem(Paths.front(), Process, DefaultWriter);
 		Paths.pop_front();
 	}
 	

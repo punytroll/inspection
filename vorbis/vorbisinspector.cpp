@@ -549,15 +549,13 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
-	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
-	
-	Inspection::Reader PartReader{Buffer};
+	Inspection::Reader PartReader{Reader};
 	auto PartResult(Get_Ogg_Stream(PartReader, {}));
 	
 	PartResult->GetValue()->SetName("OggStream");
-	Buffer.SetPosition(PartReader);
+	Reader.AdvancePosition(PartReader.GetConsumedLength());
 	
 	return PartResult;
 }
@@ -580,7 +578,7 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
+		ReadItem(Paths.front(), Process, DefaultWriter);
 		Paths.pop_front();
 	}
 	

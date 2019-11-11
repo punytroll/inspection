@@ -7,25 +7,25 @@
 #include <common/getters.h>
 #include <common/result.h>
 
-std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "File"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
 		Result->GetValue()->SetName("ASFFile");
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -48,7 +48,7 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
+		ReadItem(Paths.front(), Process, DefaultWriter);
 		Paths.pop_front();
 	}
 	

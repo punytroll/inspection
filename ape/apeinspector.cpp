@@ -13,16 +13,17 @@ using namespace std::string_literals;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // helper function to find the position of an embedded APETAG                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::int64_t GetAPETAGOffset(const std::uint8_t * Buffer, std::uint64_t Length, std::uint64_t Offset)
+std::int64_t GetAPETAGPosition(const Inspection::Buffer & Buffer)
 {
 	std::int64_t Result{-1};
 	auto Start{0ul};
-	auto Position{Offset};
+	auto Position{0ul};
 	auto State{0ul};
+	auto Length{Buffer.GetLength().GetBytes()};
 	
 	while((Result == -1) && (Position < Length))
 	{
-		auto Byte{Buffer[Position]};
+		auto Byte{Buffer.GetData()[Position]};
 		
 		switch(State)
 		{
@@ -162,19 +163,19 @@ std::int64_t GetAPETAGOffset(const std::uint8_t * Buffer, std::uint64_t Length, 
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// seeking
 	if(Continue == true)
 	{
-		auto Position{GetAPETAGOffset(Buffer.GetData(), Buffer.GetLength().GetBytes(), 0ul)};
+		auto Position{GetAPETAGPosition(Reader.GetBuffer())};
 		
 		if(Position >= 0)
 		{
-			Buffer.SetPosition(Inspection::Length(Position, 0));
+			Reader.SetPosition(Inspection::Length(Position, 0));
 		}
 		else
 		{
@@ -184,17 +185,17 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 		Result->GetValue()->SetName("APEv2 Tag");
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -217,7 +218,7 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
+		ReadItem(Paths.front(), Process, DefaultWriter);
 		Paths.pop_front();
 	}
 	

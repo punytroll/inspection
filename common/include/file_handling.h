@@ -14,9 +14,9 @@
 #include "result.h"
 #include "value_printing.h"
 
-void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer);
-void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer);
-void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer);
+void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
+void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
+void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
 
 inline std::int64_t GetFileSize(const std::string & Path)
 {
@@ -80,7 +80,7 @@ inline void PrintExceptions(const std::exception & Exception)
 	std::cerr << std::endl;
 }
 
-inline void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer)
+inline void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
 {
 	auto Directory(opendir(Path.c_str()));
 	
@@ -103,7 +103,7 @@ inline void ReadDirectory(const std::string & Path, std::function< std::unique_p
 	}
 }
 
-inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer)
+inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
 {
 	if(FileExists(Path) == true)
 	{
@@ -128,7 +128,7 @@ inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< I
 	}
 }
 
-inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer)
+inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
 {
 	auto FileDescriptor{open(Path.c_str(), O_RDONLY)};
 	
@@ -153,10 +153,11 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				try
 				{
 					Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
-					auto ParseResult{Processor(Buffer)};
+					Inspection::Reader Reader{Buffer};
+					auto ParseResult{Processor(Reader)};
 					
 					ParseResult->GetValue()->SetData(Inspection::g_BrightGreen + Path + Inspection::g_BrightWhite);
-					Writer(ParseResult, Buffer);
+					Writer(ParseResult, Reader);
 				}
 				catch(const std::exception & Exception)
 				{
@@ -169,7 +170,7 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 	}
 }
 
-inline void DefaultWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Buffer & Buffer)
+inline void DefaultWriter(std::unique_ptr< Inspection::Result > & Result, Inspection::Reader & Reader)
 {
 	PrintValue(Result->GetValue());
 	if(Result->GetSuccess() == false)
@@ -183,12 +184,9 @@ inline void DefaultWriter(std::unique_ptr< Inspection::Result > & Result, Inspec
 			std::cout << Inspection::g_BrightRed << "Parsing does not give valid " << Result->GetValue()->GetName() << '.' << Inspection::g_BrightWhite << std::endl;
 		}
 	}
-	
-	auto Rest{Buffer.GetLength() - Buffer.GetPosition()};
-	
-	if(Rest > Inspection::Length{0, 0})
+	if(Reader.HasRemaining() == true)
 	{
-		std::cout << Inspection::g_BrightBlack << "There are " << Inspection::g_Yellow << to_string_cast(Rest) << Inspection::g_BrightBlack << " bytes and bits after the data." << std::endl;
+		std::cout << Inspection::g_BrightBlack << "There are " << Inspection::g_Yellow << to_string_cast(Reader.GetRemainingLength()) << Inspection::g_BrightBlack << " bytes and bits after the data." << std::endl;
 	}
 }
 

@@ -83,6 +83,11 @@ namespace Inspection
 			assert(_PositionInBuffer >= _OffsetInBuffer);
 			assert(_PositionInBuffer <= _BoundaryInBuffer);
 		}
+		
+		const Inspection::Buffer & GetBuffer(void) const
+		{
+			return _Buffer;
+		}
 	private:
 		Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
 		Inspection::Length _BoundaryInBuffer;

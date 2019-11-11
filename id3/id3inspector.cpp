@@ -13,21 +13,21 @@ using namespace std::string_literals;
 // application                                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	
 	Result->GetValue()->SetName("ID3Tags");
 	
 	std::unique_ptr< Inspection::Result > ID3v1TagResult;
 	
-	if(Buffer.GetLength() >= Inspection::Length(128ull, 0))
+	if(Reader.GetCompleteLength() >= Inspection::Length(128, 0))
 	{
-		Buffer.SetPosition(Buffer.GetLength() - Inspection::Length(128ull, 0));
+		Reader.SetPosition(Reader.GetCompleteLength() - Inspection::Length(128, 0));
 		
-		Inspection::Reader FieldReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		
-		ID3v1TagResult = Get_ID3_1_Tag(FieldReader);
+		ID3v1TagResult = Get_ID3_1_Tag(PartReader);
 		if(ID3v1TagResult->GetSuccess() == true)
 		{
 			if(ID3v1TagResult->GetValue()->HasField("AlbumTrack") == true)
@@ -40,15 +40,15 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			}
 		}
 	}
-	Buffer.SetPosition(Inspection::Length(0ull, 0));
+	Reader.SetPosition(Inspection::Length(0, 0));
 	
-	Inspection::Reader FieldReader{Buffer};
-	auto ID3v2TagResult{Get_ID3_2_Tag(FieldReader)};
+	Inspection::Reader PartReader{Reader};
+	auto ID3v2TagResult{Get_ID3_2_Tag(PartReader)};
 	
 	Result->GetValue()->AppendField("ID3v2", ID3v2TagResult->GetValue());
 	Result->SetSuccess(((ID3v1TagResult != nullptr) && (ID3v1TagResult->GetSuccess() == true)) || ID3v2TagResult->GetSuccess());
-	Buffer.SetPosition(Buffer.GetLength());
-	Inspection::FinalizeResult(Result, Buffer);
+	Reader.SetPosition(Reader.GetCompleteLength());
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	// processing
 	while(Paths.begin() != Paths.end())
 	{
-		ReadItem(Paths.front(), ProcessBuffer, DefaultWriter);
+		ReadItem(Paths.front(), Process, DefaultWriter);
 		Paths.pop_front();
 	}
 

@@ -84,12 +84,12 @@ std::vector< std::string > SplitString(const std::string & String, char Delimite
 	return Result;
 }
 
-void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspection::Buffer & Buffer)
+void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspection::Reader & Reader)
 {
 	auto ErrorValue{Value->AppendField("error", "Unknown continuation."s)};
 	
-	ErrorValue->AddTag("position", to_string_cast(Buffer.GetPosition()));
-	ErrorValue->AddTag("length", to_string_cast(Buffer.GetLength()));
+	ErrorValue->AddTag("position", to_string_cast(Reader.GetPositionInBuffer()));
+	ErrorValue->AddTag("remaining length", to_string_cast(Reader.GetRemainingLength()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,201 +115,182 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 // - AppleSingle                                                                                 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Start{Buffer.GetPosition()};
-	std::unique_ptr< Inspection::Result > PartialResult;
-	Inspection::Reader FieldReader{Buffer};
+	auto Result{Inspection::InitializeResult(Reader)};
+	Inspection::Reader PartReader{Reader};
+	auto PartResult{Get_ID3_2_Tag(PartReader)};
 	
-	PartialResult = Get_ID3_2_Tag(FieldReader);
-	if(PartialResult->GetSuccess() == true)
+	if(PartResult->GetSuccess() == true)
 	{
-		Buffer.SetPosition(FieldReader);
-		Start = Buffer.GetPosition();
-		Result->GetValue()->AppendField("ID3v2Tag", PartialResult->GetValue());
-		if(Buffer.GetPosition() == Buffer.GetLength())
+		Result->GetValue()->AppendField("ID3v2Tag", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+		if(Reader.IsAtEnd() == true)
 		{
 			Result->SetSuccess(true);
 		}
 		else
 		{
-			Inspection::Reader FieldReader{Buffer};
+			Inspection::Reader PartReader{Reader};
 			
-			PartialResult = Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, FieldReader, {});
-			if(PartialResult->GetSuccess() == true)
+			PartResult = Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, PartReader, {});
+			if(PartResult->GetSuccess() == true)
 			{
-				Buffer.SetPosition(FieldReader);
-				Start = Buffer.GetPosition();
-				Result->GetValue()->AppendField("FLACStream", PartialResult->GetValue());
-				if(Buffer.GetPosition() == Buffer.GetLength())
+				Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				if(Reader.IsAtEnd() == true)
 				{
 					Result->SetSuccess(true);
 				}
 				else
 				{
-					Inspection::Reader FieldReader{Buffer};
+					Inspection::Reader PartReader{Reader};
 					
-					PartialResult = Get_ID3_1_Tag(FieldReader);
-					if(PartialResult->GetSuccess() == true)
+					PartResult = Get_ID3_1_Tag(PartReader);
+					if(PartResult->GetSuccess() == true)
 					{
-						Buffer.SetPosition(FieldReader);
-						Start = Buffer.GetPosition();
-						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
+						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 						}
-						if(Buffer.GetPosition() == Buffer.GetLength())
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						if(Reader.IsAtEnd() == true)
 						{
 							Result->SetSuccess(true);
 						}
 						else
 						{
-							AppendUnkownContinuation(Result->GetValue(), Buffer);
+							AppendUnkownContinuation(Result->GetValue(), Reader);
 						}
 					}
 					else
 					{
-						Buffer.SetPosition(Start);
-						AppendUnkownContinuation(Result->GetValue(), Buffer);
+						
+						AppendUnkownContinuation(Result->GetValue(), Reader);
 					}
 				}
 			}
 			else
 			{
-				Buffer.SetPosition(Start);
+				Inspection::Reader PartReader{Reader};
 				
-				Inspection::Reader FieldReader{Buffer};
-				
-				PartialResult = Get_MPEG_1_Stream(FieldReader, {});
-				if(PartialResult->GetSuccess() == true)
+				PartResult = Get_MPEG_1_Stream(PartReader, {});
+				if(PartResult->GetSuccess() == true)
 				{
-					Buffer.SetPosition(FieldReader);
-					Start = Buffer.GetPosition();
-					Result->GetValue()->AppendField("MPEG1Stream", PartialResult->GetValue());
-					if(Buffer.GetPosition() == Buffer.GetLength())
+					Result->GetValue()->AppendField("MPEG1Stream", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					if(Reader.IsAtEnd() == true)
 					{
 						Result->SetSuccess(true);
 					}
 					else
 					{
-						Inspection::Reader PartReader{Buffer};
+						Inspection::Reader PartReader{Reader};
 						auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
 						
 						if(PartResult->GetSuccess() == true)
 						{
-							Buffer.SetPosition(PartReader);
-							Start = Buffer.GetPosition();
 							Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
-							if(Buffer.GetPosition() == Buffer.GetLength())
+							Reader.AdvancePosition(PartReader.GetConsumedLength());
+							if(Reader.IsAtEnd() == true)
 							{
 								Result->SetSuccess(true);
 							}
 							else
 							{
-								Inspection::Reader FieldReader{Buffer};
+								Inspection::Reader PartReader{Reader};
 								
-								PartialResult = Get_ID3_1_Tag(FieldReader);
-								if(PartialResult->GetSuccess() == true)
+								PartResult = Get_ID3_1_Tag(PartReader);
+								if(PartResult->GetSuccess() == true)
 								{
-									Buffer.SetPosition(FieldReader);
-									Start = Buffer.GetPosition();
-									if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
+									if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 									{
-										Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
+										Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
 									}
 									else
 									{
-										Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
+										Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 									}
-									if(Buffer.GetPosition() == Buffer.GetLength())
+									Reader.AdvancePosition(PartReader.GetConsumedLength());
+									if(Reader.IsAtEnd() == true)
 									{
 										Result->SetSuccess(true);
 									}
 									else
 									{
-										AppendUnkownContinuation(Result->GetValue(), Buffer);
+										AppendUnkownContinuation(Result->GetValue(), Reader);
 									}
 								}
 								else
 								{
-									Buffer.SetPosition(Start);
-									AppendUnkownContinuation(Result->GetValue(), Buffer);
+									AppendUnkownContinuation(Result->GetValue(), Reader);
 								}
 							}
 						}
 						else
 						{
-							Buffer.SetPosition(Start);
+							Inspection::Reader PartReader{Reader};
 							
-							Inspection::Reader FieldReader{Buffer};
-							
-							PartialResult = Get_ID3_1_Tag(FieldReader);
-							if(PartialResult->GetSuccess() == true)
+							PartResult = Get_ID3_1_Tag(PartReader);
+							if(PartResult->GetSuccess() == true)
 							{
-								Buffer.SetPosition(FieldReader);
-								Start = Buffer.GetPosition();
-								if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
+								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 								{
-									Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
+									Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
 								}
 								else
 								{
-									Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
+									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 								}
-								if(Buffer.GetPosition() == Buffer.GetLength())
+								Reader.AdvancePosition(PartReader.GetConsumedLength());
+								if(Reader.IsAtEnd() == true)
 								{
 									Result->SetSuccess(true);
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Buffer);
+									AppendUnkownContinuation(Result->GetValue(), Reader);
 								}
 							}
 							else
 							{
-								Buffer.SetPosition(Start);
-								AppendUnkownContinuation(Result->GetValue(), Buffer);
+								AppendUnkownContinuation(Result->GetValue(), Reader);
 							}
 						}
 					}
 				}
 				else
 				{
-					Buffer.SetPosition(Start);
+					Inspection::Reader PartReader{Reader};
 					
-					Inspection::Reader FieldReader{Buffer};
-					
-					PartialResult = Get_ID3_1_Tag(FieldReader);
-					if(PartialResult->GetSuccess() == true)
+					PartResult = Get_ID3_1_Tag(PartReader);
+					if(PartResult->GetSuccess() == true)
 					{
-						Buffer.SetPosition(FieldReader);
-						Start = Buffer.GetPosition();
-						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
+						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 						}
-						if(Buffer.GetPosition() == Buffer.GetLength())
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						if(Reader.IsAtEnd() == true)
 						{
 							Result->SetSuccess(true);
 						}
 						else
 						{
-							AppendUnkownContinuation(Result->GetValue(), Buffer);
+							AppendUnkownContinuation(Result->GetValue(), Reader);
 						}
 					}
 					else
 					{
-						Buffer.SetPosition(Start);
-						AppendUnkownContinuation(Result->GetValue(), Buffer);
+						AppendUnkownContinuation(Result->GetValue(), Reader);
 					}
 				}
 			}
@@ -317,266 +298,238 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	}
 	else
 	{
-		Buffer.SetPosition(Start);
+		Inspection::Reader PartReader{Reader};
 		
-		Inspection::Reader FieldReader{Buffer};
-		
-		PartialResult = Get_MPEG_1_Stream(FieldReader, {});
-		if(PartialResult->GetSuccess() == true)
+		PartResult = Get_MPEG_1_Stream(PartReader, {});
+		if(PartResult->GetSuccess() == true)
 		{
-			Buffer.SetPosition(FieldReader);
-			Start = Buffer.GetPosition();
-			Result->GetValue()->AppendField("MPEG1Stream", PartialResult->GetValue());
-			if(Buffer.GetPosition() == Buffer.GetLength())
+			Result->GetValue()->AppendField("MPEG1Stream", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			if(Reader.IsAtEnd() == true)
 			{
 				Result->SetSuccess(true);
 			}
 			else
 			{
-				Inspection::Reader PartReader{Buffer};
+				Inspection::Reader PartReader{Reader};
 				auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
 				
 				if(PartResult->GetSuccess() == true)
 				{
-					Buffer.SetPosition(PartReader);
-					Start = Buffer.GetPosition();
 					Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
-					if(Buffer.GetPosition() == Buffer.GetLength())
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					if(Reader.IsAtEnd() == true)
 					{
 						Result->SetSuccess(true);
 					}
 					else
 					{
-						Inspection::Reader FieldReader{Buffer};
+						Inspection::Reader PartReader{Reader};
 						
-						PartialResult = Get_ID3_1_Tag(FieldReader);
-						if(PartialResult->GetSuccess() == true)
+						PartResult = Get_ID3_1_Tag(PartReader);
+						if(PartResult->GetSuccess() == true)
 						{
-							Buffer.SetPosition(FieldReader);
-							Start = Buffer.GetPosition();
-							if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
+							if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 							{
-								Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
+								Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
 							}
 							else
 							{
-								Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
+								Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 							}
-							if(Buffer.GetPosition() == Buffer.GetLength())
+							Reader.AdvancePosition(PartReader.GetConsumedLength());
+							if(Reader.IsAtEnd() == true)
 							{
 								Result->SetSuccess(true);
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), Buffer);
+								AppendUnkownContinuation(Result->GetValue(), Reader);
 							}
 						}
 						else
 						{
-							Buffer.SetPosition(Start);
-							AppendUnkownContinuation(Result->GetValue(), Buffer);
+							AppendUnkownContinuation(Result->GetValue(), Reader);
 						}
 					}
 				}
 				else
 				{
-					Buffer.SetPosition(Start);
+					Inspection::Reader PartReader{Reader};
 					
-					Inspection::Reader FieldReader{Buffer};
-					
-					PartialResult = Get_ID3_1_Tag(FieldReader);
-					if(PartialResult->GetSuccess() == true)
+					PartResult = Get_ID3_1_Tag(PartReader);
+					if(PartResult->GetSuccess() == true)
 					{
-						Buffer.SetPosition(FieldReader);
-						Start = Buffer.GetPosition();
-						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
+						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 						}
-						if(Buffer.GetPosition() == Buffer.GetLength())
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						if(Reader.IsAtEnd() == true)
 						{
 							Result->SetSuccess(true);
 						}
 						else
 						{
-							AppendUnkownContinuation(Result->GetValue(), Buffer);
+							AppendUnkownContinuation(Result->GetValue(), Reader);
 						}
 					}
 					else
 					{
-						Buffer.SetPosition(Start);
-						AppendUnkownContinuation(Result->GetValue(), Buffer);
+						AppendUnkownContinuation(Result->GetValue(), Reader);
 					}
 				}
 			}
 		}
 		else
 		{
-			Buffer.SetPosition(Start);
-			
-			Inspection::Reader PartReader{Buffer};
+			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
 			
 			if(PartResult->GetSuccess() == true)
 			{
-				Buffer.SetPosition(PartReader);
-				Start = Buffer.GetPosition();
 				Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
-				if(Buffer.GetPosition() == Buffer.GetLength())
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				if(Reader.IsAtEnd() == true)
 				{
 					Result->SetSuccess(true);
 				}
 				else
 				{
-					Inspection::Reader FieldReader{Buffer};
+					Inspection::Reader PartReader{Reader};
 					
-					PartialResult = Get_ID3_1_Tag(FieldReader);
-					if(PartialResult->GetSuccess() == true)
+					PartResult = Get_ID3_1_Tag(PartReader);
+					if(PartResult->GetSuccess() == true)
 					{
-						Buffer.SetPosition(FieldReader);
-						Start = Buffer.GetPosition();
-						if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
+						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 						}
-						if(Buffer.GetPosition() == Buffer.GetLength())
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						if(Reader.IsAtEnd() == true)
 						{
 							Result->SetSuccess(true);
 						}
 						else
 						{
-							AppendUnkownContinuation(Result->GetValue(), Buffer);
+							AppendUnkownContinuation(Result->GetValue(), Reader);
 						}
 					}
 					else
 					{
-						Buffer.SetPosition(Start);
-						AppendUnkownContinuation(Result->GetValue(), Buffer);
+						AppendUnkownContinuation(Result->GetValue(), Reader);
 					}
 				}
 			}
 			else
 			{
-				Buffer.SetPosition(Start);
+				Inspection::Reader PartReader{Reader};
 				
-				Inspection::Reader FieldReader{Buffer};
-				
-				PartialResult = Get_ID3_1_Tag(FieldReader);
-				if(PartialResult->GetSuccess() == true)
+				PartResult = Get_ID3_1_Tag(PartReader);
+				if(PartResult->GetSuccess() == true)
 				{
-					Buffer.SetPosition(FieldReader);
-					Start = Buffer.GetPosition();
-					if(PartialResult->GetValue()->HasField("AlbumTrack") == true)
+					if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 					{
-						Result->GetValue()->AppendField("ID3v1.1Tag", PartialResult->GetValue());
+						Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
 					}
 					else
 					{
-						Result->GetValue()->AppendField("ID3v1Tag", PartialResult->GetValue());
+						Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 					}
-					if(Buffer.GetPosition() == Buffer.GetLength())
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					if(Reader.IsAtEnd() == true)
 					{
 						Result->SetSuccess(true);
 					}
 					else
 					{
-						AppendUnkownContinuation(Result->GetValue(), Buffer);
+						AppendUnkownContinuation(Result->GetValue(), Reader);
 					}
 				}
 				else
 				{
-					Buffer.SetPosition(Start);
+					Inspection::Reader PartReader{Reader};
 					
-					Inspection::Reader FieldReader{Buffer};
-					
-					PartialResult = Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, FieldReader, {});
-					if(PartialResult->GetSuccess() == true)
+					PartResult = Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, PartReader, {});
+					if(PartResult->GetSuccess() == true)
 					{
-						Buffer.SetPosition(FieldReader);
-						Start = Buffer.GetPosition();
-						Result->GetValue()->AppendField("FLACStream", PartialResult->GetValue());
-						if(Buffer.GetPosition() == Buffer.GetLength())
+						Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
+						Reader.AdvancePosition(PartReader.GetConsumedLength());
+						if(Reader.IsAtEnd() == true)
 						{
 							Result->SetSuccess(true);
 						}
 						else
 						{
-							AppendUnkownContinuation(Result->GetValue(), Buffer);
+							AppendUnkownContinuation(Result->GetValue(), Reader);
 						}
 					}
 					else
 					{
-						Buffer.SetPosition(Start);
+						Inspection::Reader PartReader{Reader};
 						
-						Inspection::Reader FieldReader{Buffer};
-						
-						PartialResult = Inspection::g_GetterRepository.Get({"ASF", "File"}, FieldReader, {});
-						if(PartialResult->GetSuccess() == true)
+						PartResult = Inspection::g_GetterRepository.Get({"ASF", "File"}, PartReader, {});
+						if(PartResult->GetSuccess() == true)
 						{
-							Buffer.SetPosition(FieldReader);
-							Start = Buffer.GetPosition();
-							Result->GetValue()->AppendField("ASFFile", PartialResult->GetValue());
-							if(Buffer.GetPosition() == Buffer.GetLength())
+							Result->GetValue()->AppendField("ASFFile", PartResult->GetValue());
+							Reader.AdvancePosition(PartReader.GetConsumedLength());
+							if(Reader.IsAtEnd() == true)
 							{
 								Result->SetSuccess(true);
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), Buffer);
+								AppendUnkownContinuation(Result->GetValue(), Reader);
 							}
 						}
 						else
 						{
-							Buffer.SetPosition(Start);
-							
-							Inspection::Reader PartReader{Buffer};
+							Inspection::Reader PartReader{Reader};
 							auto PartResult{Get_RIFF_Chunk(PartReader, {})};
 							
 							if(PartResult->GetSuccess() == true)
 							{
 								Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
 								Result->GetValue()->SetName("RIFFFile");
-								Buffer.SetPosition(PartReader);
-								if(Buffer.GetPosition() == Buffer.GetLength())
+								Reader.AdvancePosition(PartReader.GetConsumedLength());
+								if(Reader.IsAtEnd() == true)
 								{
 									Result->SetSuccess(true);
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Buffer);
+									AppendUnkownContinuation(Result->GetValue(), Reader);
 								}
 							}
 							else
 							{
-								Buffer.SetPosition(Start);
-								
-								Inspection::Reader PartReader{Buffer};
+								Inspection::Reader PartReader{Reader};
 								auto PartResult{Inspection::g_GetterRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {})};
 								
 								if(PartResult->GetSuccess() == true)
 								{
 									Result->GetValue()->AppendField("AppleDoubleFile", PartResult->GetValue());
-									Buffer.SetPosition(PartReader);
-									if(Buffer.GetPosition() == Buffer.GetLength())
+									Reader.AdvancePosition(PartReader.GetConsumedLength());
+									if(Reader.IsAtEnd() == true)
 									{
 										Result->SetSuccess(true);
 									}
 									else
 									{
-										AppendUnkownContinuation(Result->GetValue(), Buffer);
+										AppendUnkownContinuation(Result->GetValue(), Reader);
 									}
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Buffer);
+									AppendUnkownContinuation(Result->GetValue(), Reader);
 								}
 							}
 						}
@@ -585,25 +538,21 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 			}
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > ProcessBufferWithSpecificGetter(Inspection::Buffer & Buffer, const std::vector< std::string > & Getter)
+std::unique_ptr< Inspection::Result > ProcessWithSpecificGetter(Inspection::Reader & Reader, const std::vector< std::string > & Getter)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	Inspection::Reader PartReader{Buffer};
-	std::unique_ptr< Inspection::Result > PartResult;
+	auto Result{Inspection::InitializeResult(Reader)};
+	Inspection::Reader PartReader{Reader};
+	auto PartResult{Inspection::g_GetterRepository.Get(Getter, PartReader, {})};
 	
-	PartResult = Inspection::g_GetterRepository.Get(Getter, PartReader, {});
+	Result->SetSuccess(PartResult->GetSuccess());
 	Result->GetValue()->AppendField(Getter.back(), PartResult->GetValue());
-	if(PartResult->GetSuccess() == true)
-	{
-		Buffer.SetPosition(PartReader);
-		Result->SetSuccess(true);
-	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Reader.AdvancePosition(PartReader.GetConsumedLength());
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -834,8 +783,8 @@ int main(int argc, char ** argv)
 	}
 	while(Paths.begin() != Paths.end())
 	{
-		std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Buffer &) > Writer{DefaultWriter};
-		std::function< std::unique_ptr< Inspection::Result > (Inspection::Buffer &) > Processor{ProcessBuffer};
+		std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer{DefaultWriter};
+		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor{Process};
 		
 		if(Query != "")
 		{
@@ -845,7 +794,7 @@ int main(int argc, char ** argv)
 		{
 			auto GetterParts{SplitString(Getter, '/')};
 			
-			Processor = std::bind(ProcessBufferWithSpecificGetter, std::placeholders::_1, GetterParts);
+			Processor = std::bind(ProcessWithSpecificGetter, std::placeholders::_1, GetterParts);
 		}
 		ReadItem(Paths.front(), Processor, Writer);
 		Paths.pop_front();
