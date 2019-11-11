@@ -12,75 +12,80 @@ using namespace std::string_literals;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 5th generation getters                                                                        //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer, const Inspection::Length & Length);
-std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries);
-std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer & Buffer, const Inspection::Length & Length);
-std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer & Buffer, const Inspection::Length & Length);
-std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::Buffer & Buffer);
-std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Buffer & Buffer);
+std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 
-std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Start{Buffer.GetPosition()};
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// interpretation
-	if(Length == Inspection::Length{0, 0})
+	if(Reader.HasRemaining() == false)
 	{
 		Result->GetValue()->AddTag("interpretation", "OGG nil"s);
 	}
 	else
 	{
-		auto VorbisHeaderPacketResult{Get_Vorbis_HeaderPacket(Buffer, Length)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Vorbis_AudioPacket(PartReader, {})};
 		
-		Result->SetValue(VorbisHeaderPacketResult->GetValue());
-		if(VorbisHeaderPacketResult->GetSuccess() == false)
+		Continue = PartResult->GetSuccess();
+		if(Continue == true)
 		{
-			// reset buffer position, so we can try something else
-			Buffer.SetPosition(Start);
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Vorbis_HeaderPacket(PartReader, {})};
 			
-			auto VorbisAudioPacketResult{Get_Vorbis_AudioPacket(Buffer, Length)};
-			
-			Result->SetValue(VorbisAudioPacketResult->GetValue());
-			if(VorbisAudioPacketResult->GetSuccess() == false)
+			Continue = PartResult->GetSuccess();
+			if(Continue == true)
 			{
-				// reset buffer position, so we can try something else
-				Buffer.SetPosition(Start);
-				
-				Inspection::Reader PartReader{Buffer, Length};
-				auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
+				Result->SetValue(PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+			}
+			else
+			{
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Data", PartResult->GetValue());
 				Result->GetValue()->AddTag("interpretation", "OGG unknown"s);
-				Buffer.SetPosition(PartReader);
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 8}};
-		auto FieldResult{Get_BitSet_8Bit(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_BitSet_8Bit(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -93,183 +98,167 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Buffer
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_Ogg_Page_SegmentTable(Inspection::Buffer & Buffer, std::uint8_t NumberOfEntries)
+std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Continue{true};
-	
-	// reading
-	for(auto SegmentTableEntryIndex = 0; (Continue == true) && (SegmentTableEntryIndex < NumberOfEntries); ++SegmentTableEntryIndex)
-	{
-		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField(PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Buffer & Buffer)
-{
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_String_ASCII_Alphabetic_ByTemplate(PartReader, {{"Template", "OggS"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("CapturePattern", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("StreamStructureVersion", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Ogg_Page_HeaderType(Buffer)};
-		auto FieldValue{Result->GetValue()->AppendField("HeaderType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Ogg_Page_HeaderType(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("HeaderType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "64Bit_LittleEndian"}, PartReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("GranulePosition", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("BitStreamSerialNumber", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PageSequenceNumber", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Checksum", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PageSegments", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto PageSegments{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("PageSegments")->GetData())};
-		auto FieldResult{Get_Ogg_Page_SegmentTable(Buffer, PageSegments)};
-		auto FieldValue{Result->GetValue()->AppendField("SegmentTable", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Array_EndedByNumberOfElements(PartReader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Unsigned", "8Bit"}}, {"NumberOfElements", static_cast< std::uint64_t >(PageSegments)}})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("SegmentTable", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		auto PacketStart{Buffer.GetPosition()};
-		auto PacketLength{0ull};
+		Inspection::Length PacketLength{0, 0};
 		
 		for(auto SegmentTableEntryValue : Result->GetValue()->GetField("SegmentTable")->GetFields())
 		{
 			auto SegmentTableEntry{std::experimental::any_cast< std::uint8_t >(SegmentTableEntryValue->GetData())};
 			
-			PacketLength += SegmentTableEntry;
+			PacketLength += Inspection::Length{SegmentTableEntry, 0};
 			if(SegmentTableEntry != 0xff)
 			{
+				Inspection::Reader PartReader{Reader, PacketLength};
 				// the packet ends here, read its content and try interpretation
-				auto PacketResult{Get_Ogg_Packet(Buffer, Inspection::Length{PacketLength, 0})};
+				auto PartResult{Get_Ogg_Packet(PartReader, {})};
 				
-				if(PacketResult->GetSuccess() == true)
-				{
-					Result->GetValue()->AppendField("Packet", PacketResult->GetValue());
-				}
-				// No matter what data gets read before - successfully or ansuccessfully - we heed the values from the segment table!
-				Buffer.SetPosition(PacketStart + Inspection::Length{PacketLength, 0});
-				PacketStart = Buffer.GetPosition();
-				PacketLength = 0ull;
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendField("Packet", PartResult->GetValue());
+				assert(PacketLength == PartReader.GetConsumedLength());
+				// No matter what data gets read before - successfully or unsuccessfully - we heed the values from the segment table!
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				PacketLength = Inspection::Length{0, 0};
 			}
 		}
-		if(PacketLength > 0ull)
+		if(PacketLength > Inspection::Length{0, 0})
 		{
-			Inspection::Reader PartReader{Buffer, Inspection::Length{PacketLength, 0}};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
+			Inspection::Reader PartReader{Reader, PacketLength};
+			auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
 			
-			Continue = false;
 			Result->GetValue()->AppendField("Packet", PartResult->GetValue());
 			Result->GetValue()->GetField("Packet")->AddTag("error", "The packet spans multiple pages, which is not yet supported."s);
-			Buffer.SetPosition(PartReader);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
 	auto StreamStarted{false};
 	auto StreamEnded{false};
 	
-	while(StreamEnded == false)
+	while((Continue == true) && (StreamEnded == false))
 	{
-		auto OggPageResult{Get_Ogg_Page(Buffer)};
+		// reading
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Ogg_Page(PartReader, {})};
 		
-		Result->GetValue()->AppendField("OggPage", OggPageResult->GetValue());
-		if(OggPageResult->GetSuccess() == true)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("OggPage", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+		if(Continue == true)
 		{
-			bool BeginOfStream{std::experimental::any_cast< bool >(OggPageResult->GetValue()->GetField("HeaderType")->GetField("BeginOfStream")->GetData())};
+			bool BeginOfStream{std::experimental::any_cast< bool >(PartResult->GetValue()->GetField("HeaderType")->GetField("BeginOfStream")->GetData())};
 			
 			if(BeginOfStream == true)
 			{
@@ -285,35 +274,28 @@ std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Buffer & Buffer
 					break;
 				}
 			}
-			StreamEnded = std::experimental::any_cast< bool >(OggPageResult->GetValue()->GetField("HeaderType")->GetField("EndOfStream")->GetData());
-		}
-		else
-		{
-			//~ Result->SetSuccess(false);
-			
-			break;
+			StreamEnded = std::experimental::any_cast< bool >(PartResult->GetValue()->GetField("HeaderType")->GetField("EndOfStream")->GetData());
 		}
 	}
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "1Bit"}, PartReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_1Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PacketType", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -332,43 +314,44 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_AudioPacket(Inspection::Buffer 
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer, Boundary - Buffer.GetPosition()};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Data", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer & Buffer, const Inspection::Length & Length)
+std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
-	auto Boundary{Buffer.GetPosition() + Length};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_Vorbis_HeaderPacket_Type(Buffer)};
-		auto FieldValue{Result->GetValue()->AppendField("PacketType", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_Vorbis_HeaderPacket_Type(PartReader, {})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("PacketType", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_String_ASCII_Alphabetic_ByTemplate(PartReader, {{"Template", "vorbis"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("VorbisIdentifier", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -377,49 +360,57 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket(Inspection::Buffer
 		
 		if(PacketType == 0x01)
 		{
-			auto FieldResult{Get_Vorbis_IdentificationHeader(Buffer)};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Vorbis_IdentificationHeader(PartReader, {})};
 			
-			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(PacketType == 0x03)
 		{
-			auto FieldResult{Get_Vorbis_CommentHeader(Buffer, {})};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Vorbis_CommentHeader(PartReader, {})};
 			
-			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
-			UpdateState(Continue, FieldResult);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(PacketType == 0x05)
 		{
-			Inspection::Reader PartReader{Buffer, Boundary - Buffer.GetPosition()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_Data_SetOrUnset_EndedByLength(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Data", PartResult->GetValue());
-			Buffer.SetPosition(PartReader);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else
+		{
+			assert(false);
 		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -446,102 +437,105 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_HeaderPacket_Type(Inspection::B
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Buffer & Buffer)
+std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Buffer)};
+	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("VorbisVersion", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_UnsignedInteger_8Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("AudioChannels", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Number", "Integer", "Unsigned", "32Bit_LittleEndian"}, PartReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("AudioSampleRate", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("BitrateMaximum", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_SignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("BitrateMaximum", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("BitrateNominal", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_SignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("BitrateNominal", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 32}};
-		auto FieldResult{Get_SignedInteger_32Bit_LittleEndian(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("BitrateMinimum", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Get_SignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("BitrateMinimum", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("BlockSize0", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_UnsignedInteger_4Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("BlockSize1", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Buffer};
+		Inspection::Reader PartReader{Reader};
 		auto PartResult{Get_Boolean_1Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("FramingFlag", PartResult->GetValue());
-		Buffer.SetPosition(PartReader);
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// verification
 	if(Continue == true)
@@ -550,7 +544,7 @@ std::unique_ptr< Inspection::Result > Get_Vorbis_IdentificationHeader(Inspection
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Buffer);
+	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -559,11 +553,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 {
 	Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
 	
-	auto OggStreamResult(Get_Ogg_Stream(Buffer));
+	Inspection::Reader PartReader{Buffer};
+	auto PartResult(Get_Ogg_Stream(PartReader, {}));
 	
-	OggStreamResult->GetValue()->SetName("OggStream");
+	PartResult->GetValue()->SetName("OggStream");
+	Buffer.SetPosition(PartReader);
 	
-	return OggStreamResult;
+	return PartResult;
 }
 
 int main(int argc, char ** argv)
