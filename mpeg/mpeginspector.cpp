@@ -13,12 +13,13 @@ std::unique_ptr< Inspection::Result > ProcessBuffer(Inspection::Buffer & Buffer)
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Buffer};
-		auto FieldResult{Get_MPEG_1_Stream(FieldReader, {})};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Buffer};
+		auto PartResult{Get_MPEG_1_Stream(PartReader, {})};
 		
-		UpdateState(Continue, Buffer, FieldResult, FieldReader);
-		FieldResult->GetValue()->SetName("MPEGStream");
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		PartResult->GetValue()->SetName("MPEGStream");
+		Buffer.SetPosition(PartReader);
 	}
 	// verification
 	if(Continue == true)

@@ -24,15 +24,6 @@ void Inspection::UpdateState(bool & Continue, std::unique_ptr< Inspection::Resul
 	Continue = FieldResult->GetSuccess();
 }
 
-void Inspection::UpdateState(bool & Continue, Inspection::Buffer & Buffer, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader)
-{
-	UpdateState(Continue, FieldResult);
-	if(Continue == true)
-	{
-		Buffer.SetPosition(FieldReader);
-	}
-}
-
 void Inspection::UpdateState(bool & Continue, Inspection::Reader & Reader, std::unique_ptr< Inspection::Result > & FieldResult, const Inspection::Reader & FieldReader)
 {
 	UpdateState(Continue, FieldResult);
