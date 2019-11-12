@@ -180,6 +180,18 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_Mode(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_MPEG_1_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Packet(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Page(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Page_HeaderType(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Vorbis_AudioPacket(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Vorbis_CommentHeader(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Vorbis_CommentHeader_UserComment(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Vorbis_CommentHeader_UserCommentList(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Vorbis_HeaderPacket(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Vorbis_HeaderPacket_Type(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_Ogg_Vorbis_IdentificationHeader(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_RIFF_Chunk(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkData_fmt_(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
@@ -225,10 +237,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserComment(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_UserCommentList(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 }
 
 #endif

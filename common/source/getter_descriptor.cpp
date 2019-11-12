@@ -986,6 +986,14 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetter = Inspection::Get_MPEG_1_Frame;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_Ogg_Page")
+					{
+						_HardcodedGetter = Inspection::Get_Ogg_Page;
+					}
+					else if(HardcodedGetterText->GetText() == "Get_Ogg_Vorbis_CommentHeader_UserComment")
+					{
+						_HardcodedGetter = Inspection::Get_Ogg_Vorbis_CommentHeader_UserComment;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_Chunk")
 					{
 						_HardcodedGetter = Inspection::Get_RIFF_Chunk;
@@ -1077,10 +1085,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_BigEndian;
-					}
-					else if(HardcodedGetterText->GetText() == "Get_Vorbis_CommentHeader_UserComment")
-					{
-						_HardcodedGetter = Inspection::Get_Vorbis_CommentHeader_UserComment;
 					}
 					else
 					{

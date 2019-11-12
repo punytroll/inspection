@@ -111,8 +111,9 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 // - ID3v1Tag                                                                                    //
 // - FLACStream                                                                                  //
 // - ASFFile                                                                                     //
-// - RIFFFile                                                                                    //
+// - OggStream                                                                                   //
 // - AppleSingle                                                                                 //
+// - RIFFFile                                                                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
@@ -493,12 +494,11 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 						else
 						{
 							Inspection::Reader PartReader{Reader};
-							auto PartResult{Get_RIFF_Chunk(PartReader, {})};
+							auto PartResult{Inspection::Get_Ogg_Stream(PartReader, {})};
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
-								Result->GetValue()->SetName("RIFFFile");
+								Result->GetValue()->AppendField("OggStream", PartResult->GetValue());
 								Reader.AdvancePosition(PartReader.GetConsumedLength());
 								if(Reader.IsAtEnd() == true)
 								{
@@ -529,7 +529,27 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Reader);
+									Inspection::Reader PartReader{Reader};
+									auto PartResult{Get_RIFF_Chunk(PartReader, {})};
+									
+									if(PartResult->GetSuccess() == true)
+									{
+										Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
+										Result->GetValue()->SetName("RIFFFile");
+										Reader.AdvancePosition(PartReader.GetConsumedLength());
+										if(Reader.IsAtEnd() == true)
+										{
+											Result->SetSuccess(true);
+										}
+										else
+										{
+											AppendUnkownContinuation(Result->GetValue(), Reader);
+										}
+									}
+									else
+									{
+										AppendUnkownContinuation(Result->GetValue(), Reader);
+									}
 								}
 							}
 						}
