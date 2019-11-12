@@ -1,17 +1,12 @@
 <getter>
-	<part>
+	<field name="TextEncoding">
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>TextEncoding</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>TextEncoding</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Informations">
 		<getter-reference>
 			<part>Array</part>
 			<part>EndedByLength</part>
@@ -37,10 +32,5 @@
 				</parameters>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Informations</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

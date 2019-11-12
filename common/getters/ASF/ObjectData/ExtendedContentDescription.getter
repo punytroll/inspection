@@ -1,18 +1,13 @@
 <getter>
-	<part>
+	<field name="ContentDescriptorsCount">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>ContentDescriptorsCount</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="ContentDescriptors">
 		<getter-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
@@ -34,10 +29,5 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>ContentDescriptors</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

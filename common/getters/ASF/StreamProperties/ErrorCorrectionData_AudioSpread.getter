@@ -1,57 +1,37 @@
 <getter>
-	<part>
+	<field name="Span">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Span</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="VirtualPacketLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>VirtualPacketLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="VirtualChunkLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>VirtualChunkLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="SilenceDataLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>SilenceDataLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="SilenceData">
 		<getter-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -66,10 +46,5 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<append-value>
-				<name>SilenceData</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

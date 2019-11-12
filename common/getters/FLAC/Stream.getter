@@ -1,14 +1,11 @@
 <getter>
-	<part>
+	<forward>
 		<getter-reference>
 			<part>FLAC</part>
 			<part>Stream_Header</part>
 		</getter-reference>
-		<value>
-			<set/>
-		</value>
-	</part>
-	<part>
+	</forward>
+	<field name="Frames">
 		<getter-reference>
 			<part>Array</part>
 			<part>EndedByFailureOrLength_ResetPositionOnFailure</part>
@@ -36,10 +33,5 @@
 				</parameters>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Frames</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

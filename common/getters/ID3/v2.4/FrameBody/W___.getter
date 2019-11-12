@@ -1,14 +1,9 @@
 <getter>
-	<part>
+	<field name="URL">
 		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_8859_1_1998</part>
 			<part>EndedByTerminationOrLength</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>URL</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

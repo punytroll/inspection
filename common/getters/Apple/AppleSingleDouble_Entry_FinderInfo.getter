@@ -1,24 +1,14 @@
 <getter>
-	<part>
+	<field name="FInfo">
 		<getter-reference>
 			<part>Apple</part>
 			<part>FInfo</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>FInfo</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="FXInfo">
 		<getter-reference>
 			<part>Apple</part>
 			<part>FXInfo</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>FXInfo</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

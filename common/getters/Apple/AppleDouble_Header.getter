@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<field name="MagicNumber">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
@@ -11,13 +11,8 @@
 				<unsigned-integer-32bit>333319</unsigned-integer-32bit>
 			</value-equals>
 		</verification>
-		<value>
-			<append-value>
-				<name>MagicNumber</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="VersionNumber">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
@@ -29,13 +24,8 @@
 				<unsigned-integer-32bit>131072</unsigned-integer-32bit>
 			</value-equals>
 		</verification>
-		<value>
-			<append-value>
-				<name>VersionNumber</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Filler">
 		<getter-reference>
 			<part>Data</part>
 			<part>Unset_EndedByLength</part>
@@ -48,26 +38,16 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<append-value>
-				<name>Filler</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="NumberOfEntries">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>NumberOfEntries</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="EntryDescriptors">
 		<getter-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
@@ -88,10 +68,5 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>EntryDescriptors</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

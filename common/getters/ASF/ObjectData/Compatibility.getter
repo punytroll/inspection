@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<field name="Profile">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
@@ -11,13 +11,8 @@
 				<unsigned-integer-8bit>2</unsigned-integer-8bit>
 			</value-equals>
 		</verification>
-		<value>
-			<append-value>
-				<name>Profile</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Mode">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
@@ -29,10 +24,5 @@
 				<unsigned-integer-8bit>1</unsigned-integer-8bit>
 			</value-equals>
 		</verification>
-		<value>
-			<append-value>
-				<name>Mode</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

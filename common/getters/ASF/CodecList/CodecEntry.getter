@@ -1,30 +1,20 @@
 <getter>
-	<part>
+	<field name="Type">
 		<getter-reference>
 			<part>ASF</part>
 			<part>CodecList</part>
 			<part>CodecEntryType</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Type</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="CodecNameLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>CodecNameLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="CodecName">
 		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
@@ -38,26 +28,16 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>CodecName</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="CodecDescriptionLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>CodecDescriptionLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="CodecDescription">
 		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
@@ -71,26 +51,16 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>CodecDescription</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="CodecInformationLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>CodecInformationLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="CodecInformation">
 		<getter-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -105,10 +75,5 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<append-value>
-				<name>CodecInformation</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

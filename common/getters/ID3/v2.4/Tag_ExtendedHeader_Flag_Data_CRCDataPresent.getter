@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<fields>
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
@@ -13,19 +13,11 @@
 				<unsigned-integer-8bit>5</unsigned-integer-8bit>
 			</equals>
 		</verification>
-		<value>
-			<append-sub-values/>
-		</value>
-	</part>
-	<part>
+	</fields>
+	<field name="TotalFrameCRC">
 		<getter-reference>
 			<part>ID3</part>
 			<part>UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>TotalFrameCRC</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

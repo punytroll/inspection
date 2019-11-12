@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<field name="Identifier">
 		<getter-reference>
 			<part>String</part>
 			<part>ASCII</part>
@@ -10,24 +10,14 @@
 				<string>APETAGEX</string>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Identifier</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="VersionNumber">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>VersionNumber</name>
-			</append-value>
-		</value>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 32bit">
@@ -43,45 +33,30 @@
 				</enumeration>
 			</apply-enumeration>
 		</interpretation>
-	</part>
-	<part>
+	</field>
+	<field name="TagSize">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>TagSize</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="ItemCount">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>ItemCount</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="TagsFlags">
 		<getter-reference>
 			<part>APE</part>
 			<part>Flags</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>TagsFlags</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Reserved">
 		<getter-reference>
 			<part>Data</part>
 			<part>Unset_EndedByLength</part>
@@ -94,10 +69,5 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<append-value>
-				<name>Reserved</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

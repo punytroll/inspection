@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<field name="WarmUpSamples">
 		<getter-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
@@ -24,13 +24,8 @@
 				</parameters>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>WarmUpSamples</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Residual">
 		<getter-reference>
 			<part>FLAC</part>
 			<part>Subframe_Residual</part>
@@ -43,10 +38,5 @@
 				<parameter-reference>PredictorOrder</parameter-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Residual</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

@@ -1,27 +1,17 @@
 <getter>
-	<part>
+	<field name="HeaderObject">
 		<getter-reference>
 			<part>ASF</part>
 			<part>HeaderObject</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>HeaderObject</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="DataObject">
 		<getter-reference>
 			<part>ASF</part>
 			<part>DataObject</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>DataObject</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Objects">
 		<getter-reference>
 			<part>Array</part>
 			<part>EndedByLength</part>
@@ -37,10 +27,5 @@
 				<string>Object</string>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Objects</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

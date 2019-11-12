@@ -1,14 +1,11 @@
 <getter>
-	<part>
+	<forward>
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<set/>
-		</value>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 16bit">
@@ -63,5 +60,5 @@
 				</enumeration>
 			</apply-enumeration>
 		</interpretation>
-	</part>
+	</forward>
 </getter>

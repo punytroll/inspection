@@ -1,18 +1,13 @@
 <getter>
-	<part>
+	<field name="NumberOfHeaderObjects">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>NumberOfHeaderObjects</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Reserved1">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
@@ -24,13 +19,8 @@
 				<unsigned-integer-8bit>1</unsigned-integer-8bit>
 			</value-equals>
 		</verification>
-		<value>
-			<append-value>
-				<name>Reserved1</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Reserved2">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
@@ -42,13 +32,8 @@
 				<unsigned-integer-8bit>2</unsigned-integer-8bit>
 			</value-equals>
 		</verification>
-		<value>
-			<append-value>
-				<name>Reserved2</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="HeaderObjects">
 		<getter-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
@@ -69,10 +54,5 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>HeaderObjects</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

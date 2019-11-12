@@ -22,7 +22,7 @@ namespace Inspection
 	enum class ObjectType
 	{
 		Interpretation,
-		Read
+		Part
 	};
 	
 	class GetterDescriptor

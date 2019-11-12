@@ -1,41 +1,26 @@
 <getter>
-	<part>
+	<field name="SamplesPerBlock">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>SamplesPerBlock</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="EncodeOptions">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>EncodeOptions</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="SuperBlockAlign">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>SuperBlockAlign</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

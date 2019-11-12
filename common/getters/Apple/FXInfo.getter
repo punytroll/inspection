@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<forward>
 		<getter-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
@@ -12,8 +12,5 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<set/>
-		</value>
-	</part>
+	</forward>
 </getter>

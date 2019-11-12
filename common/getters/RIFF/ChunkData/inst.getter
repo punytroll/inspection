@@ -1,93 +1,58 @@
 <getter>
-	<part>
+	<field name="UnshiftedNote">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>UnshiftedNote</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="FineTune">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Signed</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>FineTune</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Gain">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Signed</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Gain</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="LowNote">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>LowNote</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="HighNote">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>HighNote</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="LowVelocity">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>LowVelocity</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="HighVelocity">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>HighVelocity</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

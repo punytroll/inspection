@@ -1,15 +1,10 @@
 <getter>
-	<part>
+	<field name="CRC-16">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>CRC-16</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

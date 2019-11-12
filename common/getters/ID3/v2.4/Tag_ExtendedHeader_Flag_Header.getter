@@ -1,13 +1,8 @@
 <getter>
-	<part>
+	<field name="Size">
 		<getter-reference>
 			<part>ID3</part>
 			<part>UnsignedInteger_7Bit_SynchSafe_8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Size</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

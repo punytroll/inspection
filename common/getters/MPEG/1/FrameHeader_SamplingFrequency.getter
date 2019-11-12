@@ -1,14 +1,11 @@
 <getter>
-	<part>
+	<forward>
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>2Bit</part>
 		</getter-reference>
-		<value>
-			<set/>
-		</value>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
@@ -34,5 +31,5 @@
 				</enumeration>
 			</apply-enumeration>
 		</interpretation>
-	</part>
+	</forward>
 </getter>

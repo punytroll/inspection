@@ -1,18 +1,13 @@
 <getter>
-	<part>
+	<field name="LanguageIDLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>LanguageIDLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="LanguageID">
 		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
@@ -29,10 +24,5 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<append-value>
-				<name>LanguageID</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

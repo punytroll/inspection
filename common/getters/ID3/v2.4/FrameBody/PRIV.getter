@@ -1,25 +1,15 @@
 <getter>
-	<part>
+	<field name="OwnerIdentifier">
 		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_8859_1_1998</part>
 			<part>EndedByTermination</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>OwnerIdentifier</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="PrivateData">
 		<getter-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>PrivateData</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

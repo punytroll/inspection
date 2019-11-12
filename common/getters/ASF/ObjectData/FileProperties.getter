@@ -1,138 +1,83 @@
 <getter>
-	<part>
+	<field name="FileID">
 		<getter-reference>
 			<part>GUID_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>FileID</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="FileSize">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>FileSize</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="CreationDate">
 		<getter-reference>
 			<part>ASF</part>
 			<part>CreationDate</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>CreationDate</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="DataPacketsCount">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>DataPacketsCount</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="PlayDuration">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>PlayDuration</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="SendDuration">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>SendDuration</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Preroll">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Preroll</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Flags">
 		<getter-reference>
 			<part>ASF</part>
 			<part>FileProperties_Flags</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Flags</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="MinimumDataPacketSize">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>MinimumDataPacketSize</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="MaximumDataPacketSize">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>MaximumDataPacketSize</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="MaximumBitrate">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>MaximumBitrate</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

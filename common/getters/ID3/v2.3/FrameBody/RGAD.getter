@@ -1,36 +1,21 @@
 <getter>
-	<part>
+	<field name="PeakAmplitude">
 		<getter-reference>
 			<part>Number</part>
 			<part>Real</part>
 			<part>ISO_IEC_IEEE_60559_2011_binary32</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>PeakAmplitude</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="TrackReplayGainAdjustment">
 		<getter-reference>
 			<part>ID3</part>
 			<part>ReplayGainAdjustment</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>TrackReplayGainAdjustment</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="AlbumReplayGainAdjustment">
 		<getter-reference>
 			<part>ID3</part>
 			<part>ReplayGainAdjustment</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>AlbumReplayGainAdjustment</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

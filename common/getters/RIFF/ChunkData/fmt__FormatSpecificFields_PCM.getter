@@ -1,15 +1,10 @@
 <getter>
-	<part>
+	<field name="BitsPerSample">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>BitsPerSample</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

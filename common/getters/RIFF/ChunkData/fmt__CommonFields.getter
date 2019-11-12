@@ -1,64 +1,39 @@
 <getter>
-	<part>
+	<field name="FormatTag">
 		<getter-reference>
 			<part>Microsoft_WaveFormat_FormatTag</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>FormatTag</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="NumberOfChannels">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>NumberOfChannels</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="SamplesPerSecond">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>SamplesPerSecond</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="AverageBytesPerSecond">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>AverageBytesPerSecond</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="BlockAlign">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>BlockAlign</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

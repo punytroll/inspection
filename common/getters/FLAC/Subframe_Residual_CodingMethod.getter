@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<forward>
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
@@ -22,8 +22,5 @@
 				</enumeration>
 			</apply-enumeration>
 		</interpretation>
-		<value>
-			<set/>
-		</value>
-	</part>
+	</forward>
 </getter>

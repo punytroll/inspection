@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<forward>
 		<getter-reference>
 			<part>String</part>
 			<part>ASCII</part>
@@ -13,9 +13,6 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<set/>
-		</value>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="string">
@@ -364,5 +361,5 @@
 				</enumeration>
 			</apply-enumeration>
 		</interpretation>
-	</part>
+	</forward>
 </getter>

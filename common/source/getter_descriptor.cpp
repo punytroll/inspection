@@ -78,13 +78,6 @@ namespace Inspection
 		Inspection::ValueDescriptor ValueDescriptor;
 	};
 	
-	enum class AppendType
-	{
-		AppendValue,
-		AppendSubValues,
-		Set
-	};
-	
 	class LengthDescriptor
 	{
 	public:
@@ -146,13 +139,20 @@ namespace Inspection
 	class PartDescriptor
 	{
 	public:
+		enum class Type
+		{
+			Field,
+			Fields,
+			Forward
+		};
+		
 		std::vector< Inspection::ActualParameterDescriptor > ActualParameterDescriptors;
-		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
-		std::vector< Inspection::VerificationDescriptor > VerificationDescriptors;
-		std::experimental::optional< Inspection::InterpretationDescriptor > InterpretationDescriptor;
+		std::experimental::optional< std::string > FieldName;
 		Inspection::GetterReference GetterReference;
-		Inspection::AppendType ValueAppendType;
-		std::string ValueName;
+		std::experimental::optional< Inspection::InterpretationDescriptor > InterpretationDescriptor;
+		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
+		Inspection::PartDescriptor::Type Type;
+		std::vector< Inspection::VerificationDescriptor > VerificationDescriptors;
 	};
 	
 	void ApplyTags(const std::vector< Inspection::Enumeration::Element::Tag * > & Tags, std::shared_ptr< Inspection::Value > Target)
@@ -505,7 +505,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 						
 						break;
 					}
-				case Inspection::ObjectType::Read:
+				case Inspection::ObjectType::Part:
 					{
 						auto PartDescriptor{_PartDescriptors[Object.second]};
 						Inspection::Reader * PartReader{nullptr};
@@ -539,21 +539,22 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							auto PartResult{g_GetterRepository.Get(PartDescriptor->GetterReference.Parts, *PartReader, NewParameters)};
 							
 							Continue = PartResult->GetSuccess();
-							switch(PartDescriptor->ValueAppendType)
+							switch(PartDescriptor->Type)
 							{
-							case Inspection::AppendType::AppendValue:
+							case Inspection::PartDescriptor::Type::Field:
 								{
-									Result->GetValue()->AppendField(PartDescriptor->ValueName, PartResult->GetValue());
+									assert(PartDescriptor->FieldName);
+									Result->GetValue()->AppendField(PartDescriptor->FieldName.value(), PartResult->GetValue());
 									
 									break;
 								}
-							case Inspection::AppendType::AppendSubValues:
+							case Inspection::PartDescriptor::Type::Fields:
 								{
 									Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
 									
 									break;
 								}
-							case Inspection::AppendType::Set:
+							case Inspection::PartDescriptor::Type::Forward:
 								{
 									Result->SetValue(PartResult->GetValue());
 									
@@ -1094,10 +1095,23 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					_Objects.push_back(std::make_pair(Inspection::ObjectType::Interpretation, _InterpretationDescriptors.size()));
 					_InterpretationDescriptors.push_back(InterpretationDescriptor);
 				}
-				else if(GetterChildElement->GetName() == "part")
+				else if((GetterChildElement->GetName() == "field") || (GetterChildElement->GetName() == "fields") || (GetterChildElement->GetName() == "forward"))
 				{
 					auto PartDescriptor{new Inspection::PartDescriptor{}};
 					
+					if(GetterChildElement->GetName() == "field")
+					{
+						PartDescriptor->Type = Inspection::PartDescriptor::Type::Field;
+						PartDescriptor->FieldName = GetterChildElement->GetAttribute("name");
+					}
+					else if(GetterChildElement->GetName() == "fields")
+					{
+						PartDescriptor->Type = Inspection::PartDescriptor::Type::Fields;
+					}
+					else if(GetterChildElement->GetName() == "forward")
+					{
+						PartDescriptor->Type = Inspection::PartDescriptor::Type::Forward;
+					}
 					for(auto PartChildNode : GetterChildElement->GetChilds())
 					{
 						if(PartChildNode->GetNodeType() == XML::NodeType::Element)
@@ -1182,56 +1196,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 									}
 								}
 							}
-							else if(PartChildElement->GetName() == "value")
-							{
-								for(auto PartValueChildNode : PartChildElement->GetChilds())
-								{
-									if(PartValueChildNode->GetNodeType() == XML::NodeType::Element)
-									{
-										auto PartValueChildElement{dynamic_cast< const XML::Element * >(PartValueChildNode)};
-										
-										if(PartValueChildElement->GetName() == "append-value")
-										{
-											PartDescriptor->ValueAppendType = Inspection::AppendType::AppendValue;
-											for(auto PartValueAppendChildNode : PartValueChildElement->GetChilds())
-											{
-												if(PartValueAppendChildNode->GetNodeType() == XML::NodeType::Element)
-												{
-													auto PartValueAppendChildElement{dynamic_cast< const XML::Element * >(PartValueAppendChildNode)};
-													
-													if(PartValueAppendChildElement->GetName() == "name")
-													{
-														assert(PartValueAppendChildElement->GetChilds().size() == 1);
-														
-														auto NameText{dynamic_cast< const XML::Text * >(PartValueAppendChildElement->GetChild(0))};
-														
-														assert(NameText != nullptr);
-														PartDescriptor->ValueName = NameText->GetText();
-													}
-													else
-													{
-														throw std::domain_error{"/getter/part/value/append-value/" + PartValueAppendChildElement->GetName() + " not allowed."};
-													}
-												}
-											}
-										}
-										else if(PartValueChildElement->GetName() == "append-sub-values")
-										{
-											assert(PartValueChildElement->GetChilds().size() == 0);
-											PartDescriptor->ValueAppendType = Inspection::AppendType::AppendSubValues;
-										}
-										else if(PartValueChildElement->GetName() == "set")
-										{
-											assert(PartValueChildElement->GetChilds().size() == 0);
-											PartDescriptor->ValueAppendType = Inspection::AppendType::Set;
-										}
-										else
-										{
-											throw std::domain_error{"/getter/part/value/" + PartValueChildElement->GetName() + " not allowed."};
-										}
-									}
-								}
-							}
 							else if(PartChildElement->GetName() == "verification")
 							{
 								auto VerificationDescriptor{PartDescriptor->VerificationDescriptors.emplace(PartDescriptor->VerificationDescriptors.end())};
@@ -1286,7 +1250,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 							}
 						}
 					}
-					_Objects.push_back(std::make_pair(Inspection::ObjectType::Read, _PartDescriptors.size()));
+					_Objects.push_back(std::make_pair(Inspection::ObjectType::Part, _PartDescriptors.size()));
 					_PartDescriptors.push_back(PartDescriptor);
 				}
 				else

@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<field name="SeekPoints">
 		<getter-reference>
 			<part>Array</part>
 			<part>EndedByLength</part>
@@ -15,10 +15,5 @@
 				<string>SeekPoint</string>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>SeekPoints</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

@@ -1,105 +1,65 @@
 <getter>
-	<part>
+	<field name="MinimumBlockSize">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>MinimumBlockSize</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="MaximumBlockSize">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>MaximumBlockSize</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="MinimumFrameSize">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>24Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>MinimumFrameSize</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="MaximumFrameSize">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>24Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>MaximumFrameSize</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="SampleRate">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>20Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>SampleRate</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="NumberOfChannels">
 		<getter-reference>
 			<part>FLAC</part>
 			<part>StreamInfoBlock_NumberOfChannels</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>NumberOfChannels</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="BitsPerSample">
 		<getter-reference>
 			<part>FLAC</part>
 			<part>StreamInfoBlock_BitsPerSample</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>BitsPerSample</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="TotalSamplesPerChannel">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>36Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>TotalSamplesPerChannel</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="MD5SignatureOfUnencodedAudioData">
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>16</unsigned-integer-64bit>
@@ -112,10 +72,5 @@
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>MD5SignatureOfUnencodedAudioData</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

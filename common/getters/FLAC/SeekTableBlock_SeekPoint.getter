@@ -1,41 +1,26 @@
 <getter>
-	<part>
+	<field name="SampleNumberOfFirstSampleInTargetFrame">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>SampleNumberOfFirstSampleInTargetFrame</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="ByteOffsetOfTargetFrame">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>ByteOffsetOfTargetFrame</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="NumberOfSamplesInTargetFrame">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>NumberOfSamplesInTargetFrame</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

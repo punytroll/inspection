@@ -1,14 +1,11 @@
 <getter>
-	<part>
+	<fields>
 		<getter-reference>
 			<part>IEC_60908_1999</part>
 			<part>TableOfContents_Header</part>
 		</getter-reference>
-		<value>
-			<append-sub-values/>
-		</value>
-	</part>
-	<part>
+	</fields>
+	<fields>
 		<getter-reference>
 			<part>IEC_60908_1999</part>
 			<part>TableOfContents_Tracks</part>
@@ -25,8 +22,5 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-sub-values/>
-		</value>
-	</part>
+	</fields>
 </getter>

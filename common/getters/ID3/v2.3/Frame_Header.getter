@@ -1,39 +1,24 @@
 <getter>
-	<part>
+	<field name="Identifier">
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.3</part>
 			<part>Frame_Header_Identifier</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Identifier</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Size">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Size</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Flags">
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.3</part>
 			<part>Frame_Header_Flags</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>Flags</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

@@ -1,17 +1,12 @@
 <getter>
-	<part>
+	<field name="TextEncoding">
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.3</part>
 			<part>TextEncoding</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>TextEncoding</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Description">
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.3</part>
@@ -24,13 +19,8 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Description</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Information">
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.3</part>
@@ -43,10 +33,5 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Information</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

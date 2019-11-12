@@ -1,17 +1,12 @@
 <getter>
-	<part>
+	<field name="TextEncoding">
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.2</part>
 			<part>TextEncoding</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>TextEncoding</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="ImageFormat">
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>3</unsigned-integer-64bit>
@@ -43,13 +38,8 @@
 				</enumeration>
 			</apply-enumeration>
 		</interpretation>
-		<value>
-			<append-value>
-				<name>ImageFormat</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="PictureType">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
@@ -146,13 +136,8 @@
 				</enumeration>
 			</apply-enumeration>
 		</interpretation>
-		<value>
-			<append-value>
-				<name>PictureType</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Description">
 		<getter-reference>
 			<part>ID3</part>
 			<part>v2.2</part>
@@ -165,21 +150,11 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Description</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="PictureData">
 		<getter-reference>
 			<part>Data</part>
 			<part>SetOrUnset_EndedByLength</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>PictureData</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>

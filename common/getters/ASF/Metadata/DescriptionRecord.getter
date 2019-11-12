@@ -1,5 +1,5 @@
 <getter>
-	<part>
+	<field name="Reserved">
 		<getter-reference>
 			<part>Data</part>
 			<part>Unset_EndedByLength</part>
@@ -12,64 +12,39 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<append-value>
-				<name>Reserved</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="StreamNumber">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>StreamNumber</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="NameLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>NameLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="DataType">
 		<getter-reference>
 			<part>ASF</part>
 			<part>Metadata</part>
 			<part>DescriptionRecord_DataType</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>DataType</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="DataLength">
 		<getter-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
 		</getter-reference>
-		<value>
-			<append-value>
-				<name>DataLength</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Name">
 		<getter-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
@@ -86,13 +61,8 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<value>
-			<append-value>
-				<name>Name</name>
-			</append-value>
-		</value>
-	</part>
-	<part>
+	</field>
+	<field name="Data">
 		<getter-reference>
 			<part>ASF</part>
 			<part>Metadata</part>
@@ -116,10 +86,5 @@
 				</data-reference>
 			</parameter>
 		</parameters>
-		<value>
-			<append-value>
-				<name>Data</name>
-			</append-value>
-		</value>
-	</part>
+	</field>
 </getter>
