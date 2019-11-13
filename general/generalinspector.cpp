@@ -654,21 +654,47 @@ void QueryWriter(std::unique_ptr< Inspection::Result > & Result, const std::stri
 			}
 			else if(QueryPartSpecifications.size() == 3)
 			{
-				auto TestQuery{QueryPartSpecifications[2].substr(1, QueryPartSpecifications[2].size() - 2)};
 				std::shared_ptr< Inspection::Value > MatchingField;
 				
-				for(auto Field : Value->GetFields())
+				if((QueryPartSpecifications[2][0] == '[') && (QueryPartSpecifications[2][QueryPartSpecifications[2].size() - 1] == ']'))
 				{
-					if((Field->GetName() == QueryPartSpecifications[1]) && (EvaluateTestQuery(Field, TestQuery) == true))
+					auto TestQuery{QueryPartSpecifications[2].substr(1, QueryPartSpecifications[2].size() - 2)};
+					
+					for(auto Field : Value->GetFields())
 					{
-						MatchingField = Field;
-						
-						break;
+						if((Field->GetName() == QueryPartSpecifications[1]) && (EvaluateTestQuery(Field, TestQuery) == true))
+						{
+							MatchingField = Field;
+							
+							break;
+						}
+					}
+				}
+				else
+				{
+					auto WantedIndex{from_string_cast< std::uint64_t >(QueryPartSpecifications[2])};
+					std::uint64_t Index{0};
+					
+					for(auto Field : Value->GetFields())
+					{
+						if(Field->GetName() == QueryPartSpecifications[1])
+						{
+							if(WantedIndex == Index)
+							{
+								MatchingField = Field;
+								
+								break;
+							}
+							else
+							{
+								++Index;
+							}
+						}
 					}
 				}
 				if(MatchingField == nullptr)
 				{
-					throw std::invalid_argument("The test \"" + TestQuery + "\" could not be satisfied by any field.");
+					throw std::invalid_argument("The test \"" + QueryPartSpecifications[2] + "\" could not be satisfied by any field.");
 				}
 				else
 				{

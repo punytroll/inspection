@@ -2,6 +2,1246 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/has-tag:ended by predicate</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>26</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/data</argument>
+		</execute>
+		<expected-output>OggS</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/tag:character set/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/has-tag:alphabetic</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/has-tag:ended by template</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/has-tag:4 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:StreamStructureVersion/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:StreamStructureVersion/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:StreamStructureVersion/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:StreamStructureVersion/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:HeaderType/data</argument>
+		</execute>
+		<expected-output>01000000</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:HeaderType/has-tag:bitset</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:HeaderType/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:HeaderType/has-tag:least significant bit first</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:HeaderType/tag:data/data</argument>
+		</execute>
+		<expected-output>02</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:HeaderType/field:Continuation/data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:HeaderType/field:BeginOfStream/data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:HeaderType/field:EndOfStream/data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:GranulePosition/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:GranulePosition/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:GranulePosition/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:GranulePosition/has-tag:64bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:GranulePosition/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:BitStreamSerialNumber/data</argument>
+		</execute>
+		<expected-output>1229047502</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:BitStreamSerialNumber/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:BitStreamSerialNumber/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:BitStreamSerialNumber/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:BitStreamSerialNumber/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSequenceNumber/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSequenceNumber/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSequenceNumber/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSequenceNumber/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSequenceNumber/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Checksum/data</argument>
+		</execute>
+		<expected-output>1039366512</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Checksum/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Checksum/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Checksum/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Checksum/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSegments/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSegments/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSegments/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:PageSegments/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:SegmentTable/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:SegmentTable/has-tag:ended by number of elements</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:SegmentTable/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:SegmentTable/field::[tag:element index in array/is-data:0]/data</argument>
+		</execute>
+		<expected-output>30</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:SegmentTable/field::[tag:element index in array/is-data:0]/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:SegmentTable/field::[tag:element index in array/is-data:0]/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:SegmentTable/field::[tag:element index in array/is-data:0]/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:PacketType/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:PacketType/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:PacketType/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:PacketType/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:PacketType/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Vorbis Identification Header</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/data</argument>
+		</execute>
+		<expected-output>vorbis</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/tag:character set/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/has-tag:alphabetic</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/has-tag:ended by template</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/has-tag:6 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisVersion/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisVersion/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisVersion/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisVersion/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisVersion/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioChannels/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioChannels/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioChannels/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioChannels/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioSampleRate/data</argument>
+		</execute>
+		<expected-output>44100</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioSampleRate/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioSampleRate/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioSampleRate/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:AudioSampleRate/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMaximum/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMaximum/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMaximum/has-tag:signed</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMaximum/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMaximum/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateNominal/data</argument>
+		</execute>
+		<expected-output>160003</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateNominal/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateNominal/has-tag:signed</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateNominal/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateNominal/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMinimum/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMinimum/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMinimum/has-tag:signed</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMinimum/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BitrateMinimum/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BlockSize0/data</argument>
+		</execute>
+		<expected-output>8</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BlockSize0/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BlockSize0/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BlockSize0/has-tag:4bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BlockSize1/data</argument>
+		</execute>
+		<expected-output>11</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BlockSize1/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BlockSize1/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:BlockSize1/has-tag:4bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:FramingFlag/data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:FramingFlag/has-tag:boolean</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:FramingFlag/has-tag:1bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:EndOfPacketAlignment/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:EndOfPacketAlignment/has-tag:until 8bit alignment</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:EndOfPacketAlignment/tag:length/data</argument>
+		</execute>
+		<expected-output>0.7</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:EndOfPacketAlignment/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:HeaderType/data</argument>
+		</execute>
+		<expected-output>00000000</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:HeaderType/field:BeginOfStream/data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:PageSequenceNumber/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:PageSegments/data</argument>
+		</execute>
+		<expected-output>17</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:SegmentTable/field::[tag:element index in array/is-data:0]/data</argument>
+		</execute>
+		<expected-output>45</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:PacketType/data</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:PacketType/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:PacketType/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:PacketType/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:PacketType/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Vorbis Comment Header</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/data</argument>
+		</execute>
+		<expected-output>vorbis</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/tag:character set/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/has-tag:alphabetic</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/has-tag:ended by template</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/has-tag:6 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VendorLength/data</argument>
+		</execute>
+		<expected-output>29</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VendorLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VendorLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VendorLength/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VendorLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VendorLength/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:Vendor/data</argument>
+		</execute>
+		<expected-output>Xiph.Org libVorbis I 20020717</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:Vendor/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:Vendor/has-tag:29 code points</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:Vendor/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:Vendor/tag:character set/data</argument>
+		</execute>
+		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:Vendor/tag:encoding/data</argument>
+		</execute>
+		<expected-output>UTF-8</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:UserCommentListLength/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:UserCommentListLength/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:UserCommentListLength/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:UserCommentListLength/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:UserCommentListLength/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:UserCommentList/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:UserCommentList/has-tag:ended by number of elements</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:UserCommentList/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:FramingFlag/data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:FramingFlag/has-tag:boolean</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:FramingFlag/has-tag:1bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:EndOfPacketAlignment/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:EndOfPacketAlignment/has-tag:until 8bit alignment</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:EndOfPacketAlignment/tag:length/data</argument>
+		</execute>
+		<expected-output>0.7</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:EndOfPacketAlignment/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:2]/field:Packet:6/field:Data/tag:length/data</argument>
+		</execute>
+		<expected-output>368.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/040_Ogg_Vorbis</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:2]/field:Packet:6/field:Data/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/036_AppleDouble_resource_fork</argument>
 			<argument>--query=/field:AppleDoubleFile/field:Header/field:MagicNumber/data</argument>
 		</execute>
