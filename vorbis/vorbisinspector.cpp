@@ -10,9 +10,6 @@
 std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
 	Inspection::Reader PartReader{Reader};
-	
-	PartReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
-	
 	auto PartResult(Inspection::Get_Ogg_Stream(PartReader, {}));
 	
 	PartResult->GetValue()->SetName("OggStream");
