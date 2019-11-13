@@ -84,8 +84,26 @@ namespace Inspection
 		Inspection::ValueDescriptor BytesValueDescriptor;
 		Inspection::ValueDescriptor BitsValueDescriptor;
 	};
+	
+	class ApplyEnumeration
+	{
+	public:
+		ApplyEnumeration(void) :
+			Enumeration{nullptr}
+		{
+		}
+		
+		~ApplyEnumeration(void)
+		{
+			delete Enumeration;
+			Enumeration = nullptr;
+		}
+		
+		std::vector< std::string > PathParts;
+		Inspection::Enumeration * Enumeration;
+	};
 
-	class InterpretationDescriptor
+	class Interpretation
 	{
 	public:
 		enum class Type
@@ -93,20 +111,8 @@ namespace Inspection
 			ApplyEnumeration
 		};
 		
-		InterpretationDescriptor(void) :
-			Enumeration{nullptr}
-		{
-		}
-		
-		~InterpretationDescriptor(void)
-		{
-			delete Enumeration;
-			Enumeration = nullptr;
-		}
-		
-		std::vector< std::string > PathParts;
-		Inspection::InterpretationDescriptor::Type Type;
-		Inspection::Enumeration * Enumeration;
+		std::experimental::optional< Inspection::ApplyEnumeration > ApplyEnumeration;
+		Inspection::Interpretation::Type Type;
 	};
 	
 	class EqualsDescriptor
@@ -149,7 +155,7 @@ namespace Inspection
 		std::vector< Inspection::ActualParameterDescriptor > ActualParameterDescriptors;
 		std::experimental::optional< std::string > FieldName;
 		Inspection::GetterReference GetterReference;
-		std::experimental::optional< Inspection::InterpretationDescriptor > InterpretationDescriptor;
+		std::experimental::optional< Inspection::Interpretation > Interpretation;
 		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
 		Inspection::PartDescriptor::Type Type;
 		std::vector< Inspection::VerificationDescriptor > VerificationDescriptors;
@@ -458,9 +464,9 @@ Inspection::GetterDescriptor::GetterDescriptor(Inspection::GetterRepository * Ge
 
 Inspection::GetterDescriptor::~GetterDescriptor(void)
 {
-	for(auto InterpretationDescriptor : _InterpretationDescriptors)
+	for(auto Interpretation : _Interpretations)
 	{
-		delete InterpretationDescriptor;
+		delete Interpretation;
 	}
 	for(auto PartDescriptor : _PartDescriptors)
 	{
@@ -493,7 +499,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 				{
 				case Inspection::ObjectType::Interpretation:
 					{
-						auto EvaluationResult{_ApplyInterpretation(*(_InterpretationDescriptors[Object.second]), Result->GetValue())};
+						auto EvaluationResult{_ApplyInterpretation(*(_Interpretations[Object.second]), Result->GetValue())};
 						
 						if(EvaluationResult.AbortEvaluation)
 						{
@@ -565,9 +571,9 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							// interpretation
 							if(Continue == true)
 							{
-								if(PartDescriptor->InterpretationDescriptor)
+								if(PartDescriptor->Interpretation)
 								{
-									auto EvaluationResult{_ApplyInterpretation(PartDescriptor->InterpretationDescriptor.value(), PartResult->GetValue())};
+									auto EvaluationResult{_ApplyInterpretation(PartDescriptor->Interpretation.value(), PartResult->GetValue())};
 									
 									if(EvaluationResult.AbortEvaluation)
 									{
@@ -678,23 +684,25 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Ins
 	return Result;
 }
 	
-Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyInterpretation(const Inspection::InterpretationDescriptor & InterpretationDescriptor, std::shared_ptr< Inspection::Value > Target)
+Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyInterpretation(const Inspection::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target)
 {
 	Inspection::EvaluationResult Result;
 	
-	switch(InterpretationDescriptor.Type)
+	switch(Interpretation.Type)
 	{
-	case Inspection::InterpretationDescriptor::Type::ApplyEnumeration:
+	case Inspection::Interpretation::Type::ApplyEnumeration:
 		{
+			assert(Interpretation.ApplyEnumeration);
+			
 			Inspection::Enumeration * Enumeration{nullptr};
 			
-			if(InterpretationDescriptor.Enumeration != nullptr)
+			if(Interpretation.ApplyEnumeration->Enumeration != nullptr)
 			{
-				Enumeration = InterpretationDescriptor.Enumeration;
+				Enumeration = Interpretation.ApplyEnumeration->Enumeration;
 			}
 			else
 			{
-				Enumeration = _GetterRepository->GetEnumeration(InterpretationDescriptor.PathParts);
+				Enumeration = _GetterRepository->GetEnumeration(Interpretation.ApplyEnumeration->PathParts);
 			}
 			
 			auto EvaluationResult{_ApplyEnumeration(Enumeration, Target)};
@@ -1093,11 +1101,11 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 				}
 				else if(GetterChildElement->GetName() == "interpretation")
 				{
-					auto InterpretationDescriptor{new Inspection::InterpretationDescriptor{}};
+					auto Interpretation{new Inspection::Interpretation{}};
 					
-					_LoadInterpretationDescriptor(*InterpretationDescriptor, GetterChildElement);
-					_Objects.push_back(std::make_pair(Inspection::ObjectType::Interpretation, _InterpretationDescriptors.size()));
-					_InterpretationDescriptors.push_back(InterpretationDescriptor);
+					_LoadInterpretation(*Interpretation, GetterChildElement);
+					_Objects.push_back(std::make_pair(Inspection::ObjectType::Interpretation, _Interpretations.size()));
+					_Interpretations.push_back(Interpretation);
 				}
 				else if((GetterChildElement->GetName() == "field") || (GetterChildElement->GetName() == "fields") || (GetterChildElement->GetName() == "forward"))
 				{
@@ -1148,8 +1156,8 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 							}
 							else if(PartChildElement->GetName() == "interpretation")
 							{
-								PartDescriptor->InterpretationDescriptor.emplace();
-								_LoadInterpretationDescriptor(PartDescriptor->InterpretationDescriptor.value(), PartChildElement);
+								PartDescriptor->Interpretation.emplace();
+								_LoadInterpretation(PartDescriptor->Interpretation.value(), PartChildElement);
 							}
 							else if(PartChildElement->GetName() == "length")
 							{
@@ -1270,7 +1278,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 	}
 }
 
-void Inspection::GetterDescriptor::_LoadInterpretationDescriptor(Inspection::InterpretationDescriptor & InterpretationDescriptor, const XML::Element * InterpretationElement)
+void Inspection::GetterDescriptor::_LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretationElement)
 {
 	assert(InterpretationElement->GetName() == "interpretation");
 	for(auto InterpretationChildNode : InterpretationElement->GetChilds())
@@ -1281,7 +1289,8 @@ void Inspection::GetterDescriptor::_LoadInterpretationDescriptor(Inspection::Int
 			
 			if(InterpretationChildElement->GetName() == "apply-enumeration")
 			{
-				InterpretationDescriptor.Type = Inspection::InterpretationDescriptor::Type::ApplyEnumeration;
+				Interpretation.Type = Inspection::Interpretation::Type::ApplyEnumeration;
+				Interpretation.ApplyEnumeration.emplace();
 				for(auto InterpretationApplyEnumerationChildNode : InterpretationChildElement->GetChilds())
 				{
 					if(InterpretationApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
@@ -1295,12 +1304,12 @@ void Inspection::GetterDescriptor::_LoadInterpretationDescriptor(Inspection::Int
 							auto PartText{dynamic_cast< const XML::Text * >(InterpretationApplyEnumerationChildElement->GetChild(0))};
 							
 							assert(PartText != nullptr);
-							InterpretationDescriptor.PathParts.push_back(PartText->GetText());
+							Interpretation.ApplyEnumeration->PathParts.push_back(PartText->GetText());
 						}
 						else if(InterpretationApplyEnumerationChildElement->GetName() == "enumeration")
 						{
-							InterpretationDescriptor.Enumeration = new Enumeration{};
-							InterpretationDescriptor.Enumeration->Load(InterpretationApplyEnumerationChildElement);
+							Interpretation.ApplyEnumeration->Enumeration = new Enumeration{};
+							Interpretation.ApplyEnumeration->Enumeration->Load(InterpretationApplyEnumerationChildElement);
 						}
 						else
 						{
