@@ -10467,7 +10467,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Vorbis_AudioPacket(Ins
 		
 		if(PacketType == 0x00)
 		{
-			Result->GetValue()->AddTag("interpretation", "Vorbis Audio"s);
+			Result->GetValue()->GetField("PacketType")->AddTag("interpretation", "Vorbis Audio"s);
 		}
 		else
 		{
@@ -10478,7 +10478,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Vorbis_AudioPacket(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+		auto PartResult{Inspection::Get_Data_SetOrUnset_EndedByLength(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Data", PartResult->GetValue());

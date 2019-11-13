@@ -1229,7 +1229,7 @@
 			<argument>../examples/040_Ogg_Vorbis</argument>
 			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:2]/field:Packet:6/field:Data/tag:length/data</argument>
 		</execute>
-		<expected-output>368.0</expected-output>
+		<expected-output>367.7</expected-output>
 	</test>
 	<test>
 		<execute>
