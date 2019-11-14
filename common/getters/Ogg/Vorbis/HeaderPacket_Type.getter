@@ -1,0 +1,28 @@
+<getter>
+	<forward>
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>8Bit</part>
+		</getter-reference>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="1" valid="true">
+						<tag name="interpretation" type="string">Vorbis Identification Header</tag>
+					</element>
+					<element base-value="3" valid="true">
+						<tag name="interpretation" type="string">Vorbis Comment Header</tag>
+					</element>
+					<element base-value="5" valid="true">
+						<tag name="interpretation" type="string">Vorbis Setup Header</tag>
+					</element>
+					<fallback-element valid="false">
+						<tag name="error" type="nothing"/>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
+	</forward>
+</getter>

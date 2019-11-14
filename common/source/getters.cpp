@@ -10613,7 +10613,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Vorbis_HeaderPacket(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_Ogg_Vorbis_HeaderPacket_Type(PartReader, {})};
+		auto PartResult{Inspection::g_GetterRepository.Get({"Ogg", "Vorbis", "HeaderPacket_Type"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PacketType", PartResult->GetValue());
@@ -10664,51 +10664,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Vorbis_HeaderPacket(In
 		else
 		{
 			assert(false);
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Vorbis_HeaderPacket_Type(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_UnsignedInteger_8Bit(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->SetValue(PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto Type{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetData())};
-		
-		if(Type == 0x01)
-		{
-			Result->GetValue()->AddTag("interpretation", "Vorbis Identification Header"s);
-		}
-		else if(Type == 0x03)
-		{
-			Result->GetValue()->AddTag("interpretation", "Vorbis Comment Header"s);
-		}
-		else if(Type == 0x05)
-		{
-			Result->GetValue()->AddTag("interpretation", "Vorbis Setup Header"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "Unknown packet type " + to_string_cast(Type) + ".");
-			Continue = false;
 		}
 	}
 	// finalization
