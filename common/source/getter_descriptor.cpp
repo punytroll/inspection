@@ -142,6 +142,13 @@ namespace Inspection
 		std::experimental::optional< Inspection::ValueEqualsDescriptor > ValueEqualsDescriptor;
 	};
 	
+	class Tag
+	{
+	public:
+		std::string Name;
+		ValueDescriptor Value;
+	};
+	
 	class PartDescriptor
 	{
 	public:
@@ -157,6 +164,7 @@ namespace Inspection
 		Inspection::GetterReference GetterReference;
 		std::experimental::optional< Inspection::Interpretation > Interpretation;
 		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
+		std::vector< Inspection::Tag > Tags;
 		Inspection::PartDescriptor::Type Type;
 		std::vector< Inspection::VerificationDescriptor > VerificationDescriptors;
 	};
@@ -568,6 +576,18 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 								}
 							}
 							Reader.AdvancePosition(PartReader->GetConsumedLength());
+							// tags
+							if(Continue == true)
+							{
+								if(PartDescriptor->Tags.empty() == false)
+								{
+									assert(PartDescriptor->Type == Inspection::PartDescriptor::Type::Field);
+									for(auto & Tag : PartDescriptor->Tags)
+									{
+										PartResult->GetValue()->AddTag(Tag.Name, GetAnyFromValueDescriptor(Tag.Value, PartResult->GetValue(), Parameters));
+									}
+								}
+							}
 							// interpretation
 							if(Continue == true)
 							{
@@ -637,8 +657,8 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 									}
 								}
 							}
+							delete PartReader;
 						}
-						delete PartReader;
 						
 						break;
 					}
@@ -998,10 +1018,6 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 					{
 						_HardcodedGetter = Inspection::Get_Ogg_Page;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Ogg_Vorbis_CommentHeader_UserComment")
-					{
-						_HardcodedGetter = Inspection::Get_Ogg_Vorbis_CommentHeader_UserComment;
-					}
 					else if(HardcodedGetterText->GetText() == "Get_RIFF_Chunk")
 					{
 						_HardcodedGetter = Inspection::Get_RIFF_Chunk;
@@ -1149,7 +1165,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
-											throw std::domain_error{"/getter/part/getter-reference/" + GetterPartGetterReferenceChildElement->GetName() + " not allowed."};
+											throw std::domain_error{"/getter/field/getter-reference/" + GetterPartGetterReferenceChildElement->GetName() + " not allowed."};
 										}
 									}
 								}
@@ -1178,7 +1194,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
-											throw std::domain_error{"/getter/part/length/" + PartLengthChildElement->GetName() + " not allowed."};
+											throw std::domain_error{"/getter/field/length/" + PartLengthChildElement->GetName() + " not allowed."};
 										}
 									}
 								}
@@ -1203,7 +1219,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
-											throw std::domain_error{"/getter/part/parameters/" + PartParametersChildElement->GetName() + " not allowed."};
+											throw std::domain_error{"/getter/field/parameters/" + PartParametersChildElement->GetName() + " not allowed."};
 										}
 									}
 								}
@@ -1251,14 +1267,24 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 										}
 										else
 										{
-											throw std::domain_error{"/getter/part/verification/" + GetterPartVerificationChildElement->GetName() + " not allowed."};
+											throw std::domain_error{"/getter/field/verification/" + GetterPartVerificationChildElement->GetName() + " not allowed."};
 										}
 									}
 								}
 							}
+							else if(PartChildElement->GetName() == "tag")
+							{
+								assert(PartDescriptor->Type == Inspection::PartDescriptor::Type::Field);
+								PartDescriptor->Tags.emplace_back();
+								
+								auto & Tag{PartDescriptor->Tags.back()};
+								
+								Tag.Name = PartChildElement->GetAttribute("name");
+								_LoadValueDescriptorFromWithin(Tag.Value, PartChildElement);
+							}
 							else
 							{
-								throw std::domain_error{"/getter/part/" + PartChildElement->GetName() + " not allowed."};
+								throw std::domain_error{"/getter/field/" + PartChildElement->GetName() + " not allowed."};
 							}
 						}
 					}
