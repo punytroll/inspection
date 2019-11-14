@@ -1,7 +1,6 @@
 #include <experimental/optional>
 #include <fstream>
 
-#include "enumeration.h"
 #include "getter_descriptor.h"
 #include "getter_repository.h"
 #include "getters.h"
@@ -85,22 +84,25 @@ namespace Inspection
 		Inspection::ValueDescriptor BitsValueDescriptor;
 	};
 	
+	class Enumeration
+	{
+	public:
+		class Element
+		{
+		public:
+			std::string BaseValue;
+			std::vector< Inspection::Tag > Tags;
+			bool Valid;
+		};
+		std::string BaseType;
+		std::vector< Inspection::Enumeration::Element > Elements;
+		std::experimental::optional< Inspection::Enumeration::Element > FallbackElement;
+	};
+	
 	class ApplyEnumeration
 	{
 	public:
-		ApplyEnumeration(void) :
-			Enumeration{nullptr}
-		{
-		}
-		
-		~ApplyEnumeration(void)
-		{
-			delete Enumeration;
-			Enumeration = nullptr;
-		}
-		
-		std::vector< std::string > PathParts;
-		Inspection::Enumeration * Enumeration;
+		Inspection::Enumeration Enumeration;
 	};
 
 	class Interpretation
@@ -169,84 +171,6 @@ namespace Inspection
 		std::vector< Inspection::VerificationDescriptor > VerificationDescriptors;
 	};
 	
-	void ApplyTags(const std::vector< Inspection::Enumeration::Element::Tag * > & Tags, std::shared_ptr< Inspection::Value > Target)
-	{
-		for(auto Tag : Tags)
-		{
-			if(Tag->Type)
-			{
-				if(Tag->Type.value() == "string")
-				{
-					assert(Tag->Value);
-					Target->AddTag(Tag->Name, Tag->Value.value());
-				}
-				else if(Tag->Type.value() == "boolean")
-				{
-					assert(Tag->Value);
-					Target->AddTag(Tag->Name, from_string_cast< bool >(Tag->Value.value()));
-				}
-				else if(Tag->Type.value() == "nothing")
-				{
-					assert(!Tag->Value);
-					Target->AddTag(Tag->Name, nullptr);
-				}
-				else if(Tag->Type.value() == "single precision real")
-				{
-					assert(Tag->Value);
-					Target->AddTag(Tag->Name, from_string_cast< float >(Tag->Value.value()));
-				}
-				else if(Tag->Type.value() == "unsigned integer 8bit")
-				{
-					assert(Tag->Value);
-					Target->AddTag(Tag->Name, from_string_cast< std::uint8_t >(Tag->Value.value()));
-				}
-				else if(Tag->Type.value() == "unsigned integer 32bit")
-				{
-					assert(Tag->Value);
-					Target->AddTag(Tag->Name, from_string_cast< std::uint32_t >(Tag->Value.value()));
-				}
-				else
-				{
-					assert(false);
-				}
-			}
-			else
-			{
-				Target->AddTag(Tag->Name);
-			}
-		}
-	}
-	
-	template< typename DataType >
-	bool ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target)
-	{
-		bool Result{false};
-		auto BaseValueString{to_string_cast(std::experimental::any_cast< const DataType & >(Target->GetData()))};
-		auto ElementIterator{std::find_if(Enumeration->Elements.begin(), Enumeration->Elements.end(), [BaseValueString](auto Element){ return Element->BaseValue == BaseValueString; })};
-		
-		if(ElementIterator != Enumeration->Elements.end())
-		{
-			ApplyTags((*ElementIterator)->Tags, Target);
-			Result = (*ElementIterator)->Valid;
-		}
-		else
-		{
-			if(Enumeration->FallbackElement != nullptr)
-			{
-				ApplyTags(Enumeration->FallbackElement->Tags, Target);
-				Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
-				Result = Enumeration->FallbackElement->Valid;
-			}
-			else
-			{
-				Target->AddTag("error", "Could find neither an enumarion element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
-				Result = false;
-			}
-		}
-		
-		return Result;
-	}
-	
 	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		std::shared_ptr< Inspection::Value > Value{CurrentValue};
@@ -278,7 +202,11 @@ namespace Inspection
 	{
 		std::experimental::any Result;
 		
-		if(ValueDescriptor.Type == "data-reference")
+		if(ValueDescriptor.Type == "nothing")
+		{
+			Result = nullptr;
+		}
+		else if(ValueDescriptor.Type == "data-reference")
 		{
 			assert(ValueDescriptor.DataReference);
 			Result = GetAnyReferenceByDataReference(ValueDescriptor.DataReference.value(), CurrentValue, Parameters);
@@ -347,6 +275,44 @@ namespace Inspection
 		else
 		{
 			assert(false);
+		}
+		
+		return Result;
+	}
+	
+	void ApplyTags(const std::vector< Inspection::Tag > & Tags, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	{
+		for(auto Tag : Tags)
+		{
+			Target->AddTag(Tag.Name, GetAnyFromValueDescriptor(Tag.Value, CurrentValue, Parameters));
+		}
+	}
+	
+	template< typename DataType >
+	bool ApplyEnumeration(const Inspection::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	{
+		bool Result{false};
+		auto BaseValueString{to_string_cast(std::experimental::any_cast< const DataType & >(Target->GetData()))};
+		auto ElementIterator{std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto Element){ return Element.BaseValue == BaseValueString; })};
+		
+		if(ElementIterator != Enumeration.Elements.end())
+		{
+			ApplyTags(ElementIterator->Tags, Target, CurrentValue, Parameters);
+			Result = ElementIterator->Valid;
+		}
+		else
+		{
+			if(Enumeration.FallbackElement)
+			{
+				ApplyTags(Enumeration.FallbackElement->Tags, Target, CurrentValue, Parameters);
+				Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
+				Result = Enumeration.FallbackElement->Valid;
+			}
+			else
+			{
+				Target->AddTag("error", "Could find neither an enumarion element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
+				Result = false;
+			}
 		}
 		
 		return Result;
@@ -507,7 +473,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 				{
 				case Inspection::ObjectType::Interpretation:
 					{
-						auto EvaluationResult{_ApplyInterpretation(*(_Interpretations[Object.second]), Result->GetValue())};
+						auto EvaluationResult{_ApplyInterpretation(*(_Interpretations[Object.second]), Result->GetValue(), Result->GetValue(), Parameters)};
 						
 						if(EvaluationResult.AbortEvaluation)
 						{
@@ -593,7 +559,7 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 							{
 								if(PartDescriptor->Interpretation)
 								{
-									auto EvaluationResult{_ApplyInterpretation(PartDescriptor->Interpretation.value(), PartResult->GetValue())};
+									auto EvaluationResult{_ApplyInterpretation(PartDescriptor->Interpretation.value(), PartResult->GetValue(), PartResult->GetValue(), Parameters)};
 									
 									if(EvaluationResult.AbortEvaluation)
 									{
@@ -673,38 +639,36 @@ std::unique_ptr< Inspection::Result > Inspection::GetterDescriptor::Get(Inspecti
 	return Result;
 }
 
-Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(Inspection::Enumeration * Enumeration, std::shared_ptr< Inspection::Value > Target)
+Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyEnumeration(const Inspection::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	assert(Enumeration != nullptr);
-	
 	Inspection::EvaluationResult Result;
 	
-	if(Enumeration->BaseType == "string")
+	if(Enumeration.BaseType == "string")
 	{
-		Result.DataIsValid = Inspection::ApplyEnumeration< std::string >(Enumeration, Target);
+		Result.DataIsValid = Inspection::ApplyEnumeration< std::string >(Enumeration, Target, CurrentValue, Parameters);
 	}
-	else if(Enumeration->BaseType == "unsigned integer 8bit")
+	else if(Enumeration.BaseType == "unsigned integer 8bit")
 	{
-		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint8_t >(Enumeration, Target);
+		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint8_t >(Enumeration, Target, CurrentValue, Parameters);
 	}
-	else if(Enumeration->BaseType == "unsigned integer 16bit")
+	else if(Enumeration.BaseType == "unsigned integer 16bit")
 	{
-		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint16_t >(Enumeration, Target);
+		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint16_t >(Enumeration, Target, CurrentValue, Parameters);
 	}
-	else if(Enumeration->BaseType == "unsigned integer 32bit")
+	else if(Enumeration.BaseType == "unsigned integer 32bit")
 	{
-		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint32_t >(Enumeration, Target);
+		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint32_t >(Enumeration, Target, CurrentValue, Parameters);
 	}
 	else
 	{
-		Target->AddTag("error", "Could not handle the enumeration base type \"" + Enumeration->BaseType + "\".");
+		Target->AddTag("error", "Could not handle the enumeration base type \"" + Enumeration.BaseType + "\".");
 		Result.AbortEvaluation = true;
 	}
 	
 	return Result;
 }
 	
-Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyInterpretation(const Inspection::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target)
+Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyInterpretation(const Inspection::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	Inspection::EvaluationResult Result;
 	
@@ -714,18 +678,7 @@ Inspection::EvaluationResult Inspection::GetterDescriptor::_ApplyInterpretation(
 		{
 			assert(Interpretation.ApplyEnumeration);
 			
-			Inspection::Enumeration * Enumeration{nullptr};
-			
-			if(Interpretation.ApplyEnumeration->Enumeration != nullptr)
-			{
-				Enumeration = Interpretation.ApplyEnumeration->Enumeration;
-			}
-			else
-			{
-				Enumeration = _GetterRepository->GetEnumeration(Interpretation.ApplyEnumeration->PathParts);
-			}
-			
-			auto EvaluationResult{_ApplyEnumeration(Enumeration, Target)};
+			auto EvaluationResult{_ApplyEnumeration(Interpretation.ApplyEnumeration->Enumeration, Target, CurrentValue, Parameters)};
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1279,8 +1232,7 @@ void Inspection::GetterDescriptor::LoadGetterDescription(const std::string & Get
 								
 								auto & Tag{PartDescriptor->Tags.back()};
 								
-								Tag.Name = PartChildElement->GetAttribute("name");
-								_LoadValueDescriptorFromWithin(Tag.Value, PartChildElement);
+								_LoadTag(Tag, PartChildElement);
 							}
 							else
 							{
@@ -1323,19 +1275,9 @@ void Inspection::GetterDescriptor::_LoadInterpretation(Inspection::Interpretatio
 					{
 						auto InterpretationApplyEnumerationChildElement{dynamic_cast< const XML::Element * >(InterpretationApplyEnumerationChildNode)};
 						
-						if(InterpretationApplyEnumerationChildElement->GetName() == "part")
+						if(InterpretationApplyEnumerationChildElement->GetName() == "enumeration")
 						{
-							assert(InterpretationApplyEnumerationChildElement->GetChilds().size() == 1);
-							
-							auto PartText{dynamic_cast< const XML::Text * >(InterpretationApplyEnumerationChildElement->GetChild(0))};
-							
-							assert(PartText != nullptr);
-							Interpretation.ApplyEnumeration->PathParts.push_back(PartText->GetText());
-						}
-						else if(InterpretationApplyEnumerationChildElement->GetName() == "enumeration")
-						{
-							Interpretation.ApplyEnumeration->Enumeration = new Enumeration{};
-							Interpretation.ApplyEnumeration->Enumeration->Load(InterpretationApplyEnumerationChildElement);
+							_LoadEnumeration(Interpretation.ApplyEnumeration->Enumeration, InterpretationApplyEnumerationChildElement);
 						}
 						else
 						{
@@ -1352,13 +1294,102 @@ void Inspection::GetterDescriptor::_LoadInterpretation(Inspection::Interpretatio
 	}
 }
 
+void Inspection::GetterDescriptor::_LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement)
+{
+	assert(EnumerationElement != nullptr);
+	assert(EnumerationElement->GetName() == "enumeration");
+	Enumeration.BaseType = EnumerationElement->GetAttribute("base-type");
+	for(auto EnumerationChildNode : EnumerationElement->GetChilds())
+	{
+		if(EnumerationChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto EnumerationChildElement{dynamic_cast< const XML::Element * >(EnumerationChildNode)};
+			
+			if(EnumerationChildElement->GetName() == "element")
+			{
+				Enumeration.Elements.emplace_back();
+				
+				auto & Element{Enumeration.Elements.back()};
+				
+				assert(EnumerationChildElement->HasAttribute("base-value") == true);
+				Element.BaseValue = EnumerationChildElement->GetAttribute("base-value");
+				assert(EnumerationChildElement->HasAttribute("valid") == true);
+				Element.Valid = from_string_cast< bool >(EnumerationChildElement->GetAttribute("valid"));
+				for(auto EnumerationElementChildNode : EnumerationChildElement->GetChilds())
+				{
+					if(EnumerationElementChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						auto EnumerationElementChildElement{dynamic_cast< const XML::Element * >(EnumerationElementChildNode)};
+						
+						if(EnumerationElementChildElement->GetName() == "tag")
+						{
+							Element.Tags.emplace_back();
+							
+							auto & Tag{Element.Tags.back()};
+							
+							_LoadTag(Tag, EnumerationElementChildElement);
+						}
+						else
+						{
+							throw std::domain_error{EnumerationElementChildElement->GetName()};
+						}
+					}
+				}
+			}
+			else if(EnumerationChildElement->GetName() == "fallback-element")
+			{
+				assert(!Enumeration.FallbackElement);
+				Enumeration.FallbackElement.emplace();
+				Enumeration.FallbackElement->Valid = from_string_cast< bool >(EnumerationChildElement->GetAttribute("valid"));
+				for(auto EnumerationFallbackElementChildNode : EnumerationChildElement->GetChilds())
+				{
+					if(EnumerationFallbackElementChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						auto EnumerationFallbackElementChildElement{dynamic_cast< const XML::Element * >(EnumerationFallbackElementChildNode)};
+						
+						if(EnumerationFallbackElementChildElement->GetName() == "tag")
+						{
+							Enumeration.FallbackElement->Tags.emplace_back();
+							
+							auto & Tag{Enumeration.FallbackElement->Tags.back()};
+							
+							_LoadTag(Tag, EnumerationFallbackElementChildElement);
+						}
+						else
+						{
+							throw std::domain_error{EnumerationFallbackElementChildElement->GetName()};
+						}
+					}
+				}
+			}
+			else
+			{
+				throw std::domain_error{EnumerationChildElement->GetName()};
+			}
+		}
+	}
+}
+
+void Inspection::GetterDescriptor::_LoadTag(Inspection::Tag & Tag, const XML::Element * TagElement)
+{
+	Tag.Name = TagElement->GetAttribute("name");
+	_LoadValueDescriptorFromWithin(Tag.Value, TagElement);
+}
+
 void Inspection::GetterDescriptor::_LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement)
 {
-	for(auto ChildNode : ParentElement->GetChilds())
+	if(ParentElement->GetChilds().size() == 0)
 	{
-		if(ChildNode->GetNodeType() == XML::NodeType::Element)
+		_LoadValueDescriptor(ValueDescriptor, nullptr);
+	}
+	else
+	{
+		for(auto ChildNode : ParentElement->GetChilds())
 		{
-			_LoadValueDescriptor(ValueDescriptor, dynamic_cast< XML::Element * >(ChildNode));
+			if(ChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				_LoadValueDescriptor(ValueDescriptor, dynamic_cast< XML::Element * >(ChildNode));
+			}
 		}
 	}
 	if(ValueDescriptor.Type == "")
@@ -1369,7 +1400,12 @@ void Inspection::GetterDescriptor::_LoadValueDescriptorFromWithin(Inspection::Va
 
 void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ValueElement)
 {
-	if(ValueElement->GetName() == "getter-reference")
+	if(ValueElement == nullptr)
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "nothing";
+	}
+	else if(ValueElement->GetName() == "getter-reference")
 	{
 		assert(ValueDescriptor.Type == "");
 		ValueDescriptor.Type = "getter-reference";

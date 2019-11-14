@@ -1,7 +1,6 @@
 #include <experimental/iterator>
 #include <numeric>
 
-#include "enumeration.h"
 #include "file_handling.h"
 #include "getter_descriptor.h"
 #include "getter_repository.h"
@@ -27,11 +26,6 @@ namespace Inspection
 	public:
 		~Module(void)
 		{
-			for(auto EnumerationPair : _Enumerations)
-			{
-				delete EnumerationPair.second;
-				EnumerationPair.second = nullptr;
-			}
 			for(auto ModulePair : _Modules)
 			{
 				delete ModulePair.second;
@@ -44,7 +38,6 @@ namespace Inspection
 			}
 		}
 		
-		std::map< std::string, Enumeration * > _Enumerations;
 		std::map< std::string, GetterDescriptor * > _GetterDescriptors;
 		std::map< std::string, Module * > _Modules;
 		std::string _Path;
@@ -79,39 +72,6 @@ std::unique_ptr< Inspection::Result > Inspection::GetterRepository::Get(const st
 		
 		return Result;
 	}
-}
-
-Inspection::Enumeration * Inspection::GetterRepository::GetEnumeration(const std::vector< std::string > & PathParts)
-{
-	return _GetOrLoadEnumeration(PathParts);
-}
-
-Inspection::Enumeration * Inspection::GetterRepository::_GetOrLoadEnumeration(const std::vector< std::string > & PathParts)
-{
-	auto Module{_GetOrLoadModule(std::vector< std::string >{PathParts.begin(), PathParts.end() - 1})};
-	
-	assert(Module != nullptr);
-	
-	Inspection::Enumeration * Result{nullptr};
-	auto EnumerationIterator{Module->_Enumerations.find(PathParts.back())};
-	
-	if(EnumerationIterator != Module->_Enumerations.end())
-	{
-		Result = EnumerationIterator->second;
-	}
-	else
-	{
-		auto FilePath{Module->_Path + '/' + PathParts.back() + ".enumeration"};
-		
-		if((FileExists(FilePath) == true) && (IsRegularFile(FilePath) == true))
-		{
-			Result = new Inspection::Enumeration{};
-			Result->Load(FilePath);
-			Module->_Enumerations.insert(std::make_pair(PathParts.back(), Result));
-		}
-	}
-	
-	return Result;
 }
 
 Inspection::GetterDescriptor * Inspection::GetterRepository::_GetOrLoadGetterDescriptor(const std::vector< std::string > & PathParts)

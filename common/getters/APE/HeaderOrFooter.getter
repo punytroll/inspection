@@ -22,13 +22,17 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 32bit">
 					<element base-value="1000" valid="true">
-						<tag name="interpretation" type="string">1.000 (old)</tag>
+						<tag name="interpretation">
+							<string>1.000 (old)</string>
+						</tag>
 					</element>
 					<element base-value="2000" valid="true">
-						<tag name="interpretation" type="string">2.000 (new)</tag>
+						<tag name="interpretation">
+							<string>2.000 (new)</string>
+						</tag>
 					</element>
 					<fallback-element valid="false">
-						<tag name="interpretation" type="nothing"/>
+						<tag name="interpretation"/>
 					</fallback-element>
 				</enumeration>
 			</apply-enumeration>
