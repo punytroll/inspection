@@ -10,16 +10,24 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
-						<tag name="interpretation" type="string">unspecified</tag>
+						<tag name="interpretation">
+							<string>unspecified</string>
+						</tag>
 					</element>
 					<element base-value="1" valid="true">
-						<tag name="interpretation" type="string">pre-set by artist/producer/mastering engineer</tag>
+						<tag name="interpretation">
+							<string>pre-set by artist/producer/mastering engineer</string>
+						</tag>
 					</element>
 					<element base-value="2" valid="true">
-						<tag name="interpretation" type="string">set by user</tag>
+						<tag name="interpretation">
+							<string>set by user</string>
+						</tag>
 					</element>
 					<element base-value="3" valid="true">
-						<tag name="interpretation" type="string">determined automatically</tag>
+						<tag name="interpretation">
+							<string>determined automatically</string>
+						</tag>
 					</element>
 				</enumeration>
 			</apply-enumeration>

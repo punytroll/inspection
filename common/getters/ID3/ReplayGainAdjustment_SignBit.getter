@@ -10,10 +10,14 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
-						<tag name="interpretation" type="string">positive gain (boost)</tag>
+						<tag name="interpretation">
+							<string>positive gain (boost)</string>
+						</tag>
 					</element>
 					<element base-value="1" valid="true">
-						<tag name="interpretation" type="string">negative gain (attenuation)</tag>
+						<tag name="interpretation">
+							<string>negative gain (attenuation)</string>
+						</tag>
 					</element>
 				</enumeration>
 			</apply-enumeration>

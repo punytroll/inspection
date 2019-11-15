@@ -10,18 +10,32 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
-						<tag name="standard" type="string">ID3 2.2</tag>
-						<tag name="standard" type="string">ISO/IEC 8859-1:1998</tag>
-						<tag name="name" type="string">Latin alphabet No. 1</tag>
+						<tag name="standard">
+							<string>ID3 2.2</string>
+						</tag>
+						<tag name="standard">
+							<string>ISO/IEC 8859-1:1998</string>
+						</tag>
+						<tag name="name">
+							<string>Latin alphabet No. 1</string>
+						</tag>
 					</element>
 					<element base-value="1" valid="true">
-						<tag name="standard" type="string">ID3 2.2</tag>
-						<tag name="standard" type="string">ISO/IEC 10646-1:1993</tag>
-						<tag name="name" type="string">UCS-2</tag>
+						<tag name="standard">
+							<string>ID3 2.2</string>
+						</tag>
+						<tag name="standard">
+							<string>ISO/IEC 10646-1:1993</string>
+						</tag>
+						<tag name="name">
+							<string>UCS-2</string>
+						</tag>
 					</element>
 					<fallback-element valid="false">
-						<tag name="standard" type="string">ID3 2.2</tag>
-						<tag name="name" type="nothing"/>
+						<tag name="standard">
+							<string>ID3 2.2</string>
+						</tag>
+						<tag name="name"/>
 					</fallback-element>
 				</enumeration>
 			</apply-enumeration>

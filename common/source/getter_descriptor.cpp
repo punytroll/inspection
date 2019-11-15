@@ -60,12 +60,15 @@ namespace Inspection
 	{
 	public:
 		std::string Type;
+		std::experimental::optional< bool > Boolean;
 		std::experimental::optional< Inspection::DataReference > DataReference;
 		std::experimental::optional< Inspection::GetterReference > GetterReference;
 		std::experimental::optional< Inspection::ParameterReference > ParameterReference;
 		std::experimental::optional< std::vector< Inspection::ActualParameterDescriptor > > Parameters;
+		std::experimental::optional< float > SinglePrecisionReal;
 		std::experimental::optional< std::string > String;
 		std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
+		std::experimental::optional< std::uint16_t > UnsignedInteger16Bit;
 		std::experimental::optional< std::uint32_t > UnsignedInteger32Bit;
 		std::experimental::optional< std::uint64_t > UnsignedInteger64Bit;
 	};
@@ -221,10 +224,30 @@ namespace Inspection
 			assert(ValueDescriptor.UnsignedInteger8Bit);
 			Result = ValueDescriptor.UnsignedInteger8Bit.value();
 		}
+		else if(ValueDescriptor.Type == "unsigned integer 16bit")
+		{
+			assert(ValueDescriptor.UnsignedInteger16Bit);
+			Result = ValueDescriptor.UnsignedInteger16Bit.value();
+		}
+		else if(ValueDescriptor.Type == "unsigned integer 32bit")
+		{
+			assert(ValueDescriptor.UnsignedInteger32Bit);
+			Result = ValueDescriptor.UnsignedInteger32Bit.value();
+		}
 		else if(ValueDescriptor.Type == "unsigned integer 64bit")
 		{
 			assert(ValueDescriptor.UnsignedInteger64Bit);
 			Result = ValueDescriptor.UnsignedInteger64Bit.value();
+		}
+		else if(ValueDescriptor.Type == "boolean")
+		{
+			assert(ValueDescriptor.Boolean);
+			Result = ValueDescriptor.Boolean.value();
+		}
+		else if(ValueDescriptor.Type == "single precision real")
+		{
+			assert(ValueDescriptor.SinglePrecisionReal);
+			Result = ValueDescriptor.SinglePrecisionReal.value();
 		}
 		else
 		{
@@ -1492,6 +1515,17 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 		assert(TextNode != nullptr);
 		ValueDescriptor.ParameterReference->Name = TextNode->GetText();
 	}
+	else if(ValueElement->GetName() == "boolean")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "boolean";
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		ValueDescriptor.Boolean = from_string_cast< bool >(TextNode->GetText());
+	}
 	else if(ValueElement->GetName() == "string")
 	{
 		assert(ValueDescriptor.Type == "");
@@ -1514,6 +1548,17 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 		assert(TextNode != nullptr);
 		ValueDescriptor.UnsignedInteger8Bit = from_string_cast< std::uint8_t >(TextNode->GetText());
 	}
+	else if(ValueElement->GetName() == "unsigned-integer-16bit")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "unsigned integer 16bit";
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		ValueDescriptor.UnsignedInteger8Bit = from_string_cast< std::uint16_t >(TextNode->GetText());
+	}
 	else if(ValueElement->GetName() == "unsigned-integer-32bit")
 	{
 		assert(ValueDescriptor.Type == "");
@@ -1535,6 +1580,17 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 		
 		assert(TextNode != nullptr);
 		ValueDescriptor.UnsignedInteger64Bit = from_string_cast< std::uint64_t >(TextNode->GetText());
+	}
+	else if(ValueElement->GetName() == "single-precision-real")
+	{
+		assert(ValueDescriptor.Type == "");
+		ValueDescriptor.Type = "single precision real";
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		ValueDescriptor.SinglePrecisionReal = from_string_cast< float >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "parameters")
 	{

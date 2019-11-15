@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is part of version 1.1.9 of the source library "string_cast".
+ * This is part of version 1.1.10 of the source library "string_cast".
  **/
 
 #include <iomanip>
@@ -34,6 +34,17 @@ std::uint8_t from_string_cast< std::uint8_t >(const std::string & String)
 	StringStream >> Result;
 	
 	return static_cast< std::uint8_t >(Result);
+}
+
+template< >
+std::uint16_t from_string_cast< std::uint16_t >(const std::string & String)
+{
+	std::istringstream StringStream(String);
+	std::uint32_t Result;
+	
+	StringStream >> Result;
+	
+	return static_cast< std::uint16_t >(Result);
 }
 
 template< >

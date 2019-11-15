@@ -10,14 +10,20 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
-						<tag name="interpretation" type="string">partitioned Rice coding with 4-bit Rice parameter</tag>
+						<tag name="interpretation">
+							<string>partitioned Rice coding with 4-bit Rice parameter</string>
+						</tag>
 					</element>
 					<element base-value="1" valid="true">
-						<tag name="interpretation" type="string">partitioned Rice coding with 5-bit Rice parameter</tag>
+						<tag name="interpretation">
+							<string>partitioned Rice coding with 5-bit Rice parameter</string>
+						</tag>
 					</element>
 					<fallback-element valid="false">
-						<tag name="interpretation" type="nothing"/>
-						<tag name="error" type="string">Values 2 and 3 are reserved and MUST NOT be used.</tag>
+						<tag name="interpretation"/>
+						<tag name="error">
+							<string>Values 2 and 3 are reserved and MUST NOT be used.</string>
+						</tag>
 					</fallback-element>
 				</enumeration>
 			</apply-enumeration>

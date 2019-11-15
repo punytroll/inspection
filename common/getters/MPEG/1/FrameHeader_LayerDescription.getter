@@ -10,17 +10,25 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="false">
-						<tag name="error" type="string">This layer description is reserved and MUST NOT be used.</tag>
-						<tag name="interpretation" type="nothing"/>
+						<tag name="error">
+							<string>This layer description is reserved and MUST NOT be used.</string>
+						</tag>
+						<tag name="interpretation"/>
 					</element>
 					<element base-value="1" valid="true">
-						<tag name="interpretation" type="string">Layer III</tag>
+						<tag name="interpretation">
+							<string>Layer III</string>
+						</tag>
 					</element>
 					<element base-value="2" valid="true">
-						<tag name="interpretation" type="string">Layer II</tag>
+						<tag name="interpretation">
+							<string>Layer II</string>
+						</tag>
 					</element>
 					<element base-value="3" valid="false">
-						<tag name="interpretation" type="string">Layer I</tag>
+						<tag name="interpretation">
+							<string>Layer I</string>
+						</tag>
 					</element>
 				</enumeration>
 			</apply-enumeration>

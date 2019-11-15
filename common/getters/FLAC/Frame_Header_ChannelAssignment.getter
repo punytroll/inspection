@@ -10,63 +10,131 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
-						<tag name="value" type="unsigned integer 8bit">1</tag>
-						<tag name="interpretation" type="string">independent channels</tag>
-						<tag name="assignment" type="string">mono</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>1</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>independent channels</string>
+						</tag>
+						<tag name="assignment">
+							<string>mono</string>
+						</tag>
 					</element>
 					<element base-value="1" valid="true">
-						<tag name="value" type="unsigned integer 8bit">2</tag>
-						<tag name="interpretation" type="string">independent channels</tag>
-						<tag name="assignment" type="string">left, right</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>independent channels</string>
+						</tag>
+						<tag name="assignment">
+							<string>left, right</string>
+						</tag>
 					</element>
 					<element base-value="2" valid="true">
-						<tag name="value" type="unsigned integer 8bit">3</tag>
-						<tag name="interpretation" type="string">independent channels</tag>
-						<tag name="assignment" type="string">left, right, center</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>3</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>independent channels</string>
+						</tag>
+						<tag name="assignment">
+							<string>left, right, center</string>
+						</tag>
 					</element>
 					<element base-value="3" valid="true">
-						<tag name="value" type="unsigned integer 8bit">4</tag>
-						<tag name="interpretation" type="string">independent channels</tag>
-						<tag name="assignment" type="string">front left, front right, back left, back right</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>4</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>independent channels</string>
+						</tag>
+						<tag name="assignment">
+							<string>front left, front right, back left, back right</string>
+						</tag>
 					</element>
 					<element base-value="4" valid="true">
-						<tag name="value" type="unsigned integer 8bit">5</tag>
-						<tag name="interpretation" type="string">independent channels</tag>
-						<tag name="assignment" type="string">front left, front right, front center, back/surround left, back/surround right</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>5</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>independent channels</string>
+						</tag>
+						<tag name="assignment">
+							<string>front left, front right, front center, back/surround left, back/surround right</string>
+						</tag>
 					</element>
 					<element base-value="5" valid="true">
-						<tag name="value" type="unsigned integer 8bit">6</tag>
-						<tag name="interpretation" type="string">independent channels</tag>
-						<tag name="assignment" type="string">front left, front right, front center, LFE, back/surround left, back/surround right</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>6</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>independent channels</string>
+						</tag>
+						<tag name="assignment">
+							<string>front left, front right, front center, LFE, back/surround left, back/surround right</string>
+						</tag>
 					</element>
 					<element base-value="6" valid="true">
-						<tag name="value" type="unsigned integer 8bit">7</tag>
-						<tag name="interpretation" type="string">independent channels</tag>
-						<tag name="assignment" type="string">front left, front right, front center, LFE, back center, side left, side right</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>7</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>independent channels</string>
+						</tag>
+						<tag name="assignment">
+							<string>front left, front right, front center, LFE, back center, side left, side right</string>
+						</tag>
 					</element>
 					<element base-value="7" valid="true">
-						<tag name="value" type="unsigned integer 8bit">8</tag>
-						<tag name="interpretation" type="string">independent channels</tag>
-						<tag name="assignment" type="string">front left, front right, front center, LFE, back left, back right, side left, side right</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>8</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>independent channels</string>
+						</tag>
+						<tag name="assignment">
+							<string>front left, front right, front center, LFE, back left, back right, side left, side right</string>
+						</tag>
 					</element>
 					<element base-value="8" valid="true">
-						<tag name="value" type="unsigned integer 8bit">2</tag>
-						<tag name="interpretation" type="string">left/side stereo</tag>
-						<tag name="assignment" type="string">channel 0 is the left channel, channel 1 is the side (difference) channel</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>left/side stereo</string>
+						</tag>
+						<tag name="assignment">
+							<string>channel 0 is the left channel, channel 1 is the side (difference) channel</string>
+						</tag>
 					</element>
 					<element base-value="9" valid="true">
-						<tag name="value" type="unsigned integer 8bit">2</tag>
-						<tag name="interpretation" type="string">right/side stereo</tag>
-						<tag name="assignment" type="string">channel 0 is the side (difference) channel, channel 1 is the right channel</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>right/side stereo</string>
+						</tag>
+						<tag name="assignment">
+							<string>channel 0 is the side (difference) channel, channel 1 is the right channel</string>
+						</tag>
 					</element>
 					<element base-value="10" valid="true">
-						<tag name="value" type="unsigned integer 8bit">2</tag>
-						<tag name="interpretation" type="string">mid/side stereo</tag>
-						<tag name="assignment" type="string">channel 0 is the mid (average) channel, channel 1 is the side (difference) channel</tag>
+						<tag name="value">
+							<unsigned-integer-8bit>2</unsigned-integer-8bit>
+						</tag>
+						<tag name="interpretation">
+							<string>mid/side stereo</string>
+						</tag>
+						<tag name="assignment">
+							<string>channel 0 is the mid (average) channel, channel 1 is the side (difference) channel</string>
+						</tag>
 					</element>
 					<fallback-element valid="false">
 						<tag name="reserved"/>
-						<tag name="error" type="string">This channel assignment MUST NOT be used.</tag>
+						<tag name="error">
+							<string>This channel assignment MUST NOT be used.</string>
+						</tag>
 					</fallback-element>
 				</enumeration>
 			</apply-enumeration>

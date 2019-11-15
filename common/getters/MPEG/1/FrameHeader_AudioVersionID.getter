@@ -10,12 +10,18 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="1" valid="true">
-						<tag name="interpretation" type="string">MPEG Version 1</tag>
-						<tag name="standard" type="string">ISO/IEC 11172-3</tag>
+						<tag name="interpretation">
+							<string>MPEG Version 1</string>
+						</tag>
+						<tag name="standard">
+							<string>ISO/IEC 11172-3</string>
+						</tag>
 					</element>
 					<element base-value="0" valid="false">
-						<tag name="error" type="string">This audio version ID is reserved and MUST NOT be used.</tag>
-						<tag name="interpretation" type="nothing"/>
+						<tag name="error">
+							<string>This audio version ID is reserved and MUST NOT be used.</string>
+						</tag>
+						<tag name="interpretation"/>
 					</element>
 				</enumeration>
 			</apply-enumeration>

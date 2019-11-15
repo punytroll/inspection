@@ -10,10 +10,14 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
-						<tag name="original" type="boolean">false</tag>
+						<tag name="original">
+							<boolean>false</boolean>
+						</tag>
 					</element>
 					<element base-value="1" valid="true">
-						<tag name="original" type="boolean">true</tag>
+						<tag name="original">
+							<boolean>true</boolean>
+						</tag>
 					</element>
 				</enumeration>
 			</apply-enumeration>

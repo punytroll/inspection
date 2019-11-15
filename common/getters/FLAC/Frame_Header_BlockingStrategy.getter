@@ -10,10 +10,14 @@
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
-						<tag name="interpretation" type="string">fixed-blocksize stream; frame header encodes the frame number</tag>
+						<tag name="interpretation">
+							<string>fixed-blocksize stream; frame header encodes the frame number</string>
+						</tag>
 					</element>
 					<element base-value="1" valid="true">
-						<tag name="interpretation" type="string">variable-blocksize stream; frame header encodes the sample number</tag>
+						<tag name="interpretation">
+							<string>variable-blocksize stream; frame header encodes the sample number</string>
+						</tag>
 					</element>
 				</enumeration>
 			</apply-enumeration>
