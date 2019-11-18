@@ -534,14 +534,6 @@ Inspection::Type::Type(Inspection::TypeRepository * TypeRepository) :
 
 Inspection::Type::~Type(void)
 {
-	for(auto Interpretation : _Interpretations)
-	{
-		delete Interpretation;
-	}
-	for(auto PartDescriptor : _PartDescriptors)
-	{
-		delete PartDescriptor;
-	}
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -561,169 +553,148 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 		}
 		else
 		{
-			for(auto ObjectIndex = 0ul; (Continue == true) && (ObjectIndex < _Objects.size()); ++ObjectIndex)
+			for(auto & PartDescriptor : _PartDescriptors)
 			{
-				auto Object{_Objects[ObjectIndex]};
+				Inspection::Reader * PartReader{nullptr};
 				
-				switch(Object.first)
+				if(PartDescriptor.LengthDescriptor)
 				{
-				case Inspection::ObjectType::Interpretation:
+					auto Bytes{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor.LengthDescriptor->BytesValueDescriptor, Result->GetValue(), Parameters)};
+					auto Bits{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor.LengthDescriptor->BitsValueDescriptor, Result->GetValue(), Parameters)};
+					Inspection::Length Length{Bytes, Bits};
+					
+					if(Reader.Has(Length) == true)
 					{
-						auto EvaluationResult{_ApplyInterpretation(*(_Interpretations[Object.second]), Result->GetValue(), Result->GetValue(), Parameters)};
-						
-						if(EvaluationResult.AbortEvaluation)
-						{
-							if(EvaluationResult.AbortEvaluation.value() == true)
-							{
-								Continue = false;
-							}
-						}
-						
-						break;
+						PartReader = new Inspection::Reader{Reader, Length};
 					}
-				case Inspection::ObjectType::Part:
+					else
 					{
-						auto PartDescriptor{_PartDescriptors[Object.second]};
-						Inspection::Reader * PartReader{nullptr};
-						
-						if(PartDescriptor->LengthDescriptor)
-						{
-							auto Bytes{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BytesValueDescriptor, Result->GetValue(), Parameters)};
-							auto Bits{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor->LengthDescriptor->BitsValueDescriptor, Result->GetValue(), Parameters)};
-							Inspection::Length Length{Bytes, Bits};
-							
-							if(Reader.Has(Length) == true)
-							{
-								PartReader = new Inspection::Reader{Reader, Length};
-							}
-							else
-							{
-								Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
-								Continue = false;
-							}
-						}
-						else
-						{
-							PartReader = new Inspection::Reader{Reader};
-						}
-						if(PartReader != nullptr)
-						{
-							std::unordered_map< std::string, std::experimental::any > NewParameters;
-							
-							FillNewParameters(NewParameters, PartDescriptor->ActualParameterDescriptors, Result->GetValue(), Parameters);
-							
-							auto PartResult{g_TypeRepository.Get(PartDescriptor->GetterReference.Parts, *PartReader, NewParameters)};
-							
-							Continue = PartResult->GetSuccess();
-							switch(PartDescriptor->Type)
-							{
-							case Inspection::PartDescriptor::Type::Field:
-								{
-									assert(PartDescriptor->FieldName);
-									Result->GetValue()->AppendField(PartDescriptor->FieldName.value(), PartResult->GetValue());
-									
-									break;
-								}
-							case Inspection::PartDescriptor::Type::Fields:
-								{
-									Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-									
-									break;
-								}
-							case Inspection::PartDescriptor::Type::Forward:
-								{
-									Result->SetValue(PartResult->GetValue());
-									
-									break;
-								}
-							}
-							Reader.AdvancePosition(PartReader->GetConsumedLength());
-							// tags
-							if(Continue == true)
-							{
-								if(PartDescriptor->Tags.empty() == false)
-								{
-									assert(PartDescriptor->Type == Inspection::PartDescriptor::Type::Field);
-									for(auto & Tag : PartDescriptor->Tags)
-									{
-										PartResult->GetValue()->AddTag(Tag.Name, GetAnyFromValueDescriptor(Tag.Value, PartResult->GetValue(), Parameters));
-									}
-								}
-							}
-							// interpretation
-							if(Continue == true)
-							{
-								if(PartDescriptor->Interpretation)
-								{
-									auto EvaluationResult{_ApplyInterpretation(PartDescriptor->Interpretation.value(), PartResult->GetValue(), PartResult->GetValue(), Parameters)};
-									
-									if(EvaluationResult.AbortEvaluation)
-									{
-										if(EvaluationResult.AbortEvaluation.value() == true)
-										{
-											Continue = false;
-										}
-									}
-								}
-							}
-							// verification
-							if(Continue == true)
-							{
-								for(auto & VerificationDescriptor : PartDescriptor->VerificationDescriptors)
-								{
-									switch(VerificationDescriptor.Type)
-									{
-									case Inspection::VerificationDescriptor::Type::Equals:
-										{
-											assert(VerificationDescriptor.EqualsDescriptor);
-											Continue = Equals(VerificationDescriptor.EqualsDescriptor->Value1, VerificationDescriptor.EqualsDescriptor->Value2, PartResult->GetValue(), Parameters);
-											if(Continue == false)
-											{
-												Result->GetValue()->AddTag("error", "Failed to verify a value."s);
-											}
-											
-											break;
-										}
-									case Inspection::VerificationDescriptor::Type::ValueEquals:
-										{
-											assert(VerificationDescriptor.ValueEqualsDescriptor);
-											if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == Inspection::DataType::UnsignedInteger8Bit)
-											{
-												assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit);
-												Continue = std::experimental::any_cast< std::uint8_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value();
-												if(Continue == false)
-												{
-													PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value()) + "\".");
-												}
-											}
-											else if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == Inspection::DataType::UnsignedInteger32Bit)
-											{
-												assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit);
-												Continue = std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit.value();
-												if(Continue == false)
-												{
-													PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit.value()) + "\".");
-												}
-											}
-											else
-											{
-												assert(false);
-											}
-											
-											break;
-										}
-									default:
-										{
-											assert(false);
-										}
-									}
-								}
-							}
-							delete PartReader;
-						}
-						
-						break;
+						Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
+						Continue = false;
 					}
+				}
+				else
+				{
+					PartReader = new Inspection::Reader{Reader};
+				}
+				if(PartReader != nullptr)
+				{
+					std::unordered_map< std::string, std::experimental::any > NewParameters;
+					
+					FillNewParameters(NewParameters, PartDescriptor.ActualParameterDescriptors, Result->GetValue(), Parameters);
+					
+					auto PartResult{g_TypeRepository.Get(PartDescriptor.GetterReference.Parts, *PartReader, NewParameters)};
+					
+					Continue = PartResult->GetSuccess();
+					switch(PartDescriptor.Type)
+					{
+					case Inspection::PartDescriptor::Type::Field:
+						{
+							assert(PartDescriptor.FieldName);
+							Result->GetValue()->AppendField(PartDescriptor.FieldName.value(), PartResult->GetValue());
+							
+							break;
+						}
+					case Inspection::PartDescriptor::Type::Fields:
+						{
+							Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+							
+							break;
+						}
+					case Inspection::PartDescriptor::Type::Forward:
+						{
+							Result->SetValue(PartResult->GetValue());
+							
+							break;
+						}
+					}
+					Reader.AdvancePosition(PartReader->GetConsumedLength());
+					// tags
+					if(Continue == true)
+					{
+						if(PartDescriptor.Tags.empty() == false)
+						{
+							assert(PartDescriptor.Type == Inspection::PartDescriptor::Type::Field);
+							for(auto & Tag : PartDescriptor.Tags)
+							{
+								PartResult->GetValue()->AddTag(Tag.Name, GetAnyFromValueDescriptor(Tag.Value, PartResult->GetValue(), Parameters));
+							}
+						}
+					}
+					// interpretation
+					if(Continue == true)
+					{
+						if(PartDescriptor.Interpretation)
+						{
+							auto EvaluationResult{_ApplyInterpretation(PartDescriptor.Interpretation.value(), PartResult->GetValue(), PartResult->GetValue(), Parameters)};
+							
+							if(EvaluationResult.AbortEvaluation)
+							{
+								if(EvaluationResult.AbortEvaluation.value() == true)
+								{
+									Continue = false;
+								}
+							}
+						}
+					}
+					// verification
+					if(Continue == true)
+					{
+						for(auto & VerificationDescriptor : PartDescriptor.VerificationDescriptors)
+						{
+							switch(VerificationDescriptor.Type)
+							{
+							case Inspection::VerificationDescriptor::Type::Equals:
+								{
+									assert(VerificationDescriptor.EqualsDescriptor);
+									Continue = Equals(VerificationDescriptor.EqualsDescriptor->Value1, VerificationDescriptor.EqualsDescriptor->Value2, PartResult->GetValue(), Parameters);
+									if(Continue == false)
+									{
+										Result->GetValue()->AddTag("error", "Failed to verify a value."s);
+									}
+									
+									break;
+								}
+							case Inspection::VerificationDescriptor::Type::ValueEquals:
+								{
+									assert(VerificationDescriptor.ValueEqualsDescriptor);
+									if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == Inspection::DataType::UnsignedInteger8Bit)
+									{
+										assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit);
+										Continue = std::experimental::any_cast< std::uint8_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value();
+										if(Continue == false)
+										{
+											PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value()) + "\".");
+										}
+									}
+									else if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == Inspection::DataType::UnsignedInteger32Bit)
+									{
+										assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit);
+										Continue = std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit.value();
+										if(Continue == false)
+										{
+											PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit.value()) + "\".");
+										}
+									}
+									else
+									{
+										assert(false);
+									}
+									
+									break;
+								}
+							default:
+								{
+									assert(false);
+								}
+							}
+						}
+					}
+					delete PartReader;
+				}
+				if(Continue == false)
+				{
+					break;
 				}
 			}
 		}
@@ -1164,30 +1135,24 @@ void Inspection::Type::Load(const std::string & TypePath)
 						throw std::domain_error{"Invalid reference to hardcoded getter \"" + HardcodedGetterText->GetText() + "\"."};
 					}
 				}
-				else if(GetterChildElement->GetName() == "interpretation")
-				{
-					auto Interpretation{new Inspection::Interpretation{}};
-					
-					_LoadInterpretation(*Interpretation, GetterChildElement);
-					_Objects.push_back(std::make_pair(Inspection::ObjectType::Interpretation, _Interpretations.size()));
-					_Interpretations.push_back(Interpretation);
-				}
 				else if((GetterChildElement->GetName() == "field") || (GetterChildElement->GetName() == "fields") || (GetterChildElement->GetName() == "forward"))
 				{
-					auto PartDescriptor{new Inspection::PartDescriptor{}};
+					_PartDescriptors.emplace_back();
+					
+					auto & PartDescriptor{_PartDescriptors.back()};
 					
 					if(GetterChildElement->GetName() == "field")
 					{
-						PartDescriptor->Type = Inspection::PartDescriptor::Type::Field;
-						PartDescriptor->FieldName = GetterChildElement->GetAttribute("name");
+						PartDescriptor.Type = Inspection::PartDescriptor::Type::Field;
+						PartDescriptor.FieldName = GetterChildElement->GetAttribute("name");
 					}
 					else if(GetterChildElement->GetName() == "fields")
 					{
-						PartDescriptor->Type = Inspection::PartDescriptor::Type::Fields;
+						PartDescriptor.Type = Inspection::PartDescriptor::Type::Fields;
 					}
 					else if(GetterChildElement->GetName() == "forward")
 					{
-						PartDescriptor->Type = Inspection::PartDescriptor::Type::Forward;
+						PartDescriptor.Type = Inspection::PartDescriptor::Type::Forward;
 					}
 					for(auto PartChildNode : GetterChildElement->GetChilds())
 					{
@@ -1210,7 +1175,7 @@ void Inspection::Type::Load(const std::string & TypePath)
 											auto GetterPartGetterReferenceText{dynamic_cast< const XML::Text * >(GetterPartGetterReferenceChildElement->GetChild(0))};
 											
 											assert(GetterPartGetterReferenceText != nullptr);
-											PartDescriptor->GetterReference.Parts.push_back(GetterPartGetterReferenceText->GetText());
+											PartDescriptor.GetterReference.Parts.push_back(GetterPartGetterReferenceText->GetText());
 										}
 										else
 										{
@@ -1221,12 +1186,12 @@ void Inspection::Type::Load(const std::string & TypePath)
 							}
 							else if(PartChildElement->GetName() == "interpretation")
 							{
-								PartDescriptor->Interpretation.emplace();
-								_LoadInterpretation(PartDescriptor->Interpretation.value(), PartChildElement);
+								PartDescriptor.Interpretation.emplace();
+								_LoadInterpretation(PartDescriptor.Interpretation.value(), PartChildElement);
 							}
 							else if(PartChildElement->GetName() == "length")
 							{
-								PartDescriptor->LengthDescriptor.emplace();
+								PartDescriptor.LengthDescriptor.emplace();
 								for(auto PartLengthChildNode : PartChildElement->GetChilds())
 								{
 									if(PartLengthChildNode->GetNodeType() == XML::NodeType::Element)
@@ -1235,11 +1200,11 @@ void Inspection::Type::Load(const std::string & TypePath)
 										
 										if(PartLengthChildElement->GetName() == "bytes")
 										{
-											_LoadValueDescriptorFromWithin(PartDescriptor->LengthDescriptor->BytesValueDescriptor, PartLengthChildElement);
+											_LoadValueDescriptorFromWithin(PartDescriptor.LengthDescriptor->BytesValueDescriptor, PartLengthChildElement);
 										}
 										else if(PartLengthChildElement->GetName() == "bits")
 										{
-											_LoadValueDescriptorFromWithin(PartDescriptor->LengthDescriptor->BitsValueDescriptor, PartLengthChildElement);
+											_LoadValueDescriptorFromWithin(PartDescriptor.LengthDescriptor->BitsValueDescriptor, PartLengthChildElement);
 										}
 										else
 										{
@@ -1258,9 +1223,9 @@ void Inspection::Type::Load(const std::string & TypePath)
 										
 										if(PartParametersChildElement->GetName() == "parameter")
 										{
-											PartDescriptor->ActualParameterDescriptors.emplace_back();
+											PartDescriptor.ActualParameterDescriptors.emplace_back();
 											
-											auto & ActualParameterDescriptor{PartDescriptor->ActualParameterDescriptors.back()};
+											auto & ActualParameterDescriptor{PartDescriptor.ActualParameterDescriptors.back()};
 											
 											assert(PartParametersChildElement->HasAttribute("name") == true);
 											ActualParameterDescriptor.Name = PartParametersChildElement->GetAttribute("name");
@@ -1275,7 +1240,9 @@ void Inspection::Type::Load(const std::string & TypePath)
 							}
 							else if(PartChildElement->GetName() == "verification")
 							{
-								auto VerificationDescriptor{PartDescriptor->VerificationDescriptors.emplace(PartDescriptor->VerificationDescriptors.end())};
+								PartDescriptor.VerificationDescriptors.emplace_back();
+								
+								auto & VerificationDescriptor{PartDescriptor.VerificationDescriptors.back()};
 								
 								for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
 								{
@@ -1285,14 +1252,14 @@ void Inspection::Type::Load(const std::string & TypePath)
 										
 										if(GetterPartVerificationChildElement->GetName() == "value-equals")
 										{
-											VerificationDescriptor->Type = Inspection::VerificationDescriptor::Type::ValueEquals;
-											VerificationDescriptor->ValueEqualsDescriptor.emplace();
-											_LoadValueDescriptorFromWithin(VerificationDescriptor->ValueEqualsDescriptor->ValueDescriptor, GetterPartVerificationChildElement);
+											VerificationDescriptor.Type = Inspection::VerificationDescriptor::Type::ValueEquals;
+											VerificationDescriptor.ValueEqualsDescriptor.emplace();
+											_LoadValueDescriptorFromWithin(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor, GetterPartVerificationChildElement);
 										}
 										else if(GetterPartVerificationChildElement->GetName() == "equals")
 										{
-											VerificationDescriptor->Type = Inspection::VerificationDescriptor::Type::Equals;
-											VerificationDescriptor->EqualsDescriptor.emplace();
+											VerificationDescriptor.Type = Inspection::VerificationDescriptor::Type::Equals;
+											VerificationDescriptor.EqualsDescriptor.emplace();
 											
 											bool First{true};
 											
@@ -1304,12 +1271,12 @@ void Inspection::Type::Load(const std::string & TypePath)
 													
 													if(First == true)
 													{
-														_LoadValueDescriptor(VerificationDescriptor->EqualsDescriptor->Value1, GetterPartVerificationEqualsChildElement);
+														_LoadValueDescriptor(VerificationDescriptor.EqualsDescriptor->Value1, GetterPartVerificationEqualsChildElement);
 														First = false;
 													}
 													else
 													{
-														_LoadValueDescriptor(VerificationDescriptor->EqualsDescriptor->Value2, GetterPartVerificationEqualsChildElement);
+														_LoadValueDescriptor(VerificationDescriptor.EqualsDescriptor->Value2, GetterPartVerificationEqualsChildElement);
 													}
 												}
 											}
@@ -1323,10 +1290,10 @@ void Inspection::Type::Load(const std::string & TypePath)
 							}
 							else if(PartChildElement->GetName() == "tag")
 							{
-								assert(PartDescriptor->Type == Inspection::PartDescriptor::Type::Field);
-								PartDescriptor->Tags.emplace_back();
+								assert(PartDescriptor.Type == Inspection::PartDescriptor::Type::Field);
+								PartDescriptor.Tags.emplace_back();
 								
-								auto & Tag{PartDescriptor->Tags.back()};
+								auto & Tag{PartDescriptor.Tags.back()};
 								
 								_LoadTag(Tag, PartChildElement);
 							}
@@ -1336,8 +1303,6 @@ void Inspection::Type::Load(const std::string & TypePath)
 							}
 						}
 					}
-					_Objects.push_back(std::make_pair(Inspection::ObjectType::Part, _PartDescriptors.size()));
-					_PartDescriptors.push_back(PartDescriptor);
 				}
 				else
 				{

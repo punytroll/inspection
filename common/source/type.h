@@ -22,12 +22,6 @@ namespace Inspection
 	class Value;
 	class ValueDescriptor;
 	
-	enum class ObjectType
-	{
-		Interpretation,
-		Part
-	};
-	
 	class Type
 	{
 	public:
@@ -45,9 +39,7 @@ namespace Inspection
 		Inspection::EvaluationResult _ApplyEnumeration(const Inspection::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		Inspection::TypeRepository * _TypeRepository;
 		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) > _HardcodedGetter;
-		std::vector< Inspection::Interpretation * > _Interpretations;
-		std::vector< Inspection::PartDescriptor * > _PartDescriptors;
-		std::vector< std::pair< Inspection::ObjectType, std::uint32_t > > _Objects;
+		std::vector< Inspection::PartDescriptor > _PartDescriptors;
 	};
 }
 
