@@ -1,0 +1,32 @@
+<type>
+	<forward>
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>2Bit</part>
+		</getter-reference>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation">
+							<string>partitioned Rice coding with 4-bit Rice parameter</string>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<string>partitioned Rice coding with 5-bit Rice parameter</string>
+						</tag>
+					</element>
+					<fallback-element valid="false">
+						<tag name="interpretation"/>
+						<tag name="error">
+							<string>Values 2 and 3 are reserved and MUST NOT be used.</string>
+						</tag>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
+	</forward>
+</type>

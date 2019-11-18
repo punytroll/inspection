@@ -1,0 +1,39 @@
+<type>
+	<field name="FormatTag">
+		<getter-reference>
+			<part>Microsoft_WaveFormat_FormatTag</part>
+		</getter-reference>
+	</field>
+	<field name="NumberOfChannels">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+	<field name="SamplesPerSecond">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>32Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+	<field name="AverageBytesPerSecond">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>32Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+	<field name="BlockAlign">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+</type>

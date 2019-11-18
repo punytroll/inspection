@@ -5,9 +5,9 @@
 #include <common/any_printing.h>
 #include <common/buffer.h>
 #include <common/file_handling.h>
-#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
+#include <common/type_repository.h>
 #include <common/value_printing.h>
 
 using namespace std::string_literals;
@@ -134,7 +134,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 		{
 			Inspection::Reader PartReader{Reader};
 			
-			PartResult = Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, PartReader, {});
+			PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
 			if(PartResult->GetSuccess() == true)
 			{
 				Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
@@ -191,7 +191,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 					else
 					{
 						Inspection::Reader PartReader{Reader};
-						auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
+						auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
 						
 						if(PartResult->GetSuccess() == true)
 						{
@@ -313,7 +313,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 			else
 			{
 				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
+				auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
 				
 				if(PartResult->GetSuccess() == true)
 				{
@@ -389,7 +389,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 		else
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
 			
 			if(PartResult->GetSuccess() == true)
 			{
@@ -459,7 +459,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 				{
 					Inspection::Reader PartReader{Reader};
 					
-					PartResult = Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, PartReader, {});
+					PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
 					if(PartResult->GetSuccess() == true)
 					{
 						Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
@@ -477,7 +477,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 					{
 						Inspection::Reader PartReader{Reader};
 						
-						PartResult = Inspection::g_GetterRepository.Get({"ASF", "File"}, PartReader, {});
+						PartResult = Inspection::g_TypeRepository.Get({"ASF", "File"}, PartReader, {});
 						if(PartResult->GetSuccess() == true)
 						{
 							Result->GetValue()->AppendField("ASFFile", PartResult->GetValue());
@@ -512,7 +512,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 							else
 							{
 								Inspection::Reader PartReader{Reader};
-								auto PartResult{Inspection::g_GetterRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {})};
+								auto PartResult{Inspection::g_TypeRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {})};
 								
 								if(PartResult->GetSuccess() == true)
 								{
@@ -567,7 +567,7 @@ std::unique_ptr< Inspection::Result > ProcessWithSpecificGetter(Inspection::Read
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	Inspection::Reader PartReader{Reader};
-	auto PartResult{Inspection::g_GetterRepository.Get(Getter, PartReader, {})};
+	auto PartResult{Inspection::g_TypeRepository.Get(Getter, PartReader, {})};
 	
 	Result->SetSuccess(PartResult->GetSuccess());
 	Result->GetValue()->AppendField(Getter.back(), PartResult->GetValue());

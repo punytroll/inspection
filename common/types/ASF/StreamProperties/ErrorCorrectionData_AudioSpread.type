@@ -1,0 +1,50 @@
+<type>
+	<field name="Span">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>8Bit</part>
+		</getter-reference>
+	</field>
+	<field name="VirtualPacketLength">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+	<field name="VirtualChunkLength">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+	<field name="SilenceDataLength">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+	<field name="SilenceData">
+		<getter-reference>
+			<part>Buffer</part>
+			<part>UnsignedInteger_8Bit_EndedByLength</part>
+		</getter-reference>
+		<length>
+			<bytes>
+				<data-reference>
+					<field>SilenceDataLength</field>
+				</data-reference>
+			</bytes>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
+		</length>
+	</field>
+</type>

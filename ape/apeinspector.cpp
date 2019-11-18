@@ -4,9 +4,9 @@
 
 #include <common/buffer.h>
 #include <common/file_handling.h>
-#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
+#include <common/type_repository.h>
 
 using namespace std::string_literals;
 
@@ -186,7 +186,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"APE", "Tag"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());

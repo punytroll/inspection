@@ -3,9 +3,9 @@
 
 #include <common/buffer.h>
 #include <common/file_handling.h>
-#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
+#include <common/type_repository.h>
 
 std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {

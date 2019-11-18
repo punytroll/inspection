@@ -1,0 +1,10 @@
+<type>
+	<field name="NumberOfSamples">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>32Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+</type>

@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "buffer.h"
-#include "getter_repository.h"
 #include "getters.h"
 #include "guid.h"
 #include "helper.h"
@@ -13,6 +12,7 @@
 #include "not_implemented_exception.h"
 #include "reader.h"
 #include "string_cast.h"
+#include "type_repository.h"
 #include "unknown_value_exception.h"
 
 using namespace std::string_literals;
@@ -164,7 +164,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Item(Inspection::Reade
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"String", "ASCII", "Printable_EndedByTermination"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"String", "ASCII", "Printable_EndedByTermination"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ItemKey", PartResult->GetValue());
@@ -205,7 +205,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Apple_AppleDouble_File(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Apple", "AppleDouble_Header"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"Apple", "AppleDouble_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Header", PartResult->GetValue());
@@ -237,13 +237,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Apple_AppleDouble_File(Ins
 				{
 				case 9:
 					{
-						EntryResult = Inspection::g_GetterRepository.Get({"Apple", "AppleSingleDouble_Entry_FinderInfo"}, EntryReader, {});
+						EntryResult = Inspection::g_TypeRepository.Get({"Apple", "AppleSingleDouble_Entry_FinderInfo"}, EntryReader, {});
 						
 						break;
 					}
 				default:
 					{
-						EntryResult = Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, EntryReader, {});
+						EntryResult = Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, EntryReader, {});
 						
 						break;
 					}
@@ -315,7 +315,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 			
 			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 			
-			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
+			auto ElementResult{g_TypeRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 			
 			Continue = ElementResult->GetSuccess();
 			if(Continue == true)
@@ -400,7 +400,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 			
 			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 			
-			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
+			auto ElementResult{g_TypeRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 			
 			Continue = ElementResult->GetSuccess();
 			if(Continue == true)
@@ -470,7 +470,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 			
 			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 			
-			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
+			auto ElementResult{g_TypeRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 			
 			Continue = ElementResult->GetSuccess();
 			ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
@@ -540,7 +540,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 				
 				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 				
-				auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
+				auto ElementResult{g_TypeRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 				
 				Continue = ElementResult->GetSuccess();
 				ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
@@ -613,7 +613,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByPredicate(Ins
 			
 			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 			
-			auto ElementResult{g_GetterRepository.Get(ElementGetter, ElementReader, ElementParameters)};
+			auto ElementResult{g_TypeRepository.Get(ElementGetter, ElementReader, ElementParameters)};
 			
 			Continue = ElementResult->GetSuccess();
 			ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
@@ -1147,7 +1147,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CodecListObjectData(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "GUID"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "GUID"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Reserved", PartResult->GetValue());
@@ -1226,7 +1226,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -1243,7 +1243,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection:
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetField("Size")->GetData()), 0} - Reader.GetConsumedLength()};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -1297,7 +1297,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		else if(DataType == "Byte array")
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -1308,7 +1308,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 			if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
 			{
 				Inspection::Reader PartReader{Reader};
-				auto PartResult{g_GetterRepository.Get({"ASF", "Boolean_32Bit_LittleEndian"}, PartReader, {})};
+				auto PartResult{g_TypeRepository.Get({"ASF", "Boolean_32Bit_LittleEndian"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->SetValue(PartResult->GetValue());
@@ -1639,7 +1639,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_GUID(Inspection::Reade
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"GUID_LittleEndian"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"GUID_LittleEndian"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -1668,7 +1668,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectD
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "GUID"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "GUID"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ReservedField1", PartResult->GetValue());
@@ -1765,7 +1765,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspectio
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -1780,7 +1780,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspectio
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetField("Size")->GetData()), 0} - Reader.GetConsumedLength()};
-		auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "Header"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -1856,7 +1856,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
 			{
 				Inspection::Reader PartReader{Reader};
-				auto PartResult{g_GetterRepository.Get({"ASF", "Boolean_16Bit_LittleEndian"}, PartReader, {})};
+				auto PartResult{g_TypeRepository.Get({"ASF", "Boolean_16Bit_LittleEndian"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->SetValue(PartResult->GetValue());
@@ -1989,7 +1989,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Metadata_DescriptionRe
 			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
 			{
 				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "Boolean_16Bit_LittleEndian"}, PartReader, {})};
+				auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "Boolean_16Bit_LittleEndian"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->SetValue(PartResult->GetValue());
@@ -2074,7 +2074,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -2089,7 +2089,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		if(GUID == Inspection::g_ASF_CompatibilityObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "Compatibility"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "Compatibility"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2098,7 +2098,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_HeaderObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "Header"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "Header"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2107,7 +2107,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_FilePropertiesObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "FileProperties"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "FileProperties"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2143,7 +2143,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_LanguageListObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "LanguageList"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "LanguageList"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2161,7 +2161,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_MetadataObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "Metadata"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "Metadata"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2188,7 +2188,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_ExtendedContentDescriptionObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "ExtendedContentDescription"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "ExtendedContentDescription"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2197,7 +2197,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_StreamBitratePropertiesObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "StreamBitrateProperties"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "StreamBitrateProperties"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2206,7 +2206,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_ContentDescriptionObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "ContentDescription"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "ContentDescription"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2215,7 +2215,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_MetadataLibraryObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "ObjectData", "MetadataLibrary"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "ObjectData", "MetadataLibrary"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2224,7 +2224,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -2346,7 +2346,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"Microsoft_WaveFormat_FormatTag"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"Microsoft_WaveFormat_FormatTag"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("FormatTag", PartResult->GetValue());
@@ -2422,7 +2422,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 		if(FormatTag == "WAVE_FORMAT_WMAUDIO2")
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("CodecSpecificDataSize")->GetData()), 0}};
-			auto PartResult{g_GetterRepository.Get({"ASF", "StreamProperties", "TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ASF", "StreamProperties", "TypeSpecificData_AudioMedia_CodecSpecificData_WAVE_FORMAT_WMAUDIO2"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("CodecSpecificData", PartResult->GetValue());
@@ -2431,7 +2431,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 		else
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("CodecSpecificDataSize")->GetData()), 0}};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("CodecSpecificData", PartResult->GetValue());
@@ -2454,7 +2454,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ASF", "ObjectHeader"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2491,7 +2491,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "GUID"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "GUID"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("StreamType", PartResult->GetValue());
@@ -2501,7 +2501,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"ASF", "GUID"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "GUID"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ErrorCorrectionType", PartResult->GetValue());
@@ -2571,7 +2571,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 		else
 		{
 			Inspection::Reader FieldReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("TypeSpecificDataLength")->GetData()), 0}};
-			auto FieldResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
+			auto FieldResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
 			auto FieldValue{Result->GetValue()->AppendField("TypeSpecificData", FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -2585,7 +2585,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 		if(ErrorCorrectionType == Inspection::g_ASF_AudioSpreadGUID)
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("ErrorCorrectionDataLength")->GetData()), 0}};
-			auto PartResult{g_GetterRepository.Get({"ASF", "StreamProperties", "ErrorCorrectionData_AudioSpread"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ASF", "StreamProperties", "ErrorCorrectionData_AudioSpread"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("ErrorCorrectionData", PartResult->GetValue());
@@ -2594,7 +2594,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 		else
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("ErrorCorrectionDataLength")->GetData()), 0}};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("ErrorCorrectionData", PartResult->GetValue());
@@ -3163,7 +3163,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
-		auto FieldResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
+		auto FieldResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
 		
 		Result->GetValue()->GetField("RegisteredApplicationIdentifier")->AddTag("bytes", FieldResult->GetValue()->GetData());
 		UpdateState(Continue, FieldResult);
@@ -3185,7 +3185,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
+		auto FieldResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
 		auto FieldValue{Result->GetValue()->AppendField("ApplicationData", FieldResult->GetValue())};
 		
 		UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -3252,7 +3252,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Rea
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Footer"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "Frame_Footer"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Footer", PartResult->GetValue());
@@ -3302,7 +3302,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Header_BlockingStrategy"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "Frame_Header_BlockingStrategy"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("BlockingStrategy", PartResult->GetValue());
@@ -3361,7 +3361,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Header_SampleRate"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "Frame_Header_SampleRate"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SampleRate", PartResult->GetValue());
@@ -3371,7 +3371,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Header_ChannelAssignment"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "Frame_Header_ChannelAssignment"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ChannelAssignment", PartResult->GetValue());
@@ -3381,7 +3381,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspecti
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "Frame_Header_SampleSize"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "Frame_Header_SampleSize"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SampleSize", PartResult->GetValue());
@@ -3515,7 +3515,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "MetaDataBlock_Header"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "MetaDataBlock_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Header", PartResult->GetValue());
@@ -3529,7 +3529,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		if(MetaDataBlockType == "StreamInfo")
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("Header")->GetField("Length")->GetData()), 0}};
-			auto PartResult{g_GetterRepository.Get({"FLAC", "StreamInfoBlock_Data"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"FLAC", "StreamInfoBlock_Data"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -3559,7 +3559,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 			if(MetaDataBlockDataLength % 18 == 0)
 			{
 				Inspection::Reader PartReader{Reader, Inspection::Length{MetaDataBlockDataLength, 0}};
-				auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "SeekTableBlock_Data"}, PartReader, {})};
+				auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "SeekTableBlock_Data"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -3582,7 +3582,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_MetaDataBlock(Inspect
 		else if(MetaDataBlockType == "Picture")
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("Header")->GetField("Length")->GetData()), 0}};
-			auto PartResult{g_GetterRepository.Get({"FLAC", "PictureBlock_Data"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"FLAC", "PictureBlock_Data"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -3650,7 +3650,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "MetaDataBlock_Header"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "MetaDataBlock_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Header", PartResult->GetValue());
@@ -3669,7 +3669,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_StreamInfoBlock(Inspe
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("Header")->GetField("Length")->GetData()), 0}};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "StreamInfoBlock_Data"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "StreamInfoBlock_Data"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -3763,7 +3763,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe(Inspection::
 		else if(SubframeType == "SUBFRAME_FIXED")
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Subframe_Data_Fixed"}, PartReader, {{"FrameBlockSize", FrameBlockSize}, {"BitsPerSample", BitsPerSample}, {"PredictorOrder", Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()}})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Subframe_Data_Fixed"}, PartReader, {{"FrameBlockSize", FrameBlockSize}, {"BitsPerSample", BitsPerSample}, {"PredictorOrder", Result->GetValue()->GetField("Header")->GetField("Type")->GetField("Order")->GetData()}})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -3838,7 +3838,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Array", "EndedByNumberOfElements"}, PartReader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Unsigned", "BigEndian"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", BitsPerSample}}}, {"NumberOfElements", static_cast< std::uint64_t >(PredictorOrder)}})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"Array", "EndedByNumberOfElements"}, PartReader, {{"ElementGetter", std::vector< std::string >{"Number", "Integer", "Unsigned", "BigEndian"}}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", BitsPerSample}}}, {"NumberOfElements", static_cast< std::uint64_t >(PredictorOrder)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("WarmUpSamples", PartResult->GetValue());
@@ -3893,7 +3893,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Subframe_Residual"}, PartReader, {{"FrameBlockSize", FrameBlockSize}, {"PredictorOrder", PredictorOrder}})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Subframe_Residual"}, PartReader, {{"FrameBlockSize", FrameBlockSize}, {"PredictorOrder", PredictorOrder}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Residual", PartResult->GetValue());
@@ -3967,7 +3967,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Residual(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"FLAC", "Subframe_Residual_CodingMethod"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"FLAC", "Subframe_Residual_CodingMethod"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("CodingMethod", PartResult->GetValue());
@@ -4410,7 +4410,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "Frame_Header"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.2", "Frame_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -4426,7 +4426,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		if(Identifier == "COM")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "COM"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.2", "FrameBody", "COM"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4435,7 +4435,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		else if(Identifier == "PIC")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "PIC"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.2", "FrameBody", "PIC"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4444,7 +4444,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		else if((Identifier == "TAL") || (Identifier == "TCM") || (Identifier == "TCP") || (Identifier == "TEN") || (Identifier == "TP1") || (Identifier == "TP2") || (Identifier == "TPA") || (Identifier == "TRK") || (Identifier == "TT1") || (Identifier == "TT2") || (Identifier == "TYE"))
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "T__"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.2", "FrameBody", "T__"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4462,7 +4462,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		else if(Identifier == "UFI")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "UFI"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.2", "FrameBody", "UFI"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4473,7 +4473,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
-			auto FieldResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
+			auto FieldResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
 			auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -4511,7 +4511,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_TCO(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "FrameBody", "T__"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.2", "FrameBody", "T__"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -4712,7 +4712,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "Frame_Header"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "Frame_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -4728,7 +4728,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		if(Identifier == "APIC")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "APIC"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "APIC"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4737,7 +4737,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "COMM")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "COMM"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "COMM"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4746,7 +4746,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "GEOB")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "GEOB"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "GEOB"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4789,7 +4789,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "RGAD")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "RGAD"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "RGAD"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4798,7 +4798,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCOP") || (Identifier == "TDAT") || (Identifier == "TDRC") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIME") || (Identifier == "TIT1") || (Identifier == "TIT2") || (Identifier == "TIT3") || (Identifier == "TLEN") || (Identifier == "TMED") || (Identifier == "TOAL") || (Identifier == "TOFN") || (Identifier == "TOPE") || (Identifier == "TOWN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPE3") || (Identifier == "TPE4") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TRDA") || (Identifier == "TSIZ") || (Identifier == "TSO2") || (Identifier == "TSOA") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TSST") || (Identifier == "TYER"))
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4847,7 +4847,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "TXXX")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "TXXX"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "TXXX"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4856,7 +4856,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "UFID")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "UFID"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "UFID"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4865,7 +4865,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "USLT")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "USLT"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "USLT"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4874,7 +4874,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if((Identifier == "WCOM") || (Identifier == "WOAF") || (Identifier == "WOAR"))
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "W___"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "W___"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4883,7 +4883,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "WXXX")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "WXXX"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "WXXX"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4894,7 +4894,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			
 			Inspection::Reader FieldReader{Reader, ClaimedSize};
-			auto FieldResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
+			auto FieldResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, FieldReader, {})};
 			auto FieldValue{Result->GetValue()->AppendField("Data", FieldResult->GetValue())};
 			
 			UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -4932,7 +4932,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(In
 	if(Continue == true)
 	{
 		Inspection::Reader Alternative1Reader{Reader};
-		auto Alternative1Result{g_GetterRepository.Get({"IEC_60908_1999", "TableOfContents"}, Alternative1Reader, {})};
+		auto Alternative1Result{g_TypeRepository.Get({"IEC_60908_1999", "TableOfContents"}, Alternative1Reader, {})};
 		
 		UpdateState(Continue, Alternative1Result);
 		if(Continue == true)
@@ -4970,7 +4970,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 	{
 		if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
-			auto FieldResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, Reader, {})};
+			auto FieldResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, Reader, {})};
 			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -4989,7 +4989,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 		}
 		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
 		{
-			auto FieldResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, Reader, {})};
+			auto FieldResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, Reader, {})};
 			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -5058,7 +5058,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = false;
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
@@ -5078,7 +5078,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			//~ Continue = false;
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
@@ -5211,7 +5211,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PRIV(In
 		else
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("PrivateData", PartResult->GetValue());
@@ -5234,7 +5234,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCMP(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5274,7 +5274,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TCON(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5307,7 +5307,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TFLT(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5355,7 +5355,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TLAN(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5394,7 +5394,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_TSRC(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "FrameBody", "T___"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5450,7 +5450,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Inspection::g_GetterRepository.Get({"BitSet", "16Bit_BigEndian"}, Reader, {})};
+		auto FieldResult{Inspection::g_TypeRepository.Get({"BitSet", "16Bit_BigEndian"}, Reader, {})};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5606,7 +5606,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 				else
 				{
 					Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
-					auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+					auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 					
 					Continue = PartResult->GetSuccess();
 					Result->SetValue(PartResult->GetValue());
@@ -5775,7 +5775,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Frame_Header"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "Frame_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5793,7 +5793,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		if(Identifier == "APIC")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "APIC"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "APIC"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5802,7 +5802,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if(Identifier == "COMM")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "COMM"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "COMM"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5811,7 +5811,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if(Identifier == "MCDI")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "MCDI"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "MCDI"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5828,7 +5828,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if(Identifier == "PRIV")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "PRIV"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "PRIV"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5837,7 +5837,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCON") || (Identifier == "TCOP") || (Identifier == "TDRC") || (Identifier == "TDRL") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIT2") || (Identifier == "TLAN") || (Identifier == "TLEN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TYER"))
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "T___"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "T___"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5855,7 +5855,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if(Identifier == "TXXX")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "TXXX"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "TXXX"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5864,7 +5864,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if(Identifier == "UFID")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "UFID"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "UFID"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5873,7 +5873,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if(Identifier == "USLT")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "USLT"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "USLT"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5882,7 +5882,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if(Identifier == "WCOM")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "W___"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "W___"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5891,7 +5891,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		else if(Identifier == "WXXX")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "WXXX"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "WXXX"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -5902,7 +5902,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
 			
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -5986,7 +5986,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Result->GetValue()->GetField("Counter")->AddTag("standard", "ID3 2.4"s);
@@ -6006,7 +6006,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Result->GetValue()->GetField("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
@@ -6030,7 +6030,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_TCMP(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"ID3", "v2.4", "FrameBody", "T___"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ID3", "v2.4", "FrameBody", "T___"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -6200,7 +6200,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 		if(std::experimental::any_cast< bool >(Result->GetValue()->GetField("ExtendedFlags")->GetField("CRCDataPresent")->GetData()) == true)
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Data_CRCDataPresent"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Data_CRCDataPresent"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("CRCDataPresentData", PartResult->GetValue());
@@ -6233,7 +6233,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -6260,7 +6260,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -6591,7 +6591,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				if(Size > Inspection::Length{0, 0})
 				{
 					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{g_GetterRepository.Get({"ID3", "v2.2", "Frame"}, PartReader, {})};
+					auto PartResult{g_TypeRepository.Get({"ID3", "v2.2", "Frame"}, PartReader, {})};
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
@@ -6644,7 +6644,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 				if(Size > Inspection::Length{0, 0})
 				{
 					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{g_GetterRepository.Get({"ID3", "v2.3", "Frame"}, PartReader, {})};
+					auto PartResult{g_TypeRepository.Get({"ID3", "v2.3", "Frame"}, PartReader, {})};
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
@@ -6704,7 +6704,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 					if(Size > Inspection::Length{0, 0})
 					{
 						Inspection::Reader PartReader{Reader, Size};
-						auto PartResult{g_GetterRepository.Get({"ID3", "v2.4", "Frame"}, PartReader, {})};
+						auto PartResult{g_TypeRepository.Get({"ID3", "v2.4", "Frame"}, PartReader, {})};
 						
 						Continue = PartResult->GetSuccess();
 						Result->GetValue()->AppendField("Frame", PartResult->GetValue());
@@ -6827,7 +6827,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_NameCode"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_NameCode"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("NameCode", PartResult->GetValue());
@@ -6837,7 +6837,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_OriginatorCode"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_OriginatorCode"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("OriginatorCode", PartResult->GetValue());
@@ -6847,7 +6847,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"ID3", "ReplayGainAdjustment_SignBit"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_SignBit"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SignBit", PartResult->GetValue());
@@ -7113,7 +7113,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{16, 0}};
-		auto PartResult{Inspection::g_GetterRepository.Get({"GUID_LittleEndian"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"GUID_LittleEndian"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -7825,7 +7825,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		if(Reader.Has(Inspection::Length{2, 0}) == true)
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{2, 0}};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -8706,7 +8706,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{2, 0}};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -9566,7 +9566,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::R
 		if(ProtectionBit == 0x00)
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{0, 16}};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("ErrorCheck", PartResult->GetValue());
@@ -9592,7 +9592,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Frame(Inspection::R
 		}
 		
 		Inspection::Reader PartReader{Reader, Inspection::Length{FrameLength, 0} - Reader.GetConsumedLength()};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"Data", "SetOrUnset_EndedByLength"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("AudioData", PartResult->GetValue());
@@ -9624,7 +9624,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_AudioVersionID"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "FrameHeader_AudioVersionID"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("AudioVersionID", PartResult->GetValue());
@@ -9634,7 +9634,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_LayerDescription"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "FrameHeader_LayerDescription"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("LayerDescription", PartResult->GetValue());
@@ -9644,7 +9644,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_ProtectionBit"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "FrameHeader_ProtectionBit"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ProtectionBit", PartResult->GetValue());
@@ -9664,7 +9664,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_SamplingFrequency"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "FrameHeader_SamplingFrequency"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SamplingFrequency", PartResult->GetValue());
@@ -9674,7 +9674,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_PaddingBit"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "FrameHeader_PaddingBit"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PaddingBit", PartResult->GetValue());
@@ -9714,7 +9714,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_Copyright"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "FrameHeader_Copyright"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Copyright", PartResult->GetValue());
@@ -9724,7 +9724,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_OriginalHome"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "FrameHeader_OriginalHome"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Original/Home", PartResult->GetValue());
@@ -9734,7 +9734,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"MPEG", "1", "FrameHeader_Emphasis"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "FrameHeader_Emphasis"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Emphasis", PartResult->GetValue());
@@ -10613,7 +10613,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Vorbis_HeaderPacket(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"Ogg", "Vorbis", "HeaderPacket_Type"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"Ogg", "Vorbis", "HeaderPacket_Type"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PacketType", PartResult->GetValue());
@@ -10789,7 +10789,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkHeader"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"RIFF", "ChunkHeader"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Header", PartResult->GetValue());
@@ -10808,7 +10808,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 			if(ChunkIdentifier == "RIFF")
 			{
 				Inspection::Reader PartReader{Reader, ClaimedSize};
-				auto PartResult{Inspection::g_GetterRepository.Get({"RIFF", "ChunkData", "RIFF"}, PartReader, {})};
+				auto PartResult{Inspection::g_TypeRepository.Get({"RIFF", "ChunkData", "RIFF"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -10817,7 +10817,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 			else if(ChunkIdentifier == "inst")
 			{
 				Inspection::Reader PartReader{Reader, ClaimedSize};
-				auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "inst"}, PartReader, {})};
+				auto PartResult{g_TypeRepository.Get({"RIFF", "ChunkData", "inst"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -10826,7 +10826,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 			else if(ChunkIdentifier == "fact")
 			{
 				Inspection::Reader PartReader{Reader, ClaimedSize};
-				auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "fact"}, PartReader, {})};
+				auto PartResult{g_TypeRepository.Get({"RIFF", "ChunkData", "fact"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Data", PartResult->GetValue());
@@ -10909,7 +10909,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt_(Inspec
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "fmt__CommonFields"}, PartReader, {})};
+		auto PartResult{g_TypeRepository.Get({"RIFF", "ChunkData", "fmt__CommonFields"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -10923,7 +10923,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt_(Inspec
 		if(FormatTag == "WAVE_FORMAT_PCM")
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "fmt__FormatSpecificFields_PCM"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"RIFF", "ChunkData", "fmt__FormatSpecificFields_PCM"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -10932,7 +10932,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt_(Inspec
 		else if(FormatTag == "WAVE_FORMAT_EXTENSIBLE")
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{g_GetterRepository.Get({"RIFF", "ChunkData", "fmt__FormatSpecificFields_Extensible"}, PartReader, {})};
+			auto PartResult{g_TypeRepository.Get({"RIFF", "ChunkData", "fmt__FormatSpecificFields_Extensible"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -10941,7 +10941,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt_(Inspec
 		else
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"Buffer", "UnsignedInteger_8Bit_EndedByLength"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Rest", PartResult->GetValue());
@@ -11084,7 +11084,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt__Format
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_GetterRepository.Get({"GUID_LittleEndian"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"GUID_LittleEndian"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());

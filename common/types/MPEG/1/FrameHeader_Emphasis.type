@@ -1,0 +1,37 @@
+<type>
+	<forward>
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>2Bit</part>
+		</getter-reference>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation">
+							<string>no emphasis</string>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<string>50/15 microsec. emphasis</string>
+						</tag>
+					</element>
+					<element base-value="2" valid="false">
+						<tag name="error">
+							<string>This emphasis is reserved and MUST NOT be used.</string>
+						</tag>
+						<tag name="interpretation"/>
+					</element>
+					<element base-value="3" valid="true">
+						<tag name="interpretation">
+							<string>CCITT J.17</string>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
+	</forward>
+</type>

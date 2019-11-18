@@ -3,9 +3,9 @@
 
 #include <common/buffer.h>
 #include <common/file_handling.h>
-#include <common/getter_repository.h>
 #include <common/getters.h>
 #include <common/result.h>
+#include <common/type_repository.h>
 
 bool g_WithFrames{false};
 
@@ -20,7 +20,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 		if(g_WithFrames == true)
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Stream"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -30,7 +30,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 		else
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_GetterRepository.Get({"FLAC", "Stream_Header"}, PartReader, {})};
+			auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Stream_Header"}, PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());

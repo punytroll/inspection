@@ -1,0 +1,30 @@
+<type>
+	<field name="TextEncoding">
+		<getter-reference>
+			<part>ID3</part>
+			<part>v2.4</part>
+			<part>TextEncoding</part>
+		</getter-reference>
+	</field>
+	<field name="Descriptor">
+		<getter-reference>
+			<part>ID3</part>
+			<part>v2.4</part>
+			<part>TextStringAccordingToEncoding_EndedByTermination</part>
+		</getter-reference>
+		<parameters>
+			<parameter name="TextEncoding">
+				<data-reference>
+					<field>TextEncoding</field>
+				</data-reference>
+			</parameter>
+		</parameters>
+	</field>
+	<field name="URL">
+		<getter-reference>
+			<part>String</part>
+			<part>ISO_IEC_8859_1_1998</part>
+			<part>EndedByTerminationOrLength</part>
+		</getter-reference>
+	</field>
+</type>

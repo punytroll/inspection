@@ -1,0 +1,17 @@
+<type>
+	<field name="Flags">
+		<getter-reference>
+			<part>ASF</part>
+			<part>StreamBitrateProperties</part>
+			<part>BitrateRecord_Flags</part>
+		</getter-reference>
+	</field>
+	<field name="AverageBitrate">
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>32Bit_LittleEndian</part>
+		</getter-reference>
+	</field>
+</type>

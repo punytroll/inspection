@@ -1,0 +1,14 @@
+<type>
+	<field name="FInfo">
+		<getter-reference>
+			<part>Apple</part>
+			<part>FInfo</part>
+		</getter-reference>
+	</field>
+	<field name="FXInfo">
+		<getter-reference>
+			<part>Apple</part>
+			<part>FXInfo</part>
+		</getter-reference>
+	</field>
+</type>

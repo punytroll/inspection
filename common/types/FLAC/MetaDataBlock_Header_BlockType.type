@@ -1,0 +1,61 @@
+<type>
+	<forward>
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>7Bit</part>
+		</getter-reference>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation">
+							<string>StreamInfo</string>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<string>Padding</string>
+						</tag>
+					</element>
+					<element base-value="2" valid="true">
+						<tag name="interpretation">
+							<string>Application</string>
+						</tag>
+					</element>
+					<element base-value="3" valid="true">
+						<tag name="interpretation">
+							<string>SeekTable</string>
+						</tag>
+					</element>
+					<element base-value="4" valid="true">
+						<tag name="interpretation">
+							<string>VorbisComment</string>
+						</tag>
+					</element>
+					<element base-value="5" valid="true">
+						<tag name="interpretation">
+							<string>CueSheet</string>
+						</tag>
+					</element>
+					<element base-value="6" valid="true">
+						<tag name="interpretation">
+							<string>Picture</string>
+						</tag>
+					</element>
+					<element base-value="7" valid="false">
+						<tag name="interpretation">
+							<string>Invalid</string>
+						</tag>
+					</element>
+					<fallback-element valid="false">
+						<tag name="interpretation">
+							<string>Reserved</string>
+						</tag>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
+	</forward>
+</type>

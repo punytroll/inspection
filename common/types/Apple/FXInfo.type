@@ -1,0 +1,16 @@
+<type>
+	<forward>
+		<getter-reference>
+			<part>Buffer</part>
+			<part>UnsignedInteger_8Bit_EndedByLength</part>
+		</getter-reference>
+		<length>
+			<bytes>
+				<unsigned-integer-64bit>16</unsigned-integer-64bit>
+			</bytes>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
+		</length>
+	</forward>
+</type>

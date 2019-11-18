@@ -1,0 +1,34 @@
+<type>
+	<field name="FormType">
+		<getter-reference>
+			<part>String</part>
+			<part>ASCII</part>
+			<part>AlphaNumericOrSpace_EndedByLength</part>
+		</getter-reference>
+		<length>
+			<bytes>
+				<unsigned-integer-64bit>4</unsigned-integer-64bit>
+			</bytes>
+			<bits>
+				<unsigned-integer-64bit>0</unsigned-integer-64bit>
+			</bits>
+		</length>
+	</field>
+	<field name="Chunks">
+		<getter-reference>
+			<part>Array</part>
+			<part>EndedByLength</part>
+		</getter-reference>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>RIFF</part>
+					<part>Chunk</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>Chunk</string>
+			</parameter>
+		</parameters>
+	</field>
+</type>

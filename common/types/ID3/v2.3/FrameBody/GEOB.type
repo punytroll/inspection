@@ -1,0 +1,50 @@
+<type>
+	<field name="TextEncoding">
+		<getter-reference>
+			<part>ID3</part>
+			<part>v2.3</part>
+			<part>TextEncoding</part>
+		</getter-reference>
+	</field>
+	<field name="MIMEType">
+		<getter-reference>
+			<part>String</part>
+			<part>ASCII</part>
+			<part>Printable_EndedByTermination</part>
+		</getter-reference>
+	</field>
+	<field name="FileName">
+		<getter-reference>
+			<part>ID3</part>
+			<part>v2.3</part>
+			<part>TextStringAccordingToEncoding_EndedByTermination</part>
+		</getter-reference>
+		<parameters>
+			<parameter name="TextEncoding">
+				<data-reference>
+					<field>TextEncoding</field>
+				</data-reference>
+			</parameter>
+		</parameters>
+	</field>
+	<field name="ContentDescription">
+		<getter-reference>
+			<part>ID3</part>
+			<part>v2.3</part>
+			<part>TextStringAccordingToEncoding_EndedByTermination</part>
+		</getter-reference>
+		<parameters>
+			<parameter name="TextEncoding">
+				<data-reference>
+					<field>TextEncoding</field>
+				</data-reference>
+			</parameter>
+		</parameters>
+	</field>
+	<field name="EncapsulatedObject">
+		<getter-reference>
+			<part>Data</part>
+			<part>SetOrUnset_EndedByLength</part>
+		</getter-reference>
+	</field>
+</type>

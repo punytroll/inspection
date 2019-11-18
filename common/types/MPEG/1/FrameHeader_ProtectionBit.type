@@ -1,0 +1,26 @@
+<type>
+	<forward>
+		<getter-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>1Bit</part>
+		</getter-reference>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="redundancy">
+							<boolean>false</boolean>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="redundancy">
+							<boolean>true</boolean>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
+	</forward>
+</type>

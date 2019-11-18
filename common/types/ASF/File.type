@@ -1,0 +1,31 @@
+<type>
+	<field name="HeaderObject">
+		<getter-reference>
+			<part>ASF</part>
+			<part>HeaderObject</part>
+		</getter-reference>
+	</field>
+	<field name="DataObject">
+		<getter-reference>
+			<part>ASF</part>
+			<part>DataObject</part>
+		</getter-reference>
+	</field>
+	<field name="Objects">
+		<getter-reference>
+			<part>Array</part>
+			<part>EndedByLength</part>
+		</getter-reference>
+		<parameters>
+			<parameter name="ElementGetter">
+				<getter-reference>
+					<part>ASF</part>
+					<part>Object</part>
+				</getter-reference>
+			</parameter>
+			<parameter name="ElementName">
+				<string>Object</string>
+			</parameter>
+		</parameters>
+	</field>
+</type>

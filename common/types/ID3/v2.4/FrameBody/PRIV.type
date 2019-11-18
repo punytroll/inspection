@@ -1,0 +1,15 @@
+<type>
+	<field name="OwnerIdentifier">
+		<getter-reference>
+			<part>String</part>
+			<part>ISO_IEC_8859_1_1998</part>
+			<part>EndedByTermination</part>
+		</getter-reference>
+	</field>
+	<field name="PrivateData">
+		<getter-reference>
+			<part>Buffer</part>
+			<part>UnsignedInteger_8Bit_EndedByLength</part>
+		</getter-reference>
+	</field>
+</type>
