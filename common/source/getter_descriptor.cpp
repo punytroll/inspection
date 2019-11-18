@@ -29,6 +29,62 @@ namespace Inspection
 		UnsignedInteger64Bit
 	};
 	
+	Inspection::DataType GetDataTypeFromString(const std::string & String)
+	{
+		if(String == "boolean")
+		{
+			return Inspection::DataType::Boolean;
+		}
+		else if(String == "data-reference")
+		{
+			return Inspection::DataType::DataReference;
+		}
+		else if(String == "getter-reference")
+		{
+			return Inspection::DataType::GetterReference;
+		}
+		else if(String == "nothing")
+		{
+			return Inspection::DataType::Nothing;
+		}
+		else if(String == "parameter-reference")
+		{
+			return Inspection::DataType::ParameterReference;
+		}
+		else if(String == "parameters")
+		{
+			return Inspection::DataType::Parameters;
+		}
+		else if(String == "single-precision-real")
+		{
+			return Inspection::DataType::SinglePrecisionReal;
+		}
+		else if(String == "string")
+		{
+			return Inspection::DataType::String;
+		}
+		else if(String == "unsigned integer 8bit")
+		{
+			return Inspection::DataType::UnsignedInteger8Bit;
+		}
+		else if(String == "unsigned integer 16bit")
+		{
+			return Inspection::DataType::UnsignedInteger16Bit;
+		}
+		else if(String == "unsigned integer 32bit")
+		{
+			return Inspection::DataType::UnsignedInteger32Bit;
+		}
+		else if(String == "unsigned integer 64bit")
+		{
+			return Inspection::DataType::UnsignedInteger64Bit;
+		}
+		else
+		{
+			throw std::domain_error("Unknown type \"" + String + "\".");
+		}
+	}
+	
 	class EvaluationResult
 	{
 	public:
@@ -54,7 +110,7 @@ namespace Inspection
 			std::string DetailName;
 		};
 		
-		std::experimental::optional< std::string > CastToType;
+		std::experimental::optional< Inspection::DataType > CastToType;
 		std::vector< Inspection::DataReference::PartDescriptor > PartDescriptors;
 	};
 	
@@ -67,7 +123,7 @@ namespace Inspection
 	class ParameterReference
 	{
 	public:
-		std::experimental::optional< std::string > CastToType;
+		std::experimental::optional< Inspection::DataType > CastToType;
 		std::string Name;
 	};
 	
@@ -376,7 +432,7 @@ namespace Inspection
 				{
 					NewParameters.emplace(ParameterDescriptor.Name, ValueAny);
 				}
-				else if(ParameterDescriptor.ValueDescriptor.DataReference->CastToType.value() == "unsigned integer 64bit")
+				else if(ParameterDescriptor.ValueDescriptor.DataReference->CastToType.value() == Inspection::DataType::UnsignedInteger64Bit)
 				{
 					if(ValueAny.type() == typeid(std::uint16_t))
 					{
@@ -422,7 +478,7 @@ namespace Inspection
 				}
 				else
 				{
-					if(ParameterDescriptor.ValueDescriptor.ParameterReference->CastToType.value() == "unsigned integer 64bit")
+					if(ParameterDescriptor.ValueDescriptor.ParameterReference->CastToType.value() == Inspection::DataType::UnsignedInteger64Bit)
 					{
 						if(Any.type() == typeid(std::uint8_t))
 						{
@@ -1479,7 +1535,7 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 		ValueDescriptor.DataReference.emplace();
 		if(ValueElement->HasAttribute("cast-to-type") == true)
 		{
-			ValueDescriptor.DataReference->CastToType = ValueElement->GetAttribute("cast-to-type");
+			ValueDescriptor.DataReference->CastToType = GetDataTypeFromString(ValueElement->GetAttribute("cast-to-type"));
 		}
 		for(auto DataReferenceChildNode : ValueElement->GetChilds())
 		{
@@ -1523,7 +1579,7 @@ void Inspection::GetterDescriptor::_LoadValueDescriptor(Inspection::ValueDescrip
 		ValueDescriptor.ParameterReference.emplace();
 		if(ValueElement->HasAttribute("cast-to-type") == true)
 		{
-			ValueDescriptor.ParameterReference->CastToType = ValueElement->GetAttribute("cast-to-type");
+			ValueDescriptor.ParameterReference->CastToType = GetDataTypeFromString(ValueElement->GetAttribute("cast-to-type"));
 		}
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
