@@ -193,11 +193,23 @@ namespace Inspection
 		Inspection::Interpretation::Type Type;
 	};
 	
+	class Statement
+	{
+	public:
+		enum class Type
+		{
+			Value
+		};
+		
+		Inspection::Statement::Type Type;
+		Inspection::ValueDescriptor * Value;
+	};
+	
 	class EqualsDescriptor
 	{
 	public:
-		Inspection::ValueDescriptor Value1;
-		Inspection::ValueDescriptor Value2;
+		Inspection::Statement Statement1;
+		Inspection::Statement Statement2;
 	};
 	
 	class VerificationDescriptor
@@ -210,18 +222,6 @@ namespace Inspection
 		
 		Inspection::VerificationDescriptor::Type Type;
 		std::experimental::optional< Inspection::EqualsDescriptor > EqualsDescriptor;
-	};
-	
-	class Statement
-	{
-	public:
-		enum class Type
-		{
-			Value
-		};
-		
-		Inspection::Statement::Type Type;
-		Inspection::ValueDescriptor * Value;
 	};
 	
 	class Tag
@@ -656,8 +656,8 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 							{
 							case Inspection::VerificationDescriptor::Type::Equals:
 								{
-									assert(VerificationDescriptor.EqualsDescriptor);
-									Continue = Equals(VerificationDescriptor.EqualsDescriptor->Value1, VerificationDescriptor.EqualsDescriptor->Value2, PartResult->GetValue(), Parameters);
+									assert((VerificationDescriptor.EqualsDescriptor) && (VerificationDescriptor.EqualsDescriptor->Statement1.Type == Inspection::Statement::Type::Value) && ((VerificationDescriptor.EqualsDescriptor->Statement2.Type == Inspection::Statement::Type::Value)));
+									Continue = Equals(*(VerificationDescriptor.EqualsDescriptor->Statement1.Value), *(VerificationDescriptor.EqualsDescriptor->Statement2.Value), PartResult->GetValue(), Parameters);
 									if(Continue == false)
 									{
 										Result->GetValue()->AddTag("error", "Failed to verify a value."s);
@@ -1228,12 +1228,12 @@ void Inspection::Type::Load(const std::string & TypePath)
 													
 													if(First == true)
 													{
-														_LoadValueDescriptor(VerificationDescriptor.EqualsDescriptor->Value1, GetterPartVerificationEqualsChildElement);
+														_LoadStatement(VerificationDescriptor.EqualsDescriptor->Statement1, GetterPartVerificationEqualsChildElement);
 														First = false;
 													}
 													else
 													{
-														_LoadValueDescriptor(VerificationDescriptor.EqualsDescriptor->Value2, GetterPartVerificationEqualsChildElement);
+														_LoadStatement(VerificationDescriptor.EqualsDescriptor->Statement2, GetterPartVerificationEqualsChildElement);
 													}
 												}
 											}
