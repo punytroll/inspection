@@ -220,11 +220,23 @@ namespace Inspection
 		std::experimental::optional< Inspection::ValueEqualsDescriptor > ValueEqualsDescriptor;
 	};
 	
+	class Statement
+	{
+	public:
+		enum class Type
+		{
+			Value
+		};
+		
+		Inspection::Statement::Type Type;
+		Inspection::ValueDescriptor * Value;
+	};
+	
 	class Tag
 	{
 	public:
 		std::string Name;
-		ValueDescriptor Value;
+		Inspection::Statement Statement;
 	};
 	
 	class PartDescriptor
@@ -331,7 +343,7 @@ namespace Inspection
 	}
 	
 	template< typename Type >
-	Type GetDataFromValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	Type GetDataFromValueDescriptor(const Inspection::ValueDescriptor & ValueDescriptor, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		Type Result{};
 		
@@ -378,9 +390,10 @@ namespace Inspection
 	
 	void ApplyTags(const std::vector< Inspection::Tag > & Tags, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
-		for(auto Tag : Tags)
+		for(auto & Tag : Tags)
 		{
-			Target->AddTag(Tag.Name, GetAnyFromValueDescriptor(Tag.Value, CurrentValue, Parameters));
+			assert((Tag.Statement.Type == Inspection::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
+			Target->AddTag(Tag.Name, GetAnyFromValueDescriptor(*(Tag.Statement.Value), CurrentValue, Parameters));
 		}
 	}
 	
@@ -416,7 +429,7 @@ namespace Inspection
 	
 	void FillNewParameters(std::unordered_map< std::string, std::experimental::any > & NewParameters, const std::vector< Inspection::ActualParameterDescriptor > & ParameterDescriptors, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
-		for(auto ParameterDescriptor : ParameterDescriptors)
+		for(auto & ParameterDescriptor : ParameterDescriptors)
 		{
 			if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::String)
 			{
@@ -617,7 +630,8 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 							assert(PartDescriptor.Type == Inspection::PartDescriptor::Type::Field);
 							for(auto & Tag : PartDescriptor.Tags)
 							{
-								PartResult->GetValue()->AddTag(Tag.Name, GetAnyFromValueDescriptor(Tag.Value, PartResult->GetValue(), Parameters));
+								assert((Tag.Statement.Type == Inspection::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
+								PartResult->GetValue()->AddTag(Tag.Name, GetAnyFromValueDescriptor(*(Tag.Statement.Value), PartResult->GetValue(), Parameters));
 							}
 						}
 					}
@@ -1412,10 +1426,36 @@ void Inspection::Type::_LoadEnumeration(Inspection::Enumeration & Enumeration, c
 	}
 }
 
+void Inspection::Type::_LoadStatement(Inspection::Statement & Statement, const XML::Element * StatementElement)
+{
+	Statement.Type = Inspection::Statement::Type::Value;
+	Statement.Value = new Inspection::ValueDescriptor{};
+	_LoadValueDescriptor(*(Statement.Value), StatementElement);
+}
+
 void Inspection::Type::_LoadTag(Inspection::Tag & Tag, const XML::Element * TagElement)
 {
 	Tag.Name = TagElement->GetAttribute("name");
-	_LoadValueDescriptorFromWithin(Tag.Value, TagElement);
+	
+	XML::Element * StatementElement{nullptr};
+	
+	if(TagElement->GetChilds().size() > 0)
+	{
+		for(auto TagChildNode : TagElement->GetChilds())
+		{
+			if(TagChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				StatementElement = dynamic_cast< XML::Element * >(TagChildNode);
+				
+				break;
+			}
+		}
+		if(StatementElement == nullptr)
+		{
+			throw std::domain_error{"A tag element has childs but none are elements."};
+		}
+	}
+	_LoadStatement(Tag.Statement, StatementElement);
 }
 
 void Inspection::Type::_LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement)

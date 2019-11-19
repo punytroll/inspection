@@ -18,6 +18,7 @@ namespace Inspection
 	class PartDescriptor;
 	class Reader;
 	class Result;
+	class Statement;
 	class Tag;
 	class TypeReference;
 	class Value;
@@ -33,6 +34,7 @@ namespace Inspection
 	private:
 		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
 		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);
+		void _LoadStatement(Inspection::Statement & Statement, const XML::Element * StatementElement);
 		void _LoadTag(Inspection::Tag & Tag, const XML::Element * TagElement);
 		void _LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
 		void _LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
