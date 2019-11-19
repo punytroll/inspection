@@ -11,16 +11,20 @@
 
 namespace Inspection
 {
+	namespace TypeDefinition
+	{
+		class Equals;
+		class Statement;
+		class Tag;
+	};
+	
 	class Enumeration;
-	class Equals;
 	class EvaluationResult;
 	class TypeRepository;
 	class Interpretation;
 	class PartDescriptor;
 	class Reader;
 	class Result;
-	class Statement;
-	class Tag;
 	class TypeReference;
 	class Value;
 	class ValueDescriptor;
@@ -34,10 +38,10 @@ namespace Inspection
 		void Load(const std::string & TypePath);
 	private:
 		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
-		void _LoadEquals(Inspection::Equals & Equals, const XML::Element * EqualsElement);
+		void _LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement);
 		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);
-		void _LoadStatement(Inspection::Statement & Statement, const XML::Element * StatementElement);
-		void _LoadTag(Inspection::Tag & Tag, const XML::Element * TagElement);
+		void _LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement);
+		void _LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement);
 		void _LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
 		void _LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
 		void _LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ValueElement);

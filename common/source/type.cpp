@@ -167,7 +167,7 @@ namespace Inspection
 		{
 		public:
 			std::string BaseValue;
-			std::vector< Inspection::Tag > Tags;
+			std::vector< Inspection::TypeDefinition::Tag > Tags;
 			bool Valid;
 		};
 		std::string BaseType;
@@ -193,35 +193,38 @@ namespace Inspection
 		Inspection::Interpretation::Type Type;
 	};
 	
-	class Equals;
-	
-	class Statement
+	namespace TypeDefinition
 	{
-	public:
-		enum class Type
+		class Equals;
+		
+		class Statement
 		{
-			Equals,
-			Value
+		public:
+			enum class Type
+			{
+				Equals,
+				Value
+			};
+			
+			Inspection::TypeDefinition::Statement::Type Type;
+			Inspection::TypeDefinition::Equals * Equals;
+			Inspection::ValueDescriptor * Value;
 		};
 		
-		Inspection::Statement::Type Type;
-		Inspection::Equals * Equals;
-		Inspection::ValueDescriptor * Value;
-	};
-	
-	class Equals
-	{
-	public:
-		Inspection::Statement Statement1;
-		Inspection::Statement Statement2;
-	};
-	
-	class Tag
-	{
-	public:
-		std::string Name;
-		Inspection::Statement Statement;
-	};
+		class Equals
+		{
+		public:
+			Inspection::TypeDefinition::Statement Statement1;
+			Inspection::TypeDefinition::Statement Statement2;
+		};
+		
+		class Tag
+		{
+		public:
+			std::string Name;
+			Inspection::TypeDefinition::Statement Statement;
+		};
+	}
 	
 	class PartDescriptor
 	{
@@ -238,9 +241,9 @@ namespace Inspection
 		std::experimental::optional< Inspection::TypeReference > TypeReference;
 		std::experimental::optional< Inspection::Interpretation > Interpretation;
 		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
-		std::vector< Inspection::Tag > Tags;
+		std::vector< Inspection::TypeDefinition::Tag > Tags;
 		Inspection::PartDescriptor::Type Type;
-		std::vector< Inspection::Statement > Verifications;
+		std::vector< Inspection::TypeDefinition::Statement > Verifications;
 	};
 	
 	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -372,11 +375,11 @@ namespace Inspection
 		return Result;
 	}
 	
-	void ApplyTags(const std::vector< Inspection::Tag > & Tags, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	void ApplyTags(const std::vector< Inspection::TypeDefinition::Tag > & Tags, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		for(auto & Tag : Tags)
 		{
-			assert((Tag.Statement.Type == Inspection::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
+			assert((Tag.Statement.Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
 			Target->AddTag(Tag.Name, GetAnyFromValueDescriptor(*(Tag.Statement.Value), CurrentValue, Parameters));
 		}
 	}
@@ -529,12 +532,12 @@ namespace Inspection
 			return Result;
 		}
 		
-		bool Equals(const Inspection::Statement & Statement1, const Inspection::Statement & Statement2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		bool Equals(const Inspection::TypeDefinition::Statement & Statement1, const Inspection::TypeDefinition::Statement & Statement2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 		{
-			if(Statement1.Type == Inspection::Statement::Type::Value)
+			if(Statement1.Type == Inspection::TypeDefinition::Statement::Type::Value)
 			{
 				assert(Statement1.Value != nullptr);
-				if(Statement2.Type == Inspection::Statement::Type::Value)
+				if(Statement2.Type == Inspection::TypeDefinition::Statement::Type::Value)
 				{
 					assert(Statement2.Value != nullptr);
 					
@@ -643,7 +646,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 							assert(PartDescriptor.Type == Inspection::PartDescriptor::Type::Field);
 							for(auto & Tag : PartDescriptor.Tags)
 							{
-								assert((Tag.Statement.Type == Inspection::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
+								assert((Tag.Statement.Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
 								PartResult->GetValue()->AddTag(Tag.Name, GetAnyFromValueDescriptor(*(Tag.Statement.Value), PartResult->GetValue(), Parameters));
 							}
 						}
@@ -671,7 +674,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 						{
 							switch(Statement.Type)
 							{
-							case Inspection::Statement::Type::Equals:
+							case Inspection::TypeDefinition::Statement::Type::Equals:
 								{
 									assert(Statement.Equals);
 									Continue = Inspection::Algorithms::Equals(Statement.Equals->Statement1, Statement.Equals->Statement2, PartResult->GetValue(), Parameters);
@@ -1375,7 +1378,7 @@ void Inspection::Type::_LoadEnumeration(Inspection::Enumeration & Enumeration, c
 	}
 }
 
-void Inspection::Type::_LoadEquals(Inspection::Equals & Equals, const XML::Element * EqualsElement)
+void Inspection::Type::_LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement)
 {
 	bool First{true};
 	
@@ -1398,24 +1401,24 @@ void Inspection::Type::_LoadEquals(Inspection::Equals & Equals, const XML::Eleme
 	}
 }
 
-void Inspection::Type::_LoadStatement(Inspection::Statement & Statement, const XML::Element * StatementElement)
+void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
 {
 	// statement element may be nullptr, if it represents the "nothing" value
 	if((StatementElement != nullptr) && (StatementElement->GetName() == "equals"))
 	{
-		Statement.Type = Inspection::Statement::Type::Equals;
-		Statement.Equals = new Inspection::Equals{};
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Equals;
+		Statement.Equals = new Inspection::TypeDefinition::Equals{};
 		_LoadEquals(*(Statement.Equals), StatementElement);
 	}
 	else
 	{
-		Statement.Type = Inspection::Statement::Type::Value;
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Value;
 		Statement.Value = new Inspection::ValueDescriptor{};
 		_LoadValueDescriptor(*(Statement.Value), StatementElement);
 	}
 }
 
-void Inspection::Type::_LoadTag(Inspection::Tag & Tag, const XML::Element * TagElement)
+void Inspection::Type::_LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement)
 {
 	Tag.Name = TagElement->GetAttribute("name");
 	
