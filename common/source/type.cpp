@@ -855,7 +855,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 					{
 						if(PartDescriptor.Tags.empty() == false)
 						{
-							assert(PartDescriptor.Type == Inspection::PartDescriptor::Type::Field);
+							assert((PartDescriptor.Type == Inspection::PartDescriptor::Type::Field) || (PartDescriptor.Type == Inspection::PartDescriptor::Type::Forward));
 							for(auto & Tag : PartDescriptor.Tags)
 							{
 								assert((Tag.Statement.Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
@@ -1304,6 +1304,10 @@ void Inspection::Type::Load(const std::string & TypePath)
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_8Bit;
 					}
+					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_9Bit_BigEndian")
+					{
+						_HardcodedGetter = Inspection::Get_UnsignedInteger_9Bit_BigEndian;
+					}
 					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_BigEndian;
@@ -1410,7 +1414,7 @@ void Inspection::Type::Load(const std::string & TypePath)
 							}
 							else if(PartChildElement->GetName() == "tag")
 							{
-								assert(PartDescriptor.Type == Inspection::PartDescriptor::Type::Field);
+								assert((PartDescriptor.Type == Inspection::PartDescriptor::Type::Field) || (PartDescriptor.Type == Inspection::PartDescriptor::Type::Forward));
 								PartDescriptor.Tags.emplace_back();
 								
 								auto & Tag{PartDescriptor.Tags.back()};

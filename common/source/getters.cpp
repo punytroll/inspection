@@ -6890,7 +6890,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment_R
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(Reader)};
+		auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -11579,7 +11579,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_BigEndian(
 	case 9:
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::Get_UnsignedInteger_9Bit_BigEndian(PartReader)};
+			auto PartResult{Inspection::Get_UnsignedInteger_9Bit_BigEndian(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->SetValue(PartResult->GetValue());
@@ -11979,7 +11979,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_8Bit_Alter
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_9Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_UnsignedInteger_9Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

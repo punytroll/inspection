@@ -214,7 +214,7 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_7Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_8Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_9Bit_BigEndian(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_9Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_10Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_11Bit_BigEndian(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_UnsignedInteger_12Bit_BigEndian(Inspection::Reader & Reader);
