@@ -14,6 +14,7 @@ namespace Inspection
 	namespace TypeDefinition
 	{
 		class Cast;
+		class Divide;
 		class Equals;
 		class Length;
 		class Parameter;
@@ -42,6 +43,7 @@ namespace Inspection
 		void Load(const std::string & TypePath);
 	private:
 		void _LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement);
+		void _LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement);
 		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
 		void _LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement);
 		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);

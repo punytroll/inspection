@@ -206,6 +206,7 @@ namespace Inspection
 			{
 				Unknown,
 				Cast,
+				Divide,
 				Equals,
 				Value
 			};
@@ -213,6 +214,7 @@ namespace Inspection
 			Statement(void) :
 				Type{Inspection::TypeDefinition::Statement::Type::Unknown},
 				Cast{nullptr},
+				Divide{nullptr},
 				Equals{nullptr},
 				Value{nullptr}
 			{
@@ -223,10 +225,12 @@ namespace Inspection
 			Statement(Inspection::TypeDefinition::Statement && Statement) :
 				Type{Statement.Type},
 				Cast{Statement.Cast},
+				Divide{Statement.Divide},
 				Equals{Statement.Equals},
 				Value{Statement.Value}
 			{
 				Statement.Cast = nullptr;
+				Statement.Divide = nullptr;
 				Statement.Equals = nullptr;
 				Statement.Value = nullptr;
 			}
@@ -236,6 +240,7 @@ namespace Inspection
 			Inspection::TypeDefinition::Statement::Type Type;
 			// content depending on type
 			Inspection::TypeDefinition::Cast * Cast;
+			Inspection::TypeDefinition::Divide * Divide;
 			Inspection::TypeDefinition::Equals * Equals;
 			Inspection::ValueDescriptor * Value;
 		};
@@ -254,6 +259,21 @@ namespace Inspection
 			
 			Inspection::DataType DataType;
 			Inspection::TypeDefinition::Statement Statement;
+		};
+		
+		class Divide
+		{
+		public:
+			Divide(void)
+			{
+			}
+			
+			Divide(Inspection::TypeDefinition::Divide && Divide) = default;
+			
+			Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
+			
+			Inspection::TypeDefinition::Statement Dividend;
+			Inspection::TypeDefinition::Statement Divisor;
 		};
 		
 		class Equals
@@ -526,6 +546,7 @@ namespace Inspection
 	
 	namespace Algorithms
 	{
+		std::experimental::any Divide(const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		std::experimental::any GetAnyFromCast(const Inspection::TypeDefinition::Cast & Cast, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		
 		template< typename Type >
@@ -573,6 +594,12 @@ namespace Inspection
 					
 					return Parameters.at(Value.ParameterReference->Name);
 				}
+			case Inspection::DataType::SinglePrecisionReal:
+				{
+					assert(Value.SinglePrecisionReal);
+					
+					return Value.SinglePrecisionReal.value();
+				}
 			case Inspection::DataType::String:
 				{
 					assert(Value.String);
@@ -595,6 +622,12 @@ namespace Inspection
 					assert(Statement.Cast != nullptr);
 					
 					return Inspection::Algorithms::GetAnyFromCast(*(Statement.Cast), CurrentValue, Parameters);
+				}
+			case Inspection::TypeDefinition::Statement::Type::Divide:
+				{
+					assert(Statement.Divide != nullptr);
+					
+					return Inspection::Algorithms::Divide(Statement.Divide->Dividend, Statement.Divide->Divisor, CurrentValue, Parameters);
 				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
@@ -660,7 +693,6 @@ namespace Inspection
 		
 		bool Equals(const Inspection::ValueDescriptor & Value1, const Inspection::ValueDescriptor & Value2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 		{
-			auto Result{false};
 			auto Any1{GetAnyFromValueDescriptor(Value1, CurrentValue, Parameters)};
 			auto Any2{GetAnyFromValueDescriptor(Value2, CurrentValue, Parameters)};
 			
@@ -670,11 +702,11 @@ namespace Inspection
 				{
 					if(Any1.type() == typeid(std::uint8_t))
 					{
-						Result = std::experimental::any_cast< std::uint8_t >(Any1) == std::experimental::any_cast< std::uint8_t >(Any2);
+						return std::experimental::any_cast< std::uint8_t >(Any1) == std::experimental::any_cast< std::uint8_t >(Any2);
 					}
 					else if(Any1.type() == typeid(std::uint32_t))
 					{
-						Result = std::experimental::any_cast< std::uint32_t >(Any1) == std::experimental::any_cast< std::uint32_t >(Any2);
+						return std::experimental::any_cast< std::uint32_t >(Any1) == std::experimental::any_cast< std::uint32_t >(Any2);
 					}
 					else
 					{
@@ -683,7 +715,7 @@ namespace Inspection
 				}
 			}
 			
-			return Result;
+			return false;
 		}
 		
 		bool Equals(const Inspection::TypeDefinition::Statement & Statement1, const Inspection::TypeDefinition::Statement & Statement2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -706,6 +738,23 @@ namespace Inspection
 			{
 				assert(false);
 			}
+		}
+		
+		std::experimental::any Divide(const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		{
+			auto AnyDivident{Inspection::Algorithms::GetAnyFromStatement(Dividend, CurrentValue, Parameters)};
+			auto AnyDivisor{Inspection::Algorithms::GetAnyFromStatement(Divisor, CurrentValue, Parameters)};
+			
+			if((AnyDivident.type() == typeid(float)) && (AnyDivisor.type() == typeid(float)))
+			{
+				return std::experimental::any_cast< float >(AnyDivident) / std::experimental::any_cast< float >(AnyDivisor);
+			}
+			else
+			{
+				assert(false);
+			}
+			
+			return nullptr;
 		}
 	}
 	
@@ -1464,6 +1513,29 @@ void Inspection::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const 
 	assert(Cast.DataType != Inspection::DataType::Unknown);
 }
 
+void Inspection::Type::_LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement)
+{
+	bool First{true};
+	
+	for(auto DivideChildNode : DivideElement->GetChilds())
+	{
+		if(DivideChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto DivideChildElement{dynamic_cast< const XML::Element * >(DivideChildNode)};
+			
+			if(First == true)
+			{
+				_LoadStatement(Divide.Dividend, DivideChildElement);
+				First = false;
+			}
+			else
+			{
+				_LoadStatement(Divide.Divisor, DivideChildElement);
+			}
+		}
+	}
+}
+
 void Inspection::Type::_LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretationElement)
 {
 	assert(InterpretationElement->GetName() == "interpretation");
@@ -1660,7 +1732,13 @@ void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & St
 {
 	assert(Statement.Type == Inspection::TypeDefinition::Statement::Type::Unknown);
 	// statement element may be nullptr, if it represents the "nothing" value
-	if((StatementElement != nullptr) && (StatementElement->GetName() == "equals"))
+	if((StatementElement != nullptr) && (StatementElement->GetName() == "divide"))
+	{
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Divide;
+		Statement.Divide = new Inspection::TypeDefinition::Divide{};
+		_LoadDivide(*(Statement.Divide), StatementElement);
+	}
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "equals"))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Equals;
 		Statement.Equals = new Inspection::TypeDefinition::Equals{};

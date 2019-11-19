@@ -6827,7 +6827,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_NameCode"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_NameCode"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("NameCode", PartResult->GetValue());
@@ -6837,7 +6837,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_OriginatorCode"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_OriginatorCode"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("OriginatorCode", PartResult->GetValue());
@@ -6847,7 +6847,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_SignBit"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_SignBit"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SignBit", PartResult->GetValue());
@@ -6857,7 +6857,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_ID3_ReplayGainAdjustment_ReplayGainAdjustment(PartReader)};
+		auto PartResult{Inspection::g_TypeRepository.Get({"ID3", "ReplayGainAdjustment_ReplayGainAdjustment"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ReplayGainAdjustment", PartResult->GetValue());
@@ -6874,33 +6874,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment(I
 			ReplayGainAdjustment *= -1.0f;
 		}
 		Result->GetValue()->AddTag("interpretation", to_string_cast(ReplayGainAdjustment) + " dB");
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		auto ReplayGainAdjustment{static_cast< float >(std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetData()))};
-		
-		Result->GetValue()->AddTag("interpretation", ReplayGainAdjustment / 10.0f);
 	}
 	// finalization
 	Result->SetSuccess(Continue);

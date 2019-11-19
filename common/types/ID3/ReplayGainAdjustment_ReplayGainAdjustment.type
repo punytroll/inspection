@@ -1,0 +1,18 @@
+<type>
+	<forward>
+		<type-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>9Bit_BigEndian</part>
+		</type-reference>
+		<tag name="interpretation">
+			<divide>
+				<single-precision-real>
+					<data-reference/>
+				</single-precision-real>
+				<single-precision-real>10.0</single-precision-real>
+			</divide>
+		</tag>
+	</forward>
+</type>

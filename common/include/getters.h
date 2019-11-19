@@ -129,7 +129,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ID3_2_Tag(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_2_Tag_Header(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_ReplayGainAdjustment(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_ID3_ReplayGainAdjustment_ReplayGainAdjustment(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
