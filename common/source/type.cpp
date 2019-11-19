@@ -193,15 +193,19 @@ namespace Inspection
 		Inspection::Interpretation::Type Type;
 	};
 	
+	class Equals;
+	
 	class Statement
 	{
 	public:
 		enum class Type
 		{
+			Equals,
 			Value
 		};
 		
 		Inspection::Statement::Type Type;
+		Inspection::Equals * Equals;
 		Inspection::ValueDescriptor * Value;
 	};
 	
@@ -210,18 +214,6 @@ namespace Inspection
 	public:
 		Inspection::Statement Statement1;
 		Inspection::Statement Statement2;
-	};
-	
-	class Verification
-	{
-	public:
-		enum class Type
-		{
-			Equals
-		};
-		
-		Inspection::Verification::Type Type;
-		std::experimental::optional< Inspection::Equals > Equals;
 	};
 	
 	class Tag
@@ -248,7 +240,7 @@ namespace Inspection
 		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
 		std::vector< Inspection::Tag > Tags;
 		Inspection::PartDescriptor::Type Type;
-		std::vector< Inspection::Verification > Verifications;
+		std::vector< Inspection::Statement > Verifications;
 	};
 	
 	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -675,14 +667,14 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 					// verification
 					if(Continue == true)
 					{
-						for(auto & Verification : PartDescriptor.Verifications)
+						for(auto & Statement : PartDescriptor.Verifications)
 						{
-							switch(Verification.Type)
+							switch(Statement.Type)
 							{
-							case Inspection::Verification::Type::Equals:
+							case Inspection::Statement::Type::Equals:
 								{
-									assert(Verification.Equals);
-									Continue = Inspection::Algorithms::Equals(Verification.Equals->Statement1, Verification.Equals->Statement2, PartResult->GetValue(), Parameters);
+									assert(Statement.Equals);
+									Continue = Inspection::Algorithms::Equals(Statement.Equals->Statement1, Statement.Equals->Statement2, PartResult->GetValue(), Parameters);
 									if(Continue == false)
 									{
 										Result->GetValue()->AddTag("error", "Failed to verify a value."s);
@@ -1240,8 +1232,8 @@ void Inspection::Type::Load(const std::string & TypePath)
 										
 										if(GetterPartVerificationChildElement->GetName() == "equals")
 										{
-											Verification.Type = Inspection::Verification::Type::Equals;
-											Verification.Equals.emplace();
+											Verification.Type = Inspection::Statement::Type::Equals;
+											Verification.Equals = new Inspection::Equals{};
 											
 											bool First{true};
 											
