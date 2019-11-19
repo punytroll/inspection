@@ -19,9 +19,11 @@
 		</type-reference>
 		<length>
 			<bytes>
-				<data-reference cast-to-type="unsigned integer 64bit">
-					<field>Length</field>
-				</data-reference>
+				<unsigned-integer-64bit>
+					<data-reference>
+						<field>Length</field>
+					</data-reference>
+				</unsigned-integer-64bit>
 			</bytes>
 			<bits>
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>

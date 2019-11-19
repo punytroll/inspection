@@ -21,10 +21,12 @@
 				<string>APETagsItem</string>
 			</parameter>
 			<parameter name="NumberOfElements">
-				<data-reference cast-to-type="unsigned integer 64bit">
-					<field>APETagsHeader</field>
-					<field>ItemCount</field>
-				</data-reference>
+				<unsigned-integer-64bit>
+					<data-reference>
+						<field>APETagsHeader</field>
+						<field>ItemCount</field>
+					</data-reference>
+				</unsigned-integer-64bit>
 			</parameter>
 		</parameters>
 	</field>

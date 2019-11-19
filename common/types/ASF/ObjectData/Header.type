@@ -51,9 +51,11 @@
 				<string>HeaderObject</string>
 			</parameter>
 			<parameter name="NumberOfElements">
-				<data-reference cast-to-type="unsigned integer 64bit">
-					<field>NumberOfHeaderObjects</field>
-				</data-reference>
+				<unsigned-integer-64bit>
+					<data-reference>
+						<field>NumberOfHeaderObjects</field>
+					</data-reference>
+				</unsigned-integer-64bit>
 			</parameter>
 		</parameters>
 	</field>

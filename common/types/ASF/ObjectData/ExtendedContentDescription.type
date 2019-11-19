@@ -24,9 +24,11 @@
 				<string>ContentDescriptor</string>
 			</parameter>
 			<parameter name="NumberOfElements">
-				<data-reference cast-to-type="unsigned integer 64bit">
-					<field>ContentDescriptorsCount</field>
-				</data-reference>
+				<unsigned-integer-64bit>
+					<data-reference>
+						<field>ContentDescriptorsCount</field>
+					</data-reference>
+				</unsigned-integer-64bit>
 			</parameter>
 		</parameters>
 	</field>
