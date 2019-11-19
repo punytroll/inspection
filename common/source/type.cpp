@@ -153,13 +153,6 @@ namespace Inspection
 		Inspection::ValueDescriptor ValueDescriptor;
 	};
 	
-	class LengthDescriptor
-	{
-	public:
-		Inspection::ValueDescriptor BytesValueDescriptor;
-		Inspection::ValueDescriptor BitsValueDescriptor;
-	};
-	
 	class Enumeration
 	{
 	public:
@@ -218,6 +211,13 @@ namespace Inspection
 			Inspection::TypeDefinition::Statement Statement2;
 		};
 		
+		class Length
+		{
+		public:
+			Inspection::ValueDescriptor Bytes;
+			Inspection::ValueDescriptor Bits;
+		};
+		
 		class Tag
 		{
 		public:
@@ -240,7 +240,7 @@ namespace Inspection
 		std::experimental::optional< std::string > FieldName;
 		std::experimental::optional< Inspection::TypeReference > TypeReference;
 		std::experimental::optional< Inspection::Interpretation > Interpretation;
-		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
+		std::experimental::optional< Inspection::TypeDefinition::Length > Length;
 		std::vector< Inspection::TypeDefinition::Tag > Tags;
 		Inspection::PartDescriptor::Type Type;
 		std::vector< Inspection::TypeDefinition::Statement > Verifications;
@@ -586,10 +586,10 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 			{
 				Inspection::Reader * PartReader{nullptr};
 				
-				if(PartDescriptor.LengthDescriptor)
+				if(PartDescriptor.Length)
 				{
-					auto Bytes{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor.LengthDescriptor->BytesValueDescriptor, Result->GetValue(), Parameters)};
-					auto Bits{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor.LengthDescriptor->BitsValueDescriptor, Result->GetValue(), Parameters)};
+					auto Bytes{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor.Length->Bytes, Result->GetValue(), Parameters)};
+					auto Bits{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor.Length->Bits, Result->GetValue(), Parameters)};
 					Inspection::Length Length{Bytes, Bits};
 					
 					if(Reader.Has(Length) == true)
@@ -1174,7 +1174,7 @@ void Inspection::Type::Load(const std::string & TypePath)
 							}
 							else if(PartChildElement->GetName() == "length")
 							{
-								PartDescriptor.LengthDescriptor.emplace();
+								PartDescriptor.Length.emplace();
 								for(auto PartLengthChildNode : PartChildElement->GetChilds())
 								{
 									if(PartLengthChildNode->GetNodeType() == XML::NodeType::Element)
@@ -1183,11 +1183,11 @@ void Inspection::Type::Load(const std::string & TypePath)
 										
 										if(PartLengthChildElement->GetName() == "bytes")
 										{
-											_LoadValueDescriptorFromWithin(PartDescriptor.LengthDescriptor->BytesValueDescriptor, PartLengthChildElement);
+											_LoadValueDescriptorFromWithin(PartDescriptor.Length->Bytes, PartLengthChildElement);
 										}
 										else if(PartLengthChildElement->GetName() == "bits")
 										{
-											_LoadValueDescriptorFromWithin(PartDescriptor.LengthDescriptor->BitsValueDescriptor, PartLengthChildElement);
+											_LoadValueDescriptorFromWithin(PartDescriptor.Length->Bits, PartLengthChildElement);
 										}
 										else
 										{
