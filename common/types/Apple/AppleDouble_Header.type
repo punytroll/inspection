@@ -7,9 +7,10 @@
 			<part>32Bit_BigEndian</part>
 		</type-reference>
 		<verification>
-			<value-equals>
+			<equals>
+				<data-reference/>
 				<unsigned-integer-32bit>333319</unsigned-integer-32bit>
-			</value-equals>
+			</equals>
 		</verification>
 	</field>
 	<field name="VersionNumber">
@@ -20,9 +21,10 @@
 			<part>32Bit_BigEndian</part>
 		</type-reference>
 		<verification>
-			<value-equals>
+			<equals>
+				<data-reference/>
 				<unsigned-integer-32bit>131072</unsigned-integer-32bit>
-			</value-equals>
+			</equals>
 		</verification>
 	</field>
 	<field name="Filler">

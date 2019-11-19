@@ -200,24 +200,16 @@ namespace Inspection
 		Inspection::ValueDescriptor Value2;
 	};
 	
-	class ValueEqualsDescriptor
-	{
-	public:
-		Inspection::ValueDescriptor ValueDescriptor;
-	};
-	
 	class VerificationDescriptor
 	{
 	public:
 		enum class Type
 		{
-			Equals,
-			ValueEquals
+			Equals
 		};
 		
 		Inspection::VerificationDescriptor::Type Type;
 		std::experimental::optional< Inspection::EqualsDescriptor > EqualsDescriptor;
-		std::experimental::optional< Inspection::ValueEqualsDescriptor > ValueEqualsDescriptor;
 	};
 	
 	class Statement
@@ -530,6 +522,10 @@ bool Equals(const Inspection::ValueDescriptor & Value1, const Inspection::ValueD
 			{
 				Result = std::experimental::any_cast< std::uint8_t >(Any1) == std::experimental::any_cast< std::uint8_t >(Any2);
 			}
+			else if(Any1.type() == typeid(std::uint32_t))
+			{
+				Result = std::experimental::any_cast< std::uint32_t >(Any1) == std::experimental::any_cast< std::uint32_t >(Any2);
+			}
 			else
 			{
 				assert(false);
@@ -665,34 +661,6 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 									if(Continue == false)
 									{
 										Result->GetValue()->AddTag("error", "Failed to verify a value."s);
-									}
-									
-									break;
-								}
-							case Inspection::VerificationDescriptor::Type::ValueEquals:
-								{
-									assert(VerificationDescriptor.ValueEqualsDescriptor);
-									if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == Inspection::DataType::UnsignedInteger8Bit)
-									{
-										assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit);
-										Continue = std::experimental::any_cast< std::uint8_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value();
-										if(Continue == false)
-										{
-											PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger8Bit.value()) + "\".");
-										}
-									}
-									else if(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.Type == Inspection::DataType::UnsignedInteger32Bit)
-									{
-										assert(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit);
-										Continue = std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetData()) == VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit.value();
-										if(Continue == false)
-										{
-											PartResult->GetValue()->AddTag("error", "The value does not match the required value \"" + to_string_cast(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor.UnsignedInteger32Bit.value()) + "\".");
-										}
-									}
-									else
-									{
-										assert(false);
 									}
 									
 									break;
@@ -1245,13 +1213,7 @@ void Inspection::Type::Load(const std::string & TypePath)
 									{
 										auto GetterPartVerificationChildElement{dynamic_cast< const XML::Element * >(GetterPartVerificationChildNode)};
 										
-										if(GetterPartVerificationChildElement->GetName() == "value-equals")
-										{
-											VerificationDescriptor.Type = Inspection::VerificationDescriptor::Type::ValueEquals;
-											VerificationDescriptor.ValueEqualsDescriptor.emplace();
-											_LoadValueDescriptorFromWithin(VerificationDescriptor.ValueEqualsDescriptor->ValueDescriptor, GetterPartVerificationChildElement);
-										}
-										else if(GetterPartVerificationChildElement->GetName() == "equals")
+										if(GetterPartVerificationChildElement->GetName() == "equals")
 										{
 											VerificationDescriptor.Type = Inspection::VerificationDescriptor::Type::Equals;
 											VerificationDescriptor.EqualsDescriptor.emplace();
