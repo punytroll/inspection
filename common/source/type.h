@@ -15,6 +15,7 @@ namespace Inspection
 	{
 		class Equals;
 		class Length;
+		class Parameter;
 		class Statement;
 		class Tag;
 	};

@@ -127,8 +127,6 @@ namespace Inspection
 		std::string Name;
 	};
 	
-	class ActualParameterDescriptor;
-	
 	class ValueDescriptor
 	{
 	public:
@@ -137,20 +135,13 @@ namespace Inspection
 		std::experimental::optional< Inspection::DataReference > DataReference;
 		std::experimental::optional< Inspection::TypeReference > TypeReference;
 		std::experimental::optional< Inspection::ParameterReference > ParameterReference;
-		std::experimental::optional< std::vector< Inspection::ActualParameterDescriptor > > Parameters;
+		std::experimental::optional< std::vector< Inspection::TypeDefinition::Parameter > > Parameters;
 		std::experimental::optional< float > SinglePrecisionReal;
 		std::experimental::optional< std::string > String;
 		std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
 		std::experimental::optional< std::uint16_t > UnsignedInteger16Bit;
 		std::experimental::optional< std::uint32_t > UnsignedInteger32Bit;
 		std::experimental::optional< std::uint64_t > UnsignedInteger64Bit;
-	};
-	
-	class ActualParameterDescriptor
-	{
-	public:
-		std::string Name;
-		Inspection::ValueDescriptor ValueDescriptor;
 	};
 	
 	class Enumeration
@@ -216,6 +207,13 @@ namespace Inspection
 			Inspection::TypeDefinition::Statement Bits;
 		};
 		
+		class Parameter
+		{
+		public:
+			std::string Name;
+			Inspection::ValueDescriptor ValueDescriptor;
+		};
+		
 		class Tag
 		{
 		public:
@@ -234,7 +232,7 @@ namespace Inspection
 			Forward
 		};
 		
-		std::vector< Inspection::ActualParameterDescriptor > ActualParameterDescriptors;
+		std::vector< Inspection::TypeDefinition::Parameter > Parameters;
 		std::experimental::optional< std::string > FieldName;
 		std::experimental::optional< Inspection::TypeReference > TypeReference;
 		std::experimental::optional< Inspection::Interpretation > Interpretation;
@@ -412,33 +410,33 @@ namespace Inspection
 		return Result;
 	}
 	
-	void FillNewParameters(std::unordered_map< std::string, std::experimental::any > & NewParameters, const std::vector< Inspection::ActualParameterDescriptor > & ParameterDescriptors, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	void FillNewParameters(std::unordered_map< std::string, std::experimental::any > & NewParameters, const std::vector< Inspection::TypeDefinition::Parameter > & ParameterDefinitions, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
-		for(auto & ParameterDescriptor : ParameterDescriptors)
+		for(auto & ParameterDefinition : ParameterDefinitions)
 		{
-			if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::String)
+			if(ParameterDefinition.ValueDescriptor.Type == Inspection::DataType::String)
 			{
-				NewParameters.emplace(ParameterDescriptor.Name, GetDataFromValueDescriptor< std::string >(ParameterDescriptor.ValueDescriptor, CurrentValue, Parameters));
+				NewParameters.emplace(ParameterDefinition.Name, GetDataFromValueDescriptor< std::string >(ParameterDefinition.ValueDescriptor, CurrentValue, Parameters));
 			}
-			else if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::DataReference)
+			else if(ParameterDefinition.ValueDescriptor.Type == Inspection::DataType::DataReference)
 			{
-				assert(ParameterDescriptor.ValueDescriptor.DataReference);
+				assert(ParameterDefinition.ValueDescriptor.DataReference);
 				
-				auto & ValueAny{GetAnyReferenceByDataReference(ParameterDescriptor.ValueDescriptor.DataReference.value(), CurrentValue, Parameters)};
+				auto & ValueAny{GetAnyReferenceByDataReference(ParameterDefinition.ValueDescriptor.DataReference.value(), CurrentValue, Parameters)};
 				
-				if(!ParameterDescriptor.ValueDescriptor.DataReference->CastToType)
+				if(!ParameterDefinition.ValueDescriptor.DataReference->CastToType)
 				{
-					NewParameters.emplace(ParameterDescriptor.Name, ValueAny);
+					NewParameters.emplace(ParameterDefinition.Name, ValueAny);
 				}
-				else if(ParameterDescriptor.ValueDescriptor.DataReference->CastToType.value() == Inspection::DataType::UnsignedInteger64Bit)
+				else if(ParameterDefinition.ValueDescriptor.DataReference->CastToType.value() == Inspection::DataType::UnsignedInteger64Bit)
 				{
 					if(ValueAny.type() == typeid(std::uint16_t))
 					{
-						NewParameters.emplace(ParameterDescriptor.Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint16_t >(ValueAny)));
+						NewParameters.emplace(ParameterDefinition.Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint16_t >(ValueAny)));
 					}
 					else if(ValueAny.type() == typeid(std::uint32_t))
 					{
-						NewParameters.emplace(ParameterDescriptor.Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint32_t >(ValueAny)));
+						NewParameters.emplace(ParameterDefinition.Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint32_t >(ValueAny)));
 					}
 					else
 					{
@@ -450,37 +448,37 @@ namespace Inspection
 					assert(false);
 				}
 			}
-			else if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::TypeReference)
+			else if(ParameterDefinition.ValueDescriptor.Type == Inspection::DataType::TypeReference)
 			{
-				assert(ParameterDescriptor.ValueDescriptor.TypeReference);
-				NewParameters.emplace(ParameterDescriptor.Name, ParameterDescriptor.ValueDescriptor.TypeReference->Parts);
+				assert(ParameterDefinition.ValueDescriptor.TypeReference);
+				NewParameters.emplace(ParameterDefinition.Name, ParameterDefinition.ValueDescriptor.TypeReference->Parts);
 			}
-			else if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::Parameters)
+			else if(ParameterDefinition.ValueDescriptor.Type == Inspection::DataType::Parameters)
 			{
-				assert(ParameterDescriptor.ValueDescriptor.Parameters);
+				assert(ParameterDefinition.ValueDescriptor.Parameters);
 				
 				std::unordered_map< std::string, std::experimental::any > InnerParameters;
 				
-				FillNewParameters(InnerParameters, ParameterDescriptor.ValueDescriptor.Parameters.value(), CurrentValue, Parameters);
-				NewParameters.emplace(ParameterDescriptor.Name, InnerParameters);
+				FillNewParameters(InnerParameters, ParameterDefinition.ValueDescriptor.Parameters.value(), CurrentValue, Parameters);
+				NewParameters.emplace(ParameterDefinition.Name, InnerParameters);
 			}
-			else if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::ParameterReference)
+			else if(ParameterDefinition.ValueDescriptor.Type == Inspection::DataType::ParameterReference)
 			{
-				assert(ParameterDescriptor.ValueDescriptor.ParameterReference);
+				assert(ParameterDefinition.ValueDescriptor.ParameterReference);
 				
-				auto & Any{Parameters.at(ParameterDescriptor.ValueDescriptor.ParameterReference->Name)};
+				auto & Any{Parameters.at(ParameterDefinition.ValueDescriptor.ParameterReference->Name)};
 				
-				if(!ParameterDescriptor.ValueDescriptor.ParameterReference->CastToType)
+				if(!ParameterDefinition.ValueDescriptor.ParameterReference->CastToType)
 				{
-					NewParameters.emplace(ParameterDescriptor.Name, Any);
+					NewParameters.emplace(ParameterDefinition.Name, Any);
 				}
 				else
 				{
-					if(ParameterDescriptor.ValueDescriptor.ParameterReference->CastToType.value() == Inspection::DataType::UnsignedInteger64Bit)
+					if(ParameterDefinition.ValueDescriptor.ParameterReference->CastToType.value() == Inspection::DataType::UnsignedInteger64Bit)
 					{
 						if(Any.type() == typeid(std::uint8_t))
 						{
-							NewParameters.emplace(ParameterDescriptor.Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint8_t >(Any)));
+							NewParameters.emplace(ParameterDefinition.Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint8_t >(Any)));
 						}
 						else
 						{
@@ -622,7 +620,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 				{
 					std::unordered_map< std::string, std::experimental::any > NewParameters;
 					
-					FillNewParameters(NewParameters, PartDescriptor.ActualParameterDescriptors, Result->GetValue(), Parameters);
+					FillNewParameters(NewParameters, PartDescriptor.Parameters, Result->GetValue(), Parameters);
 					
 					auto PartResult{g_TypeRepository.Get(PartDescriptor.TypeReference->Parts, *PartReader, NewParameters)};
 					
@@ -1199,13 +1197,13 @@ void Inspection::Type::Load(const std::string & TypePath)
 										
 										if(PartParametersChildElement->GetName() == "parameter")
 										{
-											PartDescriptor.ActualParameterDescriptors.emplace_back();
+											PartDescriptor.Parameters.emplace_back();
 											
-											auto & ActualParameterDescriptor{PartDescriptor.ActualParameterDescriptors.back()};
+											auto & Parameter{PartDescriptor.Parameters.back()};
 											
 											assert(PartParametersChildElement->HasAttribute("name") == true);
-											ActualParameterDescriptor.Name = PartParametersChildElement->GetAttribute("name");
-											_LoadValueDescriptorFromWithin(ActualParameterDescriptor.ValueDescriptor, PartParametersChildElement);
+											Parameter.Name = PartParametersChildElement->GetAttribute("name");
+											_LoadValueDescriptorFromWithin(Parameter.ValueDescriptor, PartParametersChildElement);
 										}
 										else
 										{
