@@ -12,6 +12,19 @@ using namespace std::string_literals;
 
 namespace Inspection
 {
+	bool HasChildElements(const XML::Element * Element)
+	{
+		for(auto ChildNode : Element->GetChilds())
+		{
+			if(ChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	enum class DataType
 	{
 		Unknown,
@@ -63,19 +76,19 @@ namespace Inspection
 		{
 			return Inspection::DataType::TypeReference;
 		}
-		else if(String == "unsigned integer 8bit")
+		else if((String == "unsigned integer 8bit") || (String == "unsigned-integer-8bit"))
 		{
 			return Inspection::DataType::UnsignedInteger8Bit;
 		}
-		else if(String == "unsigned integer 16bit")
+		else if((String == "unsigned integer 16bit") || (String == "unsigned-integer-16bit"))
 		{
 			return Inspection::DataType::UnsignedInteger16Bit;
 		}
-		else if(String == "unsigned integer 32bit")
+		else if((String == "unsigned integer 32bit") || (String == "unsigned-integer-32bit"))
 		{
 			return Inspection::DataType::UnsignedInteger32Bit;
 		}
-		else if(String == "unsigned integer 64bit")
+		else if((String == "unsigned integer 64bit") || (String == "unsigned-integer-64bit"))
 		{
 			return Inspection::DataType::UnsignedInteger64Bit;
 		}
@@ -193,13 +206,23 @@ namespace Inspection
 		public:
 			enum class Type
 			{
+				Cast,
 				Equals,
 				Value
 			};
 			
 			Inspection::TypeDefinition::Statement::Type Type;
+			// content depending on type
+			Inspection::TypeDefinition::Cast * Cast;
 			Inspection::TypeDefinition::Equals * Equals;
 			Inspection::ValueDescriptor * Value;
+		};
+		
+		class Cast
+		{
+		public:
+			Inspection::DataType DataType;
+			Inspection::TypeDefinition::Statement Statement;
 		};
 		
 		class Equals
@@ -422,16 +445,82 @@ namespace Inspection
 	namespace Algorithms
 	{
 		template< typename Type >
-		Type GetDataFromStatement(const Inspection::TypeDefinition::Statement & Statement, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		Type Cast(const std::experimental::any & Any)
 		{
-			if(Statement.Type == Inspection::TypeDefinition::Statement::Type::Value)
+			if(Any.type() == typeid(std::uint8_t))
 			{
-				assert(Statement.Value != nullptr);
-				return GetDataFromValueDescriptor< Type >(*(Statement.Value), CurrentValue, Parameters);
+				return Type{std::experimental::any_cast< std::uint8_t >(Any)};
 			}
 			else
 			{
 				assert(false);
+			}
+		}
+		
+		std::experimental::any GetAnyFromValue(const Inspection::ValueDescriptor & Value, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		{
+			switch(Value.Type)
+			{
+			case Inspection::DataType::ParameterReference:
+				{
+					assert(Value.ParameterReference);
+					
+					return Parameters.at(Value.ParameterReference->Name);
+				}
+			default:
+				{
+					assert(false);
+				}
+			}
+		}
+		
+		std::experimental::any GetAnyFromStatement(const Inspection::TypeDefinition::Statement & Statement, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		{
+			switch(Statement.Type)
+			{
+			case Inspection::TypeDefinition::Statement::Type::Value:
+				{
+					assert(Statement.Value != nullptr);
+					
+					return GetAnyFromValue(*(Statement.Value), CurrentValue, Parameters);
+				}
+			default:
+				{
+					assert(false);
+				}
+			}
+		}
+		
+		template< typename Type >
+		Type GetDataFromStatement(const Inspection::TypeDefinition::Statement & Statement, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		{
+			switch(Statement.Type)
+			{
+			case Inspection::TypeDefinition::Statement::Type::Value:
+				{
+					assert(Statement.Value != nullptr);
+					
+					return GetDataFromValueDescriptor< Type >(*(Statement.Value), CurrentValue, Parameters);
+				}
+			default:
+				{
+					assert(false);
+				}
+			}
+		}
+		
+		std::experimental::any GetAnyFromCast(const Inspection::TypeDefinition::Cast & Cast, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		{
+			switch(Cast.DataType)
+			{
+			case Inspection::DataType::UnsignedInteger64Bit:
+				{
+					return Inspection::Algorithms::Cast< std::uint64_t >(GetAnyFromStatement(Cast.Statement, CurrentValue, Parameters));
+				}
+			default:
+				{
+					assert(false);
+				}
 			}
 		}
 		
@@ -492,6 +581,13 @@ namespace Inspection
 		{
 			switch(ParameterDefinition.Statement.Type)
 			{
+			case Inspection::TypeDefinition::Statement::Type::Cast:
+				{
+					assert(ParameterDefinition.Statement.Cast != nullptr);
+					NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromCast(*(ParameterDefinition.Statement.Cast), CurrentValue, Parameters));
+					
+					break;
+				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
 					assert(ParameterDefinition.Statement.Value != nullptr);
@@ -537,31 +633,7 @@ namespace Inspection
 					else if(ParameterDefinition.Statement.Value->Type == Inspection::DataType::ParameterReference)
 					{
 						assert(ParameterDefinition.Statement.Value->ParameterReference);
-						
-						auto & Any{Parameters.at(ParameterDefinition.Statement.Value->ParameterReference->Name)};
-						
-						if(!ParameterDefinition.Statement.Value->ParameterReference->CastToType)
-						{
-							NewParameters.emplace(ParameterDefinition.Name, Any);
-						}
-						else
-						{
-							if(ParameterDefinition.Statement.Value->ParameterReference->CastToType.value() == Inspection::DataType::UnsignedInteger64Bit)
-							{
-								if(Any.type() == typeid(std::uint8_t))
-								{
-									NewParameters.emplace(ParameterDefinition.Name, static_cast< std::uint64_t >(std::experimental::any_cast< std::uint8_t >(Any)));
-								}
-								else
-								{
-									assert(false);
-								}
-							}
-							else
-							{
-								assert(false);
-							}
-						}
+						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(*(ParameterDefinition.Statement.Value), CurrentValue, Parameters));
 					}
 					else if(ParameterDefinition.Statement.Value->Type == Inspection::DataType::Parameters)
 					{
@@ -1262,6 +1334,24 @@ void Inspection::Type::Load(const std::string & TypePath)
 	}
 }
 
+void Inspection::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement)
+{
+	assert(Cast.DataType == Inspection::DataType::Unknown);
+	for(auto CastChildNode : CastElement->GetChilds())
+	{
+		if(CastChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			assert(Cast.DataType == Inspection::DataType::Unknown);
+			
+			auto CastChildElement{dynamic_cast< const XML::Element * >(CastChildNode)};
+			
+			Cast.DataType = GetDataTypeFromString(CastElement->GetName());
+			_LoadStatement(Cast.Statement, CastChildElement);
+		}
+	}
+	assert(Cast.DataType != Inspection::DataType::Unknown);
+}
+
 void Inspection::Type::_LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretationElement)
 {
 	assert(InterpretationElement->GetName() == "interpretation");
@@ -1462,6 +1552,12 @@ void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & St
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Equals;
 		Statement.Equals = new Inspection::TypeDefinition::Equals{};
 		_LoadEquals(*(Statement.Equals), StatementElement);
+	}
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "unsigned-integer-64bit") && (HasChildElements(StatementElement) == true))
+	{
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Statement.Cast = new Inspection::TypeDefinition::Cast{};
+		_LoadCast(*(Statement.Cast), StatementElement);
 	}
 	else
 	{

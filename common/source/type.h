@@ -13,6 +13,7 @@ namespace Inspection
 {
 	namespace TypeDefinition
 	{
+		class Cast;
 		class Equals;
 		class Length;
 		class Parameter;
@@ -40,6 +41,7 @@ namespace Inspection
 		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void Load(const std::string & TypePath);
 	private:
+		void _LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement);
 		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
 		void _LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement);
 		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);
