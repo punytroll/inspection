@@ -1,26 +1,28 @@
 <type>
-	<field name="DataLength">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_BigEndian</part>
-		</type-reference>
-	</field>
-	<field name="FirstTrackNumber">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
-	<field name="LastTrackNumber">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="DataLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_BigEndian</part>
+			</type-reference>
+		</field>
+		<field name="FirstTrackNumber">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="LastTrackNumber">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

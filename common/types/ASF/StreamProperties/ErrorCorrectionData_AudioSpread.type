@@ -1,50 +1,52 @@
 <type>
-	<field name="Span">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
-	<field name="VirtualPacketLength">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="VirtualChunkLength">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="SilenceDataLength">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="SilenceData">
-		<type-reference>
-			<part>Buffer</part>
-			<part>UnsignedInteger_8Bit_EndedByLength</part>
-		</type-reference>
-		<length>
-			<bytes>
-				<data-reference>
-					<field>SilenceDataLength</field>
-				</data-reference>
-			</bytes>
-			<bits>
-				<unsigned-integer-64bit>0</unsigned-integer-64bit>
-			</bits>
-		</length>
-	</field>
+	<sequence>
+		<field name="Span">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="VirtualPacketLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="VirtualChunkLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="SilenceDataLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="SilenceData">
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<data-reference>
+						<field>SilenceDataLength</field>
+					</data-reference>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+	</sequence>
 </type>

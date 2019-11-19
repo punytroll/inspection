@@ -1,24 +1,26 @@
 <type>
-	<field name="Identifier">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.3</part>
-			<part>Frame_Header_Identifier</part>
-		</type-reference>
-	</field>
-	<field name="Size">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_BigEndian</part>
-		</type-reference>
-	</field>
-	<field name="Flags">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.3</part>
-			<part>Frame_Header_Flags</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="Identifier">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.3</part>
+				<part>Frame_Header_Identifier</part>
+			</type-reference>
+		</field>
+		<field name="Size">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_BigEndian</part>
+			</type-reference>
+		</field>
+		<field name="Flags">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.3</part>
+				<part>Frame_Header_Flags</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

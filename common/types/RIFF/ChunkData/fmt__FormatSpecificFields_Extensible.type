@@ -1,40 +1,42 @@
 <type>
-	<field name="BitsPerSample">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="ExtensionSize">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="ValidBitsPerSample">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="ChannelMask">
-		<type-reference>
-			<part>RIFF</part>
-			<part>ChunkData</part>
-			<part>fmt__FormatSpecificFields_Extensible_ChannelMask</part>
-		</type-reference>
-	</field>
-	<field name="SubFormat">
-		<type-reference>
-			<part>RIFF</part>
-			<part>ChunkData</part>
-			<part>fmt__FormatSpecificFields_Extensible_SubFormat</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="BitsPerSample">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="ExtensionSize">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="ValidBitsPerSample">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="ChannelMask">
+			<type-reference>
+				<part>RIFF</part>
+				<part>ChunkData</part>
+				<part>fmt__FormatSpecificFields_Extensible_ChannelMask</part>
+			</type-reference>
+		</field>
+		<field name="SubFormat">
+			<type-reference>
+				<part>RIFF</part>
+				<part>ChunkData</part>
+				<part>fmt__FormatSpecificFields_Extensible_SubFormat</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

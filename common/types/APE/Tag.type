@@ -1,39 +1,41 @@
 <type>
-	<field name="APETagsHeader">
-		<type-reference>
-			<part>APE</part>
-			<part>HeaderOrFooter</part>
-		</type-reference>
-	</field>
-	<field name="APETagsItems">
-		<type-reference>
-			<part>Array</part>
-			<part>EndedByNumberOfElements</part>
-		</type-reference>
-		<parameters>
-			<parameter name="ElementType">
-				<type-reference>
-					<part>APE</part>
-					<part>Item</part>
-				</type-reference>
-			</parameter>
-			<parameter name="ElementName">
-				<string>APETagsItem</string>
-			</parameter>
-			<parameter name="NumberOfElements">
-				<unsigned-integer-64bit>
-					<data-reference>
-						<field>APETagsHeader</field>
-						<field>ItemCount</field>
-					</data-reference>
-				</unsigned-integer-64bit>
-			</parameter>
-		</parameters>
-	</field>
-	<field name="APETagsFooter">
-		<type-reference>
-			<part>APE</part>
-			<part>HeaderOrFooter</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="APETagsHeader">
+			<type-reference>
+				<part>APE</part>
+				<part>HeaderOrFooter</part>
+			</type-reference>
+		</field>
+		<field name="APETagsItems">
+			<type-reference>
+				<part>Array</part>
+				<part>EndedByNumberOfElements</part>
+			</type-reference>
+			<parameters>
+				<parameter name="ElementType">
+					<type-reference>
+						<part>APE</part>
+						<part>Item</part>
+					</type-reference>
+				</parameter>
+				<parameter name="ElementName">
+					<string>APETagsItem</string>
+				</parameter>
+				<parameter name="NumberOfElements">
+					<unsigned-integer-64bit>
+						<data-reference>
+							<field>APETagsHeader</field>
+							<field>ItemCount</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</parameter>
+			</parameters>
+		</field>
+		<field name="APETagsFooter">
+			<type-reference>
+				<part>APE</part>
+				<part>HeaderOrFooter</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

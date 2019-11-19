@@ -1,58 +1,60 @@
 <type>
-	<field name="UnshiftedNote">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
-	<field name="FineTune">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Signed</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
-	<field name="Gain">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Signed</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
-	<field name="LowNote">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
-	<field name="HighNote">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
-	<field name="LowVelocity">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
-	<field name="HighVelocity">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="UnshiftedNote">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="FineTune">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Signed</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="Gain">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Signed</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="LowNote">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="HighNote">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="LowVelocity">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="HighVelocity">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

@@ -1,25 +1,27 @@
 <type>
-	<field name="Identifier">
-		<type-reference>
-			<part>String</part>
-			<part>ASCII</part>
-			<part>AlphaNumericOrSpace_EndedByLength</part>
-		</type-reference>
-		<length>
-			<bytes>
-				<unsigned-integer-64bit>4</unsigned-integer-64bit>
-			</bytes>
-			<bits>
-				<unsigned-integer-64bit>0</unsigned-integer-64bit>
-			</bits>
-		</length>
-	</field>
-	<field name="Size">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="Identifier">
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>AlphaNumericOrSpace_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>4</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+		<field name="Size">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

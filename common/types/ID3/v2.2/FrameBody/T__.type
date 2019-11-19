@@ -1,23 +1,25 @@
 <type>
-	<field name="TextEncoding">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.2</part>
-			<part>TextEncoding</part>
-		</type-reference>
-	</field>
-	<field name="Information">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.2</part>
-			<part>TextStringAccordingToEncoding_EndedByTerminationOrLength</part>
-		</type-reference>
-		<parameters>
-			<parameter name="TextEncoding">
-				<data-reference>
-					<field>TextEncoding</field>
-				</data-reference>
-			</parameter>
-		</parameters>
-	</field>
+	<sequence>
+		<field name="TextEncoding">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.2</part>
+				<part>TextEncoding</part>
+			</type-reference>
+		</field>
+		<field name="Information">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.2</part>
+				<part>TextStringAccordingToEncoding_EndedByTerminationOrLength</part>
+			</type-reference>
+			<parameters>
+				<parameter name="TextEncoding">
+					<data-reference>
+						<field>TextEncoding</field>
+					</data-reference>
+				</parameter>
+			</parameters>
+		</field>
+	</sequence>
 </type>

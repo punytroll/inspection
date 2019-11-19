@@ -1,76 +1,78 @@
 <type>
-	<field name="MagicNumber">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_BigEndian</part>
-		</type-reference>
-		<verification>
-			<equals>
-				<data-reference/>
-				<unsigned-integer-32bit>333319</unsigned-integer-32bit>
-			</equals>
-		</verification>
-	</field>
-	<field name="VersionNumber">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_BigEndian</part>
-		</type-reference>
-		<verification>
-			<equals>
-				<data-reference/>
-				<unsigned-integer-32bit>131072</unsigned-integer-32bit>
-			</equals>
-		</verification>
-	</field>
-	<field name="Filler">
-		<type-reference>
-			<part>Data</part>
-			<part>Unset_EndedByLength</part>
-		</type-reference>
-		<length>
-			<bytes>
-				<unsigned-integer-64bit>16</unsigned-integer-64bit>
-			</bytes>
-			<bits>
-				<unsigned-integer-64bit>0</unsigned-integer-64bit>
-			</bits>
-		</length>
-	</field>
-	<field name="NumberOfEntries">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_BigEndian</part>
-		</type-reference>
-	</field>
-	<field name="EntryDescriptors">
-		<type-reference>
-			<part>Array</part>
-			<part>EndedByNumberOfElements</part>
-		</type-reference>
-		<parameters>
-			<parameter name="ElementType">
-				<type-reference>
-					<part>Apple</part>
-					<part>AppleDouble_EntryDescriptor</part>
-				</type-reference>
-			</parameter>
-			<parameter name="ElementName">
-				<string>EntryDescriptor</string>
-			</parameter>
-			<parameter name="NumberOfElements">
-				<unsigned-integer-64bit>
-					<data-reference>
-						<field>NumberOfEntries</field>
-					</data-reference>
-				</unsigned-integer-64bit>
-			</parameter>
-		</parameters>
-	</field>
+	<sequence>
+		<field name="MagicNumber">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_BigEndian</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference/>
+					<unsigned-integer-32bit>333319</unsigned-integer-32bit>
+				</equals>
+			</verification>
+		</field>
+		<field name="VersionNumber">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_BigEndian</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference/>
+					<unsigned-integer-32bit>131072</unsigned-integer-32bit>
+				</equals>
+			</verification>
+		</field>
+		<field name="Filler">
+			<type-reference>
+				<part>Data</part>
+				<part>Unset_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>16</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+		<field name="NumberOfEntries">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_BigEndian</part>
+			</type-reference>
+		</field>
+		<field name="EntryDescriptors">
+			<type-reference>
+				<part>Array</part>
+				<part>EndedByNumberOfElements</part>
+			</type-reference>
+			<parameters>
+				<parameter name="ElementType">
+					<type-reference>
+						<part>Apple</part>
+						<part>AppleDouble_EntryDescriptor</part>
+					</type-reference>
+				</parameter>
+				<parameter name="ElementName">
+					<string>EntryDescriptor</string>
+				</parameter>
+				<parameter name="NumberOfElements">
+					<unsigned-integer-64bit>
+						<data-reference>
+							<field>NumberOfEntries</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</parameter>
+			</parameters>
+		</field>
+	</sequence>
 </type>

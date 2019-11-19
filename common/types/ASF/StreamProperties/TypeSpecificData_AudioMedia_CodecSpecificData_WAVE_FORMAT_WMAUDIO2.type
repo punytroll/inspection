@@ -1,26 +1,28 @@
 <type>
-	<field name="SamplesPerBlock">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="EncodeOptions">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="SuperBlockAlign">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="SamplesPerBlock">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="EncodeOptions">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="SuperBlockAlign">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

@@ -1,62 +1,64 @@
 <type>
-	<field name="NumberOfHeaderObjects">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="Reserved1">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-		<verification>
-			<equals>
-				<data-reference/>
-				<unsigned-integer-8bit>1</unsigned-integer-8bit>
-			</equals>
-		</verification>
-	</field>
-	<field name="Reserved2">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>8Bit</part>
-		</type-reference>
-		<verification>
-			<equals>
-				<data-reference/>
-				<unsigned-integer-8bit>2</unsigned-integer-8bit>
-			</equals>
-		</verification>
-	</field>
-	<field name="HeaderObjects">
-		<type-reference>
-			<part>Array</part>
-			<part>EndedByNumberOfElements</part>
-		</type-reference>
-		<parameters>
-			<parameter name="ElementType">
-				<type-reference>
-					<part>ASF</part>
-					<part>Object</part>
-				</type-reference>
-			</parameter>
-			<parameter name="ElementName">
-				<string>HeaderObject</string>
-			</parameter>
-			<parameter name="NumberOfElements">
-				<unsigned-integer-64bit>
-					<data-reference>
-						<field>NumberOfHeaderObjects</field>
-					</data-reference>
-				</unsigned-integer-64bit>
-			</parameter>
-		</parameters>
-	</field>
+	<sequence>
+		<field name="NumberOfHeaderObjects">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="Reserved1">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference/>
+					<unsigned-integer-8bit>1</unsigned-integer-8bit>
+				</equals>
+			</verification>
+		</field>
+		<field name="Reserved2">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference/>
+					<unsigned-integer-8bit>2</unsigned-integer-8bit>
+				</equals>
+			</verification>
+		</field>
+		<field name="HeaderObjects">
+			<type-reference>
+				<part>Array</part>
+				<part>EndedByNumberOfElements</part>
+			</type-reference>
+			<parameters>
+				<parameter name="ElementType">
+					<type-reference>
+						<part>ASF</part>
+						<part>Object</part>
+					</type-reference>
+				</parameter>
+				<parameter name="ElementName">
+					<string>HeaderObject</string>
+				</parameter>
+				<parameter name="NumberOfElements">
+					<unsigned-integer-64bit>
+						<data-reference>
+							<field>NumberOfHeaderObjects</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</parameter>
+			</parameters>
+		</field>
+	</sequence>
 </type>

@@ -342,35 +342,37 @@ namespace Inspection
 			delete Equals;
 			delete Value;
 		}
-	}
 	
-	class PartDescriptor
-	{
-	public:
-		enum class Type
+		class Part
 		{
-			Field,
-			Fields,
-			Forward
-		};
-		
-		PartDescriptor(void)
-		{
-		}
+		public:
+			enum class Type
+			{
+				Field,
+				Fields,
+				Forward,
+				Sequence
+			};
 			
-		PartDescriptor(Inspection::PartDescriptor && PartDescriptor) = default;
-		
-		PartDescriptor(const Inspection::PartDescriptor & PartDescriptor) = delete;
-		
-		std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
-		std::experimental::optional< std::string > FieldName;
-		std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-		std::experimental::optional< Inspection::Interpretation > Interpretation;
-		std::experimental::optional< Inspection::TypeDefinition::Length > Length;
-		std::vector< Inspection::TypeDefinition::Tag > Tags;
-		Inspection::PartDescriptor::Type Type;
-		std::vector< Inspection::TypeDefinition::Statement > Verifications;
-	};
+			Part(void)
+			{
+			}
+				
+			Part(Inspection::TypeDefinition::Part && Part) = default;
+			
+			Part(const Inspection::TypeDefinition::Part & Part) = delete;
+			
+			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
+			std::experimental::optional< std::string > FieldName;
+			std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
+			std::experimental::optional< Inspection::Interpretation > Interpretation;
+			std::experimental::optional< Inspection::TypeDefinition::Length > Length;
+			std::experimental::optional< std::vector< Inspection::TypeDefinition::Part > > Parts;
+			std::vector< Inspection::TypeDefinition::Tag > Tags;
+			Inspection::TypeDefinition::Part::Type Type;
+			std::vector< Inspection::TypeDefinition::Statement > Verifications;
+		};
+	}
 	
 	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::TypeDefinition::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
@@ -821,12 +823,14 @@ namespace Inspection
 }
 
 Inspection::Type::Type(Inspection::TypeRepository * TypeRepository) :
+	_Part{nullptr},
 	_TypeRepository{TypeRepository}
 {
 }
 
 Inspection::Type::~Type(void)
 {
+	delete _Part;
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -844,127 +848,13 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 			Continue = HardcodedResult->GetSuccess();
 			Result->SetValue(HardcodedResult->GetValue());
 		}
+		else if(_Part != nullptr)
+		{
+			Continue = _GetPart(*_Part, Result, Result->GetValue(), Reader, Parameters);
+		}
 		else
 		{
-			for(auto & PartDescriptor : _PartDescriptors)
-			{
-				Inspection::Reader * PartReader{nullptr};
-				
-				if(PartDescriptor.Length)
-				{
-					auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(PartDescriptor.Length->Bytes, Result->GetValue(), Parameters)};
-					auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(PartDescriptor.Length->Bits, Result->GetValue(), Parameters)};
-					Inspection::Length Length{Bytes, Bits};
-					
-					if(Reader.Has(Length) == true)
-					{
-						PartReader = new Inspection::Reader{Reader, Length};
-					}
-					else
-					{
-						Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
-						Continue = false;
-					}
-				}
-				else
-				{
-					PartReader = new Inspection::Reader{Reader};
-				}
-				if(PartReader != nullptr)
-				{
-					std::unordered_map< std::string, std::experimental::any > NewParameters;
-					
-					if(PartDescriptor.Parameters)
-					{
-						FillNewParameters(NewParameters, PartDescriptor.Parameters.value(), Result->GetValue(), Parameters);
-					}
-					
-					auto PartResult{g_TypeRepository.Get(PartDescriptor.TypeReference->Parts, *PartReader, NewParameters)};
-					
-					Continue = PartResult->GetSuccess();
-					switch(PartDescriptor.Type)
-					{
-					case Inspection::PartDescriptor::Type::Field:
-						{
-							assert(PartDescriptor.FieldName);
-							Result->GetValue()->AppendField(PartDescriptor.FieldName.value(), PartResult->GetValue());
-							
-							break;
-						}
-					case Inspection::PartDescriptor::Type::Fields:
-						{
-							Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-							
-							break;
-						}
-					case Inspection::PartDescriptor::Type::Forward:
-						{
-							Result->SetValue(PartResult->GetValue());
-							
-							break;
-						}
-					}
-					Reader.AdvancePosition(PartReader->GetConsumedLength());
-					// tags
-					if(Continue == true)
-					{
-						if(PartDescriptor.Tags.empty() == false)
-						{
-							assert((PartDescriptor.Type == Inspection::PartDescriptor::Type::Field) || (PartDescriptor.Type == Inspection::PartDescriptor::Type::Forward));
-							for(auto & Tag : PartDescriptor.Tags)
-							{
-								PartResult->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(Tag.Statement, PartResult->GetValue(), Parameters));
-							}
-						}
-					}
-					// interpretation
-					if(Continue == true)
-					{
-						if(PartDescriptor.Interpretation)
-						{
-							auto EvaluationResult{_ApplyInterpretation(PartDescriptor.Interpretation.value(), PartResult->GetValue(), PartResult->GetValue(), Parameters)};
-							
-							if(EvaluationResult.AbortEvaluation)
-							{
-								if(EvaluationResult.AbortEvaluation.value() == true)
-								{
-									Continue = false;
-								}
-							}
-						}
-					}
-					// verification
-					if(Continue == true)
-					{
-						for(auto & Statement : PartDescriptor.Verifications)
-						{
-							switch(Statement.Type)
-							{
-							case Inspection::TypeDefinition::Statement::Type::Equals:
-								{
-									assert(Statement.Equals);
-									Continue = Inspection::Algorithms::Equals(Statement.Equals->Statement1, Statement.Equals->Statement2, PartResult->GetValue(), Parameters);
-									if(Continue == false)
-									{
-										Result->GetValue()->AddTag("error", "Failed to verify a value."s);
-									}
-									
-									break;
-								}
-							default:
-								{
-									assert(false);
-								}
-							}
-						}
-					}
-					delete PartReader;
-				}
-				if(Continue == false)
-				{
-					break;
-				}
-			}
+			Continue = false;
 		}
 	}
 	// finalization
@@ -972,6 +862,156 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
+}
+
+bool Inspection::Type::_GetPart(const Inspection::TypeDefinition::Part & Part, std::unique_ptr< Inspection::Result > & Result, std::shared_ptr< Inspection::Value > & Target, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+{
+	auto Continue{true};
+	Inspection::Reader * PartReader{nullptr};
+	
+	if(Part.Length)
+	{
+		auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(Part.Length->Bytes, Result->GetValue(), Parameters)};
+		auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(Part.Length->Bits, Result->GetValue(), Parameters)};
+		Inspection::Length Length{Bytes, Bits};
+		
+		if(Reader.Has(Length) == true)
+		{
+			PartReader = new Inspection::Reader{Reader, Length};
+		}
+		else
+		{
+			Target->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
+			Continue = false;
+		}
+	}
+	else
+	{
+		PartReader = new Inspection::Reader{Reader};
+	}
+	if(PartReader != nullptr)
+	{
+		switch(Part.Type)
+		{
+		case Inspection::TypeDefinition::Part::Type::Sequence:
+			{
+				assert(Part.Parts);
+				for(auto & SequencePart : Part.Parts.value())
+				{
+					auto PartResult{_GetPart(SequencePart, Result, Target, *PartReader, Parameters)};
+					
+					Continue = PartResult;
+					if(Continue == false)
+					{
+						break;
+					}
+				}
+				Reader.AdvancePosition(PartReader->GetConsumedLength());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::Part::Type::Field:
+		case Inspection::TypeDefinition::Part::Type::Fields:
+		case Inspection::TypeDefinition::Part::Type::Forward:
+			{
+				std::unordered_map< std::string, std::experimental::any > NewParameters;
+				
+				if(Part.Parameters)
+				{
+					FillNewParameters(NewParameters, Part.Parameters.value(), Result->GetValue(), Parameters);
+				}
+				
+				auto PartResult{g_TypeRepository.Get(Part.TypeReference->Parts, *PartReader, NewParameters)};
+				
+				Continue = PartResult->GetSuccess();
+				switch(Part.Type)
+				{
+				case Inspection::TypeDefinition::Part::Type::Field:
+					{
+						assert(Part.FieldName);
+						Result->GetValue()->AppendField(Part.FieldName.value(), PartResult->GetValue());
+						
+						break;
+					}
+				case Inspection::TypeDefinition::Part::Type::Fields:
+					{
+						Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+						
+						break;
+					}
+				case Inspection::TypeDefinition::Part::Type::Forward:
+					{
+						Result->SetValue(PartResult->GetValue());
+						
+						break;
+					}
+				default:
+					{
+						assert(false);
+					}
+				}
+				Reader.AdvancePosition(PartReader->GetConsumedLength());
+				// tags
+				if(Continue == true)
+				{
+					if(Part.Tags.empty() == false)
+					{
+						assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
+						for(auto & Tag : Part.Tags)
+						{
+							PartResult->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(Tag.Statement, PartResult->GetValue(), Parameters));
+						}
+					}
+				}
+				// interpretation
+				if(Continue == true)
+				{
+					if(Part.Interpretation)
+					{
+						auto EvaluationResult{_ApplyInterpretation(Part.Interpretation.value(), PartResult->GetValue(), PartResult->GetValue(), Parameters)};
+						
+						if(EvaluationResult.AbortEvaluation)
+						{
+							if(EvaluationResult.AbortEvaluation.value() == true)
+							{
+								Continue = false;
+							}
+						}
+					}
+				}
+				// verification
+				if(Continue == true)
+				{
+					for(auto & Statement : Part.Verifications)
+					{
+						switch(Statement.Type)
+						{
+						case Inspection::TypeDefinition::Statement::Type::Equals:
+							{
+								assert(Statement.Equals);
+								Continue = Inspection::Algorithms::Equals(Statement.Equals->Statement1, Statement.Equals->Statement2, PartResult->GetValue(), Parameters);
+								if(Continue == false)
+								{
+									Result->GetValue()->AddTag("error", "Failed to verify a value."s);
+								}
+								
+								break;
+							}
+						default:
+							{
+								assert(false);
+							}
+						}
+					}
+				}
+				
+				break;
+			}
+		}
+		delete PartReader;
+	}
+	
+	return Continue;
 }
 
 Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(const Inspection::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -1045,446 +1085,377 @@ void Inspection::Type::Load(const std::string & TypePath)
 		{
 			if(TypeChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				auto GetterChildElement{dynamic_cast< const XML::Element * >(TypeChildNode)};
+				auto TypeChildElement{dynamic_cast< const XML::Element * >(TypeChildNode)};
 				
-				if(GetterChildElement->GetName() == "hardcoded")
+				if(TypeChildElement->GetName() == "hardcoded")
 				{
-					assert(GetterChildElement->GetChilds().size() == 1);
+					assert(TypeChildElement->GetChilds().size() == 1);
 					
-					auto HardcodedGetterText{dynamic_cast< const XML::Text * >(GetterChildElement->GetChild(0))};
+					auto HardcodedText{dynamic_cast< const XML::Text * >(TypeChildElement->GetChild(0))};
 					
-					assert(HardcodedGetterText != nullptr);
-					if(HardcodedGetterText->GetText() == "Get_APE_Flags")
+					assert(HardcodedText != nullptr);
+					if(HardcodedText->GetText() == "Get_APE_Flags")
 					{
 						_HardcodedGetter = Inspection::Get_APE_Flags;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_APE_Item")
+					else if(HardcodedText->GetText() == "Get_APE_Item")
 					{
 						_HardcodedGetter = Inspection::Get_APE_Item;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Apple_AppleDouble_File")
+					else if(HardcodedText->GetText() == "Get_Apple_AppleDouble_File")
 					{
 						_HardcodedGetter = Inspection::Get_Apple_AppleDouble_File;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByFailureOrLength_ResetPositionOnFailure")
+					else if(HardcodedText->GetText() == "Get_Array_EndedByFailureOrLength_ResetPositionOnFailure")
 					{
 						_HardcodedGetter = Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_Array_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_Array_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Array_EndedByNumberOfElements")
+					else if(HardcodedText->GetText() == "Get_Array_EndedByNumberOfElements")
 					{
 						_HardcodedGetter = Inspection::Get_Array_EndedByNumberOfElements;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_ASCII_String_AlphaNumeric_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_AlphaNumericOrSpace_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_ASCII_String_AlphaNumericOrSpace_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_ASCII_String_Printable_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
+					else if(HardcodedText->GetText() == "Get_ASCII_String_Printable_EndedByTermination")
 					{
 						_HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_DataObject")
+					else if(HardcodedText->GetText() == "Get_ASF_DataObject")
 					{
 						_HardcodedGetter = Get_ASF_DataObject;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor_Data")
+					else if(HardcodedText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor_Data")
 					{
 						_HardcodedGetter = Get_ASF_ExtendedContentDescription_ContentDescriptor_Data;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_HeaderObject")
+					else if(HardcodedText->GetText() == "Get_ASF_HeaderObject")
 					{
 						_HardcodedGetter = Get_ASF_HeaderObject;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_Metadata_DescriptionRecord_Data")
+					else if(HardcodedText->GetText() == "Get_ASF_Metadata_DescriptionRecord_Data")
 					{
 						_HardcodedGetter = Get_ASF_Metadata_DescriptionRecord_Data;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord_Data")
+					else if(HardcodedText->GetText() == "Get_ASF_MetadataLibrary_DescriptionRecord_Data")
 					{
 						_HardcodedGetter = Get_ASF_MetadataLibrary_DescriptionRecord_Data;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_Object")
+					else if(HardcodedText->GetText() == "Get_ASF_Object")
 					{
 						_HardcodedGetter = Get_ASF_Object;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
+					else if(HardcodedText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
 					{
 						_HardcodedGetter = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_CreationDate")
+					else if(HardcodedText->GetText() == "Get_ASF_CreationDate")
 					{
 						_HardcodedGetter = Inspection::Get_ASF_CreationDate;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_GUID")
+					else if(HardcodedText->GetText() == "Get_ASF_GUID")
 					{
 						_HardcodedGetter = Inspection::Get_ASF_GUID;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ASF_FileProperties_Flags")
+					else if(HardcodedText->GetText() == "Get_ASF_FileProperties_Flags")
 					{
 						_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_BitSet_16Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_BitSet_16Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Boolean_1Bit")
+					else if(HardcodedText->GetText() == "Get_Boolean_1Bit")
 					{
 						_HardcodedGetter = Inspection::Get_Boolean_1Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Data_SetOrUnset_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_Data_SetOrUnset_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_Data_SetOrUnset_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Data_Unset_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_Data_Unset_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_Frame")
+					else if(HardcodedText->GetText() == "Get_FLAC_Frame")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_Frame;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_MetaDataBlock")
+					else if(HardcodedText->GetText() == "Get_FLAC_MetaDataBlock")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_MetaDataBlock;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_Stream_Header")
+					else if(HardcodedText->GetText() == "Get_FLAC_Stream_Header")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_Stream_Header;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
+					else if(HardcodedText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
+					else if(HardcodedText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_CalculateBitsPerSample")
+					else if(HardcodedText->GetText() == "Get_FLAC_Subframe_CalculateBitsPerSample")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_Subframe_CalculateBitsPerSample;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_Residual")
+					else if(HardcodedText->GetText() == "Get_FLAC_Subframe_Residual")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_Subframe_Residual;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_FLAC_Subframe_Residual_Rice_Partition")
+					else if(HardcodedText->GetText() == "Get_FLAC_Subframe_Residual_Rice_Partition")
 					{
 						_HardcodedGetter = Inspection::Get_FLAC_Subframe_Residual_Rice_Partition;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_GUID_LittleEndian")
+					else if(HardcodedText->GetText() == "Get_GUID_LittleEndian")
 					{
 						_HardcodedGetter = Inspection::Get_GUID_LittleEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Frame")
+					else if(HardcodedText->GetText() == "Get_ID3_2_2_Frame")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_2_Frame;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_Language")
+					else if(HardcodedText->GetText() == "Get_ID3_2_2_Language")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_2_Language;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination")
+					else if(HardcodedText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+					else if(HardcodedText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame")
+					else if(HardcodedText->GetText() == "Get_ID3_2_3_Frame")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_3_Frame;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Language")
+					else if(HardcodedText->GetText() == "Get_ID3_2_3_Language")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_3_Language;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
+					else if(HardcodedText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination")
+					else if(HardcodedText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+					else if(HardcodedText->GetText() == "Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Frame")
+					else if(HardcodedText->GetText() == "Get_ID3_2_4_Frame")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_4_Frame;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_Language")
+					else if(HardcodedText->GetText() == "Get_ID3_2_4_Language")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_4_Language;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination")
+					else if(HardcodedText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength")
+					else if(HardcodedText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_ReplayGainAdjustment")
+					else if(HardcodedText->GetText() == "Get_ID3_ReplayGainAdjustment")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_ReplayGainAdjustment;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit")
+					else if(HardcodedText->GetText() == "Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
+					else if(HardcodedText->GetText() == "Get_IEC_60908_1999_TableOfContents_Track")
 					{
 						_HardcodedGetter = Inspection::Get_IEC_60908_1999_TableOfContents_Track;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_IEC_60908_1999_TableOfContents_Tracks")
+					else if(HardcodedText->GetText() == "Get_IEC_60908_1999_TableOfContents_Tracks")
 					{
 						_HardcodedGetter = Inspection::Get_IEC_60908_1999_TableOfContents_Tracks;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTermination")
+					else if(HardcodedText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTermination")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
+					else if(HardcodedText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength")
+					else if(HardcodedText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength")
+					else if(HardcodedText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints")
+					else if(HardcodedText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength")
+					else if(HardcodedText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary32")
+					else if(HardcodedText->GetText() == "Get_ISO_IEC_IEEE_60559_2011_binary32")
 					{
 						_HardcodedGetter = Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_MPEG_1_Frame")
+					else if(HardcodedText->GetText() == "Get_MPEG_1_Frame")
 					{
 						_HardcodedGetter = Inspection::Get_MPEG_1_Frame;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_Ogg_Page")
+					else if(HardcodedText->GetText() == "Get_Ogg_Page")
 					{
 						_HardcodedGetter = Inspection::Get_Ogg_Page;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_RIFF_Chunk")
+					else if(HardcodedText->GetText() == "Get_RIFF_Chunk")
 					{
 						_HardcodedGetter = Inspection::Get_RIFF_Chunk;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask")
+					else if(HardcodedText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask")
 					{
 						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat")
+					else if(HardcodedText->GetText() == "Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat")
 					{
 						_HardcodedGetter = Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_8Bit")
+					else if(HardcodedText->GetText() == "Get_SignedInteger_8Bit")
 					{
 						_HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_32Bit_RiceEncoded")
+					else if(HardcodedText->GetText() == "Get_SignedInteger_32Bit_RiceEncoded")
 					{
 						_HardcodedGetter = Inspection::Get_SignedInteger_32Bit_RiceEncoded;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_SignedInteger_BigEndian")
+					else if(HardcodedText->GetText() == "Get_SignedInteger_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_SignedInteger_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_String_ASCII_Alphabetic_ByTemplate")
+					else if(HardcodedText->GetText() == "Get_String_ASCII_Alphabetic_ByTemplate")
 					{
 						_HardcodedGetter = Inspection::Get_String_ASCII_Alphabetic_ByTemplate;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_1Bit")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_1Bit")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_1Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_2Bit")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_2Bit")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_2Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_3Bit")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_3Bit")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_3Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_4Bit")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_4Bit")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_4Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_7Bit")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_7Bit")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_7Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_8Bit")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_8Bit")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_8Bit;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_9Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_9Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_9Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_16Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_16Bit_LittleEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_16Bit_LittleEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_16Bit_LittleEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_20Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_20Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_20Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_24Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_32Bit_LittleEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_LittleEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_36Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_36Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_36Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_BigEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_64Bit_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_BigEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_64Bit_LittleEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_64Bit_LittleEndian;
 					}
-					else if(HardcodedGetterText->GetText() == "Get_UnsignedInteger_BigEndian")
+					else if(HardcodedText->GetText() == "Get_UnsignedInteger_BigEndian")
 					{
 						_HardcodedGetter = Inspection::Get_UnsignedInteger_BigEndian;
 					}
 					else
 					{
-						throw std::domain_error{"Invalid reference to hardcoded getter \"" + HardcodedGetterText->GetText() + "\"."};
+						throw std::domain_error{"Invalid reference to hardcoded getter \"" + HardcodedText->GetText() + "\"."};
 					}
 				}
-				else if((GetterChildElement->GetName() == "field") || (GetterChildElement->GetName() == "fields") || (GetterChildElement->GetName() == "forward"))
+				else if((TypeChildElement->GetName() == "sequence") || (TypeChildElement->GetName() == "field") || (TypeChildElement->GetName() == "fields") || (TypeChildElement->GetName() == "forward"))
 				{
-					_PartDescriptors.emplace_back();
-					
-					auto & PartDescriptor{_PartDescriptors.back()};
-					
-					if(GetterChildElement->GetName() == "field")
-					{
-						PartDescriptor.Type = Inspection::PartDescriptor::Type::Field;
-						PartDescriptor.FieldName = GetterChildElement->GetAttribute("name");
-					}
-					else if(GetterChildElement->GetName() == "fields")
-					{
-						PartDescriptor.Type = Inspection::PartDescriptor::Type::Fields;
-					}
-					else if(GetterChildElement->GetName() == "forward")
-					{
-						PartDescriptor.Type = Inspection::PartDescriptor::Type::Forward;
-					}
-					for(auto PartChildNode : GetterChildElement->GetChilds())
-					{
-						if(PartChildNode->GetNodeType() == XML::NodeType::Element)
-						{
-							auto PartChildElement{dynamic_cast< const XML::Element * >(PartChildNode)};
-							
-							if(PartChildElement->GetName() == "type-reference")
-							{
-								PartDescriptor.TypeReference.emplace();
-								_LoadTypeReference(PartDescriptor.TypeReference.value(), PartChildElement);
-							}
-							else if(PartChildElement->GetName() == "interpretation")
-							{
-								PartDescriptor.Interpretation.emplace();
-								_LoadInterpretation(PartDescriptor.Interpretation.value(), PartChildElement);
-							}
-							else if(PartChildElement->GetName() == "length")
-							{
-								PartDescriptor.Length.emplace();
-								_LoadLength(PartDescriptor.Length.value(), PartChildElement);
-							}
-							else if(PartChildElement->GetName() == "parameters")
-							{
-								PartDescriptor.Parameters.emplace();
-								_LoadParameters(PartDescriptor.Parameters.value(), PartChildElement);
-							}
-							else if(PartChildElement->GetName() == "verification")
-							{
-								PartDescriptor.Verifications.emplace_back();
-								
-								auto & Verification{PartDescriptor.Verifications.back()};
-								
-								for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
-								{
-									if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
-									{
-										_LoadStatement(Verification, dynamic_cast< XML::Element * >(GetterPartVerificationChildNode));
-									}
-								}
-							}
-							else if(PartChildElement->GetName() == "tag")
-							{
-								assert((PartDescriptor.Type == Inspection::PartDescriptor::Type::Field) || (PartDescriptor.Type == Inspection::PartDescriptor::Type::Forward));
-								PartDescriptor.Tags.emplace_back();
-								
-								auto & Tag{PartDescriptor.Tags.back()};
-								
-								_LoadTag(Tag, PartChildElement);
-							}
-							else
-							{
-								throw std::domain_error{"/getter/field/" + PartChildElement->GetName() + " not allowed."};
-							}
-						}
-					}
+					assert(_Part == nullptr);
+					_Part = new Inspection::TypeDefinition::Part{};
+					_LoadPart(*_Part, TypeChildElement);
 				}
 				else
 				{
-					throw std::domain_error{"/getter/" + GetterChildElement->GetName() + " not allowed."};
+					throw std::domain_error{"\"type/" + TypeChildElement->GetName() + "\" not allowed."};
 				}
 			}
 		}
@@ -1723,6 +1694,94 @@ void Inspection::Type::_LoadParameters(Inspection::TypeDefinition::Parameters & 
 			else
 			{
 				throw std::domain_error{ParametersChildElement->GetName() + " not allowed."};
+			}
+		}
+	}
+}
+
+void Inspection::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement)
+{
+	if(PartElement->GetName() == "sequence")
+	{
+		Part.Type = Inspection::TypeDefinition::Part::Type::Sequence;
+		Part.Parts.emplace();
+	}
+	else if(PartElement->GetName() == "field")
+	{
+		Part.Type = Inspection::TypeDefinition::Part::Type::Field;
+		Part.FieldName = PartElement->GetAttribute("name");
+	}
+	else if(PartElement->GetName() == "fields")
+	{
+		Part.Type = Inspection::TypeDefinition::Part::Type::Fields;
+	}
+	else if(PartElement->GetName() == "forward")
+	{
+		Part.Type = Inspection::TypeDefinition::Part::Type::Forward;
+	}
+	else
+	{
+		throw std::domain_error{"\"" + PartElement->GetName() + "\" not allowed."};
+	}
+	for(auto PartChildNode : PartElement->GetChilds())
+	{
+		if(PartChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto PartChildElement{dynamic_cast< const XML::Element * >(PartChildNode)};
+			
+			if(PartChildElement->GetName() == "type-reference")
+			{
+				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Fields) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
+				Part.TypeReference.emplace();
+				_LoadTypeReference(Part.TypeReference.value(), PartChildElement);
+			}
+			else if(PartChildElement->GetName() == "interpretation")
+			{
+				Part.Interpretation.emplace();
+				_LoadInterpretation(Part.Interpretation.value(), PartChildElement);
+			}
+			else if(PartChildElement->GetName() == "length")
+			{
+				Part.Length.emplace();
+				_LoadLength(Part.Length.value(), PartChildElement);
+			}
+			else if(PartChildElement->GetName() == "parameters")
+			{
+				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Fields) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
+				Part.Parameters.emplace();
+				_LoadParameters(Part.Parameters.value(), PartChildElement);
+			}
+			else if(PartChildElement->GetName() == "verification")
+			{
+				Part.Verifications.emplace_back();
+				
+				auto & Verification{Part.Verifications.back()};
+				
+				for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
+				{
+					if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						_LoadStatement(Verification, dynamic_cast< XML::Element * >(GetterPartVerificationChildNode));
+					}
+				}
+			}
+			else if(PartChildElement->GetName() == "tag")
+			{
+				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
+				Part.Tags.emplace_back();
+				
+				auto & Tag{Part.Tags.back()};
+				
+				_LoadTag(Tag, PartChildElement);
+			}
+			else if((PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward"))
+			{
+				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Sequence);
+				Part.Parts->emplace_back();
+				
+				auto & ContainedPart{Part.Parts->back()};
+				
+				_LoadPart(ContainedPart, PartChildElement);
 			}
 		}
 	}

@@ -1,15 +1,17 @@
 <type>
-	<field name="OwnerIdentifier">
-		<type-reference>
-			<part>String</part>
-			<part>ASCII</part>
-			<part>Printable_EndedByTermination</part>
-		</type-reference>
-	</field>
-	<field name="Identifier">
-		<type-reference>
-			<part>Buffer</part>
-			<part>UnsignedInteger_8Bit_EndedByLength</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="OwnerIdentifier">
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>Printable_EndedByTermination</part>
+			</type-reference>
+		</field>
+		<field name="Identifier">
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

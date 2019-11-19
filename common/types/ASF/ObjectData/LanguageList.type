@@ -1,35 +1,37 @@
 <type>
-	<field name="LanguageIDRecordsCount">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="LanguageIDRecords">
-		<type-reference>
-			<part>Array</part>
-			<part>EndedByNumberOfElements</part>
-		</type-reference>
-		<parameters>
-			<parameter name="ElementType">
-				<type-reference>
-					<part>ASF</part>
-					<part>LanguageList</part>
-					<part>LanguageIDRecord</part>
-				</type-reference>
-			</parameter>
-			<parameter name="ElementName">
-				<string>LanguageIDRecord</string>
-			</parameter>
-			<parameter name="NumberOfElements">
-				<unsigned-integer-64bit>
-					<data-reference>
-						<field>LanguageIDRecordsCount</field>
-					</data-reference>
-				</unsigned-integer-64bit>
-			</parameter>
-		</parameters>
-	</field>
+	<sequence>
+		<field name="LanguageIDRecordsCount">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="LanguageIDRecords">
+			<type-reference>
+				<part>Array</part>
+				<part>EndedByNumberOfElements</part>
+			</type-reference>
+			<parameters>
+				<parameter name="ElementType">
+					<type-reference>
+						<part>ASF</part>
+						<part>LanguageList</part>
+						<part>LanguageIDRecord</part>
+					</type-reference>
+				</parameter>
+				<parameter name="ElementName">
+					<string>LanguageIDRecord</string>
+				</parameter>
+				<parameter name="NumberOfElements">
+					<unsigned-integer-64bit>
+						<data-reference>
+							<field>LanguageIDRecordsCount</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</parameter>
+			</parameters>
+		</field>
+	</sequence>
 </type>

@@ -1,17 +1,19 @@
 <type>
-	<field name="Flags">
-		<type-reference>
-			<part>ASF</part>
-			<part>StreamBitrateProperties</part>
-			<part>BitrateRecord_Flags</part>
-		</type-reference>
-	</field>
-	<field name="AverageBitrate">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="Flags">
+			<type-reference>
+				<part>ASF</part>
+				<part>StreamBitrateProperties</part>
+				<part>BitrateRecord_Flags</part>
+			</type-reference>
+		</field>
+		<field name="AverageBitrate">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

@@ -1,50 +1,52 @@
 <type>
-	<field name="TextEncoding">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.3</part>
-			<part>TextEncoding</part>
-		</type-reference>
-	</field>
-	<field name="MIMEType">
-		<type-reference>
-			<part>String</part>
-			<part>ASCII</part>
-			<part>Printable_EndedByTermination</part>
-		</type-reference>
-	</field>
-	<field name="FileName">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.3</part>
-			<part>TextStringAccordingToEncoding_EndedByTermination</part>
-		</type-reference>
-		<parameters>
-			<parameter name="TextEncoding">
-				<data-reference>
-					<field>TextEncoding</field>
-				</data-reference>
-			</parameter>
-		</parameters>
-	</field>
-	<field name="ContentDescription">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.3</part>
-			<part>TextStringAccordingToEncoding_EndedByTermination</part>
-		</type-reference>
-		<parameters>
-			<parameter name="TextEncoding">
-				<data-reference>
-					<field>TextEncoding</field>
-				</data-reference>
-			</parameter>
-		</parameters>
-	</field>
-	<field name="EncapsulatedObject">
-		<type-reference>
-			<part>Data</part>
-			<part>SetOrUnset_EndedByLength</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="TextEncoding">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.3</part>
+				<part>TextEncoding</part>
+			</type-reference>
+		</field>
+		<field name="MIMEType">
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>Printable_EndedByTermination</part>
+			</type-reference>
+		</field>
+		<field name="FileName">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.3</part>
+				<part>TextStringAccordingToEncoding_EndedByTermination</part>
+			</type-reference>
+			<parameters>
+				<parameter name="TextEncoding">
+					<data-reference>
+						<field>TextEncoding</field>
+					</data-reference>
+				</parameter>
+			</parameters>
+		</field>
+		<field name="ContentDescription">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.3</part>
+				<part>TextStringAccordingToEncoding_EndedByTermination</part>
+			</type-reference>
+			<parameters>
+				<parameter name="TextEncoding">
+					<data-reference>
+						<field>TextEncoding</field>
+					</data-reference>
+				</parameter>
+			</parameters>
+		</field>
+		<field name="EncapsulatedObject">
+			<type-reference>
+				<part>Data</part>
+				<part>SetOrUnset_EndedByLength</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

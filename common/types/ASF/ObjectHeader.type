@@ -1,16 +1,18 @@
 <type>
-	<field name="GUID">
-		<type-reference>
-			<part>ASF</part>
-			<part>GUID</part>
-		</type-reference>
-	</field>
-	<field name="Size">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>64Bit_LittleEndian</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="GUID">
+			<type-reference>
+				<part>ASF</part>
+				<part>GUID</part>
+			</type-reference>
+		</field>
+		<field name="Size">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>64Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

@@ -1,15 +1,17 @@
 <type>
-	<field name="OwnerIdentifier">
-		<type-reference>
-			<part>String</part>
-			<part>ISO_IEC_8859_1_1998</part>
-			<part>EndedByTermination</part>
-		</type-reference>
-	</field>
-	<field name="PrivateData">
-		<type-reference>
-			<part>Buffer</part>
-			<part>UnsignedInteger_8Bit_EndedByLength</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="OwnerIdentifier">
+			<type-reference>
+				<part>String</part>
+				<part>ISO_IEC_8859_1_1998</part>
+				<part>EndedByTermination</part>
+			</type-reference>
+		</field>
+		<field name="PrivateData">
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

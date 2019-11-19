@@ -1,39 +1,41 @@
 <type>
-	<field name="FormatTag">
-		<type-reference>
-			<part>Microsoft_WaveFormat_FormatTag</part>
-		</type-reference>
-	</field>
-	<field name="NumberOfChannels">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="SamplesPerSecond">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="AverageBytesPerSecond">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="BlockAlign">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="FormatTag">
+			<type-reference>
+				<part>Microsoft_WaveFormat_FormatTag</part>
+			</type-reference>
+		</field>
+		<field name="NumberOfChannels">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="SamplesPerSecond">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="AverageBytesPerSecond">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="BlockAlign">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

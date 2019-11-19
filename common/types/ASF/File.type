@@ -1,31 +1,33 @@
 <type>
-	<field name="HeaderObject">
-		<type-reference>
-			<part>ASF</part>
-			<part>HeaderObject</part>
-		</type-reference>
-	</field>
-	<field name="DataObject">
-		<type-reference>
-			<part>ASF</part>
-			<part>DataObject</part>
-		</type-reference>
-	</field>
-	<field name="Objects">
-		<type-reference>
-			<part>Array</part>
-			<part>EndedByLength</part>
-		</type-reference>
-		<parameters>
-			<parameter name="ElementType">
-				<type-reference>
-					<part>ASF</part>
-					<part>Object</part>
-				</type-reference>
-			</parameter>
-			<parameter name="ElementName">
-				<string>Object</string>
-			</parameter>
-		</parameters>
-	</field>
+	<sequence>
+		<field name="HeaderObject">
+			<type-reference>
+				<part>ASF</part>
+				<part>HeaderObject</part>
+			</type-reference>
+		</field>
+		<field name="DataObject">
+			<type-reference>
+				<part>ASF</part>
+				<part>DataObject</part>
+			</type-reference>
+		</field>
+		<field name="Objects">
+			<type-reference>
+				<part>Array</part>
+				<part>EndedByLength</part>
+			</type-reference>
+			<parameters>
+				<parameter name="ElementType">
+					<type-reference>
+						<part>ASF</part>
+						<part>Object</part>
+					</type-reference>
+				</parameter>
+				<parameter name="ElementName">
+					<string>Object</string>
+				</parameter>
+			</parameters>
+		</field>
+	</sequence>
 </type>

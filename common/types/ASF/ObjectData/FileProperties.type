@@ -1,83 +1,85 @@
 <type>
-	<field name="FileID">
-		<type-reference>
-			<part>GUID_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="FileSize">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>64Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="CreationDate">
-		<type-reference>
-			<part>ASF</part>
-			<part>CreationDate</part>
-		</type-reference>
-	</field>
-	<field name="DataPacketsCount">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>64Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="PlayDuration">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>64Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="SendDuration">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>64Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="Preroll">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>64Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="Flags">
-		<type-reference>
-			<part>ASF</part>
-			<part>FileProperties_Flags</part>
-		</type-reference>
-	</field>
-	<field name="MinimumDataPacketSize">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="MaximumDataPacketSize">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="MaximumBitrate">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>32Bit_LittleEndian</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="FileID">
+			<type-reference>
+				<part>GUID_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="FileSize">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>64Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="CreationDate">
+			<type-reference>
+				<part>ASF</part>
+				<part>CreationDate</part>
+			</type-reference>
+		</field>
+		<field name="DataPacketsCount">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>64Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="PlayDuration">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>64Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="SendDuration">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>64Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="Preroll">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>64Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="Flags">
+			<type-reference>
+				<part>ASF</part>
+				<part>FileProperties_Flags</part>
+			</type-reference>
+		</field>
+		<field name="MinimumDataPacketSize">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="MaximumDataPacketSize">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="MaximumBitrate">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

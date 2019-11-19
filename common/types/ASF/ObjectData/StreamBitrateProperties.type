@@ -1,35 +1,37 @@
 <type>
-	<field name="BitrateRecordsCount">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="BitrateRecords">
-		<type-reference>
-			<part>Array</part>
-			<part>EndedByNumberOfElements</part>
-		</type-reference>
-		<parameters>
-			<parameter name="ElementType">
-				<type-reference>
-					<part>ASF</part>
-					<part>StreamBitrateProperties</part>
-					<part>BitrateRecord</part>
-				</type-reference>
-			</parameter>
-			<parameter name="ElementName">
-				<string>BitrateRecord</string>
-			</parameter>
-			<parameter name="NumberOfElements">
-				<unsigned-integer-64bit>
-					<data-reference>
-						<field>BitrateRecordsCount</field>
-					</data-reference>
-				</unsigned-integer-64bit>
-			</parameter>
-		</parameters>
-	</field>
+	<sequence>
+		<field name="BitrateRecordsCount">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="BitrateRecords">
+			<type-reference>
+				<part>Array</part>
+				<part>EndedByNumberOfElements</part>
+			</type-reference>
+			<parameters>
+				<parameter name="ElementType">
+					<type-reference>
+						<part>ASF</part>
+						<part>StreamBitrateProperties</part>
+						<part>BitrateRecord</part>
+					</type-reference>
+				</parameter>
+				<parameter name="ElementName">
+					<string>BitrateRecord</string>
+				</parameter>
+				<parameter name="NumberOfElements">
+					<unsigned-integer-64bit>
+						<data-reference>
+							<field>BitrateRecordsCount</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</parameter>
+			</parameters>
+		</field>
+	</sequence>
 </type>

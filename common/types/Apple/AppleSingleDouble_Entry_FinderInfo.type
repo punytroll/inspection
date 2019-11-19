@@ -1,14 +1,16 @@
 <type>
-	<field name="FInfo">
-		<type-reference>
-			<part>Apple</part>
-			<part>FInfo</part>
-		</type-reference>
-	</field>
-	<field name="FXInfo">
-		<type-reference>
-			<part>Apple</part>
-			<part>FXInfo</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="FInfo">
+			<type-reference>
+				<part>Apple</part>
+				<part>FInfo</part>
+			</type-reference>
+		</field>
+		<field name="FXInfo">
+			<type-reference>
+				<part>Apple</part>
+				<part>FXInfo</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

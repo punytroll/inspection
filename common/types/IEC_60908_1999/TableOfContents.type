@@ -1,26 +1,28 @@
 <type>
-	<fields>
-		<type-reference>
-			<part>IEC_60908_1999</part>
-			<part>TableOfContents_Header</part>
-		</type-reference>
-	</fields>
-	<fields>
-		<type-reference>
-			<part>IEC_60908_1999</part>
-			<part>TableOfContents_Tracks</part>
-		</type-reference>
-		<parameters>
-			<parameter name="FirstTrackNumber">
-				<data-reference>
-					<field>FirstTrackNumber</field>
-				</data-reference>
-			</parameter>
-			<parameter name="LastTrackNumber">
-				<data-reference>
-					<field>LastTrackNumber</field>
-				</data-reference>
-			</parameter>
-		</parameters>
-	</fields>
+	<sequence>
+		<fields>
+			<type-reference>
+				<part>IEC_60908_1999</part>
+				<part>TableOfContents_Header</part>
+			</type-reference>
+		</fields>
+		<fields>
+			<type-reference>
+				<part>IEC_60908_1999</part>
+				<part>TableOfContents_Tracks</part>
+			</type-reference>
+			<parameters>
+				<parameter name="FirstTrackNumber">
+					<data-reference>
+						<field>FirstTrackNumber</field>
+					</data-reference>
+				</parameter>
+				<parameter name="LastTrackNumber">
+					<data-reference>
+						<field>LastTrackNumber</field>
+					</data-reference>
+				</parameter>
+			</parameters>
+		</fields>
+	</sequence>
 </type>

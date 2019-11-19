@@ -1,77 +1,79 @@
 <type>
-	<field name="NameLength">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="Name">
-		<type-reference>
-			<part>String</part>
-			<part>ISO_IEC_10646_1_1993</part>
-			<part>UTF-16</part>
-			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndLength</part>
-		</type-reference>
-		<length>
-			<bytes>
-				<unsigned-integer-64bit>
+	<sequence>
+		<field name="NameLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="Name">
+			<type-reference>
+				<part>String</part>
+				<part>ISO_IEC_10646_1_1993</part>
+				<part>UTF-16</part>
+				<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>
+						<data-reference>
+							<field>NameLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+		<field name="ValueDataType">
+			<type-reference>
+				<part>ASF</part>
+				<part>ExtendedContentDescription</part>
+				<part>ContentDescriptor_ValueDataType</part>
+			</type-reference>
+		</field>
+		<field name="ValueLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="Value">
+			<type-reference>
+				<part>ASF</part>
+				<part>ExtendedContentDescription</part>
+				<part>ContentDescriptor_Data</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>
+						<data-reference>
+							<field>ValueLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+			<parameters>
+				<parameter name="DataType">
 					<data-reference>
-						<field>NameLength</field>
+						<field>ValueDataType</field>
+						<tag>interpretation</tag>
 					</data-reference>
-				</unsigned-integer-64bit>
-			</bytes>
-			<bits>
-				<unsigned-integer-64bit>0</unsigned-integer-64bit>
-			</bits>
-		</length>
-	</field>
-	<field name="ValueDataType">
-		<type-reference>
-			<part>ASF</part>
-			<part>ExtendedContentDescription</part>
-			<part>ContentDescriptor_ValueDataType</part>
-		</type-reference>
-	</field>
-	<field name="ValueLength">
-		<type-reference>
-			<part>Number</part>
-			<part>Integer</part>
-			<part>Unsigned</part>
-			<part>16Bit_LittleEndian</part>
-		</type-reference>
-	</field>
-	<field name="Value">
-		<type-reference>
-			<part>ASF</part>
-			<part>ExtendedContentDescription</part>
-			<part>ContentDescriptor_Data</part>
-		</type-reference>
-		<length>
-			<bytes>
-				<unsigned-integer-64bit>
+				</parameter>
+				<parameter name="Name">
 					<data-reference>
-						<field>ValueLength</field>
+						<field>Name</field>
 					</data-reference>
-				</unsigned-integer-64bit>
-			</bytes>
-			<bits>
-				<unsigned-integer-64bit>0</unsigned-integer-64bit>
-			</bits>
-		</length>
-		<parameters>
-			<parameter name="DataType">
-				<data-reference>
-					<field>ValueDataType</field>
-					<tag>interpretation</tag>
-				</data-reference>
-			</parameter>
-			<parameter name="Name">
-				<data-reference>
-					<field>Name</field>
-				</data-reference>
-			</parameter>
-		</parameters>
-	</field>
+				</parameter>
+			</parameters>
+		</field>
+	</sequence>
 </type>

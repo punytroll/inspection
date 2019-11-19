@@ -1,23 +1,25 @@
 <type>
-	<fields>
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.4</part>
-			<part>Tag_ExtendedHeader_Flag_Header</part>
-		</type-reference>
-		<verification>
-			<equals>
-				<data-reference>
-					<field>Size</field>
-				</data-reference>
-				<unsigned-integer-8bit>5</unsigned-integer-8bit>
-			</equals>
-		</verification>
-	</fields>
-	<field name="TotalFrameCRC">
-		<type-reference>
-			<part>ID3</part>
-			<part>UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<fields>
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.4</part>
+				<part>Tag_ExtendedHeader_Flag_Header</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference>
+						<field>Size</field>
+					</data-reference>
+					<unsigned-integer-8bit>5</unsigned-integer-8bit>
+				</equals>
+			</verification>
+		</fields>
+		<field name="TotalFrameCRC">
+			<type-reference>
+				<part>ID3</part>
+				<part>UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>

@@ -1,30 +1,32 @@
 <type>
-	<field name="TextEncoding">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.3</part>
-			<part>TextEncoding</part>
-		</type-reference>
-	</field>
-	<field name="Descriptor">
-		<type-reference>
-			<part>ID3</part>
-			<part>v2.3</part>
-			<part>TextStringAccordingToEncoding_EndedByTermination</part>
-		</type-reference>
-		<parameters>
-			<parameter name="TextEncoding">
-				<data-reference>
-					<field>TextEncoding</field>
-				</data-reference>
-			</parameter>
-		</parameters>
-	</field>
-	<field name="URL">
-		<type-reference>
-			<part>String</part>
-			<part>ISO_IEC_8859_1_1998</part>
-			<part>EndedByTerminationOrLength</part>
-		</type-reference>
-	</field>
+	<sequence>
+		<field name="TextEncoding">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.3</part>
+				<part>TextEncoding</part>
+			</type-reference>
+		</field>
+		<field name="Descriptor">
+			<type-reference>
+				<part>ID3</part>
+				<part>v2.3</part>
+				<part>TextStringAccordingToEncoding_EndedByTermination</part>
+			</type-reference>
+			<parameters>
+				<parameter name="TextEncoding">
+					<data-reference>
+						<field>TextEncoding</field>
+					</data-reference>
+				</parameter>
+			</parameters>
+		</field>
+		<field name="URL">
+			<type-reference>
+				<part>String</part>
+				<part>ISO_IEC_8859_1_1998</part>
+				<part>EndedByTerminationOrLength</part>
+			</type-reference>
+		</field>
+	</sequence>
 </type>
