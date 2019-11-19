@@ -212,7 +212,7 @@ namespace Inspection
 		Inspection::Statement Statement2;
 	};
 	
-	class VerificationDescriptor
+	class Verification
 	{
 	public:
 		enum class Type
@@ -220,7 +220,7 @@ namespace Inspection
 			Equals
 		};
 		
-		Inspection::VerificationDescriptor::Type Type;
+		Inspection::Verification::Type Type;
 		std::experimental::optional< Inspection::Equals > Equals;
 	};
 	
@@ -248,7 +248,7 @@ namespace Inspection
 		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
 		std::vector< Inspection::Tag > Tags;
 		Inspection::PartDescriptor::Type Type;
-		std::vector< Inspection::VerificationDescriptor > VerificationDescriptors;
+		std::vector< Inspection::Verification > Verifications;
 	};
 	
 	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
@@ -675,14 +675,14 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 					// verification
 					if(Continue == true)
 					{
-						for(auto & VerificationDescriptor : PartDescriptor.VerificationDescriptors)
+						for(auto & Verification : PartDescriptor.Verifications)
 						{
-							switch(VerificationDescriptor.Type)
+							switch(Verification.Type)
 							{
-							case Inspection::VerificationDescriptor::Type::Equals:
+							case Inspection::Verification::Type::Equals:
 								{
-									assert(VerificationDescriptor.Equals);
-									Continue = Inspection::Algorithms::Equals(VerificationDescriptor.Equals->Statement1, VerificationDescriptor.Equals->Statement2, PartResult->GetValue(), Parameters);
+									assert(Verification.Equals);
+									Continue = Inspection::Algorithms::Equals(Verification.Equals->Statement1, Verification.Equals->Statement2, PartResult->GetValue(), Parameters);
 									if(Continue == false)
 									{
 										Result->GetValue()->AddTag("error", "Failed to verify a value."s);
@@ -1228,9 +1228,9 @@ void Inspection::Type::Load(const std::string & TypePath)
 							}
 							else if(PartChildElement->GetName() == "verification")
 							{
-								PartDescriptor.VerificationDescriptors.emplace_back();
+								PartDescriptor.Verifications.emplace_back();
 								
-								auto & VerificationDescriptor{PartDescriptor.VerificationDescriptors.back()};
+								auto & Verification{PartDescriptor.Verifications.back()};
 								
 								for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
 								{
@@ -1240,8 +1240,8 @@ void Inspection::Type::Load(const std::string & TypePath)
 										
 										if(GetterPartVerificationChildElement->GetName() == "equals")
 										{
-											VerificationDescriptor.Type = Inspection::VerificationDescriptor::Type::Equals;
-											VerificationDescriptor.Equals.emplace();
+											Verification.Type = Inspection::Verification::Type::Equals;
+											Verification.Equals.emplace();
 											
 											bool First{true};
 											
@@ -1253,12 +1253,12 @@ void Inspection::Type::Load(const std::string & TypePath)
 													
 													if(First == true)
 													{
-														_LoadStatement(VerificationDescriptor.Equals->Statement1, GetterPartVerificationEqualsChildElement);
+														_LoadStatement(Verification.Equals->Statement1, GetterPartVerificationEqualsChildElement);
 														First = false;
 													}
 													else
 													{
-														_LoadStatement(VerificationDescriptor.Equals->Statement2, GetterPartVerificationEqualsChildElement);
+														_LoadStatement(Verification.Equals->Statement2, GetterPartVerificationEqualsChildElement);
 													}
 												}
 											}
