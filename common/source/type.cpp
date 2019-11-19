@@ -214,8 +214,8 @@ namespace Inspection
 		class Length
 		{
 		public:
-			Inspection::ValueDescriptor Bytes;
-			Inspection::ValueDescriptor Bits;
+			Inspection::TypeDefinition::Statement Bytes;
+			Inspection::TypeDefinition::Statement Bits;
 		};
 		
 		class Tag
@@ -504,6 +504,20 @@ namespace Inspection
 	
 	namespace Algorithms
 	{
+		template< typename Type >
+		Type GetDataFromStatement(const Inspection::TypeDefinition::Statement & Statement, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		{
+			if(Statement.Type == Inspection::TypeDefinition::Statement::Type::Value)
+			{
+				assert(Statement.Value != nullptr);
+				return GetDataFromValueDescriptor< Type >(*(Statement.Value), CurrentValue, Parameters);
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+		
 		bool Equals(const Inspection::ValueDescriptor & Value1, const Inspection::ValueDescriptor & Value2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 		{
 			auto Result{false};
@@ -588,8 +602,8 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 				
 				if(PartDescriptor.Length)
 				{
-					auto Bytes{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor.Length->Bytes, Result->GetValue(), Parameters)};
-					auto Bits{GetDataFromValueDescriptor< std::uint64_t >(PartDescriptor.Length->Bits, Result->GetValue(), Parameters)};
+					auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(PartDescriptor.Length->Bytes, Result->GetValue(), Parameters)};
+					auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(PartDescriptor.Length->Bits, Result->GetValue(), Parameters)};
 					Inspection::Length Length{Bytes, Bits};
 					
 					if(Reader.Has(Length) == true)
@@ -1175,26 +1189,7 @@ void Inspection::Type::Load(const std::string & TypePath)
 							else if(PartChildElement->GetName() == "length")
 							{
 								PartDescriptor.Length.emplace();
-								for(auto PartLengthChildNode : PartChildElement->GetChilds())
-								{
-									if(PartLengthChildNode->GetNodeType() == XML::NodeType::Element)
-									{
-										auto PartLengthChildElement{dynamic_cast< const XML::Element * >(PartLengthChildNode)};
-										
-										if(PartLengthChildElement->GetName() == "bytes")
-										{
-											_LoadValueDescriptorFromWithin(PartDescriptor.Length->Bytes, PartLengthChildElement);
-										}
-										else if(PartLengthChildElement->GetName() == "bits")
-										{
-											_LoadValueDescriptorFromWithin(PartDescriptor.Length->Bits, PartLengthChildElement);
-										}
-										else
-										{
-											throw std::domain_error{"/getter/field/length/" + PartLengthChildElement->GetName() + " not allowed."};
-										}
-									}
-								}
+								_LoadLength(PartDescriptor.Length.value(), PartChildElement);
 							}
 							else if(PartChildElement->GetName() == "parameters")
 							{
@@ -1401,6 +1396,30 @@ void Inspection::Type::_LoadEquals(Inspection::TypeDefinition::Equals & Equals, 
 	}
 }
 
+void Inspection::Type::_LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement)
+{
+	for(auto LengthChildNode : LengthElement->GetChilds())
+	{
+		if(LengthChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto LengthChildElement{dynamic_cast< const XML::Element * >(LengthChildNode)};
+			
+			if(LengthChildElement->GetName() == "bytes")
+			{
+				_LoadStatementFromWithin(Length.Bytes, LengthChildElement);
+			}
+			else if(LengthChildElement->GetName() == "bits")
+			{
+				_LoadStatementFromWithin(Length.Bits, LengthChildElement);
+			}
+			else
+			{
+				throw std::domain_error{"length/" + LengthChildElement->GetName() + " not allowed."};
+			}
+		}
+	}
+}
+
 void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
 {
 	// statement element may be nullptr, if it represents the "nothing" value
@@ -1418,29 +1437,34 @@ void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & St
 	}
 }
 
-void Inspection::Type::_LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement)
+void Inspection::Type::_LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement)
 {
-	Tag.Name = TagElement->GetAttribute("name");
-	
 	XML::Element * StatementElement{nullptr};
 	
-	if(TagElement->GetChilds().size() > 0)
+	if(ParentElement->GetChilds().size() > 0)
 	{
-		for(auto TagChildNode : TagElement->GetChilds())
+		for(auto ChildNode : ParentElement->GetChilds())
 		{
-			if(TagChildNode->GetNodeType() == XML::NodeType::Element)
+			if(ChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				StatementElement = dynamic_cast< XML::Element * >(TagChildNode);
+				StatementElement = dynamic_cast< XML::Element * >(ChildNode);
 				
 				break;
 			}
 		}
 		if(StatementElement == nullptr)
 		{
-			throw std::domain_error{"A tag element has childs but none are elements."};
+			throw std::domain_error{"To read a statment from an element with childs, at least one of them needs to be an element."};
 		}
 	}
-	_LoadStatement(Tag.Statement, StatementElement);
+	// the statement element may still be nullptr if it represents the "nothing" value
+	_LoadStatement(Statement, StatementElement);
+}
+
+void Inspection::Type::_LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement)
+{
+	Tag.Name = TagElement->GetAttribute("name");
+	_LoadStatementFromWithin(Tag.Statement, TagElement);
 }
 
 void Inspection::Type::_LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement)

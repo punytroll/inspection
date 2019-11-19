@@ -14,6 +14,7 @@ namespace Inspection
 	namespace TypeDefinition
 	{
 		class Equals;
+		class Length;
 		class Statement;
 		class Tag;
 	};
@@ -40,7 +41,9 @@ namespace Inspection
 		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
 		void _LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement);
 		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);
+		void _LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement);
 		void _LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement);
+		void _LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement);
 		void _LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement);
 		void _LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
 		void _LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
