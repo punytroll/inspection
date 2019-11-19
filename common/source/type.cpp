@@ -188,8 +188,6 @@ namespace Inspection
 	
 	namespace TypeDefinition
 	{
-		class Equals;
-		
 		class Statement
 		{
 		public:
