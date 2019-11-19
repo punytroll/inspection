@@ -19,6 +19,7 @@ namespace Inspection
 		class Parameters;
 		class Statement;
 		class Tag;
+		class TypeReference;
 	};
 	
 	class Enumeration;
@@ -28,7 +29,6 @@ namespace Inspection
 	class PartDescriptor;
 	class Reader;
 	class Result;
-	class TypeReference;
 	class Value;
 	class ValueDescriptor;
 	
@@ -49,7 +49,7 @@ namespace Inspection
 		void _LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement);
 		void _LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement);
 		void _LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement);
-		void _LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
+		void _LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
 		void _LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
 		void _LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ValueElement);
 		Inspection::EvaluationResult _ApplyInterpretation(const Inspection::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);

@@ -101,6 +101,12 @@ namespace Inspection
 		public:
 			std::vector< Inspection::TypeDefinition::Parameter > Parameters;
 		};
+		
+		class TypeReference
+		{
+		public:
+			std::vector< std::string > Parts;
+		};
 	}
 	
 	class DataReference
@@ -123,12 +129,6 @@ namespace Inspection
 		std::vector< Inspection::DataReference::PartDescriptor > PartDescriptors;
 	};
 	
-	class TypeReference
-	{
-	public:
-		std::vector< std::string > Parts;
-	};
-	
 	class ParameterReference
 	{
 	public:
@@ -142,7 +142,7 @@ namespace Inspection
 		Inspection::DataType Type;
 		std::experimental::optional< bool > Boolean;
 		std::experimental::optional< Inspection::DataReference > DataReference;
-		std::experimental::optional< Inspection::TypeReference > TypeReference;
+		std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
 		std::experimental::optional< Inspection::ParameterReference > ParameterReference;
 		std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
 		std::experimental::optional< float > SinglePrecisionReal;
@@ -243,7 +243,7 @@ namespace Inspection
 		
 		std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
 		std::experimental::optional< std::string > FieldName;
-		std::experimental::optional< Inspection::TypeReference > TypeReference;
+		std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
 		std::experimental::optional< Inspection::Interpretation > Interpretation;
 		std::experimental::optional< Inspection::TypeDefinition::Length > Length;
 		std::vector< Inspection::TypeDefinition::Tag > Tags;
@@ -1502,7 +1502,7 @@ void Inspection::Type::_LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML
 	_LoadStatementFromWithin(Tag.Statement, TagElement);
 }
 
-void Inspection::Type::_LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement)
+void Inspection::Type::_LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement)
 {
 	for(auto TypeReferenceChildNode : TypeReferenceElement->GetChilds())
 	{
