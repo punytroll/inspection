@@ -526,24 +526,30 @@ namespace Inspection
 	
 	namespace Algorithms
 	{
+		std::experimental::any GetAnyFromCast(const Inspection::TypeDefinition::Cast & Cast, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		
 		template< typename Type >
 		Type Cast(const std::experimental::any & Any)
 		{
-			if(Any.type() == typeid(std::uint8_t))
+			if(Any.type() == typeid(float))
 			{
-				return Type{std::experimental::any_cast< std::uint8_t >(Any)};
+				return static_cast< Type >(std::experimental::any_cast< float >(Any));
 			}
-			if(Any.type() == typeid(std::uint16_t))
+			else if(Any.type() == typeid(std::uint8_t))
 			{
-				return Type{std::experimental::any_cast< std::uint16_t >(Any)};
+				return static_cast< Type >(std::experimental::any_cast< std::uint8_t >(Any));
 			}
-			if(Any.type() == typeid(std::uint32_t))
+			else if(Any.type() == typeid(std::uint16_t))
 			{
-				return Type{std::experimental::any_cast< std::uint32_t >(Any)};
+				return static_cast< Type >(std::experimental::any_cast< std::uint16_t >(Any));
 			}
-			if(Any.type() == typeid(std::uint64_t))
+			else if(Any.type() == typeid(std::uint32_t))
 			{
-				return Type{std::experimental::any_cast< std::uint64_t >(Any)};
+				return static_cast< Type >(std::experimental::any_cast< std::uint32_t >(Any));
+			}
+			else if(Any.type() == typeid(std::uint64_t))
+			{
+				return static_cast< Type >(std::experimental::any_cast< std::uint64_t >(Any));
 			}
 			else
 			{
@@ -584,6 +590,12 @@ namespace Inspection
 		{
 			switch(Statement.Type)
 			{
+			case Inspection::TypeDefinition::Statement::Type::Cast:
+				{
+					assert(Statement.Cast != nullptr);
+					
+					return Inspection::Algorithms::GetAnyFromCast(*(Statement.Cast), CurrentValue, Parameters);
+				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
 					assert(Statement.Value != nullptr);
@@ -600,17 +612,7 @@ namespace Inspection
 		template< typename Type >
 		Type GetDataFromCast(const Inspection::TypeDefinition::Cast & Cast, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 		{
-			switch(Cast.DataType)
-			{
-			case Inspection::DataType::UnsignedInteger64Bit:
-				{
-					return Inspection::Algorithms::Cast< std::uint64_t >(GetAnyFromStatement(Cast.Statement, CurrentValue, Parameters));
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
+			return Inspection::Algorithms::Cast< Type >(GetAnyFromStatement(Cast.Statement, CurrentValue, Parameters));
 		}
 		
 		template< typename Type >
@@ -641,6 +643,10 @@ namespace Inspection
 		{
 			switch(Cast.DataType)
 			{
+			case Inspection::DataType::SinglePrecisionReal:
+				{
+					return Inspection::Algorithms::GetDataFromCast< float >(Cast, CurrentValue, Parameters);
+				}
 			case Inspection::DataType::UnsignedInteger64Bit:
 				{
 					return Inspection::Algorithms::GetDataFromCast< std::uint64_t >(Cast, CurrentValue, Parameters);
@@ -858,8 +864,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 							assert((PartDescriptor.Type == Inspection::PartDescriptor::Type::Field) || (PartDescriptor.Type == Inspection::PartDescriptor::Type::Forward));
 							for(auto & Tag : PartDescriptor.Tags)
 							{
-								assert((Tag.Statement.Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
-								PartResult->GetValue()->AddTag(Tag.Name, GetAnyFromValueDescriptor(*(Tag.Statement.Value), PartResult->GetValue(), Parameters));
+								PartResult->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(Tag.Statement, PartResult->GetValue(), Parameters));
 							}
 						}
 					}
@@ -1662,6 +1667,12 @@ void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & St
 		_LoadEquals(*(Statement.Equals), StatementElement);
 	}
 	else if((StatementElement != nullptr) && (StatementElement->GetName() == "unsigned-integer-64bit") && (HasChildElements(StatementElement) == true))
+	{
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Statement.Cast = new Inspection::TypeDefinition::Cast{};
+		_LoadCast(*(Statement.Cast), StatementElement);
+	}
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "single-precision-real") && (HasChildElements(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};
