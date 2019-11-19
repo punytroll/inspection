@@ -205,7 +205,7 @@ namespace Inspection
 		Inspection::ValueDescriptor * Value;
 	};
 	
-	class EqualsDescriptor
+	class Equals
 	{
 	public:
 		Inspection::Statement Statement1;
@@ -221,7 +221,7 @@ namespace Inspection
 		};
 		
 		Inspection::VerificationDescriptor::Type Type;
-		std::experimental::optional< Inspection::EqualsDescriptor > EqualsDescriptor;
+		std::experimental::optional< Inspection::Equals > Equals;
 	};
 	
 	class Tag
@@ -506,25 +506,52 @@ namespace Inspection
 			}
 		}
 	}
-}
-
-bool Equals(const Inspection::ValueDescriptor & Value1, const Inspection::ValueDescriptor & Value2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{false};
-	auto Any1{GetAnyFromValueDescriptor(Value1, CurrentValue, Parameters)};
-	auto Any2{GetAnyFromValueDescriptor(Value2, CurrentValue, Parameters)};
 	
-	if((Any1.empty() == false) && (Any2.empty() == false))
+	namespace Algorithms
 	{
-		if(Any1.type() == Any2.type())
+		bool Equals(const Inspection::ValueDescriptor & Value1, const Inspection::ValueDescriptor & Value2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 		{
-			if(Any1.type() == typeid(std::uint8_t))
+			auto Result{false};
+			auto Any1{GetAnyFromValueDescriptor(Value1, CurrentValue, Parameters)};
+			auto Any2{GetAnyFromValueDescriptor(Value2, CurrentValue, Parameters)};
+			
+			if((Any1.empty() == false) && (Any2.empty() == false))
 			{
-				Result = std::experimental::any_cast< std::uint8_t >(Any1) == std::experimental::any_cast< std::uint8_t >(Any2);
+				if(Any1.type() == Any2.type())
+				{
+					if(Any1.type() == typeid(std::uint8_t))
+					{
+						Result = std::experimental::any_cast< std::uint8_t >(Any1) == std::experimental::any_cast< std::uint8_t >(Any2);
+					}
+					else if(Any1.type() == typeid(std::uint32_t))
+					{
+						Result = std::experimental::any_cast< std::uint32_t >(Any1) == std::experimental::any_cast< std::uint32_t >(Any2);
+					}
+					else
+					{
+						assert(false);
+					}
+				}
 			}
-			else if(Any1.type() == typeid(std::uint32_t))
+			
+			return Result;
+		}
+		
+		bool Equals(const Inspection::Statement & Statement1, const Inspection::Statement & Statement2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		{
+			if(Statement1.Type == Inspection::Statement::Type::Value)
 			{
-				Result = std::experimental::any_cast< std::uint32_t >(Any1) == std::experimental::any_cast< std::uint32_t >(Any2);
+				assert(Statement1.Value != nullptr);
+				if(Statement2.Type == Inspection::Statement::Type::Value)
+				{
+					assert(Statement2.Value != nullptr);
+					
+					return Inspection::Algorithms::Equals(*(Statement1.Value), *(Statement2.Value), CurrentValue, Parameters);
+				}
+				else
+				{
+					assert(false);
+				}
 			}
 			else
 			{
@@ -532,8 +559,6 @@ bool Equals(const Inspection::ValueDescriptor & Value1, const Inspection::ValueD
 			}
 		}
 	}
-	
-	return Result;
 }
 
 Inspection::Type::Type(Inspection::TypeRepository * TypeRepository) :
@@ -656,8 +681,8 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 							{
 							case Inspection::VerificationDescriptor::Type::Equals:
 								{
-									assert((VerificationDescriptor.EqualsDescriptor) && (VerificationDescriptor.EqualsDescriptor->Statement1.Type == Inspection::Statement::Type::Value) && ((VerificationDescriptor.EqualsDescriptor->Statement2.Type == Inspection::Statement::Type::Value)));
-									Continue = Equals(*(VerificationDescriptor.EqualsDescriptor->Statement1.Value), *(VerificationDescriptor.EqualsDescriptor->Statement2.Value), PartResult->GetValue(), Parameters);
+									assert(VerificationDescriptor.Equals);
+									Continue = Inspection::Algorithms::Equals(VerificationDescriptor.Equals->Statement1, VerificationDescriptor.Equals->Statement2, PartResult->GetValue(), Parameters);
 									if(Continue == false)
 									{
 										Result->GetValue()->AddTag("error", "Failed to verify a value."s);
@@ -1216,7 +1241,7 @@ void Inspection::Type::Load(const std::string & TypePath)
 										if(GetterPartVerificationChildElement->GetName() == "equals")
 										{
 											VerificationDescriptor.Type = Inspection::VerificationDescriptor::Type::Equals;
-											VerificationDescriptor.EqualsDescriptor.emplace();
+											VerificationDescriptor.Equals.emplace();
 											
 											bool First{true};
 											
@@ -1228,12 +1253,12 @@ void Inspection::Type::Load(const std::string & TypePath)
 													
 													if(First == true)
 													{
-														_LoadStatement(VerificationDescriptor.EqualsDescriptor->Statement1, GetterPartVerificationEqualsChildElement);
+														_LoadStatement(VerificationDescriptor.Equals->Statement1, GetterPartVerificationEqualsChildElement);
 														First = false;
 													}
 													else
 													{
-														_LoadStatement(VerificationDescriptor.EqualsDescriptor->Statement2, GetterPartVerificationEqualsChildElement);
+														_LoadStatement(VerificationDescriptor.Equals->Statement2, GetterPartVerificationEqualsChildElement);
 													}
 												}
 											}
