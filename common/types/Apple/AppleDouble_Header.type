@@ -55,7 +55,7 @@
 			<part>EndedByNumberOfElements</part>
 		</type-reference>
 		<parameters>
-			<parameter name="ElementGetter">
+			<parameter name="ElementType">
 				<type-reference>
 					<part>Apple</part>
 					<part>AppleDouble_EntryDescriptor</part>

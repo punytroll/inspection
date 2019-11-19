@@ -13,7 +13,7 @@
 			<part>EndedByNumberOfElements</part>
 		</type-reference>
 		<parameters>
-			<parameter name="ElementGetter">
+			<parameter name="ElementType">
 				<type-reference>
 					<part>ASF</part>
 					<part>ExtendedContentDescription</part>

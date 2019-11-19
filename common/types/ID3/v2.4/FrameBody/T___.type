@@ -12,7 +12,7 @@
 			<part>EndedByLength</part>
 		</type-reference>
 		<parameters>
-			<parameter name="ElementGetter">
+			<parameter name="ElementType">
 				<type-reference>
 					<part>ID3</part>
 					<part>v2.4</part>

@@ -11,7 +11,7 @@
 			<part>EndedByFailureOrLength_ResetPositionOnFailure</part>
 		</type-reference>
 		<parameters>
-			<parameter name="ElementGetter">
+			<parameter name="ElementType">
 				<type-reference>
 					<part>FLAC</part>
 					<part>Frame</part>
