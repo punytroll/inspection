@@ -109,6 +109,31 @@ namespace Inspection
 	
 	namespace TypeDefinition
 	{
+		class DataReference
+		{
+		public:
+			class PartDescriptor
+			{
+			public:
+				enum class Type
+				{
+					Field,
+					Tag
+				};
+				
+				Inspection::TypeDefinition::DataReference::PartDescriptor::Type Type;
+				std::string DetailName;
+			};
+			
+			std::vector< Inspection::TypeDefinition::DataReference::PartDescriptor > PartDescriptors;
+		};
+		
+		class ParameterReference
+		{
+		public:
+			std::string Name;
+		};
+		
 		class Parameters
 		{
 		public:
@@ -122,39 +147,14 @@ namespace Inspection
 		};
 	}
 	
-	class DataReference
-	{
-	public:
-		class PartDescriptor
-		{
-		public:
-			enum class Type
-			{
-				Field,
-				Tag
-			};
-			
-			Inspection::DataReference::PartDescriptor::Type Type;
-			std::string DetailName;
-		};
-		
-		std::vector< Inspection::DataReference::PartDescriptor > PartDescriptors;
-	};
-	
-	class ParameterReference
-	{
-	public:
-		std::string Name;
-	};
-	
 	class ValueDescriptor
 	{
 	public:
 		Inspection::DataType DataType;
 		std::experimental::optional< bool > Boolean;
-		std::experimental::optional< Inspection::DataReference > DataReference;
+		std::experimental::optional< Inspection::TypeDefinition::DataReference > DataReference;
 		std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-		std::experimental::optional< Inspection::ParameterReference > ParameterReference;
+		std::experimental::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
 		std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
 		std::experimental::optional< float > SinglePrecisionReal;
 		std::experimental::optional< std::string > String;
@@ -204,10 +204,34 @@ namespace Inspection
 		public:
 			enum class Type
 			{
+				Unknown,
 				Cast,
 				Equals,
 				Value
 			};
+			
+			Statement(void) :
+				Type{Inspection::TypeDefinition::Statement::Type::Unknown},
+				Cast{nullptr},
+				Equals{nullptr},
+				Value{nullptr}
+			{
+			}
+			
+			Statement(const Inspection::TypeDefinition::Statement & Statement) = delete;
+			
+			Statement(Inspection::TypeDefinition::Statement && Statement) :
+				Type{Statement.Type},
+				Cast{Statement.Cast},
+				Equals{Statement.Equals},
+				Value{Statement.Value}
+			{
+				Statement.Cast = nullptr;
+				Statement.Equals = nullptr;
+				Statement.Value = nullptr;
+			}
+			
+			~Statement(void);
 			
 			Inspection::TypeDefinition::Statement::Type Type;
 			// content depending on type
@@ -219,6 +243,15 @@ namespace Inspection
 		class Cast
 		{
 		public:
+			Cast(void) :
+				DataType{Inspection::DataType::Unknown}
+			{
+			}
+			
+			Cast(Inspection::TypeDefinition::Cast && Cast) = default;
+			
+			Cast(const Inspection::TypeDefinition::Cast & Cast) = delete;
+			
 			Inspection::DataType DataType;
 			Inspection::TypeDefinition::Statement Statement;
 		};
@@ -226,6 +259,14 @@ namespace Inspection
 		class Equals
 		{
 		public:
+			Equals(void)
+			{
+			}
+			
+			Equals(Inspection::TypeDefinition::Equals && Equals) = default;
+			
+			Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
+			
 			Inspection::TypeDefinition::Statement Statement1;
 			Inspection::TypeDefinition::Statement Statement2;
 		};
@@ -233,6 +274,14 @@ namespace Inspection
 		class Length
 		{
 		public:
+			Length(void)
+			{
+			}
+			
+			Length(Inspection::TypeDefinition::Length && Length) = default;
+			
+			Length(const Inspection::TypeDefinition::Length & Length) = delete;
+			
 			Inspection::TypeDefinition::Statement Bytes;
 			Inspection::TypeDefinition::Statement Bits;
 		};
@@ -240,6 +289,14 @@ namespace Inspection
 		class Parameter
 		{
 		public:
+			Parameter(void)
+			{
+			}
+			
+			Parameter(Inspection::TypeDefinition::Parameter && Parameter) = default;
+			
+			Parameter(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
+			
 			std::string Name;
 			Inspection::TypeDefinition::Statement Statement;
 		};
@@ -247,9 +304,24 @@ namespace Inspection
 		class Tag
 		{
 		public:
+			Tag(void)
+			{
+			}
+			
+			Tag(Inspection::TypeDefinition::Tag && Tag) = default;
+			
+			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
+			
 			std::string Name;
 			Inspection::TypeDefinition::Statement Statement;
 		};
+			
+		Statement::~Statement(void)
+		{
+			delete Cast;
+			delete Equals;
+			delete Value;
+		}
 	}
 	
 	class PartDescriptor
@@ -262,6 +334,14 @@ namespace Inspection
 			Forward
 		};
 		
+		PartDescriptor(void)
+		{
+		}
+			
+		PartDescriptor(Inspection::PartDescriptor && PartDescriptor) = default;
+		
+		PartDescriptor(const Inspection::PartDescriptor & PartDescriptor) = delete;
+		
 		std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
 		std::experimental::optional< std::string > FieldName;
 		std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
@@ -272,7 +352,7 @@ namespace Inspection
 		std::vector< Inspection::TypeDefinition::Statement > Verifications;
 	};
 	
-	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::TypeDefinition::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		std::shared_ptr< Inspection::Value > Value{CurrentValue};
 		
@@ -280,13 +360,13 @@ namespace Inspection
 		{
 			switch(PartDescriptor.Type)
 			{
-			case Inspection::DataReference::PartDescriptor::Type::Field:
+			case Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Field:
 				{
 					Value = Value->GetField(PartDescriptor.DetailName);
 					
 					break;
 				}
-			case Inspection::DataReference::PartDescriptor::Type::Tag:
+			case Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Tag:
 				{
 					Value = Value->GetTag(PartDescriptor.DetailName);
 					
@@ -419,7 +499,7 @@ namespace Inspection
 	{
 		bool Result{false};
 		auto BaseValueString{to_string_cast(std::experimental::any_cast< const DataType & >(Target->GetData()))};
-		auto ElementIterator{std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto Element){ return Element.BaseValue == BaseValueString; })};
+		auto ElementIterator{std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; })};
 		
 		if(ElementIterator != Enumeration.Elements.end())
 		{
@@ -1569,6 +1649,7 @@ void Inspection::Type::_LoadParameters(Inspection::TypeDefinition::Parameters & 
 
 void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
 {
+	assert(Statement.Type == Inspection::TypeDefinition::Statement::Type::Unknown);
 	// statement element may be nullptr, if it represents the "nothing" value
 	if((StatementElement != nullptr) && (StatementElement->GetName() == "equals"))
 	{
@@ -1588,6 +1669,7 @@ void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & St
 		Statement.Value = new Inspection::ValueDescriptor{};
 		_LoadValueDescriptor(*(Statement.Value), StatementElement);
 	}
+	assert(Statement.Type != Inspection::TypeDefinition::Statement::Type::Unknown);
 }
 
 void Inspection::Type::_LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement)
@@ -1691,7 +1773,7 @@ void Inspection::Type::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueD
 				if(DataReferenceChildElement->GetName() == "field")
 				{
 					assert(DataReferenceChildElement->GetChilds().size() == 1);
-					DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Field;
+					DataReferencePartDescriptor->Type = Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Field;
 					
 					auto SubText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
 					
@@ -1701,7 +1783,7 @@ void Inspection::Type::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueD
 				else if(DataReferenceChildElement->GetName() == "tag")
 				{
 					assert(DataReferenceChildElement->GetChilds().size() == 1);
-					DataReferencePartDescriptor->Type = Inspection::DataReference::PartDescriptor::Type::Tag;
+					DataReferencePartDescriptor->Type = Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Tag;
 					
 					auto TagText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
 					
