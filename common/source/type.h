@@ -16,6 +16,7 @@ namespace Inspection
 		class Equals;
 		class Length;
 		class Parameter;
+		class Parameters;
 		class Statement;
 		class Tag;
 	};
@@ -43,6 +44,8 @@ namespace Inspection
 		void _LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement);
 		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);
 		void _LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement);
+		void _LoadParameter(Inspection::TypeDefinition::Parameter & Parameter, const XML::Element * ParameterElement);
+		void _LoadParameters(Inspection::TypeDefinition::Parameters & Parameters, const XML::Element * ParametersElement);
 		void _LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement);
 		void _LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement);
 		void _LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement);
