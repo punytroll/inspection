@@ -1,21 +1,21 @@
 <type>
 	<forward>
-		<getter-reference>
+		<type-reference>
 			<part>FLAC</part>
 			<part>Stream_Header</part>
-		</getter-reference>
+		</type-reference>
 	</forward>
 	<field name="Frames">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByFailureOrLength_ResetPositionOnFailure</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>FLAC</part>
 					<part>Frame</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="ElementName">
 				<string>Frame</string>

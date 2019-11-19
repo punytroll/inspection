@@ -17,7 +17,7 @@ namespace Inspection
 		Unknown,
 		Boolean,
 		DataReference,
-		GetterReference,
+		TypeReference,
 		Nothing,
 		ParameterReference,
 		Parameters,
@@ -39,10 +39,6 @@ namespace Inspection
 		{
 			return Inspection::DataType::DataReference;
 		}
-		else if(String == "getter-reference")
-		{
-			return Inspection::DataType::GetterReference;
-		}
 		else if(String == "nothing")
 		{
 			return Inspection::DataType::Nothing;
@@ -62,6 +58,10 @@ namespace Inspection
 		else if(String == "string")
 		{
 			return Inspection::DataType::String;
+		}
+		else if(String == "type-reference")
+		{
+			return Inspection::DataType::TypeReference;
 		}
 		else if(String == "unsigned integer 8bit")
 		{
@@ -114,7 +114,7 @@ namespace Inspection
 		std::vector< Inspection::DataReference::PartDescriptor > PartDescriptors;
 	};
 	
-	class GetterReference
+	class TypeReference
 	{
 	public:
 		std::vector< std::string > Parts;
@@ -135,7 +135,7 @@ namespace Inspection
 		Inspection::DataType Type;
 		std::experimental::optional< bool > Boolean;
 		std::experimental::optional< Inspection::DataReference > DataReference;
-		std::experimental::optional< Inspection::GetterReference > GetterReference;
+		std::experimental::optional< Inspection::TypeReference > TypeReference;
 		std::experimental::optional< Inspection::ParameterReference > ParameterReference;
 		std::experimental::optional< std::vector< Inspection::ActualParameterDescriptor > > Parameters;
 		std::experimental::optional< float > SinglePrecisionReal;
@@ -239,7 +239,7 @@ namespace Inspection
 		
 		std::vector< Inspection::ActualParameterDescriptor > ActualParameterDescriptors;
 		std::experimental::optional< std::string > FieldName;
-		Inspection::GetterReference GetterReference;
+		std::experimental::optional< Inspection::TypeReference > TypeReference;
 		std::experimental::optional< Inspection::Interpretation > Interpretation;
 		std::experimental::optional< Inspection::LengthDescriptor > LengthDescriptor;
 		std::vector< Inspection::Tag > Tags;
@@ -452,10 +452,10 @@ namespace Inspection
 					assert(false);
 				}
 			}
-			else if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::GetterReference)
+			else if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::TypeReference)
 			{
-				assert(ParameterDescriptor.ValueDescriptor.GetterReference);
-				NewParameters.emplace(ParameterDescriptor.Name, ParameterDescriptor.ValueDescriptor.GetterReference->Parts);
+				assert(ParameterDescriptor.ValueDescriptor.TypeReference);
+				NewParameters.emplace(ParameterDescriptor.Name, ParameterDescriptor.ValueDescriptor.TypeReference->Parts);
 			}
 			else if(ParameterDescriptor.ValueDescriptor.Type == Inspection::DataType::Parameters)
 			{
@@ -583,7 +583,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 					
 					FillNewParameters(NewParameters, PartDescriptor.ActualParameterDescriptors, Result->GetValue(), Parameters);
 					
-					auto PartResult{g_TypeRepository.Get(PartDescriptor.GetterReference.Parts, *PartReader, NewParameters)};
+					auto PartResult{g_TypeRepository.Get(PartDescriptor.TypeReference->Parts, *PartReader, NewParameters)};
 					
 					Continue = PartResult->GetSuccess();
 					switch(PartDescriptor.Type)
@@ -1160,29 +1160,10 @@ void Inspection::Type::Load(const std::string & TypePath)
 						{
 							auto PartChildElement{dynamic_cast< const XML::Element * >(PartChildNode)};
 							
-							if(PartChildElement->GetName() == "getter-reference")
+							if(PartChildElement->GetName() == "type-reference")
 							{
-								for(auto GetterPartGetterRefferenceChildNode : PartChildElement->GetChilds())
-								{
-									if(GetterPartGetterRefferenceChildNode->GetNodeType() == XML::NodeType::Element)
-									{
-										auto GetterPartGetterReferenceChildElement{dynamic_cast< const XML::Element * >(GetterPartGetterRefferenceChildNode)};
-										
-										if(GetterPartGetterReferenceChildElement->GetName() == "part")
-										{
-											assert(GetterPartGetterReferenceChildElement->GetChilds().size() == 1);
-											
-											auto GetterPartGetterReferenceText{dynamic_cast< const XML::Text * >(GetterPartGetterReferenceChildElement->GetChild(0))};
-											
-											assert(GetterPartGetterReferenceText != nullptr);
-											PartDescriptor.GetterReference.Parts.push_back(GetterPartGetterReferenceText->GetText());
-										}
-										else
-										{
-											throw std::domain_error{"/getter/field/getter-reference/" + GetterPartGetterReferenceChildElement->GetName() + " not allowed."};
-										}
-									}
-								}
+								PartDescriptor.TypeReference.emplace();
+								_LoadTypeReference(PartDescriptor.TypeReference.value(), PartChildElement);
 							}
 							else if(PartChildElement->GetName() == "interpretation")
 							{
@@ -1437,6 +1418,31 @@ void Inspection::Type::_LoadTag(Inspection::Tag & Tag, const XML::Element * TagE
 	_LoadValueDescriptorFromWithin(Tag.Value, TagElement);
 }
 
+void Inspection::Type::_LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement)
+{
+	for(auto TypeReferenceChildNode : TypeReferenceElement->GetChilds())
+	{
+		if(TypeReferenceChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto TypeReferenceChildElement{dynamic_cast< const XML::Element * >(TypeReferenceChildNode)};
+			
+			if(TypeReferenceChildElement->GetName() == "part")
+			{
+				assert(TypeReferenceChildElement->GetChilds().size() == 1);
+				
+				auto TypeReferencePartText{dynamic_cast< const XML::Text * >(TypeReferenceChildElement->GetChild(0))};
+				
+				assert(TypeReferencePartText != nullptr);
+				TypeReference.Parts.push_back(TypeReferencePartText->GetText());
+			}
+			else
+			{
+				throw std::domain_error{"type-reference/" + TypeReferenceChildElement->GetName() + " not allowed."};
+			}
+		}
+	}
+}
+
 void Inspection::Type::_LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement)
 {
 	if(ParentElement->GetChilds().size() == 0)
@@ -1465,33 +1471,6 @@ void Inspection::Type::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueD
 	{
 		assert(ValueDescriptor.Type == Inspection::DataType::Unknown);
 		ValueDescriptor.Type = Inspection::DataType::Nothing;
-	}
-	else if(ValueElement->GetName() == "getter-reference")
-	{
-		assert(ValueDescriptor.Type == Inspection::DataType::Unknown);
-		ValueDescriptor.Type = Inspection::DataType::GetterReference;
-		ValueDescriptor.GetterReference.emplace();
-		for(auto GetterReferenceChildNode : ValueElement->GetChilds())
-		{
-			if(GetterReferenceChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				auto GetterReferenceChildElement{dynamic_cast< const XML::Element * >(GetterReferenceChildNode)};
-				
-				if(GetterReferenceChildElement->GetName() == "part")
-				{
-					assert(GetterReferenceChildElement->GetChilds().size() == 1);
-					
-					auto PartText{dynamic_cast< const XML::Text * >(GetterReferenceChildElement->GetChild(0))};
-					
-					assert(PartText != nullptr);
-					ValueDescriptor.GetterReference->Parts.push_back(PartText->GetText());
-				}
-				else
-				{
-					throw std::domain_error{GetterReferenceChildElement->GetName() + " not allowed."};
-				}
-			}
-		}
 	}
 	else if(ValueElement->GetName() == "data-reference")
 	{
@@ -1574,6 +1553,13 @@ void Inspection::Type::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueD
 		
 		assert(TextNode != nullptr);
 		ValueDescriptor.String = TextNode->GetText();
+	}
+	else if(ValueElement->GetName() == "type-reference")
+	{
+		assert(ValueDescriptor.Type == Inspection::DataType::Unknown);
+		ValueDescriptor.Type = Inspection::DataType::TypeReference;
+		ValueDescriptor.TypeReference.emplace();
+		_LoadTypeReference(ValueDescriptor.TypeReference.value(), ValueElement);
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-8bit")
 	{

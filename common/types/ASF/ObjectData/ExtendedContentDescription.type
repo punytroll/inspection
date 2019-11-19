@@ -1,24 +1,24 @@
 <type>
 	<field name="ContentDescriptorsCount">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="ContentDescriptors">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>ASF</part>
 					<part>ExtendedContentDescription</part>
 					<part>ContentDescriptor</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="ElementName">
 				<string>ContentDescriptor</string>

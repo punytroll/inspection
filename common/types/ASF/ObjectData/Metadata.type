@@ -1,24 +1,24 @@
 <type>
 	<field name="DescriptionRecordsCount">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="DescriptionRecords">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>ASF</part>
 					<part>Metadata</part>
 					<part>DescriptionRecord</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="ElementName">
 				<string>DescriptionRecord</string>

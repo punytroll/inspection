@@ -1,10 +1,10 @@
 <type>
 	<forward>
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ASCII</part>
 			<part>AlphaNumeric_EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>4</unsigned-integer-64bit>

@@ -1,40 +1,40 @@
 <type>
 	<field name="BitsPerSample">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="ExtensionSize">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="ValidBitsPerSample">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="ChannelMask">
-		<getter-reference>
+		<type-reference>
 			<part>RIFF</part>
 			<part>ChunkData</part>
 			<part>fmt__FormatSpecificFields_Extensible_ChannelMask</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="SubFormat">
-		<getter-reference>
+		<type-reference>
 			<part>RIFF</part>
 			<part>ChunkData</part>
 			<part>fmt__FormatSpecificFields_Extensible_SubFormat</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

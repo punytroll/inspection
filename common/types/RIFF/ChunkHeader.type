@@ -1,10 +1,10 @@
 <type>
 	<field name="Identifier">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ASCII</part>
 			<part>AlphaNumericOrSpace_EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>4</unsigned-integer-64bit>
@@ -15,11 +15,11 @@
 		</length>
 	</field>
 	<field name="Size">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

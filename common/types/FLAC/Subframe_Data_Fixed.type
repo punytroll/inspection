@@ -1,17 +1,17 @@
 <type>
 	<field name="WarmUpSamples">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>Number</part>
 					<part>Integer</part>
 					<part>Unsigned</part>
 					<part>BigEndian</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="NumberOfElements">
 				<parameter-reference cast-to-type="unsigned integer 64bit">PredictorOrder</parameter-reference>
@@ -26,10 +26,10 @@
 		</parameters>
 	</field>
 	<field name="Residual">
-		<getter-reference>
+		<type-reference>
 			<part>FLAC</part>
 			<part>Subframe_Residual</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="FrameBlockSize">
 				<parameter-reference>FrameBlockSize</parameter-reference>

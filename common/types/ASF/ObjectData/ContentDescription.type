@@ -1,51 +1,51 @@
 <type>
 	<field name="TitleLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="AuthorLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="CopyrightLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="DescriptionLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="RatingLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="Title">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationOrLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<data-reference>
@@ -58,12 +58,12 @@
 		</length>
 	</field>
 	<field name="Author">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationOrLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<data-reference>
@@ -76,12 +76,12 @@
 		</length>
 	</field>
 	<field name="Copyright">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationOrLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<data-reference>
@@ -94,12 +94,12 @@
 		</length>
 	</field>
 	<field name="Description">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationOrLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<data-reference>
@@ -112,12 +112,12 @@
 		</length>
 	</field>
 	<field name="Rating">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationOrLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<data-reference>

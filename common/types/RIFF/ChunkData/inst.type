@@ -1,58 +1,58 @@
 <type>
 	<field name="UnshiftedNote">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="FineTune">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Signed</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="Gain">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Signed</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="LowNote">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="HighNote">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="LowVelocity">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="HighVelocity">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

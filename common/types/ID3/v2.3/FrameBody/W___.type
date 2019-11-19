@@ -1,9 +1,9 @@
 <type>
 	<field name="URL">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_8859_1_1998</part>
 			<part>EndedByTerminationOrLength</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

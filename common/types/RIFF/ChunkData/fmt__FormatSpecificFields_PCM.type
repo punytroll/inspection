@@ -1,10 +1,10 @@
 <type>
 	<field name="BitsPerSample">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

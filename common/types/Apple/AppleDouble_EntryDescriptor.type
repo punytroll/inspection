@@ -1,11 +1,11 @@
 <type>
 	<field name="EntryID">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 32bit">
@@ -131,19 +131,19 @@
 		</interpretation>
 	</field>
 	<field name="Offset">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="Length">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

@@ -1,10 +1,10 @@
 <type>
 	<field name="Identifier">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ASCII</part>
 			<part>Alphabetic_ByTemplate</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="Template">
 				<string>APETAGEX</string>
@@ -12,12 +12,12 @@
 		</parameters>
 	</field>
 	<field name="VersionNumber">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 32bit">
@@ -39,32 +39,32 @@
 		</interpretation>
 	</field>
 	<field name="TagSize">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="ItemCount">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="TagsFlags">
-		<getter-reference>
+		<type-reference>
 			<part>APE</part>
 			<part>Flags</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="Reserved">
-		<getter-reference>
+		<type-reference>
 			<part>Data</part>
 			<part>Unset_EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>8</unsigned-integer-64bit>

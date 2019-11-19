@@ -1,16 +1,16 @@
 <type>
 	<field name="GUID">
-		<getter-reference>
+		<type-reference>
 			<part>ASF</part>
 			<part>GUID</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="Size">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>64Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

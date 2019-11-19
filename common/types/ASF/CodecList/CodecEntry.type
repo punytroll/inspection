@@ -1,26 +1,26 @@
 <type>
 	<field name="Type">
-		<getter-reference>
+		<type-reference>
 			<part>ASF</part>
 			<part>CodecList</part>
 			<part>CodecEntryType</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="CodecNameLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="CodecName">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="NumberOfCodePoints">
 				<data-reference cast-to-type="unsigned integer 64bit">
@@ -30,20 +30,20 @@
 		</parameters>
 	</field>
 	<field name="CodecDescriptionLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="CodecDescription">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_10646_1_1993</part>
 			<part>UTF-16</part>
 			<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="NumberOfCodePoints">
 				<data-reference cast-to-type="unsigned integer 64bit">
@@ -53,18 +53,18 @@
 		</parameters>
 	</field>
 	<field name="CodecInformationLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="CodecInformation">
-		<getter-reference>
+		<type-reference>
 			<part>Buffer</part>
 			<part>UnsignedInteger_8Bit_EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<data-reference>

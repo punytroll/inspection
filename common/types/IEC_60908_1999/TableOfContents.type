@@ -1,15 +1,15 @@
 <type>
 	<fields>
-		<getter-reference>
+		<type-reference>
 			<part>IEC_60908_1999</part>
 			<part>TableOfContents_Header</part>
-		</getter-reference>
+		</type-reference>
 	</fields>
 	<fields>
-		<getter-reference>
+		<type-reference>
 			<part>IEC_60908_1999</part>
 			<part>TableOfContents_Tracks</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="FirstTrackNumber">
 				<data-reference>

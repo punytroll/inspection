@@ -1,11 +1,11 @@
 <type>
 	<field name="MagicNumber">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-32bit>333319</unsigned-integer-32bit>
@@ -13,12 +13,12 @@
 		</verification>
 	</field>
 	<field name="VersionNumber">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-32bit>131072</unsigned-integer-32bit>
@@ -26,10 +26,10 @@
 		</verification>
 	</field>
 	<field name="Filler">
-		<getter-reference>
+		<type-reference>
 			<part>Data</part>
 			<part>Unset_EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>16</unsigned-integer-64bit>
@@ -40,24 +40,24 @@
 		</length>
 	</field>
 	<field name="NumberOfEntries">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="EntryDescriptors">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>Apple</part>
 					<part>AppleDouble_EntryDescriptor</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="ElementName">
 				<string>EntryDescriptor</string>

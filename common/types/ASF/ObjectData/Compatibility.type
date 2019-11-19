@@ -1,11 +1,11 @@
 <type>
 	<field name="Profile">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-8bit>2</unsigned-integer-8bit>
@@ -13,12 +13,12 @@
 		</verification>
 	</field>
 	<field name="Mode">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-8bit>1</unsigned-integer-8bit>

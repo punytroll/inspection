@@ -1,10 +1,10 @@
 <type>
 	<field name="CRC-16">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

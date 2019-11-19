@@ -1,15 +1,15 @@
 <type>
 	<field name="SeekPoints">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>FLAC</part>
 					<part>SeekTableBlock_SeekPoint</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="ElementName">
 				<string>SeekPoint</string>

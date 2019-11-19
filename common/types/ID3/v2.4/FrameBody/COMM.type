@@ -1,24 +1,24 @@
 <type>
 	<field name="TextEncoding">
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>TextEncoding</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="Language">
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>Language</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="ShortContentDescription">
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>TextStringAccordingToEncoding_EndedByTermination</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="TextEncoding">
 				<data-reference>
@@ -28,11 +28,11 @@
 		</parameters>
 	</field>
 	<field name="Comment">
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>TextStringAccordingToEncoding_EndedByTerminationOrLength</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="TextEncoding">
 				<data-reference>

@@ -1,10 +1,10 @@
 <type>
 	<field name="TextEncoding">
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>v2.2</part>
 			<part>TextEncoding</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="ImageFormat">
 		<length>
@@ -15,11 +15,11 @@
 				<unsigned-integer-64bit>0</unsigned-integer-64bit>
 			</bits>
 		</length>
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ISO_IEC_8859_1_1998</part>
 			<part>EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="string">
@@ -46,12 +46,12 @@
 		</interpretation>
 	</field>
 	<field name="PictureType">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-type="unsigned integer 8bit">
@@ -228,11 +228,11 @@
 		</interpretation>
 	</field>
 	<field name="Description">
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>v2.2</part>
 			<part>TextStringAccordingToEncoding_EndedByTermination</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="TextEncoding">
 				<data-reference>
@@ -242,9 +242,9 @@
 		</parameters>
 	</field>
 	<field name="PictureData">
-		<getter-reference>
+		<type-reference>
 			<part>Data</part>
 			<part>SetOrUnset_EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

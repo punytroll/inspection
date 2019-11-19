@@ -1,21 +1,21 @@
 <type>
 	<field name="APETagsHeader">
-		<getter-reference>
+		<type-reference>
 			<part>APE</part>
 			<part>HeaderOrFooter</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="APETagsItems">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>APE</part>
 					<part>Item</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="ElementName">
 				<string>APETagsItem</string>
@@ -29,9 +29,9 @@
 		</parameters>
 	</field>
 	<field name="APETagsFooter">
-		<getter-reference>
+		<type-reference>
 			<part>APE</part>
 			<part>HeaderOrFooter</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

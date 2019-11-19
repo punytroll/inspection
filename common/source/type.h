@@ -19,6 +19,7 @@ namespace Inspection
 	class Reader;
 	class Result;
 	class Tag;
+	class TypeReference;
 	class Value;
 	class ValueDescriptor;
 	
@@ -33,6 +34,7 @@ namespace Inspection
 		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
 		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);
 		void _LoadTag(Inspection::Tag & Tag, const XML::Element * TagElement);
+		void _LoadTypeReference(Inspection::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
 		void _LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
 		void _LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ValueElement);
 		Inspection::EvaluationResult _ApplyInterpretation(const Inspection::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);

@@ -1,10 +1,10 @@
 <type>
 	<field name="FormType">
-		<getter-reference>
+		<type-reference>
 			<part>String</part>
 			<part>ASCII</part>
 			<part>AlphaNumericOrSpace_EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<length>
 			<bytes>
 				<unsigned-integer-64bit>4</unsigned-integer-64bit>
@@ -15,16 +15,16 @@
 		</length>
 	</field>
 	<field name="Chunks">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByLength</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>RIFF</part>
 					<part>Chunk</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="ElementName">
 				<string>Chunk</string>

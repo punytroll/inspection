@@ -1,10 +1,10 @@
 <type>
 	<fields>
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>v2.4</part>
 			<part>Tag_ExtendedHeader_Flag_Header</part>
-		</getter-reference>
+		</type-reference>
 		<verification>
 			<equals>
 				<data-reference>
@@ -15,9 +15,9 @@
 		</verification>
 	</fields>
 	<field name="TotalFrameCRC">
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

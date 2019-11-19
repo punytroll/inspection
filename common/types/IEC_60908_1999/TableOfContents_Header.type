@@ -1,26 +1,26 @@
 <type>
 	<field name="DataLength">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>16Bit_BigEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="FirstTrackNumber">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="LastTrackNumber">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

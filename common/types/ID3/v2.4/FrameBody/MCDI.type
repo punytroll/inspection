@@ -1,8 +1,8 @@
 <type>
 	<forward>
-		<getter-reference>
+		<type-reference>
 			<part>ISO_60908_1999</part>
 			<part>TableOfContents</part>
-		</getter-reference>
+		</type-reference>
 	</forward>
 </type>

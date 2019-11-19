@@ -1,8 +1,8 @@
 <type>
 	<field name="Size">
-		<getter-reference>
+		<type-reference>
 			<part>ID3</part>
 			<part>UnsignedInteger_7Bit_SynchSafe_8Bit</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 </type>

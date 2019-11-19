@@ -1,19 +1,19 @@
 <type>
 	<field name="NumberOfHeaderObjects">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>32Bit_LittleEndian</part>
-		</getter-reference>
+		</type-reference>
 	</field>
 	<field name="Reserved1">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-8bit>1</unsigned-integer-8bit>
@@ -21,12 +21,12 @@
 		</verification>
 	</field>
 	<field name="Reserved2">
-		<getter-reference>
+		<type-reference>
 			<part>Number</part>
 			<part>Integer</part>
 			<part>Unsigned</part>
 			<part>8Bit</part>
-		</getter-reference>
+		</type-reference>
 		<verification>
 			<value-equals>
 				<unsigned-integer-8bit>2</unsigned-integer-8bit>
@@ -34,16 +34,16 @@
 		</verification>
 	</field>
 	<field name="HeaderObjects">
-		<getter-reference>
+		<type-reference>
 			<part>Array</part>
 			<part>EndedByNumberOfElements</part>
-		</getter-reference>
+		</type-reference>
 		<parameters>
 			<parameter name="ElementGetter">
-				<getter-reference>
+				<type-reference>
 					<part>ASF</part>
 					<part>Object</part>
-				</getter-reference>
+				</type-reference>
 			</parameter>
 			<parameter name="ElementName">
 				<string>HeaderObject</string>
