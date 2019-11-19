@@ -1228,37 +1228,7 @@ void Inspection::Type::Load(const std::string & TypePath)
 								{
 									if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
 									{
-										auto GetterPartVerificationChildElement{dynamic_cast< const XML::Element * >(GetterPartVerificationChildNode)};
-										
-										if(GetterPartVerificationChildElement->GetName() == "equals")
-										{
-											Verification.Type = Inspection::Statement::Type::Equals;
-											Verification.Equals = new Inspection::Equals{};
-											
-											bool First{true};
-											
-											for(auto GetterPartVerificationEqualsChildNode : GetterPartVerificationChildElement->GetChilds())
-											{
-												if(GetterPartVerificationEqualsChildNode->GetNodeType() == XML::NodeType::Element)
-												{
-													auto GetterPartVerificationEqualsChildElement{dynamic_cast< const XML::Element * >(GetterPartVerificationEqualsChildNode)};
-													
-													if(First == true)
-													{
-														_LoadStatement(Verification.Equals->Statement1, GetterPartVerificationEqualsChildElement);
-														First = false;
-													}
-													else
-													{
-														_LoadStatement(Verification.Equals->Statement2, GetterPartVerificationEqualsChildElement);
-													}
-												}
-											}
-										}
-										else
-										{
-											throw std::domain_error{"/getter/field/verification/" + GetterPartVerificationChildElement->GetName() + " not allowed."};
-										}
+										_LoadStatement(Verification, dynamic_cast< XML::Element * >(GetterPartVerificationChildNode));
 									}
 								}
 							}
@@ -1405,11 +1375,44 @@ void Inspection::Type::_LoadEnumeration(Inspection::Enumeration & Enumeration, c
 	}
 }
 
+void Inspection::Type::_LoadEquals(Inspection::Equals & Equals, const XML::Element * EqualsElement)
+{
+	bool First{true};
+	
+	for(auto EqualsChildNode : EqualsElement->GetChilds())
+	{
+		if(EqualsChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto EqualsChildElement{dynamic_cast< const XML::Element * >(EqualsChildNode)};
+			
+			if(First == true)
+			{
+				_LoadStatement(Equals.Statement1, EqualsChildElement);
+				First = false;
+			}
+			else
+			{
+				_LoadStatement(Equals.Statement2, EqualsChildElement);
+			}
+		}
+	}
+}
+
 void Inspection::Type::_LoadStatement(Inspection::Statement & Statement, const XML::Element * StatementElement)
 {
-	Statement.Type = Inspection::Statement::Type::Value;
-	Statement.Value = new Inspection::ValueDescriptor{};
-	_LoadValueDescriptor(*(Statement.Value), StatementElement);
+	// statement element may be nullptr, if it represents the "nothing" value
+	if((StatementElement != nullptr) && (StatementElement->GetName() == "equals"))
+	{
+		Statement.Type = Inspection::Statement::Type::Equals;
+		Statement.Equals = new Inspection::Equals{};
+		_LoadEquals(*(Statement.Equals), StatementElement);
+	}
+	else
+	{
+		Statement.Type = Inspection::Statement::Type::Value;
+		Statement.Value = new Inspection::ValueDescriptor{};
+		_LoadValueDescriptor(*(Statement.Value), StatementElement);
+	}
 }
 
 void Inspection::Type::_LoadTag(Inspection::Tag & Tag, const XML::Element * TagElement)

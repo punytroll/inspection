@@ -12,6 +12,7 @@
 namespace Inspection
 {
 	class Enumeration;
+	class Equals;
 	class EvaluationResult;
 	class TypeRepository;
 	class Interpretation;
@@ -33,6 +34,7 @@ namespace Inspection
 		void Load(const std::string & TypePath);
 	private:
 		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
+		void _LoadEquals(Inspection::Equals & Equals, const XML::Element * EqualsElement);
 		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);
 		void _LoadStatement(Inspection::Statement & Statement, const XML::Element * StatementElement);
 		void _LoadTag(Inspection::Tag & Tag, const XML::Element * TagElement);
