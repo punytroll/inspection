@@ -929,19 +929,19 @@ bool Inspection::Type::_GetPart(const Inspection::TypeDefinition::Part & Part, s
 				case Inspection::TypeDefinition::Part::Type::Field:
 					{
 						assert(Part.FieldName);
-						Result->GetValue()->AppendField(Part.FieldName.value(), PartResult->GetValue());
+						Target->AppendField(Part.FieldName.value(), PartResult->GetValue());
 						
 						break;
 					}
 				case Inspection::TypeDefinition::Part::Type::Fields:
 					{
-						Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+						Target->AppendFields(PartResult->GetValue()->GetFields());
 						
 						break;
 					}
 				case Inspection::TypeDefinition::Part::Type::Forward:
 					{
-						Result->SetValue(PartResult->GetValue());
+						Target = PartResult->GetValue();
 						
 						break;
 					}
