@@ -1186,6 +1186,10 @@ void Inspection::Type::Load(const std::string & TypePath)
 					{
 						_HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
 					}
+					else if(HardcodedText->GetText() == "Get_Data_Set_EndedByLength")
+					{
+						_HardcodedGetter = Inspection::Get_Data_Set_EndedByLength;
+					}
 					else if(HardcodedText->GetText() == "Get_Data_SetOrUnset_EndedByLength")
 					{
 						_HardcodedGetter = Inspection::Get_Data_SetOrUnset_EndedByLength;
@@ -1341,6 +1345,18 @@ void Inspection::Type::Load(const std::string & TypePath)
 					else if(HardcodedText->GetText() == "Get_MPEG_1_Frame")
 					{
 						_HardcodedGetter = Inspection::Get_MPEG_1_Frame;
+					}
+					else if(HardcodedText->GetText() == "Get_MPEG_1_FrameHeader_BitRateIndex")
+					{
+						_HardcodedGetter = Inspection::Get_MPEG_1_FrameHeader_BitRateIndex;
+					}
+					else if(HardcodedText->GetText() == "Get_MPEG_1_FrameHeader_Mode")
+					{
+						_HardcodedGetter = Inspection::Get_MPEG_1_FrameHeader_Mode;
+					}
+					else if(HardcodedText->GetText() == "Get_MPEG_1_FrameHeader_ModeExtension")
+					{
+						_HardcodedGetter = Inspection::Get_MPEG_1_FrameHeader_ModeExtension;
 					}
 					else if(HardcodedText->GetText() == "Get_Ogg_Page")
 					{

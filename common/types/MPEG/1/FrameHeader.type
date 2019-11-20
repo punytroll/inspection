@@ -1,0 +1,129 @@
+<type>
+	<sequence>
+		<field name="FrameSync">
+			<type-reference>
+				<part>Data</part>
+				<part>Set_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>12</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+		<field name="AudioVersionID">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_AudioVersionID</part>
+			</type-reference>
+		</field>
+		<field name="LayerDescription">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_LayerDescription</part>
+			</type-reference>
+		</field>
+		<field name="ProtectionBit">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_ProtectionBit</part>
+			</type-reference>
+		</field>
+		<field name="BitRateIndex">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_BitRateIndex</part>
+			</type-reference>
+			<parameters>
+				<parameter name="LayerDescription">
+					<data-reference>
+						<field>LayerDescription</field>
+					</data-reference>
+				</parameter>
+			</parameters>
+		</field>
+		<field name="SamplingFrequency">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_SamplingFrequency</part>
+			</type-reference>
+		</field>
+		<field name="PaddingBit">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_PaddingBit</part>
+			</type-reference>
+		</field>
+		<field name="PrivateBit">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>1Bit</part>
+			</type-reference>
+		</field>
+		<field name="Mode">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_Mode</part>
+			</type-reference>
+			<parameters>
+				<parameter name="LayerDescription">
+					<data-reference>
+						<field>LayerDescription</field>
+					</data-reference>
+				</parameter>
+			</parameters>
+		</field>
+		<field name="ModeExtension">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_ModeExtension</part>
+			</type-reference>
+			<parameters>
+				<parameter name="LayerDescription">
+					<data-reference>
+						<field>LayerDescription</field>
+					</data-reference>
+				</parameter>
+				<parameter name="Mode">
+					<data-reference>
+						<field>Mode</field>
+					</data-reference>
+				</parameter>
+			</parameters>
+		</field>
+		<field name="Copyright">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_Copyright</part>
+			</type-reference>
+		</field>
+		<field name="Original/Home">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_OriginalHome</part>
+			</type-reference>
+		</field>
+		<field name="Emphasis">
+			<type-reference>
+				<part>MPEG</part>
+				<part>1</part>
+				<part>FrameHeader_Emphasis</part>
+			</type-reference>
+		</field>
+	</sequence>
+</type>
