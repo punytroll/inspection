@@ -864,15 +864,15 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 	return Result;
 }
 
-bool Inspection::Type::_GetPart(const Inspection::TypeDefinition::Part & Part, std::unique_ptr< Inspection::Result > & Result, std::shared_ptr< Inspection::Value > & Target, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+bool Inspection::Type::_GetPart(const Inspection::TypeDefinition::Part & Part, std::unique_ptr< Inspection::Result > & TopLevelResult, std::shared_ptr< Inspection::Value > & Target, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Continue{true};
 	Inspection::Reader * PartReader{nullptr};
 	
 	if(Part.Length)
 	{
-		auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(Part.Length->Bytes, Result->GetValue(), Parameters)};
-		auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(Part.Length->Bits, Result->GetValue(), Parameters)};
+		auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(Part.Length->Bytes, TopLevelResult->GetValue(), Parameters)};
+		auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(Part.Length->Bits, TopLevelResult->GetValue(), Parameters)};
 		Inspection::Length Length{Bytes, Bits};
 		
 		if(Reader.Has(Length) == true)
@@ -898,7 +898,7 @@ bool Inspection::Type::_GetPart(const Inspection::TypeDefinition::Part & Part, s
 				assert(Part.Parts);
 				for(auto & SequencePart : Part.Parts.value())
 				{
-					auto PartResult{_GetPart(SequencePart, Result, Target, *PartReader, Parameters)};
+					auto PartResult{_GetPart(SequencePart, TopLevelResult, Target, *PartReader, Parameters)};
 					
 					Continue = PartResult;
 					if(Continue == false)
@@ -918,7 +918,7 @@ bool Inspection::Type::_GetPart(const Inspection::TypeDefinition::Part & Part, s
 				
 				if(Part.Parameters)
 				{
-					FillNewParameters(NewParameters, Part.Parameters.value(), Result->GetValue(), Parameters);
+					FillNewParameters(NewParameters, Part.Parameters.value(), TopLevelResult->GetValue(), Parameters);
 				}
 				
 				auto PartResult{g_TypeRepository.Get(Part.TypeReference->Parts, *PartReader, NewParameters)};
@@ -992,7 +992,7 @@ bool Inspection::Type::_GetPart(const Inspection::TypeDefinition::Part & Part, s
 								Continue = Inspection::Algorithms::Equals(Statement.Equals->Statement1, Statement.Equals->Statement2, PartResult->GetValue(), Parameters);
 								if(Continue == false)
 								{
-									Result->GetValue()->AddTag("error", "Failed to verify a value."s);
+									PartResult->GetValue()->AddTag("error", "The value failed to verify."s);
 								}
 								
 								break;

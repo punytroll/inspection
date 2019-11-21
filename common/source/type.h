@@ -42,7 +42,7 @@ namespace Inspection
 		std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void Load(const std::string & TypePath);
 	private:
-		bool _GetPart(const Inspection::TypeDefinition::Part & Part, std::unique_ptr< Inspection::Result > & Result, std::shared_ptr< Inspection::Value > & Target, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		bool _GetPart(const Inspection::TypeDefinition::Part & Part, std::unique_ptr< Inspection::Result > & TopLevelResult, std::shared_ptr< Inspection::Value > & Target, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void _LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement);
 		void _LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement);
 		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
