@@ -563,14 +563,14 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > ProcessWithSpecificGetter(Inspection::Reader & Reader, const std::vector< std::string > & Getter)
+std::unique_ptr< Inspection::Result > ProcessAsSpecificType(Inspection::Reader & Reader, const std::vector< std::string > & Type)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	Inspection::Reader PartReader{Reader};
-	auto PartResult{Inspection::g_TypeRepository.Get(Getter, PartReader, {})};
+	auto PartResult{Inspection::g_TypeRepository.Get(Type, PartReader, {})};
 	
 	Result->SetSuccess(PartResult->GetSuccess());
-	Result->GetValue()->AppendField(Getter.back(), PartResult->GetValue());
+	Result->GetValue()->AppendField(Type.back(), PartResult->GetValue());
 	Reader.AdvancePosition(PartReader.GetConsumedLength());
 	Inspection::FinalizeResult(Result, Reader);
 	
@@ -786,8 +786,8 @@ void QueryWriter(std::unique_ptr< Inspection::Result > & Result, const std::stri
 
 int main(int argc, char ** argv)
 {
-	std::string GetterPrefix{"--getter="};
-	std::string Getter;
+	std::string TypePrefix{"--type="};
+	std::string Type;
 	std::string QueryPrefix{"--query="};
 	std::string Query;
 	std::deque< std::string > Paths;
@@ -812,9 +812,9 @@ int main(int argc, char ** argv)
 		{
 			g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples = true;
 		}
-		else if(Argument.compare(0, GetterPrefix.size(), GetterPrefix) == 0)
+		else if(Argument.compare(0, TypePrefix.size(), TypePrefix) == 0)
 		{
-			Getter = Argument.substr(GetterPrefix.size());
+			Type = Argument.substr(TypePrefix.size());
 		}
 		else
 		{
@@ -836,11 +836,11 @@ int main(int argc, char ** argv)
 		{
 			Writer = std::bind(QueryWriter, std::placeholders::_1, Query);
 		}
-		if(Getter != "")
+		if(Type != "")
 		{
-			auto GetterParts{SplitString(Getter, '/')};
+			auto TypeParts{SplitString(Type, '/')};
 			
-			Processor = std::bind(ProcessWithSpecificGetter, std::placeholders::_1, GetterParts);
+			Processor = std::bind(ProcessAsSpecificType, std::placeholders::_1, TypeParts);
 		}
 		ReadItem(Paths.front(), Processor, Writer);
 		Paths.pop_front();
