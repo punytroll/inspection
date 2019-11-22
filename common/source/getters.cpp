@@ -2346,7 +2346,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_TypeRepository.Get({"Microsoft_WaveFormat_FormatTag"}, PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"Microsoft", "WAVE", "WaveFormat_FormatTag"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("FormatTag", PartResult->GetValue());

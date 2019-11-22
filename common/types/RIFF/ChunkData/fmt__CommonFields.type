@@ -2,7 +2,9 @@
 	<sequence>
 		<field name="FormatTag">
 			<type-reference>
-				<part>Microsoft_WaveFormat_FormatTag</part>
+				<part>Microsoft</part>
+				<part>WAVE</part>
+				<part>WaveFormat_FormatTag</part>
 			</type-reference>
 		</field>
 		<field name="NumberOfChannels">
