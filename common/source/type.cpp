@@ -6,25 +6,13 @@
 #include "result.h"
 #include "type.h"
 #include "type_repository.h"
+#include "xml_helper.h"
 #include "xml_puny_dom.h"
 
 using namespace std::string_literals;
 
 namespace Inspection
 {
-	bool HasChildElements(const XML::Element * Element)
-	{
-		for(auto ChildNode : Element->GetChilds())
-		{
-			if(ChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
 	enum class DataType
 	{
 		Unknown,
@@ -1819,13 +1807,13 @@ void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & St
 		Statement.Equals = new Inspection::TypeDefinition::Equals{};
 		_LoadEquals(*(Statement.Equals), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "unsigned-integer-64bit") && (HasChildElements(StatementElement) == true))
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasChildElements(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};
 		_LoadCast(*(Statement.Cast), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "single-precision-real") && (HasChildElements(StatementElement) == true))
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "single-precision-real") && (XML::HasChildElements(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};
