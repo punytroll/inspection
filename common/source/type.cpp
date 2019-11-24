@@ -5,6 +5,7 @@
 #include "not_implemented_exception.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition.h"
 #include "type_repository.h"
 #include "xml_helper.h"
 #include "xml_puny_dom.h"
@@ -13,72 +14,55 @@ using namespace std::string_literals;
 
 namespace Inspection
 {
-	enum class DataType
-	{
-		Unknown,
-		Boolean,
-		DataReference,
-		TypeReference,
-		Nothing,
-		ParameterReference,
-		Parameters,
-		SinglePrecisionReal,
-		String,
-		UnsignedInteger8Bit,
-		UnsignedInteger16Bit,
-		UnsignedInteger32Bit,
-		UnsignedInteger64Bit
-	};
-	
-	Inspection::DataType GetDataTypeFromString(const std::string & String)
+	Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String)
 	{
 		if(String == "boolean")
 		{
-			return Inspection::DataType::Boolean;
+			return Inspection::TypeDefinition::DataType::Boolean;
 		}
 		else if(String == "data-reference")
 		{
-			return Inspection::DataType::DataReference;
+			return Inspection::TypeDefinition::DataType::DataReference;
 		}
 		else if(String == "nothing")
 		{
-			return Inspection::DataType::Nothing;
+			return Inspection::TypeDefinition::DataType::Nothing;
 		}
 		else if(String == "parameter-reference")
 		{
-			return Inspection::DataType::ParameterReference;
+			return Inspection::TypeDefinition::DataType::ParameterReference;
 		}
 		else if(String == "parameters")
 		{
-			return Inspection::DataType::Parameters;
+			return Inspection::TypeDefinition::DataType::Parameters;
 		}
 		else if(String == "single-precision-real")
 		{
-			return Inspection::DataType::SinglePrecisionReal;
+			return Inspection::TypeDefinition::DataType::SinglePrecisionReal;
 		}
 		else if(String == "string")
 		{
-			return Inspection::DataType::String;
+			return Inspection::TypeDefinition::DataType::String;
 		}
 		else if(String == "type-reference")
 		{
-			return Inspection::DataType::TypeReference;
+			return Inspection::TypeDefinition::DataType::TypeReference;
 		}
 		else if((String == "unsigned integer 8bit") || (String == "unsigned-integer-8bit"))
 		{
-			return Inspection::DataType::UnsignedInteger8Bit;
+			return Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
 		}
 		else if((String == "unsigned integer 16bit") || (String == "unsigned-integer-16bit"))
 		{
-			return Inspection::DataType::UnsignedInteger16Bit;
+			return Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
 		}
 		else if((String == "unsigned integer 32bit") || (String == "unsigned-integer-32bit"))
 		{
-			return Inspection::DataType::UnsignedInteger32Bit;
+			return Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
 		}
 		else if((String == "unsigned integer 64bit") || (String == "unsigned-integer-64bit"))
 		{
-			return Inspection::DataType::UnsignedInteger64Bit;
+			return Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
 		}
 		else
 		{
@@ -94,273 +78,6 @@ namespace Inspection
 		std::experimental::optional< bool > EngineError;
 		std::experimental::optional< bool > StructureIsValid;
 	};
-	
-	namespace TypeDefinition
-	{
-		class DataReference
-		{
-		public:
-			class PartDescriptor
-			{
-			public:
-				enum class Type
-				{
-					Field,
-					Tag
-				};
-				
-				Inspection::TypeDefinition::DataReference::PartDescriptor::Type Type;
-				std::string DetailName;
-			};
-			
-			std::vector< Inspection::TypeDefinition::DataReference::PartDescriptor > PartDescriptors;
-		};
-		
-		class ParameterReference
-		{
-		public:
-			std::string Name;
-		};
-		
-		class Parameters
-		{
-		public:
-			std::vector< Inspection::TypeDefinition::Parameter > Parameters;
-		};
-		
-		class TypeReference
-		{
-		public:
-			std::vector< std::string > Parts;
-		};
-	}
-	
-	class ValueDescriptor
-	{
-	public:
-		Inspection::DataType DataType;
-		std::experimental::optional< bool > Boolean;
-		std::experimental::optional< Inspection::TypeDefinition::DataReference > DataReference;
-		std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-		std::experimental::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
-		std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
-		std::experimental::optional< float > SinglePrecisionReal;
-		std::experimental::optional< std::string > String;
-		std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
-		std::experimental::optional< std::uint16_t > UnsignedInteger16Bit;
-		std::experimental::optional< std::uint32_t > UnsignedInteger32Bit;
-		std::experimental::optional< std::uint64_t > UnsignedInteger64Bit;
-	};
-	
-	class Enumeration
-	{
-	public:
-		class Element
-		{
-		public:
-			std::string BaseValue;
-			std::vector< Inspection::TypeDefinition::Tag > Tags;
-			bool Valid;
-		};
-		std::string BaseType;
-		std::vector< Inspection::Enumeration::Element > Elements;
-		std::experimental::optional< Inspection::Enumeration::Element > FallbackElement;
-	};
-	
-	class ApplyEnumeration
-	{
-	public:
-		Inspection::Enumeration Enumeration;
-	};
-
-	class Interpretation
-	{
-	public:
-		enum class Type
-		{
-			ApplyEnumeration
-		};
-		
-		std::experimental::optional< Inspection::ApplyEnumeration > ApplyEnumeration;
-		Inspection::Interpretation::Type Type;
-	};
-	
-	namespace TypeDefinition
-	{
-		class Statement
-		{
-		public:
-			enum class Type
-			{
-				Unknown,
-				Cast,
-				Divide,
-				Equals,
-				Value
-			};
-			
-			Statement(void) :
-				Type{Inspection::TypeDefinition::Statement::Type::Unknown},
-				Cast{nullptr},
-				Divide{nullptr},
-				Equals{nullptr},
-				Value{nullptr}
-			{
-			}
-			
-			Statement(const Inspection::TypeDefinition::Statement & Statement) = delete;
-			
-			Statement(Inspection::TypeDefinition::Statement && Statement) :
-				Type{Statement.Type},
-				Cast{Statement.Cast},
-				Divide{Statement.Divide},
-				Equals{Statement.Equals},
-				Value{Statement.Value}
-			{
-				Statement.Cast = nullptr;
-				Statement.Divide = nullptr;
-				Statement.Equals = nullptr;
-				Statement.Value = nullptr;
-			}
-			
-			~Statement(void);
-			
-			Inspection::TypeDefinition::Statement::Type Type;
-			// content depending on type
-			Inspection::TypeDefinition::Cast * Cast;
-			Inspection::TypeDefinition::Divide * Divide;
-			Inspection::TypeDefinition::Equals * Equals;
-			Inspection::ValueDescriptor * Value;
-		};
-		
-		class Cast
-		{
-		public:
-			Cast(void) :
-				DataType{Inspection::DataType::Unknown}
-			{
-			}
-			
-			Cast(Inspection::TypeDefinition::Cast && Cast) = default;
-			
-			Cast(const Inspection::TypeDefinition::Cast & Cast) = delete;
-			
-			Inspection::DataType DataType;
-			Inspection::TypeDefinition::Statement Statement;
-		};
-		
-		class Divide
-		{
-		public:
-			Divide(void)
-			{
-			}
-			
-			Divide(Inspection::TypeDefinition::Divide && Divide) = default;
-			
-			Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
-			
-			Inspection::TypeDefinition::Statement Dividend;
-			Inspection::TypeDefinition::Statement Divisor;
-		};
-		
-		class Equals
-		{
-		public:
-			Equals(void)
-			{
-			}
-			
-			Equals(Inspection::TypeDefinition::Equals && Equals) = default;
-			
-			Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
-			
-			Inspection::TypeDefinition::Statement Statement1;
-			Inspection::TypeDefinition::Statement Statement2;
-		};
-		
-		class Length
-		{
-		public:
-			Length(void)
-			{
-			}
-			
-			Length(Inspection::TypeDefinition::Length && Length) = default;
-			
-			Length(const Inspection::TypeDefinition::Length & Length) = delete;
-			
-			Inspection::TypeDefinition::Statement Bytes;
-			Inspection::TypeDefinition::Statement Bits;
-		};
-		
-		class Parameter
-		{
-		public:
-			Parameter(void)
-			{
-			}
-			
-			Parameter(Inspection::TypeDefinition::Parameter && Parameter) = default;
-			
-			Parameter(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
-			
-			std::string Name;
-			Inspection::TypeDefinition::Statement Statement;
-		};
-		
-		class Tag
-		{
-		public:
-			Tag(void)
-			{
-			}
-			
-			Tag(Inspection::TypeDefinition::Tag && Tag) = default;
-			
-			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
-			
-			std::string Name;
-			Inspection::TypeDefinition::Statement Statement;
-		};
-			
-		Statement::~Statement(void)
-		{
-			delete Cast;
-			delete Equals;
-			delete Value;
-		}
-	
-		class Part
-		{
-		public:
-			enum class Type
-			{
-				Field,
-				Fields,
-				Forward,
-				Sequence
-			};
-			
-			Part(void)
-			{
-			}
-				
-			Part(Inspection::TypeDefinition::Part && Part) = default;
-			
-			Part(const Inspection::TypeDefinition::Part & Part) = delete;
-			
-			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
-			std::experimental::optional< std::string > FieldName;
-			std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-			std::experimental::optional< Inspection::Interpretation > Interpretation;
-			std::experimental::optional< Inspection::TypeDefinition::Length > Length;
-			std::experimental::optional< std::vector< Inspection::TypeDefinition::Part > > Parts;
-			std::vector< Inspection::TypeDefinition::Tag > Tags;
-			Inspection::TypeDefinition::Part::Type Type;
-			std::vector< Inspection::TypeDefinition::Statement > Verifications;
-		};
-	}
 	
 	const std::experimental::any & GetAnyReferenceByDataReference(const Inspection::TypeDefinition::DataReference & DataReference, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
@@ -389,59 +106,59 @@ namespace Inspection
 		return Value->GetData();
 	}
 	
-	std::experimental::any GetAnyFromValueDescriptor(const Inspection::ValueDescriptor & ValueDescriptor, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	std::experimental::any GetAnyFromValueDescriptor(const Inspection::TypeDefinition::Value & Value, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
-		if(ValueDescriptor.DataType == Inspection::DataType::Boolean)
+		if(Value.DataType == Inspection::TypeDefinition::DataType::Boolean)
 		{
-			assert(ValueDescriptor.Boolean);
+			assert(Value.Boolean);
 			
-			return ValueDescriptor.Boolean.value();
+			return Value.Boolean.value();
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::DataReference)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::DataReference)
 		{
-			assert(ValueDescriptor.DataReference);
+			assert(Value.DataReference);
 			
-			return GetAnyReferenceByDataReference(ValueDescriptor.DataReference.value(), CurrentValue, Parameters);
+			return GetAnyReferenceByDataReference(Value.DataReference.value(), CurrentValue, Parameters);
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::Nothing)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::Nothing)
 		{
 			return nullptr;
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::SinglePrecisionReal)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::SinglePrecisionReal)
 		{
-			assert(ValueDescriptor.SinglePrecisionReal);
+			assert(Value.SinglePrecisionReal);
 			
-			return ValueDescriptor.SinglePrecisionReal.value();
+			return Value.SinglePrecisionReal.value();
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::String)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::String)
 		{
-			assert(ValueDescriptor.String);
+			assert(Value.String);
 			
-			return ValueDescriptor.String.value();
+			return Value.String.value();
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::UnsignedInteger8Bit)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger8Bit)
 		{
-			assert(ValueDescriptor.UnsignedInteger8Bit);
+			assert(Value.UnsignedInteger8Bit);
 			
-			return ValueDescriptor.UnsignedInteger8Bit.value();
+			return Value.UnsignedInteger8Bit.value();
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::UnsignedInteger16Bit)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger16Bit)
 		{
-			assert(ValueDescriptor.UnsignedInteger16Bit);
+			assert(Value.UnsignedInteger16Bit);
 			
-			return ValueDescriptor.UnsignedInteger16Bit.value();
+			return Value.UnsignedInteger16Bit.value();
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::UnsignedInteger32Bit)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger32Bit)
 		{
-			assert(ValueDescriptor.UnsignedInteger32Bit);
+			assert(Value.UnsignedInteger32Bit);
 			
-			return ValueDescriptor.UnsignedInteger32Bit.value();
+			return Value.UnsignedInteger32Bit.value();
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::UnsignedInteger64Bit)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger64Bit)
 		{
-			assert(ValueDescriptor.UnsignedInteger64Bit);
+			assert(Value.UnsignedInteger64Bit);
 			
-			return ValueDescriptor.UnsignedInteger64Bit.value();
+			return Value.UnsignedInteger64Bit.value();
 		}
 		else
 		{
@@ -450,15 +167,15 @@ namespace Inspection
 	}
 	
 	template< typename Type >
-	Type GetDataFromValueDescriptor(const Inspection::ValueDescriptor & ValueDescriptor, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	Type GetDataFromValueDescriptor(const Inspection::TypeDefinition::Value & Value, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		Type Result{};
 		
-		if(ValueDescriptor.DataType == Inspection::DataType::DataReference)
+		if(Value.DataType == Inspection::TypeDefinition::DataType::DataReference)
 		{
-			assert(ValueDescriptor.DataReference);
+			assert(Value.DataReference);
 			
-			auto & Any{GetAnyReferenceByDataReference(ValueDescriptor.DataReference.value(), CurrentValue, Parameters)};
+			auto & Any{GetAnyReferenceByDataReference(Value.DataReference.value(), CurrentValue, Parameters)};
 			
 			if(Any.type() == typeid(std::uint8_t))
 			{
@@ -477,15 +194,15 @@ namespace Inspection
 				assert(false);
 			}
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::String)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::String)
 		{
-			assert(ValueDescriptor.String);
-			Result = from_string_cast< Type >(ValueDescriptor.String.value());
+			assert(Value.String);
+			Result = from_string_cast< Type >(Value.String.value());
 		}
-		else if(ValueDescriptor.DataType == Inspection::DataType::UnsignedInteger64Bit)
+		else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger64Bit)
 		{
-			assert(ValueDescriptor.UnsignedInteger64Bit);
-			Result = ValueDescriptor.UnsignedInteger64Bit.value();
+			assert(Value.UnsignedInteger64Bit);
+			Result = Value.UnsignedInteger64Bit.value();
 		}
 		else
 		{
@@ -505,7 +222,7 @@ namespace Inspection
 	}
 	
 	template< typename DataType >
-	bool ApplyEnumeration(const Inspection::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+	bool ApplyEnumeration(const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 	{
 		bool Result{false};
 		auto BaseValueString{to_string_cast(std::experimental::any_cast< const DataType & >(Target->GetData()))};
@@ -568,29 +285,29 @@ namespace Inspection
 			}
 		}
 		
-		std::experimental::any GetAnyFromValue(const Inspection::ValueDescriptor & Value, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		std::experimental::any GetAnyFromValue(const Inspection::TypeDefinition::Value & Value, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 		{
 			switch(Value.DataType)
 			{
-			case Inspection::DataType::DataReference:
+			case Inspection::TypeDefinition::DataType::DataReference:
 				{
 					assert(Value.DataReference);
 					
 					return GetAnyReferenceByDataReference(Value.DataReference.value(), CurrentValue, Parameters);
 				}
-			case Inspection::DataType::ParameterReference:
+			case Inspection::TypeDefinition::DataType::ParameterReference:
 				{
 					assert(Value.ParameterReference);
 					
 					return Parameters.at(Value.ParameterReference->Name);
 				}
-			case Inspection::DataType::SinglePrecisionReal:
+			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
 					assert(Value.SinglePrecisionReal);
 					
 					return Value.SinglePrecisionReal.value();
 				}
-			case Inspection::DataType::String:
+			case Inspection::TypeDefinition::DataType::String:
 				{
 					assert(Value.String);
 					
@@ -666,11 +383,11 @@ namespace Inspection
 		{
 			switch(Cast.DataType)
 			{
-			case Inspection::DataType::SinglePrecisionReal:
+			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
 					return Inspection::Algorithms::GetDataFromCast< float >(Cast, CurrentValue, Parameters);
 				}
-			case Inspection::DataType::UnsignedInteger64Bit:
+			case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
 				{
 					return Inspection::Algorithms::GetDataFromCast< std::uint64_t >(Cast, CurrentValue, Parameters);
 				}
@@ -681,7 +398,7 @@ namespace Inspection
 			}
 		}
 		
-		bool Equals(const Inspection::ValueDescriptor & Value1, const Inspection::ValueDescriptor & Value2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+		bool Equals(const Inspection::TypeDefinition::Value & Value1, const Inspection::TypeDefinition::Value & Value2, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 		{
 			auto Any1{GetAnyFromValueDescriptor(Value1, CurrentValue, Parameters)};
 			auto Any2{GetAnyFromValueDescriptor(Value2, CurrentValue, Parameters)};
@@ -764,26 +481,26 @@ namespace Inspection
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
 					assert(ParameterDefinition.Statement.Value != nullptr);
-					if(ParameterDefinition.Statement.Value->DataType == Inspection::DataType::String)
+					if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::String)
 					{
 						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(*(ParameterDefinition.Statement.Value), CurrentValue, Parameters));
 					}
-					else if(ParameterDefinition.Statement.Value->DataType == Inspection::DataType::DataReference)
+					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
 					{
 						assert(ParameterDefinition.Statement.Value->DataReference);
 						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(*(ParameterDefinition.Statement.Value), CurrentValue, Parameters));
 					}
-					else if(ParameterDefinition.Statement.Value->DataType == Inspection::DataType::TypeReference)
+					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
 					{
 						assert(ParameterDefinition.Statement.Value->TypeReference);
 						NewParameters.emplace(ParameterDefinition.Name, ParameterDefinition.Statement.Value->TypeReference->Parts);
 					}
-					else if(ParameterDefinition.Statement.Value->DataType == Inspection::DataType::ParameterReference)
+					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
 					{
 						assert(ParameterDefinition.Statement.Value->ParameterReference);
 						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(*(ParameterDefinition.Statement.Value), CurrentValue, Parameters));
 					}
-					else if(ParameterDefinition.Statement.Value->DataType == Inspection::DataType::Parameters)
+					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
 					{
 						assert(ParameterDefinition.Statement.Value->Parameters);
 						
@@ -1002,7 +719,7 @@ bool Inspection::Type::_GetPart(const Inspection::TypeDefinition::Part & Part, s
 	return Continue;
 }
 
-Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(const Inspection::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	Inspection::EvaluationResult Result;
 	
@@ -1031,13 +748,13 @@ Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(const Inspectio
 	return Result;
 }
 	
-Inspection::EvaluationResult Inspection::Type::_ApplyInterpretation(const Inspection::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+Inspection::EvaluationResult Inspection::Type::_ApplyInterpretation(const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	Inspection::EvaluationResult Result;
 	
 	switch(Interpretation.Type)
 	{
-	case Inspection::Interpretation::Type::ApplyEnumeration:
+	case Inspection::TypeDefinition::Interpretation::Type::ApplyEnumeration:
 		{
 			assert(Interpretation.ApplyEnumeration);
 			
@@ -1472,12 +1189,12 @@ void Inspection::Type::Load(const std::string & TypePath)
 
 void Inspection::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement)
 {
-	assert(Cast.DataType == Inspection::DataType::Unknown);
+	assert(Cast.DataType == Inspection::TypeDefinition::DataType::Unknown);
 	for(auto CastChildNode : CastElement->GetChilds())
 	{
 		if(CastChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			assert(Cast.DataType == Inspection::DataType::Unknown);
+			assert(Cast.DataType == Inspection::TypeDefinition::DataType::Unknown);
 			
 			auto CastChildElement{dynamic_cast< const XML::Element * >(CastChildNode)};
 			
@@ -1485,7 +1202,7 @@ void Inspection::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const 
 			_LoadStatement(Cast.Statement, CastChildElement);
 		}
 	}
-	assert(Cast.DataType != Inspection::DataType::Unknown);
+	assert(Cast.DataType != Inspection::TypeDefinition::DataType::Unknown);
 }
 
 void Inspection::Type::_LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement)
@@ -1511,7 +1228,7 @@ void Inspection::Type::_LoadDivide(Inspection::TypeDefinition::Divide & Divide, 
 	}
 }
 
-void Inspection::Type::_LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretationElement)
+void Inspection::Type::_LoadInterpretation(Inspection::TypeDefinition::Interpretation & Interpretation, const XML::Element * InterpretationElement)
 {
 	assert(InterpretationElement->GetName() == "interpretation");
 	for(auto InterpretationChildNode : InterpretationElement->GetChilds())
@@ -1522,7 +1239,7 @@ void Inspection::Type::_LoadInterpretation(Inspection::Interpretation & Interpre
 			
 			if(InterpretationChildElement->GetName() == "apply-enumeration")
 			{
-				Interpretation.Type = Inspection::Interpretation::Type::ApplyEnumeration;
+				Interpretation.Type = Inspection::TypeDefinition::Interpretation::Type::ApplyEnumeration;
 				Interpretation.ApplyEnumeration.emplace();
 				for(auto InterpretationApplyEnumerationChildNode : InterpretationChildElement->GetChilds())
 				{
@@ -1549,7 +1266,7 @@ void Inspection::Type::_LoadInterpretation(Inspection::Interpretation & Interpre
 	}
 }
 
-void Inspection::Type::_LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement)
+void Inspection::Type::_LoadEnumeration(Inspection::TypeDefinition::Enumeration & Enumeration, const XML::Element * EnumerationElement)
 {
 	assert(EnumerationElement != nullptr);
 	assert(EnumerationElement->GetName() == "enumeration");
@@ -1822,8 +1539,8 @@ void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & St
 	else
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Value;
-		Statement.Value = new Inspection::ValueDescriptor{};
-		_LoadValueDescriptor(*(Statement.Value), StatementElement);
+		Statement.Value = new Inspection::TypeDefinition::Value{};
+		_LoadValue(*(Statement.Value), StatementElement);
 	}
 	assert(Statement.Type != Inspection::TypeDefinition::Statement::Type::Unknown);
 }
@@ -1884,11 +1601,11 @@ void Inspection::Type::_LoadTypeReference(Inspection::TypeDefinition::TypeRefere
 	}
 }
 
-void Inspection::Type::_LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement)
+void Inspection::Type::_LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement)
 {
 	if(ParentElement->GetChilds().size() == 0)
 	{
-		_LoadValueDescriptor(ValueDescriptor, nullptr);
+		_LoadValue(Value, nullptr);
 	}
 	else
 	{
@@ -1896,33 +1613,33 @@ void Inspection::Type::_LoadValueDescriptorFromWithin(Inspection::ValueDescripto
 		{
 			if(ChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				_LoadValueDescriptor(ValueDescriptor, dynamic_cast< XML::Element * >(ChildNode));
+				_LoadValue(Value, dynamic_cast< XML::Element * >(ChildNode));
 			}
 		}
 	}
-	if(ValueDescriptor.DataType == Inspection::DataType::Unknown)
+	if(Value.DataType == Inspection::TypeDefinition::DataType::Unknown)
 	{
 		throw std::domain_error{"No valid value description."};
 	}
 }
 
-void Inspection::Type::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ValueElement)
+void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement)
 {
 	if(ValueElement == nullptr)
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::Nothing;
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::Nothing;
 	}
 	else if(ValueElement->GetName() == "data-reference")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::DataReference;
-		ValueDescriptor.DataReference.emplace();
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::DataReference;
+		Value.DataReference.emplace();
 		for(auto DataReferenceChildNode : ValueElement->GetChilds())
 		{
 			if(DataReferenceChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				auto & DataReferencePartDescriptors{ValueDescriptor.DataReference->PartDescriptors};
+				auto & DataReferencePartDescriptors{Value.DataReference->PartDescriptors};
 				auto DataReferencePartDescriptor{DataReferencePartDescriptors.emplace(DataReferencePartDescriptors.end())};
 				auto DataReferenceChildElement{dynamic_cast< const XML::Element * >(DataReferenceChildNode)};
 				
@@ -1955,106 +1672,106 @@ void Inspection::Type::_LoadValueDescriptor(Inspection::ValueDescriptor & ValueD
 	}
 	else if(ValueElement->GetName() == "parameter-reference")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::ParameterReference;
-		ValueDescriptor.ParameterReference.emplace();
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::ParameterReference;
+		Value.ParameterReference.emplace();
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		ValueDescriptor.ParameterReference->Name = TextNode->GetText();
+		Value.ParameterReference->Name = TextNode->GetText();
 	}
 	else if(ValueElement->GetName() == "boolean")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::Boolean;
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::Boolean;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		ValueDescriptor.Boolean = from_string_cast< bool >(TextNode->GetText());
+		Value.Boolean = from_string_cast< bool >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "string")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::String;
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::String;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		ValueDescriptor.String = TextNode->GetText();
+		Value.String = TextNode->GetText();
 	}
 	else if(ValueElement->GetName() == "type-reference")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::TypeReference;
-		ValueDescriptor.TypeReference.emplace();
-		_LoadTypeReference(ValueDescriptor.TypeReference.value(), ValueElement);
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::TypeReference;
+		Value.TypeReference.emplace();
+		_LoadTypeReference(Value.TypeReference.value(), ValueElement);
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-8bit")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::UnsignedInteger8Bit;
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		ValueDescriptor.UnsignedInteger8Bit = from_string_cast< std::uint8_t >(TextNode->GetText());
+		Value.UnsignedInteger8Bit = from_string_cast< std::uint8_t >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-16bit")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::UnsignedInteger16Bit;
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		ValueDescriptor.UnsignedInteger8Bit = from_string_cast< std::uint16_t >(TextNode->GetText());
+		Value.UnsignedInteger8Bit = from_string_cast< std::uint16_t >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-32bit")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::UnsignedInteger32Bit;
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		ValueDescriptor.UnsignedInteger32Bit = from_string_cast< std::uint32_t >(TextNode->GetText());
+		Value.UnsignedInteger32Bit = from_string_cast< std::uint32_t >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-64bit")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::UnsignedInteger64Bit;
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		ValueDescriptor.UnsignedInteger64Bit = from_string_cast< std::uint64_t >(TextNode->GetText());
+		Value.UnsignedInteger64Bit = from_string_cast< std::uint64_t >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "single-precision-real")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::SinglePrecisionReal;
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::SinglePrecisionReal;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		ValueDescriptor.SinglePrecisionReal = from_string_cast< float >(TextNode->GetText());
+		Value.SinglePrecisionReal = from_string_cast< float >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "parameters")
 	{
-		assert(ValueDescriptor.DataType == Inspection::DataType::Unknown);
-		ValueDescriptor.DataType = Inspection::DataType::Parameters;
-		ValueDescriptor.Parameters.emplace();
-		_LoadParameters(ValueDescriptor.Parameters.value(), ValueElement);
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::Parameters;
+		Value.Parameters.emplace();
+		_LoadParameters(Value.Parameters.value(), ValueElement);
 	}
 	else
 	{

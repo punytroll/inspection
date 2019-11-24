@@ -15,7 +15,9 @@ namespace Inspection
 	{
 		class Cast;
 		class Divide;
+		class Enumeration;
 		class Equals;
+		class Interpretation;
 		class Length;
 		class Parameter;
 		class Parameters;
@@ -23,16 +25,14 @@ namespace Inspection
 		class Statement;
 		class Tag;
 		class TypeReference;
+		class Value;
 	};
 	
-	class Enumeration;
 	class EvaluationResult;
 	class TypeRepository;
-	class Interpretation;
 	class Reader;
 	class Result;
 	class Value;
-	class ValueDescriptor;
 	
 	class Type
 	{
@@ -45,9 +45,9 @@ namespace Inspection
 		bool _GetPart(const Inspection::TypeDefinition::Part & Part, std::unique_ptr< Inspection::Result > & TopLevelResult, std::shared_ptr< Inspection::Value > & Target, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void _LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement);
 		void _LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement);
-		void _LoadEnumeration(Inspection::Enumeration & Enumeration, const XML::Element * EnumerationElement);
+		void _LoadEnumeration(Inspection::TypeDefinition::Enumeration & Enumeration, const XML::Element * EnumerationElement);
 		void _LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement);
-		void _LoadInterpretation(Inspection::Interpretation & Interpretation, const XML::Element * InterpretElement);
+		void _LoadInterpretation(Inspection::TypeDefinition::Interpretation & Interpretation, const XML::Element * InterpretElement);
 		void _LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement);
 		void _LoadParameter(Inspection::TypeDefinition::Parameter & Parameter, const XML::Element * ParameterElement);
 		void _LoadParameters(Inspection::TypeDefinition::Parameters & Parameters, const XML::Element * ParametersElement);
@@ -56,10 +56,10 @@ namespace Inspection
 		void _LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement);
 		void _LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement);
 		void _LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
-		void _LoadValueDescriptorFromWithin(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ParentElement);
-		void _LoadValueDescriptor(Inspection::ValueDescriptor & ValueDescriptor, const XML::Element * ValueElement);
-		Inspection::EvaluationResult _ApplyInterpretation(const Inspection::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-		Inspection::EvaluationResult _ApplyEnumeration(const Inspection::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		void _LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement);
+		void _LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement);
+		Inspection::EvaluationResult _ApplyInterpretation(const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		Inspection::EvaluationResult _ApplyEnumeration(const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target, std::shared_ptr< Inspection::Value > CurrentValue, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) > _HardcodedGetter;
 		Inspection::TypeDefinition::Part * _Part;
 		Inspection::TypeRepository * _TypeRepository;
