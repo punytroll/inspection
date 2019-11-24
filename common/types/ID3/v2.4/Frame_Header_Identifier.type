@@ -15,7 +15,7 @@
 		</length>
 		<interpretation>
 			<apply-enumeration>
-				<enumeration base-type="string">
+				<enumeration base-data-type="string">
 					<element base-value="AENC" valid="true">
 						<tag name="standard">
 							<string>ID3 2.4</string>

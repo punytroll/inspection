@@ -8,7 +8,7 @@
 		</type-reference>
 		<interpretation>
 			<apply-enumeration>
-				<enumeration base-type="unsigned integer 8bit">
+				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
 							<string>fixed-blocksize stream; frame header encodes the frame number</string>

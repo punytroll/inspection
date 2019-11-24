@@ -667,25 +667,25 @@ Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(const Inspectio
 {
 	Inspection::EvaluationResult Result;
 	
-	if(Enumeration.BaseType == "string")
+	if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::String)
 	{
 		Result.DataIsValid = Inspection::ApplyEnumeration< std::string >(Enumeration, Target, CurrentValue, Parameters);
 	}
-	else if(Enumeration.BaseType == "unsigned integer 8bit")
+	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger8Bit)
 	{
 		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint8_t >(Enumeration, Target, CurrentValue, Parameters);
 	}
-	else if(Enumeration.BaseType == "unsigned integer 16bit")
+	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger16Bit)
 	{
 		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint16_t >(Enumeration, Target, CurrentValue, Parameters);
 	}
-	else if(Enumeration.BaseType == "unsigned integer 32bit")
+	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger32Bit)
 	{
 		Result.DataIsValid = Inspection::ApplyEnumeration< std::uint32_t >(Enumeration, Target, CurrentValue, Parameters);
 	}
 	else
 	{
-		Target->AddTag("error", "Could not handle the enumeration base type \"" + Enumeration.BaseType + "\".");
+		Target->AddTag("error", "Could not handle the enumeration base type.");
 		Result.AbortEvaluation = true;
 	}
 	
@@ -1214,7 +1214,7 @@ void Inspection::Type::_LoadEnumeration(Inspection::TypeDefinition::Enumeration 
 {
 	assert(EnumerationElement != nullptr);
 	assert(EnumerationElement->GetName() == "enumeration");
-	Enumeration.BaseType = EnumerationElement->GetAttribute("base-type");
+	Enumeration.BaseDataType = Inspection::TypeDefinition::GetDataTypeFromString(EnumerationElement->GetAttribute("base-data-type"));
 	for(auto EnumerationChildNode : EnumerationElement->GetChilds())
 	{
 		if(EnumerationChildNode->GetNodeType() == XML::NodeType::Element)

@@ -23,7 +23,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
 								<string>MPEG Version 1</string>
@@ -51,7 +51,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="false">
 							<tag name="error">
 								<string>This layer description is reserved and MUST NOT be used.</string>
@@ -86,7 +86,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="redundancy">
 								<boolean>false</boolean>
@@ -124,7 +124,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="value">
 								<unsigned-integer-32bit>44100</unsigned-integer-32bit>
@@ -177,7 +177,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="padding">
 								<boolean>false</boolean>
@@ -242,7 +242,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="copyright">
 								<boolean>false</boolean>
@@ -266,7 +266,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="original">
 								<boolean>false</boolean>
@@ -290,7 +290,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="interpretation">
 								<string>no emphasis</string>

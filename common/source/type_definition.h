@@ -248,7 +248,7 @@ namespace Inspection
 				std::vector< Inspection::TypeDefinition::Tag > Tags;
 				bool Valid;
 			};
-			std::string BaseType;
+			Inspection::TypeDefinition::DataType BaseDataType;
 			std::vector< Inspection::TypeDefinition::Enumeration::Element > Elements;
 			std::experimental::optional< Inspection::TypeDefinition::Enumeration::Element > FallbackElement;
 		};

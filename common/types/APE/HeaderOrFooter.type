@@ -21,7 +21,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 32bit">
+					<enumeration base-data-type="unsigned integer 32bit">
 						<element base-value="1000" valid="true">
 							<tag name="interpretation">
 								<string>1.000 (old)</string>

@@ -8,7 +8,7 @@
 		</type-reference>
 		<interpretation>
 			<apply-enumeration>
-				<enumeration base-type="unsigned integer 16bit">
+				<enumeration base-data-type="unsigned integer 16bit">
 					<element base-value="0" valid="false">
 						<tag name="constant name">
 							<string>WAVE_FORMAT_UNKNOWN</string>

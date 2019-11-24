@@ -23,7 +23,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="string">
+					<enumeration base-data-type="string">
 						<element base-value="--&gt;" valid="true">
 							<tag name="mime-type">
 								<string>application/x-url</string>
@@ -55,7 +55,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 8bit">
+					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="standard">
 								<string>ID3 2.2</string>

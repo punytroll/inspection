@@ -9,7 +9,7 @@
 			</type-reference>
 			<interpretation>
 				<apply-enumeration>
-					<enumeration base-type="unsigned integer 32bit">
+					<enumeration base-data-type="unsigned integer 32bit">
 						<element base-value="0" valid="false"/>
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
