@@ -503,7 +503,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 		}
 		else
 		{
-			Continue = false;
+			assert(false);
 		}
 	}
 	// finalization
