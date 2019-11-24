@@ -300,6 +300,62 @@ namespace Inspection
 			Inspection::TypeDefinition::Part::Type Type;
 			std::vector< Inspection::TypeDefinition::Statement > Verifications;
 		};
+		
+		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String)
+		{
+			if(String == "boolean")
+			{
+				return Inspection::TypeDefinition::DataType::Boolean;
+			}
+			else if(String == "data-reference")
+			{
+				return Inspection::TypeDefinition::DataType::DataReference;
+			}
+			else if(String == "nothing")
+			{
+				return Inspection::TypeDefinition::DataType::Nothing;
+			}
+			else if(String == "parameter-reference")
+			{
+				return Inspection::TypeDefinition::DataType::ParameterReference;
+			}
+			else if(String == "parameters")
+			{
+				return Inspection::TypeDefinition::DataType::Parameters;
+			}
+			else if(String == "single-precision-real")
+			{
+				return Inspection::TypeDefinition::DataType::SinglePrecisionReal;
+			}
+			else if(String == "string")
+			{
+				return Inspection::TypeDefinition::DataType::String;
+			}
+			else if(String == "type-reference")
+			{
+				return Inspection::TypeDefinition::DataType::TypeReference;
+			}
+			else if((String == "unsigned integer 8bit") || (String == "unsigned-integer-8bit"))
+			{
+				return Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
+			}
+			else if((String == "unsigned integer 16bit") || (String == "unsigned-integer-16bit"))
+			{
+				return Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
+			}
+			else if((String == "unsigned integer 32bit") || (String == "unsigned-integer-32bit"))
+			{
+				return Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
+			}
+			else if((String == "unsigned integer 64bit") || (String == "unsigned-integer-64bit"))
+			{
+				return Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
+			}
+			else
+			{
+				return Inspection::TypeDefinition::DataType::Unknown;
+			}
+		}
 	}
 }
 
