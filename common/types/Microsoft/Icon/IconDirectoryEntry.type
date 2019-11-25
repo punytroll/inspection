@@ -1,0 +1,74 @@
+<type>
+	<sequence>
+		<field name="Width">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="Height">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="ColorCount">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="Reserved">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference root="current"/>
+					<unsigned-integer-8bit>0</unsigned-integer-8bit>
+				</equals>
+			</verification>
+		</field>
+		<field name="Planes">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="BitCount">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="BytesInRes">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="ImageOffset">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+	</sequence>
+</type>

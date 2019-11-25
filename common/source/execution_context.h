@@ -143,7 +143,11 @@ namespace Inspection
 								}
 							case Inspection::TypeDefinition::Part::Type::Field:
 								{
-									assert(false);
+									if(Result->HasField(PartIterator->DetailName) == true)
+									{
+										Result = Result->GetField(PartIterator->DetailName);
+										++PartIterator;
+									}
 									
 									break;
 								}

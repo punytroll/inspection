@@ -318,6 +318,10 @@ namespace Inspection
 					{
 						return std::experimental::any_cast< std::uint8_t >(Any1) == std::experimental::any_cast< std::uint8_t >(Any2);
 					}
+					else if(Any1.type() == typeid(std::uint16_t))
+					{
+						return std::experimental::any_cast< std::uint16_t >(Any1) == std::experimental::any_cast< std::uint16_t >(Any2);
+					}
 					else if(Any1.type() == typeid(std::uint32_t))
 					{
 						return std::experimental::any_cast< std::uint32_t >(Any1) == std::experimental::any_cast< std::uint32_t >(Any2);
@@ -509,7 +513,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 					}
 				case Inspection::TypeDefinition::Part::Type::Field:
 					{
-						auto FieldResult{_GetForward(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						auto FieldResult{_GetField(ExecutionContext, *_Part, *PartReader, PartParameters)};
 						
 						Continue = FieldResult->GetSuccess();
 						Result->GetValue()->AppendField(_Part->FieldName.value(), FieldResult->GetValue());
@@ -564,12 +568,99 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetField(Inspection::Ex
 	auto Continue{true};
 	
 	ExecutionContext.Push(Field, Result, Parameters);
-	assert(Field.TypeReference);
-	
-	auto FieldResult{Inspection::g_TypeRepository.Get(Field.TypeReference->Parts, Reader, ExecutionContext.GetAllParameters())};
-	
-	Continue = FieldResult->GetSuccess();
-	Result->SetValue(FieldResult->GetValue());
+	if(Field.TypeReference)
+	{
+		auto FieldResult{Inspection::g_TypeRepository.Get(Field.TypeReference->Parts, Reader, ExecutionContext.GetAllParameters())};
+		
+		Continue = FieldResult->GetSuccess();
+		Result->SetValue(FieldResult->GetValue());
+	}
+	else if(Field.Parts)
+	{
+		assert(Field.Parts->size() == 1);
+		
+		auto & FieldPart{Field.Parts->front()};
+		Inspection::Reader * FieldPartReader{nullptr};
+		
+		if(FieldPart.Length)
+		{
+			auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, FieldPart.Length->Bytes)};
+			auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, FieldPart.Length->Bits)};
+			Inspection::Length Length{Bytes, Bits};
+			
+			if(Reader.Has(Length) == true)
+			{
+				FieldPartReader = new Inspection::Reader{Reader, Length};
+			}
+			else
+			{
+				Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
+				Continue = false;
+			}
+		}
+		else
+		{
+			FieldPartReader = new Inspection::Reader{Reader};
+		}
+		if(FieldPartReader != nullptr)
+		{
+			std::unordered_map< std::string, std::experimental::any > FieldPartParameters;
+			
+			if(FieldPart.Parameters)
+			{
+				FillNewParameters(ExecutionContext, FieldPartParameters, FieldPart.Parameters.value());
+			}
+			switch(FieldPart.Type)
+			{
+			case Inspection::TypeDefinition::Part::Type::Field:
+				{
+					auto FieldResult{_GetField(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					
+					Continue = FieldResult->GetSuccess();
+					assert(FieldPart.FieldName);
+					Result->GetValue()->AppendField(FieldPart.FieldName.value(), FieldResult->GetValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::Part::Type::Fields:
+				{
+					auto FieldsResult{_GetFields(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					
+					Continue = FieldsResult->GetSuccess();
+					Result->GetValue()->AppendFields(FieldsResult->GetValue()->GetFields());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::Part::Type::Forward:
+				{
+					auto ForwardResult{_GetForward(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					
+					Continue = ForwardResult->GetSuccess();
+					Result->SetValue(ForwardResult->GetValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::Part::Type::Sequence:
+				{
+					auto SequenceResult{_GetSequence(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					
+					Continue = SequenceResult->GetSuccess();
+					Result->GetValue()->AppendFields(SequenceResult->GetValue()->GetFields());
+					
+					break;
+				}
+			default:
+				{
+					assert(false);
+				}
+			}
+			Reader.AdvancePosition(FieldPartReader->GetConsumedLength());
+		}
+	}
+	else
+	{
+		assert(false);
+	}
 	// tags
 	if(Continue == true)
 	{
@@ -1556,7 +1647,6 @@ void Inspection::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const 
 	if(PartElement->GetName() == "sequence")
 	{
 		Part.Type = Inspection::TypeDefinition::Part::Type::Sequence;
-		Part.Parts.emplace();
 	}
 	else if(PartElement->GetName() == "field")
 	{
@@ -1628,7 +1718,11 @@ void Inspection::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const 
 			}
 			else if((PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward"))
 			{
-				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Sequence);
+				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Sequence) || ((Part.Type == Inspection::TypeDefinition::Part::Type::Field) && (!Part.Parts)));
+				if(!Part.Parts)
+				{
+					Part.Parts.emplace();
+				}
 				Part.Parts->emplace_back();
 				
 				auto & ContainedPart{Part.Parts->back()};
@@ -1875,7 +1969,7 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger8Bit = from_string_cast< std::uint16_t >(TextNode->GetText());
+		Value.UnsignedInteger16Bit = from_string_cast< std::uint16_t >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-32bit")
 	{

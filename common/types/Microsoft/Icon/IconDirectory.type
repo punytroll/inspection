@@ -1,0 +1,69 @@
+<type>
+	<sequence>
+		<field name="IconHeader">
+			<sequence>
+				<field name="Reserved">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+					<verification>
+						<equals>
+							<data-reference root="current"/>
+							<unsigned-integer-16bit>0</unsigned-integer-16bit>
+						</equals>
+					</verification>
+				</field>
+				<field name="Type">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+					<verification>
+						<equals>
+							<data-reference root="current"/>
+							<unsigned-integer-16bit>1</unsigned-integer-16bit>
+						</equals>
+					</verification>
+				</field>
+				<field name="Count">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+				<field name="Entries">
+					<type-reference>
+						<part>Array</part>
+						<part>EndedByNumberOfElements</part>
+					</type-reference>
+					<parameters>
+						<parameter name="ElementType">
+							<type-reference>
+								<part>Microsoft</part>
+								<part>Icon</part>
+								<part>IconDirectoryEntry</part>
+							</type-reference>
+						</parameter>
+						<parameter name="NumberOfElements">
+							<unsigned-integer-64bit>
+								<data-reference root="type">
+									<field>Count</field>
+								</data-reference>
+							</unsigned-integer-64bit>
+						</parameter>
+						<parameter name="ElementName">
+							<string>Entry</string>
+						</parameter>
+					</parameters>
+				</field>
+			</sequence>
+		</field>
+	</sequence>
+</type>
