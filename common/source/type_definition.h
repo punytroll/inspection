@@ -19,10 +19,19 @@
 #ifndef COMMON_TYPE_DEFINITION_H
 #define COMMON_TYPE_DEFINITION_H
 
+#include <vector>
+
 namespace Inspection
 {
+	class Value;
+	
 	namespace TypeDefinition
 	{
+		class Cast;
+		class Divide;
+		class Equals;
+		class Parameter;
+		
 		enum class DataType
 		{
 			Unknown,
@@ -56,6 +65,13 @@ namespace Inspection
 				std::string DetailName;
 			};
 			
+			enum class Root
+			{
+				Current,
+				Type
+			};
+			
+			Inspection::TypeDefinition::DataReference::Root Root;
 			std::vector< Inspection::TypeDefinition::DataReference::PartDescriptor > PartDescriptors;
 		};
 		

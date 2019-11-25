@@ -8,7 +8,7 @@
 			</type-reference>
 			<verification>
 				<equals>
-					<data-reference>
+					<data-reference root="current">
 						<field>Size</field>
 					</data-reference>
 					<unsigned-integer-8bit>5</unsigned-integer-8bit>

@@ -48,7 +48,7 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference>
+					<data-reference root="type">
 						<field>NameLength</field>
 					</data-reference>
 				</bytes>
@@ -65,7 +65,7 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference>
+					<data-reference root="type">
 						<field>DataLength</field>
 					</data-reference>
 				</bytes>
@@ -75,7 +75,7 @@
 			</length>
 			<parameters>
 				<parameter name="DataType">
-					<data-reference>
+					<data-reference root="type">
 						<field>DataType</field>
 						<tag>interpretation</tag>
 					</data-reference>

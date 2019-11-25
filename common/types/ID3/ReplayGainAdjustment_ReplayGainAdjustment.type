@@ -9,7 +9,7 @@
 		<tag name="interpretation">
 			<divide>
 				<single-precision-real>
-					<data-reference/>
+					<data-reference root="current"/>
 				</single-precision-real>
 				<single-precision-real>10.0</single-precision-real>
 			</divide>

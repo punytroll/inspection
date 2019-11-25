@@ -9,7 +9,7 @@
 			</type-reference>
 			<verification>
 				<equals>
-					<data-reference/>
+					<data-reference root="current"/>
 					<unsigned-integer-8bit>2</unsigned-integer-8bit>
 				</equals>
 			</verification>
@@ -23,7 +23,7 @@
 			</type-reference>
 			<verification>
 				<equals>
-					<data-reference/>
+					<data-reference root="current"/>
 					<unsigned-integer-8bit>1</unsigned-integer-8bit>
 				</equals>
 			</verification>

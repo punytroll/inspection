@@ -18,7 +18,7 @@
 			<length>
 				<bytes>
 					<unsigned-integer-64bit>
-						<data-reference>
+						<data-reference root="type">
 							<field>NameLength</field>
 						</data-reference>
 					</unsigned-integer-64bit>
@@ -52,7 +52,7 @@
 			<length>
 				<bytes>
 					<unsigned-integer-64bit>
-						<data-reference>
+						<data-reference root="type">
 							<field>ValueLength</field>
 						</data-reference>
 					</unsigned-integer-64bit>
@@ -63,13 +63,13 @@
 			</length>
 			<parameters>
 				<parameter name="DataType">
-					<data-reference>
+					<data-reference root="type">
 						<field>ValueDataType</field>
 						<tag>interpretation</tag>
 					</data-reference>
 				</parameter>
 				<parameter name="Name">
-					<data-reference>
+					<data-reference root="type">
 						<field>Name</field>
 					</data-reference>
 				</parameter>

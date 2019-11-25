@@ -109,7 +109,7 @@
 			</type-reference>
 			<parameters>
 				<parameter name="LayerDescription">
-					<data-reference>
+					<data-reference root="type">
 						<field>LayerDescription</field>
 					</data-reference>
 				</parameter>
@@ -208,7 +208,7 @@
 			</type-reference>
 			<parameters>
 				<parameter name="LayerDescription">
-					<data-reference>
+					<data-reference root="type">
 						<field>LayerDescription</field>
 					</data-reference>
 				</parameter>
@@ -222,12 +222,12 @@
 			</type-reference>
 			<parameters>
 				<parameter name="LayerDescription">
-					<data-reference>
+					<data-reference root="type">
 						<field>LayerDescription</field>
 					</data-reference>
 				</parameter>
 				<parameter name="Mode">
-					<data-reference>
+					<data-reference root="type">
 						<field>Mode</field>
 					</data-reference>
 				</parameter>

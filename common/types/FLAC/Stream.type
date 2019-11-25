@@ -24,7 +24,7 @@
 				<parameter name="ElementParameters">
 					<parameters>
 						<parameter name="NumberOfChannelsByStream">
-							<data-reference>
+							<data-reference root="type">
 								<field>StreamInfoBlock</field>
 								<field>Data</field>
 								<field>NumberOfChannels</field>

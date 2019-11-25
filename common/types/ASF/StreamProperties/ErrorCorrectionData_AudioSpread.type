@@ -39,7 +39,7 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference>
+					<data-reference root="type">
 						<field>SilenceDataLength</field>
 					</data-reference>
 				</bytes>

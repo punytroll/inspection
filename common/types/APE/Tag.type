@@ -23,7 +23,7 @@
 				</parameter>
 				<parameter name="NumberOfElements">
 					<unsigned-integer-64bit>
-						<data-reference>
+						<data-reference root="type">
 							<field>APETagsHeader</field>
 							<field>ItemCount</field>
 						</data-reference>

@@ -21,7 +21,7 @@
 			<length>
 				<bytes>
 					<unsigned-integer-64bit>
-						<data-reference>
+						<data-reference root="type">
 							<field>Length</field>
 						</data-reference>
 					</unsigned-integer-64bit>

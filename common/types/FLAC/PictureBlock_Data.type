@@ -22,7 +22,7 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference>
+					<data-reference root="type">
 						<field>MIMETypeLength</field>
 					</data-reference>
 				</bytes>
@@ -48,7 +48,7 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference>
+					<data-reference root="type">
 						<field>DescriptionLength</field>
 					</data-reference>
 				</bytes>
@@ -104,7 +104,7 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference>
+					<data-reference root="type">
 						<field>PictureDataLength</field>
 					</data-reference>
 				</bytes>

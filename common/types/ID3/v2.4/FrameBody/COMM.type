@@ -22,7 +22,7 @@
 			</type-reference>
 			<parameters>
 				<parameter name="TextEncoding">
-					<data-reference>
+					<data-reference root="type">
 						<field>TextEncoding</field>
 					</data-reference>
 				</parameter>
@@ -36,7 +36,7 @@
 			</type-reference>
 			<parameters>
 				<parameter name="TextEncoding">
-					<data-reference>
+					<data-reference root="type">
 						<field>TextEncoding</field>
 					</data-reference>
 				</parameter>

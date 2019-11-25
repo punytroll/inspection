@@ -26,7 +26,7 @@
 				</parameter>
 				<parameter name="NumberOfElements">
 					<unsigned-integer-64bit>
-						<data-reference>
+						<data-reference root="type">
 							<field>ContentDescriptorsCount</field>
 						</data-reference>
 					</unsigned-integer-64bit>

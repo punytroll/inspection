@@ -17,7 +17,7 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference>
+					<data-reference root="type">
 						<field>LanguageIDLength</field>
 					</data-reference>
 				</bytes>

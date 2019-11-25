@@ -13,12 +13,12 @@
 			</type-reference>
 			<parameters>
 				<parameter name="FirstTrackNumber">
-					<data-reference>
+					<data-reference root="type">
 						<field>FirstTrackNumber</field>
 					</data-reference>
 				</parameter>
 				<parameter name="LastTrackNumber">
-					<data-reference>
+					<data-reference root="type">
 						<field>LastTrackNumber</field>
 					</data-reference>
 				</parameter>

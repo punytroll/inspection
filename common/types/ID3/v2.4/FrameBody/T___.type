@@ -26,7 +26,7 @@
 				<parameter name="ElementParameters">
 					<parameters>
 						<parameter name="TextEncoding">
-							<data-reference>
+							<data-reference root="type">
 								<field>TextEncoding</field>
 							</data-reference>
 						</parameter>

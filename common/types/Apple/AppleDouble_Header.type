@@ -9,7 +9,7 @@
 			</type-reference>
 			<verification>
 				<equals>
-					<data-reference/>
+					<data-reference root="current"/>
 					<unsigned-integer-32bit>333319</unsigned-integer-32bit>
 				</equals>
 			</verification>
@@ -23,7 +23,7 @@
 			</type-reference>
 			<verification>
 				<equals>
-					<data-reference/>
+					<data-reference root="current"/>
 					<unsigned-integer-32bit>131072</unsigned-integer-32bit>
 				</equals>
 			</verification>
@@ -67,7 +67,7 @@
 				</parameter>
 				<parameter name="NumberOfElements">
 					<unsigned-integer-64bit>
-						<data-reference>
+						<data-reference root="type">
 							<field>NumberOfEntries</field>
 						</data-reference>
 					</unsigned-integer-64bit>
