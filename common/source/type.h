@@ -61,6 +61,7 @@ namespace Inspection
 			void _LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement);
 			void _LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement);
 			void _LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement);
+			void _LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement);
 			void _LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
 			void _LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement);
 			void _LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement);
