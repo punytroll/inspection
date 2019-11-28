@@ -929,6 +929,14 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetSequence(Inspection:
 			Reader.AdvancePosition(SequencePartReader->GetConsumedLength());
 		}
 	}
+	// tags
+	if(Continue == true)
+	{
+		for(auto & Tag : Sequence.Tags)
+		{
+			Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement));
+		}
+	}
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
@@ -1705,7 +1713,7 @@ void Inspection::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const 
 			}
 			else if(PartChildElement->GetName() == "tag")
 			{
-				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
+				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward) || (Part.Type == Inspection::TypeDefinition::Part::Type::Sequence));
 				Part.Tags.emplace_back();
 				
 				auto & Tag{Part.Tags.back()};
