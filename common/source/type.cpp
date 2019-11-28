@@ -28,6 +28,114 @@ namespace Inspection
 	{
 		std::experimental::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor);
 		std::experimental::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast);
+		std::experimental::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement);
+		const std::experimental::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
+		
+		template< typename Type >
+		Type Cast(const std::experimental::any & Any)
+		{
+			if(Any.type() == typeid(float))
+			{
+				return static_cast< Type >(std::experimental::any_cast< float >(Any));
+			}
+			else if(Any.type() == typeid(std::uint8_t))
+			{
+				return static_cast< Type >(std::experimental::any_cast< std::uint8_t >(Any));
+			}
+			else if(Any.type() == typeid(std::uint16_t))
+			{
+				return static_cast< Type >(std::experimental::any_cast< std::uint16_t >(Any));
+			}
+			else if(Any.type() == typeid(std::uint32_t))
+			{
+				return static_cast< Type >(std::experimental::any_cast< std::uint32_t >(Any));
+			}
+			else if(Any.type() == typeid(std::uint64_t))
+			{
+				return static_cast< Type >(std::experimental::any_cast< std::uint64_t >(Any));
+			}
+			else
+			{
+				std::cout << Any.type().name() << std::endl;
+				assert(false);
+			}
+		}
+		
+		template< typename Type >
+		Type GetDataFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
+		{
+			return Inspection::Algorithms::Cast< Type >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement));
+		}
+		
+		template< typename Type >
+		Type GetDataFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
+		{
+			Type Result{};
+			
+			if(Value.DataType == Inspection::TypeDefinition::DataType::DataReference)
+			{
+				assert(Value.DataReference);
+				
+				auto & Any{Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, Value.DataReference.value())};
+				
+				if(Any.type() == typeid(std::uint8_t))
+				{
+					Result = std::experimental::any_cast< std::uint8_t >(Any);
+				}
+				else if(Any.type() == typeid(std::uint16_t))
+				{
+					Result = std::experimental::any_cast< std::uint16_t >(Any);
+				}
+				else if(Any.type() == typeid(std::uint32_t))
+				{
+					Result = std::experimental::any_cast< std::uint32_t >(Any);
+				}
+				else
+				{
+					assert(false);
+				}
+			}
+			else if(Value.DataType == Inspection::TypeDefinition::DataType::String)
+			{
+				assert(Value.String);
+				Result = from_string_cast< Type >(Value.String.value());
+			}
+			else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger64Bit)
+			{
+				assert(Value.UnsignedInteger64Bit);
+				Result = Value.UnsignedInteger64Bit.value();
+			}
+			else
+			{
+				assert(false);
+			}
+			
+			return Result;
+		}
+		
+		template< typename Type >
+		Type GetDataFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement)
+		{
+			switch(Statement.Type)
+			{
+			case Inspection::TypeDefinition::Statement::Type::Cast:
+				{
+					assert(Statement.Cast != nullptr);
+					
+					return Inspection::Algorithms::GetDataFromCast< Type >(ExecutionContext, *(Statement.Cast));
+				}
+			case Inspection::TypeDefinition::Statement::Type::Value:
+				{
+					assert(Statement.Value != nullptr);
+					
+					return Inspection::Algorithms::GetDataFromValue< Type >(ExecutionContext, *(Statement.Value));
+				}
+			default:
+				{
+					assert(false);
+				}
+			}
+		}
 		
 		const std::experimental::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference)
 		{
@@ -58,6 +166,12 @@ namespace Inspection
 					assert(Value.DataReference);
 					
 					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, Value.DataReference.value());
+				}
+			case Inspection::TypeDefinition::DataType::Length:
+				{
+					assert(Value.Length);
+					
+					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Value.Length->Bytes), Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Value.Length->Bits)};
 				}
 			case Inspection::TypeDefinition::DataType::Nothing:
 				{
@@ -112,52 +226,6 @@ namespace Inspection
 			}
 		}
 		
-		template< typename Type >
-		Type GetDataFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
-		{
-			Type Result{};
-			
-			if(Value.DataType == Inspection::TypeDefinition::DataType::DataReference)
-			{
-				assert(Value.DataReference);
-				
-				auto & Any{Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, Value.DataReference.value())};
-				
-				if(Any.type() == typeid(std::uint8_t))
-				{
-					Result = std::experimental::any_cast< std::uint8_t >(Any);
-				}
-				else if(Any.type() == typeid(std::uint16_t))
-				{
-					Result = std::experimental::any_cast< std::uint16_t >(Any);
-				}
-				else if(Any.type() == typeid(std::uint32_t))
-				{
-					Result = std::experimental::any_cast< std::uint32_t >(Any);
-				}
-				else
-				{
-					assert(false);
-				}
-			}
-			else if(Value.DataType == Inspection::TypeDefinition::DataType::String)
-			{
-				assert(Value.String);
-				Result = from_string_cast< Type >(Value.String.value());
-			}
-			else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger64Bit)
-			{
-				assert(Value.UnsignedInteger64Bit);
-				Result = Value.UnsignedInteger64Bit.value();
-			}
-			else
-			{
-				assert(false);
-			}
-			
-			return Result;
-		}
-		
 		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector< Inspection::TypeDefinition::Tag > & Tags, std::shared_ptr< Inspection::Value > Target)
 		{
 			for(auto & Tag : Tags)
@@ -197,36 +265,6 @@ namespace Inspection
 			return Result;
 		}
 		
-		template< typename Type >
-		Type Cast(const std::experimental::any & Any)
-		{
-			if(Any.type() == typeid(float))
-			{
-				return static_cast< Type >(std::experimental::any_cast< float >(Any));
-			}
-			else if(Any.type() == typeid(std::uint8_t))
-			{
-				return static_cast< Type >(std::experimental::any_cast< std::uint8_t >(Any));
-			}
-			else if(Any.type() == typeid(std::uint16_t))
-			{
-				return static_cast< Type >(std::experimental::any_cast< std::uint16_t >(Any));
-			}
-			else if(Any.type() == typeid(std::uint32_t))
-			{
-				return static_cast< Type >(std::experimental::any_cast< std::uint32_t >(Any));
-			}
-			else if(Any.type() == typeid(std::uint64_t))
-			{
-				return static_cast< Type >(std::experimental::any_cast< std::uint64_t >(Any));
-			}
-			else
-			{
-				std::cout << Any.type().name() << std::endl;
-				assert(false);
-			}
-		}
-		
 		std::experimental::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement)
 		{
 			switch(Statement.Type)
@@ -248,36 +286,6 @@ namespace Inspection
 					assert(Statement.Value != nullptr);
 					
 					return Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Statement.Value));
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
-		
-		template< typename Type >
-		Type GetDataFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
-		{
-			return Inspection::Algorithms::Cast< Type >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement));
-		}
-		
-		template< typename Type >
-		Type GetDataFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement)
-		{
-			switch(Statement.Type)
-			{
-			case Inspection::TypeDefinition::Statement::Type::Cast:
-				{
-					assert(Statement.Cast != nullptr);
-					
-					return GetDataFromCast< Type >(ExecutionContext, *(Statement.Cast));
-				}
-			case Inspection::TypeDefinition::Statement::Type::Value:
-				{
-					assert(Statement.Value != nullptr);
-					
-					return GetDataFromValue< Type >(ExecutionContext, *(Statement.Value));
 				}
 			default:
 				{
@@ -1854,14 +1862,13 @@ void Inspection::Type::_LoadValueFromWithin(Inspection::TypeDefinition::Value & 
 
 void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement)
 {
+	assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 	if(ValueElement == nullptr)
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::Nothing;
 	}
 	else if(ValueElement->GetName() == "boolean")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::Boolean;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
@@ -1872,7 +1879,6 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 	}
 	else if(ValueElement->GetName() == "data-reference")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::DataReference;
 		Value.DataReference.emplace();
 		assert(ValueElement->HasAttribute("root") == true);
@@ -1923,9 +1929,14 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 			}
 		}
 	}
+	else if(ValueElement->GetName() == "length")
+	{
+		Value.DataType = Inspection::TypeDefinition::DataType::Length;
+		Value.Length.emplace();
+		_LoadLength(Value.Length.value(), ValueElement);
+	}
 	else if(ValueElement->GetName() == "parameter-reference")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::ParameterReference;
 		Value.ParameterReference.emplace();
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
@@ -1937,14 +1948,12 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 	}
 	else if(ValueElement->GetName() == "parameters")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::Parameters;
 		Value.Parameters.emplace();
 		_LoadParameters(Value.Parameters.value(), ValueElement);
 	}
 	else if(ValueElement->GetName() == "single-precision-real")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::SinglePrecisionReal;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
@@ -1955,7 +1964,6 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 	}
 	else if(ValueElement->GetName() == "string")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::String;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
@@ -1966,14 +1974,12 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 	}
 	else if(ValueElement->GetName() == "type-reference")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::TypeReference;
 		Value.TypeReference.emplace();
 		_LoadTypeReference(Value.TypeReference.value(), ValueElement);
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-8bit")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
@@ -1984,7 +1990,6 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-16bit")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
@@ -1995,7 +2000,6 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-32bit")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
@@ -2006,7 +2010,6 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-64bit")
 	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
@@ -2019,4 +2022,5 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 	{
 		throw std::domain_error{ValueElement->GetName() + " not allowed."};
 	}
+	assert(Value.DataType != Inspection::TypeDefinition::DataType::Unknown);
 }

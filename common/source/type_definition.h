@@ -31,6 +31,7 @@ namespace Inspection
 		class Divide;
 		class Equals;
 		class Parameter;
+		class Value;
 		
 		enum class DataType
 		{
@@ -39,6 +40,7 @@ namespace Inspection
 			DataReference,
 			TypeReference,
 			Nothing,
+			Length,
 			ParameterReference,
 			Parameters,
 			SinglePrecisionReal,
@@ -91,23 +93,6 @@ namespace Inspection
 		{
 		public:
 			std::vector< std::string > Parts;
-		};
-		
-		class Value
-		{
-		public:
-			Inspection::TypeDefinition::DataType DataType;
-			std::experimental::optional< bool > Boolean;
-			std::experimental::optional< Inspection::TypeDefinition::DataReference > DataReference;
-			std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-			std::experimental::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
-			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
-			std::experimental::optional< float > SinglePrecisionReal;
-			std::experimental::optional< std::string > String;
-			std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
-			std::experimental::optional< std::uint16_t > UnsignedInteger16Bit;
-			std::experimental::optional< std::uint32_t > UnsignedInteger32Bit;
-			std::experimental::optional< std::uint64_t > UnsignedInteger64Bit;
 		};
 		
 		class Statement
@@ -215,6 +200,24 @@ namespace Inspection
 			
 			Inspection::TypeDefinition::Statement Bytes;
 			Inspection::TypeDefinition::Statement Bits;
+		};
+		
+		class Value
+		{
+		public:
+			Inspection::TypeDefinition::DataType DataType;
+			std::experimental::optional< bool > Boolean;
+			std::experimental::optional< Inspection::TypeDefinition::DataReference > DataReference;
+			std::experimental::optional< Inspection::TypeDefinition::Length > Length;
+			std::experimental::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
+			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
+			std::experimental::optional< float > SinglePrecisionReal;
+			std::experimental::optional< std::string > String;
+			std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
+			std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
+			std::experimental::optional< std::uint16_t > UnsignedInteger16Bit;
+			std::experimental::optional< std::uint32_t > UnsignedInteger32Bit;
+			std::experimental::optional< std::uint64_t > UnsignedInteger64Bit;
 		};
 		
 		class Parameter
