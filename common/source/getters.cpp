@@ -307,7 +307,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
 		}
 		
-		auto ElementType{std::experimental::any_cast< const Inspection::Type * >(Parameters.at("ElementType"))};
+		auto ElementType{std::experimental::any_cast< const Inspection::TypeDefinition::Type * >(Parameters.at("ElementType"))};
 		std::uint64_t ElementIndexInArray{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -392,7 +392,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLeng
 			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
 		}
 		
-		auto ElementType{std::experimental::any_cast< const Inspection::Type * >(Parameters.at("ElementType"))};
+		auto ElementType{std::experimental::any_cast< const Inspection::TypeDefinition::Type * >(Parameters.at("ElementType"))};
 		std::uint64_t ElementIndexInArray{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -462,7 +462,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByLength(Inspec
 			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
 		}
 		
-		auto ElementType{std::experimental::any_cast< const Inspection::Type * >(Parameters.at("ElementType"))};
+		auto ElementType{std::experimental::any_cast< const Inspection::TypeDefinition::Type * >(Parameters.at("ElementType"))};
 		std::uint64_t ElementIndexInArray{0};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
@@ -529,7 +529,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByNumberOfEleme
 			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
 		}
 		
-		auto ElementType{std::experimental::any_cast< const Inspection::Type * >(Parameters.at("ElementType"))};
+		auto ElementType{std::experimental::any_cast< const Inspection::TypeDefinition::Type * >(Parameters.at("ElementType"))};
 		auto NumberOfElements{std::experimental::any_cast< std::uint64_t >(Parameters.at("NumberOfElements"))};
 		std::uint64_t ElementIndexInArray{0};
 		
@@ -605,7 +605,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByPredicate(Ins
 		}
 		
 		auto EndPredicate{std::experimental::any_cast< std::function< bool (std::shared_ptr< Inspection::Value >) > >(Parameters.at("EndPredicate"))};
-		auto ElementType{std::experimental::any_cast< const Inspection::Type * >(Parameters.at("ElementType"))};
+		auto ElementType{std::experimental::any_cast< const Inspection::TypeDefinition::Type * >(Parameters.at("ElementType"))};
 		std::uint64_t ElementIndexInArray{0};
 		
 		while(Continue == true)

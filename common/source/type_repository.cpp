@@ -31,14 +31,14 @@ namespace Inspection
 				delete ModulePair.second;
 				ModulePair.second = nullptr;
 			}
-			for(auto TypePair : _TypeDescriptors)
+			for(auto TypePair : _Types)
 			{
 				delete TypePair.second;
 				TypePair.second = nullptr;
 			}
 		}
 		
-		std::map< std::string, Type * > _TypeDescriptors;
+		std::map< std::string, Inspection::TypeDefinition::Type * > _Types;
 		std::map< std::string, Module * > _Modules;
 		std::string _Path;
 	};
@@ -56,7 +56,7 @@ Inspection::TypeRepository::~TypeRepository(void)
 	_RootModule = nullptr;
 }
 
-const Inspection::Type * Inspection::TypeRepository::GetType(const std::vector< std::string > & PathParts)
+const Inspection::TypeDefinition::Type * Inspection::TypeRepository::GetType(const std::vector< std::string > & PathParts)
 {
 	return _GetOrLoadType(PathParts);
 }
@@ -79,16 +79,16 @@ std::unique_ptr< Inspection::Result > Inspection::TypeRepository::Get(const std:
 	}
 }
 
-Inspection::Type * Inspection::TypeRepository::_GetOrLoadType(const std::vector< std::string > & PathParts)
+Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(const std::vector< std::string > & PathParts)
 {
 	auto Module{_GetOrLoadModule(std::vector< std::string >{PathParts.begin(), PathParts.end() - 1})};
-	Inspection::Type * Result{nullptr};
+	Inspection::TypeDefinition::Type * Result{nullptr};
 	
 	if(Module != nullptr)
 	{
-		auto TypeIterator{Module->_TypeDescriptors.find(PathParts.back())};
+		auto TypeIterator{Module->_Types.find(PathParts.back())};
 		
-		if(TypeIterator != Module->_TypeDescriptors.end())
+		if(TypeIterator != Module->_Types.end())
 		{
 			Result = TypeIterator->second;
 		}
@@ -98,9 +98,9 @@ Inspection::Type * Inspection::TypeRepository::_GetOrLoadType(const std::vector<
 			
 			if((FileExists(TypePath) == true) && (IsRegularFile(TypePath) == true))
 			{
-				Result = new Inspection::Type{this};
+				Result = new Inspection::TypeDefinition::Type{this};
 				Result->Load(TypePath);
-				Module->_TypeDescriptors.insert(std::make_pair(PathParts.back(), Result));
+				Module->_Types.insert(std::make_pair(PathParts.back(), Result));
 			}
 		}
 	}

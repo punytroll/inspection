@@ -452,18 +452,18 @@ namespace Inspection
 	}
 }
 
-Inspection::Type::Type(Inspection::TypeRepository * TypeRepository) :
+Inspection::TypeDefinition::Type::Type(Inspection::TypeRepository * TypeRepository) :
 	_Part{nullptr},
 	_TypeRepository{TypeRepository}
 {
 }
 
-Inspection::Type::~Type(void)
+Inspection::TypeDefinition::Type::~Type(void)
 {
 	delete _Part;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -576,7 +576,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -732,7 +732,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetField(Inspection::Ex
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -793,7 +793,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetFields(Inspection::E
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -865,7 +865,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetForward(Inspection::
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -959,7 +959,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetSequence(Inspection:
 	return Result;
 }
 
-Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target) const
+Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target) const
 {
 	Inspection::EvaluationResult Result;
 	
@@ -988,7 +988,7 @@ Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(Inspection::Exe
 	return Result;
 }
 	
-Inspection::EvaluationResult Inspection::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target) const
+Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target) const
 {
 	Inspection::EvaluationResult Result;
 	
@@ -1016,7 +1016,7 @@ Inspection::EvaluationResult Inspection::Type::_ApplyInterpretation(Inspection::
 	return Result;
 }
 
-void Inspection::Type::Load(const std::string & TypePath)
+void Inspection::TypeDefinition::Type::Load(const std::string & TypePath)
 {
 	try
 	{
@@ -1427,7 +1427,7 @@ void Inspection::Type::Load(const std::string & TypePath)
 	}
 }
 
-void Inspection::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement)
+void Inspection::TypeDefinition::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement)
 {
 	assert(Cast.DataType == Inspection::TypeDefinition::DataType::Unknown);
 	for(auto CastChildNode : CastElement->GetChilds())
@@ -1445,7 +1445,7 @@ void Inspection::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const 
 	assert(Cast.DataType != Inspection::TypeDefinition::DataType::Unknown);
 }
 
-void Inspection::Type::_LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement)
+void Inspection::TypeDefinition::Type::_LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement)
 {
 	bool First{true};
 	
@@ -1468,7 +1468,7 @@ void Inspection::Type::_LoadDivide(Inspection::TypeDefinition::Divide & Divide, 
 	}
 }
 
-void Inspection::Type::_LoadInterpretation(Inspection::TypeDefinition::Interpretation & Interpretation, const XML::Element * InterpretationElement)
+void Inspection::TypeDefinition::Type::_LoadInterpretation(Inspection::TypeDefinition::Interpretation & Interpretation, const XML::Element * InterpretationElement)
 {
 	assert(InterpretationElement->GetName() == "interpretation");
 	for(auto InterpretationChildNode : InterpretationElement->GetChilds())
@@ -1506,7 +1506,7 @@ void Inspection::Type::_LoadInterpretation(Inspection::TypeDefinition::Interpret
 	}
 }
 
-void Inspection::Type::_LoadEnumeration(Inspection::TypeDefinition::Enumeration & Enumeration, const XML::Element * EnumerationElement)
+void Inspection::TypeDefinition::Type::_LoadEnumeration(Inspection::TypeDefinition::Enumeration & Enumeration, const XML::Element * EnumerationElement)
 {
 	assert(EnumerationElement != nullptr);
 	assert(EnumerationElement->GetName() == "enumeration");
@@ -1582,7 +1582,7 @@ void Inspection::Type::_LoadEnumeration(Inspection::TypeDefinition::Enumeration 
 	}
 }
 
-void Inspection::Type::_LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement)
+void Inspection::TypeDefinition::Type::_LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement)
 {
 	bool First{true};
 	
@@ -1605,7 +1605,7 @@ void Inspection::Type::_LoadEquals(Inspection::TypeDefinition::Equals & Equals, 
 	}
 }
 
-void Inspection::Type::_LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement)
+void Inspection::TypeDefinition::Type::_LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement)
 {
 	for(auto LengthChildNode : LengthElement->GetChilds())
 	{
@@ -1629,14 +1629,14 @@ void Inspection::Type::_LoadLength(Inspection::TypeDefinition::Length & Length, 
 	}
 }
 
-void Inspection::Type::_LoadParameter(Inspection::TypeDefinition::Parameter & Parameter, const XML::Element * ParameterElement)
+void Inspection::TypeDefinition::Type::_LoadParameter(Inspection::TypeDefinition::Parameter & Parameter, const XML::Element * ParameterElement)
 {
 	assert(ParameterElement->HasAttribute("name") == true);
 	Parameter.Name = ParameterElement->GetAttribute("name");
 	_LoadStatementFromWithin(Parameter.Statement, ParameterElement);
 }
 
-void Inspection::Type::_LoadParameters(Inspection::TypeDefinition::Parameters & Parameters, const XML::Element * ParametersElement)
+void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinition::Parameters & Parameters, const XML::Element * ParametersElement)
 {
 	for(auto ParametersChildNode : ParametersElement->GetChilds())
 	{
@@ -1660,7 +1660,7 @@ void Inspection::Type::_LoadParameters(Inspection::TypeDefinition::Parameters & 
 	}
 }
 
-void Inspection::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement)
+void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement)
 {
 	if(PartElement->GetName() == "sequence")
 	{
@@ -1751,7 +1751,7 @@ void Inspection::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const 
 	}
 }
 
-void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
+void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
 {
 	assert(Statement.Type == Inspection::TypeDefinition::Statement::Type::Unknown);
 	// statement element may be nullptr, if it represents the "nothing" value
@@ -1788,7 +1788,7 @@ void Inspection::Type::_LoadStatement(Inspection::TypeDefinition::Statement & St
 	assert(Statement.Type != Inspection::TypeDefinition::Statement::Type::Unknown);
 }
 
-void Inspection::Type::_LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement)
+void Inspection::TypeDefinition::Type::_LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement)
 {
 	XML::Element * StatementElement{nullptr};
 	
@@ -1812,14 +1812,14 @@ void Inspection::Type::_LoadStatementFromWithin(Inspection::TypeDefinition::Stat
 	_LoadStatement(Statement, StatementElement);
 }
 
-void Inspection::Type::_LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement)
+void Inspection::TypeDefinition::Type::_LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement)
 {
 	assert(TagElement->HasAttribute("name") == true);
 	Tag.Name = TagElement->GetAttribute("name");
 	_LoadStatementFromWithin(Tag.Statement, TagElement);
 }
 
-void Inspection::Type::_LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement)
+void Inspection::TypeDefinition::Type::_LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement)
 {
 	for(auto TypeReferenceChildNode : TypeReferenceElement->GetChilds())
 	{
@@ -1844,7 +1844,7 @@ void Inspection::Type::_LoadTypeReference(Inspection::TypeDefinition::TypeRefere
 	}
 }
 
-void Inspection::Type::_LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement)
+void Inspection::TypeDefinition::Type::_LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement)
 {
 	if(ParentElement->GetChilds().size() == 0)
 	{
@@ -1866,7 +1866,7 @@ void Inspection::Type::_LoadValueFromWithin(Inspection::TypeDefinition::Value & 
 	}
 }
 
-void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement)
+void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement)
 {
 	assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 	if(ValueElement == nullptr)
