@@ -657,10 +657,6 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetField(Inspection::Ex
 			Reader.AdvancePosition(FieldPartReader->GetConsumedLength());
 		}
 	}
-	else
-	{
-		assert(false);
-	}
 	// tags
 	if(Continue == true)
 	{
