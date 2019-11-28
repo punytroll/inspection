@@ -195,6 +195,12 @@ namespace Inspection
 					
 					return Value.String.value();
 				}
+			case Inspection::TypeDefinition::DataType::TypeReference:
+				{
+					assert(Value.TypeReference);
+					
+					return Inspection::g_TypeRepository.GetType(Value.TypeReference->Parts);
+				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
 				{
 					assert(Value.UnsignedInteger8Bit);
@@ -412,7 +418,7 @@ namespace Inspection
 					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
 					{
 						assert(ParameterDefinition.Statement.Value->TypeReference);
-						NewParameters.emplace(ParameterDefinition.Name, ParameterDefinition.Statement.Value->TypeReference->Parts);
+						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
 					}
 					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
 					{
@@ -457,7 +463,7 @@ Inspection::Type::~Type(void)
 	delete _Part;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -570,7 +576,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::Get(Inspection::Reader &
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -578,7 +584,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetField(Inspection::Ex
 	ExecutionContext.Push(Field, Result, Parameters);
 	if(Field.TypeReference)
 	{
-		auto FieldResult{Inspection::g_TypeRepository.Get(Field.TypeReference->Parts, Reader, ExecutionContext.GetAllParameters())};
+		auto FieldResult{Inspection::g_TypeRepository.GetType(Field.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
 		
 		Continue = FieldResult->GetSuccess();
 		Result->SetValue(FieldResult->GetValue());
@@ -726,7 +732,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetField(Inspection::Ex
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -734,7 +740,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetFields(Inspection::E
 	ExecutionContext.Push(Fields, Result, Parameters);
 	assert(Fields.TypeReference);
 	
-	auto FieldsResult{Inspection::g_TypeRepository.Get(Fields.TypeReference->Parts, Reader, ExecutionContext.GetAllParameters())};
+	auto FieldsResult{Inspection::g_TypeRepository.GetType(Fields.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
 	
 	Continue = FieldsResult->GetSuccess();
 	Result->SetValue(FieldsResult->GetValue());
@@ -787,7 +793,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetFields(Inspection::E
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -795,7 +801,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetForward(Inspection::
 	ExecutionContext.Push(Forward, Result, Parameters);
 	assert(Forward.TypeReference);
 	
-	auto ForwardResult{Inspection::g_TypeRepository.Get(Forward.TypeReference->Parts, Reader, ExecutionContext.GetAllParameters())};
+	auto ForwardResult{Inspection::g_TypeRepository.GetType(Forward.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
 	
 	Continue = ForwardResult->GetSuccess();
 	Result->SetValue(ForwardResult->GetValue());
@@ -859,7 +865,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetForward(Inspection::
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -953,7 +959,7 @@ std::unique_ptr< Inspection::Result > Inspection::Type::_GetSequence(Inspection:
 	return Result;
 }
 
-Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target)
+Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target) const
 {
 	Inspection::EvaluationResult Result;
 	
@@ -982,7 +988,7 @@ Inspection::EvaluationResult Inspection::Type::_ApplyEnumeration(Inspection::Exe
 	return Result;
 }
 	
-Inspection::EvaluationResult Inspection::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target)
+Inspection::EvaluationResult Inspection::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target) const
 {
 	Inspection::EvaluationResult Result;
 	

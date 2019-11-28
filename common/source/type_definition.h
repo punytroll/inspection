@@ -23,6 +23,7 @@
 
 namespace Inspection
 {
+	class Type;
 	class Value;
 	
 	namespace TypeDefinition

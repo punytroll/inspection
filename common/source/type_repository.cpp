@@ -56,6 +56,11 @@ Inspection::TypeRepository::~TypeRepository(void)
 	_RootModule = nullptr;
 }
 
+const Inspection::Type * Inspection::TypeRepository::GetType(const std::vector< std::string > & PathParts)
+{
+	return _GetOrLoadType(PathParts);
+}
+
 std::unique_ptr< Inspection::Result > Inspection::TypeRepository::Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Type{_GetOrLoadType(PathParts)};

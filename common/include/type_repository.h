@@ -21,6 +21,7 @@ namespace Inspection
 		TypeRepository(void);
 		~TypeRepository(void);
 		std::unique_ptr< Inspection::Result > Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		const Inspection::Type * GetType(const std::vector< std::string > & PathParts);
 	private:
 		Inspection::Type * _GetOrLoadType(const std::vector< std::string > & PathParts);
 		Module * _GetOrLoadModule(const std::vector< std::string > & PathParts);
