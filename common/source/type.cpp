@@ -1859,6 +1859,17 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
 		Value.DataType = Inspection::TypeDefinition::DataType::Nothing;
 	}
+	else if(ValueElement->GetName() == "boolean")
+	{
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::Boolean;
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		Value.Boolean = from_string_cast< bool >(TextNode->GetText());
+	}
 	else if(ValueElement->GetName() == "data-reference")
 	{
 		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
@@ -1924,16 +1935,23 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 		assert(TextNode != nullptr);
 		Value.ParameterReference->Name = TextNode->GetText();
 	}
-	else if(ValueElement->GetName() == "boolean")
+	else if(ValueElement->GetName() == "parameters")
 	{
 		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
-		Value.DataType = Inspection::TypeDefinition::DataType::Boolean;
+		Value.DataType = Inspection::TypeDefinition::DataType::Parameters;
+		Value.Parameters.emplace();
+		_LoadParameters(Value.Parameters.value(), ValueElement);
+	}
+	else if(ValueElement->GetName() == "single-precision-real")
+	{
+		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
+		Value.DataType = Inspection::TypeDefinition::DataType::SinglePrecisionReal;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
 		
 		assert(TextNode != nullptr);
-		Value.Boolean = from_string_cast< bool >(TextNode->GetText());
+		Value.SinglePrecisionReal = from_string_cast< float >(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "string")
 	{
@@ -1996,24 +2014,6 @@ void Inspection::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, con
 		
 		assert(TextNode != nullptr);
 		Value.UnsignedInteger64Bit = from_string_cast< std::uint64_t >(TextNode->GetText());
-	}
-	else if(ValueElement->GetName() == "single-precision-real")
-	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
-		Value.DataType = Inspection::TypeDefinition::DataType::SinglePrecisionReal;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
-		
-		assert(TextNode != nullptr);
-		Value.SinglePrecisionReal = from_string_cast< float >(TextNode->GetText());
-	}
-	else if(ValueElement->GetName() == "parameters")
-	{
-		assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
-		Value.DataType = Inspection::TypeDefinition::DataType::Parameters;
-		Value.Parameters.emplace();
-		_LoadParameters(Value.Parameters.value(), ValueElement);
 	}
 	else
 	{
