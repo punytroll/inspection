@@ -595,10 +595,19 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		ElementProperties.emplace_back(std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("position")->GetData()), std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("length")->GetData()));
 	}
 	std::sort(std::begin(ElementProperties), std::end(ElementProperties));
-	// build up list of elements with their properties
-	// sort list
-	// read elements in order, fail on gaps
-	// give correct name to elements
+	for(auto ElementPropertiesIndex = 0ul; (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
+	{
+		auto & Properties{ElementProperties[ElementPropertiesIndex]};
+		
+		assert(Reader.GetPositionInBuffer() == Properties.first);
+		
+		Inspection::Reader ElementReader{Reader, Properties.second};
+		auto ElementResult{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)->Get(ElementReader, ExecutionContext.GetAllParameters())};
+		
+		Continue = ElementResult->GetSuccess();
+		Result->GetValue()->AppendField(Array.Array->ElementName, ElementResult->GetValue());
+		Reader.AdvancePosition(ElementReader.GetConsumedLength());
+	}
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
