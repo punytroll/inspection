@@ -70,5 +70,33 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
+		<tag name="position">
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>ImageOffset</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</tag>
+		<tag name="length">
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>BytesInRes</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</tag>
 	</sequence>
 </type>

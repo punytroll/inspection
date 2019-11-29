@@ -131,13 +131,9 @@ namespace Inspection
 							assert(ExecutionStackIterator->_Part != nullptr);
 							switch(ExecutionStackIterator->_Part->Type)
 							{
-							case Inspection::TypeDefinition::Part::Type::Sequence:
+							case Inspection::TypeDefinition::Part::Type::Array:
 								{
-									if(Result->HasField(PartIterator->DetailName) == true)
-									{
-										Result = Result->GetField(PartIterator->DetailName);
-										++PartIterator;
-									}
+									assert(false);
 									
 									break;
 								}
@@ -168,6 +164,16 @@ namespace Inspection
 									
 									break;
 								}
+							case Inspection::TypeDefinition::Part::Type::Sequence:
+								{
+									if(Result->HasField(PartIterator->DetailName) == true)
+									{
+										Result = Result->GetField(PartIterator->DetailName);
+										++PartIterator;
+									}
+									
+									break;
+								}
 							}
 						}
 						
@@ -180,6 +186,102 @@ namespace Inspection
 						++PartIterator;
 						
 						break;
+					}
+				}
+			}
+			
+			return Result;
+		}
+		
+		std::shared_ptr< Inspection::Value > GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference)
+		{
+			std::shared_ptr< Inspection::Value > Result;
+			std::list< Inspection::ExecutionContext::Element >::iterator ExecutionStackIterator;
+			
+			switch(FieldReference.Root)
+			{
+			case Inspection::TypeDefinition::FieldReference::Root::Current:
+				{
+					assert(_ExecutionStack.size() > 0);
+					ExecutionStackIterator = std::prev(std::end(_ExecutionStack));
+					
+					break;
+				}
+			case Inspection::TypeDefinition::FieldReference::Root::Type:
+				{
+					assert(_ExecutionStack.size() > 0);
+					ExecutionStackIterator = std::begin(_ExecutionStack);
+					
+					break;
+				}
+			default:
+				{
+					assert(false);
+				}
+			}
+			Result = ExecutionStackIterator->_Result->GetValue();
+			
+			auto PartIterator{std::begin(FieldReference.Parts)};
+			
+			while(PartIterator != std::end(FieldReference.Parts))
+			{
+				// maybe, the field is already in the result
+				if(Result->HasField(PartIterator->FieldName) == true)
+				{
+					Result = Result->GetField(PartIterator->FieldName);
+					++PartIterator;
+				}
+				// if not, the field might be in the current stack
+				else
+				{
+					++ExecutionStackIterator;
+					Result = ExecutionStackIterator->_Result->GetValue();
+					assert(ExecutionStackIterator->_Part != nullptr);
+					switch(ExecutionStackIterator->_Part->Type)
+					{
+					case Inspection::TypeDefinition::Part::Type::Array:
+						{
+							assert(false);
+							
+							break;
+						}
+					case Inspection::TypeDefinition::Part::Type::Field:
+						{
+							if(Result->HasField(PartIterator->FieldName) == true)
+							{
+								Result = Result->GetField(PartIterator->FieldName);
+								++PartIterator;
+							}
+							
+							break;
+						}
+					case Inspection::TypeDefinition::Part::Type::Fields:
+						{
+							// fields are flattened onto the parent, behaving just like a sequence
+							if(Result->HasField(PartIterator->FieldName) == true)
+							{
+								Result = Result->GetField(PartIterator->FieldName);
+								++PartIterator;
+							}
+							
+							break;
+						}
+					case Inspection::TypeDefinition::Part::Type::Forward:
+						{
+							assert(false);
+							
+							break;
+						}
+					case Inspection::TypeDefinition::Part::Type::Sequence:
+						{
+							if(Result->HasField(PartIterator->FieldName) == true)
+							{
+								Result = Result->GetField(PartIterator->FieldName);
+								++PartIterator;
+							}
+							
+							break;
+						}
 					}
 				}
 			}

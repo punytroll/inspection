@@ -65,5 +65,18 @@
 				</field>
 			</sequence>
 		</field>
+		<array name="ImageData">
+			<iterate>
+				<field-reference root="type">
+					<field>IconHeader</field>
+					<field>Entries</field>
+				</field-reference>
+			</iterate>
+			<element-name>Image</element-name>
+			<element-type>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</element-type>
+		</array>
 	</sequence>
 </type>

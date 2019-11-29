@@ -576,6 +576,37 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 	return Result;
 }
 
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	ExecutionContext.Push(Array, Result, Parameters);
+	assert(Array.Array);
+	
+	auto IterateField{ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateField)};
+	
+	assert(IterateField != nullptr);
+	
+	std::vector< std::pair< Inspection::Length, Inspection::Length > > ElementProperties;
+	
+	for(auto Field : IterateField->GetFields())
+	{
+		ElementProperties.emplace_back(std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("position")->GetData()), std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("length")->GetData()));
+	}
+	std::sort(std::begin(ElementProperties), std::end(ElementProperties));
+	// build up list of elements with their properties
+	// sort list
+	// read elements in order, fail on gaps
+	// give correct name to elements
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
 std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -907,6 +938,16 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 			}
 			switch(SequencePart.Type)
 			{
+			case Inspection::TypeDefinition::Part::Type::Array:
+				{
+					auto ArrayResult{_GetArray(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
+					
+					Continue = ArrayResult->GetSuccess();
+					assert(SequencePart.FieldName);
+					Result->GetValue()->AppendField(SequencePart.FieldName.value(), ArrayResult->GetValue());
+					
+					break;
+				}
 			case Inspection::TypeDefinition::Part::Type::Field:
 				{
 					auto FieldResult{_GetField(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
@@ -1212,6 +1253,35 @@ void Inspection::TypeDefinition::Type::_LoadEquals(Inspection::TypeDefinition::E
 	}
 }
 
+void Inspection::TypeDefinition::Type::_LoadFieldReference(Inspection::TypeDefinition::FieldReference & FieldReference, const XML::Element * FieldReferenceElement)
+{
+	assert(FieldReferenceElement->HasAttribute("root") == true);
+	if(FieldReferenceElement->GetAttribute("root") == "current")
+	{
+		FieldReference.Root = Inspection::TypeDefinition::FieldReference::Root::Current;
+	}
+	else
+	{
+		FieldReference.Root = Inspection::TypeDefinition::FieldReference::Root::Type;
+	}
+	for(auto FieldReferenceChildNode : FieldReferenceElement->GetChilds())
+	{
+		if(FieldReferenceChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto FieldReferenceChildElement{dynamic_cast< const XML::Element * >(FieldReferenceChildNode)};
+			
+			assert(FieldReferenceChildElement->GetName() == "field");
+			assert(FieldReferenceChildElement->GetChilds().size() == 1);
+			
+			auto FieldReferenceFieldText{dynamic_cast< const XML::Text * >(FieldReferenceChildElement->GetChild(0))};
+			
+			assert(FieldReferenceFieldText != nullptr);
+			FieldReference.Parts.emplace_back();
+			FieldReference.Parts.back().FieldName = FieldReferenceFieldText->GetText();
+		}
+	}
+}
+
 void Inspection::TypeDefinition::Type::_LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement)
 {
 	for(auto LengthChildNode : LengthElement->GetChilds())
@@ -1269,7 +1339,13 @@ void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinitio
 
 void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement)
 {
-	if(PartElement->GetName() == "sequence")
+	if(PartElement->GetName() == "array")
+	{
+		Part.Type = Inspection::TypeDefinition::Part::Type::Array;
+		Part.FieldName = PartElement->GetAttribute("name");
+		Part.Array.emplace();
+	}
+	else if(PartElement->GetName() == "sequence")
 	{
 		Part.Type = Inspection::TypeDefinition::Part::Type::Sequence;
 	}
@@ -1341,7 +1417,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				
 				_LoadTag(Tag, PartChildElement);
 			}
-			else if((PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward"))
+			else if((PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward") || (PartChildElement->GetName() == "array"))
 			{
 				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Sequence) || ((Part.Type == Inspection::TypeDefinition::Part::Type::Field) && (!Part.Parts)));
 				if(!Part.Parts)
@@ -1353,6 +1429,43 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				auto & ContainedPart{Part.Parts->back()};
 				
 				_LoadPart(ContainedPart, PartChildElement);
+			}
+			else if(PartChildElement->GetName() == "iterate")
+			{
+				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
+				
+				XML::Element * FieldReferenceElement{nullptr};
+				
+				for(auto PartIterateChildNode : PartChildElement->GetChilds())
+				{
+					if(PartIterateChildNode->GetNodeType() == XML::NodeType::Element)
+					{
+						assert(FieldReferenceElement == nullptr);
+						FieldReferenceElement = dynamic_cast< XML::Element * >(PartIterateChildNode);
+					}
+				}
+				assert(FieldReferenceElement != nullptr);
+				_LoadFieldReference(Part.Array->IterateField, FieldReferenceElement);
+			}
+			else if(PartChildElement->GetName() == "element-name")
+			{
+				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
+				assert(PartChildElement->GetChilds().size() == 1);
+				
+				auto ElementNameText{dynamic_cast< const XML::Text * >(PartChildElement->GetChild(0))};
+				
+				assert(ElementNameText != nullptr);
+				Part.Array->ElementName = ElementNameText->GetText();
+			}
+			else if(PartChildElement->GetName() == "element-type")
+			{
+				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
+				_LoadTypeReference(Part.Array->ElementType, PartChildElement);
+			}
+			else
+			{
+				std::cout << PartChildElement->GetName() << std::endl;
+				assert(false);
 			}
 		}
 	}
@@ -1832,19 +1945,13 @@ void Inspection::TypeDefinition::Type::_LoadTypeReference(Inspection::TypeDefini
 		{
 			auto TypeReferenceChildElement{dynamic_cast< const XML::Element * >(TypeReferenceChildNode)};
 			
-			if(TypeReferenceChildElement->GetName() == "part")
-			{
-				assert(TypeReferenceChildElement->GetChilds().size() == 1);
-				
-				auto TypeReferencePartText{dynamic_cast< const XML::Text * >(TypeReferenceChildElement->GetChild(0))};
-				
-				assert(TypeReferencePartText != nullptr);
-				TypeReference.Parts.push_back(TypeReferencePartText->GetText());
-			}
-			else
-			{
-				throw std::domain_error{"type-reference/" + TypeReferenceChildElement->GetName() + " not allowed."};
-			}
+			assert(TypeReferenceChildElement->GetName() == "part");
+			assert(TypeReferenceChildElement->GetChilds().size() == 1);
+			
+			auto TypeReferencePartText{dynamic_cast< const XML::Text * >(TypeReferenceChildElement->GetChild(0))};
+			
+			assert(TypeReferencePartText != nullptr);
+			TypeReference.Parts.push_back(TypeReferencePartText->GetText());
 		}
 	}
 }

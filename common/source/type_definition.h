@@ -78,6 +78,25 @@ namespace Inspection
 			std::vector< Inspection::TypeDefinition::DataReference::PartDescriptor > PartDescriptors;
 		};
 		
+		class FieldReference
+		{
+		public:
+			class Part
+			{
+			public:
+				std::string FieldName;
+			};
+			
+			enum class Root
+			{
+				Current,
+				Type
+			};
+			
+			Inspection::TypeDefinition::FieldReference::Root Root;
+			std::vector< Inspection::TypeDefinition::FieldReference::Part > Parts;
+		};
+		
 		class ParameterReference
 		{
 		public:
@@ -291,11 +310,20 @@ namespace Inspection
 			Inspection::TypeDefinition::Interpretation::Type Type;
 		};
 		
+		class Array
+		{
+		public:
+			Inspection::TypeDefinition::FieldReference IterateField;
+			std::string ElementName;
+			Inspection::TypeDefinition::TypeReference ElementType;
+		};
+		
 		class Part
 		{
 		public:
 			enum class Type
 			{
+				Array,
 				Field,
 				Fields,
 				Forward,
@@ -310,6 +338,7 @@ namespace Inspection
 			
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
 			
+			std::experimental::optional< Inspection::TypeDefinition::Array > Array;
 			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
 			std::experimental::optional< std::string > FieldName;
 			std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;

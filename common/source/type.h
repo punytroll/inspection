@@ -27,6 +27,7 @@ namespace Inspection
 		class Divide;
 		class Enumeration;
 		class Equals;
+		class FieldReference;
 		class Interpretation;
 		class Length;
 		class Parameter;
@@ -45,6 +46,7 @@ namespace Inspection
 			std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
 			void Load(const std::string & TypePath);
 		private:
+			std::unique_ptr< Inspection::Result > _GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
 			std::unique_ptr< Inspection::Result > _GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
 			std::unique_ptr< Inspection::Result > _GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
 			std::unique_ptr< Inspection::Result > _GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
@@ -53,6 +55,7 @@ namespace Inspection
 			void _LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement);
 			void _LoadEnumeration(Inspection::TypeDefinition::Enumeration & Enumeration, const XML::Element * EnumerationElement);
 			void _LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement);
+			void _LoadFieldReference(Inspection::TypeDefinition::FieldReference & FieldReference, const XML::Element * FieldReferenceElement);
 			void _LoadInterpretation(Inspection::TypeDefinition::Interpretation & Interpretation, const XML::Element * InterpretElement);
 			void _LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement);
 			void _LoadParameter(Inspection::TypeDefinition::Parameter & Parameter, const XML::Element * ParameterElement);
