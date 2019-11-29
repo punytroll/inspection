@@ -46,6 +46,7 @@ namespace Inspection
 			std::unique_ptr< Inspection::Result > Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
 			void Load(const std::string & TypePath);
 		private:
+			std::unique_ptr< Inspection::Result > _GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
 			std::unique_ptr< Inspection::Result > _GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
 			std::unique_ptr< Inspection::Result > _GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;
 			std::unique_ptr< Inspection::Result > _GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const;

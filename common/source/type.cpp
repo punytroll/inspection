@@ -516,6 +516,15 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 				}
 				switch(_Part->Type)
 				{
+				case Inspection::TypeDefinition::Part::Type::Alternative:
+					{
+						auto SequenceResult{_GetAlternative(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						
+						Continue = SequenceResult->GetSuccess();
+						Result->SetValue(SequenceResult->GetValue());
+						
+						break;
+					}
 				case Inspection::TypeDefinition::Part::Type::Sequence:
 					{
 						auto SequenceResult{_GetSequence(ExecutionContext, *_Part, *PartReader, PartParameters)};
@@ -571,6 +580,116 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto FoundAlternative{false};
+	
+	ExecutionContext.Push(Alternative, Result, Parameters);
+	assert(Alternative.Parts);
+	for(auto AlternativePartIterator = std::begin(Alternative.Parts.value()); ((FoundAlternative == false) && (AlternativePartIterator != std::end(Alternative.Parts.value()))); ++AlternativePartIterator)
+	{
+		auto & AlternativePart{*AlternativePartIterator};
+		Inspection::Reader * AlternativePartReader{nullptr};
+		
+		if(AlternativePart.Length)
+		{
+			auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, AlternativePart.Length->Bytes)};
+			auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, AlternativePart.Length->Bits)};
+			Inspection::Length Length{Bytes, Bits};
+			
+			if(Reader.Has(Length) == true)
+			{
+				AlternativePartReader = new Inspection::Reader{Reader, Length};
+			}
+			else
+			{
+				Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
+			}
+		}
+		else
+		{
+			AlternativePartReader = new Inspection::Reader{Reader};
+		}
+		if(AlternativePartReader != nullptr)
+		{
+			std::unordered_map< std::string, std::experimental::any > AlternativePartParameters;
+			
+			if(AlternativePart.Parameters)
+			{
+				FillNewParameters(ExecutionContext, AlternativePartParameters, AlternativePart.Parameters.value());
+			}
+			switch(AlternativePart.Type)
+			{
+			case Inspection::TypeDefinition::Part::Type::Array:
+				{
+					auto ArrayResult{_GetArray(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					
+					FoundAlternative = ArrayResult->GetSuccess();
+					if(FoundAlternative == true)
+					{
+						assert(AlternativePart.FieldName);
+						Result->GetValue()->AppendField(AlternativePart.FieldName.value(), ArrayResult->GetValue());
+					}
+					
+					break;
+				}
+			case Inspection::TypeDefinition::Part::Type::Field:
+				{
+					auto FieldResult{_GetField(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					
+					FoundAlternative = FieldResult->GetSuccess();
+					if(FoundAlternative == true)
+					{
+						assert(AlternativePart.FieldName);
+						Result->GetValue()->AppendField(AlternativePart.FieldName.value(), FieldResult->GetValue());
+					}
+					
+					break;
+				}
+			case Inspection::TypeDefinition::Part::Type::Fields:
+				{
+					auto FieldsResult{_GetFields(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					
+					FoundAlternative = FieldsResult->GetSuccess();
+					if(FoundAlternative == true)
+					{
+						Result->GetValue()->AppendFields(FieldsResult->GetValue()->GetFields());
+					}
+					
+					break;
+				}
+			case Inspection::TypeDefinition::Part::Type::Forward:
+				{
+					auto ForwardResult{_GetForward(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					
+					FoundAlternative = ForwardResult->GetSuccess();
+					if(FoundAlternative == true)
+					{
+						Result->SetValue(ForwardResult->GetValue());
+					}
+					
+					break;
+				}
+			default:
+				{
+					assert(false);
+				}
+			}
+			if(FoundAlternative == true)
+			{
+				Reader.AdvancePosition(AlternativePartReader->GetConsumedLength());
+			}
+		}
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(FoundAlternative);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -1348,7 +1467,11 @@ void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinitio
 
 void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement)
 {
-	if(PartElement->GetName() == "array")
+	if(PartElement->GetName() == "alternative")
+	{
+		Part.Type = Inspection::TypeDefinition::Part::Type::Alternative;
+	}
+	else if(PartElement->GetName() == "array")
 	{
 		Part.Type = Inspection::TypeDefinition::Part::Type::Array;
 		Part.FieldName = PartElement->GetAttribute("name");
@@ -1426,9 +1549,9 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				
 				_LoadTag(Tag, PartChildElement);
 			}
-			else if((PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward") || (PartChildElement->GetName() == "array"))
+			else if((PartChildElement->GetName() == "alternative") || (PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward") || (PartChildElement->GetName() == "array"))
 			{
-				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Sequence) || ((Part.Type == Inspection::TypeDefinition::Part::Type::Field) && (!Part.Parts)));
+				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Sequence) || ((Part.Type == Inspection::TypeDefinition::Part::Type::Field) && (!Part.Parts)) || (Part.Type == Inspection::TypeDefinition::Part::Type::Alternative));
 				if(!Part.Parts)
 				{
 					Part.Parts.emplace();
@@ -1791,6 +1914,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
 				}
+				else if(HardcodedText->GetText() == "Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength")
+				{
+					Type._HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength;
+				}
 				else if(HardcodedText->GetText() == "Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength")
 				{
 					Type._HardcodedGetter = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength;
@@ -1932,7 +2059,7 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 					throw std::domain_error{"Invalid reference to hardcoded getter \"" + HardcodedText->GetText() + "\"."};
 				}
 			}
-			else if((TypeChildElement->GetName() == "sequence") || (TypeChildElement->GetName() == "field") || (TypeChildElement->GetName() == "fields") || (TypeChildElement->GetName() == "forward"))
+			else if((TypeChildElement->GetName() == "alternative") || (TypeChildElement->GetName() == "sequence") || (TypeChildElement->GetName() == "field") || (TypeChildElement->GetName() == "fields") || (TypeChildElement->GetName() == "forward"))
 			{
 				assert(Type._Part == nullptr);
 				Type._Part = new Inspection::TypeDefinition::Part{};

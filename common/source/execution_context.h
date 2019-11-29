@@ -131,6 +131,12 @@ namespace Inspection
 							assert(ExecutionStackIterator->_Part != nullptr);
 							switch(ExecutionStackIterator->_Part->Type)
 							{
+							case Inspection::TypeDefinition::Part::Type::Alternative:
+								{
+									assert(false);
+									
+									break;
+								}
 							case Inspection::TypeDefinition::Part::Type::Array:
 								{
 									assert(false);
@@ -239,6 +245,12 @@ namespace Inspection
 					assert(ExecutionStackIterator->_Part != nullptr);
 					switch(ExecutionStackIterator->_Part->Type)
 					{
+					case Inspection::TypeDefinition::Part::Type::Alternative:
+						{
+							assert(false);
+							
+							break;
+						}
 					case Inspection::TypeDefinition::Part::Type::Array:
 						{
 							assert(false);

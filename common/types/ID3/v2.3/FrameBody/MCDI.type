@@ -11,7 +11,7 @@
 				<part>String</part>
 				<part>ISO_IEC_10646_1_1993</part>
 				<part>UCS-2</part>
-				<part>WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength</part>
+				<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationOrLength</part>
 			</type-reference>
 			<tag name="error">
 				<string>The content of an "MCDI" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian.</string>

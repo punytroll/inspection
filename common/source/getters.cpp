@@ -4760,7 +4760,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		else if(Identifier == "MCDI")
 		{
 			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::Get_ID3_2_3_Frame_Body_MCDI(PartReader)};
+			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.3", "FrameBody", "MCDI"})->Get(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -4921,43 +4921,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		Reader.SetPosition(FieldStart + ClaimedSize);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_MCDI(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader Alternative1Reader{Reader};
-		auto Alternative1Result{Inspection::g_TypeRepository.GetType({"IEC_60908_1999", "TableOfContents"})->Get(Alternative1Reader, {})};
-		
-		UpdateState(Continue, Alternative1Result);
-		if(Continue == true)
-		{
-			Result->SetValue(Alternative1Result->GetValue());
-			Reader.AdvancePosition(Alternative1Reader.GetConsumedLength());
-		}
-		else
-		{
-			Inspection::Reader Alternative2Reader{Reader};
-			auto Alternative2Result{Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Alternative2Reader, {})};
-			
-			UpdateState(Continue, Reader, Alternative2Result, Alternative2Reader);
-			if(Continue == true)
-			{
-				Result->GetValue()->AppendField("String", Alternative2Result->GetValue());
-				Result->GetValue()->GetField("String")->AddTag("error", "The content of an \"MCDI\" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian."s);
-			}
-		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);

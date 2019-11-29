@@ -323,6 +323,7 @@ namespace Inspection
 		public:
 			enum class Type
 			{
+				Alternative,
 				Array,
 				Field,
 				Fields,
