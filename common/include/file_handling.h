@@ -186,7 +186,7 @@ inline void DefaultWriter(std::unique_ptr< Inspection::Result > & Result, Inspec
 	}
 	if(Reader.HasRemaining() == true)
 	{
-		std::cout << Inspection::g_BrightBlack << "There are " << Inspection::g_Yellow << to_string_cast(Reader.GetRemainingLength()) << Inspection::g_BrightBlack << " bytes and bits after the data." << std::endl;
+		std::cout << Inspection::g_BrightBlack << "There are " << Inspection::g_Yellow << to_string_cast(Reader.GetRemainingLength()) << Inspection::g_BrightBlack << " bytes and bits after the data." << Inspection::g_Reset << std::endl;
 	}
 }
 
