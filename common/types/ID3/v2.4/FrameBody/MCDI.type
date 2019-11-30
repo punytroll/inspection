@@ -1,7 +1,7 @@
 <type>
 	<forward>
 		<type-reference>
-			<part>ISO_60908_1999</part>
+			<part>IEC_60908_1999</part>
 			<part>TableOfContents</part>
 		</type-reference>
 	</forward>

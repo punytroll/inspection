@@ -2,6 +2,14 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/042_ID3_2.4_MCDI_binary</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Tracks/field:Track:[tag:element index in array/is-data:3]/field:StartAddress/data</argument>
+		</execute>
+		<expected-output>60160</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/040_Ogg_Vorbis</argument>
 			<argument>--query=/field:OggStream/field:Pages/has-tag:array</argument>
 		</execute>
