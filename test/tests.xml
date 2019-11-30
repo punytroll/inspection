@@ -5129,6 +5129,70 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/041_ID3_2.3_MCDI_UCS-2_LE_String</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:String/data</argument>
+		</execute>
+		<expected-output>D+96+54DD+A651+10667+16B0E+1C2E1+208AC+26449+2C52E+33356+39DBB+3D7A7+400FB+454A9</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/041_ID3_2.3_MCDI_UCS-2_LE_String</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:String/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/041_ID3_2.3_MCDI_UCS-2_LE_String</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:String/tag:character set/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 10646-1:1993</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/041_ID3_2.3_MCDI_UCS-2_LE_String</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:String/tag:encoding/data</argument>
+		</execute>
+		<expected-output>UCS-2</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/041_ID3_2.3_MCDI_UCS-2_LE_String</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:String/has-tag:little endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/041_ID3_2.3_MCDI_UCS-2_LE_String</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:String/has-tag:80 code points + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/041_ID3_2.3_MCDI_UCS-2_LE_String</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:String/has-tag:ended by termination and length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/041_ID3_2.3_MCDI_UCS-2_LE_String</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:String/tag:error/data</argument>
+		</execute>
+		<expected-output>The content of an "MCDI" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian.</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/039_ID3_2.4_ExtendedHeader_CRC</argument>
 			<argument>--query=/field:ID3v2Tag/field:ExtendedHeader/field:Size/data</argument>
 		</execute>
