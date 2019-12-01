@@ -1826,6 +1826,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_GUID_LittleEndian;
 				}
+				else if(HardcodedText->GetText() == "Get_ID3_1_Genre")
+				{
+					Type._HardcodedGetter = Inspection::Get_ID3_1_Genre;
+				}
 				else if(HardcodedText->GetText() == "Get_ID3_2_2_Frame")
 				{
 					Type._HardcodedGetter = Inspection::Get_ID3_2_2_Frame;

@@ -1,0 +1,1388 @@
+<map>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>0</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Blues</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>1</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Classic Rock</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>2</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Country</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>3</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Dance</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>4</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Disco</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>5</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Funk</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>6</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Grunge</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>7</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Hip-Hop</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>8</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Jazz</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>9</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Metal</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>10</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>New Age</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>11</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Oldies</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>12</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Other</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>13</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Pop</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>14</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>R&amp;B</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>15</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Rap</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>16</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Reggae</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>17</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Rock</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>18</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Techno</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>19</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Industrial</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>20</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Alternative</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>21</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Ska</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>22</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Death Metal</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>23</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Pranks</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>24</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Soundtrack</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>25</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Euro-Techno</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>26</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Ambient</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>27</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Trip-Hop</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>28</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>VOcal</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>29</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Jazz+Funk</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>30</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Fusion</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>31</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Trance</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>32</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Classical</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>33</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Instrumental</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>34</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Acid</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>35</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>House</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>36</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Game</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>37</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Sound Clip</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>38</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Gospel</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>39</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Noise</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>40</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>AlternRock</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>41</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Bass</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>42</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Soul</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>43</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Punk</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>44</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Space</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>45</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Meditative</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>46</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Instrumental Pop</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>47</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Instrumental Rock</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>48</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Ethnic</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>49</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Gothic</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>50</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Darkwave</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>51</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Techno-Industrial</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>52</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Electronic</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>53</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Pop-Folk</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>54</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Eurodance</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>55</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Dream</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>56</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Southern Rock</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>57</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Comedy</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>58</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Cult</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>59</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Gangsta</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>60</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Top 40</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>61</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Christian Rap</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>62</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Pop/Funk</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>63</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Jungle</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>64</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Native American</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>65</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Cabaret</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>66</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>New Wave</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>67</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Psychadelic</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>68</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Rave</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>69</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Showtunes</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>70</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Trailer</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>71</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Lo-Fi</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>72</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Tribal</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>73</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Acid Punk</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>74</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Acid Jazz</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>75</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Polka</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>76</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Retro</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>77</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Musical</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>78</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Rock &amp; Roll</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>79</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Hard Rock</string>
+		</member>
+		<member name="standard">
+			<string>ID3v1</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>80</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Folk</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>81</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Folk-Rock</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>82</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>National Folk</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>83</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Swing</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>84</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Fast Fusion</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>85</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Bebop</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>86</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Latin</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>87</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Revival</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>88</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Celtic</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>89</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Bluegrass</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>90</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Avantgarde</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>91</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Gothic Rock</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>92</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Progressive Rock</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>93</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Psychedelic Rock</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>94</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Symphonic Rock</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>95</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Slow Rock</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>96</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Big Band</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>97</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Chorus</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>98</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Easy Listening</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>99</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Acoustic</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>100</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Humor</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>101</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Speech</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>102</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Chanson</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>103</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Opera</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>104</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Chamber Music</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>105</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Sonata</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>106</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Symphony</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>107</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Booty Bass</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>108</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Primus</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>109</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Porn Groove</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>110</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Satire</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>111</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Slow Jam</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>112</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Club</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>113</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Tango</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>114</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Samba</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>115</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Folklore</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>116</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Ballad</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>117</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Power Ballad</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>118</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Rhythmic Soul</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>119</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Freestyle</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>120</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Duet</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>121</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Punk Rock</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>122</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Drum Solo</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>123</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Acapella</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>124</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Euro-House</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+	<element>
+		<member name="number">
+			<unsigned-integer-8bit>125</unsigned-integer-8bit>
+		</member>
+		<member name="text">
+			<string>Dance Hall</string>
+		</member>
+		<member name="standard">
+			<string>Winamp extensions</string>
+		</member>
+	</element>
+</map>

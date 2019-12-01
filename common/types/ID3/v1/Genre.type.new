@@ -1,0 +1,35 @@
+<type>
+	<forward>
+		<type-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>8Bit</part>
+		</type-reference>
+		<interpretation>
+			<apply-map>
+				<mapping-reference>
+					<part>ID3</part>
+					<part>v1</part>
+					<part>Genre</part>
+				</mapping-reference>
+				<from>
+					<member name="number">
+						<data-reference root="current"/>
+					</member>
+				</from>
+				<to>
+					<tag name="interpretation">
+						<member-reference name="string"/>
+					</tag>
+					<tag name="standard">
+						<member-reference name="standard"/>
+					</tag>
+				</to>
+				<fallback>
+					<tag name="interpretation"/>
+				</fallback>
+			</apply-map>
+		</interpretation>
+	</forward>
+</type>
