@@ -4256,107 +4256,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_GUID_LittleEndian(Inspecti
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Tag(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_String_ASCII_Alphabetic_ByTemplate(PartReader, {{"Template", "TAG"s}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Identifier", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{30, 0}};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("Title", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{30, 0}};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("Artist", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{30, 0}};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("Album", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("Year", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{30, 0}};
-		auto FieldResult{Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(FieldReader)};
-		
-		UpdateState(Continue, FieldResult);
-		if(Continue == true)
-		{
-			auto FieldValue{Result->GetValue()->AppendField("Comment", FieldResult->GetValue())};
-			
-			Reader.AdvancePosition(FieldReader.GetConsumedLength());
-		}
-		else
-		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{29, 0}};
-			FieldResult = Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(FieldReader);
-			
-			auto FieldValue{Result->GetValue()->AppendField("Comment", FieldResult->GetValue())};
-			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
-			// reading
-			if(Continue == true)
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_8Bit(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("AlbumTrack", PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-		}
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v1", "Genre"})->Get(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Genre", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_1_Genre(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -7585,7 +7484,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -7678,7 +7577,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

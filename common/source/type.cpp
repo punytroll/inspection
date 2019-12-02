@@ -676,6 +676,18 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 					
 					break;
 				}
+			case Inspection::TypeDefinition::Part::Type::Sequence:
+				{
+					auto SequenceResult{_GetSequence(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					
+					FoundAlternative = SequenceResult->GetSuccess();
+					if(FoundAlternative == true)
+					{
+						Result->SetValue(SequenceResult->GetValue());
+					}
+					
+					break;
+				}
 			default:
 				{
 					assert(false);
@@ -1066,6 +1078,15 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 			}
 			switch(SequencePart.Type)
 			{
+			case Inspection::TypeDefinition::Part::Type::Alternative:
+				{
+					auto AlternativeResult{_GetAlternative(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
+					
+					Continue = AlternativeResult->GetSuccess();
+					Result->GetValue()->AppendFields(AlternativeResult->GetValue()->GetFields());
+					
+					break;
+				}
 			case Inspection::TypeDefinition::Part::Type::Array:
 				{
 					auto ArrayResult{_GetArray(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
@@ -1917,6 +1938,14 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength")
 				{
 					Type._HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength;
+				}
+				else if(HardcodedText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength")
+				{
+					Type._HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength;
+				}
+				else if(HardcodedText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength")
+				{
+					Type._HardcodedGetter = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength;
 				}
 				else if(HardcodedText->GetText() == "Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength")
 				{

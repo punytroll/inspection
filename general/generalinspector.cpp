@@ -147,7 +147,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 				{
 					Inspection::Reader PartReader{Reader};
 					
-					PartResult = Get_ID3_1_Tag(PartReader);
+					PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 					if(PartResult->GetSuccess() == true)
 					{
 						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -205,7 +205,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 							{
 								Inspection::Reader PartReader{Reader};
 								
-								PartResult = Get_ID3_1_Tag(PartReader);
+								PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 								if(PartResult->GetSuccess() == true)
 								{
 									if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -236,7 +236,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 						{
 							Inspection::Reader PartReader{Reader};
 							
-							PartResult = Get_ID3_1_Tag(PartReader);
+							PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							if(PartResult->GetSuccess() == true)
 							{
 								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -268,7 +268,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 				{
 					Inspection::Reader PartReader{Reader};
 					
-					PartResult = Get_ID3_1_Tag(PartReader);
+					PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 					if(PartResult->GetSuccess() == true)
 					{
 						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -327,7 +327,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 					{
 						Inspection::Reader PartReader{Reader};
 						
-						PartResult = Get_ID3_1_Tag(PartReader);
+						PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 						if(PartResult->GetSuccess() == true)
 						{
 							if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -358,7 +358,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 				{
 					Inspection::Reader PartReader{Reader};
 					
-					PartResult = Get_ID3_1_Tag(PartReader);
+					PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 					if(PartResult->GetSuccess() == true)
 					{
 						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -403,7 +403,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 				{
 					Inspection::Reader PartReader{Reader};
 					
-					PartResult = Get_ID3_1_Tag(PartReader);
+					PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 					if(PartResult->GetSuccess() == true)
 					{
 						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -434,7 +434,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 			{
 				Inspection::Reader PartReader{Reader};
 				
-				PartResult = Get_ID3_1_Tag(PartReader);
+				PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 				if(PartResult->GetSuccess() == true)
 				{
 					if(PartResult->GetValue()->HasField("AlbumTrack") == true)

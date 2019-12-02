@@ -5,6 +5,7 @@
 #include <common/file_handling.h>
 #include <common/getters.h>
 #include <common/result.h>
+#include <common/type_repository.h>
 
 using namespace std::string_literals;
 
@@ -26,7 +27,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 		
 		Inspection::Reader PartReader{Reader};
 		
-		ID3v1TagResult = Get_ID3_1_Tag(PartReader);
+		ID3v1TagResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 		if(ID3v1TagResult->GetSuccess() == true)
 		{
 			if(ID3v1TagResult->GetValue()->HasField("AlbumTrack") == true)
