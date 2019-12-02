@@ -2,6 +2,590 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Identifier/data</argument>
+		</execute>
+		<expected-output>TAG</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Identifier/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Identifier/has-tag:alphabetic</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Identifier/has-tag:ended by template</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Identifier/has-tag:3 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Identifier/tag:character set/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Identifier/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Title/data</argument>
+		</execute>
+		<expected-output>The Lazarus Heart</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Title/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Title/has-tag:17 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Title/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Title/has-tag:13 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Title/tag:character set/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Title/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Artist/data</argument>
+		</execute>
+		<expected-output>Sting</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Artist/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Artist/has-tag:5 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Artist/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Artist/has-tag:25 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Artist/tag:character set/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Artist/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Album/data</argument>
+		</execute>
+		<expected-output>...Nothing Like The Sun</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Album/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Album/has-tag:23 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Album/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Album/has-tag:7 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Album/tag:character set/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Album/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Year/data</argument>
+		</execute>
+		<expected-output>1987</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Year/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Year/has-tag:4 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Year/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Year/tag:character set/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Year/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/data</argument>
+		</execute>
+		<expected-output></expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:empty</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:29 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/tag:character set/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:AlbumTrack/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:AlbumTrack/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:AlbumTrack/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:AlbumTrack/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/data</argument>
+		</execute>
+		<expected-output>17</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Rock</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3v1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/043_ID3_1.1_truncated_comment</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/data</argument>
+		</execute>
+		<expected-output>Amazon.com Song ID: 20355908</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/043_ID3_1.1_truncated_comment</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:28 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/043_ID3_1.1_truncated_comment</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/043_ID3_1.1_truncated_comment</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:1 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/043_ID3_1.1_truncated_comment</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:AlbumTrack/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/043_ID3_1.1_truncated_comment</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/data</argument>
+		</execute>
+		<expected-output>57</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/043_ID3_1.1_truncated_comment</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Comedy</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/043_ID3_1.1_truncated_comment</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Genre/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3v1</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/044_ID3_1.1_printable_track</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/data</argument>
+		</execute>
+		<expected-output>Created by Grip</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/044_ID3_1.1_printable_track</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:15 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/044_ID3_1.1_printable_track</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/044_ID3_1.1_printable_track</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:14 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/044_ID3_1.1_printable_track</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:AlbumTrack/data</argument>
+		</execute>
+		<expected-output>20</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/045_ID3_1</argument>
+			<argument>--query=/field:ID3v1Tag/field:Comment/data</argument>
+		</execute>
+		<expected-output>Created by Grip</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/045_ID3_1</argument>
+			<argument>--query=/field:ID3v1Tag/field:Comment/has-tag:15 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/045_ID3_1</argument>
+			<argument>--query=/field:ID3v1Tag/field:Comment/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/045_ID3_1</argument>
+			<argument>--query=/field:ID3v1Tag/field:Comment/has-tag:15 terminations until length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/045_ID3_1</argument>
+			<argument>--query=/field:ID3v1Tag/has-field:AlbumTrack</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/045_ID3_1</argument>
+			<argument>--query=/field:ID3v1Tag/field:Genre/data</argument>
+		</execute>
+		<expected-output>57</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/046_ID3_1_full_comment</argument>
+			<argument>--query=/field:ID3v1Tag/field:Comment/data</argument>
+		</execute>
+		<expected-output>Created by Grip               </expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/046_ID3_1_full_comment</argument>
+			<argument>--query=/field:ID3v1Tag/field:Comment/has-tag:30 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/046_ID3_1_full_comment</argument>
+			<argument>--query=/field:ID3v1Tag/field:Comment/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/042_ID3_2.4_MCDI_binary</argument>
 			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Tracks/field:Track:[tag:element index in array/is-data:3]/field:StartAddress/data</argument>
 		</execute>
@@ -1498,86 +2082,6 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/id3/003_1.1.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Identifier/data</argument>
-		</execute>
-		<expected-output>TAG</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/003_1.1.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Identifier/has-tag:3 characters</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/003_1.1.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Identifier/has-tag:ended by template</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/004_id3v1tag</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Artist/data</argument>
-		</execute>
-		<expected-output>Sting</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/004_id3v1tag</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Artist/has-tag:string</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/004_id3v1tag</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Artist/has-tag:5 characters</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/004_id3v1tag</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Artist/has-tag:ended by termination</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/004_id3v1tag</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Artist/has-tag:25 terminations until length</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/004_id3v1tag</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Artist/tag:character set/data</argument>
-		</execute>
-		<expected-output>ISO/IEC 8859-1:1998</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/004_id3v1tag</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Artist/tag:encoding/data</argument>
-		</execute>
-		<expected-output>ISO/IEC 8859-1:1998</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
 			<argument>../examples/id3/001_2.4_TSSE_utf-8.mp3</argument>
 			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
 		</execute>
@@ -2068,86 +2572,6 @@
 			<command>../generalinspector</command>
 			<argument>../examples/id3/020_2.3_COMM_dut_8859-1.mp3</argument>
 			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:ShortContentDescription/has-tag:0 characters + termination</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/003_1.1.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/data</argument>
-		</execute>
-		<expected-output>Amazon.com Song ID: 20355908</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/003_1.1.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:string</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/003_1.1.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:28 characters</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/003_1.1.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:ended by termination</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/003_1.1.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:1 terminations until length</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/data</argument>
-		</execute>
-		<expected-output>Created by Grip</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:string</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:15 characters</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:ended by termination</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/006_1.1_printable_track.mp3</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Comment/has-tag:14 terminations until length</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
