@@ -2937,7 +2937,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -4439,44 +4439,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame_Body_TCO(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Language(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader Alternative1Reader{Reader, Inspection::Length{3, 0}};
-		auto Alternative1Result{Get_ISO_639_2_1998_Code(Alternative1Reader)};
-		
-		UpdateState(Continue, Alternative1Result);
-		if(Continue == true)
-		{
-			Reader.AdvancePosition(Alternative1Reader.GetRemainingLength());
-			Result->SetValue(Alternative1Result->GetValue());
-		}
-		else
-		{
-			Inspection::Reader Alternative2Reader{Reader, Inspection::Length{3, 0}};
-			auto Alternative2Result{Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Alternative2Reader)};
-			
-			UpdateState(Continue, Reader, Alternative2Result, Alternative2Reader);
-			Result->SetValue(Alternative2Result->GetValue());
-			if(Continue == true)
-			{
-				Result->GetValue()->AddTag("standard", "ISO 639-2:1998 (alpha-3)"s);
-				Result->GetValue()->AddTag("error", "The language code consists of three null bytes. Although common, this is not valid."s);
-			}
-		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -5412,7 +5374,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
-		auto PartResult{Inspection::Get_ISO_639_2_1998_Code(PartReader)};
+		auto PartResult{Inspection::Get_ISO_639_2_1998_Code(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		if(Continue == true)
@@ -5423,7 +5385,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Language(Inspectio
 		else
 		{
 			Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(PartReader)};
+			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			if(Continue == true)
@@ -5928,7 +5890,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 	if(Continue == true)
 	{
 		Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
-		auto FieldResult{Get_ISO_639_2_1998_Code(FieldReader)};
+		auto FieldResult{Get_ISO_639_2_1998_Code(FieldReader, {})};
 		
 		UpdateState(Continue, FieldResult);
 		if(Continue == true)
@@ -5965,7 +5927,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Language(Inspectio
 			else
 			{
 				Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
-				auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(FieldReader)};
+				auto FieldResult{Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(FieldReader, {})};
 				auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 				
 				UpdateState(Continue, Reader, FieldResult, FieldReader);
@@ -7165,20 +7127,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{3, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{3, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{

@@ -2,6 +2,166 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/data</argument>
+		</execute>
+		<expected-output>00 00 00</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:zeroed</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:length/data</argument>
+		</execute>
+		<expected-output>3.0</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:standard/data</argument>
+		</execute>
+		<expected-output>ISO 639-2:1998 (alpha-3)</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>nothing</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/048_ID3_2.2_COM_null_language</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:error/data</argument>
+		</execute>
+		<expected-output>The language code consists of three null bytes. Although common, this is not valid.</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/data</argument>
+		</execute>
+		<expected-output>eng</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:alphabetic</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:ended by length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/has-tag:3 characters</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:character set/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ASCII</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:standard/data</argument>
+		</execute>
+		<expected-output>ISO 639-2:1998 (alpha-3)</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/047_ID3_2.2_COM_eng</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>English</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
 			<argument>../examples/004_ID3_1.1</argument>
 			<argument>--query=/field:ID3v1.1Tag/field:Identifier/data</argument>
 		</execute>
@@ -2043,14 +2203,6 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/id3/025_2.3_COMM_null_language.mp3</argument>
-			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/data</argument>
-		</execute>
-		<expected-output>00 00 00</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/026_2.2_COM_null_language.mp3</argument>
 			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Language/data</argument>
 		</execute>
 		<expected-output>00 00 00</expected-output>

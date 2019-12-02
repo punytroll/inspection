@@ -1799,6 +1799,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength;
 				}
+				else if(HardcodedText->GetText() == "Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength")
+				{
+					Type._HardcodedGetter = Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength;
+				}
 				else if(HardcodedText->GetText() == "Get_Data_Set_EndedByLength")
 				{
 					Type._HardcodedGetter = Inspection::Get_Data_Set_EndedByLength;
@@ -1854,10 +1858,6 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_ID3_2_2_Frame")
 				{
 					Type._HardcodedGetter = Inspection::Get_ID3_2_2_Frame;
-				}
-				else if(HardcodedText->GetText() == "Get_ID3_2_2_Language")
-				{
-					Type._HardcodedGetter = Inspection::Get_ID3_2_2_Language;
 				}
 				else if(HardcodedText->GetText() == "Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination")
 				{
@@ -1926,6 +1926,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_IEC_60908_1999_TableOfContents_Tracks")
 				{
 					Type._HardcodedGetter = Inspection::Get_IEC_60908_1999_TableOfContents_Tracks;
+				}
+				else if(HardcodedText->GetText() == "Get_ISO_639_2_1998_Code")
+				{
+					Type._HardcodedGetter = Inspection::Get_ISO_639_2_1998_Code;
 				}
 				else if(HardcodedText->GetText() == "Get_ISO_IEC_8859_1_1998_String_EndedByLength")
 				{

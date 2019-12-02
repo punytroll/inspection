@@ -1,3 +1,31 @@
 <type>
-	<hardcoded>Get_ID3_2_2_Language</hardcoded>
+	<alternative>
+		<forward>
+			<type-reference>
+				<part>ISO_639</part>
+				<part>2_1998</part>
+			</type-reference>
+		</forward>
+		<forward>
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_Zeroed_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>3</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+			<tag name="standard">
+				<string>ISO 639-2:1998 (alpha-3)</string>
+			</tag>
+			<tag name="interpretation"/>
+			<tag name="error">
+				<string>The language code consists of three null bytes. Although common, this is not valid.</string>
+			</tag>
+		</forward>
+	</alternative>
 </type>
