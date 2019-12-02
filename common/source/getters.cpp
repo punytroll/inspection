@@ -875,62 +875,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Inspection::Reader & Reader, const std::string & TemplateString)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("character set", "ASCII"s);
-	Result->GetValue()->AddTag("encoding", "ASCII"s);
-	Result->GetValue()->AddTag("alphanumeric"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{TemplateString.size(), 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be at least " + to_string_cast(Inspection::Length{TemplateString.size(), 0}) + ", the length of the template string.");
-			Continue = false;
-		}
-	}
-	// reading
-	if(Continue == true)
-	{
-		std::stringstream Value;
-		auto NumberOfCharacters{0ul};
-		
-		for(auto TemplateCharacter : TemplateString)
-		{
-			auto Character{Reader.Get8Bits()};
-			
-			if(((Is_ASCII_Character_Alphabetic(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true)) && (TemplateCharacter == Character))
-			{
-				NumberOfCharacters += 1;
-				Value << Character;
-			}
-			else
-			{
-				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
-				Continue = false;
-				
-				break;
-			}
-		}
-		if(Continue == true)
-		{
-			Result->GetValue()->AddTag("ended by template"s);
-		}
-		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters"s);
-		Result->GetValue()->SetData(Value.str());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -3608,7 +3552,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Stream_Header(Inspect
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_String_ASCII_Alphabetic_ByTemplate(PartReader, {{"Template", "fLaC"s}})};
+		auto PartResult{Inspection::Get_String_ASCII_ByTemplate(PartReader, {{"Template", "fLaC"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("FLAC stream marker", PartResult->GetValue());
@@ -6550,10 +6494,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag_Header(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Reader, "ID3")};
-		auto FieldValue{Result->GetValue()->AppendField("FileIdentifier", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_String_ASCII_ByTemplate(PartReader, {{"Template", "ID3"s}})};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("FileIdentifier", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -9920,7 +9866,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Page(Inspection::Reade
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_String_ASCII_Alphabetic_ByTemplate(PartReader, {{"Template", "OggS"s}})};
+		auto PartResult{Inspection::Get_String_ASCII_ByTemplate(PartReader, {{"Template", "OggS"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("CapturePattern", PartResult->GetValue());
@@ -10260,7 +10206,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Vorbis_HeaderPacket(In
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_String_ASCII_Alphabetic_ByTemplate(PartReader, {{"Template", "vorbis"s}})};
+		auto PartResult{Inspection::Get_String_ASCII_ByTemplate(PartReader, {{"Template", "vorbis"s}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("VorbisIdentifier", PartResult->GetValue());
@@ -11050,7 +10996,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedIntegers_BigEndian(I
 	return Get_Array_EndedByNumberOfElements(Reader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Number", "Integer", "Signed", "BigEndian"})}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Bits", Bits}}}, {"NumberOfElements", NumberOfElements}});
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_String_ASCII_Alphabetic_ByTemplate(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::Get_String_ASCII_ByTemplate(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto & Template{std::experimental::any_cast< const std::string & >(Parameters.at("Template"))};
@@ -11059,7 +11005,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_String_ASCII_Alphabetic_By
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
-	Result->GetValue()->AddTag("alphabetic"s);
+	Result->GetValue()->AddTag("template", Template);
 	// verification
 	if(Continue == true)
 	{
@@ -11079,7 +11025,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_String_ASCII_Alphabetic_By
 		{
 			auto Character{Reader.Get8Bits()};
 			
-			if((Is_ASCII_Character_Alphabetic(Character) == true) && (TemplateCharacter == Character))
+			if(TemplateCharacter == Character)
 			{
 				NumberOfCharacters += 1;
 				Value << Character;
@@ -11087,7 +11033,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_String_ASCII_Alphabetic_By
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphabetic ASCII character.");
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character does not match the template.");
 				Continue = false;
 			}
 		}

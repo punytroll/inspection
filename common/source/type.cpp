@@ -2019,9 +2019,9 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_SignedInteger_BigEndian;
 				}
-				else if(HardcodedText->GetText() == "Get_String_ASCII_Alphabetic_ByTemplate")
+				else if(HardcodedText->GetText() == "Get_String_ASCII_ByTemplate")
 				{
-					Type._HardcodedGetter = Inspection::Get_String_ASCII_Alphabetic_ByTemplate;
+					Type._HardcodedGetter = Inspection::Get_String_ASCII_ByTemplate;
 				}
 				else if(HardcodedText->GetText() == "Get_UnsignedInteger_1Bit")
 				{

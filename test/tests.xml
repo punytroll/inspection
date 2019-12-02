@@ -179,9 +179,9 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/004_ID3_1.1</argument>
-			<argument>--query=/field:ID3v1.1Tag/field:Identifier/has-tag:alphabetic</argument>
+			<argument>--query=/field:ID3v1.1Tag/field:Identifier/tag:template/data</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>TAG</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -811,9 +811,9 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/040_Ogg_Vorbis</argument>
-			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/has-tag:alphabetic</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:CapturePattern/tag:template/data</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>OggS</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -1251,9 +1251,9 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/040_Ogg_Vorbis</argument>
-			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/has-tag:alphabetic</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:0]/field:Packet/field:VorbisIdentifier/tag:template/data</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>vorbis</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -1739,9 +1739,9 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/040_Ogg_Vorbis</argument>
-			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/has-tag:alphabetic</argument>
+			<argument>--query=/field:OggStream/field:Pages/field:Page:[tag:element index in array/is-data:1]/field:Packet/field:VorbisIdentifier/tag:template/data</argument>
 		</execute>
-		<expected-output>true</expected-output>
+		<expected-output>vorbis</expected-output>
 	</test>
 	<test>
 		<execute>
