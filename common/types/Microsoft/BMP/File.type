@@ -1,0 +1,200 @@
+<type>
+	<sequence>
+		<field name="BitmapFileHeader">
+			<sequence>
+				<field name="Type">
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>ByTemplate</part>
+					</type-reference>
+					<parameters>
+						<parameter name="Template">
+							<string>BM</string>
+						</parameter>
+					</parameters>
+				</field>
+				<field name="Size">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+				<field name="OffBits">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+			</sequence>
+			<tag name="type name">
+				<string>BITMAPFILEHEADER</string>
+			</tag>
+		</field>
+		<field name="DIBHeader">
+			<alternative>
+				<sequence>
+					<tag name="type name">
+						<string>BITMAPINFOHEADER</string>
+					</tag>
+					<field name="Size">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+						<verification>
+							<equals>
+								<data-reference root="current"/>
+								<unsigned-integer-32bit>40</unsigned-integer-32bit>
+							</equals>
+						</verification>
+					</field>
+					<field name="Width">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Signed</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+					<field name="Height">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Signed</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+					<field name="Planes">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>16Bit_LittleEndian</part>
+						</type-reference>
+						<verification>
+							<equals>
+								<data-reference root="current"/>
+								<unsigned-integer-16bit>1</unsigned-integer-16bit>
+							</equals>
+						</verification>
+					</field>
+					<field name="BitCount">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>16Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+					<field name="Compression">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+						<interpretation>
+							<apply-enumeration>
+								<enumeration base-data-type="unsigned integer 32bit">
+									<element base-value="0" valid="true">
+										<tag name="constant name">
+											<string>BI_RGB</string>
+										</tag>
+										<tag name="interpretation">
+											<string>uncompressed RGB</string>
+										</tag>
+									</element>
+									<element base-value="3" valid="true">
+										<tag name="constant name">
+											<string>BI_BITFIELDS</string>
+										</tag>
+										<tag name="interpretation">
+											<string>uncompressed RGB with color masks</string>
+										</tag>
+									</element>
+									<fallback-element valid="false">
+										<tag name="constant name"/>
+										<tag name="interpretation"/>
+									</fallback-element>
+								</enumeration>
+							</apply-enumeration>
+						</interpretation>
+					</field>
+					<field name="SizeImage">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+					<field name="XPelsPerMeter">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Signed</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+					<field name="YPelsPerMeter">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Signed</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+					<field name="ClrUsed">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+					<field name="ClrImportant">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+				</sequence>
+				<sequence>
+					<field name="Size">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>32Bit_LittleEndian</part>
+						</type-reference>
+					</field>
+				</sequence>
+			</alternative>
+		</field>
+	</sequence>
+</type>
