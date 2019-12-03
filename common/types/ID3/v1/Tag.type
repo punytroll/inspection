@@ -4,7 +4,7 @@
 			<type-reference>
 				<part>String</part>
 				<part>ASCII</part>
-				<part>Alphabetic_ByTemplate</part>
+				<part>ByTemplate</part>
 			</type-reference>
 			<parameters>
 				<parameter name="Template">
