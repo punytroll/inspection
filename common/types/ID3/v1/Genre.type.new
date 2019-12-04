@@ -8,11 +8,11 @@
 		</type-reference>
 		<interpretation>
 			<apply-map>
-				<mapping-reference>
+				<map-reference>
 					<part>ID3</part>
 					<part>v1</part>
 					<part>Genre</part>
-				</mapping-reference>
+				</map-reference>
 				<from>
 					<member name="number">
 						<data-reference root="current"/>
