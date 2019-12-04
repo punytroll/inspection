@@ -1,0 +1,11 @@
+<map>
+	<element>
+		<!-- from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.8 -->
+		<member name="name">
+			<string>ASF_Reserved_2</string>
+		</member>
+		<member name="guid">
+			<guid>86d15241-311d-11d0-a3a4-00a0c90348f6</guid>
+		</member>
+	</element>
+</map>
