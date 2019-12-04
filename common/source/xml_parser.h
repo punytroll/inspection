@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019  Hagen Möbius
+ * Copyright (C) 2006, 2007  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.6.1 of the xml parser.
+ * This is version 1.7.5 of the xml parser.
  **/
 
 #ifndef XML_PARSER_H
@@ -33,6 +33,7 @@ public:
 	virtual ~XMLParser(void);
 	void Parse(void);
 protected:
+	virtual void Comment(const std::string & Comment);
 	virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes);
 	virtual void ElementEnd(const std::string & TagName);
 	virtual void Text(const std::string & Text);
