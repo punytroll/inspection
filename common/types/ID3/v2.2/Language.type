@@ -1,12 +1,14 @@
 <type>
 	<alternative>
 		<forward>
+			<!-- this is according to standard -->
 			<type-reference>
 				<part>ISO_639</part>
 				<part>2_1998</part>
 			</type-reference>
 		</forward>
 		<forward>
+			<!-- this is a fallback, as seen in the wild -->
 			<type-reference>
 				<part>Buffer</part>
 				<part>UnsignedInteger_8Bit_Zeroed_EndedByLength</part>
