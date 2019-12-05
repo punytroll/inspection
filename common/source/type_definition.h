@@ -21,6 +21,8 @@
 
 #include <vector>
 
+#include "guid.h"
+
 namespace Inspection
 {
 	class Type;
@@ -39,13 +41,14 @@ namespace Inspection
 			Unknown,
 			Boolean,
 			DataReference,
-			TypeReference,
+			GUID,
 			Nothing,
 			Length,
 			ParameterReference,
 			Parameters,
 			SinglePrecisionReal,
 			String,
+			TypeReference,
 			UnsignedInteger8Bit,
 			UnsignedInteger16Bit,
 			UnsignedInteger32Bit,
@@ -228,6 +231,7 @@ namespace Inspection
 			Inspection::TypeDefinition::DataType DataType;
 			std::experimental::optional< bool > Boolean;
 			std::experimental::optional< Inspection::TypeDefinition::DataReference > DataReference;
+			std::experimental::optional< Inspection::GUID > GUID;
 			std::experimental::optional< Inspection::TypeDefinition::Length > Length;
 			std::experimental::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
 			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;

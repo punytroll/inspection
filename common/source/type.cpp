@@ -167,6 +167,12 @@ namespace Inspection
 					
 					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, Value.DataReference.value());
 				}
+			case Inspection::TypeDefinition::DataType::GUID:
+				{
+					assert(Value.GUID);
+					
+					return Value.GUID.value();
+				}
 			case Inspection::TypeDefinition::DataType::Length:
 				{
 					assert(Value.Length);
@@ -339,6 +345,10 @@ namespace Inspection
 					else if(Any1.type() == typeid(std::uint32_t))
 					{
 						return std::experimental::any_cast< std::uint32_t >(Any1) == std::experimental::any_cast< std::uint32_t >(Any2);
+					}
+					else if(Any1.type() == typeid(Inspection::GUID))
+					{
+						return std::experimental::any_cast< const Inspection::GUID & >(Any1) == std::experimental::any_cast< const Inspection::GUID & >(Any2);
 					}
 					else
 					{
@@ -2219,6 +2229,16 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 				}
 			}
 		}
+	}
+	else if(ValueElement->GetName() == "guid")
+	{
+		Value.DataType = Inspection::TypeDefinition::DataType::GUID;
+		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+		
+		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		
+		assert(TextNode != nullptr);
+		Value.GUID.emplace(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "length")
 	{
