@@ -581,7 +581,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 				Reader.AdvancePosition(PartReader->GetConsumedLength());
 			}
 			ExecutionContext.Pop();
-			assert(ExecutionContext._ExecutionStack.size() == 0);
+			assert(ExecutionContext.GetExecutionStackSize() == 0);
 		}
 		else
 		{
