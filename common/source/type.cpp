@@ -491,8 +491,10 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 		else if(_Part != nullptr)
 		{
 			Inspection::ExecutionContext ExecutionContext;
+			Inspection::TypeDefinition::Part TypePart;
 			
-			ExecutionContext.Push(*Result, Parameters);
+			TypePart.Type = Inspection::TypeDefinition::Part::Type::Type;
+			ExecutionContext.Push(TypePart, *Result, Reader, Parameters);
 			
 			Inspection::Reader * PartReader{nullptr};
 			
@@ -600,7 +602,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto FoundAlternative{false};
 	
-	ExecutionContext.Push(Alternative, *Result, Parameters);
+	ExecutionContext.Push(Alternative, *Result, Reader, Parameters);
 	assert(Alternative.Parts);
 	for(auto AlternativePartIterator = std::begin(Alternative.Parts.value()); ((FoundAlternative == false) && (AlternativePartIterator != std::end(Alternative.Parts.value()))); ++AlternativePartIterator)
 	{
@@ -722,7 +724,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	ExecutionContext.Push(Array, *Result, Parameters);
+	ExecutionContext.Push(Array, *Result, Reader, Parameters);
 	assert(Array.Array);
 	
 	auto IterateField{ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateField)};
@@ -762,7 +764,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	ExecutionContext.Push(Field, *Result, Parameters);
+	ExecutionContext.Push(Field, *Result, Reader, Parameters);
 	if(Field.TypeReference)
 	{
 		auto FieldResult{Inspection::g_TypeRepository.GetType(Field.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
@@ -918,7 +920,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	ExecutionContext.Push(Fields, *Result, Parameters);
+	ExecutionContext.Push(Fields, *Result, Reader, Parameters);
 	assert(Fields.TypeReference);
 	
 	auto FieldsResult{Inspection::g_TypeRepository.GetType(Fields.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
@@ -979,7 +981,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForw
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	ExecutionContext.Push(Forward, *Result, Parameters);
+	ExecutionContext.Push(Forward, *Result, Reader, Parameters);
 	assert(Forward.TypeReference);
 	
 	auto ForwardResult{Inspection::g_TypeRepository.GetType(Forward.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
@@ -1051,7 +1053,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	ExecutionContext.Push(Sequence, *Result, Parameters);
+	ExecutionContext.Push(Sequence, *Result, Reader, Parameters);
 	assert(Sequence.Parts);
 	for(auto SequencePartIterator = std::begin(Sequence.Parts.value()); ((Continue == true) && (SequencePartIterator != std::end(Sequence.Parts.value()))); ++SequencePartIterator)
 	{

@@ -38,18 +38,20 @@ namespace Inspection
 		class Element
 		{
 		public:
-			Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-			Element(Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+			Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+			
+			const Inspection::TypeDefinition::Part & GetPart(void);
+			const std::unordered_map< std::string, std::experimental::any > & GetParameters(void);
+			Inspection::Reader & GetReader(void);
+			Inspection::Result & GetResult(void);
 			
 			const std::unordered_map< std::string, std::experimental::any > & _Parameters;
-			const Inspection::TypeDefinition::Part * _Part;
+			const Inspection::TypeDefinition::Part & _Part;
+			Inspection::Reader & _Reader;
 			Inspection::Result & _Result;
-		private:
-			Element(const Inspection::TypeDefinition::Part * Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		};
 	public:
-		void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-		void Push(Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void Pop(void);
 		Inspection::Result & GetTopLevelResult(void) const;
 		std::shared_ptr< Inspection::Value > GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference);

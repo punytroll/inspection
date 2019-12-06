@@ -18,31 +18,17 @@
 
 #include "execution_context.h"
 
-Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
-	Inspection::ExecutionContext::Element(&Part, Result, Parameters)
-{
-}
-
-Inspection::ExecutionContext::Element::Element(Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
-	Inspection::ExecutionContext::Element(nullptr, Result, Parameters)
-{
-}
-
-Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part * Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
+Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
 	_Parameters{Parameters},
 	_Part{Part},
+	_Reader{Reader},
 	_Result{Result}
 {
 }
 
-void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	_ExecutionStack.emplace_back(Part, Result, Parameters);
-}
-
-void Inspection::ExecutionContext::Push(Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	_ExecutionStack.emplace_back(Result, Parameters);
+	_ExecutionStack.emplace_back(Part, Result, Reader, Parameters);
 }
 
 void Inspection::ExecutionContext::Pop(void)
@@ -103,8 +89,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromD
 				{
 					++ExecutionStackIterator;
 					Result = ExecutionStackIterator->_Result.GetValue();
-					assert(ExecutionStackIterator->_Part != nullptr);
-					switch(ExecutionStackIterator->_Part->Type)
+					switch(ExecutionStackIterator->_Part.Type)
 					{
 					case Inspection::TypeDefinition::Part::Type::Alternative:
 						{
@@ -152,6 +137,12 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromD
 								Result = Result->GetField(PartIterator->DetailName);
 								++PartIterator;
 							}
+							
+							break;
+						}
+					case Inspection::TypeDefinition::Part::Type::Type:
+						{
+							// skipped intentionally
 							
 							break;
 						}
@@ -217,8 +208,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromF
 		{
 			++ExecutionStackIterator;
 			Result = ExecutionStackIterator->_Result.GetValue();
-			assert(ExecutionStackIterator->_Part != nullptr);
-			switch(ExecutionStackIterator->_Part->Type)
+			switch(ExecutionStackIterator->_Part.Type)
 			{
 			case Inspection::TypeDefinition::Part::Type::Alternative:
 				{
@@ -266,6 +256,12 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromF
 						Result = Result->GetField(PartIterator->FieldName);
 						++PartIterator;
 					}
+					
+					break;
+				}
+			case Inspection::TypeDefinition::Part::Type::Type:
+				{
+					// skipped intentionally
 					
 					break;
 				}

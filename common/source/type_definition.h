@@ -326,7 +326,8 @@ namespace Inspection
 				Field,
 				Fields,
 				Forward,
-				Sequence
+				Sequence,
+				Type
 			};
 			
 			Part(void)
