@@ -38,20 +38,20 @@ namespace Inspection
 		class Element
 		{
 		public:
-			Element(const Inspection::TypeDefinition::Part & Part, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-			Element(const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+			Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+			Element(Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 			
 			const std::unordered_map< std::string, std::experimental::any > & _Parameters;
 			const Inspection::TypeDefinition::Part * _Part;
-			const std::unique_ptr< Inspection::Result > & _Result;
+			Inspection::Result & _Result;
 		private:
-			Element(const Inspection::TypeDefinition::Part * Part, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+			Element(const Inspection::TypeDefinition::Part * Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		};
 	public:
-		void Push(const Inspection::TypeDefinition::Part & Part, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-		void Push(const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		void Push(Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void Pop(void);
-		const std::unique_ptr< Inspection::Result > & GetTopLevelResult(void) const;
+		Inspection::Result & GetTopLevelResult(void) const;
 		std::shared_ptr< Inspection::Value > GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference);
 		std::shared_ptr< Inspection::Value > GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference);
 		const std::experimental::any & GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference);

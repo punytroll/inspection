@@ -18,29 +18,29 @@
 
 #include "execution_context.h"
 
-Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
+Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
 	Inspection::ExecutionContext::Element(&Part, Result, Parameters)
 {
 }
 
-Inspection::ExecutionContext::Element::Element(const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
+Inspection::ExecutionContext::Element::Element(Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
 	Inspection::ExecutionContext::Element(nullptr, Result, Parameters)
 {
 }
 
-Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part * Part, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
+Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part * Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
 	_Parameters{Parameters},
 	_Part{Part},
 	_Result{Result}
 {
 }
 
-void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	_ExecutionStack.emplace_back(Part, Result, Parameters);
 }
 
-void Inspection::ExecutionContext::Push(const std::unique_ptr< Inspection::Result > & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+void Inspection::ExecutionContext::Push(Inspection::Result & Result, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	_ExecutionStack.emplace_back(Result, Parameters);
 }
@@ -50,7 +50,7 @@ void Inspection::ExecutionContext::Pop(void)
 	_ExecutionStack.pop_back();
 }
 
-const std::unique_ptr< Inspection::Result > & Inspection::ExecutionContext::GetTopLevelResult(void) const
+Inspection::Result & Inspection::ExecutionContext::GetTopLevelResult(void) const
 {
 	return _ExecutionStack.front()._Result;
 }
@@ -81,7 +81,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromD
 			assert(false);
 		}
 	}
-	Result = ExecutionStackIterator->_Result->GetValue();
+	Result = ExecutionStackIterator->_Result.GetValue();
 	
 	auto PartIterator{std::begin(DataReference.PartDescriptors)};
 	
@@ -102,7 +102,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromD
 				else
 				{
 					++ExecutionStackIterator;
-					Result = ExecutionStackIterator->_Result->GetValue();
+					Result = ExecutionStackIterator->_Result.GetValue();
 					assert(ExecutionStackIterator->_Part != nullptr);
 					switch(ExecutionStackIterator->_Part->Type)
 					{
@@ -200,7 +200,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromF
 			assert(false);
 		}
 	}
-	Result = ExecutionStackIterator->_Result->GetValue();
+	Result = ExecutionStackIterator->_Result.GetValue();
 	
 	auto PartIterator{std::begin(FieldReference.Parts)};
 	
@@ -216,7 +216,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromF
 		else
 		{
 			++ExecutionStackIterator;
-			Result = ExecutionStackIterator->_Result->GetValue();
+			Result = ExecutionStackIterator->_Result.GetValue();
 			assert(ExecutionStackIterator->_Part != nullptr);
 			switch(ExecutionStackIterator->_Part->Type)
 			{
