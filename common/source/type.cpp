@@ -30,6 +30,7 @@ namespace Inspection
 		std::experimental::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast);
 		std::experimental::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement);
 		const std::experimental::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
+		std::experimental::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend);
 		
 		template< typename Type >
 		Type Cast(const std::experimental::any & Any)
@@ -179,6 +180,12 @@ namespace Inspection
 					
 					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Value.Length->Bytes), Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Value.Length->Bits)};
 				}
+			case Inspection::TypeDefinition::DataType::LengthReference:
+				{
+					assert(Value.LengthReference);
+					
+					return ExecutionContext.CalculateLengthFromReference(Value.LengthReference.value());
+				}
 			case Inspection::TypeDefinition::DataType::Nothing:
 				{
 					return nullptr;
@@ -293,6 +300,12 @@ namespace Inspection
 					
 					return Inspection::Algorithms::Divide(ExecutionContext, Statement.Divide->Dividend, Statement.Divide->Divisor);
 				}
+			case Inspection::TypeDefinition::Statement::Type::Subtract:
+				{
+					assert(Statement.Subtract != nullptr);
+					
+					return Inspection::Algorithms::Subtract(ExecutionContext, Statement.Subtract->Minuend, Statement.Subtract->Subtrahend);
+				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
 					assert(Statement.Value != nullptr);
@@ -310,6 +323,14 @@ namespace Inspection
 		{
 			switch(Cast.DataType)
 			{
+			case Inspection::TypeDefinition::DataType::Length:
+				{
+					auto Any{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement)};
+					
+					assert(Any.type() == typeid(Inspection::Length));
+					
+					return Any;
+				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
 					return Inspection::Algorithms::GetDataFromCast< float >(ExecutionContext, Cast);
@@ -390,6 +411,23 @@ namespace Inspection
 			if((AnyDivident.type() == typeid(float)) && (AnyDivisor.type() == typeid(float)))
 			{
 				return std::experimental::any_cast< float >(AnyDivident) / std::experimental::any_cast< float >(AnyDivisor);
+			}
+			else
+			{
+				assert(false);
+			}
+			
+			return nullptr;
+		}
+		
+		std::experimental::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend)
+		{
+			auto AnyMinuend{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Minuend)};
+			auto AnySubtrahend{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Subtrahend)};
+			
+			if((AnyMinuend.type() == typeid(Inspection::Length)) && (AnySubtrahend.type() == typeid(Inspection::Length)))
+			{
+				return std::experimental::any_cast< const Inspection::Length & >(AnyMinuend) - std::experimental::any_cast< const Inspection::Length & >(AnySubtrahend);
 			}
 			else
 			{
@@ -1649,6 +1687,29 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 	}
 }
 
+void Inspection::TypeDefinition::Type::_LoadSubtract(Inspection::TypeDefinition::Subtract & Subtract, const XML::Element * SubtractElement)
+{
+	bool First{true};
+	
+	for(auto SubtractChildNode : SubtractElement->GetChilds())
+	{
+		if(SubtractChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto SubtractChildElement{dynamic_cast< const XML::Element * >(SubtractChildNode)};
+			
+			if(First == true)
+			{
+				_LoadStatement(Subtract.Minuend, SubtractChildElement);
+				First = false;
+			}
+			else
+			{
+				_LoadStatement(Subtract.Subtrahend, SubtractChildElement);
+			}
+		}
+	}
+}
+
 void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
 {
 	assert(Statement.Type == Inspection::TypeDefinition::Statement::Type::Unknown);
@@ -1664,6 +1725,12 @@ void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Equals;
 		Statement.Equals = new Inspection::TypeDefinition::Equals{};
 		_LoadEquals(*(Statement.Equals), StatementElement);
+	}
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "subtract"))
+	{
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Subtract;
+		Statement.Subtract = new Inspection::TypeDefinition::Subtract{};
+		_LoadSubtract(*(Statement.Subtract), StatementElement);
 	}
 	else if((StatementElement != nullptr) && (StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
 	{
@@ -1785,10 +1852,6 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor_Data")
 				{
 					Type._HardcodedGetter = Get_ASF_ExtendedContentDescription_ContentDescriptor_Data;
-				}
-				else if(HardcodedText->GetText() == "Get_ASF_HeaderObject")
-				{
-					Type._HardcodedGetter = Get_ASF_HeaderObject;
 				}
 				else if(HardcodedText->GetText() == "Get_ASF_Metadata_DescriptionRecord_Data")
 				{
@@ -2270,6 +2333,29 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		Value.DataType = Inspection::TypeDefinition::DataType::Length;
 		Value.Length.emplace();
 		_LoadLength(Value.Length.value(), ValueElement);
+	}
+	else if(ValueElement->GetName() == "length-reference")
+	{
+		Value.DataType = Inspection::TypeDefinition::DataType::LengthReference;
+		Value.LengthReference.emplace();
+		assert(ValueElement->HasAttribute("root") == true);
+		if(ValueElement->GetAttribute("root") == "type")
+		{
+			Value.LengthReference->Root = Inspection::TypeDefinition::LengthReference::Root::Type;
+		}
+		else
+		{
+			assert(false);
+		}
+		assert(ValueElement->HasAttribute("name") == true);
+		if(ValueElement->GetAttribute("name") == "consumed")
+		{
+			Value.LengthReference->Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
+		}
+		else
+		{
+			assert(false);
+		}
 	}
 	else if(ValueElement->GetName() == "parameter-reference")
 	{

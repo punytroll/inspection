@@ -1,3 +1,42 @@
 <type>
-	<hardcoded>Get_ASF_HeaderObject</hardcoded>
+	<sequence>
+		<fields>
+			<type-reference>
+				<part>ASF</part>
+				<part>ObjectHeader</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference root="current">
+						<field>GUID</field>
+					</data-reference>
+					<guid name="ASF_Header_Object">75b22630-668e-11cf-a6d9-00aa0062ce6c</guid>
+				</equals>
+			</verification>
+		</fields>
+		<fields>
+			<type-reference>
+				<part>ASF</part>
+				<part>ObjectData</part>
+				<part>Header</part>
+			</type-reference>
+			<length>
+				<subtract>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>
+								<data-reference root="type">
+									<field>Size</field>
+								</data-reference>
+							</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+					<length-reference root="type" name="consumed"/>
+				</subtract>
+			</length>
+		</fields>
+	</sequence>
 </type>

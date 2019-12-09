@@ -54,6 +54,7 @@ namespace Inspection
 		void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 		void Pop(void);
 		Inspection::Result & GetTopLevelResult(void) const;
+		Inspection::Length CalculateLengthFromReference(const Inspection::TypeDefinition::LengthReference & LengthReference);
 		std::shared_ptr< Inspection::Value > GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference);
 		std::shared_ptr< Inspection::Value > GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference);
 		const std::experimental::any & GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference);

@@ -1653,43 +1653,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FileProperties_Flags(I
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderObject(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "ObjectHeader"})->Get(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = std::experimental::any_cast< Inspection::GUID >(Result->GetValue()->GetField("GUID")->GetData()) == Inspection::g_ASF_HeaderObjectGUID;
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetField("Size")->GetData()), 0} - Reader.GetConsumedLength()};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "ObjectData", "Header"})->Get(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_IndexPlaceholderObjectData(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};

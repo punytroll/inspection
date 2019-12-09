@@ -35,6 +35,7 @@ namespace Inspection
 		class Divide;
 		class Equals;
 		class Parameter;
+		class Subtract;
 		class Value;
 		
 		enum class DataType
@@ -45,6 +46,7 @@ namespace Inspection
 			GUID,
 			Nothing,
 			Length,
+			LengthReference,
 			ParameterReference,
 			Parameters,
 			SinglePrecisionReal,
@@ -101,6 +103,23 @@ namespace Inspection
 			std::vector< Inspection::TypeDefinition::FieldReference::Part > Parts;
 		};
 		
+		class LengthReference
+		{
+		public:
+			enum class Name
+			{
+				Consumed
+			};
+			
+			enum class Root
+			{
+				Type
+			};
+			
+			Inspection::TypeDefinition::LengthReference::Name Name;
+			Inspection::TypeDefinition::LengthReference::Root Root;
+		};
+		
 		class ParameterReference
 		{
 		public:
@@ -128,6 +147,7 @@ namespace Inspection
 				Cast,
 				Divide,
 				Equals,
+				Subtract,
 				Value
 			};
 			
@@ -136,6 +156,7 @@ namespace Inspection
 				Cast{nullptr},
 				Divide{nullptr},
 				Equals{nullptr},
+				Subtract{nullptr},
 				Value{nullptr}
 			{
 			}
@@ -147,11 +168,13 @@ namespace Inspection
 				Cast{Statement.Cast},
 				Divide{Statement.Divide},
 				Equals{Statement.Equals},
+				Subtract{Statement.Subtract},
 				Value{Statement.Value}
 			{
 				Statement.Cast = nullptr;
 				Statement.Divide = nullptr;
 				Statement.Equals = nullptr;
+				Statement.Subtract = nullptr;
 				Statement.Value = nullptr;
 			}
 			
@@ -162,6 +185,7 @@ namespace Inspection
 			Inspection::TypeDefinition::Cast * Cast;
 			Inspection::TypeDefinition::Divide * Divide;
 			Inspection::TypeDefinition::Equals * Equals;
+			Inspection::TypeDefinition::Subtract * Subtract;
 			Inspection::TypeDefinition::Value * Value;
 		};
 		
@@ -226,6 +250,21 @@ namespace Inspection
 			Inspection::TypeDefinition::Statement Bits;
 		};
 		
+		class Subtract
+		{
+		public:
+			Subtract(void)
+			{
+			}
+			
+			Subtract(Inspection::TypeDefinition::Subtract && Subtract) = default;
+			
+			Subtract(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
+			
+			Inspection::TypeDefinition::Statement Minuend;
+			Inspection::TypeDefinition::Statement Subtrahend;
+		};
+		
 		class Value
 		{
 		public:
@@ -234,6 +273,7 @@ namespace Inspection
 			std::experimental::optional< Inspection::TypeDefinition::DataReference > DataReference;
 			std::experimental::optional< Inspection::GUID > GUID;
 			std::experimental::optional< Inspection::TypeDefinition::Length > Length;
+			std::experimental::optional< Inspection::TypeDefinition::LengthReference > LengthReference;
 			std::experimental::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
 			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
 			std::experimental::optional< float > SinglePrecisionReal;

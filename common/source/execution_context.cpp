@@ -41,6 +41,14 @@ Inspection::Result & Inspection::ExecutionContext::GetTopLevelResult(void) const
 	return _ExecutionStack.front()._Result;
 }
 
+Inspection::Length Inspection::ExecutionContext::CalculateLengthFromReference(const Inspection::TypeDefinition::LengthReference & LengthReference)
+{
+	assert(LengthReference.Root == Inspection::TypeDefinition::LengthReference::Root::Type);
+	assert(LengthReference.Name == Inspection::TypeDefinition::LengthReference::Name::Consumed);
+	
+	return _ExecutionStack.front()._Reader.GetConsumedLength();
+}
+
 std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference)
 {
 	std::shared_ptr< Inspection::Value > Result;

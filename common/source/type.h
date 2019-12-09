@@ -33,6 +33,7 @@ namespace Inspection
 		class Parameter;
 		class Parameters;
 		class Part;
+		class Subtract;
 		class Statement;
 		class Tag;
 		class TypeReference;
@@ -64,6 +65,7 @@ namespace Inspection
 			void _LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement);
 			void _LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement);
 			void _LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement);
+			void _LoadSubtract(Inspection::TypeDefinition::Subtract & Subtract, const XML::Element * SubtractElement);
 			void _LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement);
 			void _LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement);
 			void _LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);

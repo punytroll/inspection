@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
+#include <cassert>
+
 #include "type_definition.h"
 
 Inspection::TypeDefinition::Statement::~Statement(void)
@@ -34,6 +36,10 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	else if(String == "data-reference")
 	{
 		return Inspection::TypeDefinition::DataType::DataReference;
+	}
+	else if(String == "length")
+	{
+		return Inspection::TypeDefinition::DataType::Length;
 	}
 	else if(String == "nothing")
 	{
@@ -77,6 +83,6 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	}
 	else
 	{
-		return Inspection::TypeDefinition::DataType::Unknown;
+		assert(false);
 	}
 }
