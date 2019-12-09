@@ -599,6 +599,8 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 
 std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
+	assert(Alternative.Type == Inspection::TypeDefinition::Part::Type::Alternative);
+	
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto FoundAlternative{false};
 	
@@ -721,6 +723,8 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 
 std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
+	assert(Array.Type == Inspection::TypeDefinition::Part::Type::Array);
+	
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -761,6 +765,8 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 
 std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
+	assert(Field.Type == Inspection::TypeDefinition::Part::Type::Field);
+	
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -809,6 +815,15 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 			}
 			switch(FieldPart.Type)
 			{
+			case Inspection::TypeDefinition::Part::Type::Alternative:
+				{
+					auto AlternativeResult{_GetAlternative(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					
+					Continue = AlternativeResult->GetSuccess();
+					Result->SetValue(AlternativeResult->GetValue());
+					
+					break;
+				}
 			case Inspection::TypeDefinition::Part::Type::Field:
 				{
 					auto FieldResult{_GetField(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
@@ -824,7 +839,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 					auto FieldsResult{_GetFields(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
 					
 					Continue = FieldsResult->GetSuccess();
-					Result->GetValue()->AppendFields(FieldsResult->GetValue()->GetFields());
+					Result->SetValue(FieldsResult->GetValue());
 					
 					break;
 				}
@@ -842,7 +857,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 					auto SequenceResult{_GetSequence(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
 					
 					Continue = SequenceResult->GetSuccess();
-					Result->GetValue()->AppendFields(SequenceResult->GetValue()->GetFields());
+					Result->SetValue(SequenceResult->GetValue());
 					
 					break;
 				}
@@ -917,6 +932,8 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 
 std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
+	assert(Fields.Type == Inspection::TypeDefinition::Part::Type::Fields);
+	
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -978,6 +995,8 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 
 std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
+	assert(Forward.Type == Inspection::TypeDefinition::Part::Type::Forward);
+	
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -1050,6 +1069,8 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForw
 
 std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
 {
+	assert(Sequence.Type == Inspection::TypeDefinition::Part::Type::Sequence);
+	
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
@@ -2022,6 +2043,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_SignedInteger_8Bit")
 				{
 					Type._HardcodedGetter = Inspection::Get_SignedInteger_8Bit;
+				}
+				else if(HardcodedText->GetText() == "Get_SignedInteger_32Bit_LittleEndian")
+				{
+					Type._HardcodedGetter = Inspection::Get_SignedInteger_32Bit_LittleEndian;
 				}
 				else if(HardcodedText->GetText() == "Get_SignedInteger_32Bit_RiceEncoded")
 				{
