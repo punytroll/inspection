@@ -1,0 +1,25 @@
+<type>
+	<sequence>
+		<fields>
+			<type-reference>
+				<part>ASF</part>
+				<part>ObjectHeader</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference root="current">
+						<field>GUID</field>
+					</data-reference>
+					<guid name="ASF_Stream_Properties_Object">b7dc0791-a9b7-11cf-8ee6-00c00c205365</guid>
+				</equals>
+			</verification>
+		</fields>
+		<fields>
+			<type-reference>
+				<part>ASF</part>
+				<part>ObjectData</part>
+				<part>StreamProperties</part>
+			</type-reference>
+		</fields>
+	</sequence>
+</type>

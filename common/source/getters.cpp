@@ -1114,45 +1114,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_CreationDate(Inspectio
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_DataObject(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{g_TypeRepository.GetType({"ASF", "ObjectHeader"})->Get(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// verification
-	if(Continue == true)
-	{
-		auto GUID{std::experimental::any_cast< Inspection::GUID >(Result->GetValue()->GetField("GUID")->GetData())};
-		
-		Continue = GUID == Inspection::g_ASF_DataObjectGUID;
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetField("Size")->GetData()), 0} - Reader.GetConsumedLength()};
-		auto PartResult{Inspection::Get_Data_SetOrUnset_EndedByLength(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Data", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -1513,7 +1474,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		if(Reader.HasRemaining() == true)
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::Get_ASF_StreamPropertiesObject(PartReader)};
+			auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "StreamProperties"})->Get(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("StreamPropertiesObject", PartResult->GetValue());
@@ -1976,7 +1937,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_StreamPropertiesObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::Get_ASF_StreamPropertiesObjectData(PartReader)};
+			auto PartResult{Inspection::Get_ASF_StreamPropertiesObjectData(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
@@ -2305,44 +2266,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_TypeS
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "ObjectHeader"})->Get(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = std::experimental::any_cast< Inspection::GUID >(Result->GetValue()->GetField("GUID")->GetData()) == Inspection::g_ASF_StreamPropertiesObjectGUID;
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_ASF_StreamPropertiesObjectData(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObjectData(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObjectData(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

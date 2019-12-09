@@ -1845,10 +1845,6 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_ASCII_String_Printable_EndedByTermination;
 				}
-				else if(HardcodedText->GetText() == "Get_ASF_DataObject")
-				{
-					Type._HardcodedGetter = Get_ASF_DataObject;
-				}
 				else if(HardcodedText->GetText() == "Get_ASF_ExtendedContentDescription_ContentDescriptor_Data")
 				{
 					Type._HardcodedGetter = Get_ASF_ExtendedContentDescription_ContentDescriptor_Data;
@@ -1868,6 +1864,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
 				{
 					Type._HardcodedGetter = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
+				}
+				else if(HardcodedText->GetText() == "Get_ASF_StreamPropertiesObjectData")
+				{
+					Type._HardcodedGetter = Inspection::Get_ASF_StreamPropertiesObjectData;
 				}
 				else if(HardcodedText->GetText() == "Get_ASF_CreationDate")
 				{

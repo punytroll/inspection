@@ -45,8 +45,11 @@ Inspection::Length Inspection::ExecutionContext::CalculateLengthFromReference(co
 {
 	assert(LengthReference.Root == Inspection::TypeDefinition::LengthReference::Root::Type);
 	assert(LengthReference.Name == Inspection::TypeDefinition::LengthReference::Name::Consumed);
+	assert(_ExecutionStack.size() >= 2);
 	
-	return _ExecutionStack.front()._Reader.GetConsumedLength();
+	// Although the first element in the stack is the "type", its length is the last to be modified (right at the end).
+	// We expect at least the second element to be present at use its length. (might be a sequence)
+	return std::next(std::begin(_ExecutionStack))->_Reader.GetConsumedLength();
 }
 
 std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference)
