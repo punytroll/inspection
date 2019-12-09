@@ -500,9 +500,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 			
 			if(_Part->Length)
 			{
-				auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, _Part->Length->Bytes)};
-				auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, _Part->Length->Bits)};
-				Inspection::Length Length{Bytes, Bits};
+				auto Length{std::experimental::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, _Part->Length.value()))};
 				
 				if(Reader.Has(Length) == true)
 				{
@@ -613,9 +611,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 		
 		if(AlternativePart.Length)
 		{
-			auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, AlternativePart.Length->Bytes)};
-			auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, AlternativePart.Length->Bits)};
-			Inspection::Length Length{Bytes, Bits};
+			auto Length{std::experimental::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, AlternativePart.Length.value()))};
 			
 			if(Reader.Has(Length) == true)
 			{
@@ -787,9 +783,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 		
 		if(FieldPart.Length)
 		{
-			auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, FieldPart.Length->Bytes)};
-			auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, FieldPart.Length->Bits)};
-			Inspection::Length Length{Bytes, Bits};
+			auto Length{std::experimental::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, FieldPart.Length.value()))};
 			
 			if(Reader.Has(Length) == true)
 			{
@@ -1083,9 +1077,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 		
 		if(SequencePart.Length)
 		{
-			auto Bytes{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, SequencePart.Length->Bytes)};
-			auto Bits{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, SequencePart.Length->Bits)};
-			Inspection::Length Length{Bytes, Bits};
+			auto Length{std::experimental::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, SequencePart.Length.value()))};
 			
 			if(Reader.Has(Length) == true)
 			{
@@ -1572,7 +1564,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			else if(PartChildElement->GetName() == "length")
 			{
 				Part.Length.emplace();
-				_LoadLength(Part.Length.value(), PartChildElement);
+				_LoadStatement(Part.Length.value(), PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "parameters")
 			{
@@ -1673,13 +1665,19 @@ void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition
 		Statement.Equals = new Inspection::TypeDefinition::Equals{};
 		_LoadEquals(*(Statement.Equals), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasChildElements(StatementElement) == true))
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};
 		_LoadCast(*(Statement.Cast), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "single-precision-real") && (XML::HasChildElements(StatementElement) == true))
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(StatementElement) == true))
+	{
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Statement.Cast = new Inspection::TypeDefinition::Cast{};
+		_LoadCast(*(Statement.Cast), StatementElement);
+	}
+	else if((StatementElement != nullptr) && (StatementElement->GetName() == "single-precision-real") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};

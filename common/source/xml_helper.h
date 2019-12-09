@@ -23,6 +23,28 @@
 
 namespace XML
 {
+	inline bool HasOneChildElement(const XML::Element * Element)
+	{
+		auto Found{false};
+		
+		for(auto ChildNode : Element->GetChilds())
+		{
+			if(ChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				if(Found == false)
+				{
+					Found = true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		
+		return Found;
+	}
+	
 	inline bool HasChildElements(const XML::Element * Element)
 	{
 		for(auto ChildNode : Element->GetChilds())

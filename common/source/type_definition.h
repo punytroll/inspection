@@ -343,7 +343,7 @@ namespace Inspection
 			std::experimental::optional< std::string > FieldName;
 			std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
 			std::experimental::optional< Inspection::TypeDefinition::Interpretation > Interpretation;
-			std::experimental::optional< Inspection::TypeDefinition::Length > Length;
+			std::experimental::optional< Inspection::TypeDefinition::Statement > Length;
 			std::experimental::optional< std::vector< Inspection::TypeDefinition::Part > > Parts;
 			std::vector< Inspection::TypeDefinition::Tag > Tags;
 			Inspection::TypeDefinition::Part::Type Type;
