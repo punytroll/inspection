@@ -44,7 +44,6 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_FileProperties_Flags(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASF_GUID(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_ASF_HeaderExtensionObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_IndexPlaceholderObjectData(Inspection::Reader & Reader);
 	std::unique_ptr< Inspection::Result > Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASF_Metadata_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);

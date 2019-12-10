@@ -1517,68 +1517,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_GUID(Inspection::Reade
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASF_HeaderExtensionObjectData(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_ASF_GUID(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("ReservedField1", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = std::experimental::any_cast< Inspection::GUID >(Result->GetValue()->GetField("ReservedField1")->GetData()) == Inspection::g_ASF_Reserved1GUID;
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("ReservedField2", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("ReservedField2")->GetData()) == 0x0006;
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("HeaderExtensionDataSize", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{std::experimental::any_cast< std::uint32_t >(Result->GetValue()->GetField("HeaderExtensionDataSize")->GetData()), 0}};
-		auto PartResult{Inspection::Get_Array_EndedByLength(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"ASF", "Object"})}, {"ElementName", "AdditionalExtendedHeader"s}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("AdditionalExtendedHeaders", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FileProperties_Flags(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -1955,7 +1893,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Object(Inspection::Rea
 		else if(GUID == Inspection::g_ASF_HeaderExtensionObjectGUID)
 		{
 			Inspection::Reader PartReader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult{Inspection::Get_ASF_HeaderExtensionObjectData(PartReader)};
+			auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "ObjectData", "HeaderExtension"})->Get(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
