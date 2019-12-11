@@ -1,0 +1,25 @@
+<type>
+	<sequence>
+		<field name="Header">
+			<type-reference>
+				<part>FLAC</part>
+				<part>MetaDataBlock_Header</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference root="current">
+						<field>BlockType</field>
+						<tag>interpretation</tag>
+					</data-reference>
+					<string>StreamInfo</string>
+				</equals>
+			</verification>
+		</field>
+		<field name="Data">
+			<type-reference>
+				<part>FLAC</part>
+				<part>StreamInfoBlock_Data</part>
+			</type-reference>
+		</field>
+	</sequence>
+</type>

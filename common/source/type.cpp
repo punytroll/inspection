@@ -346,6 +346,12 @@ namespace Inspection
 			}
 		}
 		
+		template< typename Type >
+		bool Equals(const std::experimental::any & One, const std::experimental::any & Two)
+		{
+			return std::experimental::any_cast< const Type & >(One) == std::experimental::any_cast< const Type & >(Two);
+		}
+		
 		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value1, const Inspection::TypeDefinition::Value & Value2)
 		{
 			auto Any1{Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value1)};
@@ -357,19 +363,23 @@ namespace Inspection
 				{
 					if(Any1.type() == typeid(std::uint8_t))
 					{
-						return std::experimental::any_cast< std::uint8_t >(Any1) == std::experimental::any_cast< std::uint8_t >(Any2);
+						return Inspection::Algorithms::Equals< std::uint8_t >(Any1, Any2);
 					}
 					else if(Any1.type() == typeid(std::uint16_t))
 					{
-						return std::experimental::any_cast< std::uint16_t >(Any1) == std::experimental::any_cast< std::uint16_t >(Any2);
+						return Inspection::Algorithms::Equals< std::uint16_t >(Any1, Any2);
 					}
 					else if(Any1.type() == typeid(std::uint32_t))
 					{
-						return std::experimental::any_cast< std::uint32_t >(Any1) == std::experimental::any_cast< std::uint32_t >(Any2);
+						return Inspection::Algorithms::Equals< std::uint32_t >(Any1, Any2);
 					}
 					else if(Any1.type() == typeid(Inspection::GUID))
 					{
-						return std::experimental::any_cast< const Inspection::GUID & >(Any1) == std::experimental::any_cast< const Inspection::GUID & >(Any2);
+						return Inspection::Algorithms::Equals< Inspection::GUID >(Any1, Any2);
+					}
+					else if(Any1.type() == typeid(std::string))
+					{
+						return Inspection::Algorithms::Equals< std::string >(Any1, Any2);
 					}
 					else
 					{
