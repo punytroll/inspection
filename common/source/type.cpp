@@ -1909,9 +1909,13 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_Data_Unset_EndedByLength;
 				}
-				else if(HardcodedText->GetText() == "Get_FLAC_Frame")
+				else if(HardcodedText->GetText() == "Get_Data_Unset_Until8BitAlignment")
 				{
-					Type._HardcodedGetter = Inspection::Get_FLAC_Frame;
+					Type._HardcodedGetter = Inspection::Get_Data_Unset_Until8BitAlignment;
+				}
+				else if(HardcodedText->GetText() == "Get_FLAC_Frame_Header")
+				{
+					Type._HardcodedGetter = Inspection::Get_FLAC_Frame_Header;
 				}
 				else if(HardcodedText->GetText() == "Get_FLAC_MetaDataBlock")
 				{

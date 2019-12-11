@@ -2921,75 +2921,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_FLAC_Frame_Header(PartReader)};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Header", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// inspect
-	if(Continue == true)
-	{
-		auto NumberOfChannelsByFrame{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("ChannelAssignment")->GetTag("value")->GetData())};
-		auto NumberOfChannelsByStream{std::experimental::any_cast< std::uint8_t >(Parameters.at("NumberOfChannelsByStream"))};
-		
-		if(NumberOfChannelsByStream != NumberOfChannelsByFrame)
-		{
-			Result->GetValue()->AddTag("error", "The number of channels from the stream (" + to_string_cast(NumberOfChannelsByStream) + ") does not match the number of channels from the frame (" + to_string_cast(NumberOfChannelsByFrame) + ").");
-			Continue = false;
-		}
-	}
-	// reading
-	if(Continue == true)
-	{
-		auto NumberOfChannelsByStream{std::experimental::any_cast< std::uint8_t >(Parameters.at("NumberOfChannelsByStream"))};
-		auto BlockSize{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("Header")->GetField("BlockSize")->GetTag("value")->GetData())};
-		auto BitsPerSample{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("SampleSize")->GetTag("value")->GetData())};
-		auto ChannelAssignment{std::experimental::any_cast< std::uint8_t >(Result->GetValue()->GetField("Header")->GetField("ChannelAssignment")->GetData())};
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"FLAC", "Subframe_CalculateBitsPerSample"})}, {"NumberOfElements", static_cast< std::uint64_t >(NumberOfChannelsByStream)}, {"ElementName", "Subframe"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"BlockSize", BlockSize}, {"BitsPerSample", BitsPerSample}, {"ChannelAssignment", ChannelAssignment}}}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Subframes", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_Data_Unset_Until8BitAlignment(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Padding", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"FLAC", "Frame_Footer"})->Get(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Footer", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Frame_Header(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};

@@ -63,20 +63,7 @@ const Inspection::TypeDefinition::Type * Inspection::TypeRepository::GetType(con
 
 std::unique_ptr< Inspection::Result > Inspection::TypeRepository::Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
-	auto Type{_GetOrLoadType(PathParts)};
-	
-	if(Type != nullptr)
-	{
-		return Type->Get(Reader, Parameters);
-	}
-	else
-	{
-		auto Result{Inspection::InitializeResult(Reader)};
-		Result->GetValue()->AddTag("error", "Could not find/load the type \"" + JoinSeparated(PathParts, "/") + "\".");
-		Inspection::FinalizeResult(Result, Reader);
-		
-		return Result;
-	}
+	return _GetOrLoadType(PathParts)->Get(Reader, Parameters);
 }
 
 Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(const std::vector< std::string > & PathParts)
@@ -101,6 +88,10 @@ Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(co
 				Result = new Inspection::TypeDefinition::Type{this};
 				Result->Load(TypePath);
 				Module->_Types.insert(std::make_pair(PathParts.back(), Result));
+			}
+			else
+			{
+				throw std::runtime_error("Could not find the type file \"" + TypePath + "\".");
 			}
 		}
 	}
@@ -137,7 +128,7 @@ Inspection::Module * Inspection::TypeRepository::_GetOrLoadModule(const std::vec
 			}
 			else
 			{
-				return nullptr;
+				throw std::runtime_error("Could not find the module directory \"" + ModulePath + "\".");
 			}
 		}
 	}
