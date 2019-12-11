@@ -351,8 +351,16 @@ namespace Inspection
 		class Array
 		{
 		public:
-			Inspection::TypeDefinition::FieldReference IterateField;
-			std::string ElementName;
+			enum class IterateType
+			{
+				ForEachField,
+				NumberOfElements
+			};
+			
+			Inspection::TypeDefinition::Array::IterateType IterateType;
+			std::experimental::optional< Inspection::TypeDefinition::FieldReference > IterateForEachField;
+			std::experimental::optional< Inspection::TypeDefinition::Statement > IterateNumberOfElements;
+			std::experimental::optional< std::string > ElementName;
 			Inspection::TypeDefinition::TypeReference ElementType;
 		};
 		

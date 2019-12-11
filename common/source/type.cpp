@@ -773,32 +773,95 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	auto Continue{true};
 	
 	ExecutionContext.Push(Array, *Result, Reader, Parameters);
+	Result->GetValue()->AddTag("array");
 	assert(Array.Array);
 	
-	auto IterateField{ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateField)};
+	auto NumberOfAppendedElements{0};
 	
-	assert(IterateField != nullptr);
-	
-	std::vector< std::pair< Inspection::Length, Inspection::Length > > ElementProperties;
-	
-	for(auto Field : IterateField->GetFields())
+	switch(Array.Array->IterateType)
 	{
-		ElementProperties.emplace_back(std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("position")->GetData()), std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("length")->GetData()));
+	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
+		{
+			auto IterateField{ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateForEachField.value())};
+			
+			assert(IterateField != nullptr);
+			
+			std::vector< std::pair< Inspection::Length, Inspection::Length > > ElementProperties;
+			
+			for(auto Field : IterateField->GetFields())
+			{
+				ElementProperties.emplace_back(std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("position")->GetData()), std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("length")->GetData()));
+			}
+			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
+			for(auto ElementPropertiesIndex = 0ul; (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
+			{
+				auto & Properties{ElementProperties[ElementPropertiesIndex]};
+				
+				assert(Reader.GetPositionInBuffer() == Properties.first);
+				
+				Inspection::Reader ElementReader{Reader, Properties.second};
+				auto ElementResult{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)->Get(ElementReader, ExecutionContext.GetAllParameters())};
+				
+				Continue = ElementResult->GetSuccess();
+				Result->GetValue()->AppendField(Array.Array->ElementName.value(), ElementResult->GetValue());
+				Reader.AdvancePosition(ElementReader.GetConsumedLength());
+				++NumberOfAppendedElements;
+			}
+			
+			break;
+		}
+	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
+		{
+			auto NumberOfRequiredElements{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Array.Array->IterateNumberOfElements.value())};
+			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
+			std::uint64_t ElementIndexInArray{0};
+			
+			while(true)
+			{
+				if(ElementIndexInArray < NumberOfRequiredElements)
+				{
+					Inspection::Reader ElementReader{Reader};
+					
+					ElementParameters["ElementIndex"] = ElementIndexInArray;
+					
+					auto ElementResult{ElementType->Get(ElementReader, ExecutionContext.GetAllParameters())};
+					
+					Continue = ElementResult->GetSuccess();
+					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+					if(Array.Array->ElementName)
+					{
+						Result->GetValue()->AppendField(Array.Array->ElementName.value(), ElementResult->GetValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendField(ElementResult->GetValue());
+					}
+					Reader.AdvancePosition(ElementReader.GetConsumedLength());
+					if(Continue == false)
+					{
+						Result->GetValue()->AddTag("ended by failure"s);
+						
+						break;
+					}
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by number of elements"s);
+					
+					break;
+				}
+			}
+			NumberOfAppendedElements = ElementIndexInArray;
+			
+			break;
+		}
+	default:
+		{
+			assert(false);
+		}
 	}
-	std::sort(std::begin(ElementProperties), std::end(ElementProperties));
-	for(auto ElementPropertiesIndex = 0ul; (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
-	{
-		auto & Properties{ElementProperties[ElementPropertiesIndex]};
-		
-		assert(Reader.GetPositionInBuffer() == Properties.first);
-		
-		Inspection::Reader ElementReader{Reader, Properties.second};
-		auto ElementResult{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)->Get(ElementReader, ExecutionContext.GetAllParameters())};
-		
-		Continue = ElementResult->GetSuccess();
-		Result->GetValue()->AppendField(Array.Array->ElementName, ElementResult->GetValue());
-		Reader.AdvancePosition(ElementReader.GetConsumedLength());
-	}
+	Result->GetValue()->AddTag("number of elements", NumberOfAppendedElements);
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
@@ -1659,19 +1722,32 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			else if(PartChildElement->GetName() == "iterate")
 			{
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
-				
-				XML::Element * FieldReferenceElement{nullptr};
-				
-				for(auto PartIterateChildNode : PartChildElement->GetChilds())
+				assert(Part.Array);
+				assert(PartChildElement->HasAttribute("type") == true);
+				if(PartChildElement->GetAttribute("type") == "for-each-field")
 				{
-					if(PartIterateChildNode->GetNodeType() == XML::NodeType::Element)
+					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
+					Part.Array->IterateForEachField.emplace();
+					
+					XML::Element * FieldReferenceElement{nullptr};
+					
+					for(auto PartIterateChildNode : PartChildElement->GetChilds())
 					{
-						assert(FieldReferenceElement == nullptr);
-						FieldReferenceElement = dynamic_cast< XML::Element * >(PartIterateChildNode);
+						if(PartIterateChildNode->GetNodeType() == XML::NodeType::Element)
+						{
+							assert(FieldReferenceElement == nullptr);
+							FieldReferenceElement = dynamic_cast< XML::Element * >(PartIterateChildNode);
+						}
 					}
+					assert(FieldReferenceElement != nullptr);
+					_LoadFieldReference(Part.Array->IterateForEachField.value(), FieldReferenceElement);
 				}
-				assert(FieldReferenceElement != nullptr);
-				_LoadFieldReference(Part.Array->IterateField, FieldReferenceElement);
+				else if(PartChildElement->GetAttribute("type") == "number-of-elements")
+				{
+					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
+					Part.Array->IterateNumberOfElements.emplace();
+					_LoadStatementFromWithin(Part.Array->IterateNumberOfElements.value(), PartChildElement);
+				}
 			}
 			else if(PartChildElement->GetName() == "element-name")
 			{
