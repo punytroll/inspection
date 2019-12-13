@@ -3490,7 +3490,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_SignedInteger_5Bit(PartReader)};
+		auto PartResult{Inspection::Get_SignedInteger_5Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("QuantizedLinearPredictorCoefficientShift", PartResult->GetValue());
@@ -6536,31 +6536,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_GUID(Inspection::Reade
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track(Reader, {})};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
-		
-		UpdateState(Continue, FieldResult);
-	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = (Result->GetValue()->GetField("Number")->HasTag("interpretation") == true) && (std::experimental::any_cast< const std::string & >(Result->GetValue()->GetField("Number")->GetTag("interpretation")->GetData()) == "Lead-Out");
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfContents_Track(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -6594,10 +6569,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_Track_Control(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("Control", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_IEC_60908_1999_TableOfContents_Track_Control(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Control", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6654,10 +6631,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_BitSet_4Bit_MostSignificantBitFirst(Reader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -6731,10 +6710,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_IEC_60908_1999_TableOfContents_LeadOutTrack(Reader)};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::g_TypeRepository.GetType({"IEC_60908_1999", "TableOfContents_LeadOutTrack"})->Get(PartReader, {})};
 		
-		Result->GetValue()->AppendField("LeadOutTrack", FieldResult->GetValue());
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("LeadOutTrack", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10375,21 +10356,56 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(In
 	{
 	case 1:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 1}};
-			auto FieldResult{Get_SignedInteger_1Bit(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_SignedInteger_1Bit(PartReader, {})};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			
+			break;
+		}
+	case 5:
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_SignedInteger_5Bit(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			
+			break;
+		}
+	case 8:
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_SignedInteger_8Bit(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
 	case 12:
 		{
-			Inspection::Reader FieldReader{Reader, Inspection::Length{0, 12}};
-			auto FieldResult{Get_SignedInteger_12Bit_BigEndian(FieldReader)};
-			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_SignedInteger_12Bit_BigEndian(PartReader, {})};
 			
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			
+			break;
+		}
+	case 32:
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_SignedInteger_32Bit_BigEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			
 			break;
 		}
@@ -10405,7 +10421,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_BigEndian(In
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10436,7 +10452,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_1Bit(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_5Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10498,7 +10514,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_8Bit(Inspect
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10531,7 +10547,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_12Bit_BigEnd
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -10611,21 +10627,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEn
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_UnsignedInteger_32Bit_AlternativeUnary(FieldReader)};
-		auto FieldValue{Result->GetValue()->AppendField("MostSignificantBits", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_UnsignedInteger_32Bit_AlternativeUnary(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("MostSignificantBits", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
 	{
 		auto Rice{std::experimental::any_cast< std::uint8_t >(Parameters.at("Rice"))};
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Get_UnsignedInteger_BigEndian(FieldReader, {{"Bits", Rice}})};
-		auto FieldValue{Result->GetValue()->AppendField("LeastSignificantBits", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_UnsignedInteger_BigEndian(PartReader, {{"Bits", Rice}})};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("LeastSignificantBits", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)

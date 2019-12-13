@@ -1,0 +1,17 @@
+<type>
+	<forward>
+		<type-reference>
+			<part>IEC_60908_1999</part>
+			<part>TableOfContents_Track</part>
+		</type-reference>
+		<verification>
+			<equals>
+				<data-reference root="current">
+					<field>Number</field>
+					<tag>interpretation</tag>
+				</data-reference>
+				<string>Lead-Out</string>
+			</equals>
+		</verification>
+	</forward>
+</type>

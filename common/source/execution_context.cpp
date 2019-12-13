@@ -137,7 +137,11 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromD
 						}
 					case Inspection::TypeDefinition::Part::Type::Forward:
 						{
-							assert(false);
+							if(Result->HasField(PartIterator->DetailName) == true)
+							{
+								Result = Result->GetField(PartIterator->DetailName);
+								++PartIterator;
+							}
 							
 							break;
 						}
