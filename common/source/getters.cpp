@@ -59,7 +59,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_APE_Flags(Inspection::Read
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian(PartReader)};
+		auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -355,76 +355,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_AtLeastOne_EndedByFa
 		{
 			Result->GetValue()->AddTag("error", "The array contains no elements, although at least one is required."s);
 			Continue = false;
-		}
-		Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	Result->GetValue()->AddTag("array"s);
-	// reading
-	if(Continue == true)
-	{
-		std::experimental::optional< std::string > ElementName;
-		std::unordered_map< std::string, std::experimental::any > ElementParameters;
-		auto ElementParametersIterator{Parameters.find("ElementParameters")};
-		
-		if(ElementParametersIterator != Parameters.end())
-		{
-			const auto & ElementParametersFromParameter{std::experimental::any_cast< const std::unordered_map< std::string, std::experimental::any > & >(ElementParametersIterator->second)};
-			
-			ElementParameters.insert(std::begin(ElementParametersFromParameter), std::end(ElementParametersFromParameter));
-		}
-		
-		auto ElementNameIterator{Parameters.find("ElementName")};
-		
-		if(ElementNameIterator != Parameters.end())
-		{
-			ElementName = std::experimental::any_cast< std::string >(ElementNameIterator->second);
-		}
-		
-		auto ElementType{std::experimental::any_cast< const Inspection::TypeDefinition::Type * >(Parameters.at("ElementType"))};
-		std::uint64_t ElementIndexInArray{0};
-		
-		while((Continue == true) && (Reader.HasRemaining() == true))
-		{
-			Inspection::Reader ElementReader{Reader};
-			
-			ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
-			
-			auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
-			
-			Continue = ElementResult->GetSuccess();
-			if(Continue == true)
-			{
-				ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-				if(ElementName)
-				{
-					Result->GetValue()->AppendField(ElementName.value(), ElementResult->GetValue());
-				}
-				else
-				{
-					Result->GetValue()->AppendField(ElementResult->GetValue());
-				}
-				Reader.AdvancePosition(ElementReader.GetConsumedLength());
-			}
-		}
-		if(Reader.IsAtEnd() == true)
-		{
-			Result->GetValue()->AddTag("ended by length"s);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("ended by failure"s);
 		}
 		Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
 	}
@@ -1163,86 +1093,54 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedContentDescrip
 		}
 		else if(DataType == "Boolean")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "Boolean_32Bit_LittleEndian"})->Get(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "Boolean_32Bit_LittleEndian"})->Get(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "Unsigned integer 32bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "Unsigned integer 64bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{8, 0})
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			// interpretation
+			if(Continue == true)
 			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				// interpretation
-				if(Continue == true)
+				auto & Name{std::experimental::any_cast< const std::string & >(Parameters.at("Name"))};
+			
+				if(Name == "WM/EncodingTime")
 				{
-					auto & Name{std::experimental::any_cast< const std::string & >(Parameters.at("Name"))};
-				
-					if(Name == "WM/EncodingTime")
-					{
-						auto UnsignedInteger64Bit{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetData())};
-						auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
-						
-						Result->GetValue()->AppendField("DateTime", DateTime);
-						Result->GetValue()->GetField("DateTime")->AddTag("date and time"s);
-						Result->GetValue()->GetField("DateTime")->AddTag("from Microsoft filetime"s);
-					}
+					auto UnsignedInteger64Bit{std::experimental::any_cast< std::uint64_t >(Result->GetValue()->GetData())};
+					auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
+					
+					Result->GetValue()->AppendField("DateTime", DateTime);
+					Result->GetValue()->GetField("DateTime")->AddTag("date and time"s);
+					Result->GetValue()->GetField("DateTime")->AddTag("from Microsoft filetime"s);
 				}
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
 			}
 		}
 		else if(DataType == "Unsigned integer 16bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
@@ -1266,7 +1164,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian(PartReader)};
+		auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -1526,7 +1424,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_FileProperties_Flags(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian(PartReader)};
+		auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -1612,95 +1510,55 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_MetadataLibrary_Descri
 		}
 		else if(DataType == "Boolean")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "Boolean_16Bit_LittleEndian"})->Get(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "Boolean_16Bit_LittleEndian"})->Get(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "Unsigned integer 32bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "Unsigned integer 64bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{8, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "Unsigned integer 16bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "GUID")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{16, 0})
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_GUID_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			// interpretation
+			if(Continue == true)
 			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_GUID_LittleEndian(PartReader, {})};
+				auto GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetValue()->GetData())};
+				auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
 				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				// interpretation
-				if(Continue == true)
-				{
-					auto GUID{std::experimental::any_cast< const Inspection::GUID & >(Result->GetValue()->GetData())};
-					auto GUIDInterpretation{Inspection::Get_GUID_Interpretation(GUID)};
-					
-					Result->GetValue()->AddTag("interpretation", GUIDInterpretation);
-				}
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{16, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
+				Result->GetValue()->AddTag("interpretation", GUIDInterpretation);
 			}
 		}
 		else
@@ -1745,71 +1603,39 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_Metadata_DescriptionRe
 		}
 		else if(DataType == "Boolean")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "Boolean_16Bit_LittleEndian"})->Get(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::g_TypeRepository.GetType({"ASF", "Boolean_16Bit_LittleEndian"})->Get(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "Unsigned integer 32bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{4, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "Unsigned integer 64bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{8, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{8, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(DataType == "Unsigned integer 16bit")
 		{
-			if(Reader.GetRemainingLength() == Inspection::Length{2, 0})
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "The length of the data should be " + to_string_cast(Inspection::Length{2, 0}) + ", not " + to_string_cast(Reader.GetRemainingLength()) + ".");
-				Continue = false;
-			}
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->SetValue(PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
 		{
@@ -2006,7 +1832,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamBitratePropertie
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_16Bit_LittleEndian(PartReader)};
+		auto PartResult{Inspection::Get_BitSet_16Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -2046,7 +1872,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamProperties_Flags
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_16Bit_LittleEndian(PartReader)};
+		auto PartResult{Inspection::Get_BitSet_16Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -2332,7 +2158,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_StreamPropertiesObject
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -2369,7 +2195,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_4Bit_MostSignifican
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -2410,7 +2236,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_8Bit(Inspection::Re
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian_LeastSignificantBitFirstPerByte(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -2463,7 +2289,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_BigEndian(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian_LeastSignificantBitFirstPerByte(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -2516,7 +2342,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_16Bit_LittleEndian(
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -4001,13 +3827,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
@@ -4062,7 +3888,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_2_Tag_Header_Flags(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_8Bit(PartReader, {})};
+		auto PartResult{Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -4378,13 +4204,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
@@ -4887,7 +4713,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Header_Flags
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Inspection::Get_BitSet_16Bit_BigEndian(Reader, {})};
+		auto FieldResult{Inspection::Get_BitSet_16Bit_BigEndian_LeastSignificantBitFirstPerByte(Reader, {})};
 		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 		
 		UpdateState(Continue, FieldResult);
@@ -5060,7 +4886,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Tag_Header_Flags(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_8Bit(PartReader, {})};
+		auto PartResult{Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5343,13 +5169,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		
 		if(HandledSize > ClaimedSize)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
 		else if(HandledSize < ClaimedSize)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
 		}
@@ -5700,7 +5526,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_8Bit(PartReader, {})};
+		auto PartResult{Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Restrictions", PartResult->GetValue());
@@ -5723,7 +5549,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_ExtendedHeader
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_8Bit(PartReader, {})};
+		auto PartResult{Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5773,7 +5599,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Tag_Header_Flags(I
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_8Bit(PartReader, {})};
+		auto PartResult{Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -5957,7 +5783,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccordin
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -5965,10 +5791,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 	// reading
 	if(Continue == true)
 	{
-		auto FieldResult{Get_ID3_2_Tag_Header(Reader)};
-		auto FieldValue{Result->GetValue()->AppendField("TagHeader", FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_ID3_2_Tag_Header(PartReader)};
 		
-		UpdateState(Continue, FieldResult);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("TagHeader", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -6632,7 +6460,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_IEC_60908_1999_TableOfCont
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(PartReader)};
+		auto PartResult{Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -9419,28 +9247,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_FrameHeader_ModeExt
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_MPEG_1_Stream(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"MPEG", "1", "Frame"})}, {"ElementName", "MPEGFrame"s}})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("MPEGFrames", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Packet(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
@@ -9654,7 +9460,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Page_HeaderType(Inspec
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_8Bit(PartReader, {})};
+		auto PartResult{Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -10199,7 +10005,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_ChunkData_fmt__Format
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian(PartReader)};
+		auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());

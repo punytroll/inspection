@@ -16,7 +16,7 @@
 		<field name="Flags">
 			<type-reference>
 				<part>BitSet</part>
-				<part>16Bit_BigEndian</part>
+				<part>16Bit_BigEndian_LeastSignificantBitFirstPerByte</part>
 			</type-reference>
 		</field>
 	</sequence>

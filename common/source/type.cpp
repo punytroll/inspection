@@ -583,6 +583,15 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 						
 						break;
 					}
+				case Inspection::TypeDefinition::Part::Type::Array:
+					{
+						auto ArrayResult{_GetArray(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						
+						Continue = ArrayResult->GetSuccess();
+						Result->GetValue()->AppendField(_Part->FieldName.value(), ArrayResult->GetValue());
+						
+						break;
+					}
 				case Inspection::TypeDefinition::Part::Type::Sequence:
 					{
 						auto SequenceResult{_GetSequence(ExecutionContext, *_Part, *PartReader, PartParameters)};
@@ -776,7 +785,6 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	Result->GetValue()->AddTag("array");
 	assert(Array.Array);
 	
-	auto NumberOfAppendedElements{0};
 	
 	switch(Array.Array->IterateType)
 	{
@@ -793,6 +801,9 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 				ElementProperties.emplace_back(std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("position")->GetData()), std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("length")->GetData()));
 			}
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
+			
+			auto NumberOfAppendedElements{0};
+			
 			for(auto ElementPropertiesIndex = 0ul; (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
 			{
 				auto & Properties{ElementProperties[ElementPropertiesIndex]};
@@ -807,6 +818,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 				Reader.AdvancePosition(ElementReader.GetConsumedLength());
 				++NumberOfAppendedElements;
 			}
+			Result->GetValue()->AddTag("number of elements", NumberOfAppendedElements);
 			
 			break;
 		}
@@ -823,7 +835,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 				{
 					Inspection::Reader ElementReader{Reader};
 					
-					ElementParameters["ElementIndex"] = ElementIndexInArray;
+					ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 					
 					auto ElementResult{ElementType->Get(ElementReader, ExecutionContext.GetAllParameters())};
 					
@@ -852,7 +864,54 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 					break;
 				}
 			}
-			NumberOfAppendedElements = ElementIndexInArray;
+			Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+			
+			break;
+		}
+	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
+		{
+			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
+			std::uint64_t ElementIndexInArray{0};
+			
+			while((Continue == true) && (Reader.HasRemaining() == true))
+			{
+				Inspection::Reader ElementReader{Reader};
+				
+				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+				
+				auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
+				
+				Continue = ElementResult->GetSuccess();
+				if(Continue == true)
+				{
+					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+					if(Array.Array->ElementName)
+					{
+						Result->GetValue()->AppendField(Array.Array->ElementName.value(), ElementResult->GetValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendField(ElementResult->GetValue());
+					}
+					Reader.AdvancePosition(ElementReader.GetConsumedLength());
+				}
+				else
+				{
+					Continue = true;
+					
+					break;
+				}
+			}
+			if(Reader.IsAtEnd() == true)
+			{
+				Result->GetValue()->AddTag("ended by length"s);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by failure"s);
+			}
+			Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
 			
 			break;
 		}
@@ -861,7 +920,6 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 			assert(false);
 		}
 	}
-	Result->GetValue()->AddTag("number of elements", NumberOfAppendedElements);
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
@@ -1748,6 +1806,15 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 					Part.Array->IterateNumberOfElements.emplace();
 					_LoadStatementFromWithin(Part.Array->IterateNumberOfElements.value(), PartChildElement);
 				}
+				else if(PartChildElement->GetAttribute("type") == "until-failure-or-length")
+				{
+					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength;
+					assert(XML::HasChildNodes(PartChildElement) == false);
+				}
+				else
+				{
+					assert(false);
+				}
 			}
 			else if(PartChildElement->GetName() == "element-name")
 			{
@@ -1903,10 +1970,6 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_Apple_AppleDouble_File;
 				}
-				else if(HardcodedText->GetText() == "Get_Array_EndedByFailureOrLength_ResetPositionOnFailure")
-				{
-					Type._HardcodedGetter = Inspection::Get_Array_EndedByFailureOrLength_ResetPositionOnFailure;
-				}
 				else if(HardcodedText->GetText() == "Get_Array_EndedByLength")
 				{
 					Type._HardcodedGetter = Inspection::Get_Array_EndedByLength;
@@ -1967,9 +2030,9 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
 				}
-				else if(HardcodedText->GetText() == "Get_BitSet_16Bit_BigEndian")
+				else if(HardcodedText->GetText() == "Get_BitSet_16Bit_BigEndian_LeastSignificantBitFirstPerByte")
 				{
-					Type._HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian;
+					Type._HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian_LeastSignificantBitFirstPerByte;
 				}
 				else if(HardcodedText->GetText() == "Get_Boolean_1Bit")
 				{
@@ -2038,6 +2101,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_ID3_1_Genre")
 				{
 					Type._HardcodedGetter = Inspection::Get_ID3_1_Genre;
+				}
+				else if(HardcodedText->GetText() == "Get_ID3_2_Tag")
+				{
+					Type._HardcodedGetter = Inspection::Get_ID3_2_Tag;
 				}
 				else if(HardcodedText->GetText() == "Get_ID3_2_2_Frame")
 				{
@@ -2284,7 +2351,7 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 					throw std::domain_error{"Invalid reference to hardcoded getter \"" + HardcodedText->GetText() + "\"."};
 				}
 			}
-			else if((TypeChildElement->GetName() == "alternative") || (TypeChildElement->GetName() == "sequence") || (TypeChildElement->GetName() == "field") || (TypeChildElement->GetName() == "fields") || (TypeChildElement->GetName() == "forward"))
+			else if((TypeChildElement->GetName() == "alternative") || (TypeChildElement->GetName() == "array") || (TypeChildElement->GetName() == "sequence") || (TypeChildElement->GetName() == "field") || (TypeChildElement->GetName() == "fields") || (TypeChildElement->GetName() == "forward"))
 			{
 				assert(Type._Part == nullptr);
 				Type._Part = new Inspection::TypeDefinition::Part{};

@@ -43,7 +43,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 	Reader.SetPosition(Inspection::Length(0, 0));
 	
 	Inspection::Reader PartReader{Reader};
-	auto ID3v2TagResult{Get_ID3_2_Tag(PartReader)};
+	auto ID3v2TagResult{Inspection::Get_ID3_2_Tag(PartReader, {})};
 	
 	Result->GetValue()->AppendField("ID3v2", ID3v2TagResult->GetValue());
 	Result->SetSuccess(((ID3v1TagResult != nullptr) && (ID3v1TagResult->GetSuccess() == true)) || ID3v2TagResult->GetSuccess());

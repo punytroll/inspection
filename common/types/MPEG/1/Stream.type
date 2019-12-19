@@ -1,0 +1,11 @@
+<type>
+	<array name="MPEGFrames">
+		<iterate type="until-failure-or-length"/>
+		<element-type>
+			<part>MPEG</part>
+			<part>1</part>
+			<part>Frame</part>
+		</element-type>
+		<element-name>MPEGFrame</element-name>
+	</array>
+</type>

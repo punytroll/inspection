@@ -354,7 +354,8 @@ namespace Inspection
 			enum class IterateType
 			{
 				ForEachField,
-				NumberOfElements
+				NumberOfElements,
+				UntilFailureOrLength
 			};
 			
 			Inspection::TypeDefinition::Array::IterateType IterateType;

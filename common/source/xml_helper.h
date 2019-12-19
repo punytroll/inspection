@@ -57,6 +57,11 @@ namespace XML
 		
 		return false;
 	}
+	
+	inline bool HasChildNodes(const XML::Element * Element)
+	{
+		return Element->GetChilds().size() > 0;
+	}
 }
 
 #endif

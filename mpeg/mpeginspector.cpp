@@ -4,6 +4,7 @@
 #include <common/file_handling.h>
 #include <common/getters.h>
 #include <common/result.h>
+#include <common/type_repository.h>
 
 std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
@@ -14,7 +15,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Get_MPEG_1_Stream(PartReader, {})};
+		auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());

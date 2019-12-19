@@ -120,7 +120,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	Inspection::Reader PartReader{Reader};
-	auto PartResult{Get_ID3_2_Tag(PartReader)};
+	auto PartResult{Inspection::Get_ID3_2_Tag(PartReader, {})};
 	
 	if(PartResult->GetSuccess() == true)
 	{
@@ -179,7 +179,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 			{
 				Inspection::Reader PartReader{Reader};
 				
-				PartResult = Get_MPEG_1_Stream(PartReader, {});
+				PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
 				if(PartResult->GetSuccess() == true)
 				{
 					Result->GetValue()->AppendField("MPEG1Stream", PartResult->GetValue());
@@ -301,7 +301,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 	{
 		Inspection::Reader PartReader{Reader};
 		
-		PartResult = Get_MPEG_1_Stream(PartReader, {});
+		PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
 		if(PartResult->GetSuccess() == true)
 		{
 			Result->GetValue()->AppendField("MPEG1Stream", PartResult->GetValue());
@@ -563,15 +563,23 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > ProcessAsSpecificType(Inspection::Reader & Reader, const std::vector< std::string > & Type)
+std::unique_ptr< Inspection::Result > ProcessAsSpecificType(Inspection::Reader & Reader, const std::vector< std::vector< std::string > > & TypeSequence)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
-	Inspection::Reader PartReader{Reader};
-	auto PartResult{Inspection::g_TypeRepository.Get(Type, PartReader, {})};
+	auto Continue{true};
 	
-	Result->SetSuccess(PartResult->GetSuccess());
-	Result->GetValue()->AppendField(Type.back(), PartResult->GetValue());
-	Reader.AdvancePosition(PartReader.GetConsumedLength());
+	for(auto Index = 0ul; Index < TypeSequence.size(); ++Index)
+	{
+		auto & TypeParts{TypeSequence[Index]};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::g_TypeRepository.Get(TypeParts, PartReader, {})};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField(TypeParts.back(), PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// finalization
+	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
@@ -787,7 +795,8 @@ void QueryWriter(std::unique_ptr< Inspection::Result > & Result, const std::stri
 int main(int argc, char ** argv)
 {
 	std::string TypePrefix{"--type="};
-	std::string Type;
+	std::string TypesPrefix{"--types="};
+	std::string Types;
 	std::string QueryPrefix{"--query="};
 	std::string Query;
 	std::deque< std::string > Paths;
@@ -814,7 +823,11 @@ int main(int argc, char ** argv)
 		}
 		else if(Argument.compare(0, TypePrefix.size(), TypePrefix) == 0)
 		{
-			Type = Argument.substr(TypePrefix.size());
+			Types = Argument.substr(TypePrefix.size());
+		}
+		else if(Argument.compare(0, TypesPrefix.size(), TypesPrefix) == 0)
+		{
+			Types = Argument.substr(TypesPrefix.size());
 		}
 		else
 		{
@@ -836,11 +849,17 @@ int main(int argc, char ** argv)
 		{
 			Writer = std::bind(QueryWriter, std::placeholders::_1, Query);
 		}
-		if(Type != "")
+		if(Types != "")
 		{
-			auto TypeParts{SplitString(Type, '/')};
+			auto TypesParts{SplitString(Types, ';')};
+			std::vector< std::vector< std::string > > TypeSequence;
 			
-			Processor = std::bind(ProcessAsSpecificType, std::placeholders::_1, TypeParts);
+			for(auto & TypeParts : TypesParts)
+			{
+				TypeSequence.emplace_back(SplitString(TypeParts, '/'));
+			}
+			
+			Processor = std::bind(ProcessAsSpecificType, std::placeholders::_1, TypeSequence);
 		}
 		ReadItem(Paths.front(), Processor, Writer);
 		Paths.pop_front();
