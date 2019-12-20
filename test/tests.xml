@@ -2266,7 +2266,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Header/field:BlockType/data</argument>
 		</execute>
 		<expected-output>0</expected-output>
@@ -2274,7 +2274,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Header/field:BlockType/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>StreamInfo</expected-output>
@@ -2282,7 +2282,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/has-tag:array</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -2290,7 +2290,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/has-tag:ended by predicate</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -2298,7 +2298,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/tag:number of elements/data</argument>
 		</execute>
 		<expected-output>1</expected-output>
@@ -2306,7 +2306,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Header/field:BlockType/data</argument>
 		</execute>
 		<expected-output>6</expected-output>
@@ -2314,7 +2314,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Header/field:BlockType/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>Picture</expected-output>
@@ -2322,7 +2322,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:PictureType/data</argument>
 		</execute>
 		<expected-output>3</expected-output>
@@ -2330,7 +2330,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:PictureType/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>Cover (front)</expected-output>
@@ -2338,7 +2338,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:MIMEType/data</argument>
 		</execute>
 		<expected-output>image/jpeg</expected-output>
@@ -2346,7 +2346,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:MIMEType/has-tag:string</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -2354,7 +2354,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:MIMEType/tag:character set/data</argument>
 		</execute>
 		<expected-output>ASCII</expected-output>
@@ -2362,7 +2362,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:MIMEType/tag:encoding/data</argument>
 		</execute>
 		<expected-output>ASCII</expected-output>
@@ -2370,7 +2370,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:MIMEType/has-tag:printable</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -2378,7 +2378,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:MIMEType/has-tag:ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -2386,7 +2386,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:MIMEType/has-tag:10 characters</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -2394,7 +2394,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:Description/data</argument>
 		</execute>
 		<expected-output></expected-output>
@@ -2402,7 +2402,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:Description/has-tag:string</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -2410,7 +2410,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:Description/tag:character set/data</argument>
 		</execute>
 		<expected-output>Unicode/ISO/IEC 10646-1:1993</expected-output>
@@ -2418,7 +2418,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:Description/tag:encoding/data</argument>
 		</execute>
 		<expected-output>UTF-8</expected-output>
@@ -2426,7 +2426,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:Description/has-tag:ended by length</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -2434,7 +2434,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Data/field:Description/has-tag:0 code points</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -4914,7 +4914,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/010_flac_with_picture_frame</argument>
+			<argument>../examples/010_FLAC_Picture</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Header/field:LastMetaDataBlock/data</argument>
 		</execute>
 		<expected-output>false</expected-output>
@@ -4922,7 +4922,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:MinimumBlockSize/data</argument>
 		</execute>
 		<expected-output>4096</expected-output>
@@ -4930,7 +4930,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:MaximumBlockSize/data</argument>
 		</execute>
 		<expected-output>4096</expected-output>
@@ -4938,7 +4938,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:MinimumFrameSize/data</argument>
 		</execute>
 		<expected-output>14</expected-output>
@@ -4946,7 +4946,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:MaximumFrameSize/data</argument>
 		</execute>
 		<expected-output>6055</expected-output>
@@ -4954,7 +4954,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:SampleRate/data</argument>
 		</execute>
 		<expected-output>44100</expected-output>
@@ -4962,7 +4962,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:NumberOfChannels/data</argument>
 		</execute>
 		<expected-output>1</expected-output>
@@ -4970,7 +4970,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:NumberOfChannels/tag:value/data</argument>
 		</execute>
 		<expected-output>2</expected-output>
@@ -4978,7 +4978,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:BitsPerSample/data</argument>
 		</execute>
 		<expected-output>15</expected-output>
@@ -4986,7 +4986,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:BitsPerSample/tag:value/data</argument>
 		</execute>
 		<expected-output>16</expected-output>
@@ -4994,7 +4994,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:TotalSamplesPerChannel/data</argument>
 		</execute>
 		<expected-output>368088</expected-output>
@@ -5002,7 +5002,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:StreamInfoBlock/field:Data/field:MD5SignatureOfUnencodedAudioData/data</argument>
 		</execute>
 		<expected-output>52 d8 0c 42 cf bd 54 72 54 20 21 1d 9f 39 5b 53</expected-output>
@@ -5010,7 +5010,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:0]/field:Header/field:LastMetaDataBlock/data</argument>
 		</execute>
 		<expected-output>false</expected-output>
@@ -5018,7 +5018,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:1]/field:Header/field:LastMetaDataBlock/data</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5026,7 +5026,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:1]/field:Header/field:BlockType/data</argument>
 		</execute>
 		<expected-output>1</expected-output>
@@ -5034,7 +5034,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:MetaDataBlocks/field:MetaDataBlock:[tag:element index in array/is-data:1]/field:Header/field:BlockType/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>Padding</expected-output>
@@ -5042,7 +5042,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Header/field:PaddingBit/data</argument>
 		</execute>
 		<expected-output></expected-output>
@@ -5050,7 +5050,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Header/field:PaddingBit/has-tag:unset data</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5058,7 +5058,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Header/field:PaddingBit/tag:length/data</argument>
 		</execute>
 		<expected-output>0.1</expected-output>
@@ -5066,7 +5066,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Header/field:PaddingBit/tag:length/tag:unit/data</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
@@ -5074,7 +5074,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Header/field:Type/data</argument>
 		</execute>
 		<expected-output>0</expected-output>
@@ -5082,7 +5082,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Header/field:Type/field:Order/data</argument>
 		</execute>
 		<expected-output>6</expected-output>
@@ -5090,7 +5090,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Header/field:WastedBitsPerSampleFlag/data</argument>
 		</execute>
 		<expected-output>false</expected-output>
@@ -5098,7 +5098,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodingMethod/data</argument>
 		</execute>
 		<expected-output>0</expected-output>
@@ -5106,7 +5106,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodingMethod/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>partitioned Rice coding with 4-bit Rice parameter</expected-output>
@@ -5114,7 +5114,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodingMethod/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5122,7 +5122,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodingMethod/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5130,7 +5130,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodingMethod/has-tag:2bit</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5138,7 +5138,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/has-tag:array</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5146,7 +5146,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/has-tag:ended by number of elements</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5154,7 +5154,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/tag:number of elements/data</argument>
 		</execute>
 		<expected-output>32</expected-output>
@@ -5162,7 +5162,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/field:Partition:[tag:element index in array/is-data:11]/field:RiceParameter/data</argument>
 		</execute>
 		<expected-output>7</expected-output>
@@ -5170,7 +5170,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--verbose</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/field:Partition:[tag:element index in array/is-data:25]/field:Samples/field::[tag:element index in array/is-data:117]/data</argument>
 		</execute>
@@ -5179,7 +5179,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--verbose</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/field:Partition:[tag:element index in array/is-data:25]/field:Samples/field::[tag:element index in array/is-data:117]/field:MostSignificantBits/data</argument>
 		</execute>
@@ -5188,7 +5188,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--verbose</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/field:Partition:[tag:element index in array/is-data:25]/field:Samples/field::[tag:element index in array/is-data:117]/field:MostSignificantBits/has-tag:integer</argument>
 		</execute>
@@ -5197,7 +5197,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--verbose</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/field:Partition:[tag:element index in array/is-data:25]/field:Samples/field::[tag:element index in array/is-data:117]/field:MostSignificantBits/has-tag:unsigned</argument>
 		</execute>
@@ -5206,7 +5206,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--verbose</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/field:Partition:[tag:element index in array/is-data:25]/field:Samples/field::[tag:element index in array/is-data:117]/field:MostSignificantBits/has-tag:alternative unary</argument>
 		</execute>
@@ -5215,7 +5215,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--verbose</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/field:Partition:[tag:element index in array/is-data:25]/field:Samples/field::[tag:element index in array/is-data:117]/field:MostSignificantBits/tag:length/data</argument>
 		</execute>
@@ -5224,7 +5224,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--verbose</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodedResidual/field:Partitions/field:Partition:[tag:element index in array/is-data:25]/field:Samples/field::[tag:element index in array/is-data:117]/field:MostSignificantBits/tag:length/tag:unit/data</argument>
 		</execute>
@@ -5233,7 +5233,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Footer/field:CRC-16/data</argument>
 		</execute>
 		<expected-output>47342</expected-output>
@@ -5241,7 +5241,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Footer/field:CRC-16/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5249,7 +5249,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Footer/field:CRC-16/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5257,7 +5257,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Footer/field:CRC-16/has-tag:16bit</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5265,7 +5265,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Footer/field:CRC-16/has-tag:big endian</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5273,7 +5273,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Footer/field:CRC-16/data</argument>
 		</execute>
 		<expected-output>13342</expected-output>
@@ -5281,7 +5281,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Footer/field:CRC-16/data</argument>
 		</execute>
 		<expected-output>34686</expected-output>
@@ -5289,7 +5289,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleRate/data</argument>
 		</execute>
 		<expected-output>9</expected-output>
@@ -5297,7 +5297,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleRate/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5305,7 +5305,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleRate/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5313,7 +5313,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleRate/has-tag:4bit</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5321,7 +5321,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleRate/tag:value/data</argument>
 		</execute>
 		<expected-output>44.1</expected-output>
@@ -5329,7 +5329,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleRate/tag:value/type</argument>
 		</execute>
 		<expected-output>single precision real</expected-output>
@@ -5337,7 +5337,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleRate/tag:unit/data</argument>
 		</execute>
 		<expected-output>kHz</expected-output>
@@ -5345,7 +5345,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleSize/data</argument>
 		</execute>
 		<expected-output>4</expected-output>
@@ -5353,7 +5353,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleSize/tag:value/data</argument>
 		</execute>
 		<expected-output>16</expected-output>
@@ -5361,7 +5361,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:SampleSize/tag:unit/data</argument>
 		</execute>
 		<expected-output>bits</expected-output>
@@ -5369,7 +5369,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:ChannelAssignment/data</argument>
 		</execute>
 		<expected-output>1</expected-output>
@@ -5377,7 +5377,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:ChannelAssignment/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5385,7 +5385,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:ChannelAssignment/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5393,7 +5393,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:ChannelAssignment/has-tag:4bit</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5401,7 +5401,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:ChannelAssignment/tag:value/data</argument>
 		</execute>
 		<expected-output>2</expected-output>
@@ -5409,7 +5409,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:ChannelAssignment/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>independent channels</expected-output>
@@ -5417,7 +5417,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Header/field:ChannelAssignment/tag:assignment/data</argument>
 		</execute>
 		<expected-output>left, right</expected-output>
@@ -5425,7 +5425,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:ChannelAssignment/data</argument>
 		</execute>
 		<expected-output>8</expected-output>
@@ -5433,7 +5433,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:ChannelAssignment/tag:value/data</argument>
 		</execute>
 		<expected-output>2</expected-output>
@@ -5441,7 +5441,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:ChannelAssignment/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>left/side stereo</expected-output>
@@ -5449,7 +5449,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:ChannelAssignment/tag:assignment/data</argument>
 		</execute>
 		<expected-output>channel 0 is the left channel, channel 1 is the side (difference) channel</expected-output>
@@ -5457,7 +5457,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:BlockingStrategy/data</argument>
 		</execute>
 		<expected-output>0</expected-output>
@@ -5465,7 +5465,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:BlockingStrategy/has-tag:integer</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5473,7 +5473,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:BlockingStrategy/has-tag:unsigned</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5481,7 +5481,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:BlockingStrategy/has-tag:1bit</argument>
 		</execute>
 		<expected-output>true</expected-output>
@@ -5489,7 +5489,7 @@
 	<test>
 		<execute>
 			<command>../generalinspector</command>
-			<argument>../examples/014_small_flacstream</argument>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:1]/field:Header/field:BlockingStrategy/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>fixed-blocksize stream; frame header encodes the frame number</expected-output>
