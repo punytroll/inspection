@@ -1,0 +1,43 @@
+<type>
+	<sequence>
+		<field name="ExtensionSystemID">
+			<type-reference>
+				<part>GUID_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="ExtensionDataSize">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="ExtensionSystemInfoLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="ExtensionSystemInfo">
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>ExtensionSystemInfoLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+	</sequence>
+</type>

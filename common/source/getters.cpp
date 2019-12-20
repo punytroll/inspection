@@ -1355,16 +1355,25 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_ExtendedStreamProperti
 		Result->GetValue()->AppendField("PayloadExtensionSystemCount", PartResult->GetValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
-	// verification
+	// reading
 	if(Continue == true)
 	{
-		auto StreamNameCount{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("StreamNameCount")->GetData())};
-		auto PayloadExtensionSystemCount{std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("PayloadExtensionSystemCount")->GetData())};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType({"ASF", "ExtendedStreamProperties", "StreamName"})}, {"ElementName", "StreamName"s}, {"NumberOfElements", static_cast< std::uint64_t >(std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("StreamNameCount")->GetData()))}})};
 		
-		if((StreamNameCount != 0) || (PayloadExtensionSystemCount != 0))
-		{
-			throw Inspection::NotImplementedException("StreamNameCount != 0 || PayloadExtensionSystemCount != 0");
-		}
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("StreamNames", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType({"ASF", "ExtendedStreamProperties", "PayloadExtensionSystem"})}, {"ElementName", "PayloadExtensionSystems"s}, {"NumberOfElements", static_cast< std::uint64_t >(std::experimental::any_cast< std::uint16_t >(Result->GetValue()->GetField("PayloadExtensionSystemCount")->GetData()))}})};
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("PayloadExtensionSystems", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
 	if(Continue == true)
@@ -1455,15 +1464,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASF_IndexPlaceholderObject
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength() != Inspection::Length{10, 0})
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be exactly " + to_string_cast(Inspection::Length{10, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -8355,6 +8355,76 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		auto Second{Reader.Get8Bits()};
 		
 		Result->GetValue()->SetData(static_cast< std::uint16_t >(static_cast< std::uint16_t >(First) | static_cast< std::uint16_t >(Second << 8)));
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	Inspection::FinalizeResult(Result, Reader);
+	
+	return Result;
+}
+
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByNumberOfCodePoints(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+{
+	auto Result{Inspection::InitializeResult(Reader)};
+	auto Continue{true};
+	
+	Result->GetValue()->AddTag("string"s);
+	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
+	Result->GetValue()->AddTag("encoding", "UTF-16"s);
+	Result->GetValue()->AddTag("little endian"s);
+	Result->GetValue()->AddTag("without byte order mark"s);
+	// reading
+	if(Continue == true)
+	{
+		auto NumberOfCodePoints{std::experimental::any_cast< std::uint64_t >(Parameters.at("NumberOfCodePoints"))};
+		auto CodePointIndex{0ul};
+		std::stringstream Value;
+		
+		while((Continue == true) && (Reader.HasRemaining() == true) && (CodePointIndex < NumberOfCodePoints))
+		{
+			Inspection::Reader PartReader{Reader};
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(PartReader)};
+			
+			Continue = PartResult->GetSuccess();
+			if(Continue == true)
+			{
+				auto CodePoint{std::experimental::any_cast< std::uint32_t >(PartResult->GetValue()->GetData())};
+				
+				if(CodePoint == 0x00000000)
+				{
+					Result->GetValue()->AddTag("error", "The string MUST NOT contain a termination."s);
+					Continue = false;
+					
+					break;
+				}
+				else
+				{
+					CodePointIndex += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint);
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "The " + to_string_cast(CodePointIndex + 1) + "th code point is not a valid UTF-16 code point.");
+				Continue = false;
+			}
+		}
+		if(CodePointIndex == 0)
+		{
+			Result->GetValue()->AddTag("empty"s);
+		}
+		Result->GetValue()->AddTag(to_string_cast(CodePointIndex) + " code points");
+		if(Reader.IsAtEnd() == true)
+		{
+			Result->GetValue()->AddTag("ended by length"s);
+		}
+		else
+		{
+			Result->GetValue()->AddTag("ended by number of code points"s);
+		}
+		Result->GetValue()->SetData(Value.str());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
