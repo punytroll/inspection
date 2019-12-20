@@ -20,7 +20,9 @@
 						</tag>
 					</element>
 					<fallback-element valid="false">
-						<tag name="interpretation"/>
+						<tag name="interpretation">
+							<nothing/>
+						</tag>
 						<tag name="error">
 							<string>Values 2 and 3 are reserved and MUST NOT be used.</string>
 						</tag>

@@ -1,6 +1,6 @@
 <type>
 	<array name="MPEGFrames">
-		<iterate type="until-failure-or-length"/>
+		<iterate type="at-least-one-until-failure-or-length"/>
 		<element-type>
 			<part>MPEG</part>
 			<part>1</part>

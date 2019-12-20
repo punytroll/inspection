@@ -6,34 +6,23 @@
 				<part>Stream_Header</part>
 			</type-reference>
 		</forward>
-		<field name="Frames">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByFailureOrLength_ResetPositionOnFailure</part>
-			</type-reference>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>FLAC</part>
-						<part>Frame</part>
-					</type-reference>
+		<array name="Frames">
+			<iterate type="at-least-one-until-failure-or-length"/>
+			<element-type>
+				<part>FLAC</part>
+				<part>Frame</part>
+			</element-type>
+			<element-name>Frame</element-name>
+			<element-parameters>
+				<parameter name="NumberOfChannelsByStream">
+					<data-reference root="type">
+						<field>StreamInfoBlock</field>
+						<field>Data</field>
+						<field>NumberOfChannels</field>
+						<tag>value</tag>
+					</data-reference>
 				</parameter>
-				<parameter name="ElementName">
-					<string>Frame</string>
-				</parameter>
-				<parameter name="ElementParameters">
-					<parameters>
-						<parameter name="NumberOfChannelsByStream">
-							<data-reference root="type">
-								<field>StreamInfoBlock</field>
-								<field>Data</field>
-								<field>NumberOfChannels</field>
-								<tag>value</tag>
-							</data-reference>
-						</parameter>
-					</parameters>
-				</parameter>
-			</parameters>
-		</field>
+			</element-parameters>
+		</array>
 	</sequence>
 </type>

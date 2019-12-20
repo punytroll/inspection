@@ -249,8 +249,15 @@ namespace Inspection
 		{
 			for(auto & Tag : Tags)
 			{
-				assert((Tag.Statement.Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag.Statement.Value != nullptr));
-				Target->AddTag(Tag.Name, GetAnyFromValue(ExecutionContext, *(Tag.Statement.Value)));
+				if(Tag.Statement)
+				{
+					assert((Tag.Statement->Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag.Statement->Value != nullptr));
+					Target->AddTag(Tag.Name, GetAnyFromValue(ExecutionContext, *(Tag.Statement->Value)));
+				}
+				else
+				{
+					Target->AddTag(Tag.Name);
+				}
 			}
 		}
 		
@@ -788,8 +795,76 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	
 	switch(Array.Array->IterateType)
 	{
+	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
+		{
+			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			
+			if(Array.Array->ElementParameters)
+			{
+				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
+			}
+			
+			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
+			std::uint64_t ElementIndexInArray{0};
+			
+			while((Continue == true) && (Reader.HasRemaining() == true))
+			{
+				Inspection::Reader ElementReader{Reader};
+				
+				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+				
+				auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
+				
+				Continue = ElementResult->GetSuccess();
+				if(Continue == true)
+				{
+					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+					if(Array.Array->ElementName)
+					{
+						Result->GetValue()->AppendField(Array.Array->ElementName.value(), ElementResult->GetValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendField(ElementResult->GetValue());
+					}
+					Reader.AdvancePosition(ElementReader.GetConsumedLength());
+				}
+				else
+				{
+					break;
+				}
+			}
+			if(Reader.IsAtEnd() == true)
+			{
+				Result->GetValue()->AddTag("ended by length"s);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by failure"s);
+			}
+			if(ElementIndexInArray > 0)
+			{
+				Result->GetValue()->AddTag("at least one element"s);
+				Continue = true;
+			}
+			else
+			{
+				Result->GetValue()->AddTag("error", "At least one element was expected."s);
+				Continue = false;
+			}
+			Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+			
+			break;
+		}
 	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
 		{
+			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			
+			if(Array.Array->ElementParameters)
+			{
+				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
+			}
+			
 			auto IterateField{ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateForEachField.value())};
 			
 			assert(IterateField != nullptr);
@@ -802,6 +877,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 			}
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
 			
+			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
 			auto NumberOfAppendedElements{0};
 			
 			for(auto ElementPropertiesIndex = 0ul; (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
@@ -811,7 +887,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 				assert(Reader.GetPositionInBuffer() == Properties.first);
 				
 				Inspection::Reader ElementReader{Reader, Properties.second};
-				auto ElementResult{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)->Get(ElementReader, ExecutionContext.GetAllParameters())};
+				auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
 				
 				Continue = ElementResult->GetSuccess();
 				Result->GetValue()->AppendField(Array.Array->ElementName.value(), ElementResult->GetValue());
@@ -824,8 +900,14 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		}
 	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
 		{
-			auto NumberOfRequiredElements{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Array.Array->IterateNumberOfElements.value())};
 			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			
+			if(Array.Array->ElementParameters)
+			{
+				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
+			}
+			
+			auto NumberOfRequiredElements{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Array.Array->IterateNumberOfElements.value())};
 			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
 			std::uint64_t ElementIndexInArray{0};
 			
@@ -837,7 +919,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 					
 					ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 					
-					auto ElementResult{ElementType->Get(ElementReader, ExecutionContext.GetAllParameters())};
+					auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
 					
 					Continue = ElementResult->GetSuccess();
 					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
@@ -871,6 +953,12 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
 		{
 			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			
+			if(Array.Array->ElementParameters)
+			{
+				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
+			}
+			
 			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
 			std::uint64_t ElementIndexInArray{0};
 			
@@ -1035,12 +1123,15 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	// tags
 	if(Continue == true)
 	{
-		if(Field.Tags.empty() == false)
+		for(auto & Tag : Field.Tags)
 		{
-			assert((Field.Type == Inspection::TypeDefinition::Part::Type::Field) || (Field.Type == Inspection::TypeDefinition::Part::Type::Forward));
-			for(auto & Tag : Field.Tags)
+			if(Tag.Statement)
 			{
-				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement));
+				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement.value()));
+			}
+			else
+			{
+				Result->GetValue()->AddTag(Tag.Name);
 			}
 		}
 	}
@@ -1173,11 +1264,15 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForw
 	// tags
 	if(Continue == true)
 	{
-		if(Forward.Tags.empty() == false)
+		for(auto & Tag : Forward.Tags)
 		{
-			for(auto & Tag : Forward.Tags)
+			if(Tag.Statement)
 			{
-				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement));
+				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement.value()));
+			}
+			else
+			{
+				Result->GetValue()->AddTag(Tag.Name);
 			}
 		}
 	}
@@ -1332,7 +1427,14 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 	{
 		for(auto & Tag : Sequence.Tags)
 		{
-			Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement));
+			if(Tag.Statement)
+			{
+				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement.value()));
+			}
+			else
+			{
+				Result->GetValue()->AddTag(Tag.Name);
+			}
 		}
 	}
 	ExecutionContext.Pop();
@@ -1782,7 +1884,12 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
 				assert(Part.Array);
 				assert(PartChildElement->HasAttribute("type") == true);
-				if(PartChildElement->GetAttribute("type") == "for-each-field")
+				if(PartChildElement->GetAttribute("type") == "at-least-one-until-failure-or-length")
+				{
+					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength;
+					assert(XML::HasChildNodes(PartChildElement) == false);
+				}
+				else if(PartChildElement->GetAttribute("type") == "for-each-field")
 				{
 					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
 					Part.Array->IterateForEachField.emplace();
@@ -1831,6 +1938,12 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
 				_LoadTypeReference(Part.Array->ElementType, PartChildElement);
 			}
+			else if(PartChildElement->GetName() == "element-parameters")
+			{
+				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
+				Part.Array->ElementParameters.emplace();
+				_LoadParameters(Part.Array->ElementParameters.value(), PartChildElement);
+			}
 			else
 			{
 				std::cout << PartChildElement->GetName() << std::endl;
@@ -1865,39 +1978,39 @@ void Inspection::TypeDefinition::Type::_LoadSubtract(Inspection::TypeDefinition:
 
 void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
 {
+	assert(StatementElement != nullptr);
 	assert(Statement.Type == Inspection::TypeDefinition::Statement::Type::Unknown);
-	// statement element may be nullptr, if it represents the "nothing" value
-	if((StatementElement != nullptr) && (StatementElement->GetName() == "divide"))
+	if(StatementElement->GetName() == "divide")
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Divide;
 		Statement.Divide = new Inspection::TypeDefinition::Divide{};
 		_LoadDivide(*(Statement.Divide), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "equals"))
+	else if(StatementElement->GetName() == "equals")
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Equals;
 		Statement.Equals = new Inspection::TypeDefinition::Equals{};
 		_LoadEquals(*(Statement.Equals), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "subtract"))
+	else if(StatementElement->GetName() == "subtract")
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Subtract;
 		Statement.Subtract = new Inspection::TypeDefinition::Subtract{};
 		_LoadSubtract(*(Statement.Subtract), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
+	else if((StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};
 		_LoadCast(*(Statement.Cast), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(StatementElement) == true))
+	else if((StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};
 		_LoadCast(*(Statement.Cast), StatementElement);
 	}
-	else if((StatementElement != nullptr) && (StatementElement->GetName() == "single-precision-real") && (XML::HasOneChildElement(StatementElement) == true))
+	else if((StatementElement->GetName() == "single-precision-real") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};
@@ -1932,7 +2045,6 @@ void Inspection::TypeDefinition::Type::_LoadStatementFromWithin(Inspection::Type
 			throw std::domain_error{"To read a statment from an element with childs, at least one of them needs to be an element."};
 		}
 	}
-	// the statement element may still be nullptr if it represents the "nothing" value
 	_LoadStatement(Statement, StatementElement);
 }
 
@@ -1940,7 +2052,11 @@ void Inspection::TypeDefinition::Type::_LoadTag(Inspection::TypeDefinition::Tag 
 {
 	assert(TagElement->HasAttribute("name") == true);
 	Tag.Name = TagElement->GetAttribute("name");
-	_LoadStatementFromWithin(Tag.Statement, TagElement);
+	if(XML::HasChildElements(TagElement) == true)
+	{
+		Tag.Statement.emplace();
+		_LoadStatementFromWithin(Tag.Statement.value(), TagElement);
+	}
 }
 
 void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement)
@@ -2408,10 +2524,12 @@ void Inspection::TypeDefinition::Type::_LoadValueFromWithin(Inspection::TypeDefi
 
 void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement)
 {
+	assert(ValueElement != nullptr);
 	assert(Value.DataType == Inspection::TypeDefinition::DataType::Unknown);
-	if(ValueElement == nullptr)
+	if(ValueElement->GetName() == "nothing")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::Nothing;
+		assert(ValueElement->GetChilds().size() == 0);
 	}
 	else if(ValueElement->GetName() == "boolean")
 	{
@@ -2599,7 +2717,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 	}
 	else
 	{
-		throw std::domain_error{ValueElement->GetName() + " not allowed."};
+		assert(false);
 	}
 	assert(Value.DataType != Inspection::TypeDefinition::DataType::Unknown);
 }

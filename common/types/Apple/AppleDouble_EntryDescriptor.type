@@ -125,7 +125,9 @@
 							</tag>
 						</element>
 						<fallback-element valid="true">
-							<tag name="interpretation"/>
+							<tag name="interpretation">
+							<nothing/>
+							</tag>
 						</fallback-element>
 					</enumeration>
 				</apply-enumeration>

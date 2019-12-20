@@ -312,7 +312,7 @@ namespace Inspection
 			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
 			
 			std::string Name;
-			Inspection::TypeDefinition::Statement Statement;
+			std::experimental::optional< Inspection::TypeDefinition::Statement > Statement;
 		};
 		
 		class Enumeration
@@ -353,6 +353,7 @@ namespace Inspection
 		public:
 			enum class IterateType
 			{
+				AtLeastOneUntilFailureOrLength,
 				ForEachField,
 				NumberOfElements,
 				UntilFailureOrLength
@@ -362,6 +363,7 @@ namespace Inspection
 			std::experimental::optional< Inspection::TypeDefinition::FieldReference > IterateForEachField;
 			std::experimental::optional< Inspection::TypeDefinition::Statement > IterateNumberOfElements;
 			std::experimental::optional< std::string > ElementName;
+			std::experimental::optional< Inspection::TypeDefinition::Parameters > ElementParameters;
 			Inspection::TypeDefinition::TypeReference ElementType;
 		};
 		
