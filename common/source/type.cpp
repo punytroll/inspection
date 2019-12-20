@@ -1,5 +1,4 @@
 #include <experimental/optional>
-#include <fstream>
 
 #include "execution_context.h"
 #include "getters.h"
@@ -1502,22 +1501,14 @@ Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretat
 	return Result;
 }
 
-void Inspection::TypeDefinition::Type::Load(const std::string & TypePath)
+void Inspection::TypeDefinition::Type::Load(std::istream & InputStream)
 {
-	try
-	{
-		std::ifstream InputFileStream{TypePath};
-		XML::Document Document{InputFileStream};
-		auto DocumentElement{Document.GetDocumentElement()};
-		
-		assert(DocumentElement != nullptr);
-		assert(DocumentElement->GetName() == "type");
-		_LoadType(*this, DocumentElement);
-	}
-	catch(std::domain_error & Exception)
-	{
-		std::throw_with_nested(std::runtime_error("Type path: " + TypePath));
-	}
+	XML::Document Document{InputStream};
+	auto DocumentElement{Document.GetDocumentElement()};
+	
+	assert(DocumentElement != nullptr);
+	assert(DocumentElement->GetName() == "type");
+	_LoadType(*this, DocumentElement);
 }
 
 void Inspection::TypeDefinition::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement)

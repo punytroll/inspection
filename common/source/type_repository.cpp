@@ -1,4 +1,5 @@
 #include <experimental/iterator>
+#include <fstream>
 #include <numeric>
 
 #include "file_handling.h"
@@ -86,7 +87,16 @@ Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(co
 			if((FileExists(TypePath) == true) && (IsRegularFile(TypePath) == true))
 			{
 				Result = new Inspection::TypeDefinition::Type{this};
-				Result->Load(TypePath);
+				try
+				{
+					std::ifstream InputFileStream{TypePath};
+					
+					Result->Load(InputFileStream);
+				}
+				catch(std::domain_error & Exception)
+				{
+					std::throw_with_nested(std::runtime_error("Type path: " + TypePath));
+				}
 				Module->_Types.insert(std::make_pair(PathParts.back(), Result));
 			}
 			else
