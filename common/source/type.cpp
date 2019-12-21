@@ -2229,10 +2229,6 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_ID3_2_3_Frame;
 				}
-				else if(HardcodedText->GetText() == "Get_ID3_2_3_Language")
-				{
-					Type._HardcodedGetter = Inspection::Get_ID3_2_3_Language;
-				}
 				else if(HardcodedText->GetText() == "Get_ID3_2_3_Frame_Header_Flags")
 				{
 					Type._HardcodedGetter = Inspection::Get_ID3_2_3_Frame_Header_Flags;

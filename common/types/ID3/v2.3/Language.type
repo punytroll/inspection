@@ -1,3 +1,106 @@
 <type>
-	<hardcoded>Get_ID3_2_3_Language</hardcoded>
+	<alternative>
+		<forward>
+			<!-- this is according to standard -->
+			<type-reference>
+				<part>ISO_639</part>
+				<part>2_1998</part>
+			</type-reference>
+		</forward>
+		<forward>
+			<!-- this is a fallback, as seen in the wild -->
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_Zeroed_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>3</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+			<tag name="standard">
+				<string>ISO 639-2:1998 (alpha-3)</string>
+			</tag>
+			<tag name="interpretation">
+				<nothing/>
+			</tag>
+			<tag name="error">
+				<string>The language code consists of three null bytes. Although common, this is not valid.</string>
+			</tag>
+		</forward>
+		<forward>
+			<!-- 'XXX' is used in ID3v2.4 to indicate an unknown language -->
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>ByTemplate</part>
+			</type-reference>
+			<parameters>
+				<parameter name="Template">
+					<string>XXX</string>
+				</parameter>
+			</parameters>
+			<tag name="standard">
+				<string>ID3v2.4</string>
+			</tag>
+			<tag name="interpretation">
+				<nothing/>
+			</tag>
+			<tag name="error">
+				<string>The language code 'XXX' is only valid in ID3v2.4 to indicate an unknown language.</string>
+			</tag>
+		</forward>
+		<forward>
+			<!-- try to read at least an ASCII string -->
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>Printable_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>3</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+			<tag name="standard">
+				<string>ISO 639-2:1998 (alpha-3)</string>
+			</tag>
+			<tag name="interpretation">
+				<nothing/>
+			</tag>
+			<tag name="error">
+				<string>The language code is an ASCII string but is not recognized as ISO 639-2:1998 (alpha-3).</string>
+			</tag>
+		</forward>
+		<forward>
+			<!-- this is just a fallback, so we read anything at all -->
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>3</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+			<tag name="standard">
+				<string>ISO 639-2:1998 (alpha-3)</string>
+			</tag>
+			<tag name="interpretation">
+				<nothing/>
+			</tag>
+			<tag name="error">
+				<string>Could not read a valid ASCII string to be interpreted as an ISO 639-2:1998 (alpha-3) language code.</string>
+			</tag>
+		</forward>
+	</alternative>
 </type>
