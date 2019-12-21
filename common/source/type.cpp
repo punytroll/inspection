@@ -2245,10 +2245,6 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_ID3_2_4_Frame;
 				}
-				else if(HardcodedText->GetText() == "Get_ID3_2_4_Language")
-				{
-					Type._HardcodedGetter = Inspection::Get_ID3_2_4_Language;
-				}
 				else if(HardcodedText->GetText() == "Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination")
 				{
 					Type._HardcodedGetter = Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination;
