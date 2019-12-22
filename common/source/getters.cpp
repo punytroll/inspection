@@ -2712,33 +2712,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_ApplicationBlock_Data
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
-		auto FieldResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader, {})};
+		Inspection::Reader PartReader{Reader};
+		auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
 		
-		Result->GetValue()->GetField("RegisteredApplicationIdentifier")->AddTag("bytes", FieldResult->GetValue()->GetData());
-		UpdateState(Continue, FieldResult);
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{4, 0}};
-		auto FieldResult{Get_ASCII_String_Printable_EndedByLength(FieldReader, {})};
-		
-		UpdateState(Continue, FieldResult);
-		if(Continue == true)
-		{
-			Reader.AdvancePosition(FieldReader.GetConsumedLength());
-			Result->GetValue()->GetField("RegisteredApplicationIdentifier")->AddTag("string interpretation", FieldResult->GetValue()->GetData());
-		}
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader FieldReader{Reader};
-		auto FieldResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(FieldReader, {})};
-		auto FieldValue{Result->GetValue()->AppendField("ApplicationData", FieldResult->GetValue())};
-		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("ApplicationData", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -5003,11 +4982,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame(Inspection::
 		}
 		else if(Identifier == "POPM")
 		{
-			Inspection::Reader FieldReader{Reader, ClaimedSize};
-			auto FieldResult{Get_ID3_2_4_Frame_Body_POPM(FieldReader)};
+			Inspection::Reader PartReader{Reader, ClaimedSize};
+			auto PartResult{Inspection::Get_ID3_2_4_Frame_Body_POPM(PartReader)};
 			
-			Result->GetValue()->AppendFields(FieldResult->GetValue()->GetFields());
-			UpdateState(Continue, Reader, FieldResult, FieldReader);
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(Identifier == "PRIV")
 		{
@@ -5771,12 +5751,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			{
 				if(std::experimental::any_cast< bool >(Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()) == true)
 				{
-					Inspection::Reader FieldReader{Reader, Size};
-					auto FieldResult{Get_ID3_2_4_Tag_ExtendedHeader(FieldReader)};
-					auto FieldValue{Result->GetValue()->AppendField("ExtendedHeader", FieldResult->GetValue())};
+					Inspection::Reader PartReader{Reader, Size};
+					auto PartResult{Inspection::Get_ID3_2_4_Tag_ExtendedHeader(PartReader)};
 					
-					UpdateState(Continue, Reader, FieldResult, FieldReader);
-					Size -= FieldReader.GetConsumedLength();
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendField("ExtendedHeader", PartResult->GetValue());
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					Size -= PartReader.GetConsumedLength();
 				}
 			}
 			if(Continue == true)
@@ -6422,11 +6403,12 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader FieldReader{Reader, Inspection::Length{3, 0}};
-		auto FieldResult{Get_ASCII_String_Alphabetic_EndedByLength(FieldReader)};
-		auto FieldValue{Result->SetValue(FieldResult->GetValue())};
+		Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
+		auto PartResult{Inspection::Get_ASCII_String_Alphabetic_EndedByLength(PartReader)};
 		
-		UpdateState(Continue, Reader, FieldResult, FieldReader);
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
