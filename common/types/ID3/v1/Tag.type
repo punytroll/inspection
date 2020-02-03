@@ -58,11 +58,6 @@
 			</length>
 		</field>
 		<field name="Year">
-			<type-reference>
-				<part>String</part>
-				<part>ISO_IEC_8859_1_1998</part>
-				<part>EndedByTerminationUntilLengthOrLength</part>
-			</type-reference>
 			<length>
 				<bytes>
 					<unsigned-integer-64bit>4</unsigned-integer-64bit>
@@ -71,6 +66,36 @@
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>
 				</bits>
 			</length>
+			<alternative>
+				<forward>
+					<type-reference>
+						<part>String</part>
+						<part>ISO_IEC_8859_1_1998</part>
+						<part>EndedByTerminationUntilLengthOrLength</part>
+					</type-reference>
+				</forward>
+				<sequence>
+					<tag name="error">
+						<string>The "Year" field must be four bytes long and any unused bytes at the end must be filled with binary zeros.</string>
+					</tag>
+					<tag name="standard">
+						<string>ID3v1</string>
+					</tag>
+					<field name="String">
+						<type-reference>
+							<part>String</part>
+							<part>ISO_IEC_8859_1_1998</part>
+							<part>EndedByTermination</part>
+						</type-reference>
+					</field>
+					<field name="Rest">
+						<type-reference>
+							<part>Data</part>
+							<part>SetOrUnset_EndedByLength</part>
+						</type-reference>
+					</field>
+				</sequence>
+			</alternative>
 		</field>
 		<alternative>
 			<field name="Comment">
