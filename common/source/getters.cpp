@@ -4186,14 +4186,23 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame(Inspection::
 			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
+			Reader.SetPosition(FieldStart + ClaimedSize);
 		}
 		else if(HandledSize < ClaimedSize)
 		{
 			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
 			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("error", "See at the end of the frame for superfluous data."s);
+			
+			Inspection::Reader PartReader{Reader, ClaimedSize - HandledSize};
+			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Rest", PartResult->GetValue());
+			Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -5704,8 +5713,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			// reading
 			if(Continue == true)
 			{
+				auto & Unsynchronization{Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("Unsynchronization")->GetData()};
 				Inspection::Reader PartReader{Reader, Size};
-				auto PartResult{Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"ID3", "v2.3", "Frame"})}, {"ElementName", "Frame"s}})};
+				auto PartResult{Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"ID3", "v2.3", "Frame"})}, {"ElementName", "Frame"s}, {"ElementParameters", std::unordered_map< std::string, std::experimental::any >{{"Unsynchronization", Unsynchronization}}}})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
@@ -5734,8 +5744,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_Tag(Inspection::Read
 			{
 				if(Size > Inspection::Length{0, 0})
 				{
+					auto & Unsynchronization{Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("Unsynchronization")->GetData()};
 					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Inspection::Get_ID3_2_3_Frame(PartReader, {})};
+					auto PartResult{Inspection::Get_ID3_2_3_Frame(PartReader, {{"Unsynchronization", Unsynchronization}})};
 					
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
