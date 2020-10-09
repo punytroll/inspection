@@ -175,7 +175,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 		
 		if(Position >= 0)
 		{
-			Reader.SetPosition(Inspection::Length(Position, 0));
+			Reader.SetPosition(Inspection::Length{static_cast< std::uint64_t >(Position), 0});
 		}
 		else
 		{
