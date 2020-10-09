@@ -54,10 +54,4 @@ $(OBJECT_DIRECTORY)/%.o: %.cpp
 libcommon.a: $(OBJECT_FILES)
 	ar rcs $@ $(OBJECT_FILES)
 
-test/test: test/test.o
-	$(CXX) $(LDFLAGS) $^ -o $@ libcommon.a
-
-test/test.o: test/test.cpp
-	$(CXX) $(CXXFLAGS) -Iinclude -c $< -o $@
-
 .PHONY: default all all-here all-recursive check clean clean-here clean-recursive
