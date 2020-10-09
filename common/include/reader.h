@@ -92,7 +92,8 @@ namespace Inspection
 		
 		const Inspection::Buffer & GetBuffer(void) const
 		{
-			return _Buffer;
+			assert(_Buffer != nullptr);
+			return *_Buffer;
 		}
 		
 		void SetBitstreamType(Inspection::Reader::BitstreamType BitstreamType)
@@ -101,10 +102,10 @@ namespace Inspection
 			_BitstreamType = BitstreamType;
 		}
 	private:
-		Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length, Inspection::Reader::BitstreamType BitstreamType);
+		Reader(Inspection::Buffer * Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length, Inspection::Reader::BitstreamType BitstreamType);
 		Inspection::Reader::BitstreamType _BitstreamType;
 		Inspection::Length _BoundaryInBuffer;
-		Inspection::Buffer & _Buffer;
+		Inspection::Buffer * _Buffer;
 		Inspection::Length _OffsetInBuffer;
 		Inspection::Length _PositionInBuffer;
 	};
