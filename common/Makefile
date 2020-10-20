@@ -24,9 +24,6 @@ all-here: libcommon.a
 
 all-recursive: all-here
 
-check: libcommon.a test/test
-	./test/test
-
 clean: clean-recursive
 
 clean-here:
