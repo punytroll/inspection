@@ -10,12 +10,12 @@ clean:
 	$(RM) flacinspector.o
 
 common:
-	$(MAKE) -C common
+	$(MAKE) -C ../common
 
-../flacinspector: flacinspector.o common/libcommon.a
-	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
+../flacinspector: flacinspector.o ../common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@
 
-flacinspector.o: flacinspector.cpp common/include/*.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
+flacinspector.o: flacinspector.cpp ../common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

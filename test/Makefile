@@ -14,12 +14,12 @@ clean:
 	$(RM) test.o
 
 common:
-	$(MAKE) -C common
+	$(MAKE) -C ../common
 
-test: test.o common/libcommon.a
-	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
+test: test.o ../common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@
 
-test.o: test.cpp common/include/*.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
+test.o: test.cpp ../common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: all common default

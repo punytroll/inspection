@@ -10,12 +10,12 @@ clean:
 	$(RM) vorbisinspector.o
 
 common:
-	$(MAKE) -C common
+	$(MAKE) -C ../common
 
-../vorbisinspector: vorbisinspector.o common/libcommon.a
-	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
+../vorbisinspector: vorbisinspector.o ../common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@
 
-vorbisinspector.o: vorbisinspector.cpp common/include/*.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
+vorbisinspector.o: vorbisinspector.cpp ../common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

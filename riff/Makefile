@@ -10,12 +10,12 @@ clean:
 	$(RM) riffinspector.o
 
 common:
-	$(MAKE) -C common
+	$(MAKE) -C ../common
 
-../riffinspector: riffinspector.o common/libcommon.a
-	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
+../riffinspector: riffinspector.o ../common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@
 
-riffinspector.o: riffinspector.cpp common/include/*.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
+riffinspector.o: riffinspector.cpp ../common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

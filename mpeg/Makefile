@@ -2,19 +2,19 @@ CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
 
 default: all
 
-all: ../mpeginspector
+all: common ../mpeginspector
 
 clean:
 	$(RM) ../mpeginspector
 	$(RM) mpeginspector.o
 
 common:
-	$(MAKE) -C common
+	$(MAKE) -C ../common
 
-../mpeginspector: mpeginspector.o common/libcommon.a
-	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
+../mpeginspector: mpeginspector.o ../common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@
 
-mpeginspector.o: mpeginspector.cpp common/include/*.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
+mpeginspector.o: mpeginspector.cpp ../common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

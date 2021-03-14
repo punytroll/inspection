@@ -10,12 +10,12 @@ clean:
 	$(RM) apeinspector.o
 
 common:
-	$(MAKE) -C common
+	$(MAKE) -C ../common
 
-../apeinspector: apeinspector.o common/libcommon.a
-	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
+../apeinspector: apeinspector.o ../common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@
 
-apeinspector.o: apeinspector.cpp common/include/*.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
+apeinspector.o: apeinspector.cpp ../common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

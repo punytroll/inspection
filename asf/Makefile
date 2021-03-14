@@ -10,12 +10,12 @@ clean:
 	$(RM) asfinspector.o
 
 common:
-	$(MAKE) -C common
+	$(MAKE) -C ../common
 
-../asfinspector: asfinspector.o common/libcommon.a
-	$(CXX) $(LDFLAGS) $^ -o $@ common/libcommon.a
+../asfinspector: asfinspector.o ../common/libcommon.a
+	$(CXX) $(LDFLAGS) $^ -o $@
 
-asfinspector.o: asfinspector.cpp common/include/*.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -Icommon/include
+asfinspector.o: asfinspector.cpp ../common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common
