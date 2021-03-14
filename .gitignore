@@ -19,6 +19,7 @@
 /generalinspector
 /common/libcommon.a
 /common/.dependency-files/
+/common/source/type_library_path.h
 /common/test/test
 /common/test/test.o
 /examples/preparations/

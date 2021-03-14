@@ -1,6 +1,8 @@
 CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
 LDFLAGS = -g
 
+ALWAYS_EXECUTE := $(shell python3 update_type_library_path.py "$(CURDIR)/types" "source/type_library_path.h")
+
 default: all
 
 HEADER_DIRECTORIES := $(patsubst %/,%,$(sort $(dir $(shell find . -name '*.h'))))
@@ -29,6 +31,7 @@ clean: clean-recursive
 clean-here:
 	$(RM) libcommon.a
 	$(RM) $(OBJECT_FILES)
+	$(RM) source/type_library_path.h
 	@MORE_OBJECT_FILES="$(filter-out $(OBJECT_FILES),$(wildcard $(OBJECT_DIRECTORY)/*.o))"; \
 	if [ x"$${MORE_OBJECT_FILES}" != x ]; then \
 		echo "\nThe following object files have not been removed explicitly. They are deleted with the \"$(OBJECT_DIRECTORY)\" directory, nevertheless."; \

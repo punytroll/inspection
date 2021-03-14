@@ -5,6 +5,7 @@
 #include "file_handling.h"
 #include "type.h"
 #include "type_repository.h"
+#include "type_library_path.h"
 
 std::string JoinSeparated(const std::vector< std::string > & Strings, const std::string & Separator)
 {
@@ -48,7 +49,7 @@ namespace Inspection
 Inspection::TypeRepository::TypeRepository(void) :
 	_RootModule{new Module{}}
 {
-	_RootModule->_Path = "/home/moebius/projects/inspection/common/types";
+	_RootModule->_Path = g_TypeLibraryPath;
 }
 
 Inspection::TypeRepository::~TypeRepository(void)
