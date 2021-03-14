@@ -19,7 +19,7 @@ common:
 test: test.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-test.o: test.cpp ../common/include/*.h
+test.o: test.cpp ../common/include/common/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: all common default

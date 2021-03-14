@@ -15,7 +15,7 @@ common:
 ../flacinspector: flacinspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-flacinspector.o: flacinspector.cpp ../common/include/*.h
+flacinspector.o: flacinspector.cpp ../common/include/common/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

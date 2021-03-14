@@ -14,7 +14,7 @@ common:
 ../mpeginspector: mpeginspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-mpeginspector.o: mpeginspector.cpp ../common/include/*.h
+mpeginspector.o: mpeginspector.cpp ../common/include/common/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

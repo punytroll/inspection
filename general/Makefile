@@ -15,7 +15,7 @@ common:
 ../generalinspector: generalinspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-generalinspector.o: generalinspector.cpp ../common/include/*.h
+generalinspector.o: generalinspector.cpp ../common/include/common/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

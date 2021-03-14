@@ -48,11 +48,11 @@ clean-recursive: clean-here
 
 $(DEPENDENCY_DIRECTORY)/%.dep: %
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
+	$(CXX) $(CXXFLAGS) -Iinclude/common -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
 
 $(OBJECT_DIRECTORY)/%.o: %.cpp
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude -c $< -o $@
+	$(CXX) $(CXXFLAGS) -Iinclude/common -c $< -o $@
 
 libcommon.a: $(OBJECT_FILES)
 	ar rcs $@ $(OBJECT_FILES)

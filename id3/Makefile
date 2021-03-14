@@ -14,7 +14,7 @@ common:
 ../id3inspector: id3inspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-id3inspector.o: id3inspector.cpp ../common/include/*.h
+id3inspector.o: id3inspector.cpp ../common/include/common/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

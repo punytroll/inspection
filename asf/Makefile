@@ -15,7 +15,7 @@ common:
 ../asfinspector: asfinspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-asfinspector.o: asfinspector.cpp ../common/include/*.h
+asfinspector.o: asfinspector.cpp ../common/include/common/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

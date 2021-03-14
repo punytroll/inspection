@@ -15,7 +15,7 @@ common:
 ../apeinspector: apeinspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-apeinspector.o: apeinspector.cpp ../common/include/*.h
+apeinspector.o: apeinspector.cpp ../common/include/common/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

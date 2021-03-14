@@ -15,7 +15,7 @@ common:
 ../vorbisinspector: vorbisinspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-vorbisinspector.o: vorbisinspector.cpp ../common/include/*.h
+vorbisinspector.o: vorbisinspector.cpp ../common/include/common/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common
