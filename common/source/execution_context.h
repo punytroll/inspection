@@ -19,6 +19,7 @@
 #ifndef COMMON_EXECUTION_CONTEXT_H
 #define COMMON_EXECUTION_CONTEXT_H
 
+#include <any>
 #include <cassert>
 #include <functional>
 #include <list>
@@ -38,27 +39,27 @@ namespace Inspection
 		class Element
 		{
 		public:
-			Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+			Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
 			
 			const Inspection::TypeDefinition::Part & GetPart(void);
-			const std::unordered_map< std::string, std::experimental::any > & GetParameters(void);
+			const std::unordered_map< std::string, std::any > & GetParameters(void);
 			Inspection::Reader & GetReader(void);
 			Inspection::Result & GetResult(void);
 			
-			const std::unordered_map< std::string, std::experimental::any > & _Parameters;
+			const std::unordered_map< std::string, std::any > & _Parameters;
 			const Inspection::TypeDefinition::Part & _Part;
 			Inspection::Reader & _Reader;
 			Inspection::Result & _Result;
 		};
 	public:
-		void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters);
+		void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
 		void Pop(void);
 		Inspection::Result & GetTopLevelResult(void) const;
 		Inspection::Length CalculateLengthFromReference(const Inspection::TypeDefinition::LengthReference & LengthReference);
 		std::shared_ptr< Inspection::Value > GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference);
 		std::shared_ptr< Inspection::Value > GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference);
-		const std::experimental::any & GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference);
-		std::unordered_map< std::string, std::experimental::any > GetAllParameters(void);
+		const std::any & GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference);
+		std::unordered_map< std::string, std::any > GetAllParameters(void);
 		std::uint32_t GetExecutionStackSize(void) const;
 	private:
 		std::list< Inspection::ExecutionContext::Element > _ExecutionStack;

@@ -16,9 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
+#include <any>
+
 #include "execution_context.h"
 
-Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) :
+Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) :
 	_Parameters{Parameters},
 	_Part{Part},
 	_Reader{Reader},
@@ -26,7 +28,7 @@ Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition:
 {
 }
 
-void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	_ExecutionStack.emplace_back(Part, Result, Reader, Parameters);
 }
@@ -287,7 +289,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromF
 	return Result;
 }
 
-const std::experimental::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference)
+const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference)
 {
 	auto ExecutionStackIterator{std::rbegin(_ExecutionStack)};
 	
@@ -307,9 +309,9 @@ const std::experimental::any & Inspection::ExecutionContext::GetAnyReferenceFrom
 	throw std::runtime_error{"Could not find named parameter \"" + ParameterReference.Name + "\"."};
 }
 
-std::unordered_map< std::string, std::experimental::any > Inspection::ExecutionContext::GetAllParameters(void)
+std::unordered_map< std::string, std::any > Inspection::ExecutionContext::GetAllParameters(void)
 {
-	std::unordered_map< std::string, std::experimental::any > Result;
+	std::unordered_map< std::string, std::any > Result;
 	
 	for(auto ExecutionStackElement : _ExecutionStack)
 	{

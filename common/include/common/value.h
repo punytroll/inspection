@@ -2,7 +2,7 @@
 #define INSPECTION_COMMON_VALUE_H
 
 #include <algorithm>
-#include <experimental/any>
+#include <any>
 #include <list>
 #include <memory>
 
@@ -82,7 +82,7 @@ namespace Inspection
 			return Tag;
 		}
 		
-		const std::experimental::any & GetData(void)
+		const std::any & GetData(void)
 		{
 			return _Data;
 		}
@@ -141,7 +141,7 @@ namespace Inspection
 			return std::find_if(std::begin(_Fields), std::end(_Fields), [&Name](const std::shared_ptr< Inspection::Value > & Field) { return Field->GetName() == Name; }) != std::end(_Fields);
 		}
 		
-		void SetData(const std::experimental::any & Data)
+		void SetData(const std::any & Data)
 		{
 			_Data = Data;
 		}
@@ -151,7 +151,7 @@ namespace Inspection
 			_Name = Name;
 		}
 	private:
-		std::experimental::any _Data;
+		std::any _Data;
 		std::string _Name;
 		std::list< std::shared_ptr< Inspection::Value > > _Tags;
 		std::list< std::shared_ptr< Inspection::Value > > _Fields;

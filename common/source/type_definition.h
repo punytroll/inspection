@@ -19,7 +19,7 @@
 #ifndef COMMON_TYPE_DEFINITION_H
 #define COMMON_TYPE_DEFINITION_H
 
-#include <experimental/optional>
+#include <optional>
 #include <vector>
 
 #include "guid.h"
@@ -269,20 +269,20 @@ namespace Inspection
 		{
 		public:
 			Inspection::TypeDefinition::DataType DataType;
-			std::experimental::optional< bool > Boolean;
-			std::experimental::optional< Inspection::TypeDefinition::DataReference > DataReference;
-			std::experimental::optional< Inspection::GUID > GUID;
-			std::experimental::optional< Inspection::TypeDefinition::Length > Length;
-			std::experimental::optional< Inspection::TypeDefinition::LengthReference > LengthReference;
-			std::experimental::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
-			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
-			std::experimental::optional< float > SinglePrecisionReal;
-			std::experimental::optional< std::string > String;
-			std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-			std::experimental::optional< std::uint8_t > UnsignedInteger8Bit;
-			std::experimental::optional< std::uint16_t > UnsignedInteger16Bit;
-			std::experimental::optional< std::uint32_t > UnsignedInteger32Bit;
-			std::experimental::optional< std::uint64_t > UnsignedInteger64Bit;
+			std::optional< bool > Boolean;
+			std::optional< Inspection::TypeDefinition::DataReference > DataReference;
+			std::optional< Inspection::GUID > GUID;
+			std::optional< Inspection::TypeDefinition::Length > Length;
+			std::optional< Inspection::TypeDefinition::LengthReference > LengthReference;
+			std::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
+			std::optional< Inspection::TypeDefinition::Parameters > Parameters;
+			std::optional< float > SinglePrecisionReal;
+			std::optional< std::string > String;
+			std::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
+			std::optional< std::uint8_t > UnsignedInteger8Bit;
+			std::optional< std::uint16_t > UnsignedInteger16Bit;
+			std::optional< std::uint32_t > UnsignedInteger32Bit;
+			std::optional< std::uint64_t > UnsignedInteger64Bit;
 		};
 		
 		class Parameter
@@ -312,7 +312,7 @@ namespace Inspection
 			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
 			
 			std::string Name;
-			std::experimental::optional< Inspection::TypeDefinition::Statement > Statement;
+			std::optional< Inspection::TypeDefinition::Statement > Statement;
 		};
 		
 		class Enumeration
@@ -327,7 +327,7 @@ namespace Inspection
 			};
 			Inspection::TypeDefinition::DataType BaseDataType;
 			std::vector< Inspection::TypeDefinition::Enumeration::Element > Elements;
-			std::experimental::optional< Inspection::TypeDefinition::Enumeration::Element > FallbackElement;
+			std::optional< Inspection::TypeDefinition::Enumeration::Element > FallbackElement;
 		};
 		
 		class ApplyEnumeration
@@ -344,7 +344,7 @@ namespace Inspection
 				ApplyEnumeration
 			};
 			
-			std::experimental::optional< Inspection::TypeDefinition::ApplyEnumeration > ApplyEnumeration;
+			std::optional< Inspection::TypeDefinition::ApplyEnumeration > ApplyEnumeration;
 			Inspection::TypeDefinition::Interpretation::Type Type;
 		};
 		
@@ -360,10 +360,10 @@ namespace Inspection
 			};
 			
 			Inspection::TypeDefinition::Array::IterateType IterateType;
-			std::experimental::optional< Inspection::TypeDefinition::FieldReference > IterateForEachField;
-			std::experimental::optional< Inspection::TypeDefinition::Statement > IterateNumberOfElements;
-			std::experimental::optional< std::string > ElementName;
-			std::experimental::optional< Inspection::TypeDefinition::Parameters > ElementParameters;
+			std::optional< Inspection::TypeDefinition::FieldReference > IterateForEachField;
+			std::optional< Inspection::TypeDefinition::Statement > IterateNumberOfElements;
+			std::optional< std::string > ElementName;
+			std::optional< Inspection::TypeDefinition::Parameters > ElementParameters;
 			Inspection::TypeDefinition::TypeReference ElementType;
 		};
 		
@@ -389,13 +389,13 @@ namespace Inspection
 			
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
 			
-			std::experimental::optional< Inspection::TypeDefinition::Array > Array;
-			std::experimental::optional< Inspection::TypeDefinition::Parameters > Parameters;
-			std::experimental::optional< std::string > FieldName;
-			std::experimental::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-			std::experimental::optional< Inspection::TypeDefinition::Interpretation > Interpretation;
-			std::experimental::optional< Inspection::TypeDefinition::Statement > Length;
-			std::experimental::optional< std::vector< Inspection::TypeDefinition::Part > > Parts;
+			std::optional< Inspection::TypeDefinition::Array > Array;
+			std::optional< Inspection::TypeDefinition::Parameters > Parameters;
+			std::optional< std::string > FieldName;
+			std::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
+			std::optional< Inspection::TypeDefinition::Interpretation > Interpretation;
+			std::optional< Inspection::TypeDefinition::Statement > Length;
+			std::optional< std::vector< Inspection::TypeDefinition::Part > > Parts;
 			std::vector< Inspection::TypeDefinition::Tag > Tags;
 			Inspection::TypeDefinition::Part::Type Type;
 			std::vector< Inspection::TypeDefinition::Statement > Verifications;

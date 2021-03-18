@@ -1,4 +1,3 @@
-#include <experimental/iterator>
 #include <fstream>
 #include <numeric>
 
@@ -63,7 +62,7 @@ const Inspection::TypeDefinition::Type * Inspection::TypeRepository::GetType(con
 	return _GetOrLoadType(PathParts);
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeRepository::Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters)
+std::unique_ptr< Inspection::Result > Inspection::TypeRepository::Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	return _GetOrLoadType(PathParts)->Get(Reader, Parameters);
 }

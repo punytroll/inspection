@@ -1,4 +1,5 @@
-#include <experimental/optional>
+#include <any>
+#include <optional>
 
 #include "execution_context.h"
 #include "getters.h"
@@ -17,42 +18,42 @@ namespace Inspection
 	class EvaluationResult
 	{
 	public:
-		std::experimental::optional< bool > AbortEvaluation;
-		std::experimental::optional< bool > DataIsValid;
-		std::experimental::optional< bool > EngineError;
-		std::experimental::optional< bool > StructureIsValid;
+		std::optional< bool > AbortEvaluation;
+		std::optional< bool > DataIsValid;
+		std::optional< bool > EngineError;
+		std::optional< bool > StructureIsValid;
 	};
 	
 	namespace Algorithms
 	{
-		std::experimental::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor);
-		std::experimental::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast);
-		std::experimental::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement);
-		const std::experimental::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
-		std::experimental::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend);
+		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor);
+		std::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast);
+		std::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement);
+		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
+		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend);
 		
 		template< typename Type >
-		Type Cast(const std::experimental::any & Any)
+		Type Cast(const std::any & Any)
 		{
 			if(Any.type() == typeid(float))
 			{
-				return static_cast< Type >(std::experimental::any_cast< float >(Any));
+				return static_cast< Type >(std::any_cast< float >(Any));
 			}
 			else if(Any.type() == typeid(std::uint8_t))
 			{
-				return static_cast< Type >(std::experimental::any_cast< std::uint8_t >(Any));
+				return static_cast< Type >(std::any_cast< std::uint8_t >(Any));
 			}
 			else if(Any.type() == typeid(std::uint16_t))
 			{
-				return static_cast< Type >(std::experimental::any_cast< std::uint16_t >(Any));
+				return static_cast< Type >(std::any_cast< std::uint16_t >(Any));
 			}
 			else if(Any.type() == typeid(std::uint32_t))
 			{
-				return static_cast< Type >(std::experimental::any_cast< std::uint32_t >(Any));
+				return static_cast< Type >(std::any_cast< std::uint32_t >(Any));
 			}
 			else if(Any.type() == typeid(std::uint64_t))
 			{
-				return static_cast< Type >(std::experimental::any_cast< std::uint64_t >(Any));
+				return static_cast< Type >(std::any_cast< std::uint64_t >(Any));
 			}
 			else
 			{
@@ -80,15 +81,15 @@ namespace Inspection
 				
 				if(Any.type() == typeid(std::uint8_t))
 				{
-					Result = std::experimental::any_cast< std::uint8_t >(Any);
+					Result = std::any_cast< std::uint8_t >(Any);
 				}
 				else if(Any.type() == typeid(std::uint16_t))
 				{
-					Result = std::experimental::any_cast< std::uint16_t >(Any);
+					Result = std::any_cast< std::uint16_t >(Any);
 				}
 				else if(Any.type() == typeid(std::uint32_t))
 				{
-					Result = std::experimental::any_cast< std::uint32_t >(Any);
+					Result = std::any_cast< std::uint32_t >(Any);
 				}
 				else
 				{
@@ -137,7 +138,7 @@ namespace Inspection
 			}
 		}
 		
-		const std::experimental::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference)
+		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference)
 		{
 			auto Value{ExecutionContext.GetValueFromDataReference(DataReference)};
 			
@@ -146,12 +147,12 @@ namespace Inspection
 			return Value->GetData();
 		}
 		
-		const std::experimental::any & GetAnyReferenceFromParameterReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::ParameterReference & ParameterReference)
+		const std::any & GetAnyReferenceFromParameterReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::ParameterReference & ParameterReference)
 		{
 			return ExecutionContext.GetAnyReferenceFromParameterReference(ParameterReference);
 		}
 		
-		std::experimental::any GetAnyFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
+		std::any GetAnyFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
 		{
 			switch(Value.DataType)
 			{
@@ -264,7 +265,7 @@ namespace Inspection
 		bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target)
 		{
 			bool Result{false};
-			auto BaseValueString{to_string_cast(std::experimental::any_cast< const DataType & >(Target->GetData()))};
+			auto BaseValueString{to_string_cast(std::any_cast< const DataType & >(Target->GetData()))};
 			auto ElementIterator{std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; })};
 			
 			if(ElementIterator != Enumeration.Elements.end())
@@ -290,7 +291,7 @@ namespace Inspection
 			return Result;
 		}
 		
-		std::experimental::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement)
+		std::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement)
 		{
 			switch(Statement.Type)
 			{
@@ -325,7 +326,7 @@ namespace Inspection
 			}
 		}
 		
-		std::experimental::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
+		std::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
 		{
 			switch(Cast.DataType)
 			{
@@ -353,9 +354,9 @@ namespace Inspection
 		}
 		
 		template< typename Type >
-		bool Equals(const std::experimental::any & One, const std::experimental::any & Two)
+		bool Equals(const std::any & One, const std::any & Two)
 		{
-			return std::experimental::any_cast< const Type & >(One) == std::experimental::any_cast< const Type & >(Two);
+			return std::any_cast< const Type & >(One) == std::any_cast< const Type & >(Two);
 		}
 		
 		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value1, const Inspection::TypeDefinition::Value & Value2)
@@ -363,7 +364,7 @@ namespace Inspection
 			auto Any1{Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value1)};
 			auto Any2{Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value2)};
 			
-			if((Any1.empty() == false) && (Any2.empty() == false))
+			if((Any1.has_value() == true) && (Any2.has_value() == true))
 			{
 				if(Any1.type() == Any2.type())
 				{
@@ -419,14 +420,14 @@ namespace Inspection
 			}
 		}
 		
-		std::experimental::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor)
+		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor)
 		{
 			auto AnyDivident{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Dividend)};
 			auto AnyDivisor{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Divisor)};
 			
 			if((AnyDivident.type() == typeid(float)) && (AnyDivisor.type() == typeid(float)))
 			{
-				return std::experimental::any_cast< float >(AnyDivident) / std::experimental::any_cast< float >(AnyDivisor);
+				return std::any_cast< float >(AnyDivident) / std::any_cast< float >(AnyDivisor);
 			}
 			else
 			{
@@ -436,14 +437,14 @@ namespace Inspection
 			return nullptr;
 		}
 		
-		std::experimental::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend)
+		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend)
 		{
 			auto AnyMinuend{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Minuend)};
 			auto AnySubtrahend{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Subtrahend)};
 			
 			if((AnyMinuend.type() == typeid(Inspection::Length)) && (AnySubtrahend.type() == typeid(Inspection::Length)))
 			{
-				return std::experimental::any_cast< const Inspection::Length & >(AnyMinuend) - std::experimental::any_cast< const Inspection::Length & >(AnySubtrahend);
+				return std::any_cast< const Inspection::Length & >(AnyMinuend) - std::any_cast< const Inspection::Length & >(AnySubtrahend);
 			}
 			else
 			{
@@ -454,7 +455,7 @@ namespace Inspection
 		}
 	}
 	
-	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map< std::string, std::experimental::any > & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions)
+	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map< std::string, std::any > & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions)
 	{
 		for(auto & ParameterDefinition : ParameterDefinitions.Parameters)
 		{
@@ -493,7 +494,7 @@ namespace Inspection
 					{
 						assert(ParameterDefinition.Statement.Value->Parameters);
 						
-						std::unordered_map< std::string, std::experimental::any > InnerParameters;
+						std::unordered_map< std::string, std::any > InnerParameters;
 						
 						FillNewParameters(ExecutionContext, InnerParameters, ParameterDefinition.Statement.Value->Parameters.value());
 						NewParameters.emplace(ParameterDefinition.Name, InnerParameters);
@@ -527,7 +528,7 @@ Inspection::TypeDefinition::Type::~Type(void)
 	delete _Part;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -554,7 +555,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 			
 			if(_Part->Length)
 			{
-				auto Length{std::experimental::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, _Part->Length.value()))};
+				auto Length{std::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, _Part->Length.value()))};
 				
 				if(Reader.Has(Length) == true)
 				{
@@ -572,7 +573,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 			}
 			if(PartReader != nullptr)
 			{
-				std::unordered_map< std::string, std::experimental::any > PartParameters;
+				std::unordered_map< std::string, std::any > PartParameters;
 				
 				if(_Part->Parameters)
 				{
@@ -658,7 +659,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
 {
 	assert(Alternative.Type == Inspection::TypeDefinition::Part::Type::Alternative);
 	
@@ -674,7 +675,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 		
 		if(AlternativePart.Length)
 		{
-			auto Length{std::experimental::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, AlternativePart.Length.value()))};
+			auto Length{std::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, AlternativePart.Length.value()))};
 			
 			if(Reader.Has(Length) == true)
 			{
@@ -691,7 +692,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 		}
 		if(AlternativePartReader != nullptr)
 		{
-			std::unordered_map< std::string, std::experimental::any > AlternativePartParameters;
+			std::unordered_map< std::string, std::any > AlternativePartParameters;
 			
 			if(AlternativePart.Parameters)
 			{
@@ -780,7 +781,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
 {
 	assert(Array.Type == Inspection::TypeDefinition::Part::Type::Array);
 	
@@ -796,7 +797,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	{
 	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
 		{
-			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			std::unordered_map< std::string, std::any > ElementParameters;
 			
 			if(Array.Array->ElementParameters)
 			{
@@ -857,7 +858,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		}
 	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
 		{
-			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			std::unordered_map< std::string, std::any > ElementParameters;
 			
 			if(Array.Array->ElementParameters)
 			{
@@ -872,7 +873,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 			
 			for(auto Field : IterateField->GetFields())
 			{
-				ElementProperties.emplace_back(std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("position")->GetData()), std::experimental::any_cast< const Inspection::Length & >(Field->GetTag("length")->GetData()));
+				ElementProperties.emplace_back(std::any_cast< const Inspection::Length & >(Field->GetTag("position")->GetData()), std::any_cast< const Inspection::Length & >(Field->GetTag("length")->GetData()));
 			}
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
 			
@@ -899,7 +900,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		}
 	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
 		{
-			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			std::unordered_map< std::string, std::any > ElementParameters;
 			
 			if(Array.Array->ElementParameters)
 			{
@@ -951,7 +952,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		}
 	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
 		{
-			std::unordered_map< std::string, std::experimental::any > ElementParameters;
+			std::unordered_map< std::string, std::any > ElementParameters;
 			
 			if(Array.Array->ElementParameters)
 			{
@@ -1015,7 +1016,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
 {
 	assert(Field.Type == Inspection::TypeDefinition::Part::Type::Field);
 	
@@ -1039,7 +1040,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 		
 		if(FieldPart.Length)
 		{
-			auto Length{std::experimental::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, FieldPart.Length.value()))};
+			auto Length{std::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, FieldPart.Length.value()))};
 			
 			if(Reader.Has(Length) == true)
 			{
@@ -1057,7 +1058,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 		}
 		if(FieldPartReader != nullptr)
 		{
-			std::unordered_map< std::string, std::experimental::any > FieldPartParameters;
+			std::unordered_map< std::string, std::any > FieldPartParameters;
 			
 			if(FieldPart.Parameters)
 			{
@@ -1183,7 +1184,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
 {
 	assert(Fields.Type == Inspection::TypeDefinition::Part::Type::Fields);
 	
@@ -1246,7 +1247,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
 {
 	assert(Forward.Type == Inspection::TypeDefinition::Part::Type::Forward);
 	
@@ -1324,7 +1325,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForw
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map< std::string, std::experimental::any > & Parameters) const
+std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
 {
 	assert(Sequence.Type == Inspection::TypeDefinition::Part::Type::Sequence);
 	
@@ -1340,7 +1341,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 		
 		if(SequencePart.Length)
 		{
-			auto Length{std::experimental::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, SequencePart.Length.value()))};
+			auto Length{std::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, SequencePart.Length.value()))};
 			
 			if(Reader.Has(Length) == true)
 			{
@@ -1358,7 +1359,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 		}
 		if(SequencePartReader != nullptr)
 		{
-			std::unordered_map< std::string, std::experimental::any > SequencePartParameters;
+			std::unordered_map< std::string, std::any > SequencePartParameters;
 			
 			if(SequencePart.Parameters)
 			{

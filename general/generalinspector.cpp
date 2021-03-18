@@ -626,7 +626,7 @@ bool EvaluateTestQuery(std::shared_ptr< Inspection::Value > Value, const std::st
 		}
 		else if(QueryPartSpecifications[0] == "has-data")
 		{
-			return Value->GetData().empty() == false;
+			return Value->GetData().has_value();
 		}
 		else if(QueryPartSpecifications[0] == "is-data")
 		{
@@ -757,7 +757,7 @@ void QueryWriter(std::unique_ptr< Inspection::Result > & Result, const std::stri
 		}
 		else if(QueryPartSpecifications[0] == "has-data")
 		{
-			if(Value->GetData().empty() == false)
+			if(Value->GetData().has_value() == true)
 			{
 				std::cout << "true";
 			}

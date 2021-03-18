@@ -12,7 +12,7 @@ namespace Inspection
 {
 	inline void PrintValue(std::shared_ptr< Inspection::Value > Value, const std::string & Indentation = "")
 	{
-		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetData().empty() == false) || (Value->GetTags().empty() == false)};
+		auto HeaderLine{(Value->GetName().empty() == false) || (Value->GetData().has_value() == true) || (Value->GetTags().empty() == false)};
 		
 		if(HeaderLine == true)
 		{
@@ -30,11 +30,11 @@ namespace Inspection
 			}
 			std::cout << Value->GetName();
 		}
-		if((Value->GetName().empty() == false) && (Value->GetData().empty() == false))
+		if((Value->GetName().empty() == false) && (Value->GetData().has_value() == true))
 		{
 			std::cout << g_White << ": ";
 		}
-		if(Value->GetData().empty() == false)
+		if(Value->GetData().has_value() == true)
 		{
 			if((Value->GetName().empty() == false) && (Value->GetName() == "error"))
 			{
@@ -63,7 +63,7 @@ namespace Inspection
 					{
 						std::cout << g_BrightRed;
 					}
-					else if(Tag->GetData().empty() == true)
+					else if(Tag->GetData().has_value() == false)
 					{
 						std::cout << g_BrightBlack;
 					}
@@ -73,11 +73,11 @@ namespace Inspection
 					}
 					std::cout << Tag->GetName();
 				}
-				if((Tag->GetName().empty() == false) && (Tag->GetData().empty() == false))
+				if((Tag->GetName().empty() == false) && (Tag->GetData().has_value() == true))
 				{
 					std::cout << g_White << '=';
 				}
-				if(Tag->GetData().empty() == false)
+				if(Tag->GetData().has_value() == true)
 				{
 					if(Tag->GetData().type() == typeid(nullptr))
 					{
@@ -114,11 +114,11 @@ namespace Inspection
 							std::cout << SubTag->GetName();
 						}
 						std::cout << g_BrightBlack;
-						if((SubTag->GetName().empty() == false) && (SubTag->GetData().empty() == false))
+						if((SubTag->GetName().empty() == false) && (SubTag->GetData().has_value() == true))
 						{
 							std::cout << '=';
 						}
-						if(SubTag->GetData().empty() == false)
+						if(SubTag->GetData().has_value() == true)
 						{
 							std::cout << SubTag->GetData();
 						}
