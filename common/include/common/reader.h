@@ -25,6 +25,7 @@ namespace Inspection
 		explicit Reader(Inspection::Reader & Reader);
 		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & Length);
+		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
 		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
 		std::uint8_t Get0Bits(void);
 		std::uint8_t Get1Bits(void);
@@ -88,6 +89,16 @@ namespace Inspection
 			_PositionInBuffer = _OffsetInBuffer + Position;
 			assert(_PositionInBuffer >= _OffsetInBuffer);
 			assert(_PositionInBuffer <= _BoundaryInBuffer);
+		}
+		
+		Inspection::Length GetOffsetInBuffer(void) const
+		{
+			return _OffsetInBuffer;
+		}
+		
+		Inspection::Length GetBoundaryInBuffer(void) const
+		{
+			return _BoundaryInBuffer;
 		}
 		
 		const Inspection::Buffer & GetBuffer(void) const

@@ -43,6 +43,10 @@ inline std::ostream & operator<<(std::ostream & OStream, const std::any & Any)
 	{
 		return OStream;
 	}
+	else if(Any.type() == typeid(char))
+	{
+		return OStream << std::any_cast< char >(Any);
+	}
 	else if(Any.type() == typeid(std::string))
 	{
 		return OStream << std::any_cast< std::string >(Any);

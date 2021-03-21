@@ -3,224 +3,227 @@
 #include <string>
 
 #include <common/buffer.h>
-#include <common/file_handling.h>
-#include <common/getters.h>
+#include <common/inspector.h>
+#include <common/reader.h>
 #include <common/result.h>
 #include <common/type_repository.h>
 
-using namespace std::string_literals;
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// helper function to find the position of an embedded APETAG                                    //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-std::int64_t GetAPETAGPosition(const Inspection::Buffer & Buffer)
+namespace Inspection
 {
-	std::int64_t Result{-1};
-	auto Start{0ul};
-	auto Position{0ul};
-	auto State{0ul};
-	auto Length{Buffer.GetLength().GetBytes()};
-	
-	while((Result == -1) && (Position < Length))
+	class APEInspector : public Inspection::Inspector
 	{
-		auto Byte{Buffer.GetData()[Position]};
-		
-		switch(State)
+	protected:
+		virtual std::tuple< Inspection::Length, Inspection::Length > _GetStartAndEnd(const Inspection::Buffer & Buffer, const Inspection::Length & StartAt) override
 		{
-		case 0:
+			auto Found{false};
+			auto Start{0ul};
+			auto Position{StartAt.GetBytes()};
+			
+			if(StartAt.GetBits() != 0)
 			{
-				if(Byte == 'A')
-				{
-					Start = Position;
-					State = 1;
-				}
-				else
-				{
-					State = 0;
-				}
-				
-				break;
+				Position += 1;
 			}
-		case 1:
+			
+			auto State{0ul};
+			auto Length{Buffer.GetLength().GetBytes()};
+			
+			while((Found == false) && (Position < Length))
 			{
-				if(Byte == 'P')
-				{
-					State = 2;
-				}
-				else if(Byte == 'A')
-				{
-					State = 1;
-				}
-				else
-				{
-					State = 0;
-				}
+				auto Byte{Buffer.GetData()[Position]};
 				
-				break;
+				switch(State)
+				{
+				case 0:
+					{
+						if(Byte == 'A')
+						{
+							Start = Position;
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 1:
+					{
+						if(Byte == 'P')
+						{
+							State = 2;
+						}
+						else if(Byte == 'A')
+						{
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 2:
+					{
+						if(Byte == 'E')
+						{
+							State = 3;
+						}
+						else if(Byte == 'A')
+						{
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 3:
+					{
+						if(Byte == 'T')
+						{
+							State = 4;
+						}
+						else if(Byte == 'A')
+						{
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 4:
+					{
+						if(Byte == 'A')
+						{
+							State = 5;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 5:
+					{
+						if(Byte == 'G')
+						{
+							State = 6;
+						}
+						else if(Byte == 'A')
+						{
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 6:
+					{
+						if(Byte == 'E')
+						{
+							State = 7;
+						}
+						else if(Byte == 'A')
+						{
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 7:
+					{
+						if(Byte == 'X')
+						{
+							Found = true;
+						}
+						else if(Byte == 'A')
+						{
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				}
+				Position += 1;
 			}
-		case 2:
+			if(Found == true)
 			{
-				if(Byte == 'E')
-				{
-					State = 3;
-				}
-				else if(Byte == 'A')
-				{
-					State = 1;
-				}
-				else
-				{
-					State = 0;
-				}
-				
-				break;
+				return {{Start, 0}, Buffer.GetLength()};
 			}
-		case 3:
+			else
 			{
-				if(Byte == 'T')
-				{
-					State = 4;
-				}
-				else if(Byte == 'A')
-				{
-					State = 1;
-				}
-				else
-				{
-					State = 0;
-				}
-				
-				break;
-			}
-		case 4:
-			{
-				if(Byte == 'A')
-				{
-					State = 5;
-				}
-				else
-				{
-					State = 0;
-				}
-				
-				break;
-			}
-		case 5:
-			{
-				if(Byte == 'G')
-				{
-					State = 6;
-				}
-				else if(Byte == 'A')
-				{
-					State = 1;
-				}
-				else
-				{
-					State = 0;
-				}
-				
-				break;
-			}
-		case 6:
-			{
-				if(Byte == 'E')
-				{
-					State = 7;
-				}
-				else if(Byte == 'A')
-				{
-					State = 1;
-				}
-				else
-				{
-					State = 0;
-				}
-				
-				break;
-			}
-		case 7:
-			{
-				if(Byte == 'X')
-				{
-					Result = Start;
-				}
-				else if(Byte == 'A')
-				{
-					State = 1;
-				}
-				else
-				{
-					State = 0;
-				}
-				
-				break;
+				return {Buffer.GetLength(), Buffer.GetLength()};
 			}
 		}
-		Position += 1;
-	}
-	
-	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// seeking
-	if(Continue == true)
-	{
-		auto Position{GetAPETAGPosition(Reader.GetBuffer())};
 		
-		if(Position >= 0)
+		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 		{
-			Reader.SetPosition(Inspection::Length{static_cast< std::uint64_t >(Position), 0});
+			auto Result{Inspection::InitializeResult(Reader)};
+			auto Continue{Reader.HasRemaining()};
+			
+			// reading
+			if(Continue == true)
+			{
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
+				
+				Continue = PartResult->GetSuccess();
+				Result->SetValue(PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				Result->GetValue()->SetName("APEv2 Tag");
+			}
+			// finalization
+			Result->SetSuccess(Continue);
+			Inspection::FinalizeResult(Result, Reader);
+			
+			return Result;
 		}
-		else
-		{
-			Continue = false;
-		}
-	}
-	// reading
-	if(Continue == true)
-	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->SetValue(PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-		Result->GetValue()->SetName("APEv2 Tag");
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
+	};
 }
 
 int main(int argc, char ** argv)
 {
-	std::deque< std::string > Paths;
-	auto Arguments{argc};
-	auto Argument{0};
+	Inspection::APEInspector Inspector;
+	auto NumberOfArguments{argc};
+	auto ArgumentIndex{0};
 	
-	while(++Argument < Arguments)
+	while(++ArgumentIndex < NumberOfArguments)
 	{
-		Paths.push_back(argv[Argument]);
+		std::string Argument{argv[ArgumentIndex]};
+		
+		Inspector.PushPath(Argument);
 	}
-	if(Paths.size() == 0)
+	
+	int Result{0};
+	
+	if(Inspector.GetPathCount() == 0)
 	{
 		std::cerr << "Usage: " << argv[0] << " <paths> ..." << std::endl;
-
-		return 1;
+		Result = 1;
 	}
-	while(Paths.begin() != Paths.end())
+	else
 	{
-		ReadItem(Paths.front(), Process, DefaultWriter);
-		Paths.pop_front();
+		Inspector.Process();
 	}
 	
-	return 0;
+	return Result;
 }

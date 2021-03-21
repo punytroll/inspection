@@ -116,7 +116,7 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 // - RIFFFile                                                                                    //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Get_General(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	Inspection::Reader PartReader{Reader};
@@ -563,7 +563,7 @@ std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > ProcessAsSpecificType(Inspection::Reader & Reader, const std::vector< std::vector< std::string > > & TypeSequence)
+std::unique_ptr< Inspection::Result > Get_AsSpecificTypeSequence(Inspection::Reader & Reader, const std::vector< std::vector< std::string > > & TypeSequence)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -843,7 +843,7 @@ int main(int argc, char ** argv)
 	while(Paths.begin() != Paths.end())
 	{
 		std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer{DefaultWriter};
-		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor{Process};
+		std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::any > &) > Getter{Get_General};
 		
 		if(Query != "")
 		{
@@ -858,10 +858,9 @@ int main(int argc, char ** argv)
 			{
 				TypeSequence.emplace_back(SplitString(TypeParts, '/'));
 			}
-			
-			Processor = std::bind(ProcessAsSpecificType, std::placeholders::_1, TypeSequence);
+			Getter = std::bind(Get_AsSpecificTypeSequence, std::placeholders::_1, TypeSequence);
 		}
-		ReadItem(Paths.front(), Processor, Writer);
+		ReadItem(Paths.front(), Getter, Writer);
 		Paths.pop_front();
 	}
 	

@@ -10354,7 +10354,11 @@ std::unique_ptr< Inspection::Result > Inspection::Get_String_ASCII_ByTemplate(In
 			{
 				Result->GetValue()->AddTag("ended by error"s);
 				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character does not match the template.");
+				Result->GetValue()->AddTag("expected character", TemplateCharacter);
+				Result->GetValue()->AddTag("found character", static_cast< char >(Character));
 				Continue = false;
+				
+				break;
 			}
 		}
 		if(Continue == true)

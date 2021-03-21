@@ -1,80 +1,108 @@
 #include <deque>
 #include <memory>
 
-#include <common/buffer.h>
-#include <common/file_handling.h>
-#include <common/getters.h>
+#include <common/inspector.h>
 #include <common/result.h>
 #include <common/type_repository.h>
 
-bool g_WithFrames{false};
-
-std::unique_ptr< Inspection::Result > Process(Inspection::Reader & Reader)
+namespace Inspection
 {
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	// reading
-	if(Continue == true)
+	class FLACInspector : public Inspection::Inspector
 	{
-		if(g_WithFrames == true)
+	public:
+		FLACInspector(void) :
+			_WithFrames{false}
 		{
-			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->SetValue(PartResult->GetValue());
-			Result->GetValue()->SetName("FLACStream");
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else
+		
+		void SetWithFrames(void)
 		{
-			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Stream_Header"}, PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->SetValue(PartResult->GetValue());
-			Result->GetValue()->SetName("FLACStream");
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			_WithFrames = true;
 		}
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
+	protected:
+		virtual std::tuple< Inspection::Length, Inspection::Length > _GetStartAndEnd(const Inspection::Buffer & Buffer, const Inspection::Length & StartAt) override
+		{
+			if(StartAt == Inspection::Length{0, 0})
+			{
+				return {{0, 0}, Buffer.GetLength()};
+			}
+			else
+			{
+				return {Buffer.GetLength(), Buffer.GetLength()};
+			}
+		}
+		
+		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
+		{
+			auto Result{Inspection::InitializeResult(Reader)};
+			auto Continue{true};
+			
+			// reading
+			if(Continue == true)
+			{
+				if(_WithFrames == true)
+				{
+					Inspection::Reader PartReader{Reader};
+					auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {})};
+					
+					Continue = PartResult->GetSuccess();
+					Result->SetValue(PartResult->GetValue());
+					Result->GetValue()->SetName("FLACStream");
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
+				else
+				{
+					Inspection::Reader PartReader{Reader};
+					auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Stream_Header"}, PartReader, {})};
+					
+					Continue = PartResult->GetSuccess();
+					Result->SetValue(PartResult->GetValue());
+					Result->GetValue()->SetName("FLACStream");
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
+			}
+			// finalization
+			Result->SetSuccess(Continue);
+			Inspection::FinalizeResult(Result, Reader);
+			
+			return Result;
+		}
+	private:
+		bool _WithFrames;
+	};
 }
 
 int main(int argc, char ** argv)
 {
-	std::deque< std::string > Paths;
-	auto Arguments{argc};
+	Inspection::FLACInspector Inspector;
+	auto NumberOfArguments{argc};
 	auto ArgumentIndex{0};
 	
-	while(++ArgumentIndex < Arguments)
+	while(++ArgumentIndex < NumberOfArguments)
 	{
 		std::string Argument{argv[ArgumentIndex]};
 		
 		if(Argument == "--with-frames")
 		{
-			g_WithFrames = true;
+			Inspector.SetWithFrames();
 		}
 		else
 		{
-			Paths.push_back(Argument);
+			Inspector.PushPath(Argument);
 		}
 	}
-	if(Paths.size() == 0)
+	
+	int Result{0};
+	
+	if(Inspector.GetPathCount() == 0)
 	{
-		std::cerr << "Usage: " << argv[0] << " <paths> ..." << std::endl;
-
-		return 1;
+		std::cerr << "Usage: " << argv[0] << " [--with-frames] <paths> ..." << std::endl;
+		Result = 1;
 	}
-	while(Paths.begin() != Paths.end())
+	else
 	{
-		ReadItem(Paths.front(), Process, DefaultWriter);
-		Paths.pop_front();
+		Inspector.Process();
 	}
 	
-	return 0;
+	return Result;
 }

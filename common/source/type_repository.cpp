@@ -1,5 +1,6 @@
 #include <fstream>
 #include <numeric>
+#include <string>
 
 #include "file_handling.h"
 #include "type.h"

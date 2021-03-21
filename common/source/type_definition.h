@@ -20,6 +20,7 @@
 #define COMMON_TYPE_DEFINITION_H
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "guid.h"

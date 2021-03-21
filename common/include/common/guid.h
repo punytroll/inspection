@@ -2,6 +2,7 @@
 #define INSPECTION_COMMON_GUID_H
 
 #include <cstdint>
+#include <string>
 
 namespace Inspection
 {

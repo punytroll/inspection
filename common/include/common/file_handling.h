@@ -11,12 +11,13 @@
 #include <iostream>
 
 #include "colors.h"
+#include "exception_printing.h"
 #include "result.h"
 #include "value_printing.h"
 
-void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
-void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
-void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
+void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::any > &) > Getter, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
+void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::any > &) > Getter, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
+void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::any > &) > Getter, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer);
 
 inline std::int64_t GetFileSize(const std::string & Path)
 {
@@ -59,28 +60,7 @@ inline bool IsRegularFile(const std::string & Path)
 	return S_ISREG(Stat.st_mode);
 }
 
-inline void PrintException(const std::exception & Exception)
-{
-	std::cerr << Inspection::g_Yellow << Exception.what() << Inspection::g_Reset << std::endl;
-	try
-	{
-		std::rethrow_if_nested(Exception);
-	}
-	catch(const std::exception & NestedException)
-	{
-		std::cerr << Inspection::g_Red << "Nested exception" << Inspection::g_Reset << ":" << std::endl;
-		PrintException(NestedException);
-	}
-}
-
-inline void PrintExceptions(const std::exception & Exception)
-{
-	std::cerr << Inspection::g_Red << "Caught an exception while processing" << Inspection::g_Reset << ":" << std::endl;
-	PrintException(Exception);
-	std::cerr << std::endl;
-}
-
-inline void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
+inline void ReadDirectory(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::any > &) > Getter, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
 {
 	auto Directory(opendir(Path.c_str()));
 	
@@ -96,24 +76,24 @@ inline void ReadDirectory(const std::string & Path, std::function< std::unique_p
 			}
 			else if((std::string(DirectoryEntry->d_name) != ".") && (std::string(DirectoryEntry->d_name) != ".."))
 			{
-				ReadItem(Path + '/' + DirectoryEntry->d_name, Processor, Writer);
+				ReadItem(Path + '/' + DirectoryEntry->d_name, Getter, Writer);
 			}
 		}
 		closedir(Directory);
 	}
 }
 
-inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
+inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::any > &) > Getter, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
 {
 	if(FileExists(Path) == true)
 	{
 		if(IsDirectory(Path) == true)
 		{
-			ReadDirectory(Path, Processor, Writer);
+			ReadDirectory(Path, Getter, Writer);
 		}
 		else if(IsRegularFile(Path) == true)
 		{
-			ReadFile(Path, Processor, Writer);
+			ReadFile(Path, Getter, Writer);
 		}
 		else
 		{
@@ -128,7 +108,7 @@ inline void ReadItem(const std::string & Path, std::function< std::unique_ptr< I
 	}
 }
 
-inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &) > Processor, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
+inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< Inspection::Result > (Inspection::Reader &, const std::unordered_map< std::string, std::any > &) > Getter, std::function< void (std::unique_ptr< Inspection::Result > &, Inspection::Reader &) > Writer)
 {
 	auto FileDescriptor{open(Path.c_str(), O_RDONLY)};
 	
@@ -154,14 +134,14 @@ inline void ReadFile(const std::string & Path, std::function< std::unique_ptr< I
 				{
 					Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
 					Inspection::Reader Reader{Buffer};
-					auto ParseResult{Processor(Reader)};
+					auto ParseResult{Getter(Reader, {})};
 					
 					ParseResult->GetValue()->SetData(Inspection::g_BrightGreen + Path + Inspection::g_BrightWhite);
 					Writer(ParseResult, Reader);
 				}
 				catch(const std::exception & Exception)
 				{
-					PrintExceptions(Exception);
+					Inspection::PrintExceptions(Exception);
 				}
 				munmap(Address, FileSize);
 			}

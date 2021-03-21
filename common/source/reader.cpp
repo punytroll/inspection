@@ -13,6 +13,11 @@ Inspection::Reader::Reader(Inspection::Reader & Reader) :
 	assert(_BoundaryInBuffer <= Reader._BoundaryInBuffer);
 }
 
+Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length) :
+	Inspection::Reader{&Buffer, OffsetInBuffer, Length, Inspection::Reader::BitstreamType::MostSignificantBitFirst}
+{
+}
+
 Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length) :
 	Inspection::Reader{Reader._Buffer, OffsetInBuffer, Length, Reader._BitstreamType}
 {
