@@ -1,8 +1,10 @@
+#include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <numeric>
 #include <string>
 
-#include "file_handling.h"
+#include "result.h"
 #include "type.h"
 #include "type_repository.h"
 #include "type_library_path.h"
@@ -85,7 +87,7 @@ Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(co
 		{
 			auto TypePath{Module->_Path + '/' + PathParts.back() + ".type"};
 			
-			if((FileExists(TypePath) == true) && (IsRegularFile(TypePath) == true))
+			if((std::filesystem::exists(TypePath) == true) && (std::filesystem::is_regular_file(TypePath) == true))
 			{
 				Result = new Inspection::TypeDefinition::Type{this};
 				try
@@ -129,7 +131,7 @@ Inspection::Module * Inspection::TypeRepository::_GetOrLoadModule(const std::vec
 		}
 		else
 		{
-			if((FileExists(ModulePath) == true) && (IsDirectory(ModulePath) == true))
+			if((std::filesystem::exists(ModulePath) == true) && (std::filesystem::is_directory(ModulePath) == true))
 			{
 				auto NewModule{new Module{}};
 				
