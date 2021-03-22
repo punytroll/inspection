@@ -6,6 +6,7 @@
 #include "colors.h"
 #include "exception_printing.h"
 #include "inspector.h"
+#include "query.h"
 #include "reader.h"
 #include "value_printing.h"
 
@@ -147,5 +148,152 @@ void Inspection::Inspector::_Writer(std::unique_ptr< Inspection::Result > & Resu
 	if(Result->GetSuccess() == false)
 	{
 		std::cout << Inspection::g_BrightRed << "Parsing does not give valid." << Inspection::g_BrightWhite << std::endl;
+	}
+}
+
+void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Value, const std::string & Query)
+{
+	auto QueryParts{Inspection::SplitString(Query.substr(1), '/')};
+	
+	for(auto Index = 0ul; Index < QueryParts.size(); ++Index)
+	{
+		auto QueryPart{QueryParts[Index]};
+		auto QueryPartSpecifications{Inspection::SplitString(QueryPart, ':')};
+		
+		if(QueryPartSpecifications[0] == "field")
+		{
+			if(QueryPartSpecifications.size() == 2)
+			{
+				Value = Value->GetField(QueryPartSpecifications[1]);
+			}
+			else if(QueryPartSpecifications.size() == 3)
+			{
+				std::shared_ptr< Inspection::Value > MatchingField;
+				
+				if((QueryPartSpecifications[2][0] == '[') && (QueryPartSpecifications[2][QueryPartSpecifications[2].size() - 1] == ']'))
+				{
+					auto TestQuery{QueryPartSpecifications[2].substr(1, QueryPartSpecifications[2].size() - 2)};
+					
+					for(auto Field : Value->GetFields())
+					{
+						if((Field->GetName() == QueryPartSpecifications[1]) && (Inspection::EvaluateTestQuery(Field, TestQuery) == true))
+						{
+							MatchingField = Field;
+							
+							break;
+						}
+					}
+				}
+				else
+				{
+					auto WantedIndex{from_string_cast< std::uint64_t >(QueryPartSpecifications[2])};
+					std::uint64_t Index{0};
+					
+					for(auto Field : Value->GetFields())
+					{
+						if(Field->GetName() == QueryPartSpecifications[1])
+						{
+							if(WantedIndex == Index)
+							{
+								MatchingField = Field;
+								
+								break;
+							}
+							else
+							{
+								++Index;
+							}
+						}
+					}
+				}
+				if(MatchingField == nullptr)
+				{
+					throw std::invalid_argument("The test \"" + QueryPartSpecifications[2] + "\" could not be satisfied by any field.");
+				}
+				else
+				{
+					Value = MatchingField;
+				}
+			}
+			if(Index + 1 == QueryParts.size())
+			{
+				PrintValue(Value);
+			}
+		}
+		else if(QueryPartSpecifications[0] == "data")
+		{
+			if(QueryPartSpecifications.size() == 1)
+			{
+				std::cout << Value->GetData();
+			}
+			else
+			{
+				throw std::invalid_argument("The \"data\" query part specification does not accept any arguments.");
+			}
+		}
+		else if(QueryPartSpecifications[0] == "tag")
+		{
+			Value = Value->GetTag(QueryPartSpecifications[1]);
+			if(Index + 1 == QueryParts.size())
+			{
+				PrintValue(Value);
+			}
+		}
+		else if(QueryPartSpecifications[0] == "has-tag")
+		{
+			if(Value->HasTag(QueryPartSpecifications[1]) == true)
+			{
+				std::cout << "true";
+			}
+			else
+			{
+				std::cout << "false";
+			}
+		}
+		else if(QueryPartSpecifications[0] == "has-field")
+		{
+			if(Value->HasField(QueryPartSpecifications[1]) == true)
+			{
+				std::cout << "true";
+			}
+			else
+			{
+				std::cout << "false";
+			}
+		}
+		else if(QueryPartSpecifications[0] == "has-data")
+		{
+			if(Value->GetData().has_value() == true)
+			{
+				std::cout << "true";
+			}
+			else
+			{
+				std::cout << "false";
+			}
+		}
+		else if(QueryPartSpecifications[0] == "is-value")
+		{
+			std::stringstream Output;
+			
+			Output << Value->GetData();
+			if(Output.str() == QueryPartSpecifications[1])
+			{
+				std::cout << "true";
+			}
+			else
+			{
+				std::cout << "false";
+			}
+		}
+		else if(QueryPartSpecifications[0] == "type")
+		{
+			assert(QueryPartSpecifications.size() == 1);
+			std::cout << GetTypeName(Value->GetData().type());
+		}
+		else
+		{
+			assert(false);
+		}
 	}
 }

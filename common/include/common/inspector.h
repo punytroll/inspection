@@ -21,6 +21,7 @@ namespace Inspection
 		virtual std::tuple< Inspection::Length, Inspection::Length > _GetStartAndEnd(const Inspection::Buffer & Buffer, const Inspection::Length & Length);
 		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) = 0;
 		virtual void _Writer(std::unique_ptr< Inspection::Result > & Result);
+		void _QueryWriter(std::shared_ptr< Inspection::Value > Value, const std::string & Query);
 	private:
 		void _ProcessPath(const std::filesystem::directory_entry & DirectoryEntry);
 		void _ProcessFile(const std::filesystem::directory_entry & DirectoryEntry);
