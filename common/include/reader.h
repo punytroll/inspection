@@ -76,11 +76,22 @@ namespace Inspection
 			return _PositionInBuffer + Length <= _BoundaryInBuffer;
 		}
 		
+		/**
+		 * This function is valid for filters as well. It returns true, as long
+		 * as the read position is not equal to the end position.
+		 * Caveat: For generatoring filters (those that may create data out of
+		 *   thin air once they reach the end of the data) this may return true
+		 *   even if the positions are equal!
+		 **/
 		bool HasRemaining(void) const
 		{
 			return _PositionInBuffer < _BoundaryInBuffer;
 		}
 		
+		/**
+		 * This function is valid for filters as well. It return true, if the
+		 * read position equals the end position.
+		 **/
 		bool IsAtEnd(void) const
 		{
 			return _PositionInBuffer == _BoundaryInBuffer;

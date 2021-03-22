@@ -10,6 +10,8 @@ int main(void)
 	std::uint8_t Buffer1[] = {0x00};
 	std::uint8_t Buffer2[] = {0x61, 0x62, 0x63, 0x64, 0x65};
 	std::uint8_t Buffer3[] = {0x00, 0x00, 0x00, 0x00, 0x00};
+	std::uint8_t Buffer4[] = {0x61, 0x62, 0x63, 0x64, 0x65, 0x00};
+	std::uint8_t Buffer5[] = {0x61, 0x62, 0x63, 0x64, 0x65, 0x00, 0x00};
 	
 	{
 		// read an unsigned integer with 0 bits from an empty reader
@@ -188,6 +190,69 @@ int main(void)
 		assert(Data[1] == 0x00);
 		assert(Data[2] == 0x00);
 		assert(Data[3] == 0x00);
+	}
+	{
+		// testing reading with Get_ISO_IEC_8859_1_1998_String_EndedByLength
+		Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Reader, {})};
+		
+		assert(Result->GetSuccess() == true);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
+	}
+	{
+		// testing reading with Get_ISO_IEC_8859_1_1998_String_EndedByLength from a buffer that is too short
+		Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Reader, {})};
+		
+		assert(Result->GetSuccess() == false);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
+	}
+	{
+		// testing reading with Get_ISO_IEC_8859_1_1998_String_EndedByTermination
+		Inspection::Buffer Buffer{Buffer4, Inspection::Length{6, 0}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+		
+		assert(Result->GetSuccess() == true);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
+	}
+	{
+		// testing reading with Get_ISO_IEC_8859_1_1998_String_EndedByTermination
+		Inspection::Buffer Buffer{Buffer5, Inspection::Length{6, 4}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+		
+		assert(Result->GetSuccess() == true);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
+	}
+	{
+		// testing reading with Get_ISO_IEC_8859_1_1998_String_EndedByTermination from a buffer that is too short
+		Inspection::Buffer Buffer{Buffer4, Inspection::Length{4, 4}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+		
+		assert(Result->GetSuccess() == false);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
+	}
+	{
+		// testing reading with Get_ISO_IEC_8859_1_1998_String_EndedByTermination
+		Inspection::Buffer Buffer{Buffer1, Inspection::Length{1, 0}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+		
+		assert(Result->GetSuccess() == true);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "");
+	}
+	{
+		// testing reading with Get_ISO_IEC_8859_1_1998_String_EndedByTermination
+		Inspection::Buffer Buffer{Buffer1, Inspection::Length{0, 2}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+		
+		assert(Result->GetSuccess() == false);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "");
 	}
 	std::cout << "All tests successfull." << std::endl;
 }

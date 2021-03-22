@@ -6389,34 +6389,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
 	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
+		Inspection::ReadResult ReadResult;
 		auto NumberOfCharacters{0ul};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				NumberOfCharacters += 1;
-				Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character);
+				if(Is_ISO_IEC_8859_1_1998_Character(ReadResult.Data) == true)
+				{
+					NumberOfCharacters += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(ReadResult.Data);
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+					Continue = false;
+				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -6446,52 +6445,44 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
 	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{1, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
-			Continue = false;
-		}
-	}
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	//reading
 	if(Continue == true)
 	{
-		auto NumberOfCharacters{0ul};
 		std::stringstream Value;
+		Inspection::ReadResult ReadResult;
+		auto NumberOfCharacters{0ul};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if(Character == 0x00)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				if(NumberOfCharacters == 0)
+				if(ReadResult.Data == 0x00)
 				{
-					Result->GetValue()->AddTag("empty"s);
+					if(NumberOfCharacters == 0)
+					{
+						Result->GetValue()->AddTag("empty"s);
+					}
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					Result->GetValue()->AddTag("ended by termination"s);
+					
+					break;
 				}
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-				Result->GetValue()->AddTag("ended by termination"s);
-				
-				break;
-			}
-			else if(Is_ISO_IEC_8859_1_1998_Character(Character) == true)
-			{
-				NumberOfCharacters += 1;
-				Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Character);
+				else if(Is_ISO_IEC_8859_1_1998_Character(ReadResult.Data) == true)
+				{
+					NumberOfCharacters += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(ReadResult.Data);
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+					Continue = false;
+				}
 			}
 			else
 			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
