@@ -6,8 +6,9 @@
 
 int main(void)
 {
-	std::uint8_t * Buffer0 = { };
-	std::uint8_t * Buffer1 = { 0x00 };
+	std::uint8_t Buffer0[] = {};
+	std::uint8_t Buffer1[] = {0x00};
+	std::uint8_t Buffer2[] = {0x61, 0x62, 0x63, 0x64, 0x65};
 	
 	{
 		// read an unsigned integer with 0 bits from an empty reader
@@ -30,6 +31,24 @@ int main(void)
 		assert(Reader.GetPositionInBuffer() == Inspection::Length(0, 0));
 		assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
 		assert(Reader.GetRemainingLength() == Inspection::Length(1, 0));
+	}
+	{
+		// testing reading with Get_ASCII_String_Alphabetic_EndedByLength
+		Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Reader, {})};
+		
+		assert(Result->GetSuccess() == true);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
+	}
+	{
+		// testing reading with Get_ASCII_String_Alphabetic_EndedByLength from a buffer that is too short
+		Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
+		Inspection::Reader Reader{Buffer};
+		auto Result{Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Reader, {})};
+		
+		assert(Result->GetSuccess() == false);
+		assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 	}
 	std::cout << "All tests successfull." << std::endl;
 }

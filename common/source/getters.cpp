@@ -698,7 +698,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -707,34 +707,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphabetic"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
+		ReadResult ReadResult;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if(Is_ASCII_Character_Alphabetic(Character) == true)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				NumberOfCharacters += 1;
-				Value << Character;
+				if(Is_ASCII_Character_Alphabetic(ReadResult.Data) == true)
+				{
+					NumberOfCharacters += 1;
+					Value << ReadResult.Data;
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphabetic ASCII character.");
+					Continue = false;
+				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphabetic ASCII character.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.OutputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -6316,7 +6315,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_639_2_1998_Code(Inspec
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader, Inspection::Length{3, 0}};
-		auto PartResult{Inspection::Get_ASCII_String_Alphabetic_EndedByLength(PartReader)};
+		auto PartResult{Inspection::Get_ASCII_String_Alphabetic_EndedByLength(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());

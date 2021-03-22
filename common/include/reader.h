@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "length.h"
+#include "read_result.h"
 
 namespace Inspection
 {
@@ -36,6 +37,7 @@ namespace Inspection
 		std::uint8_t Get6Bits(void);
 		std::uint8_t Get7Bits(void);
 		std::uint8_t Get8Bits(void);
+		bool Read8Bits(ReadResult & ReadResult);
 		
 		void AdvancePosition(const Inspection::Length & Offset)
 		{

@@ -1,4 +1,5 @@
 #include "buffer.h"
+#include "read_result.h"
 #include "reader.h"
 
 Inspection::Reader::Reader(Inspection::Buffer & Buffer) :
@@ -304,4 +305,52 @@ std::uint8_t Inspection::Reader::Get8Bits(void)
 	_PositionInBuffer += Inspection::Length{0, 8};
 	
 	return Result;
+}
+
+bool Inspection::Reader::Read8Bits(ReadResult & ReadResult)
+{
+	ReadResult.Success = _Buffer != nullptr;
+	ReadResult.OutputLength = Inspection::Length{0, 8};
+	ReadResult.Data = 0;
+	if(ReadResult.Success == true)
+	{
+		if(Has(Inspection::Length{0, 8}) == true)
+		{
+			ReadResult.InputLength = Inspection::Length{0, 8};
+			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
+			{
+				if(_PositionInBuffer.GetBits() == 0)
+				{
+					ReadResult.Data = *(_Buffer->GetData() + _PositionInBuffer.GetBytes());
+				}
+				else
+				{
+					ReadResult.Data = ((*(_Buffer->GetData() + _PositionInBuffer.GetBytes()) << _PositionInBuffer.GetBits()) | ((*(_Buffer->GetData() + _PositionInBuffer.GetBytes() + 1)) >> (8 - _PositionInBuffer.GetBits()))) & 0xff;
+				}
+			}
+			else
+			{
+				if(_PositionInBuffer.GetBits() == 0)
+				{
+					ReadResult.Data = *(_Buffer->GetData() + _PositionInBuffer.GetBytes());
+				}
+				else
+				{
+					ReadResult.Data = ((*(_Buffer->GetData() + _PositionInBuffer.GetBytes()) >> _PositionInBuffer.GetBits()) | ((*(_Buffer->GetData() + _PositionInBuffer.GetBytes() + 1)) << (8 - _PositionInBuffer.GetBits()))) & 0xff;
+				}
+			}
+			_PositionInBuffer += ReadResult.InputLength;
+		}
+		else
+		{
+			ReadResult.InputLength = _BoundaryInBuffer - _PositionInBuffer;
+			ReadResult.Success = false;
+		}
+	}
+	else
+	{
+		ReadResult.InputLength = Inspection::Length{0, 0};
+	}
+	
+	return ReadResult.Success;
 }
