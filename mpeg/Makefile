@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
+CXXFLAGS = -std=c++20 -Wall -Werror -g -O0
 LDFLAGS = -g
 
 default: all
@@ -15,7 +15,7 @@ common:
 ../mpeginspector: mpeginspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-mpeginspector.o: mpeginspector.cpp ../common/include/common/*.h
+mpeginspector.o: mpeginspector.cpp ../common/include/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
+CXXFLAGS = -std=c++20 -Wall -Werror -g -O0
 LDFLAGS = -g
 
 default: all
@@ -19,7 +19,7 @@ common:
 test: test.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-test.o: test.cpp ../common/include/common/*.h
+test.o: test.cpp ../common/include/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: all common default

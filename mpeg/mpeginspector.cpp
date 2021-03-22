@@ -1,8 +1,8 @@
 #include <deque>
 
-#include <common/inspector.h>
-#include <common/result.h>
-#include <common/type_repository.h>
+#include "inspector.h"
+#include "result.h"
+#include "type_repository.h"
 
 namespace Inspection
 {

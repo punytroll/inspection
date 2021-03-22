@@ -1,8 +1,8 @@
 #include <cassert>
 
-#include <common/buffer.h>
-#include <common/getters.h>
-#include <common/result.h>
+#include "buffer.h"
+#include "getters.h"
+#include "result.h"
 
 int main(void)
 {

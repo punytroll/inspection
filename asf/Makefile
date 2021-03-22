@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
+CXXFLAGS = -std=c++20 -Wall -Werror -g -O0
 LDFLAGS = -g
 
 default: all
@@ -15,7 +15,7 @@ common:
 ../asfinspector: asfinspector.o ../common/libcommon.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-asfinspector.o: asfinspector.cpp ../common/include/common/*.h
+asfinspector.o: asfinspector.cpp ../common/include/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
 
 .PHONY: common

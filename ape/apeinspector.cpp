@@ -2,11 +2,11 @@
 #include <memory>
 #include <string>
 
-#include <common/buffer.h>
-#include <common/inspector.h>
-#include <common/reader.h>
-#include <common/result.h>
-#include <common/type_repository.h>
+#include "buffer.h"
+#include "inspector.h"
+#include "reader.h"
+#include "result.h"
+#include "type_repository.h"
 
 namespace Inspection
 {

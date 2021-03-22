@@ -1,9 +1,9 @@
 #include <bitset>
 #include <deque>
 
-#include <common/getters.h>
-#include <common/inspector.h>
-#include <common/result.h>
+#include "getters.h"
+#include "inspector.h"
+#include "result.h"
 
 namespace Inspection
 {

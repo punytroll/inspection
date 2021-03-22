@@ -2,15 +2,15 @@
 #include <string>
 #include <vector>
 
-#include <common/any_printing.h>
-#include <common/buffer.h>
-#include <common/file_handling.h>
-#include <common/getters.h>
-#include <common/inspector.h>
-#include <common/query.h>
-#include <common/result.h>
-#include <common/type_repository.h>
-#include <common/value_printing.h>
+#include "any_printing.h"
+#include "buffer.h"
+#include "file_handling.h"
+#include "getters.h"
+#include "inspector.h"
+#include "query.h"
+#include "result.h"
+#include "type_repository.h"
+#include "value_printing.h"
 
 using namespace std::string_literals;
 

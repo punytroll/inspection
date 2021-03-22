@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++17 -Wall -Werror -g -O0
+CXXFLAGS = -std=c++20 -Wall -Werror -g -O0
 LDFLAGS = -g
 
 ALWAYS_EXECUTE := $(shell python3 update_type_library_path.py "$(CURDIR)/types" "source/type_library_path.h")
@@ -48,11 +48,11 @@ clean-recursive: clean-here
 
 $(DEPENDENCY_DIRECTORY)/%.dep: %
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude/common -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
+	$(CXX) $(CXXFLAGS) -Iinclude -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
 
 $(OBJECT_DIRECTORY)/%.o: %.cpp
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude/common -c $< -o $@
+	$(CXX) $(CXXFLAGS) -Iinclude -c $< -o $@
 
 libcommon.a: $(OBJECT_FILES)
 	ar rcs $@ $(OBJECT_FILES)

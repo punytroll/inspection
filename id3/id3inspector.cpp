@@ -1,10 +1,10 @@
 #include <deque>
 #include <string>
 
-#include <common/getters.h>
-#include <common/inspector.h>
-#include <common/result.h>
-#include <common/type_repository.h>
+#include "getters.h"
+#include "inspector.h"
+#include "result.h"
+#include "type_repository.h"
 
 namespace Inspection
 {
