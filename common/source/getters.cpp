@@ -733,7 +733,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Alphabetic_En
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.OutputLength) + " bytes and bits of remaining data.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -760,34 +760,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumeric_
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphanumeric"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
+		ReadResult ReadResult;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if((Is_ASCII_Character_Alphabetic(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true))
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				NumberOfCharacters += 1;
-				Value << Character;
+				if((Is_ASCII_Character_Alphabetic(ReadResult.Data) == true) || (Is_ASCII_Character_DecimalDigit(ReadResult.Data) == true))
+				{
+					NumberOfCharacters += 1;
+					Value << ReadResult.Data;
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
+					Continue = false;
+				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric ASCII character.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -814,34 +813,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphanumeric or space"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
+		ReadResult ReadResult;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if((Is_ASCII_Character_Alphabetic(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true) || (Is_ASCII_Character_Space(Character) == true))
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				NumberOfCharacters += 1;
-				Value << Character;
+				if((Is_ASCII_Character_Alphabetic(ReadResult.Data) == true) || (Is_ASCII_Character_DecimalDigit(ReadResult.Data) == true) || (Is_ASCII_Character_Space(ReadResult.Data) == true))
+				{
+					NumberOfCharacters += 1;
+					Value << ReadResult.Data;
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric or space ASCII character.");
+					Continue = false;
+				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an alphanumeric or space ASCII character.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -859,7 +857,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_AlphaNumericO
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -868,36 +866,35 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("printable"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
+		ReadResult ReadResult;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if(Is_ASCII_Character_Printable(Character) == true)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				NumberOfCharacters += 1;
-				Value << Character;
+				if(Is_ASCII_Character_Printable(ReadResult.Data) == true)
+				{
+					NumberOfCharacters += 1;
+					Value << ReadResult.Data;
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by invalid character '" + to_string_cast(ReadResult.Data) + '\'');
+					Reader.MoveBackPosition(Inspection::Length{1, 0});
+					
+					break;
+				}
 			}
 			else
 			{
-				Result->GetValue()->AddTag("ended by invalid character '" + to_string_cast(Character) + '\'');
-				Reader.MoveBackPosition(Inspection::Length{1, 0});
-				
-				break;
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				Continue = false;
 			}
 		}
 		if(Reader.IsAtEnd() == true)
@@ -923,34 +920,33 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_String_Printable_End
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("printable"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
+		ReadResult ReadResult;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if(Is_ASCII_Character_Printable(Character) == true)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				NumberOfCharacters += 1;
-				Value << Character;
+				if(Is_ASCII_Character_Printable(ReadResult.Data) == true)
+				{
+					NumberOfCharacters += 1;
+					Value << ReadResult.Data;
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
+					Continue = false;
+				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -2456,23 +2452,24 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("8bit values"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
+		Inspection::ReadResult ReadResult;
 		std::vector< std::uint8_t > Value;
 		
-		while(Reader.HasRemaining() == true)
+		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			Value.push_back(Reader.Get8Bits());
+			if(Reader.Read8Bits(ReadResult) == true)
+			{
+				Value.push_back(ReadResult.Data);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(Value.size() + 1) + "th 8bit value from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				Continue = false;
+			}
 		}
 		Result->GetValue()->SetData(Value);
 		AppendLength(Result->GetValue(), Reader.GetConsumedLength());
@@ -2494,28 +2491,27 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Buffer_UnsignedInteger_8Bi
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("8bit values"s);
 	Result->GetValue()->AddTag("zeroed");
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
+		Inspection::ReadResult ReadResult;
 		std::vector< std::uint8_t > Value;
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Byte{Reader.Get8Bits()};
-			
-			Value.push_back(Byte);
-			if(Byte != 0x00)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(Value.size()) + "th byte was not zeroed.");
+				Value.push_back(ReadResult.Data);
+				if(ReadResult.Data != 0x00)
+				{
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(Value.size()) + "th 8bit value was not zeroed.");
+					Continue = false;
+				}
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(Value.size() + 1) + "th 8bit value from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
