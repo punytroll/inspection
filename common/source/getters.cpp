@@ -5436,7 +5436,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccordin
 		}
 		else if(TextEncoding == 0x03)
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Reader, {})};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -5508,7 +5508,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_TextStringAccordin
 		}
 		else if(TextEncoding == 0x03)
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Reader, {})};
 			auto FieldValue{Result->SetValue(FieldResult->GetValue())};
 			
 			UpdateState(Continue, FieldResult);
@@ -6503,41 +6503,40 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
 	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
+		Inspection::ReadResult ReadResult;
 		auto NumberOfCharacters{0ul};
 		auto EndedByTermination{false};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Byte{Reader.Get8Bits()};
-			
-			if(Byte == 0x00)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				EndedByTermination = true;
-				
-				break;
-			}
-			else if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
-			{
-				NumberOfCharacters += 1;
-				Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
+				if(ReadResult.Data == 0x00)
+				{
+					EndedByTermination = true;
+					
+					break;
+				}
+				else if(Is_ISO_IEC_8859_1_1998_Character(ReadResult.Data) == true)
+				{
+					NumberOfCharacters += 1;
+					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(ReadResult.Data);
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+					Continue = false;
+				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not an ISO/IEC 8859-1:1998 character.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -6585,57 +6584,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
 	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{1, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
-			Continue = false;
-		}
-	}
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
+		Inspection::ReadResult ReadResult;
 		auto NumberOfCharacters{0ul};
 		auto NumberOfTerminations{0ul};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Byte{Reader.Get8Bits()};
-			
-			if(Byte == 0x00)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				NumberOfTerminations += 1;
-			}
-			else if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
-			{
-				if(NumberOfTerminations == 0)
+				if(ReadResult.Data == 0x00)
 				{
-					NumberOfCharacters += 1;
-					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
+					NumberOfTerminations += 1;
+				}
+				else if(Is_ISO_IEC_8859_1_1998_Character(ReadResult.Data) == true)
+				{
+					if(NumberOfTerminations == 0)
+					{
+						NumberOfCharacters += 1;
+						Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(ReadResult.Data);
+					}
+					else
+					{
+						Result->GetValue()->AddTag("ended by error"s);
+						Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+						Continue = false;
+					}
 				}
 				else
 				{
 					Result->GetValue()->AddTag("ended by error"s);
-					Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
 					Continue = false;
 				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -6678,48 +6667,47 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_8859_1_1998_String
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "ISO/IEC 8859-1:1998"s);
 	Result->GetValue()->AddTag("encoding", "ISO/IEC 8859-1:1998"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
 		std::stringstream Value;
+		Inspection::ReadResult ReadResult;
 		auto NumberOfCharacters{0ul};
 		auto NumberOfTerminations{0ul};
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto Byte{Reader.Get8Bits()};
-			
-			if(Byte == 0x00)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				NumberOfTerminations += 1;
-			}
-			else if(Is_ISO_IEC_8859_1_1998_Character(Byte) == true)
-			{
-				if(NumberOfTerminations == 0)
+				if(ReadResult.Data == 0x00)
 				{
-					NumberOfCharacters += 1;
-					Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(Byte);
+					NumberOfTerminations += 1;
+				}
+				else if(Is_ISO_IEC_8859_1_1998_Character(ReadResult.Data) == true)
+				{
+					if(NumberOfTerminations == 0)
+					{
+						NumberOfCharacters += 1;
+						Value << Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(ReadResult.Data);
+					}
+					else
+					{
+						Result->GetValue()->AddTag("ended by error"s);
+						Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+						Continue = false;
+					}
 				}
 				else
 				{
 					Result->GetValue()->AddTag("ended by error"s);
-					Result->GetValue()->AddTag("error", "After the first termination byte only terminations are allowed, but the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not."s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
 					Continue = false;
 				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte is not an ISO/IEC 8859-1:1998 character or termination.");
+				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + NumberOfTerminations + 1) + "th byte from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
@@ -6870,27 +6858,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{2, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto First{Reader.Get8Bits()};
-		auto Second{Reader.Get8Bits()};
+		Inspection::ReadResult FirstReadResult;
 		
-		Result->GetValue()->SetData(static_cast< std::uint32_t >((static_cast< std::uint32_t >(First) << 8) | static_cast< std::uint32_t >(Second)));
+		if(Reader.Read8Bits(FirstReadResult) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if(Reader.Read8Bits(SecondReadResult) == true)
+			{
+				Result->GetValue()->SetData(static_cast< std::uint32_t >((static_cast< std::uint32_t >(FirstReadResult.Data) << 8) | static_cast< std::uint32_t >(SecondReadResult.Data)));
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+				Continue = false;
+			}
+		}
+		else
+		{
+			Result->GetValue()->AddTag("ended by error"s);
+			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -6899,27 +6897,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{2, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto First{Reader.Get8Bits()};
-		auto Second{Reader.Get8Bits()};
+		Inspection::ReadResult FirstReadResult;
 		
-		Result->GetValue()->SetData(static_cast< std::uint32_t >((static_cast< std::uint32_t >(Second) << 8) | static_cast< std::uint32_t >(First)));
+		if(Reader.Read8Bits(FirstReadResult) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if(Reader.Read8Bits(SecondReadResult) == true)
+			{
+				Result->GetValue()->SetData(static_cast< std::uint32_t >((static_cast< std::uint32_t >(SecondReadResult.Data) << 8) | static_cast< std::uint32_t >(FirstReadResult.Data)));
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+				Continue = false;
+			}
+		}
+		else
+		{
+			Result->GetValue()->AddTag("ended by error"s);
+			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -6937,15 +6945,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
 	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -6954,7 +6953,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -7003,15 +7002,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
 	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -7021,7 +7011,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -7092,15 +7082,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
 	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	Result->GetValue()->AddTag("little endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -7109,7 +7090,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -7158,15 +7139,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	Result->GetValue()->AddTag("character set", "ISO/IEC 10646-1:1993"s);
 	Result->GetValue()->AddTag("encoding", "UCS-2"s);
 	Result->GetValue()->AddTag("little endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -7176,7 +7148,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -7330,91 +7302,124 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UCS_2
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{1, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto First{Reader.Get8Bits()};
+		Inspection::ReadResult FirstReadResult;
 		
-		if((First & 0x80) == 0x00)
+		if(Reader.Read8Bits(FirstReadResult) == true)
 		{
-			Result->GetValue()->SetData(static_cast< std::uint32_t >(First));
-		}
-		else if((First & 0xe0) == 0xc0)
-		{
-			if(Reader.Has(Inspection::Length{1, 0}) == true)
+			if((FirstReadResult.Data & 0x80) == 0x00)
 			{
-				auto Second{Reader.Get8Bits()};
+				Result->GetValue()->SetData(static_cast< std::uint32_t >(FirstReadResult.Data));
+			}
+			else if((FirstReadResult.Data & 0xe0) == 0xc0)
+			{
+				Inspection::ReadResult SecondReadResult;
 				
-				if((Second & 0xc0) == 0x80)
+				if(Reader.Read8Bits(SecondReadResult) == true)
 				{
-					Result->GetValue()->SetData(static_cast< std::uint32_t >((First & 0x1f) << 6) | static_cast< std::uint32_t >(Second & 0x3f));
+					if((SecondReadResult.Data & 0xc0) == 0x80)
+					{
+						Result->GetValue()->SetData(static_cast< std::uint32_t >((FirstReadResult.Data & 0x1f) << 6) | static_cast< std::uint32_t >(SecondReadResult.Data & 0x3f));
+					}
+					else
+					{
+						Continue = false;
+					}
 				}
 				else
 				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
 					Continue = false;
 				}
 			}
-			else
+			else if((FirstReadResult.Data & 0xf0) == 0xe0)
 			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xf0) == 0xe0)
-		{
-			if(Reader.Has(Inspection::Length{2, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
+				Inspection::ReadResult SecondReadResult;
+				Inspection::ReadResult ThirdReadResult;
 				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
+				if(Reader.Read8Bits(SecondReadResult) == true)
 				{
-					Result->GetValue()->SetData(static_cast< std::uint32_t >((First & 0x0f) << 12)| static_cast< std::uint32_t >((Second & 0x3f) << 6) | static_cast< std::uint32_t >(Third & 0x3f));
+					if(Reader.Read8Bits(ThirdReadResult) == true)
+					{
+						if(((SecondReadResult.Data & 0xc0) == 0x80) && ((ThirdReadResult.Data & 0xc0) == 0x80))
+						{
+							Result->GetValue()->SetData(static_cast< std::uint32_t >((FirstReadResult.Data & 0x0f) << 12)| static_cast< std::uint32_t >((SecondReadResult.Data & 0x3f) << 6) | static_cast< std::uint32_t >(ThirdReadResult.Data & 0x3f));
+						}
+						else
+						{
+							Continue = false;
+						}
+					}
+					else
+					{
+						Result->GetValue()->AddTag("ended by error"s);
+						Result->GetValue()->AddTag("error", "Could not read the third byte of the UTF-8 codepoint from " + to_string_cast(ThirdReadResult.InputLength) + " bytes and bits of remaining data.");
+						Continue = false;
+					}
 				}
 				else
 				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
 					Continue = false;
 				}
 			}
-			else
+			else if((FirstReadResult.Data & 0xf8) == 0xf0)
 			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xf8) == 0xf0)
-		{
-			if(Reader.Has(Inspection::Length{3, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				auto Fourth{Reader.Get8Bits()};
+				Inspection::ReadResult SecondReadResult;
+				Inspection::ReadResult ThirdReadResult;
+				Inspection::ReadResult FourthReadResult;
 				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
+				if(Reader.Read8Bits(SecondReadResult) == true)
 				{
-					Result->GetValue()->SetData(static_cast< std::uint32_t >((First & 0x07) << 18)| static_cast< std::uint32_t >((Second & 0x3f) << 12) | static_cast< std::uint32_t >((Third & 0x3f) << 6) | static_cast< std::uint32_t >(Fourth & 0x3f));
+					if(Reader.Read8Bits(ThirdReadResult) == true)
+					{
+						if(Reader.Read8Bits(FourthReadResult) == true)
+						{
+							if(((SecondReadResult.Data & 0xc0) == 0x80) && ((ThirdReadResult.Data & 0xc0) == 0x80) && ((FourthReadResult.Data & 0xc0) == 0x80))
+							{
+								Result->GetValue()->SetData(static_cast< std::uint32_t >((FirstReadResult.Data & 0x07) << 18)| static_cast< std::uint32_t >((SecondReadResult.Data & 0x3f) << 12) | static_cast< std::uint32_t >((ThirdReadResult.Data & 0x3f) << 6) | static_cast< std::uint32_t >(FourthReadResult.Data & 0x3f));
+							}
+							else
+							{
+								Continue = false;
+							}
+						}
+						else
+						{
+							Result->GetValue()->AddTag("ended by error"s);
+							Result->GetValue()->AddTag("error", "Could not read the fourth byte of the UTF-8 codepoint from " + to_string_cast(ThirdReadResult.InputLength) + " bytes and bits of remaining data.");
+							Continue = false;
+						}
+					}
+					else
+					{
+						Result->GetValue()->AddTag("ended by error"s);
+						Result->GetValue()->AddTag("error", "Could not read the third byte of the UTF-8 codepoint from " + to_string_cast(ThirdReadResult.InputLength) + " bytes and bits of remaining data.");
+						Continue = false;
+					}
 				}
 				else
 				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
 					Continue = false;
 				}
 			}
-			else
-			{
-				Continue = false;
-			}
+		}
+		else
+		{
+			Result->GetValue()->AddTag("ended by error"s);
+			Result->GetValue()->AddTag("error", "Could not read the first byte of the UTF-8 codepoint from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Continue = false;
 		}
 	}
 	// finalization
@@ -7432,15 +7437,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
 	Result->GetValue()->AddTag("encoding", "UTF-8"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -7449,7 +7445,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			NumberOfCodePoints += 1;
@@ -7479,7 +7475,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -7487,15 +7483,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
 	Result->GetValue()->AddTag("encoding", "UTF-8"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -7504,7 +7491,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -7544,7 +7531,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -7552,15 +7539,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	Result->GetValue()->AddTag("string"s);
 	Result->GetValue()->AddTag("character set", "Unicode/ISO/IEC 10646-1:1993"s);
 	Result->GetValue()->AddTag("encoding", "UTF-8"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.GetRemainingLength().GetBits() != 0)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be an integer multiple of bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -7570,7 +7548,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_8
 	
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -7781,7 +7759,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -7789,7 +7767,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	// reading
 	if(Continue == true)
 	{
-		auto FirstCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader)};
+		auto FirstCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader, {})};
 		
 		UpdateState(Continue, FirstCodeUnitResult);
 		if(Continue == true)
@@ -7804,7 +7782,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			}
 			else if((FirstCodeUnit >= 0xd800) && (FirstCodeUnit < 0xdc00))
 			{
-				auto SecondCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader)};
+				auto SecondCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader, {})};
 				
 				UpdateState(Continue, SecondCodeUnitResult);
 				if(Continue == true)
@@ -7836,27 +7814,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{2, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto First{Reader.Get8Bits()};
-		auto Second{Reader.Get8Bits()};
+		Inspection::ReadResult FirstReadResult;
 		
-		Result->GetValue()->SetData(static_cast< std::uint16_t >(static_cast< std::uint16_t >(First << 8) | static_cast< std::uint16_t >(Second)));
+		if(Reader.Read8Bits(FirstReadResult) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if(Reader.Read8Bits(SecondReadResult) == true)
+			{
+				Result->GetValue()->SetData(static_cast< std::uint16_t >((static_cast< std::uint16_t >(FirstReadResult.Data) << 8) | static_cast< std::uint16_t >(SecondReadResult.Data)));
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+				Continue = false;
+			}
+		}
+		else
+		{
+			Result->GetValue()->AddTag("ended by error"s);
+			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -7875,15 +7863,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	Result->GetValue()->AddTag("encoding", "UTF-16"s);
 	Result->GetValue()->AddTag("big endian"s);
 	Result->GetValue()->AddTag("without byte order mark"s);
-	// verification
-	if(Continue == true)
-	{
-		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
-		{
-			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -7892,7 +7871,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto PartResult{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader)};
+			auto PartResult{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			if(Continue == true)
@@ -7941,15 +7920,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	Result->GetValue()->AddTag("encoding", "UTF-16"s);
 	Result->GetValue()->AddTag("big endian"s);
 	Result->GetValue()->AddTag("without byte order mark"s);
-	// verification
-	if(Continue == true)
-	{
-		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
-		{
-			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -7959,7 +7929,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -8021,7 +7991,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -8029,7 +7999,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	// reading
 	if(Continue == true)
 	{
-		auto FirstCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader)};
+		auto FirstCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader, {})};
 		
 		UpdateState(Continue, FirstCodeUnitResult);
 		if(Continue == true)
@@ -8044,7 +8014,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 			}
 			else if((FirstCodeUnit >= 0xd800) && (FirstCodeUnit < 0xdc00))
 			{
-				auto SecondCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader)};
+				auto SecondCodeUnitResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader, {})};
 				
 				UpdateState(Continue, SecondCodeUnitResult);
 				if(Continue == true)
@@ -8076,27 +8046,37 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{2, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto First{Reader.Get8Bits()};
-		auto Second{Reader.Get8Bits()};
+		Inspection::ReadResult FirstReadResult;
 		
-		Result->GetValue()->SetData(static_cast< std::uint16_t >(static_cast< std::uint16_t >(First) | static_cast< std::uint16_t >(Second << 8)));
+		if(Reader.Read8Bits(FirstReadResult) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if(Reader.Read8Bits(SecondReadResult) == true)
+			{
+				Result->GetValue()->SetData(static_cast< std::uint16_t >((static_cast< std::uint16_t >(SecondReadResult.Data) << 8) | static_cast< std::uint16_t >(FirstReadResult.Data)));
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by error"s);
+				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+				Continue = false;
+			}
+		}
+		else
+		{
+			Result->GetValue()->AddTag("ended by error"s);
+			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -8125,7 +8105,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		while((Continue == true) && (Reader.HasRemaining() == true) && (CodePointIndex < NumberOfCodePoints))
 		{
 			Inspection::Reader PartReader{Reader};
-			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(PartReader)};
+			auto PartResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			if(Continue == true)
@@ -8185,15 +8165,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	Result->GetValue()->AddTag("encoding", "UTF-16"s);
 	Result->GetValue()->AddTag("little endian"s);
 	Result->GetValue()->AddTag("without byte order mark"s);
-	// verification
-	if(Continue == true)
-	{
-		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
-		{
-			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -8202,7 +8173,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto PartResult{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader)};
+			auto PartResult{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {})};
 			
 			Continue = PartResult->GetSuccess();
 			if(Continue == true)
@@ -8251,15 +8222,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	Result->GetValue()->AddTag("encoding", "UTF-16"s);
 	Result->GetValue()->AddTag("little endian"s);
 	Result->GetValue()->AddTag("without byte order mark"s);
-	// verification
-	if(Continue == true)
-	{
-		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
-		{
-			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -8269,7 +8231,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -8351,15 +8313,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 	Result->GetValue()->AddTag("encoding", "UTF-16"s);
 	Result->GetValue()->AddTag("little endian"s);
 	Result->GetValue()->AddTag("without byte order mark"s);
-	// verification
-	if(Continue == true)
-	{
-		if((Reader.GetRemainingLength().GetBits() != 0) && (Reader.GetRemainingLength().GetBytes() % 2 != 0))
-		{
-			Result->GetValue()->AddTag("error", "The available length must be a multiple of two bytes, without additional bits."s);
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -8369,7 +8322,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
@@ -8452,7 +8405,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ISO_IEC_10646_1_1993_UTF_1
 		
 		while((Continue == true) && (Reader.HasRemaining() == true) && (CodePointIndex < NumberOfCodePoints))
 		{
-			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader)};
+			auto FieldResult{Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {})};
 			
 			UpdateState(Continue, FieldResult);
 			if(Continue == true)
