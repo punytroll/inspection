@@ -18,7 +18,7 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 	auto ErrorValue{Value->AppendField("error", "Unknown continuation."s)};
 	
 	ErrorValue->AddTag("position", to_string_cast(Reader.GetPositionInBuffer()));
-	ErrorValue->AddTag("remaining length", to_string_cast(Reader.GetRemainingLength()));
+	ErrorValue->AddTag("remaining length", to_string_cast(Reader.CalculateRemainingInputLength()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

@@ -2557,10 +2557,10 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Data_SetOrUnset_EndedByLen
 	
 	Result->GetValue()->AddTag("any data"s);
 	
-	auto RemainingLength{Reader.GetRemainingLength()};
+	auto RemainingOutputLength{Reader.CalculateRemainingOutputLength()};
 	
-	Reader.AdvancePosition(RemainingLength);
-	AppendLength(Result->GetValue(), RemainingLength);
+	Reader.AdvancePosition(RemainingOutputLength);
+	AppendLength(Result->GetValue(), RemainingOutputLength);
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -4115,7 +4115,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 	// reading
 	if(Continue == true)
 	{
-		if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
+		auto RemainingOutputLength{Reader.CalculateRemainingOutputLength()};
+		
+		if(RemainingOutputLength < Inspection::Length{4, 0})
 		{
 			auto FieldResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader, {})};
 			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
@@ -4125,7 +4127,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 			Result->GetValue()->GetField("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Continue = false;
 		}
-		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
+		else if(RemainingOutputLength == Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {})};
@@ -4134,7 +4136,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_PCNT(In
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
+		else if(RemainingOutputLength > Inspection::Length{4, 0})
 		{
 			auto FieldResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader, {})};
 			auto FieldValue{Result->GetValue()->AppendField("Counter", FieldResult->GetValue())};
@@ -4194,7 +4196,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 	// reading
 	if(Continue == true)
 	{
-		if(Reader.IsAtEnd() == true)
+		auto RemainingOutputLength{Reader.CalculateRemainingOutputLength()};
+		
+		if(RemainingOutputLength == Inspection::Length{0, 0})
 		{
 			auto FieldValue{std::make_shared< Inspection::Value >()};
 			
@@ -4202,7 +4206,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			FieldValue->AddTag("omitted"s);
 			Result->GetValue()->AppendField(FieldValue);
 		}
-		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
+		else if(RemainingOutputLength < Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
@@ -4213,7 +4217,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			Result->GetValue()->GetField("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
+		else if(RemainingOutputLength == Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {})};
@@ -4222,7 +4226,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_3_Frame_Body_POPM(In
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
+		else if(RemainingOutputLength > Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
@@ -5044,7 +5048,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 	// reading
 	if(Continue == true)
 	{
-		if(Reader.IsAtEnd() == true)
+		auto RemainingOutputLength{Reader.CalculateRemainingOutputLength()};
+		
+		if(RemainingOutputLength == Inspection::Length{0, 0})
 		{
 			auto CounterValue{std::make_shared< Inspection::Value >()};
 			
@@ -5052,7 +5058,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			CounterValue->AddTag("omitted"s);
 			Result->GetValue()->AppendField(CounterValue);
 		}
-		else if(Reader.GetRemainingLength() < Inspection::Length{4, 0})
+		else if(RemainingOutputLength < Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
@@ -5063,7 +5069,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			Continue = false;
 		}
-		else if(Reader.GetRemainingLength() == Inspection::Length{4, 0})
+		else if(RemainingOutputLength == Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {})};
@@ -5072,7 +5078,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ID3_2_4_Frame_Body_POPM(In
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(Reader.GetRemainingLength() > Inspection::Length{4, 0})
+		else if(RemainingOutputLength > Inspection::Length{4, 0})
 		{
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
@@ -9676,7 +9682,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 		}
 		else
 		{
-			Result->GetValue()->AddTag("error", "The RIFF chunk claims to have a length of " + to_string_cast(ClaimedSize) + " bytes and bits but only " + to_string_cast(Reader.GetRemainingLength()) + " bytes and bits are available.");
+			Result->GetValue()->AddTag("error", "The RIFF chunk claims to have a length of " + to_string_cast(ClaimedSize) + " bytes and bits but only " + to_string_cast(Reader.CalculateRemainingOutputLength()) + " bytes and bits are available.");
 			Continue = false;
 		}
 	}

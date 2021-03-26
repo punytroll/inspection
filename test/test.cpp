@@ -22,7 +22,7 @@ int main(void)
 		assert(Result->GetSuccess() == true);
 		assert(Reader.GetPositionInBuffer() == Inspection::Length(0, 0));
 		assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
-		assert(Reader.GetRemainingLength() == Inspection::Length(0, 0));
+		assert(Reader.CalculateRemainingOutputLength() == Inspection::Length(0, 0));
 	}
 	{
 		// read an unsigned integer with 0 bits from the start of a non-empty reader
@@ -33,7 +33,7 @@ int main(void)
 		assert(Result->GetSuccess() == true);
 		assert(Reader.GetPositionInBuffer() == Inspection::Length(0, 0));
 		assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
-		assert(Reader.GetRemainingLength() == Inspection::Length(1, 0));
+		assert(Reader.CalculateRemainingOutputLength() == Inspection::Length(1, 0));
 	}
 	{
 		// testing reading with Get_ASCII_String_Alphabetic_EndedByLength

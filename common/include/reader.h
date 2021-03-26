@@ -61,7 +61,27 @@ namespace Inspection
 			return _PositionInBuffer - _OffsetInBuffer;
 		}
 		
-		Inspection::Length GetRemainingLength(void) const
+		/**
+		 * @brief This function calculates and returns the length of the data, that can still be
+		 *     read from the data source, using this reader.
+		 * @note This call might be very expensive, if the reader is based on a data source that
+		 *     transform its data.
+		 **/
+		Inspection::Length CalculateRemainingOutputLength(void) const
+		{
+			return _BoundaryInBuffer - _PositionInBuffer;
+		}
+		
+		/**
+		 * @brief This function calculates and returns the length of the data, that needs to be
+		 *     processed on the base data source, in order to reach the end of this reader.
+		 * @note If the result is larger than 0.0 bytes and bits, this is not saying, that
+		 *     something can actually be read from the reader. All remaining input data might be
+		 *     filtered out when transforming to output data.
+		 * @note This call might be very expensive, if the reader is based on a data source that
+		 *     transforms its data.
+		 **/
+		Inspection::Length CalculateRemainingInputLength(void) const
 		{
 			return _BoundaryInBuffer - _PositionInBuffer;
 		}
