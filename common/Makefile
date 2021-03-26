@@ -1,7 +1,6 @@
-CXXFLAGS = -std=c++20 -Wall -Werror -g -O0
-LDFLAGS = -g
+include ../Makefile.include
 
-ALWAYS_EXECUTE := $(shell python3 update_type_library_path.py "$(CURDIR)/types" "source/type_library_path.h")
+ALWAYS_EXECUTE := $(shell $(PYTHON) update_type_library_path.py "$(CURDIR)/types" "source/type_library_path.h")
 
 default: all
 

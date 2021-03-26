@@ -1,5 +1,4 @@
-CXXFLAGS = -std=c++20 -Wall -Werror -g -O0
-LDFLAGS = -g
+include ../Makefile.include
 
 default: all
 
