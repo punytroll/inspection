@@ -8,10 +8,10 @@ Inspection::Reader::Reader(Inspection::Buffer & Buffer) :
 }
 
 Inspection::Reader::Reader(Inspection::Reader & Reader) :
-	Inspection::Reader{Reader._Buffer, Reader._PositionInBuffer, Reader._BoundaryInBuffer - Reader._PositionInBuffer, Reader._BitstreamType}
+	Inspection::Reader{Reader._Buffer, Reader._PositionInBuffer, Reader._EndPositionInInput - Reader._PositionInBuffer, Reader._BitstreamType}
 {
-	assert(Reader._PositionInBuffer <= Reader._BoundaryInBuffer);
-	assert(_BoundaryInBuffer <= Reader._BoundaryInBuffer);
+	assert(Reader._PositionInBuffer <= Reader._EndPositionInInput);
+	assert(_EndPositionInInput <= Reader._EndPositionInInput);
 }
 
 Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length) :
@@ -26,20 +26,20 @@ Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length
 
 Inspection::Reader::Reader(Inspection::Buffer * Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length, Inspection::Reader::BitstreamType BitstreamType) :
 	_BitstreamType{BitstreamType},
-	_BoundaryInBuffer{OffsetInBuffer + Length},
 	_Buffer{Buffer},
-	_OffsetInBuffer{OffsetInBuffer},
-	_PositionInBuffer{OffsetInBuffer}
+	_EndPositionInInput{OffsetInBuffer + Length},
+	_PositionInBuffer{OffsetInBuffer},
+	_StartPositionInInput{OffsetInBuffer}
 {
-	assert((Buffer == nullptr) || (_OffsetInBuffer <= Buffer->GetLength()));
-	assert((Buffer == nullptr) || (_BoundaryInBuffer <= Buffer->GetLength()));
+	assert((Buffer == nullptr) || (_StartPositionInInput <= Buffer->GetLength()));
+	assert((Buffer == nullptr) || (_EndPositionInInput <= Buffer->GetLength()));
 }
 
 Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length & Length) :
 	Inspection::Reader{Reader._Buffer, Reader._PositionInBuffer, Length, Reader._BitstreamType}
 {
-	assert(Reader._PositionInBuffer + Length <= Reader._BoundaryInBuffer);
-	assert(_BoundaryInBuffer <= Reader._BoundaryInBuffer);
+	assert(Reader._PositionInBuffer + Length <= Reader._EndPositionInInput);
+	assert(_EndPositionInInput <= Reader._EndPositionInInput);
 }
 
 std::uint8_t Inspection::Reader::Get0Bits(void)
@@ -343,7 +343,7 @@ bool Inspection::Reader::Read8Bits(ReadResult & ReadResult)
 		}
 		else
 		{
-			ReadResult.InputLength = _BoundaryInBuffer - _PositionInBuffer;
+			ReadResult.InputLength = _EndPositionInInput - _PositionInBuffer;
 			ReadResult.Success = false;
 		}
 	}

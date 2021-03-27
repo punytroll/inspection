@@ -41,13 +41,13 @@ namespace Inspection
 		
 		void AdvancePosition(const Inspection::Length & Offset)
 		{
-			assert(_PositionInBuffer + Offset <= _BoundaryInBuffer);
+			assert(_PositionInBuffer + Offset <= _EndPositionInInput);
 			_PositionInBuffer += Offset;
 		}
 		
 		void MoveBackPosition(const Inspection::Length & Offset)
 		{
-			assert(_PositionInBuffer - Offset >= _OffsetInBuffer);
+			assert(_PositionInBuffer - Offset >= _StartPositionInInput);
 			_PositionInBuffer -= Offset;
 		}
 		
@@ -58,7 +58,7 @@ namespace Inspection
 		
 		Inspection::Length GetConsumedLength(void) const
 		{
-			return _PositionInBuffer - _OffsetInBuffer;
+			return _PositionInBuffer - _StartPositionInInput;
 		}
 		
 		/**
@@ -69,7 +69,7 @@ namespace Inspection
 		 **/
 		Inspection::Length CalculateRemainingOutputLength(void) const
 		{
-			return _BoundaryInBuffer - _PositionInBuffer;
+			return _EndPositionInInput - _PositionInBuffer;
 		}
 		
 		/**
@@ -83,17 +83,17 @@ namespace Inspection
 		 **/
 		Inspection::Length CalculateRemainingInputLength(void) const
 		{
-			return _BoundaryInBuffer - _PositionInBuffer;
+			return _EndPositionInInput - _PositionInBuffer;
 		}
 		
 		Inspection::Length GetCompleteLength(void) const
 		{
-			return _BoundaryInBuffer - _OffsetInBuffer;
+			return _EndPositionInInput - _StartPositionInInput;
 		}
 		
 		bool Has(const Inspection::Length & Length) const
 		{
-			return _PositionInBuffer + Length <= _BoundaryInBuffer;
+			return _PositionInBuffer + Length <= _EndPositionInInput;
 		}
 		
 		/**
@@ -105,7 +105,7 @@ namespace Inspection
 		 **/
 		bool HasRemaining(void) const
 		{
-			return _PositionInBuffer < _BoundaryInBuffer;
+			return _PositionInBuffer < _EndPositionInInput;
 		}
 		
 		/**
@@ -114,24 +114,14 @@ namespace Inspection
 		 **/
 		bool IsAtEnd(void) const
 		{
-			return _PositionInBuffer == _BoundaryInBuffer;
+			return _PositionInBuffer == _EndPositionInInput;
 		}
 		
 		void SetPosition(const Inspection::Length & Position)
 		{
-			_PositionInBuffer = _OffsetInBuffer + Position;
-			assert(_PositionInBuffer >= _OffsetInBuffer);
-			assert(_PositionInBuffer <= _BoundaryInBuffer);
-		}
-		
-		Inspection::Length GetOffsetInBuffer(void) const
-		{
-			return _OffsetInBuffer;
-		}
-		
-		Inspection::Length GetBoundaryInBuffer(void) const
-		{
-			return _BoundaryInBuffer;
+			_PositionInBuffer = _StartPositionInInput + Position;
+			assert(_PositionInBuffer >= _StartPositionInInput);
+			assert(_PositionInBuffer <= _EndPositionInInput);
 		}
 		
 		const Inspection::Buffer & GetBuffer(void) const
@@ -148,10 +138,10 @@ namespace Inspection
 	private:
 		Reader(Inspection::Buffer * Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length, Inspection::Reader::BitstreamType BitstreamType);
 		Inspection::Reader::BitstreamType _BitstreamType;
-		Inspection::Length _BoundaryInBuffer;
 		Inspection::Buffer * _Buffer;
-		Inspection::Length _OffsetInBuffer;
+		Inspection::Length _EndPositionInInput;
 		Inspection::Length _PositionInBuffer;
+		Inspection::Length _StartPositionInInput;
 	};
 }
 
