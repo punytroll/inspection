@@ -26,8 +26,8 @@ namespace Inspection
 		explicit Reader(Inspection::Reader & Reader);
 		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & Length);
 		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & Length);
-		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
-		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length);
+		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
+		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
 		std::uint8_t Get0Bits(void);
 		std::uint8_t Get1Bits(void);
 		std::uint8_t Get2Bits(void);
@@ -136,7 +136,7 @@ namespace Inspection
 			_BitstreamType = BitstreamType;
 		}
 	private:
-		Reader(Inspection::Buffer * Buffer, const Inspection::Length & OffsetInBuffer, const Inspection::Length & Length, Inspection::Reader::BitstreamType BitstreamType);
+		Reader(Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length, Inspection::Reader::BitstreamType BitstreamType);
 		Inspection::Reader::BitstreamType _BitstreamType;
 		Inspection::Buffer * _Buffer;
 		Inspection::Length _EndPositionInInput;
