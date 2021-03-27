@@ -20,7 +20,7 @@ int main(void)
 		auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
 		
 		assert(Result->GetSuccess() == true);
-		assert(Reader.GetPositionInBuffer() == Inspection::Length(0, 0));
+		assert(Reader.GetReadPositionInInput() == Inspection::Length(0, 0));
 		assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
 		assert(Reader.CalculateRemainingOutputLength() == Inspection::Length(0, 0));
 	}
@@ -31,7 +31,7 @@ int main(void)
 		auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
 		
 		assert(Result->GetSuccess() == true);
-		assert(Reader.GetPositionInBuffer() == Inspection::Length(0, 0));
+		assert(Reader.GetReadPositionInInput() == Inspection::Length(0, 0));
 		assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
 		assert(Reader.CalculateRemainingOutputLength() == Inspection::Length(1, 0));
 	}

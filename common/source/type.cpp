@@ -884,7 +884,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 			{
 				auto & Properties{ElementProperties[ElementPropertiesIndex]};
 				
-				assert(Reader.GetPositionInBuffer() == Properties.first);
+				assert(Reader.GetReadPositionInInput() == Properties.first);
 				
 				Inspection::Reader ElementReader{Reader, Properties.second};
 				auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};

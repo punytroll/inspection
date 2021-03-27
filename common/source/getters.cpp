@@ -220,13 +220,13 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Apple_AppleDouble_File(Ins
 		
 		if(EntryDescriptorFields.size() > 0)
 		{
-			auto StartPosition{Reader.GetPositionInBuffer()};
+			auto StartPosition{Reader.GetReadPositionInInput()};
 			auto EntriesField{Result->GetValue()->AppendField("Entries")};
 			
 			EntriesField->AddTag("array"s);
 			
 			auto EntryDescriptorFieldIterator{std::begin(EntryDescriptorFields)};
-			Inspection::Length FurthestPosition{Reader.GetPositionInBuffer()};
+			Inspection::Length FurthestPosition{Reader.GetReadPositionInInput()};
 			auto EntryIndex{0};
 			
 			while((Continue == true) && (EntryDescriptorFieldIterator != std::end(EntryDescriptorFields)))
@@ -255,9 +255,9 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Apple_AppleDouble_File(Ins
 				auto EntryField{EntriesField->AppendField("Entry", EntryResult->GetValue())};
 				
 				EntryField->AddTag("element index in array", EntryIndex);
-				if((Continue == true) && (EntryReader.GetPositionInBuffer() > FurthestPosition))
+				if((Continue == true) && (EntryReader.GetReadPositionInInput() > FurthestPosition))
 				{
-					FurthestPosition = EntryReader.GetPositionInBuffer();
+					FurthestPosition = EntryReader.GetReadPositionInInput();
 				}
 				++EntryDescriptorFieldIterator;
 				++EntryIndex;
@@ -2577,7 +2577,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Data_SetOrUnset_Until16Bit
 	Result->GetValue()->AddTag("until 16bit alignment");
 	
 	Inspection::Length LengthUntil16BitAlignment;
-	auto OutOfAlignmentBits{Reader.GetPositionInBuffer().GetTotalBits() % 16};
+	auto OutOfAlignmentBits{Reader.GetReadPositionInInput().GetTotalBits() % 16};
 	
 	if(OutOfAlignmentBits > 0)
 	{
@@ -2608,7 +2608,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Data_Unset_Until16BitAlign
 	Result->GetValue()->AddTag("until 16bit alignment");
 	
 	Inspection::Length LengthUntil16BitAlignment;
-	auto OutOfAlignmentBits{Reader.GetPositionInBuffer().GetTotalBits() % 16};
+	auto OutOfAlignmentBits{Reader.GetReadPositionInInput().GetTotalBits() % 16};
 	
 	if(OutOfAlignmentBits > 0)
 	{
@@ -2675,7 +2675,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Data_Unset_Until8BitAlignm
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{0, static_cast< std::uint8_t >((8 - Reader.GetPositionInBuffer().GetBits()) % 8)}};
+		Inspection::Reader PartReader{Reader, Inspection::Length{0, static_cast< std::uint8_t >((8 - Reader.GetReadPositionInInput().GetBits()) % 8)}};
 		auto PartResult{Inspection::Get_Data_Unset_EndedByLength(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
@@ -9068,7 +9068,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Ogg_Packet(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		if(Reader.GetPositionInBuffer().GetBits() > 0)
+		if(Reader.GetReadPositionInInput().GetBits() > 0)
 		{
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_Data_Unset_Until8BitAlignment(PartReader, {})};
@@ -9666,7 +9666,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 			
 			if(HandledSize < ClaimedSize)
 			{
-				auto OutOfAlignmentBits{Reader.GetPositionInBuffer().GetTotalBits() % 16};
+				auto OutOfAlignmentBits{Reader.GetReadPositionInInput().GetTotalBits() % 16};
 				
 				if(HandledSize + Inspection::Length{0, OutOfAlignmentBits} == ClaimedSize)
 				{
@@ -9691,7 +9691,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_RIFF_Chunk(Inspection::Rea
 	{
 		if(Reader.HasRemaining() == true)
 		{
-			auto OutOfAlignmentBits{Reader.GetPositionInBuffer().GetTotalBits() % 16};
+			auto OutOfAlignmentBits{Reader.GetReadPositionInInput().GetTotalBits() % 16};
 			
 			if(OutOfAlignmentBits > 0)
 			{
