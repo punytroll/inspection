@@ -2,23 +2,18 @@ Patterns:
 ================================
 These patterns need to spread to all getter implementations:
 1. "Continue" pattern: A local variable named "Continue" tracks, whether the getter should continue its work. If this variable becomes false, the getter should fall through to returning the Result. Every reading of subsequent parts (as well as verification and interpretation) should be surrounded by a "if(Continue == true)" query.
-2. "Field" pattern: Instead of long variable names that refer to parts of the original format specification (like "OwnerIdentifierResult"), the general name "FieldResult" should be used.
-3. "Part" pattern: Instead of FieldReader, FieldResult and FieldValue, PartReader, PartResult and PartValue should be used.
-4. "SubReader" pattern: Every part should be read from its own reader, because that assures, that every getter starts at the postiion 0.
-5. "NoValue" pattern: Don't create the local variable FieldValue or PartValue.
-6. "ValueAfterContinue": First update the Continue variable, then append the PartValue to the result.
-7. "NoUpdateState": All calls to different versions of UpdateState should be replaced by the specific lines "Continue = PartResult->GetSuccess()" and "Reader.AdvancePosition(FieldReader.GetConsumedLength())". These two lines may need to be placed separatly instead of adjoint.
-8. "AdvanceAfterValue": Append the value and THEN advance the reader position.
-9. "NoLoops": Getters must not implement their own loops but defer to multi-purpose array getters.
-10. "NoLengthVerification": Getters which defer to other getters instead of accessing the Reader directly, should do no verification step on the available length.
-11. "ExplicitArrays": Whenever using arrays, always append the array value instead of appending the items of the array.
-12. "NoLengthExceptFromData": Don't try to restrict a sub readers range based on programmer knowledge, how long it will be. (Like 4 byte for an unsigned 32bit integer.) Only use length restrictions from data.
-13. "InterpretationAlwaysContinues": Just because an interpretation (like looking up an enum) fails, doesn't mean, that reading should discontinue. This program is intended extract as much data as possible from the whole file, so it should just abruptly stop if it finds a value that doesn't belong there. Instead, an error message should be appended, and maybe also a "null"-interpretation.
-14. "Parameters": All hardcoded getters should be implemented with a Parameters parameter, an unordered map from string to any.
-15. "Elements": In all array reading getters, the parts that constitute the array are called Elements.
-16. "ElementGetter": The getter referenced in the parameters for array getters is called "ElementGetter".
-17. "ElementIndexInArray": All array functions must pass a parameter "ElementIndexInArray" to the element getter.
-18. "HardcodedCalls": Whenever a hardcoded getter calls another hardcoded getter, for performance reasons, it should do so directly, not via the getter repository.
+2. "SubReader" pattern: Every part should be read from its own reader, because that assures, that every getter starts at the position 0.
+3. "ValueAfterContinue": First update the Continue variable, then append the PartValue to the result.
+4. "AdvanceAfterValue": Append the value and THEN advance the reader position.
+5. "NoLoops": Getters must not implement their own loops but defer to multi-purpose array getters.
+6. "NoLengthVerification": Getters which defer to other getters instead of accessing the Reader directly, should do no verification step on the available length.
+7. "ExplicitArrays": Whenever using arrays, always append the array value instead of appending the items of the array.
+8. "NoLengthExceptFromData": Don't try to restrict a sub readers range based on programmer knowledge, how long it will be. (Like 4 byte for an unsigned 32bit integer.) Only use length restrictions from data.
+9. "InterpretationAlwaysContinues": Just because an interpretation (like looking up an enum) fails, doesn't mean, that reading should discontinue. This program is intended extract as much data as possible from the whole file, so it should just abruptly stop if it finds a value that doesn't belong there. Instead, an error message should be appended, and maybe also a "null"-interpretation.
+10. "Elements": In all array reading getters, the parts that constitute the array are called Elements.
+11. "ElementGetter": The getter referenced in the parameters for array getters is called "ElementGetter".
+12. "ElementIndexInArray": All array functions must pass a parameter "ElementIndexInArray" to the element getter.
+13. "HardcodedCalls": Whenever a hardcoded getter calls another hardcoded getter, for performance reasons, it should do so directly, not via the getter repository.
 
 On the history of getters:
 ================================
