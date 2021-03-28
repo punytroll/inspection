@@ -136,7 +136,7 @@ namespace Inspection
 			_BitstreamType = BitstreamType;
 		}
 	private:
-		Reader(Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length, Inspection::Reader::BitstreamType BitstreamType);
+		Reader(Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType);
 		Inspection::Reader::BitstreamType _BitstreamType;
 		Inspection::Buffer * _Buffer;
 		Inspection::Length _EndPositionInInput;
