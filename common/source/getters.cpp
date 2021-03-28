@@ -581,7 +581,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_Array_EndedByPredicate(Ins
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -590,26 +590,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphabetic");
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{1, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto Character{Reader.Get8Bits()};
+		Inspection::ReadResult ReadResult;
 		
-		if(Is_ASCII_Character_Alphabetic(Character) == true)
+		if(Reader.Read8Bits(ReadResult) == true)
 		{
-			Result->GetValue()->SetData(Character);
+			if(Is_ASCII_Character_Alphabetic(ReadResult.Data) == true)
+			{
+				Result->GetValue()->SetData(ReadResult.Data);
+			}
+			else
+			{
+				Continue = false;
+			}
 		}
 		else
 		{
+			Result->GetValue()->AddTag("ended by error"s);
+			Result->GetValue()->AddTag("error", "Could not read the character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 			Continue = false;
 		}
 	}
@@ -620,7 +620,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_Alphabetic
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -629,26 +629,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphanumeric");
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{1, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto Character{Reader.Get8Bits()};
+		Inspection::ReadResult ReadResult;
 		
-		if((Is_ASCII_Character_Alphabetic(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true))
+		if(Reader.Read8Bits(ReadResult) == true)
 		{
-			Result->GetValue()->SetData(Character);
+			if((Is_ASCII_Character_Alphabetic(ReadResult.Data) == true) || (Is_ASCII_Character_DecimalDigit(ReadResult.Data) == true))
+			{
+				Result->GetValue()->SetData(ReadResult.Data);
+			}
+			else
+			{
+				Continue = false;
+			}
 		}
 		else
 		{
+			Result->GetValue()->AddTag("ended by error"s);
+			Result->GetValue()->AddTag("error", "Could not read the character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 			Continue = false;
 		}
 	}
@@ -659,7 +659,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader)
+std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
@@ -668,26 +668,26 @@ std::unique_ptr< Inspection::Result > Inspection::Get_ASCII_Character_AlphaNumer
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("alphanumeric or space");
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{1, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{1, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto Character{Reader.Get8Bits()};
+		Inspection::ReadResult ReadResult;
 		
-		if((Is_ASCII_Character_Alphabetic(Character) == true) || (Is_ASCII_Character_DecimalDigit(Character) == true) || (Is_ASCII_Character_Space(Character) == true))
+		if(Reader.Read8Bits(ReadResult) == true)
 		{
-			Result->GetValue()->SetData(Character);
+			if((Is_ASCII_Character_Alphabetic(ReadResult.Data) == true) || (Is_ASCII_Character_DecimalDigit(ReadResult.Data) == true) || (Is_ASCII_Character_Space(ReadResult.Data) == true))
+			{
+				Result->GetValue()->SetData(ReadResult.Data);
+			}
+			else
+			{
+				Continue = false;
+			}
 		}
 		else
 		{
+			Result->GetValue()->AddTag("ended by error"s);
+			Result->GetValue()->AddTag("error", "Could not read the character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
 			Continue = false;
 		}
 	}

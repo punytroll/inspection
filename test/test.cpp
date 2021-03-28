@@ -680,5 +680,74 @@ int main(void)
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x00000061);
 		}
 	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Get_ASCII_Character_Alphabetic                                                            //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
+		
+		{
+			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_Character_Alphabetic(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_Character_Alphabetic(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) == 0x61);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Get_ASCII_Character_AlphaNumeric                                                          //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
+		
+		{
+			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_Character_AlphaNumeric(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_Character_AlphaNumeric(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) == 0x61);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Get_ASCII_Character_AlphaNumericOrSpace                                                   //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
+		
+		{
+			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) == 0x61);
+		}
+	}
 	std::cout << "All tests successfull." << std::endl;
 }

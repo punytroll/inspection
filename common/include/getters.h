@@ -28,9 +28,9 @@ namespace Inspection
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_Array_EndedByPredicate(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
-	std::unique_ptr< Inspection::Result > Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader);
-	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader);
+	std::unique_ptr< Inspection::Result > Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
+	std::unique_ptr< Inspection::Result > Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_Alphabetic_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_AlphaNumeric_EndedByLength(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters);
 	std::unique_ptr< Inspection::Result > Get_ASCII_String_AlphaNumeric_EndedByTemplateLength(Inspection::Reader & Reader, const std::string & TemplateString);
