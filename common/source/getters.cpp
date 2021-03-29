@@ -3294,7 +3294,7 @@ std::unique_ptr< Inspection::Result > Inspection::Get_FLAC_Subframe_Data_LPC(Ins
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_SignedIntegers_BigEndian(PartReader, std::any_cast< std::uint8_t >(Result->GetValue()->GetField("QuantizedLinearPredictorCoefficientsPrecision")->GetTag("value")->GetData()), PredictorOrder)};
+		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Signed", "BigEndian"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Bits", Result->GetValue()->GetField("QuantizedLinearPredictorCoefficientsPrecision")->GetTag("value")->GetData()}}}, {"NumberOfElements", static_cast<std::uint64_t>(PredictorOrder)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("PredictorCoefficients", PartResult->GetValue());
@@ -10309,11 +10309,6 @@ std::unique_ptr< Inspection::Result > Inspection::Get_SignedInteger_32Bit_RiceEn
 	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
-}
-
-std::unique_ptr< Inspection::Result > Inspection::Get_SignedIntegers_BigEndian(Inspection::Reader & Reader, std::uint8_t Bits, std::uint64_t NumberOfElements)
-{
-	return Get_Array_EndedByNumberOfElements(Reader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Number", "Integer", "Signed", "BigEndian"})}, {"ElementParameters", std::unordered_map< std::string, std::any >{{"Bits", Bits}}}, {"NumberOfElements", NumberOfElements}});
 }
 
 std::unique_ptr< Inspection::Result > Inspection::Get_String_ASCII_ByTemplate(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)

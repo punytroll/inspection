@@ -5403,6 +5403,142 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/has-tag:ended by number of elements</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/field::0/data</argument>
+		</execute>
+		<expected-output>508</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/field::1/data</argument>
+		</execute>
+		<expected-output>474</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/field::2/data</argument>
+		</execute>
+		<expected-output>448</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/field::3/data</argument>
+		</execute>
+		<expected-output>487</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/field::4/data</argument>
+		</execute>
+		<expected-output>523</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/field::5/data</argument>
+		</execute>
+		<expected-output>573</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:WarmUpSamples/field::6/data</argument>
+		</execute>
+		<expected-output>671</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:PredictorCoefficients/field::0/data</argument>
+		</execute>
+		<expected-output>1094</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:PredictorCoefficients/field::1/data</argument>
+		</execute>
+		<expected-output>-984</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:PredictorCoefficients/field::2/data</argument>
+		</execute>
+		<expected-output>422</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:PredictorCoefficients/field::3/data</argument>
+		</execute>
+		<expected-output>-17</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:PredictorCoefficients/field::4/data</argument>
+		</execute>
+		<expected-output>-15</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:PredictorCoefficients/field::5/data</argument>
+		</execute>
+		<expected-output>-80</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
+			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:PredictorCoefficients/field::6/data</argument>
+		</execute>
+		<expected-output>85</expected-output>
+	</test>
+	<test>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/014_FLAC_Stream</argument>
 			<argument>--query=/field:FLACStream/field:Frames/field:Frame:[tag:element index in array/is-data:2]/field:Subframes/field:Subframe:[tag:element index in array/is-data:0]/field:Data/field:Residual/field:CodingMethod/data</argument>
 		</execute>
 		<expected-output>0</expected-output>
