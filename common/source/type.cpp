@@ -667,7 +667,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 	auto FoundAlternative{false};
 	
 	ExecutionContext.Push(Alternative, *Result, Reader, Parameters);
-	assert(Alternative.Parts);
+	assert(Alternative.Parts.has_value() == true);
 	for(auto AlternativePartIterator = std::begin(Alternative.Parts.value()); ((FoundAlternative == false) && (AlternativePartIterator != std::end(Alternative.Parts.value()))); ++AlternativePartIterator)
 	{
 		auto & AlternativePart{*AlternativePartIterator};
@@ -790,7 +790,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	
 	ExecutionContext.Push(Array, *Result, Reader, Parameters);
 	Result->GetValue()->AddTag("array");
-	assert(Array.Array);
+	assert(Array.Array.has_value() == true);
 	
 	
 	switch(Array.Array->IterateType)
@@ -799,7 +799,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		{
 			std::unordered_map< std::string, std::any > ElementParameters;
 			
-			if(Array.Array->ElementParameters)
+			if(Array.Array->ElementParameters.has_value() == true)
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
 			}
