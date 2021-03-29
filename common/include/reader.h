@@ -37,7 +37,8 @@ namespace Inspection
 		std::uint8_t Get6Bits(void);
 		std::uint8_t Get7Bits(void);
 		std::uint8_t Get8Bits(void);
-		bool Read8Bits(ReadResult & ReadResult);
+		bool Read4Bits(Inspection::ReadResult & ReadResult);
+		bool Read8Bits(Inspection::ReadResult & ReadResult);
 		
 		void AdvancePosition(const Inspection::Length & Offset)
 		{

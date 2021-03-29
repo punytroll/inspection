@@ -2150,27 +2150,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_4Bit_MostSignificantB
 	Result->GetValue()->AddTag("bitset"s);
 	Result->GetValue()->AddTag("4bit"s);
 	Result->GetValue()->AddTag("most significant bit first"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 4}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 4}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::bitset< 4 > Value;
-		auto Byte1{Reader.Get4Bits()};
+		Inspection::ReadResult ReadResult;
 		
-		Value[0] = (Byte1 & 0x08) == 0x08;
-		Value[1] = (Byte1 & 0x04) == 0x04;
-		Value[2] = (Byte1 & 0x02) == 0x02;
-		Value[3] = (Byte1 & 0x01) == 0x01;
-		Result->GetValue()->SetData(Value);
-		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1});
+		if(Reader.Read4Bits(ReadResult) == true)
+		{
+			std::bitset<4> Value;
+			
+			Value[0] = (ReadResult.Data & 0x08) == 0x08;
+			Value[1] = (ReadResult.Data & 0x04) == 0x04;
+			Value[2] = (ReadResult.Data & 0x02) == 0x02;
+			Value[3] = (ReadResult.Data & 0x01) == 0x01;
+			Result->GetValue()->SetData(Value);
+			Result->GetValue()->AddTag("data", std::vector<std::uint8_t>{ReadResult.Data});
+		}
+		else
+		{
+			Result->GetValue()->AddTag("error", "Could not read 4 bits from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
