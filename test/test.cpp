@@ -817,5 +817,5 @@ int main(void)
 			assert(std::any_cast<std::int16_t>(Result->GetValue()->GetData()) == 0x0643);
 		}
 	}
-	std::cout << "All tests successfull." << std::endl;
+	std::cout << "All tests successful." << std::endl;
 }
