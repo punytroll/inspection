@@ -3,6 +3,7 @@
 #include "buffer.h"
 #include "getters.h"
 #include "result.h"
+#include "value_printing.h"
 
 int main(void)
 {
@@ -747,6 +748,73 @@ int main(void)
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) == 0x61);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Get_SignedInteger_8Bit_BigEndian                                                          //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x64};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 5}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_8Bit(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_8Bit(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result->GetValue()->GetData()) == 0x64);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Get_SignedInteger_12Bit_BigEndian                                                         //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x64, 0x30};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 2}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 4}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 2}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 4}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result->GetValue()->GetData()) == 0x0643);
 		}
 	}
 	std::cout << "All tests successfull." << std::endl;

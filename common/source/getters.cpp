@@ -21,16 +21,25 @@ using namespace std::string_literals;
 
 bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples{false};
 
-std::shared_ptr<Inspection::Value> AppendLength(std::shared_ptr<Inspection::Value> Value, Inspection::Length Length)
+std::shared_ptr<Inspection::Value> AppendLength(std::shared_ptr<Inspection::Value> Value, const Inspection::Length & Length, const std::string & LengthName = "length"s)
 {
-	auto Tag{std::make_shared< Inspection::Value >()};
+	auto Result{Value->AddTag(LengthName, Length)};
 	
-	Tag->SetName("length");
-	Tag->SetData(Length);
-	Tag->AddTag("unit", "bytes and bits"s);
-	Value->AddTag(Tag);
+	Result->AddTag("unit", "bytes and bits"s);
 	
-	return Tag;
+	return Result;
+}
+
+std::shared_ptr<Inspection::Value> AppendReadErrorTag(std::shared_ptr<Inspection::Value> Value, const Inspection::ReadResult & ReadResult)
+{
+	assert(ReadResult.Success == false);
+	
+	auto Result{Value->AddTag("error", "Could not read enought data."s)};
+	
+	AppendLength(Result, ReadResult.OutputLength, "data length");
+	AppendLength(Result, ReadResult.InputLength, "remaining length");
+	
+	return Result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10130,21 +10139,20 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_8Bit(Inspectio
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("signed"s);
 	Result->GetValue()->AddTag("8bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 8}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::int8_t Value{static_cast<std::int8_t>(Reader.Get8Bits())};
+		Inspection::ReadResult ReadResult;
 		
-		Result->GetValue()->SetData(Value);
+		if(Reader.Read8Bits(ReadResult) == true)
+		{
+			Result->GetValue()->SetData(static_cast<std::int8_t>(ReadResult.Data));
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10161,23 +10169,32 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_12Bit_BigEndia
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("signed"s);
 	Result->GetValue()->AddTag("12bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 12}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 12}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::int16_t Value{0};
+		Inspection::ReadResult ReadResult;
 		
-		Value |= static_cast<std::int16_t>(static_cast<std::int16_t>(Reader.Get4Bits() << 12) >> 4);
-		Value |= static_cast<std::int16_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if(Reader.Read4Bits(ReadResult) == true)
+		{
+			std::int16_t Value{0};
+			
+			Value |= static_cast<std::int16_t>(static_cast<std::int16_t>(ReadResult.Data << 12) >> 4);
+			if(Reader.Read8Bits(ReadResult) == true)
+			{
+				Value |= static_cast<std::int16_t>(ReadResult.Data);
+				Result->GetValue()->SetData(Value);
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
+				Continue = false;
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
