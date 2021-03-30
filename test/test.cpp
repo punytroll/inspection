@@ -817,5 +817,56 @@ int main(void)
 			assert(std::any_cast<std::int16_t>(Result->GetValue()->GetData()) == 0x0643);
 		}
 	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Get_ASCII_String_Printable_EndedByTermination                                             //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBufferASCIILatinSmallLetterA[] = {0x61, 0x62, 0x00, 0x00};
+		
+		{
+			Inspection::Buffer Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{0, 2}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(Result->GetValue()->HasTag("ended by error") == true);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "a");
+			assert(Result->GetValue()->HasTag("ended by error") == true);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{2, 6}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "ab");
+			assert(Result->GetValue()->HasTag("ended by error") == true);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{3, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "ab");
+		}
+	}
 	std::cout << "All tests successful." << std::endl;
 }

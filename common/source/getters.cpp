@@ -604,7 +604,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_Alphabetic(I
 		else
 		{
 			Result->GetValue()->AddTag("ended by error"s);
-			Result->GetValue()->AddTag("error", "Could not read the character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
 			Continue = false;
 		}
 	}
@@ -643,7 +643,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_AlphaNumeric
 		else
 		{
 			Result->GetValue()->AddTag("ended by error"s);
-			Result->GetValue()->AddTag("error", "Could not read the character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
 			Continue = false;
 		}
 	}
@@ -682,7 +682,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_AlphaNumeric
 		else
 		{
 			Result->GetValue()->AddTag("ended by error"s);
-			Result->GetValue()->AddTag("error", "Could not read the character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
 			Continue = false;
 		}
 	}
@@ -728,7 +728,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Alphabetic_Ende
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				Continue = false;
 			}
 		}
@@ -781,7 +781,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumeric_En
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				Continue = false;
 			}
 		}
@@ -834,7 +834,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumericOrS
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				Continue = false;
 			}
 		}
@@ -888,7 +888,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				Continue = false;
 			}
 		}
@@ -941,7 +941,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(NumberOfCharacters + 1) + "th character from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				Continue = false;
 			}
 		}
@@ -973,27 +973,41 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
 	{
 		auto NumberOfCharacters{0ul};
 		std::stringstream Value;
+		ReadResult ReadResult;
 		
-		while((Continue == true) && (Reader.Has(Inspection::Length{1, 0}) == true))
+		while(Continue == true)
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if(Character == 0x00)
+			if(Reader.Read8Bits(ReadResult) == true)
 			{
-				Result->GetValue()->AddTag("ended by termination"s);
-				Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
-				
-				break;
-			}
-			else if(Is_ASCII_Character_Printable(Character) == true)
-			{
-				NumberOfCharacters += 1;
-				Value << Character;
+				if(ReadResult.Data == 0x00)
+				{
+					Result->GetValue()->AddTag("ended by termination"s);
+					Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters + termination");
+					
+					break;
+				}
+				else if(Is_ASCII_Character_Printable(ReadResult.Data) == true)
+				{
+					NumberOfCharacters += 1;
+					Value << ReadResult.Data;
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character is not a printable ASCII character.");
+					Continue = false;
+				}
 			}
 			else
 			{
+				Result->GetValue()->AddTag("ended by error"s);
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				Continue = false;
 			}
+		}
+		if(Continue == false)
+		{
+			Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
 		}
 		Result->GetValue()->SetData(Value.str());
 	}
