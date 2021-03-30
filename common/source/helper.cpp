@@ -123,7 +123,7 @@ bool Inspection::Is_ASCII_Character_Space(std::uint8_t Character)
 
 bool Inspection::Is_ISO_IEC_8859_1_1998_Character(std::uint8_t Character)
 {
-	return ((Character >= 0x20) && (Character < 0x7f)) || (Character >= 0x10);
+	return ((Character >= 0x20) && (Character < 0x7f)) || (Character >= 0xa0);
 }
 
 std::string Inspection::Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(const std::string & ISO_3166_1_Alpha_2_CountryCode)

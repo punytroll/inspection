@@ -868,5 +868,96 @@ int main(void)
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "ab");
 		}
 	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Get_UnsignedInteger_36Bit_BigEndian                                                       //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x43, 0x62, 0xa6, 0x9e, 0x30};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 3}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 1}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 6}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{4, 2}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{4, 4}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<std::uint64_t>(Result->GetValue()->GetData()) == 0x00000004362a69e3);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Get_ISO_IEC_8859_1_1998_Character                                                         //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer_ISO_IEC_8859_1_1998_LatinSmallLetterA[] = {0x61};
+		std::uint8_t RawBuffer_Not_ISO_IEC_8859_1_1998_Character[] = {0x87};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer_ISO_IEC_8859_1_1998_LatinSmallLetterA, Inspection::Length{0, 5}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer_ISO_IEC_8859_1_1998_LatinSmallLetterA, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer_Not_ISO_IEC_8859_1_1998_Character, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+			assert(Result->GetValue()->HasTag("error") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("data") == true);
+		}
+	}
 	std::cout << "All tests successful." << std::endl;
 }
