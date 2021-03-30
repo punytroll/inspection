@@ -21,7 +21,7 @@ using namespace std::string_literals;
 
 bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples{false};
 
-std::shared_ptr<Inspection::Value> AppendLength(std::shared_ptr<Inspection::Value> Value, const Inspection::Length & Length, const std::string & LengthName = "length"s)
+std::shared_ptr<Inspection::Value> AppendLengthTag(std::shared_ptr<Inspection::Value> Value, const Inspection::Length & Length, const std::string & LengthName = "length"s)
 {
 	auto Result{Value->AddTag(LengthName, Length)};
 	
@@ -36,8 +36,8 @@ std::shared_ptr<Inspection::Value> AppendReadErrorTag(std::shared_ptr<Inspection
 	
 	auto Result{Value->AddTag("error", "Could not read enought data."s)};
 	
-	AppendLength(Result, ReadResult.OutputLength, "data length");
-	AppendLength(Result, ReadResult.InputLength, "remaining length");
+	AppendLengthTag(Result, ReadResult.OutputLength, "data length");
+	AppendLengthTag(Result, ReadResult.InputLength, "remaining length");
 	
 	return Result;
 }
@@ -2464,12 +2464,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(Value.size() + 1) + "th 8bit value from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				Continue = false;
 			}
 		}
 		Result->GetValue()->SetData(Value);
-		AppendLength(Result->GetValue(), Reader.GetConsumedLength());
+		AppendLengthTag(Result->GetValue(), Reader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2508,12 +2508,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the " + to_string_cast(Value.size() + 1) + "th 8bit value from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				Continue = false;
 			}
 		}
 		Result->GetValue()->SetData(Value);
-		AppendLength(Result->GetValue(), Reader.GetConsumedLength());
+		AppendLengthTag(Result->GetValue(), Reader.GetConsumedLength());
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2539,7 +2539,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Set_EndedByLength(Inspe
 	// interpretation
 	if(Continue == true)
 	{
-		AppendLength(Result->GetValue(), Reader.GetConsumedLength());
+		AppendLengthTag(Result->GetValue(), Reader.GetConsumedLength());
 	}
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -2557,7 +2557,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_SetOrUnset_EndedByLengt
 	auto RemainingOutputLength{Reader.CalculateRemainingOutputLength()};
 	
 	Reader.AdvancePosition(RemainingOutputLength);
-	AppendLength(Result->GetValue(), RemainingOutputLength);
+	AppendLengthTag(Result->GetValue(), RemainingOutputLength);
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -2588,7 +2588,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_SetOrUnset_Until16BitAl
 			Result->GetValue()->AddTag("error", "The next 16bit alignment is not inside the reader's available data length.");
 		}
 	}
-	AppendLength(Result->GetValue(), LengthUntil16BitAlignment);
+	AppendLengthTag(Result->GetValue(), LengthUntil16BitAlignment);
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -2626,7 +2626,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_Until16BitAlignme
 			Result->GetValue()->AddTag("error", "The next 16bit alignment is not inside the reader's available data length.");
 		}
 	}
-	AppendLength(Result->GetValue(), LengthUntil16BitAlignment);
+	AppendLengthTag(Result->GetValue(), LengthUntil16BitAlignment);
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
@@ -2651,7 +2651,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_EndedByLength(Ins
 	// interpretation
 	if(Continue == true)
 	{
-		AppendLength(Result->GetValue(), Reader.GetConsumedLength());
+		AppendLengthTag(Result->GetValue(), Reader.GetConsumedLength());
 	}
 	else
 	{
@@ -11474,7 +11474,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_Altern
 				else
 				{
 					Result->GetValue()->SetData(Value);
-					AppendLength(Result->GetValue(), Reader.GetConsumedLength());
+					AppendLengthTag(Result->GetValue(), Reader.GetConsumedLength());
 					
 					break;
 				}
