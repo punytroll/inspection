@@ -1169,7 +1169,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedStreamProperties
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 32 > & Flags{std::any_cast<const std::bitset<32> &>(Result->GetValue()->GetData())};
+		const std::bitset<32> & Flags{std::any_cast<const std::bitset<32> &>(Result->GetValue()->GetData())};
 		
 		Result->GetValue()->AppendField("[0] Reliable", Flags[0]);
 		Result->GetValue()->AppendField("[1] Seekable", Flags[1]);
@@ -1438,7 +1438,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_FileProperties_Flags(Ins
 	// interpretation
 	//~ if(Continue == true)
 	//~ {
-		//~ const std::bitset< 32 > & Flags{std::any_cast<const std::bitset<32> &>(Result->GetValue()->GetData())};
+		//~ const std::bitset<32> & Flags{std::any_cast<const std::bitset<32> &>(Result->GetValue()->GetData())};
 		
 		//~ Result->GetValue()->AppendField("[0] Broadcast", Flags[0]);
 		//~ Result->GetValue()->AppendField("[1] Seekable", Flags[1]);
@@ -2169,7 +2169,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_4Bit_MostSignificantB
 	{
 		Inspection::ReadResult ReadResult;
 		
-		if(Reader.Read4Bits(ReadResult) == true)
+		if((Continue = Reader.Read4Bits(ReadResult)) == true)
 		{
 			std::bitset<4> Value;
 			
@@ -2182,8 +2182,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_4Bit_MostSignificantB
 		}
 		else
 		{
-			Result->GetValue()->AddTag("error", "Could not read 4 bits from " + to_string_cast(ReadResult.InputLength) + " bytes and bits of remaining data.");
-			Continue = false;
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
 		}
 	}
 	// finalization
@@ -2202,30 +2201,30 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_8Bit_LeastSignificant
 	Result->GetValue()->AddTag("8bit"s);
 	Result->GetValue()->AddTag("least significant bit first"s);
 	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 8}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::bitset<8> Value;
-		auto Byte1{Reader.Get8Bits()};
+		Inspection::ReadResult ReadResult;
 		
-		Value[0] = (Byte1 & 0x01) == 0x01;
-		Value[1] = (Byte1 & 0x02) == 0x02;
-		Value[2] = (Byte1 & 0x04) == 0x04;
-		Value[3] = (Byte1 & 0x08) == 0x08;
-		Value[4] = (Byte1 & 0x10) == 0x10;
-		Value[5] = (Byte1 & 0x20) == 0x20;
-		Value[6] = (Byte1 & 0x40) == 0x40;
-		Value[7] = (Byte1 & 0x80) == 0x80;
-		Result->GetValue()->SetData(Value);
-		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1});
+		if((Continue = Reader.Read8Bits(ReadResult)) == true)
+		{
+			std::bitset<8> Value;
+			
+			Value[0] = (ReadResult.Data & 0x01) == 0x01;
+			Value[1] = (ReadResult.Data & 0x02) == 0x02;
+			Value[2] = (ReadResult.Data & 0x04) == 0x04;
+			Value[3] = (ReadResult.Data & 0x08) == 0x08;
+			Value[4] = (ReadResult.Data & 0x10) == 0x10;
+			Value[5] = (ReadResult.Data & 0x20) == 0x20;
+			Value[6] = (ReadResult.Data & 0x40) == 0x40;
+			Value[7] = (ReadResult.Data & 0x80) == 0x80;
+			Result->GetValue()->SetData(Value);
+			Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{ReadResult.Data});
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2243,42 +2242,47 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_16Bit_BigEndian_Least
 	Result->GetValue()->AddTag("16bit"s);
 	Result->GetValue()->AddTag("big endian"s);
 	Result->GetValue()->AddTag("least significant bit first per byte"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 16}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::bitset< 16 > Value;
-		auto Byte1{Reader.Get8Bits()};
+		Inspection::ReadResult FirstReadResult;
 		
-		Value[8] = (Byte1 & 0x01) == 0x01;
-		Value[9] = (Byte1 & 0x02) == 0x02;
-		Value[10] = (Byte1 & 0x04) == 0x04;
-		Value[11] = (Byte1 & 0x08) == 0x08;
-		Value[12] = (Byte1 & 0x10) == 0x10;
-		Value[13] = (Byte1 & 0x20) == 0x20;
-		Value[14] = (Byte1 & 0x40) == 0x40;
-		Value[15] = (Byte1 & 0x80) == 0x80;
-		
-		auto Byte2{Reader.Get8Bits()};
-		
-		Value[0] = (Byte2 & 0x01) == 0x01;
-		Value[1] = (Byte2 & 0x02) == 0x02;
-		Value[2] = (Byte2 & 0x04) == 0x04;
-		Value[3] = (Byte2 & 0x08) == 0x08;
-		Value[4] = (Byte2 & 0x10) == 0x10;
-		Value[5] = (Byte2 & 0x20) == 0x20;
-		Value[6] = (Byte2 & 0x40) == 0x40;
-		Value[7] = (Byte2 & 0x80) == 0x80;
-		Result->GetValue()->SetData(Value);
-		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1, Byte2});
+		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			{
+				std::bitset<16> Value;
+				
+				Value[0] = (SecondReadResult.Data & 0x01) == 0x01;
+				Value[1] = (SecondReadResult.Data & 0x02) == 0x02;
+				Value[2] = (SecondReadResult.Data & 0x04) == 0x04;
+				Value[3] = (SecondReadResult.Data & 0x08) == 0x08;
+				Value[4] = (SecondReadResult.Data & 0x10) == 0x10;
+				Value[5] = (SecondReadResult.Data & 0x20) == 0x20;
+				Value[6] = (SecondReadResult.Data & 0x40) == 0x40;
+				Value[7] = (SecondReadResult.Data & 0x80) == 0x80;
+				Value[8] = (FirstReadResult.Data & 0x01) == 0x01;
+				Value[9] = (FirstReadResult.Data & 0x02) == 0x02;
+				Value[10] = (FirstReadResult.Data & 0x04) == 0x04;
+				Value[11] = (FirstReadResult.Data & 0x08) == 0x08;
+				Value[12] = (FirstReadResult.Data & 0x10) == 0x10;
+				Value[13] = (FirstReadResult.Data & 0x20) == 0x20;
+				Value[14] = (FirstReadResult.Data & 0x40) == 0x40;
+				Value[15] = (FirstReadResult.Data & 0x80) == 0x80;
+				Result->GetValue()->SetData(Value);
+				Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{FirstReadResult.Data, SecondReadResult.Data});
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2296,42 +2300,47 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_16Bit_LittleEndian_Le
 	Result->GetValue()->AddTag("16bit"s);
 	Result->GetValue()->AddTag("little endian"s);
 	Result->GetValue()->AddTag("least significant bit first per byte"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 16}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::bitset< 16 > Value;
-		auto Byte1{Reader.Get8Bits()};
+		Inspection::ReadResult FirstReadResult;
 		
-		Value[0] = (Byte1 & 0x01) == 0x01;
-		Value[1] = (Byte1 & 0x02) == 0x02;
-		Value[2] = (Byte1 & 0x04) == 0x04;
-		Value[3] = (Byte1 & 0x08) == 0x08;
-		Value[4] = (Byte1 & 0x10) == 0x10;
-		Value[5] = (Byte1 & 0x20) == 0x20;
-		Value[6] = (Byte1 & 0x40) == 0x40;
-		Value[7] = (Byte1 & 0x80) == 0x80;
-		
-		auto Byte2{Reader.Get8Bits()};
-		
-		Value[8] = (Byte2 & 0x01) == 0x01;
-		Value[9] = (Byte2 & 0x02) == 0x02;
-		Value[10] = (Byte2 & 0x04) == 0x04;
-		Value[11] = (Byte2 & 0x08) == 0x08;
-		Value[12] = (Byte2 & 0x10) == 0x10;
-		Value[13] = (Byte2 & 0x20) == 0x20;
-		Value[14] = (Byte2 & 0x40) == 0x40;
-		Value[15] = (Byte2 & 0x80) == 0x80;
-		Result->GetValue()->SetData(Value);
-		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1, Byte2});
+		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			{
+				std::bitset<16> Value;
+				
+				Value[0] = (FirstReadResult.Data & 0x01) == 0x01;
+				Value[1] = (FirstReadResult.Data & 0x02) == 0x02;
+				Value[2] = (FirstReadResult.Data & 0x04) == 0x04;
+				Value[3] = (FirstReadResult.Data & 0x08) == 0x08;
+				Value[4] = (FirstReadResult.Data & 0x10) == 0x10;
+				Value[5] = (FirstReadResult.Data & 0x20) == 0x20;
+				Value[6] = (FirstReadResult.Data & 0x40) == 0x40;
+				Value[7] = (FirstReadResult.Data & 0x80) == 0x80;
+				Value[8] = (SecondReadResult.Data & 0x01) == 0x01;
+				Value[9] = (SecondReadResult.Data & 0x02) == 0x02;
+				Value[10] = (SecondReadResult.Data & 0x04) == 0x04;
+				Value[11] = (SecondReadResult.Data & 0x08) == 0x08;
+				Value[12] = (SecondReadResult.Data & 0x10) == 0x10;
+				Value[13] = (SecondReadResult.Data & 0x20) == 0x20;
+				Value[14] = (SecondReadResult.Data & 0x40) == 0x40;
+				Value[15] = (SecondReadResult.Data & 0x80) == 0x80;
+				Result->GetValue()->SetData(Value);
+				Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{FirstReadResult.Data, SecondReadResult.Data});
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2349,64 +2358,81 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_32Bit_LittleEndian_Le
 	Result->GetValue()->AddTag("32bit"s);
 	Result->GetValue()->AddTag("little endian"s);
 	Result->GetValue()->AddTag("least significant bit first per byte"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 32}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::bitset< 32 > Value;
-		auto Byte1{Reader.Get8Bits()};
+		Inspection::ReadResult FirstReadResult;
 		
-		Value[0] = (Byte1 & 0x01) == 0x01;
-		Value[1] = (Byte1 & 0x02) == 0x02;
-		Value[2] = (Byte1 & 0x04) == 0x04;
-		Value[3] = (Byte1 & 0x08) == 0x08;
-		Value[4] = (Byte1 & 0x10) == 0x10;
-		Value[5] = (Byte1 & 0x20) == 0x20;
-		Value[6] = (Byte1 & 0x40) == 0x40;
-		Value[7] = (Byte1 & 0x80) == 0x80;
-		
-		auto Byte2{Reader.Get8Bits()};
-		
-		Value[8] = (Byte2 & 0x01) == 0x01;
-		Value[9] = (Byte2 & 0x02) == 0x02;
-		Value[10] = (Byte2 & 0x04) == 0x04;
-		Value[11] = (Byte2 & 0x08) == 0x08;
-		Value[12] = (Byte2 & 0x10) == 0x10;
-		Value[13] = (Byte2 & 0x20) == 0x20;
-		Value[14] = (Byte2 & 0x40) == 0x40;
-		Value[15] = (Byte2 & 0x80) == 0x80;
-		
-		auto Byte3{Reader.Get8Bits()};
-		
-		Value[16] = (Byte3 & 0x01) == 0x01;
-		Value[17] = (Byte3 & 0x02) == 0x02;
-		Value[18] = (Byte3 & 0x04) == 0x04;
-		Value[19] = (Byte3 & 0x08) == 0x08;
-		Value[20] = (Byte3 & 0x10) == 0x10;
-		Value[21] = (Byte3 & 0x20) == 0x20;
-		Value[22] = (Byte3 & 0x40) == 0x40;
-		Value[23] = (Byte3 & 0x80) == 0x80;
-		
-		auto Byte4{Reader.Get8Bits()};
-		
-		Value[24] = (Byte4 & 0x01) == 0x01;
-		Value[25] = (Byte4 & 0x02) == 0x02;
-		Value[26] = (Byte4 & 0x04) == 0x04;
-		Value[27] = (Byte4 & 0x08) == 0x08;
-		Value[28] = (Byte4 & 0x10) == 0x10;
-		Value[29] = (Byte4 & 0x20) == 0x20;
-		Value[30] = (Byte4 & 0x40) == 0x40;
-		Value[31] = (Byte4 & 0x80) == 0x80;
-		Result->GetValue()->SetData(Value);
-		Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{Byte1, Byte2, Byte3, Byte4});
+		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			{
+				Inspection::ReadResult ThirdReadResult;
+				
+				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				{
+					Inspection::ReadResult FourthReadResult;
+					
+					if((Continue = Reader.Read8Bits(FourthReadResult)) == true)
+					{
+						std::bitset<32> Value;
+						
+						Value[0] = (FirstReadResult.Data & 0x01) == 0x01;
+						Value[1] = (FirstReadResult.Data & 0x02) == 0x02;
+						Value[2] = (FirstReadResult.Data & 0x04) == 0x04;
+						Value[3] = (FirstReadResult.Data & 0x08) == 0x08;
+						Value[4] = (FirstReadResult.Data & 0x10) == 0x10;
+						Value[5] = (FirstReadResult.Data & 0x20) == 0x20;
+						Value[6] = (FirstReadResult.Data & 0x40) == 0x40;
+						Value[7] = (FirstReadResult.Data & 0x80) == 0x80;
+						Value[8] = (SecondReadResult.Data & 0x01) == 0x01;
+						Value[9] = (SecondReadResult.Data & 0x02) == 0x02;
+						Value[10] = (SecondReadResult.Data & 0x04) == 0x04;
+						Value[11] = (SecondReadResult.Data & 0x08) == 0x08;
+						Value[12] = (SecondReadResult.Data & 0x10) == 0x10;
+						Value[13] = (SecondReadResult.Data & 0x20) == 0x20;
+						Value[14] = (SecondReadResult.Data & 0x40) == 0x40;
+						Value[15] = (SecondReadResult.Data & 0x80) == 0x80;
+						Value[16] = (ThirdReadResult.Data & 0x01) == 0x01;
+						Value[17] = (ThirdReadResult.Data & 0x02) == 0x02;
+						Value[18] = (ThirdReadResult.Data & 0x04) == 0x04;
+						Value[19] = (ThirdReadResult.Data & 0x08) == 0x08;
+						Value[20] = (ThirdReadResult.Data & 0x10) == 0x10;
+						Value[21] = (ThirdReadResult.Data & 0x20) == 0x20;
+						Value[22] = (ThirdReadResult.Data & 0x40) == 0x40;
+						Value[23] = (ThirdReadResult.Data & 0x80) == 0x80;
+						Value[24] = (FourthReadResult.Data & 0x01) == 0x01;
+						Value[25] = (FourthReadResult.Data & 0x02) == 0x02;
+						Value[26] = (FourthReadResult.Data & 0x04) == 0x04;
+						Value[27] = (FourthReadResult.Data & 0x08) == 0x08;
+						Value[28] = (FourthReadResult.Data & 0x10) == 0x10;
+						Value[29] = (FourthReadResult.Data & 0x20) == 0x20;
+						Value[30] = (FourthReadResult.Data & 0x40) == 0x40;
+						Value[31] = (FourthReadResult.Data & 0x80) == 0x80;
+						Result->GetValue()->SetData(Value);
+						Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{FirstReadResult.Data, SecondReadResult.Data, ThirdReadResult.Data, FourthReadResult.Data});
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), FourthReadResult);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -4653,7 +4679,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Header_Flags(I
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 16 > & Flags{std::any_cast< const std::bitset< 16 > & >(Result->GetValue()->GetData())};
+		const std::bitset<16> & Flags{std::any_cast< const std::bitset<16> & >(Result->GetValue()->GetData())};
 		std::shared_ptr<Inspection::Value> FlagValue;
 		
 		FlagValue = Result->GetValue()->AppendField("TagAlterPreservation", Flags[15]);
@@ -9896,7 +9922,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_ChunkData_fmt__FormatSp
 	// interpretation
 	if(Continue == true)
 	{
-		const std::bitset< 32 > & ChannelMask{std::any_cast<const std::bitset<32> &>(Result->GetValue()->GetData())};
+		const std::bitset<32> & ChannelMask{std::any_cast<const std::bitset<32> &>(Result->GetValue()->GetData())};
 		
 		if(ChannelMask[0] == true)
 		{
@@ -10881,19 +10907,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit(Inspect
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("8bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 8}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->SetData(Reader.Get8Bits());
+		Inspection::ReadResult ReadResult;
+		
+		if((Continue = Reader.Read8Bits(ReadResult)) == true)
+		{
+			Result->GetValue()->SetData(ReadResult.Data);
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
