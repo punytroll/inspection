@@ -10732,19 +10732,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_2Bit(Inspect
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("2bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 2}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 2}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->SetData(Reader.Get2Bits());
+		Inspection::ReadResult ReadResult;
+		
+		if((Continue = Reader.Read2Bits(ReadResult)) == true)
+		{
+			Result->GetValue()->SetData(ReadResult.Data);
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11014,23 +11014,28 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_10Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("10bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 10}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 10}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint16_t Value{0ul};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint16_t>(Reader.Get2Bits()) << 8;
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read2Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((ReadResult1.Data << 8) | ReadResult2.Data));
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
