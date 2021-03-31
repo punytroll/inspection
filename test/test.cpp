@@ -7,6 +7,123 @@
 
 int main(void)
 {
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Reader.Read3Bits()                                                            //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0xf3, 0x24, 0x76};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{3, 0}};
+			Inspection::Reader Reader{Buffer};
+			Inspection::ReadResult ReadResult;
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x07);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x04);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x06);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x02);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x02);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x01);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x06);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x06);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{3, 0}};
+			Inspection::Reader Reader{Buffer};
+			
+			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
+			
+			Inspection::ReadResult ReadResult;
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x03);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x06);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x03);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x02);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x02);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x04);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x05);
+			
+			assert(Reader.Read3Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 3}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 3}));
+			assert(ReadResult.Data == 0x03);
+		}
+	}
+	
 	std::uint8_t Buffer0[] = {};
 	std::uint8_t Buffer1[] = {0x00};
 	std::uint8_t Buffer2[] = {0x61, 0x62, 0x63, 0x64, 0x65};
@@ -957,6 +1074,90 @@ int main(void)
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("data") == true);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_UnsignedInteger_11Bit_BigEndian                                           //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0x51, 0xea, 0xa9, 0x34, 0xb2};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{11, 0}};
+			Inspection::Reader Reader{Buffer};
+			
+			auto Result1{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x042e);
+			
+			auto Result2{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			
+			assert(Result2->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x00d3);
+			
+			auto Result3{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0622);
+			
+			auto Result4{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			
+			assert(Result4->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result4->GetValue()->GetData()) == 0x00f6);
+			
+			auto Result5{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			
+			assert(Result5->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result5->GetValue()->GetData()) == 0x06a8);
+			
+			auto Result6{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			
+			assert(Result6->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result6->GetValue()->GetData()) == 0x07aa);
+			
+			auto Result7{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			
+			assert(Result7->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result7->GetValue()->GetData()) == 0x0526);
+			
+			auto Result8{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			
+			assert(Result8->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result8->GetValue()->GetData()) == 0x04b2);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_UnsignedInteger_12Bit_BigEndian                                           //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{6, 0}};
+			Inspection::Reader Reader{Buffer};
+			
+			auto Result1{Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x085c);
+			
+			auto Result2{Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x034f);
+			
+			auto Result3{Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0110);
+			
+			auto Result4{Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {})};
+			
+			assert(Result4->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result4->GetValue()->GetData()) == 0x0f6d);
 		}
 	}
 	std::cout << "All tests successful." << std::endl;

@@ -31,12 +31,12 @@ namespace Inspection
 		std::uint8_t Get0Bits(void);
 		std::uint8_t Get1Bits(void);
 		std::uint8_t Get2Bits(void);
-		std::uint8_t Get3Bits(void);
 		std::uint8_t Get4Bits(void);
 		std::uint8_t Get5Bits(void);
 		std::uint8_t Get6Bits(void);
 		std::uint8_t Get7Bits(void);
 		std::uint8_t Get8Bits(void);
+		bool Read3Bits(Inspection::ReadResult & ReadResult);
 		bool Read4Bits(Inspection::ReadResult & ReadResult);
 		bool Read8Bits(Inspection::ReadResult & ReadResult);
 		

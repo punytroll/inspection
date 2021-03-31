@@ -10761,19 +10761,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_3Bit(Inspect
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("3bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 3}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 3}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->SetData(Reader.Get3Bits());
+		Inspection::ReadResult ReadResult;
+		
+		if((Continue = Reader.Read3Bits(ReadResult)) == true)
+		{
+			Result->GetValue()->SetData(ReadResult.Data);
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10795,14 +10795,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_4Bit(Inspect
 	{
 		Inspection::ReadResult ReadResult;
 		
-		if(Reader.Read4Bits(ReadResult) == true)
+		if((Continue = Reader.Read4Bits(ReadResult)) == true)
 		{
 			Result->GetValue()->SetData(ReadResult.Data);
 		}
 		else
 		{
 			AppendReadErrorTag(Result->GetValue(), ReadResult);
-			Continue = false;
 		}
 	}
 	// finalization
@@ -11049,23 +11048,28 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_11Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("11bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 11}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 11}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint16_t Value{0ul};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint16_t>(Reader.Get3Bits()) << 8;
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read3Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((ReadResult1.Data << 8) | ReadResult2.Data));
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11092,7 +11096,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_12Bit_BigEnd
 		{
 			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read4Bits(ReadResult2)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
 				Result->GetValue()->SetData(static_cast<std::uint16_t>((ReadResult1.Data << 8) | ReadResult2.Data));
 			}
