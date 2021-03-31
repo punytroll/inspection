@@ -2245,43 +2245,43 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_16Bit_BigEndian_Least
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
 				std::bitset<16> Value;
 				
-				Value[0] = (SecondReadResult.Data & 0x01) == 0x01;
-				Value[1] = (SecondReadResult.Data & 0x02) == 0x02;
-				Value[2] = (SecondReadResult.Data & 0x04) == 0x04;
-				Value[3] = (SecondReadResult.Data & 0x08) == 0x08;
-				Value[4] = (SecondReadResult.Data & 0x10) == 0x10;
-				Value[5] = (SecondReadResult.Data & 0x20) == 0x20;
-				Value[6] = (SecondReadResult.Data & 0x40) == 0x40;
-				Value[7] = (SecondReadResult.Data & 0x80) == 0x80;
-				Value[8] = (FirstReadResult.Data & 0x01) == 0x01;
-				Value[9] = (FirstReadResult.Data & 0x02) == 0x02;
-				Value[10] = (FirstReadResult.Data & 0x04) == 0x04;
-				Value[11] = (FirstReadResult.Data & 0x08) == 0x08;
-				Value[12] = (FirstReadResult.Data & 0x10) == 0x10;
-				Value[13] = (FirstReadResult.Data & 0x20) == 0x20;
-				Value[14] = (FirstReadResult.Data & 0x40) == 0x40;
-				Value[15] = (FirstReadResult.Data & 0x80) == 0x80;
+				Value[0] = (ReadResult2.Data & 0x01) == 0x01;
+				Value[1] = (ReadResult2.Data & 0x02) == 0x02;
+				Value[2] = (ReadResult2.Data & 0x04) == 0x04;
+				Value[3] = (ReadResult2.Data & 0x08) == 0x08;
+				Value[4] = (ReadResult2.Data & 0x10) == 0x10;
+				Value[5] = (ReadResult2.Data & 0x20) == 0x20;
+				Value[6] = (ReadResult2.Data & 0x40) == 0x40;
+				Value[7] = (ReadResult2.Data & 0x80) == 0x80;
+				Value[8] = (ReadResult1.Data & 0x01) == 0x01;
+				Value[9] = (ReadResult1.Data & 0x02) == 0x02;
+				Value[10] = (ReadResult1.Data & 0x04) == 0x04;
+				Value[11] = (ReadResult1.Data & 0x08) == 0x08;
+				Value[12] = (ReadResult1.Data & 0x10) == 0x10;
+				Value[13] = (ReadResult1.Data & 0x20) == 0x20;
+				Value[14] = (ReadResult1.Data & 0x40) == 0x40;
+				Value[15] = (ReadResult1.Data & 0x80) == 0x80;
 				Result->GetValue()->SetData(Value);
-				Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{FirstReadResult.Data, SecondReadResult.Data});
+				Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{ReadResult1.Data, ReadResult2.Data});
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -2303,43 +2303,43 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_16Bit_LittleEndian_Le
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
 				std::bitset<16> Value;
 				
-				Value[0] = (FirstReadResult.Data & 0x01) == 0x01;
-				Value[1] = (FirstReadResult.Data & 0x02) == 0x02;
-				Value[2] = (FirstReadResult.Data & 0x04) == 0x04;
-				Value[3] = (FirstReadResult.Data & 0x08) == 0x08;
-				Value[4] = (FirstReadResult.Data & 0x10) == 0x10;
-				Value[5] = (FirstReadResult.Data & 0x20) == 0x20;
-				Value[6] = (FirstReadResult.Data & 0x40) == 0x40;
-				Value[7] = (FirstReadResult.Data & 0x80) == 0x80;
-				Value[8] = (SecondReadResult.Data & 0x01) == 0x01;
-				Value[9] = (SecondReadResult.Data & 0x02) == 0x02;
-				Value[10] = (SecondReadResult.Data & 0x04) == 0x04;
-				Value[11] = (SecondReadResult.Data & 0x08) == 0x08;
-				Value[12] = (SecondReadResult.Data & 0x10) == 0x10;
-				Value[13] = (SecondReadResult.Data & 0x20) == 0x20;
-				Value[14] = (SecondReadResult.Data & 0x40) == 0x40;
-				Value[15] = (SecondReadResult.Data & 0x80) == 0x80;
+				Value[0] = (ReadResult1.Data & 0x01) == 0x01;
+				Value[1] = (ReadResult1.Data & 0x02) == 0x02;
+				Value[2] = (ReadResult1.Data & 0x04) == 0x04;
+				Value[3] = (ReadResult1.Data & 0x08) == 0x08;
+				Value[4] = (ReadResult1.Data & 0x10) == 0x10;
+				Value[5] = (ReadResult1.Data & 0x20) == 0x20;
+				Value[6] = (ReadResult1.Data & 0x40) == 0x40;
+				Value[7] = (ReadResult1.Data & 0x80) == 0x80;
+				Value[8] = (ReadResult2.Data & 0x01) == 0x01;
+				Value[9] = (ReadResult2.Data & 0x02) == 0x02;
+				Value[10] = (ReadResult2.Data & 0x04) == 0x04;
+				Value[11] = (ReadResult2.Data & 0x08) == 0x08;
+				Value[12] = (ReadResult2.Data & 0x10) == 0x10;
+				Value[13] = (ReadResult2.Data & 0x20) == 0x20;
+				Value[14] = (ReadResult2.Data & 0x40) == 0x40;
+				Value[15] = (ReadResult2.Data & 0x80) == 0x80;
 				Result->GetValue()->SetData(Value);
-				Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{FirstReadResult.Data, SecondReadResult.Data});
+				Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{ReadResult1.Data, ReadResult2.Data});
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -2361,77 +2361,77 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_32Bit_LittleEndian_Le
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
-				Inspection::ReadResult ThirdReadResult;
+				Inspection::ReadResult ReadResult3;
 				
-				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
 				{
-					Inspection::ReadResult FourthReadResult;
+					Inspection::ReadResult ReadResult4;
 					
-					if((Continue = Reader.Read8Bits(FourthReadResult)) == true)
+					if((Continue = Reader.Read8Bits(ReadResult4)) == true)
 					{
 						std::bitset<32> Value;
 						
-						Value[0] = (FirstReadResult.Data & 0x01) == 0x01;
-						Value[1] = (FirstReadResult.Data & 0x02) == 0x02;
-						Value[2] = (FirstReadResult.Data & 0x04) == 0x04;
-						Value[3] = (FirstReadResult.Data & 0x08) == 0x08;
-						Value[4] = (FirstReadResult.Data & 0x10) == 0x10;
-						Value[5] = (FirstReadResult.Data & 0x20) == 0x20;
-						Value[6] = (FirstReadResult.Data & 0x40) == 0x40;
-						Value[7] = (FirstReadResult.Data & 0x80) == 0x80;
-						Value[8] = (SecondReadResult.Data & 0x01) == 0x01;
-						Value[9] = (SecondReadResult.Data & 0x02) == 0x02;
-						Value[10] = (SecondReadResult.Data & 0x04) == 0x04;
-						Value[11] = (SecondReadResult.Data & 0x08) == 0x08;
-						Value[12] = (SecondReadResult.Data & 0x10) == 0x10;
-						Value[13] = (SecondReadResult.Data & 0x20) == 0x20;
-						Value[14] = (SecondReadResult.Data & 0x40) == 0x40;
-						Value[15] = (SecondReadResult.Data & 0x80) == 0x80;
-						Value[16] = (ThirdReadResult.Data & 0x01) == 0x01;
-						Value[17] = (ThirdReadResult.Data & 0x02) == 0x02;
-						Value[18] = (ThirdReadResult.Data & 0x04) == 0x04;
-						Value[19] = (ThirdReadResult.Data & 0x08) == 0x08;
-						Value[20] = (ThirdReadResult.Data & 0x10) == 0x10;
-						Value[21] = (ThirdReadResult.Data & 0x20) == 0x20;
-						Value[22] = (ThirdReadResult.Data & 0x40) == 0x40;
-						Value[23] = (ThirdReadResult.Data & 0x80) == 0x80;
-						Value[24] = (FourthReadResult.Data & 0x01) == 0x01;
-						Value[25] = (FourthReadResult.Data & 0x02) == 0x02;
-						Value[26] = (FourthReadResult.Data & 0x04) == 0x04;
-						Value[27] = (FourthReadResult.Data & 0x08) == 0x08;
-						Value[28] = (FourthReadResult.Data & 0x10) == 0x10;
-						Value[29] = (FourthReadResult.Data & 0x20) == 0x20;
-						Value[30] = (FourthReadResult.Data & 0x40) == 0x40;
-						Value[31] = (FourthReadResult.Data & 0x80) == 0x80;
+						Value[0] = (ReadResult1.Data & 0x01) == 0x01;
+						Value[1] = (ReadResult1.Data & 0x02) == 0x02;
+						Value[2] = (ReadResult1.Data & 0x04) == 0x04;
+						Value[3] = (ReadResult1.Data & 0x08) == 0x08;
+						Value[4] = (ReadResult1.Data & 0x10) == 0x10;
+						Value[5] = (ReadResult1.Data & 0x20) == 0x20;
+						Value[6] = (ReadResult1.Data & 0x40) == 0x40;
+						Value[7] = (ReadResult1.Data & 0x80) == 0x80;
+						Value[8] = (ReadResult2.Data & 0x01) == 0x01;
+						Value[9] = (ReadResult2.Data & 0x02) == 0x02;
+						Value[10] = (ReadResult2.Data & 0x04) == 0x04;
+						Value[11] = (ReadResult2.Data & 0x08) == 0x08;
+						Value[12] = (ReadResult2.Data & 0x10) == 0x10;
+						Value[13] = (ReadResult2.Data & 0x20) == 0x20;
+						Value[14] = (ReadResult2.Data & 0x40) == 0x40;
+						Value[15] = (ReadResult2.Data & 0x80) == 0x80;
+						Value[16] = (ReadResult3.Data & 0x01) == 0x01;
+						Value[17] = (ReadResult3.Data & 0x02) == 0x02;
+						Value[18] = (ReadResult3.Data & 0x04) == 0x04;
+						Value[19] = (ReadResult3.Data & 0x08) == 0x08;
+						Value[20] = (ReadResult3.Data & 0x10) == 0x10;
+						Value[21] = (ReadResult3.Data & 0x20) == 0x20;
+						Value[22] = (ReadResult3.Data & 0x40) == 0x40;
+						Value[23] = (ReadResult3.Data & 0x80) == 0x80;
+						Value[24] = (ReadResult4.Data & 0x01) == 0x01;
+						Value[25] = (ReadResult4.Data & 0x02) == 0x02;
+						Value[26] = (ReadResult4.Data & 0x04) == 0x04;
+						Value[27] = (ReadResult4.Data & 0x08) == 0x08;
+						Value[28] = (ReadResult4.Data & 0x10) == 0x10;
+						Value[29] = (ReadResult4.Data & 0x20) == 0x20;
+						Value[30] = (ReadResult4.Data & 0x40) == 0x40;
+						Value[31] = (ReadResult4.Data & 0x80) == 0x80;
 						Result->GetValue()->SetData(Value);
-						Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{FirstReadResult.Data, SecondReadResult.Data, ThirdReadResult.Data, FourthReadResult.Data});
+						Result->GetValue()->AddTag("data", std::vector< std::uint8_t >{ReadResult1.Data, ReadResult2.Data, ReadResult3.Data, ReadResult4.Data});
 					}
 					else
 					{
-						AppendReadErrorTag(Result->GetValue(), FourthReadResult);
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
 					}
 				}
 				else
 				{
-					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
 				}
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -6899,27 +6899,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
-				auto CodePoint{static_cast<std::uint32_t>((static_cast<std::uint32_t>(FirstReadResult.Data) << 8) | static_cast<std::uint32_t>(SecondReadResult.Data))};
+				auto CodePoint{static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult1.Data) << 8) | static_cast<std::uint32_t>(ReadResult2.Data))};
 				
 				Result->GetValue()->AppendField("codepoint", CodePoint);
 				Result->GetValue()->SetData(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint));
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -6938,27 +6938,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
-				auto CodePoint{static_cast<std::uint32_t>((static_cast<std::uint32_t>(SecondReadResult.Data) << 8) | static_cast<std::uint32_t>(FirstReadResult.Data))};
+				auto CodePoint{static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult2.Data) << 8) | static_cast<std::uint32_t>(ReadResult1.Data))};
 				
 				Result->GetValue()->AppendField("codepoint", CodePoint);
 				Result->GetValue()->SetData(Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(CodePoint));
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -6976,27 +6976,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if(Reader.Read8Bits(FirstReadResult) == true)
+		if(Reader.Read8Bits(ReadResult1) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if(Reader.Read8Bits(SecondReadResult) == true)
+			if(Reader.Read8Bits(ReadResult2) == true)
 			{
-				Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(FirstReadResult.Data) << 8) | static_cast<std::uint32_t>(SecondReadResult.Data)));
+				Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult1.Data) << 8) | static_cast<std::uint32_t>(ReadResult2.Data)));
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
 		else
 		{
 			Result->GetValue()->AddTag("ended by error"s);
-			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
 			Continue = false;
 		}
 	}
@@ -7015,27 +7015,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if(Reader.Read8Bits(FirstReadResult) == true)
+		if(Reader.Read8Bits(ReadResult1) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if(Reader.Read8Bits(SecondReadResult) == true)
+			if(Reader.Read8Bits(ReadResult2) == true)
 			{
-				Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(SecondReadResult.Data) << 8) | static_cast<std::uint32_t>(FirstReadResult.Data)));
+				Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult2.Data) << 8) | static_cast<std::uint32_t>(ReadResult1.Data)));
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
 		else
 		{
 			Result->GetValue()->AddTag("ended by error"s);
-			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
 			Continue = false;
 		}
 	}
@@ -7426,23 +7426,23 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if(Reader.Read8Bits(FirstReadResult) == true)
+		if(Reader.Read8Bits(ReadResult1) == true)
 		{
-			if((FirstReadResult.Data & 0x80) == 0x00)
+			if((ReadResult1.Data & 0x80) == 0x00)
 			{
-				Result->GetValue()->SetData(static_cast<std::uint32_t>(FirstReadResult.Data));
+				Result->GetValue()->SetData(static_cast<std::uint32_t>(ReadResult1.Data));
 			}
-			else if((FirstReadResult.Data & 0xe0) == 0xc0)
+			else if((ReadResult1.Data & 0xe0) == 0xc0)
 			{
-				Inspection::ReadResult SecondReadResult;
+				Inspection::ReadResult ReadResult2;
 				
-				if(Reader.Read8Bits(SecondReadResult) == true)
+				if(Reader.Read8Bits(ReadResult2) == true)
 				{
-					if((SecondReadResult.Data & 0xc0) == 0x80)
+					if((ReadResult2.Data & 0xc0) == 0x80)
 					{
-						Result->GetValue()->SetData(static_cast<std::uint32_t>((FirstReadResult.Data & 0x1f) << 6) | static_cast<std::uint32_t>(SecondReadResult.Data & 0x3f));
+						Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data & 0x1f) << 6) | static_cast<std::uint32_t>(ReadResult2.Data & 0x3f));
 					}
 					else
 					{
@@ -7452,22 +7452,22 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
 				else
 				{
 					Result->GetValue()->AddTag("ended by error"s);
-					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
 					Continue = false;
 				}
 			}
-			else if((FirstReadResult.Data & 0xf0) == 0xe0)
+			else if((ReadResult1.Data & 0xf0) == 0xe0)
 			{
-				Inspection::ReadResult SecondReadResult;
-				Inspection::ReadResult ThirdReadResult;
+				Inspection::ReadResult ReadResult2;
+				Inspection::ReadResult ReadResult3;
 				
-				if(Reader.Read8Bits(SecondReadResult) == true)
+				if(Reader.Read8Bits(ReadResult2) == true)
 				{
-					if(Reader.Read8Bits(ThirdReadResult) == true)
+					if(Reader.Read8Bits(ReadResult3) == true)
 					{
-						if(((SecondReadResult.Data & 0xc0) == 0x80) && ((ThirdReadResult.Data & 0xc0) == 0x80))
+						if(((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80))
 						{
-							Result->GetValue()->SetData(static_cast<std::uint32_t>((FirstReadResult.Data & 0x0f) << 12)| static_cast<std::uint32_t>((SecondReadResult.Data & 0x3f) << 6) | static_cast<std::uint32_t>(ThirdReadResult.Data & 0x3f));
+							Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data & 0x0f) << 12)| static_cast<std::uint32_t>((ReadResult2.Data & 0x3f) << 6) | static_cast<std::uint32_t>(ReadResult3.Data & 0x3f));
 						}
 						else
 						{
@@ -7477,32 +7477,32 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
 					else
 					{
 						Result->GetValue()->AddTag("ended by error"s);
-						Result->GetValue()->AddTag("error", "Could not read the third byte of the UTF-8 codepoint from " + to_string_cast(ThirdReadResult.InputLength) + " bytes and bits of remaining data.");
+						Result->GetValue()->AddTag("error", "Could not read the third byte of the UTF-8 codepoint from " + to_string_cast(ReadResult3.InputLength) + " bytes and bits of remaining data.");
 						Continue = false;
 					}
 				}
 				else
 				{
 					Result->GetValue()->AddTag("ended by error"s);
-					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
 					Continue = false;
 				}
 			}
-			else if((FirstReadResult.Data & 0xf8) == 0xf0)
+			else if((ReadResult1.Data & 0xf8) == 0xf0)
 			{
-				Inspection::ReadResult SecondReadResult;
-				Inspection::ReadResult ThirdReadResult;
-				Inspection::ReadResult FourthReadResult;
+				Inspection::ReadResult ReadResult2;
+				Inspection::ReadResult ReadResult3;
+				Inspection::ReadResult ReadResult4;
 				
-				if(Reader.Read8Bits(SecondReadResult) == true)
+				if(Reader.Read8Bits(ReadResult2) == true)
 				{
-					if(Reader.Read8Bits(ThirdReadResult) == true)
+					if(Reader.Read8Bits(ReadResult3) == true)
 					{
-						if(Reader.Read8Bits(FourthReadResult) == true)
+						if(Reader.Read8Bits(ReadResult4) == true)
 						{
-							if(((SecondReadResult.Data & 0xc0) == 0x80) && ((ThirdReadResult.Data & 0xc0) == 0x80) && ((FourthReadResult.Data & 0xc0) == 0x80))
+							if(((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80) && ((ReadResult4.Data & 0xc0) == 0x80))
 							{
-								Result->GetValue()->SetData(static_cast<std::uint32_t>((FirstReadResult.Data & 0x07) << 18)| static_cast<std::uint32_t>((SecondReadResult.Data & 0x3f) << 12) | static_cast<std::uint32_t>((ThirdReadResult.Data & 0x3f) << 6) | static_cast<std::uint32_t>(FourthReadResult.Data & 0x3f));
+								Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data & 0x07) << 18)| static_cast<std::uint32_t>((ReadResult2.Data & 0x3f) << 12) | static_cast<std::uint32_t>((ReadResult3.Data & 0x3f) << 6) | static_cast<std::uint32_t>(ReadResult4.Data & 0x3f));
 							}
 							else
 							{
@@ -7512,21 +7512,21 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
 						else
 						{
 							Result->GetValue()->AddTag("ended by error"s);
-							Result->GetValue()->AddTag("error", "Could not read the fourth byte of the UTF-8 codepoint from " + to_string_cast(ThirdReadResult.InputLength) + " bytes and bits of remaining data.");
+							Result->GetValue()->AddTag("error", "Could not read the fourth byte of the UTF-8 codepoint from " + to_string_cast(ReadResult3.InputLength) + " bytes and bits of remaining data.");
 							Continue = false;
 						}
 					}
 					else
 					{
 						Result->GetValue()->AddTag("ended by error"s);
-						Result->GetValue()->AddTag("error", "Could not read the third byte of the UTF-8 codepoint from " + to_string_cast(ThirdReadResult.InputLength) + " bytes and bits of remaining data.");
+						Result->GetValue()->AddTag("error", "Could not read the third byte of the UTF-8 codepoint from " + to_string_cast(ReadResult3.InputLength) + " bytes and bits of remaining data.");
 						Continue = false;
 					}
 				}
 				else
 				{
 					Result->GetValue()->AddTag("ended by error"s);
-					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+					Result->GetValue()->AddTag("error", "Could not read the second byte of the UTF-8 codepoint from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
 					Continue = false;
 				}
 			}
@@ -7534,7 +7534,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
 		else
 		{
 			Result->GetValue()->AddTag("ended by error"s);
-			Result->GetValue()->AddTag("error", "Could not read the first byte of the UTF-8 codepoint from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Result->GetValue()->AddTag("error", "Could not read the first byte of the UTF-8 codepoint from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
 			Continue = false;
 		}
 	}
@@ -7938,27 +7938,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if(Reader.Read8Bits(FirstReadResult) == true)
+		if(Reader.Read8Bits(ReadResult1) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if(Reader.Read8Bits(SecondReadResult) == true)
+			if(Reader.Read8Bits(ReadResult2) == true)
 			{
-				Result->GetValue()->SetData(static_cast<std::uint16_t>((static_cast<std::uint16_t>(FirstReadResult.Data) << 8) | static_cast<std::uint16_t>(SecondReadResult.Data)));
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((static_cast<std::uint16_t>(ReadResult1.Data) << 8) | static_cast<std::uint16_t>(ReadResult2.Data)));
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
 		else
 		{
 			Result->GetValue()->AddTag("ended by error"s);
-			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
 			Continue = false;
 		}
 	}
@@ -8170,27 +8170,27 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if(Reader.Read8Bits(FirstReadResult) == true)
+		if(Reader.Read8Bits(ReadResult1) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if(Reader.Read8Bits(SecondReadResult) == true)
+			if(Reader.Read8Bits(ReadResult2) == true)
 			{
-				Result->GetValue()->SetData(static_cast<std::uint16_t>((static_cast<std::uint16_t>(SecondReadResult.Data) << 8) | static_cast<std::uint16_t>(FirstReadResult.Data)));
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((static_cast<std::uint16_t>(ReadResult2.Data) << 8) | static_cast<std::uint16_t>(ReadResult1.Data)));
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(SecondReadResult.InputLength) + " bytes and bits of remaining data.");
+				Result->GetValue()->AddTag("error", "Could not read the second byte from " + to_string_cast(ReadResult2.InputLength) + " bytes and bits of remaining data.");
 				Continue = false;
 			}
 		}
 		else
 		{
 			Result->GetValue()->AddTag("ended by error"s);
-			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(FirstReadResult.InputLength) + " bytes and bits of remaining data.");
+			Result->GetValue()->AddTag("error", "Could not read the first byte from " + to_string_cast(ReadResult1.InputLength) + " bytes and bits of remaining data.");
 			Continue = false;
 		}
 	}
@@ -8604,48 +8604,48 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_IEEE_60559_2011_bina
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
-				Inspection::ReadResult ThirdReadResult;
+				Inspection::ReadResult ReadResult3;
 				
-				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
 				{
-					Inspection::ReadResult FourthReadResult;
+					Inspection::ReadResult ReadResult4;
 					
-					if((Continue = Reader.Read8Bits(FourthReadResult)) == true)
+					if((Continue = Reader.Read8Bits(ReadResult4)) == true)
 					{
 						std::uint8_t Data[4];
 						
-						Data[0] = FirstReadResult.Data;
-						Data[1] = SecondReadResult.Data;
-						Data[2] = ThirdReadResult.Data;
-						Data[3] = FourthReadResult.Data;
+						Data[0] = ReadResult1.Data;
+						Data[1] = ReadResult2.Data;
+						Data[2] = ReadResult3.Data;
+						Data[3] = ReadResult4.Data;
 						Result->GetValue()->SetData(*reinterpret_cast< const float * const >(Data));
 					}
 					else
 					{
-						AppendReadErrorTag(Result->GetValue(), FourthReadResult);
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
 					}
 				}
 				else
 				{
-					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
 				}
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -11086,24 +11086,24 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_12Bit_BigEnd
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read4Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read4Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read4Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read4Bits(ReadResult2)) == true)
 			{
-				Result->GetValue()->SetData(static_cast<std::uint16_t>((FirstReadResult.Data << 8) | SecondReadResult.Data));
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((ReadResult1.Data << 8) | ReadResult2.Data));
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -11330,33 +11330,33 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_20Bit_BigEnd
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read4Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read4Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
-				Inspection::ReadResult ThirdReadResult;
+				Inspection::ReadResult ReadResult3;
 				
-				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
 				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((FirstReadResult.Data << 16) | (SecondReadResult.Data << 8) | ThirdReadResult.Data));
+					Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data << 16) | (ReadResult2.Data << 8) | ReadResult3.Data));
 				}
 				else
 				{
-					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
 				}
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -11589,42 +11589,42 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_BigEnd
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
-				Inspection::ReadResult ThirdReadResult;
+				Inspection::ReadResult ReadResult3;
 				
-				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
 				{
-					Inspection::ReadResult FourthReadResult;
+					Inspection::ReadResult ReadResult4;
 					
-					if((Continue = Reader.Read8Bits(FourthReadResult)) == true)
+					if((Continue = Reader.Read8Bits(ReadResult4)) == true)
 					{
-						Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(FirstReadResult.Data) << 24) | (static_cast<std::uint32_t>(SecondReadResult.Data) << 16) | (static_cast<std::uint32_t>(ThirdReadResult.Data) << 8) | (static_cast<std::uint32_t>(FourthReadResult.Data))));
+						Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult1.Data) << 24) | (static_cast<std::uint32_t>(ReadResult2.Data) << 16) | (static_cast<std::uint32_t>(ReadResult3.Data) << 8) | (static_cast<std::uint32_t>(ReadResult4.Data))));
 					}
 					else
 					{
-						AppendReadErrorTag(Result->GetValue(), FourthReadResult);
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
 					}
 				}
 				else
 				{
-					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
 				}
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -11646,42 +11646,42 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_Little
 	// verification
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
-				Inspection::ReadResult ThirdReadResult;
+				Inspection::ReadResult ReadResult3;
 				
-				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
 				{
-					Inspection::ReadResult FourthReadResult;
+					Inspection::ReadResult ReadResult4;
 					
-					if((Continue = Reader.Read8Bits(FourthReadResult)) == true)
+					if((Continue = Reader.Read8Bits(ReadResult4)) == true)
 					{
-						Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(FourthReadResult.Data) << 24) | (static_cast<std::uint32_t>(ThirdReadResult.Data) << 16) | (static_cast<std::uint32_t>(SecondReadResult.Data) << 8) | (static_cast<std::uint32_t>(FirstReadResult.Data))));
+						Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult4.Data) << 24) | (static_cast<std::uint32_t>(ReadResult3.Data) << 16) | (static_cast<std::uint32_t>(ReadResult2.Data) << 8) | (static_cast<std::uint32_t>(ReadResult1.Data))));
 					}
 					else
 					{
-						AppendReadErrorTag(Result->GetValue(), FourthReadResult);
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
 					}
 				}
 				else
 				{
-					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
 				}
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -11703,51 +11703,51 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_36Bit_BigEnd
 	// reading
 	if(Continue == true)
 	{
-		Inspection::ReadResult FirstReadResult;
+		Inspection::ReadResult ReadResult1;
 		
-		if((Continue = Reader.Read4Bits(FirstReadResult)) == true)
+		if((Continue = Reader.Read4Bits(ReadResult1)) == true)
 		{
-			Inspection::ReadResult SecondReadResult;
+			Inspection::ReadResult ReadResult2;
 			
-			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 			{
-				Inspection::ReadResult ThirdReadResult;
+				Inspection::ReadResult ReadResult3;
 				
-				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
 				{
-					Inspection::ReadResult FourthReadResult;
+					Inspection::ReadResult ReadResult4;
 					
-					if((Continue = Reader.Read8Bits(FourthReadResult)) == true)
+					if((Continue = Reader.Read8Bits(ReadResult4)) == true)
 					{
-						Inspection::ReadResult FifthReadResult;
+						Inspection::ReadResult ReadResult5;
 						
-						if((Continue = Reader.Read8Bits(FifthReadResult)) == true)
+						if((Continue = Reader.Read8Bits(ReadResult5)) == true)
 						{
-							Result->GetValue()->SetData(static_cast<std::uint64_t>((static_cast<std::uint64_t>(FirstReadResult.Data) << 32) | (static_cast<std::uint64_t>(SecondReadResult.Data) << 24) | (static_cast<std::uint64_t>(ThirdReadResult.Data) << 16) | (static_cast<std::uint64_t>(FourthReadResult.Data) << 8) | static_cast<std::uint64_t>(FifthReadResult.Data)));
+							Result->GetValue()->SetData(static_cast<std::uint64_t>((static_cast<std::uint64_t>(ReadResult1.Data) << 32) | (static_cast<std::uint64_t>(ReadResult2.Data) << 24) | (static_cast<std::uint64_t>(ReadResult3.Data) << 16) | (static_cast<std::uint64_t>(ReadResult4.Data) << 8) | static_cast<std::uint64_t>(ReadResult5.Data)));
 						}
 						else
 						{
-							AppendReadErrorTag(Result->GetValue(), FifthReadResult);
+							AppendReadErrorTag(Result->GetValue(), ReadResult5);
 						}
 					}
 					else
 					{
-						AppendReadErrorTag(Result->GetValue(), FourthReadResult);
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
 					}
 				}
 				else
 				{
-					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
 				}
 			}
 			else
 			{
-				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
 			}
 		}
 		else
 		{
-			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
