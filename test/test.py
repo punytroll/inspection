@@ -3,6 +3,24 @@ from sys import exit
 from xml.dom.minidom import Node, parse
 import subprocess
 
+Black = "\x1b[30m"
+Red = "\x1b[31m"
+Green = "\x1b[32m"
+Yellow = "\x1b[33m"
+Blue = "\x1b[34m"
+Magenta = "\x1b[35m"
+Cyan = "\x1b[36m"
+White = "\x1b[37m"
+BrightBlack = "\x1b[90m"
+BrightRed = "\x1b[91m"
+BrightGreen = "\x1b[92m"
+BrightYellow = "\x1b[93m"
+BrightBlue = "\x1b[94m"
+BrightMagenta = "\x1b[95m"
+BrightCyan = "\x1b[96m"
+BrightWhite = "\x1b[97m"
+Reset = "\x1b[0m"
+
 parser = OptionParser()
 parser.add_option("-i", "--in", dest="test_suite", help="The test suite file.")
 
@@ -52,13 +70,23 @@ for node in tests_element.childNodes:
 					test.expected_output = get_text(node.childNodes)
 		tests.append(test)
 
+number_of_tests = 0
+number_of_successes = 0
+number_of_failures = 0
 for test in tests:
+	number_of_tests += 1
 	print("Running \"" + test.execute.command + " " + " ".join(test.execute.arguments) + "\"")
 	result = subprocess.run([test.execute.command] + test.execute.arguments, stdout=subprocess.PIPE)
 	result = result.stdout.decode("utf-8")
-	print("    => \"" + result + "\"")
-	if result != test.expected_output:
-		print("Test failed! Expected output was \"" + test.expected_output + "\".")
-		exit(1)
-
-print("All tests successful.")
+	if result == test.expected_output:
+		number_of_successes += 1
+		print("    => \"" + BrightGreen + result + Reset + "\"")
+	else:
+		number_of_failures += 1
+		print("    => \"" + BrightRed + result + Reset + "\"")
+		print("Test failed! Expected output was \"" + BrightBlue + test.expected_output + Reset + "\".")
+print()
+if number_of_failures == 0:
+	print("All " + Yellow + str(number_of_successes) + Reset + " test(s) " + BrightGreen + "successful" + Reset + ".")
+else:
+	print("Out of " + Yellow + str(number_of_tests) + Reset + " test(s), " + Yellow + str(number_of_successes) + Reset + " test(s) were " + BrightGreen + "successful" + Reset + " and " + Yellow + str(number_of_failures) + Reset + " test(s) " + BrightRed + "failed" + Reset + ".")
