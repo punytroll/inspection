@@ -11586,25 +11586,46 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("32bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 32}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint32_t Value{0};
+		Inspection::ReadResult FirstReadResult;
 		
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 24;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 16;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			{
+				Inspection::ReadResult ThirdReadResult;
+				
+				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				{
+					Inspection::ReadResult FourthReadResult;
+					
+					if((Continue = Reader.Read8Bits(FourthReadResult)) == true)
+					{
+						Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(FirstReadResult.Data) << 24) | (static_cast<std::uint32_t>(SecondReadResult.Data) << 16) | (static_cast<std::uint32_t>(ThirdReadResult.Data) << 8) | (static_cast<std::uint32_t>(FourthReadResult.Data))));
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), FourthReadResult);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11625,22 +11646,43 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_Little
 	// verification
 	if(Continue == true)
 	{
-		if(Reader.Has(Inspection::Length{0, 32}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
-			Continue = false;
-		}
-	}
-	// reading
-	if(Continue == true)
-	{
-		std::uint32_t Value{0};
+		Inspection::ReadResult FirstReadResult;
 		
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits());
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 16;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 24;
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read8Bits(FirstReadResult)) == true)
+		{
+			Inspection::ReadResult SecondReadResult;
+			
+			if((Continue = Reader.Read8Bits(SecondReadResult)) == true)
+			{
+				Inspection::ReadResult ThirdReadResult;
+				
+				if((Continue = Reader.Read8Bits(ThirdReadResult)) == true)
+				{
+					Inspection::ReadResult FourthReadResult;
+					
+					if((Continue = Reader.Read8Bits(FourthReadResult)) == true)
+					{
+						Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(FourthReadResult.Data) << 24) | (static_cast<std::uint32_t>(ThirdReadResult.Data) << 16) | (static_cast<std::uint32_t>(SecondReadResult.Data) << 8) | (static_cast<std::uint32_t>(FirstReadResult.Data))));
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), FourthReadResult);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ThirdReadResult);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), SecondReadResult);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), FirstReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
