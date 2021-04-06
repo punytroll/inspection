@@ -10174,21 +10174,20 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_5Bit(Inspectio
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("signed"s);
 	Result->GetValue()->AddTag("5bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 5}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 5}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::int8_t Value{static_cast<std::int8_t>(static_cast<std::int8_t>(Reader.Get5Bits() << 3) >> 3)};
+		Inspection::ReadResult ReadResult;
 		
-		Result->GetValue()->SetData(Value);
+		if(Reader.Read5Bits(ReadResult) == true)
+		{
+			Result->GetValue()->SetData(static_cast<std::int8_t>(static_cast<std::int8_t>(ReadResult.Data << 3) >> 3));
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10822,16 +10821,16 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_5Bit(Inspect
 	// verification
 	if(Continue == true)
 	{
-		if(Reader.Has(Inspection::Length{0, 5}) == false)
+		Inspection::ReadResult ReadResult;
+		
+		if((Continue = Reader.Read5Bits(ReadResult)) == true)
 		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 5}) + ".");
-			Continue = false;
+			Result->GetValue()->SetData(ReadResult.Data);
 		}
-	}
-	// reading
-	if(Continue == true)
-	{
-		Result->GetValue()->SetData(Reader.Get5Bits());
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11131,23 +11130,28 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_13Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("13bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 13}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 13}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint16_t Value{0ul};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint16_t>(Reader.Get5Bits()) << 8;
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read5Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((ReadResult1.Data << 8) | ReadResult2.Data));
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);

@@ -103,40 +103,6 @@ std::uint8_t Inspection::Reader::Get4Bits(void)
 	return Result;
 }
 
-std::uint8_t Inspection::Reader::Get5Bits(void)
-{
-	assert(_Buffer != nullptr);
-	assert(Has(Inspection::Length{0, 5}) == true);
-	
-	std::uint8_t Result;
-	
-	if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
-	{
-		if(_ReadPositionInInput.GetBits() < 4)
-		{
-			Result = (*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> (3 - _ReadPositionInInput.GetBits())) & 0x1f;
-		}
-		else
-		{
-			Result = ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) << (_ReadPositionInInput.GetBits() - 3)) | ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes() + 1)) >> (11 - _ReadPositionInInput.GetBits()))) & 0x1f;
-		}
-	}
-	else
-	{
-		if(_ReadPositionInInput.GetBits() < 4)
-		{
-			Result = (*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> _ReadPositionInInput.GetBits()) & 0x1f;
-		}
-		else
-		{
-			Result = ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> _ReadPositionInInput.GetBits()) | ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes() + 1)) << (8 - _ReadPositionInInput.GetBits()))) & 0x1f;
-		}
-	}
-	_ReadPositionInInput += Inspection::Length{0, 5};
-	
-	return Result;
-}
-
 std::uint8_t Inspection::Reader::Get6Bits(void)
 {
 	assert(_Buffer != nullptr);
@@ -365,6 +331,54 @@ bool Inspection::Reader::Read4Bits(Inspection::ReadResult & ReadResult)
 				else
 				{
 					ReadResult.Data = ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> _ReadPositionInInput.GetBits()) | ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes() + 1)) << (8 - _ReadPositionInInput.GetBits()))) & 0x0f;
+				}
+			}
+			_ReadPositionInInput += ReadResult.InputLength;
+		}
+		else
+		{
+			ReadResult.InputLength = _EndPositionInInput - _ReadPositionInInput;
+			ReadResult.Success = false;
+		}
+	}
+	else
+	{
+		ReadResult.InputLength = Inspection::Length{0, 0};
+	}
+	
+	return ReadResult.Success;
+}
+
+bool Inspection::Reader::Read5Bits(Inspection::ReadResult & ReadResult)
+{
+	ReadResult.Success = _Buffer != nullptr;
+	ReadResult.OutputLength = Inspection::Length{0, 5};
+	ReadResult.Data = 0;
+	if(ReadResult.Success == true)
+	{
+		if(Has(Inspection::Length{0, 5}) == true)
+		{
+			ReadResult.InputLength = Inspection::Length{0, 5};
+			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
+			{
+				if(_ReadPositionInInput.GetBits() < 4)
+				{
+					ReadResult.Data = (*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> (3 - _ReadPositionInInput.GetBits())) & 0x1f;
+				}
+				else
+				{
+					ReadResult.Data = ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) << (_ReadPositionInInput.GetBits() - 3)) | ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes() + 1)) >> (11 - _ReadPositionInInput.GetBits()))) & 0x1f;
+				}
+			}
+			else
+			{
+				if(_ReadPositionInInput.GetBits() < 4)
+				{
+					ReadResult.Data = (*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> _ReadPositionInInput.GetBits()) & 0x1f;
+				}
+				else
+				{
+					ReadResult.Data = ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> _ReadPositionInInput.GetBits()) | ((*(_Buffer->GetData() + _ReadPositionInInput.GetBytes() + 1)) << (8 - _ReadPositionInInput.GetBits()))) & 0x1f;
 				}
 			}
 			_ReadPositionInInput += ReadResult.InputLength;
