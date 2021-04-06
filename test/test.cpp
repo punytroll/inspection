@@ -272,7 +272,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_String_Alphabetic_EndedByLength                                                 //
+	// Inspection::Get_ASCII_String_Alphabetic_EndedByLength                                     //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -294,7 +294,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_String_AlphaNumeric_EndedByLength                                               //
+	// Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength                                   //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -316,7 +316,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_String_AlphaNumericOrSpace_EndedByLength                                        //
+	// Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength                            //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -338,7 +338,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_String_Printable_EndedByInvalidOrLength                                         //
+	// Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength                             //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -360,7 +360,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_String_Printable_EndedByLength                                                  //
+	// Inspection::Get_ASCII_String_Printable_EndedByLength                                      //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -382,7 +382,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_Buffer_UnsignedInteger_8Bit_EndedByLength                                             //
+	// Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength                                 //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -419,7 +419,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength                                      //
+	// Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength                          //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -456,7 +456,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_8859_1_1998_String_EndedByLength                                              //
+	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength                                  //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -478,7 +478,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_8859_1_1998_String_EndedByTermination                                         //
+	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination                             //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -500,7 +500,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_8859_1_1998_String_EndedByTermination                                         //
+	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination                             //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -530,7 +530,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength                                 //
+	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength                     //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -576,7 +576,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength                              //
+	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength                  //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -638,7 +638,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength                      //
+	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength          //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
@@ -700,7 +700,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint                                                  //
+	// Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint                                      //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF8CodePointLatinSmallLetterA[] = {0x61};
@@ -751,7 +751,7 @@ int main(void)
 		}
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian                                        //
+	// Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian                            //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUCS2Termination[] = {0x00, 0x00};
@@ -781,7 +781,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian                                     //
+	// Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian                         //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUCS2Termination[] = {0x00, 0x00};
@@ -811,7 +811,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit                                                //
+	// Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit                                    //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF16Termination[] = {0x00, 0x00};
@@ -834,7 +834,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit                                                //
+	// Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit                                    //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF16Termination[] = {0x00, 0x00};
@@ -857,7 +857,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint                                               //
+	// Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint                                   //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF16BELatinSmallLetterA[] = {0x00, 0x61};
@@ -894,7 +894,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint                                               //
+	// Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint                                   //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF16LatinSmallLetterA[] = {0x61, 0x00};
@@ -917,7 +917,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_Character_Alphabetic                                                            //
+	// Inspection::Get_ASCII_Character_Alphabetic                                                //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
@@ -940,7 +940,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_Character_AlphaNumeric                                                          //
+	// Inspection::Get_ASCII_Character_AlphaNumeric                                              //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
@@ -963,7 +963,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_Character_AlphaNumericOrSpace                                                   //
+	// Inspection::Get_ASCII_Character_AlphaNumericOrSpace                                       //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
@@ -986,7 +986,65 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_SignedInteger_8Bit_BigEndian                                                          //
+	// Inspection::Get_SignedInteger_5Bit                                                        //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 3}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{5, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result1{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result1->GetValue()->GetData()) == -16);
+			
+			auto Result2{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result2->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result2->GetValue()->GetData()) == -9);
+			
+			auto Result3{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result3->GetValue()->GetData()) == 1);
+			
+			auto Result4{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result4->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result4->GetValue()->GetData()) == -12);
+			
+			auto Result5{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result5->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result5->GetValue()->GetData()) == -2);
+			
+			auto Result6{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result6->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result6->GetValue()->GetData()) == 4);
+			
+			auto Result7{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result7->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result7->GetValue()->GetData()) == 8);
+			
+			auto Result8{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			
+			assert(Result8->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result8->GetValue()->GetData()) == 15);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_SignedInteger_8Bit                                                        //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t RawBuffer[] = {0x64};
@@ -1009,7 +1067,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_SignedInteger_12Bit_BigEndian                                                         //
+	// Inspection::Get_SignedInteger_12Bit_BigEndian                                             //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t RawBuffer[] = {0x64, 0x30};
@@ -1053,7 +1111,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ASCII_String_Printable_EndedByTermination                                             //
+	// Inspection::Get_ASCII_String_Printable_EndedByTermination                                 //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t RawBufferASCIILatinSmallLetterA[] = {0x61, 0x62, 0x00, 0x00};
@@ -1104,7 +1162,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_UnsignedInteger_36Bit_BigEndian                                                       //
+	// Inspection::Get_UnsignedInteger_36Bit_BigEndian                                           //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t RawBuffer[] = {0x43, 0x62, 0xa6, 0x9e, 0x30};
@@ -1160,7 +1218,7 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Get_ISO_IEC_8859_1_1998_Character                                                         //
+	// Inspection::Get_ISO_IEC_8859_1_1998_Character                                             //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t RawBuffer_ISO_IEC_8859_1_1998_LatinSmallLetterA[] = {0x61};
@@ -1195,6 +1253,64 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_UnsignedInteger_5Bit                                                      //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 2}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{5, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result1{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result1->GetValue()->GetData()) == 16);
+			
+			auto Result2{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result2->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result2->GetValue()->GetData()) == 23);
+			
+			auto Result3{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result3->GetValue()->GetData()) == 1);
+			
+			auto Result4{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result4->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result4->GetValue()->GetData()) == 20);
+			
+			auto Result5{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result5->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result5->GetValue()->GetData()) == 30);
+			
+			auto Result6{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result6->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result6->GetValue()->GetData()) == 4);
+			
+			auto Result7{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result7->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result7->GetValue()->GetData()) == 8);
+			
+			auto Result8{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			
+			assert(Result8->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result8->GetValue()->GetData()) == 15);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_UnsignedInteger_10Bit_BigEndian                                           //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
@@ -1203,7 +1319,6 @@ int main(void)
 		{
 			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{5, 0}};
 			Inspection::Reader Reader{Buffer};
-			
 			auto Result1{Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {})};
 			
 			assert(Result1->GetSuccess() == true);
@@ -1235,7 +1350,6 @@ int main(void)
 		{
 			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{11, 0}};
 			Inspection::Reader Reader{Buffer};
-			
 			auto Result1{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
 			
 			assert(Result1->GetSuccess() == true);
@@ -1307,6 +1421,43 @@ int main(void)
 			
 			assert(Result4->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result4->GetValue()->GetData()) == 0x0f6d);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_UnsignedInteger_13Bit_BigEndian                                           //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 1}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{6, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result1{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x10b8);
+			
+			auto Result2{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			
+			assert(Result2->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x0d3c);
+			
+			auto Result3{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0887);
+			
+			auto Result4{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			
+			assert(Result4->GetSuccess() == false);
 		}
 	}
 	std::cout << "All tests successful." << std::endl;
