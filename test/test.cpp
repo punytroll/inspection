@@ -1041,6 +1041,34 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_SignedInteger_1Bit                                                        //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result{Inspection::Get_SignedInteger_1Bit(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result1{Inspection::Get_SignedInteger_1Bit(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result1->GetValue()->GetData()) == -1);
+			
+			auto Result2{Inspection::Get_SignedInteger_1Bit(Reader, {})};
+			
+			assert(Result2->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result2->GetValue()->GetData()) == 0);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_SignedInteger_5Bit                                                        //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
@@ -1406,6 +1434,41 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_UnsignedInteger_9Bit_BigEndian                                            //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{5, 0}};
+			Inspection::Reader Reader{Buffer};
+			auto Result1{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x010b);
+			
+			auto Result2{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			
+			assert(Result2->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x010d);
+			
+			auto Result3{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0078);
+			
+			auto Result4{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			
+			assert(Result4->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result4->GetValue()->GetData()) == 0x0110);
+			
+			auto Result5{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			
+			assert(Result5->GetSuccess() == false);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_UnsignedInteger_10Bit_BigEndian                                           //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
@@ -1584,6 +1647,27 @@ int main(void)
 			auto Result4{Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {})};
 			
 			assert(Result4->GetSuccess() == false);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit                                   //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x45, 0x8d};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 0}};
+			Inspection::Reader Reader{Buffer};
+			
+			auto Result1{Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint8_t>(Result1->GetValue()->GetData()) == 0x45);
+			
+			auto Result2{Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader, {})};
+			
+			assert(Result2->GetSuccess() == false);
 		}
 	}
 	

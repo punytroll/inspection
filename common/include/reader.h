@@ -28,10 +28,10 @@ namespace Inspection
 		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & Length);
 		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
 		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
-		std::uint8_t Get1Bits(void);
 		std::uint8_t Get7Bits(void);
 		std::uint8_t Get8Bits(void);
 		bool Read0Bits(Inspection::ReadResult & ReadResult);
+		bool Read1Bits(Inspection::ReadResult & ReadResult);
 		bool Read2Bits(Inspection::ReadResult & ReadResult);
 		bool Read3Bits(Inspection::ReadResult & ReadResult);
 		bool Read4Bits(Inspection::ReadResult & ReadResult);

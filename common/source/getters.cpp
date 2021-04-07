@@ -2448,21 +2448,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Boolean_1Bit(Inspection::Rea
 	
 	Result->GetValue()->AddTag("boolean"s);
 	Result->GetValue()->AddTag("1bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 1}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		auto Bit{Reader.Get1Bits()};
+		Inspection::ReadResult ReadResult;
 		
-		Result->GetValue()->SetData((0x01 & Bit) == 0x01);
+		if((Continue = Reader.Read1Bits(ReadResult)) == true)
+		{
+			Result->GetValue()->SetData((ReadResult.Data & 0x01) == 0x01);
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -2562,9 +2560,18 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Set_EndedByLength(Inspe
 	// reading
 	if(Continue == true)
 	{
+		Inspection::ReadResult ReadResult;
+		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			Continue = Reader.Get1Bits() == 0x01;
+			if((Continue == Reader.Read1Bits(ReadResult)) == true)
+			{
+				Continue = ReadResult.Data == 0x01;
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
+			}
 		}
 	}
 	// interpretation
@@ -2643,9 +2650,18 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_Until16BitAlignme
 		LengthUntil16BitAlignment.Set(0, 16 - OutOfAlignmentBits);
 		if(Reader.Has(LengthUntil16BitAlignment) == true)
 		{
+			Inspection::ReadResult ReadResult;
+			
 			while((Continue == true) && (Reader.GetConsumedLength() < LengthUntil16BitAlignment))
 			{
-				Continue = Reader.Get1Bits() == 0x00;
+				if((Continue = Reader.Read1Bits(ReadResult)) == true)
+				{
+					Continue = ReadResult.Data == 0x00;
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult);
+				}
 			}
 			if(Continue == false)
 			{
@@ -2674,9 +2690,18 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_EndedByLength(Ins
 	// reading
 	if(Continue == true)
 	{
+		Inspection::ReadResult ReadResult;
+		
 		while((Continue == true) && (Reader.HasRemaining() == true))
 		{
-			Continue = Reader.Get1Bits() == 0x00;
+			if((Continue = Reader.Read1Bits(ReadResult)) == true)
+			{
+				Continue = ReadResult.Data == 0x00;
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
+			}
 		}
 	}
 	// interpretation
@@ -5995,28 +6020,25 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_7Bit_Syn
 	Result->GetValue()->AddTag("7bit value"s);
 	Result->GetValue()->AddTag("8bit field"s);
 	Result->GetValue()->AddTag("synchsafe"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 8}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 8}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		if(Reader.Get1Bits() == 0x00)
+		Inspection::ReadResult ReadResult;
+		
+		if((Continue = Reader.Read8Bits(ReadResult)) == true)
 		{
-			std::uint8_t First{Reader.Get7Bits()};
-			
-			Result->GetValue()->SetData(First);
+			if((Continue = ((ReadResult.Data & 0x80) == 0x00)) == true)
+			{
+				Result->GetValue()->SetData(ReadResult.Data);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("error", "The unsigned integer should start with an unset bit."s);
+			}
 		}
 		else
 		{
-			Continue = false;
-			Result->GetValue()->AddTag("error", "The unsigned integer should start with an unset bit."s);
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
 		}
 	}
 	// finalization
@@ -10179,21 +10201,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_1Bit(Inspectio
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("signed"s);
 	Result->GetValue()->AddTag("1bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 1}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::int8_t Value{static_cast<std::int8_t>(static_cast<std::int8_t>(Reader.Get1Bits() << 7) >> 7)};
+		Inspection::ReadResult ReadResult;
 		
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read1Bits(ReadResult)) == true)
+		{
+			Result->GetValue()->SetData(static_cast<std::int8_t>(static_cast<std::int8_t>(ReadResult.Data << 7) >> 7));
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10759,7 +10779,16 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_1Bit(Inspect
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->SetData(Reader.Get1Bits());
+		Inspection::ReadResult ReadResult;
+		
+		if((Continue = Reader.Read1Bits(ReadResult)) == true)
+		{
+			Result->GetValue()->SetData(ReadResult.Data);
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10974,18 +11003,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit(Inspect
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
-	std::uint8_t Value{0ul};
+	std::uint8_t Value{0};
 	
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("alternative unary"s);
+	
+	Inspection::ReadResult ReadResult;
+	
 	while(true)
 	{
-		if(Reader.Has(Inspection::Length{0, 1}) == true)
+		if(Reader.Read1Bits(ReadResult) == true)
 		{
-			auto Bit{Reader.Get1Bits()};
-			
-			if(Bit == 0x00)
+			if(ReadResult.Data == 0x00)
 			{
 				Value += 1;
 			}
@@ -11024,23 +11054,28 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_9Bit_BigEndi
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("9bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 9}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 9}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint16_t Value{0ul};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint16_t>(Reader.Get1Bits()) << 8;
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read1Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((static_cast<std::uint16_t>(static_cast<std::uint16_t>(ReadResult1.Data) << 8)) | static_cast<std::uint16_t>(ReadResult2.Data)));
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11354,24 +11389,37 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_17Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("17bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 17}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 17}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint32_t Value{0ul};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint32_t>(Reader.Get1Bits()) << 16;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read1Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Inspection::ReadResult ReadResult3;
+				
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+				{
+					Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult1.Data) << 16) | (static_cast<std::uint32_t>(ReadResult2.Data) << 8) | ReadResult3.Data));
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11606,15 +11654,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_Altern
 	// reading
 	if(Continue == true)
 	{
+		Inspection::ReadResult ReadResult;
 		std::uint32_t Value{0};
 		
 		while(Continue == true)
 		{
-			if(Reader.HasRemaining() == true)
+			if((Continue = Reader.Read1Bits(ReadResult)) == true)
 			{
-				auto Bit{Reader.Get1Bits()};
-				
-				if(Bit == 0x00)
+				if(ReadResult.Data == 0x00)
 				{
 					Value += 1;
 				}
@@ -11628,7 +11675,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_Altern
 			}
 			else
 			{
-				Continue = false;
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 			}
 		}
 	}

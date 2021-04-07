@@ -42,26 +42,6 @@ Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length
 	assert(_EndPositionInInput <= Reader._EndPositionInInput);
 }
 
-std::uint8_t Inspection::Reader::Get1Bits(void)
-{
-	assert(_Buffer != nullptr);
-	assert(Has(Inspection::Length{0, 1}) == true);
-	
-	std::uint8_t Result;
-	
-	if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
-	{
-		Result = (*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> (7 - _ReadPositionInInput.GetBits())) & 0x01;
-	}
-	else
-	{
-		Result = (*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> _ReadPositionInInput.GetBits()) & 0x01;
-	}
-	_ReadPositionInInput += Inspection::Length{0, 1};
-	
-	return Result;
-}
-
 std::uint8_t Inspection::Reader::Get7Bits(void)
 {
 	assert(_Buffer != nullptr);
@@ -136,6 +116,42 @@ bool Inspection::Reader::Read0Bits(Inspection::ReadResult & ReadResult)
 	ReadResult.Data = 0;
 	ReadResult.InputLength = Inspection::Length{0, 0};
 	ReadResult.OutputLength = Inspection::Length{0, 0};
+	
+	return ReadResult.Success;
+}
+
+bool Inspection::Reader::Read1Bits(Inspection::ReadResult & ReadResult)
+{
+	ReadResult.Success = _Buffer != nullptr;
+	ReadResult.Data = 0;
+	if(ReadResult.Success == true)
+	{
+		if(Has(Inspection::Length{0, 1}) == true)
+		{
+			ReadResult.InputLength = Inspection::Length{0, 1};
+			ReadResult.OutputLength = Inspection::Length{0, 1};
+			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
+			{
+				ReadResult.Data = (*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> (7 - _ReadPositionInInput.GetBits())) & 0x01;
+			}
+			else
+			{
+				ReadResult.Data = (*(_Buffer->GetData() + _ReadPositionInInput.GetBytes()) >> _ReadPositionInInput.GetBits()) & 0x01;
+			}
+			_ReadPositionInInput += ReadResult.InputLength;
+		}
+		else
+		{
+			ReadResult.InputLength = _EndPositionInInput - _ReadPositionInInput;
+			ReadResult.OutputLength = Inspection::Length{0, 0};
+			ReadResult.Success = false;
+		}
+	}
+	else
+	{
+		ReadResult.InputLength = Inspection::Length{0, 0};
+		ReadResult.OutputLength = Inspection::Length{0, 0};
+	}
 	
 	return ReadResult.Success;
 }
