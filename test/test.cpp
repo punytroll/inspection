@@ -1586,5 +1586,54 @@ int main(void)
 			assert(Result4->GetSuccess() == false);
 		}
 	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian                       //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x45, 0x33, 0x4f, 0x11, 0x80, 0x80, 0x80, 0x80};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
+			Inspection::Reader Reader{Buffer};
+			
+			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x08ace791);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
+			Inspection::Reader Reader{Buffer, Inspection::Length{1, 0}, Inspection::Length{4, 0}};
+			
+			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
+			Inspection::Reader Reader{Buffer, Inspection::Length{2, 0}, Inspection::Length{4, 0}};
+			
+			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
+			Inspection::Reader Reader{Buffer, Inspection::Length{3, 0}, Inspection::Length{4, 0}};
+			
+			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
+			Inspection::Reader Reader{Buffer, Inspection::Length{4, 0}, Inspection::Length{4, 0}};
+			
+			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			
+			assert(Result->GetSuccess() == false);
+		}
+	}
 	std::cout << "All tests successful." << std::endl;
 }

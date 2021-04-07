@@ -6037,58 +6037,73 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_28Bit_Sy
 	Result->GetValue()->AddTag("32bit field"s);
 	Result->GetValue()->AddTag("synchsafe"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 32}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		if(Reader.Get1Bits() == 0x00)
+		Inspection::ReadResult ReadResult1;
+		
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			std::uint32_t First{Reader.Get7Bits()};
-			
-			if(Reader.Get1Bits() == 0x00)
+			if((Continue = ((ReadResult1.Data & 0x80) == 0x00)) == true)
 			{
-				std::uint32_t Second{Reader.Get7Bits()};
+				Inspection::ReadResult ReadResult2;
 				
-				if(Reader.Get1Bits() == 0x00)
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 				{
-					std::uint32_t Third{Reader.Get7Bits()};
-					
-					if(Reader.Get1Bits() == 0x00)
+					if((Continue = ((ReadResult2.Data & 0x80) == 0x00)) == true)
 					{
-						std::uint32_t Fourth{Reader.Get7Bits()};
+						Inspection::ReadResult ReadResult3;
 						
-						Result->GetValue()->SetData((First << 21) | (Second << 14) | (Third << 7) | (Fourth));
+						if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+						{
+							if((Continue = ((ReadResult3.Data & 0x80) == 0x00)) == true)
+							{
+								Inspection::ReadResult ReadResult4;
+								
+								if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+								{
+									if((Continue = ((ReadResult4.Data & 0x80) == 0x00)) == true)
+									{
+										Result->GetValue()->SetData((static_cast<std::uint32_t>(ReadResult1.Data) << 21) | (static_cast<std::uint32_t>(ReadResult2.Data) << 14) | (static_cast<std::uint32_t>(ReadResult3.Data) << 7) | static_cast<std::uint32_t>(ReadResult4.Data));
+									}
+									else
+									{
+										Result->GetValue()->AddTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
+									}
+								}
+								else
+								{
+									AppendReadErrorTag(Result->GetValue(), ReadResult4);
+								}
+							}
+							else
+							{
+								Result->GetValue()->AddTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult3);
+						}
 					}
 					else
 					{
-						Result->GetValue()->AddTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
-						Continue = false;
+						Result->GetValue()->AddTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
 					}
 				}
 				else
 				{
-					Result->GetValue()->AddTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
-					Continue = false;
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
 				}
 			}
 			else
 			{
-				Result->GetValue()->AddTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
-				Continue = false;
+				Result->GetValue()->AddTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
 			}
 		}
 		else
 		{
-			Result->GetValue()->AddTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
-			Continue = false;
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -6109,68 +6124,89 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_32Bit_Sy
 	Result->GetValue()->AddTag("40bit field"s);
 	Result->GetValue()->AddTag("synchsafe"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 40}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 40}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		if(Reader.Get4Bits() == 0x00)
+		Inspection::ReadResult ReadResult1;
+		
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			std::uint32_t First{Reader.Get4Bits()};
-			
-			if(Reader.Get1Bits() == 0x00)
+			if((Continue = ((ReadResult1.Data & 0x80) == 0x00)) == true)
 			{
-				std::uint32_t Second{Reader.Get7Bits()};
+				Inspection::ReadResult ReadResult2;
 				
-				if(Reader.Get1Bits() == 0x00)
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 				{
-					std::uint32_t Third{Reader.Get7Bits()};
-					
-					if(Reader.Get1Bits() == 0x00)
+					if((Continue = ((ReadResult2.Data & 0x80) == 0x00)) == true)
 					{
-						std::uint32_t Fourth{Reader.Get7Bits()};
+						Inspection::ReadResult ReadResult3;
 						
-						if(Reader.Get1Bits() == 0x00)
+						if((Continue = Reader.Read8Bits(ReadResult3)) == true)
 						{
-							std::uint32_t Fifth{Reader.Get7Bits()};
-							
-							Result->GetValue()->SetData((First << 28) | (Second << 21) | (Third << 14) | (Fourth << 7) | Fifth);
+							if((Continue = ((ReadResult3.Data & 0x80) == 0x00)) == true)
+							{
+								Inspection::ReadResult ReadResult4;
+								
+								if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+								{
+									if((Continue = ((ReadResult4.Data & 0x80) == 0x00)) == true)
+									{
+										Inspection::ReadResult ReadResult5;
+										
+										if((Continue = Reader.Read8Bits(ReadResult5)) == true)
+										{
+											if((Continue = ((ReadResult5.Data & 0x80) == 0x00)) == true)
+											{
+												Result->GetValue()->SetData((static_cast<std::uint32_t>(ReadResult1.Data) << 28) | (static_cast<std::uint32_t>(ReadResult2.Data) << 21) | (static_cast<std::uint32_t>(ReadResult3.Data) << 14) | (static_cast<std::uint32_t>(ReadResult4.Data) << 7) | static_cast<std::uint32_t>(ReadResult5.Data));
+											}
+											else
+											{
+												Result->GetValue()->AddTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
+											}
+										}
+										else
+										{
+											AppendReadErrorTag(Result->GetValue(), ReadResult5);
+										}
+									}
+									else
+									{
+										Result->GetValue()->AddTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
+									}
+								}
+								else
+								{
+									AppendReadErrorTag(Result->GetValue(), ReadResult4);
+								}
+							}
+							else
+							{
+								Result->GetValue()->AddTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
+							}
 						}
 						else
 						{
-							Result->GetValue()->AddTag("error", "The fifth byte of the unsigned integer should start with an unset bit."s);
-							Continue = false;
+							AppendReadErrorTag(Result->GetValue(), ReadResult3);
 						}
 					}
 					else
 					{
-						Result->GetValue()->AddTag("error", "The fourth byte of the unsigned integer should start with an unset bit."s);
-						Continue = false;
+						Result->GetValue()->AddTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
 					}
 				}
 				else
 				{
-					Result->GetValue()->AddTag("error", "The third byte of the unsigned integer should start with an unset bit."s);
-					Continue = false;
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
 				}
 			}
 			else
 			{
-				Result->GetValue()->AddTag("error", "The second byte of the unsigned integer should start with an unset bit."s);
-				Continue = false;
+				Result->GetValue()->AddTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
 			}
 		}
 		else
 		{
-			Result->GetValue()->AddTag("error", "The first byte of the unsigned integer should start with an unset bit."s);
-			Continue = false;
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
