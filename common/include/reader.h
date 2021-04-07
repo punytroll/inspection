@@ -28,8 +28,6 @@ namespace Inspection
 		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & Length);
 		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
 		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
-		std::uint8_t Get7Bits(void);
-		std::uint8_t Get8Bits(void);
 		bool Read0Bits(Inspection::ReadResult & ReadResult);
 		bool Read1Bits(Inspection::ReadResult & ReadResult);
 		bool Read2Bits(Inspection::ReadResult & ReadResult);
@@ -37,6 +35,7 @@ namespace Inspection
 		bool Read4Bits(Inspection::ReadResult & ReadResult);
 		bool Read5Bits(Inspection::ReadResult & ReadResult);
 		bool Read6Bits(Inspection::ReadResult & ReadResult);
+		bool Read7Bits(Inspection::ReadResult & ReadResult);
 		bool Read8Bits(Inspection::ReadResult & ReadResult);
 		
 		void AdvancePosition(const Inspection::Length & Offset)

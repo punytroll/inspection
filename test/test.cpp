@@ -1651,6 +1651,68 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_UnsignedInteger_16Bit_BigEndian                                           //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0xab};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{7, 0}};
+			Inspection::Reader Reader{Buffer};
+			
+			auto Result1{Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x85c3);
+			
+			auto Result2{Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x4f11);
+			
+			auto Result3{Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {})};
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0f6d);
+			
+			auto Result4{Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {})};
+			
+			assert(Result4->GetSuccess() == false);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_UnsignedInteger_16Bit_LittleEndian                                        //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0xab};
+		
+		{
+			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{7, 0}};
+			Inspection::Reader Reader{Buffer};
+			
+			auto Result1{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0xc385);
+			
+			auto Result2{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {})};
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x114f);
+			
+			auto Result3{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {})};
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x6d0f);
+			
+			auto Result4{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {})};
+			
+			assert(Result4->GetSuccess() == false);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit                                   //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{

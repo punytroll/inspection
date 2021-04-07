@@ -3700,36 +3700,118 @@ std::unique_ptr<Inspection::Result> Inspection::Get_GUID_LittleEndian(Inspection
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
+	GUID Value;
 	
-	// verification
+	Result->GetValue()->AddTag("guid"s);
+	Result->GetValue()->AddTag("binary"s);
+	Result->GetValue()->AddTag("little endian"s);
+	// reading
 	if(Continue == true)
 	{
-		if(Reader.Has(Inspection::Length{16, 0}) == false)
+		Inspection::ReadResult ReadResult1;
+		
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{16, 0}) + ".");
-			Continue = false;
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Inspection::ReadResult ReadResult3;
+				
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+				{
+					Inspection::ReadResult ReadResult4;
+					
+					if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+					{
+						Value.Data1 = ReadResult1.Data | (static_cast<std::uint32_t>(ReadResult2.Data) << 8) | (static_cast<std::uint32_t>(ReadResult3.Data) << 16) | (static_cast<std::uint32_t>(ReadResult4.Data) << 24);
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->AddTag("guid"s);
-		Result->GetValue()->AddTag("binary"s);
-		Result->GetValue()->AddTag("little endian"s);
+		Inspection::ReadResult ReadResult1;
 		
-		GUID Value;
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Value.Data2 = ReadResult1.Data | (static_cast<std::uint32_t>(ReadResult2.Data) << 8);
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::ReadResult ReadResult1;
 		
-		Value.Data1 = static_cast<std::uint32_t>(Reader.Get8Bits()) + (static_cast<std::uint32_t>(Reader.Get8Bits()) << 8) + (static_cast<std::uint32_t>(Reader.Get8Bits()) << 16) + (static_cast<std::uint32_t>(Reader.Get8Bits()) << 24);
-		Value.Data2 = static_cast<std::uint32_t>(Reader.Get8Bits()) + (static_cast<std::uint32_t>(Reader.Get8Bits()) << 8);
-		Value.Data3 = static_cast<std::uint32_t>(Reader.Get8Bits()) + (static_cast<std::uint32_t>(Reader.Get8Bits()) << 8);
-		Value.Data4[0] = Reader.Get8Bits();
-		Value.Data4[1] = Reader.Get8Bits();
-		Value.Data4[2] = Reader.Get8Bits();
-		Value.Data4[3] = Reader.Get8Bits();
-		Value.Data4[4] = Reader.Get8Bits();
-		Value.Data4[5] = Reader.Get8Bits();
-		Value.Data4[6] = Reader.Get8Bits();
-		Value.Data4[7] = Reader.Get8Bits();
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Value.Data3 = ReadResult1.Data | (static_cast<std::uint32_t>(ReadResult2.Data) << 8);
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		Inspection::ReadResult ReadResult;
+		
+		for(auto Index = 0; (Continue == true) && (Index < 8); ++Index)
+		{
+			if((Continue = Reader.Read8Bits(ReadResult)) == true)
+			{
+				Value.Data4[Index] = ReadResult.Data;
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
+			}
+		}
+	}
+	// post-processing
+	if(Continue == true)
+	{
 		Result->GetValue()->SetData(Value);
 	}
 	// finalization
@@ -10333,25 +10415,46 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_BigEndia
 	Result->GetValue()->AddTag("signed"s);
 	Result->GetValue()->AddTag("32bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 32}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::int32_t Value{0l};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 24;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 16;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Inspection::ReadResult ReadResult3;
+				
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+				{
+					Inspection::ReadResult ReadResult4;
+					
+					if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+					{
+						Result->GetValue()->SetData(static_cast<std::int32_t>(static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult1.Data) << 24) | static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult2.Data) << 16) | static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult3.Data) << 8) | static_cast<std::int32_t>(ReadResult4.Data)));
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10381,13 +10484,43 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_LittleEn
 	// reading
 	if(Continue == true)
 	{
-		std::int32_t Value{0l};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits());
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 16;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 24;
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Inspection::ReadResult ReadResult3;
+				
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+				{
+					Inspection::ReadResult ReadResult4;
+					
+					if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+					{
+						Result->GetValue()->SetData(static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult1.Data) | static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult2.Data) << 8) | static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult3.Data) << 16) | static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult4.Data) << 24)));
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -10466,37 +10599,37 @@ std::unique_ptr<Inspection::Result> Inspection::Get_String_ASCII_ByTemplate(Insp
 	Result->GetValue()->AddTag("character set", "ASCII"s);
 	Result->GetValue()->AddTag("encoding", "ASCII"s);
 	Result->GetValue()->AddTag("template", Template);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{Template.size(), 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length must be at least " + to_string_cast(Inspection::Length{Template.size(), 0}) + ", the length of the template string.");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
+		Inspection::ReadResult ReadResult;
 		std::stringstream Value;
 		auto NumberOfCharacters{0ul};
 		
 		for(auto TemplateCharacter : Template)
 		{
-			auto Character{Reader.Get8Bits()};
-			
-			if(TemplateCharacter == Character)
+			if((Continue = Reader.Read8Bits(ReadResult)) == true)
 			{
-				NumberOfCharacters += 1;
-				Value << Character;
+				if(TemplateCharacter == ReadResult.Data)
+				{
+					NumberOfCharacters += 1;
+					Value << ReadResult.Data;
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by error"s);
+					Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character does not match the template.");
+					Result->GetValue()->AddTag("expected character", TemplateCharacter);
+					Result->GetValue()->AddTag("found character", static_cast<char>(ReadResult.Data));
+					Continue = false;
+					
+					break;
+				}
 			}
 			else
 			{
 				Result->GetValue()->AddTag("ended by error"s);
-				Result->GetValue()->AddTag("error", "The " + to_string_cast(NumberOfCharacters + 1) + "th character does not match the template.");
-				Result->GetValue()->AddTag("expected character", TemplateCharacter);
-				Result->GetValue()->AddTag("found character", static_cast< char >(Character));
-				Continue = false;
+				AppendReadErrorTag(Result->GetValue(), ReadResult);
 				
 				break;
 			}
@@ -10950,19 +11083,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_7Bit(Inspect
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("7bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 7}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 7}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->SetData(Reader.Get7Bits());
+		Inspection::ReadResult ReadResult;
+		
+		if((Continue = Reader.Read7Bits(ReadResult)) == true)
+		{
+			Result->GetValue()->SetData(ReadResult.Data);
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11287,23 +11420,28 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_15Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("15bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 15}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 15}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint16_t Value{0ul};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint16_t>(Reader.Get7Bits()) << 8;
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read7Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((ReadResult1.Data << 8) | ReadResult2.Data));
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11321,23 +11459,28 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_16Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("16bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 16}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint16_t Value{0};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((ReadResult1.Data << 8) | ReadResult2.Data));
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11355,23 +11498,28 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_16Bit_Little
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("16bit"s);
 	Result->GetValue()->AddTag("little endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 16}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 16}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint16_t Value{0};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits());
-		Value |= static_cast<std::uint16_t>(Reader.Get8Bits()) << 8;
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Result->GetValue()->SetData(static_cast<std::uint16_t>((static_cast<std::uint16_t>(static_cast<std::uint16_t>(ReadResult2.Data) << 8)) | static_cast<std::uint16_t>(ReadResult1.Data)));
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11485,24 +11633,37 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_24Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("24bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 24}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 24}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint32_t Value{0ul};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 16;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint32_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Inspection::ReadResult ReadResult3;
+				
+				if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+				{
+					Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data << 16) | (ReadResult2.Data << 8) | ReadResult3.Data));
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -11516,124 +11677,230 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	Result->GetValue()->AddTag("integer");
+	Result->GetValue()->AddTag("unsigned");
+	Result->GetValue()->AddTag("31bit");
+	Result->GetValue()->AddTag("UTF-8 coded");
 	// reading
-	if(Reader.Has(Inspection::Length{1, 0}) == true)
+	if(Continue == true)
 	{
-		auto First{Reader.Get8Bits()};
+		Inspection::ReadResult ReadResult1;
 		
-		if((First & 0x80) == 0x00)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Result->GetValue()->SetData(static_cast<std::uint32_t>(First));
-		}
-		else if((First & 0xe0) == 0xc0)
-		{
-			if(Reader.Has(Inspection::Length{1, 0}) == true)
+			if((ReadResult1.Data & 0x80) == 0x00)
 			{
-				auto Second{Reader.Get8Bits()};
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{1, 0});
+				Result->GetValue()->SetData(static_cast<std::uint32_t>(ReadResult1.Data));
+			}
+			else if((ReadResult1.Data & 0xe0) == 0xc0)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{2, 0});
 				
-				if((Second & 0xc0) == 0x80)
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x1f) << 6) | static_cast<std::uint32_t>(Second & 0x3f));
+					if((Continue = ((ReadResult2.Data & 0xc0) == 0x80)) == true)
+					{
+						Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data & 0x1f) << 6) | static_cast<std::uint32_t>(ReadResult2.Data & 0x3f));
+					}
+					else
+					{
+						Result->GetValue()->AddTag("error", "The first byte indicated a length of two bytes, but the following byte did not have the correct format."s);
+					}
 				}
 				else
 				{
-					Continue = false;
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xf0) == 0xe0)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{3, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						if((Continue = (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80))) == true)
+						{
+							Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data & 0x0f) << 12)| static_cast<std::uint32_t>((ReadResult2.Data & 0x3f) << 6) | static_cast<std::uint32_t>(ReadResult3.Data & 0x3f));
+						}
+						else
+						{
+							Result->GetValue()->AddTag("error", "The first byte indicated a length of three bytes, but the following bytes did not have the correct format."s);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xf8) == 0xf0)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{4, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						Inspection::ReadResult ReadResult4;
+						
+						if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+						{
+							if((Continue == (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80) && ((ReadResult4.Data & 0xc0) == 0x80))) == true)
+							{
+								Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data & 0x07) << 18)| static_cast<std::uint32_t>((ReadResult2.Data & 0x3f) << 12) | static_cast<std::uint32_t>((ReadResult3.Data & 0x3f) << 6) | static_cast<std::uint32_t>(ReadResult4.Data & 0x3f));
+							}
+							else
+							{
+								Result->GetValue()->AddTag("error", "The first byte indicated a length of four bytes, but the following bytes did not have the correct format."s);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult4);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xfc) == 0xf8)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{5, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						Inspection::ReadResult ReadResult4;
+						
+						if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+						{
+							Inspection::ReadResult ReadResult5;
+							
+							if((Continue = Reader.Read8Bits(ReadResult5)) == true)
+							{
+								if((Continue == (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80) && ((ReadResult4.Data & 0xc0) == 0x80) && ((ReadResult5.Data & 0xc0) == 0x80))) == true)
+								{
+									Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data & 0x03) << 24)| static_cast<std::uint32_t>((ReadResult2.Data & 0x3f) << 18) | static_cast<std::uint32_t>((ReadResult3.Data & 0x3f) << 12) | static_cast<std::uint32_t>((ReadResult4.Data & 0x3f) << 6) | static_cast<std::uint32_t>(ReadResult5.Data & 0x3f));
+								}
+								else
+								{
+									Result->GetValue()->AddTag("error", "The first byte indicated a length of five bytes, but the following bytes did not have the correct format."s);
+								}
+							}
+							else
+							{
+								AppendReadErrorTag(Result->GetValue(), ReadResult5);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult4);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xfe) == 0xfc)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{6, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						Inspection::ReadResult ReadResult4;
+						
+						if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+						{
+							Inspection::ReadResult ReadResult5;
+							
+							if((Continue = Reader.Read8Bits(ReadResult5)) == true)
+							{
+								Inspection::ReadResult ReadResult6;
+								
+								if((Continue = Reader.Read8Bits(ReadResult6)) == true)
+								{
+									if((Continue == (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80) && ((ReadResult4.Data & 0xc0) == 0x80) && ((ReadResult5.Data & 0xc0) == 0x80) && ((ReadResult6.Data & 0xc0) == 0x80))) == true)
+									{
+										Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data & 0x01) << 30)| static_cast<std::uint32_t>((ReadResult2.Data & 0x3f) << 24) | static_cast<std::uint32_t>((ReadResult3.Data & 0x3f) << 18) | static_cast<std::uint32_t>((ReadResult4.Data & 0x3f) << 12) | static_cast<std::uint32_t>((ReadResult5.Data & 0x3f) << 6) | static_cast<std::uint32_t>(ReadResult6.Data & 0x3f));
+									}
+									else
+									{
+										Result->GetValue()->AddTag("error", "The first byte indicated a length of six bytes, but the following bytes did not have the correct format."s);
+									}
+								}
+								else
+								{
+									AppendReadErrorTag(Result->GetValue(), ReadResult6);
+								}
+							}
+							else
+							{
+								AppendReadErrorTag(Result->GetValue(), ReadResult5);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult4);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
 				}
 			}
 			else
 			{
-				Continue = false;
+				Result->GetValue()->AddTag("error", "The first byte has an invalid format to indicate the length of the data.");
 			}
 		}
-		else if((First & 0xf0) == 0xe0)
+		else
 		{
-			if(Reader.Has(Inspection::Length{2, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x0f) << 12)| static_cast<std::uint32_t>((Second & 0x3f) << 6) | static_cast<std::uint32_t>(Third & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xf8) == 0xf0)
-		{
-			if(Reader.Has(Inspection::Length{3, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				auto Fourth{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x07) << 18)| static_cast<std::uint32_t>((Second & 0x3f) << 12) | static_cast<std::uint32_t>((Third & 0x3f) << 6) | static_cast<std::uint32_t>(Fourth & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xfc) == 0xf8)
-		{
-			if(Reader.Has(Inspection::Length{4, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				auto Fourth{Reader.Get8Bits()};
-				auto Fifth{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x03) << 24)| static_cast<std::uint32_t>((Second & 0x3f) << 18) | static_cast<std::uint32_t>((Third & 0x3f) << 12) | static_cast<std::uint32_t>((Fourth & 0x3f) << 6) | static_cast<std::uint32_t>(Fifth & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xfe) == 0xfc)
-		{
-			if(Reader.Has(Inspection::Length{5, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				auto Fourth{Reader.Get8Bits()};
-				auto Fifth{Reader.Get8Bits()};
-				auto Sixth{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x01) << 30)| static_cast<std::uint32_t>((Second & 0x3f) << 24) | static_cast<std::uint32_t>((Third & 0x3f) << 18) | static_cast<std::uint32_t>((Fourth & 0x3f) << 12) | static_cast<std::uint32_t>((Fifth & 0x3f) << 6) | static_cast<std::uint32_t>(Sixth & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -11871,149 +12138,296 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_36Bit_UTF_8_
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
+	Result->GetValue()->AddTag("integer");
+	Result->GetValue()->AddTag("unsigned");
+	Result->GetValue()->AddTag("36bit");
+	Result->GetValue()->AddTag("UTF-8 coded");
 	// reading
-	if(Reader.Has(Inspection::Length{1, 0}) == true)
+	if(Continue == true)
 	{
-		auto First{Reader.Get8Bits()};
+		Inspection::ReadResult ReadResult1;
 		
-		if((First & 0x80) == 0x00)
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Result->GetValue()->SetData(static_cast<std::uint32_t>(First));
-		}
-		else if((First & 0xe0) == 0xc0)
-		{
-			if(Reader.Has(Inspection::Length{1, 0}) == true)
+			if((ReadResult1.Data & 0x80) == 0x00)
 			{
-				auto Second{Reader.Get8Bits()};
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{1, 0});
+				Result->GetValue()->SetData(static_cast<std::uint64_t>(ReadResult1.Data));
+			}
+			else if((ReadResult1.Data & 0xe0) == 0xc0)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{2, 0});
 				
-				if((Second & 0xc0) == 0x80)
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
 				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x1f) << 6) | static_cast<std::uint32_t>(Second & 0x3f));
+					if((Continue = ((ReadResult2.Data & 0xc0) == 0x80)) == true)
+					{
+						Result->GetValue()->SetData(static_cast<std::uint64_t>((ReadResult1.Data & 0x1f) << 6) | static_cast<std::uint64_t>(ReadResult2.Data & 0x3f));
+					}
+					else
+					{
+						Result->GetValue()->AddTag("error", "The first byte indicated a length of two bytes, but the following byte did not have the correct format."s);
+					}
 				}
 				else
 				{
-					Continue = false;
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xf0) == 0xe0)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{3, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						if((Continue = (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80))) == true)
+						{
+							Result->GetValue()->SetData(static_cast<std::uint64_t>((ReadResult1.Data & 0x0f) << 12)| static_cast<std::uint64_t>((ReadResult2.Data & 0x3f) << 6) | static_cast<std::uint64_t>(ReadResult3.Data & 0x3f));
+						}
+						else
+						{
+							Result->GetValue()->AddTag("error", "The first byte indicated a length of three bytes, but the following bytes did not have the correct format."s);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xf8) == 0xf0)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{4, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						Inspection::ReadResult ReadResult4;
+						
+						if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+						{
+							if((Continue == (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80) && ((ReadResult4.Data & 0xc0) == 0x80))) == true)
+							{
+								Result->GetValue()->SetData(static_cast<std::uint64_t>((ReadResult1.Data & 0x07) << 18)| static_cast<std::uint64_t>((ReadResult2.Data & 0x3f) << 12) | static_cast<std::uint64_t>((ReadResult3.Data & 0x3f) << 6) | static_cast<std::uint64_t>(ReadResult4.Data & 0x3f));
+							}
+							else
+							{
+								Result->GetValue()->AddTag("error", "The first byte indicated a length of four bytes, but the following bytes did not have the correct format."s);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult4);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xfc) == 0xf8)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{5, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						Inspection::ReadResult ReadResult4;
+						
+						if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+						{
+							Inspection::ReadResult ReadResult5;
+							
+							if((Continue = Reader.Read8Bits(ReadResult5)) == true)
+							{
+								if((Continue == (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80) && ((ReadResult4.Data & 0xc0) == 0x80) && ((ReadResult5.Data & 0xc0) == 0x80))) == true)
+								{
+									Result->GetValue()->SetData(static_cast<std::uint64_t>((ReadResult1.Data & 0x03) << 24)| static_cast<std::uint64_t>((ReadResult2.Data & 0x3f) << 18) | static_cast<std::uint64_t>((ReadResult3.Data & 0x3f) << 12) | static_cast<std::uint64_t>((ReadResult4.Data & 0x3f) << 6) | static_cast<std::uint64_t>(ReadResult5.Data & 0x3f));
+								}
+								else
+								{
+									Result->GetValue()->AddTag("error", "The first byte indicated a length of five bytes, but the following bytes did not have the correct format."s);
+								}
+							}
+							else
+							{
+								AppendReadErrorTag(Result->GetValue(), ReadResult5);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult4);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xfe) == 0xfc)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{6, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						Inspection::ReadResult ReadResult4;
+						
+						if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+						{
+							Inspection::ReadResult ReadResult5;
+							
+							if((Continue = Reader.Read8Bits(ReadResult5)) == true)
+							{
+								Inspection::ReadResult ReadResult6;
+								
+								if((Continue = Reader.Read8Bits(ReadResult6)) == true)
+								{
+									if((Continue == (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80) && ((ReadResult4.Data & 0xc0) == 0x80) && ((ReadResult5.Data & 0xc0) == 0x80) && ((ReadResult6.Data & 0xc0) == 0x80))) == true)
+									{
+										Result->GetValue()->SetData(static_cast<std::uint64_t>((ReadResult1.Data & 0x01) << 30)| static_cast<std::uint64_t>((ReadResult2.Data & 0x3f) << 24) | static_cast<std::uint64_t>((ReadResult3.Data & 0x3f) << 18) | static_cast<std::uint64_t>((ReadResult4.Data & 0x3f) << 12) | static_cast<std::uint64_t>((ReadResult5.Data & 0x3f) << 6) | static_cast<std::uint64_t>(ReadResult6.Data & 0x3f));
+									}
+									else
+									{
+										Result->GetValue()->AddTag("error", "The first byte indicated a length of six bytes, but the following bytes did not have the correct format."s);
+									}
+								}
+								else
+								{
+									AppendReadErrorTag(Result->GetValue(), ReadResult6);
+								}
+							}
+							else
+							{
+								AppendReadErrorTag(Result->GetValue(), ReadResult5);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult4);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
+				}
+			}
+			else if((ReadResult1.Data & 0xff) == 0xfe)
+			{
+				Result->GetValue()->AddTag("indicated length", Inspection::Length{7, 0});
+				
+				Inspection::ReadResult ReadResult2;
+				
+				if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+				{
+					Inspection::ReadResult ReadResult3;
+					
+					if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+					{
+						Inspection::ReadResult ReadResult4;
+						
+						if((Continue = Reader.Read8Bits(ReadResult4)) == true)
+						{
+							Inspection::ReadResult ReadResult5;
+							
+							if((Continue = Reader.Read8Bits(ReadResult5)) == true)
+							{
+								Inspection::ReadResult ReadResult6;
+								
+								if((Continue = Reader.Read8Bits(ReadResult6)) == true)
+								{
+									Inspection::ReadResult ReadResult7;
+									
+									if((Continue = Reader.Read8Bits(ReadResult7)) == true)
+									{
+										if((Continue == (((ReadResult2.Data & 0xc0) == 0x80) && ((ReadResult3.Data & 0xc0) == 0x80) && ((ReadResult4.Data & 0xc0) == 0x80) && ((ReadResult5.Data & 0xc0) == 0x80) && ((ReadResult6.Data & 0xc0) == 0x80) && ((ReadResult7.Data & 0xc0) == 0x80))) == true)
+										{
+											Result->GetValue()->SetData(static_cast<std::uint64_t>((ReadResult2.Data & 0x3f) << 30) | static_cast<std::uint64_t>((ReadResult3.Data & 0x3f) << 24) | static_cast<std::uint64_t>((ReadResult4.Data & 0x3f) << 18) | static_cast<std::uint64_t>((ReadResult5.Data & 0x3f) << 12) | static_cast<std::uint64_t>((ReadResult6.Data & 0x3f) << 6) | static_cast<std::uint64_t>(ReadResult7.Data & 0x3f));
+										}
+										else
+										{
+											Result->GetValue()->AddTag("error", "The first byte indicated a length of seven bytes, but the following bytes did not have the correct format."s);
+										}
+									}
+									else
+									{
+									}
+								}
+								else
+								{
+									AppendReadErrorTag(Result->GetValue(), ReadResult6);
+								}
+							}
+							else
+							{
+								AppendReadErrorTag(Result->GetValue(), ReadResult5);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult4);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult3);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult2);
 				}
 			}
 			else
 			{
-				Continue = false;
+				Result->GetValue()->AddTag("error", "The first byte has an invalid format to indicate the length of the data.");
 			}
 		}
-		else if((First & 0xf0) == 0xe0)
+		else
 		{
-			if(Reader.Has(Inspection::Length{2, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x0f) << 12)| static_cast<std::uint32_t>((Second & 0x3f) << 6) | static_cast<std::uint32_t>(Third & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xf8) == 0xf0)
-		{
-			if(Reader.Has(Inspection::Length{3, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				auto Fourth{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x07) << 18)| static_cast<std::uint32_t>((Second & 0x3f) << 12) | static_cast<std::uint32_t>((Third & 0x3f) << 6) | static_cast<std::uint32_t>(Fourth & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xfc) == 0xf8)
-		{
-			if(Reader.Has(Inspection::Length{4, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				auto Fourth{Reader.Get8Bits()};
-				auto Fifth{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x03) << 24)| static_cast<std::uint32_t>((Second & 0x3f) << 18) | static_cast<std::uint32_t>((Third & 0x3f) << 12) | static_cast<std::uint32_t>((Fourth & 0x3f) << 6) | static_cast<std::uint32_t>(Fifth & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xfe) == 0xfc)
-		{
-			if(Reader.Has(Inspection::Length{5, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				auto Fourth{Reader.Get8Bits()};
-				auto Fifth{Reader.Get8Bits()};
-				auto Sixth{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((First & 0x01) << 30)| static_cast<std::uint32_t>((Second & 0x3f) << 24) | static_cast<std::uint32_t>((Third & 0x3f) << 18) | static_cast<std::uint32_t>((Fourth & 0x3f) << 12) | static_cast<std::uint32_t>((Fifth & 0x3f) << 6) | static_cast<std::uint32_t>(Sixth & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
-		}
-		else if((First & 0xff) == 0xfe)
-		{
-			if(Reader.Has(Inspection::Length{6, 0}) == true)
-			{
-				auto Second{Reader.Get8Bits()};
-				auto Third{Reader.Get8Bits()};
-				auto Fourth{Reader.Get8Bits()};
-				auto Fifth{Reader.Get8Bits()};
-				auto Sixth{Reader.Get8Bits()};
-				auto Seventh{Reader.Get8Bits()};
-				
-				if(((Second & 0xc0) == 0x80) && ((Third & 0xc0) == 0x80) && ((Fourth & 0xc0) == 0x80) && ((Fifth & 0xc0) == 0x80) && ((Sixth & 0xc0) == 0x80) && ((Seventh & 0xc0) == 0x80))
-				{
-					Result->GetValue()->SetData(static_cast<std::uint32_t>((Second & 0x3f) << 30) | static_cast<std::uint32_t>((Third & 0x3f) << 24) | static_cast<std::uint32_t>((Fourth & 0x3f) << 18) | static_cast<std::uint32_t>((Fifth & 0x3f) << 12) | static_cast<std::uint32_t>((Sixth & 0x3f) << 6) | static_cast<std::uint32_t>(Seventh & 0x3f));
-				}
-				else
-				{
-					Continue = false;
-				}
-			}
-			else
-			{
-				Continue = false;
-			}
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -12032,29 +12446,82 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_64Bit_BigEnd
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("64bit"s);
 	Result->GetValue()->AddTag("big endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 64}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 64}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint64_t Value{0ull};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 56;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 48;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 40;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 32;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 24;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 16;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits());
-		Result->GetValue()->SetData(Value);
+		if((Continue == Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue == Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Inspection::ReadResult ReadResult3;
+				
+				if((Continue == Reader.Read8Bits(ReadResult3)) == true)
+				{
+					Inspection::ReadResult ReadResult4;
+					
+					if((Continue == Reader.Read8Bits(ReadResult4)) == true)
+					{
+						Inspection::ReadResult ReadResult5;
+						
+						if((Continue == Reader.Read8Bits(ReadResult5)) == true)
+						{
+							Inspection::ReadResult ReadResult6;
+							
+							if((Continue == Reader.Read8Bits(ReadResult6)) == true)
+							{
+								Inspection::ReadResult ReadResult7;
+								
+								if((Continue == Reader.Read8Bits(ReadResult7)) == true)
+								{
+									Inspection::ReadResult ReadResult8;
+									
+									if((Continue == Reader.Read8Bits(ReadResult8)) == true)
+									{
+										Result->GetValue()->SetData((static_cast<std::uint64_t>(ReadResult1.Data) << 56) | (static_cast<std::uint64_t>(ReadResult2.Data) << 48) | (static_cast<std::uint64_t>(ReadResult3.Data) << 40) | (static_cast<std::uint64_t>(ReadResult4.Data) << 32) | (static_cast<std::uint64_t>(ReadResult5.Data) << 24) | (static_cast<std::uint64_t>(ReadResult6.Data) << 16) | (static_cast<std::uint64_t>(ReadResult7.Data) << 8) | static_cast<std::uint64_t>(ReadResult8.Data));
+									}
+									else
+									{
+										AppendReadErrorTag(Result->GetValue(), ReadResult8);
+									}
+								}
+								else
+								{
+									AppendReadErrorTag(Result->GetValue(), ReadResult7);
+								}
+							}
+							else
+							{
+								AppendReadErrorTag(Result->GetValue(), ReadResult6);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult5);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -12072,29 +12539,82 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_64Bit_Little
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("64bit"s);
 	Result->GetValue()->AddTag("little endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 64}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 64}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		std::uint64_t Value{0};
+		Inspection::ReadResult ReadResult1;
 		
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits());
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 8;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 16;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 24;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 32;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 40;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 48;
-		Value |= static_cast<std::uint64_t>(Reader.Get8Bits()) << 56;
-		Result->GetValue()->SetData(Value);
+		if((Continue == Reader.Read8Bits(ReadResult1)) == true)
+		{
+			Inspection::ReadResult ReadResult2;
+			
+			if((Continue == Reader.Read8Bits(ReadResult2)) == true)
+			{
+				Inspection::ReadResult ReadResult3;
+				
+				if((Continue == Reader.Read8Bits(ReadResult3)) == true)
+				{
+					Inspection::ReadResult ReadResult4;
+					
+					if((Continue == Reader.Read8Bits(ReadResult4)) == true)
+					{
+						Inspection::ReadResult ReadResult5;
+						
+						if((Continue == Reader.Read8Bits(ReadResult5)) == true)
+						{
+							Inspection::ReadResult ReadResult6;
+							
+							if((Continue == Reader.Read8Bits(ReadResult6)) == true)
+							{
+								Inspection::ReadResult ReadResult7;
+								
+								if((Continue == Reader.Read8Bits(ReadResult7)) == true)
+								{
+									Inspection::ReadResult ReadResult8;
+									
+									if((Continue == Reader.Read8Bits(ReadResult8)) == true)
+									{
+										Result->GetValue()->SetData(static_cast<std::uint64_t>(ReadResult1.Data) | (static_cast<std::uint64_t>(ReadResult2.Data) << 8) | (static_cast<std::uint64_t>(ReadResult3.Data) << 16) | (static_cast<std::uint64_t>(ReadResult4.Data) << 24) | (static_cast<std::uint64_t>(ReadResult5.Data) << 32) | (static_cast<std::uint64_t>(ReadResult6.Data) << 40) | (static_cast<std::uint64_t>(ReadResult7.Data) << 48) | (static_cast<std::uint64_t>(ReadResult8.Data) << 56));
+									}
+									else
+									{
+										AppendReadErrorTag(Result->GetValue(), ReadResult8);
+									}
+								}
+								else
+								{
+									AppendReadErrorTag(Result->GetValue(), ReadResult7);
+								}
+							}
+							else
+							{
+								AppendReadErrorTag(Result->GetValue(), ReadResult6);
+							}
+						}
+						else
+						{
+							AppendReadErrorTag(Result->GetValue(), ReadResult5);
+						}
+					}
+					else
+					{
+						AppendReadErrorTag(Result->GetValue(), ReadResult4);
+					}
+				}
+				else
+				{
+					AppendReadErrorTag(Result->GetValue(), ReadResult3);
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
+		}
+		else
+		{
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
