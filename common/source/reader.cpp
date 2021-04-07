@@ -174,13 +174,13 @@ std::uint8_t Inspection::Reader::Get8Bits(void)
 bool Inspection::Reader::Read2Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
-	ReadResult.OutputLength = Inspection::Length{0, 2};
 	ReadResult.Data = 0;
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 2}) == true)
 		{
 			ReadResult.InputLength = Inspection::Length{0, 2};
+			ReadResult.OutputLength = Inspection::Length{0, 2};
 			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
 			{
 				if(_ReadPositionInInput.GetBits() < 7)
@@ -208,12 +208,14 @@ bool Inspection::Reader::Read2Bits(Inspection::ReadResult & ReadResult)
 		else
 		{
 			ReadResult.InputLength = _EndPositionInInput - _ReadPositionInInput;
+			ReadResult.OutputLength = Inspection::Length{0, 0};
 			ReadResult.Success = false;
 		}
 	}
 	else
 	{
 		ReadResult.InputLength = Inspection::Length{0, 0};
+		ReadResult.OutputLength = Inspection::Length{0, 0};
 	}
 	
 	return ReadResult.Success;
@@ -222,13 +224,13 @@ bool Inspection::Reader::Read2Bits(Inspection::ReadResult & ReadResult)
 bool Inspection::Reader::Read3Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
-	ReadResult.OutputLength = Inspection::Length{0, 3};
 	ReadResult.Data = 0;
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 3}) == true)
 		{
 			ReadResult.InputLength = Inspection::Length{0, 3};
+			ReadResult.OutputLength = Inspection::Length{0, 3};
 			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
 			{
 				if(_ReadPositionInInput.GetBits() < 6)
@@ -256,12 +258,14 @@ bool Inspection::Reader::Read3Bits(Inspection::ReadResult & ReadResult)
 		else
 		{
 			ReadResult.InputLength = _EndPositionInInput - _ReadPositionInInput;
+			ReadResult.OutputLength = Inspection::Length{0, 0};
 			ReadResult.Success = false;
 		}
 	}
 	else
 	{
 		ReadResult.InputLength = Inspection::Length{0, 0};
+		ReadResult.OutputLength = Inspection::Length{0, 0};
 	}
 	
 	return ReadResult.Success;
@@ -270,13 +274,13 @@ bool Inspection::Reader::Read3Bits(Inspection::ReadResult & ReadResult)
 bool Inspection::Reader::Read4Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
-	ReadResult.OutputLength = Inspection::Length{0, 4};
 	ReadResult.Data = 0;
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 4}) == true)
 		{
 			ReadResult.InputLength = Inspection::Length{0, 4};
+			ReadResult.OutputLength = Inspection::Length{0, 4};
 			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
 			{
 				if(_ReadPositionInInput.GetBits() < 5)
@@ -304,12 +308,14 @@ bool Inspection::Reader::Read4Bits(Inspection::ReadResult & ReadResult)
 		else
 		{
 			ReadResult.InputLength = _EndPositionInInput - _ReadPositionInInput;
+			ReadResult.OutputLength = Inspection::Length{0, 0};
 			ReadResult.Success = false;
 		}
 	}
 	else
 	{
 		ReadResult.InputLength = Inspection::Length{0, 0};
+		ReadResult.OutputLength = Inspection::Length{0, 0};
 	}
 	
 	return ReadResult.Success;
@@ -318,13 +324,13 @@ bool Inspection::Reader::Read4Bits(Inspection::ReadResult & ReadResult)
 bool Inspection::Reader::Read5Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
-	ReadResult.OutputLength = Inspection::Length{0, 5};
 	ReadResult.Data = 0;
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 5}) == true)
 		{
 			ReadResult.InputLength = Inspection::Length{0, 5};
+			ReadResult.OutputLength = Inspection::Length{0, 5};
 			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
 			{
 				if(_ReadPositionInInput.GetBits() < 4)
@@ -352,12 +358,14 @@ bool Inspection::Reader::Read5Bits(Inspection::ReadResult & ReadResult)
 		else
 		{
 			ReadResult.InputLength = _EndPositionInInput - _ReadPositionInInput;
+			ReadResult.OutputLength = Inspection::Length{0, 0};
 			ReadResult.Success = false;
 		}
 	}
 	else
 	{
 		ReadResult.InputLength = Inspection::Length{0, 0};
+		ReadResult.OutputLength = Inspection::Length{0, 0};
 	}
 	
 	return ReadResult.Success;
@@ -366,13 +374,13 @@ bool Inspection::Reader::Read5Bits(Inspection::ReadResult & ReadResult)
 bool Inspection::Reader::Read6Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
-	ReadResult.OutputLength = Inspection::Length{0, 6};
 	ReadResult.Data = 0;
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 6}) == true)
 		{
 			ReadResult.InputLength = Inspection::Length{0, 6};
+			ReadResult.OutputLength = Inspection::Length{0, 6};
 			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
 			{
 				if(_ReadPositionInInput.GetBits() < 3)
@@ -400,12 +408,14 @@ bool Inspection::Reader::Read6Bits(Inspection::ReadResult & ReadResult)
 		else
 		{
 			ReadResult.InputLength = _EndPositionInInput - _ReadPositionInInput;
+			ReadResult.OutputLength = Inspection::Length{0, 0};
 			ReadResult.Success = false;
 		}
 	}
 	else
 	{
 		ReadResult.InputLength = Inspection::Length{0, 0};
+		ReadResult.OutputLength = Inspection::Length{0, 0};
 	}
 	
 	return ReadResult.Success;
@@ -414,13 +424,13 @@ bool Inspection::Reader::Read6Bits(Inspection::ReadResult & ReadResult)
 bool Inspection::Reader::Read8Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
-	ReadResult.OutputLength = Inspection::Length{0, 8};
 	ReadResult.Data = 0;
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 8}) == true)
 		{
 			ReadResult.InputLength = Inspection::Length{0, 8};
+			ReadResult.OutputLength = Inspection::Length{0, 8};
 			if(_BitstreamType == Inspection::Reader::BitstreamType::MostSignificantBitFirst)
 			{
 				if(_ReadPositionInInput.GetBits() == 0)
@@ -448,12 +458,14 @@ bool Inspection::Reader::Read8Bits(Inspection::ReadResult & ReadResult)
 		else
 		{
 			ReadResult.InputLength = _EndPositionInInput - _ReadPositionInInput;
+			ReadResult.OutputLength = Inspection::Length{0, 0};
 			ReadResult.Success = false;
 		}
 	}
 	else
 	{
 		ReadResult.InputLength = Inspection::Length{0, 0};
+		ReadResult.OutputLength = Inspection::Length{0, 0};
 	}
 	
 	return ReadResult.Success;

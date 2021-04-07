@@ -267,7 +267,7 @@ int main(void)
 			assert(Reader.Read6Bits(ReadResult) == false);
 			assert(ReadResult.Success == false);
 			assert((ReadResult.InputLength == Inspection::Length{0, 4}));
-			assert((ReadResult.OutputLength == Inspection::Length{0, 6}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 0}));
 		}
 		{
 			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 0}};
@@ -292,7 +292,7 @@ int main(void)
 			assert(Reader.Read6Bits(ReadResult) == false);
 			assert(ReadResult.Success == false);
 			assert((ReadResult.InputLength == Inspection::Length{0, 4}));
-			assert((ReadResult.OutputLength == Inspection::Length{0, 6}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 0}));
 		}
 	}
 	
