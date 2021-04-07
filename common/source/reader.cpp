@@ -42,13 +42,6 @@ Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length
 	assert(_EndPositionInInput <= Reader._EndPositionInInput);
 }
 
-std::uint8_t Inspection::Reader::Get0Bits(void)
-{
-	std::uint8_t Result{0};
-	
-	return Result;
-}
-
 std::uint8_t Inspection::Reader::Get1Bits(void)
 {
 	assert(_Buffer != nullptr);
@@ -169,6 +162,16 @@ std::uint8_t Inspection::Reader::Get8Bits(void)
 	_ReadPositionInInput += Inspection::Length{0, 8};
 	
 	return Result;
+}
+
+bool Inspection::Reader::Read0Bits(Inspection::ReadResult & ReadResult)
+{
+	ReadResult.Success = _Buffer != nullptr;
+	ReadResult.Data = 0;
+	ReadResult.InputLength = Inspection::Length{0, 0};
+	ReadResult.OutputLength = Inspection::Length{0, 0};
+	
+	return ReadResult.Success;
 }
 
 bool Inspection::Reader::Read2Bits(Inspection::ReadResult & ReadResult)

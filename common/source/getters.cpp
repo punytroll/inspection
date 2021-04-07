@@ -10722,7 +10722,16 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_0Bit(Inspect
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("0bit"s);
-	Result->GetValue()->SetData(Reader.Get0Bits());
+	// reading
+	if(Continue == true)
+	{
+		Inspection::ReadResult ReadResult;
+		
+		if((Continue = Reader.Read0Bits(ReadResult)) == true)
+		{
+			Result->GetValue()->SetData(ReadResult.Data);
+		}
+	}
 	// finalization
 	Result->SetSuccess(Continue);
 	Inspection::FinalizeResult(Result, Reader);
