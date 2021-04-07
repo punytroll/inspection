@@ -90,3 +90,4 @@ if number_of_failures == 0:
 	print("All " + Yellow + str(number_of_successes) + Reset + " test(s) " + BrightGreen + "successful" + Reset + ".")
 else:
 	print("Out of " + Yellow + str(number_of_tests) + Reset + " test(s), " + Yellow + str(number_of_successes) + Reset + " test(s) were " + BrightGreen + "successful" + Reset + " and " + Yellow + str(number_of_failures) + Reset + " test(s) " + BrightRed + "failed" + Reset + ".")
+	exit(1)
