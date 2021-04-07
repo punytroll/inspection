@@ -112,7 +112,7 @@ namespace Inspection
 	std::unique_ptr<Inspection::Result> Get_ID3_ReplayGainAdjustment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-	std::unique_ptr<Inspection::Result> Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+	std::unique_ptr<Inspection::Result> Get_ID3_UnsignedInteger_35Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_ID3_GUID(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_IEC_60908_1999_TableOfContents_Track(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_IEC_60908_1999_TableOfContents_Track_Control(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);

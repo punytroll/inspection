@@ -18,7 +18,7 @@
 		<field name="TotalFrameCRC">
 			<type-reference>
 				<part>ID3</part>
-				<part>UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian</part>
+				<part>UnsignedInteger_35Bit_SynchSafe_40Bit_BigEndian</part>
 			</type-reference>
 		</field>
 	</sequence>

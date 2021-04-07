@@ -6113,14 +6113,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_28Bit_Sy
 	return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_32Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_35Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
 	auto Continue{true};
 	
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
-	Result->GetValue()->AddTag("32bit value"s);
+	Result->GetValue()->AddTag("35bit value"s);
 	Result->GetValue()->AddTag("40bit field"s);
 	Result->GetValue()->AddTag("synchsafe"s);
 	Result->GetValue()->AddTag("big endian"s);
@@ -6157,7 +6157,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_32Bit_Sy
 										{
 											if((Continue = ((ReadResult5.Data & 0x80) == 0x00)) == true)
 											{
-												Result->GetValue()->SetData((static_cast<std::uint32_t>(ReadResult1.Data) << 28) | (static_cast<std::uint32_t>(ReadResult2.Data) << 21) | (static_cast<std::uint32_t>(ReadResult3.Data) << 14) | (static_cast<std::uint32_t>(ReadResult4.Data) << 7) | static_cast<std::uint32_t>(ReadResult5.Data));
+												Result->GetValue()->SetData((static_cast<std::uint64_t>(ReadResult1.Data) << 28) | (static_cast<std::uint64_t>(ReadResult2.Data) << 21) | (static_cast<std::uint64_t>(ReadResult3.Data) << 14) | (static_cast<std::uint64_t>(ReadResult4.Data) << 7) | static_cast<std::uint64_t>(ReadResult5.Data));
 											}
 											else
 											{
