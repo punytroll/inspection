@@ -13,7 +13,7 @@ namespace Inspection
 	class APEInspector : public Inspection::Inspector
 	{
 	protected:
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer)
+		virtual std::unique_ptr< Inspection::Result > _Getter(const Inspection::Buffer & Buffer)
 		{
 			auto [Start, End] = _GetStartAndEnd(Buffer, Inspection::Length{0, 0});
 			auto Reader = Inspection::Reader{Buffer, Start, End - Start};

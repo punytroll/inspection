@@ -91,12 +91,11 @@ void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 		else
 		{
 			auto Buffer = Inspection::Buffer{Address, Inspection::Length(FileSize, 0)};
-			
-			auto Result{std::make_unique< Inspection::Result >()};
+			auto Result = std::make_unique< Inspection::Result >();
 			
 			Result->GetValue()->SetName(Inspection::g_BrightGreen + Path.string() + Inspection::g_BrightWhite);
 			
-			auto LengthTag{Result->GetValue()->AddTag("length", Buffer.GetLength())};
+			auto LengthTag = Result->GetValue()->AddTag("length", Buffer.GetLength());
 			
 			LengthTag->AddTag("unit", "bytes and bits"s);
 			

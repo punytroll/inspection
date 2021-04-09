@@ -22,12 +22,11 @@ namespace Inspection
 		
 		friend class Inspection::Buffer;
 		
-		explicit Reader(Inspection::Buffer & Buffer);
-		explicit Reader(Inspection::Reader & Reader);
-		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & Length);
-		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & Length);
-		explicit Reader(Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
-		explicit Reader(Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
+		explicit Reader(const Inspection::Buffer & Buffer);
+		explicit Reader(const Inspection::Reader & Reader);
+		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & Length);
+		explicit Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
+		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
 		bool Read0Bits(Inspection::ReadResult & ReadResult);
 		bool Read1Bits(Inspection::ReadResult & ReadResult);
 		bool Read2Bits(Inspection::ReadResult & ReadResult);
@@ -135,9 +134,9 @@ namespace Inspection
 			_BitstreamType = BitstreamType;
 		}
 	private:
-		Reader(Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType);
+		Reader(const Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType);
 		Inspection::Reader::BitstreamType _BitstreamType;
-		Inspection::Buffer * _Buffer;
+		const Inspection::Buffer * _Buffer;
 		Inspection::Length _EndPositionInInput;
 		Inspection::Length _ReadPositionInInput;
 		Inspection::Length _StartPositionInInput;

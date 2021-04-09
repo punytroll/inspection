@@ -65,7 +65,7 @@ namespace Inspection
 			_TypeSequence.emplace_back(Type);
 		}
 	protected:
-		virtual std::unique_ptr<Inspection::Result> _Getter(Inspection::Buffer & Buffer)
+		virtual std::unique_ptr<Inspection::Result> _Getter(const Inspection::Buffer & Buffer)
 		{
 			if(_TypeSequence.size() == 0)
 			{
@@ -89,7 +89,7 @@ namespace Inspection
 			}
 		}
 	private:
-		std::unique_ptr<Inspection::Result> _GetGeneral(Inspection::Buffer & Buffer)
+		std::unique_ptr<Inspection::Result> _GetGeneral(const Inspection::Buffer & Buffer)
 		{
 			auto Result = std::make_unique<Inspection::Result>();
 			
@@ -565,7 +565,7 @@ namespace Inspection
 			return Result;
 		}
 
-		std::unique_ptr<Inspection::Result> _GetAsSpecificTypeSequence(Inspection::Buffer & Buffer)
+		std::unique_ptr<Inspection::Result> _GetAsSpecificTypeSequence(const Inspection::Buffer & Buffer)
 		{
 			auto Reader = Inspection::Reader{Buffer};
 			

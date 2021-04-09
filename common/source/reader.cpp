@@ -2,29 +2,36 @@
 #include "read_result.h"
 #include "reader.h"
 
-Inspection::Reader::Reader(Inspection::Buffer & Buffer) :
+Inspection::Reader::Reader(const Inspection::Buffer & Buffer) :
 	Inspection::Reader{&Buffer, Inspection::Length{0, 0}, Buffer.GetLength(), Inspection::Reader::BitstreamType::MostSignificantBitFirst}
 {
 }
 
-Inspection::Reader::Reader(Inspection::Reader & Reader) :
+Inspection::Reader::Reader(const Inspection::Reader & Reader) :
 	Inspection::Reader{Reader._Buffer, Reader._ReadPositionInInput, Reader._EndPositionInInput, Reader._BitstreamType}
 {
 	assert(Reader._ReadPositionInInput <= Reader._EndPositionInInput);
 	assert(_EndPositionInInput <= Reader._EndPositionInInput);
 }
 
-Inspection::Reader::Reader(Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length) :
+Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::Length & Length) :
+	Inspection::Reader{Reader._Buffer, Reader._ReadPositionInInput, Reader._ReadPositionInInput + Length, Reader._BitstreamType}
+{
+	assert(Reader._ReadPositionInInput + Length <= Reader._EndPositionInInput);
+	assert(_EndPositionInInput <= Reader._EndPositionInInput);
+}
+
+Inspection::Reader::Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length) :
 	Inspection::Reader{&Buffer, StartPositionInInput, StartPositionInInput + Length, Inspection::Reader::BitstreamType::MostSignificantBitFirst}
 {
 }
 
-Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length) :
+Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length) :
 	Inspection::Reader{Reader._Buffer, StartPositionInInput, StartPositionInInput + Length, Reader._BitstreamType}
 {
 }
 
-Inspection::Reader::Reader(Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType) :
+Inspection::Reader::Reader(const Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType) :
 	_BitstreamType{BitstreamType},
 	_Buffer{Buffer},
 	_EndPositionInInput{EndPositionInInput},
@@ -33,13 +40,6 @@ Inspection::Reader::Reader(Inspection::Buffer * Buffer, const Inspection::Length
 {
 	assert((Buffer == nullptr) || (_StartPositionInInput <= Buffer->GetLength()));
 	assert((Buffer == nullptr) || (_EndPositionInInput <= Buffer->GetLength()));
-}
-
-Inspection::Reader::Reader(Inspection::Reader & Reader, const Inspection::Length & Length) :
-	Inspection::Reader{Reader._Buffer, Reader._ReadPositionInInput, Reader._ReadPositionInInput + Length, Reader._BitstreamType}
-{
-	assert(Reader._ReadPositionInInput + Length <= Reader._EndPositionInInput);
-	assert(_EndPositionInInput <= Reader._EndPositionInInput);
 }
 
 bool Inspection::Reader::Read0Bits(Inspection::ReadResult & ReadResult)

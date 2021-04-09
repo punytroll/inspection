@@ -18,7 +18,7 @@ namespace Inspection
 		void Process(void);
 		void PushPath(const std::filesystem::path & Path);
 	protected:
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer) = 0;
+		virtual std::unique_ptr< Inspection::Result > _Getter(const Inspection::Buffer & Buffer) = 0;
 		virtual void _Writer(std::unique_ptr< Inspection::Result > & Result);
 		void _QueryWriter(std::shared_ptr< Inspection::Value > Value, const std::string & Query);
 	private:

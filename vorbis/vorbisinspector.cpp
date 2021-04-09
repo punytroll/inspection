@@ -10,7 +10,7 @@ namespace Inspection
 	class VorbisInspector : public Inspection::Inspector
 	{
 	protected:
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer)
+		virtual std::unique_ptr< Inspection::Result > _Getter(const Inspection::Buffer & Buffer)
 		{
 			auto Reader = Inspection::Reader{Buffer};
 			
