@@ -22,27 +22,32 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// the following functions parses these forms:                                                   //
-// - ID3v2Tag                                                                                    //
-// - ID3v2Tag FLACStream                                                                         //
-// - ID3v2Tag FLACStream ID3v1Tag                                                                //
-// - ID3v2Tag MPEG1Stream                                                                        //
-// - ID3v2Tag MPEG1Stream APEv2Tag                                                               //
-// - ID3v2Tag MPEG1Stream APEv2Tag ID3v1Tag                                                      //
-// - ID3v2Tag MPEG1Stream ID3v1Tag                                                               //
-// - ID3v2Tag ID3v1Tag                                                                           //
-// - MPEG1Stream                                                                                 //
-// - MPEG1Stream APEv2Tag                                                                        //
-// - MPEG1Stream APEv2Tag ID3v1Tag                                                               //
-// - MPEG1Stream ID3v1Tag                                                                        //
-// - APEv2Tag                                                                                    //
-// - APEv2Tag ID3v1Tag                                                                           //
-// - ID3v1Tag                                                                                    //
-// - FLACStream                                                                                  //
-// - ASFFile                                                                                     //
-// - OggStream                                                                                   //
-// - AppleSingle                                                                                 //
-// - RIFFFile                                                                                    //
+// the GeneralInspector is able to recognize these following forms:                              //
+//                                                                                               //
+// - most significant bit first:                                                                 //
+//     - ID3v2Tag                                                                                //
+//     - ID3v2Tag FLACStream                                                                     //
+//     - ID3v2Tag FLACStream ID3v1Tag                                                            //
+//     - ID3v2Tag MPEG1Stream                                                                    //
+//     - ID3v2Tag MPEG1Stream APEv2Tag                                                           //
+//     - ID3v2Tag MPEG1Stream APEv2Tag ID3v1Tag                                                  //
+//     - ID3v2Tag MPEG1Stream ID3v1Tag                                                           //
+//     - ID3v2Tag ID3v1Tag                                                                       //
+//     - MPEG1Stream                                                                             //
+//     - MPEG1Stream APEv2Tag                                                                    //
+//     - MPEG1Stream APEv2Tag ID3v1Tag                                                           //
+//     - MPEG1Stream ID3v1Tag                                                                    //
+//     - APEv2Tag                                                                                //
+//     - APEv2Tag ID3v1Tag                                                                       //
+//     - ID3v1Tag                                                                                //
+//     - FLACStream                                                                              //
+//     - ASFFile                                                                                 //
+//     - AppleSingle                                                                             //
+//     - RIFFFile                                                                                //
+//                                                                                               //
+// - least significant bit first                                                                 //
+//     - OggStream                                                                               //
+//                                                                                               //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace Inspection
@@ -55,12 +60,12 @@ namespace Inspection
 			_Query = Query;
 		}
 		
-		void PushType(const std::vector< std::string > & Type)
+		void PushType(const std::vector<std::string> & Type)
 		{
 			_TypeSequence.emplace_back(Type);
 		}
 	protected:
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer)
+		virtual std::unique_ptr<Inspection::Result> _Getter(Inspection::Buffer & Buffer)
 		{
 			if(_TypeSequence.size() == 0)
 			{
@@ -72,12 +77,44 @@ namespace Inspection
 			}
 		}
 		
-		std::unique_ptr< Inspection::Result > _GetGeneral(Inspection::Buffer & Buffer)
+		virtual void _Writer(std::unique_ptr<Inspection::Result> & Result) override
 		{
-			auto Reader = Inspection::Reader{Buffer};
+			if(_Query != "")
+			{
+				_QueryWriter(Result->GetValue(), _Query);
+			}
+			else
+			{
+				Inspection::Inspector::_Writer(Result);
+			}
+		}
+	private:
+		std::unique_ptr<Inspection::Result> _GetGeneral(Inspection::Buffer & Buffer)
+		{
+			auto Result = std::make_unique<Inspection::Result>();
 			
-			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
+			// reading most significant bit first
+			if(Result->GetSuccess() == false)
+			{
+				auto Reader = Inspection::Reader{Buffer};
+				
+				Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
+				Result = _GetGeneralMostSignificantBitFirst(Reader);
+			}
+			// reading least significant bit first
+			if(Result->GetSuccess() == false)
+			{
+				auto Reader = Inspection::Reader{Buffer};
+				
+				Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
+				Result = _GetGeneralLeastSignificantBitFirst(Reader);
+			}
 			
+			return Result;
+		}
+		
+		std::unique_ptr<Inspection::Result> _GetGeneralMostSignificantBitFirst(Inspection::Reader & Reader)
+		{
 			auto Result{Inspection::InitializeResult(Reader)};
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_ID3_2_Tag(PartReader, {})};
@@ -453,15 +490,12 @@ namespace Inspection
 								}
 								else
 								{
-									auto PartReader = Inspection::Reader{Buffer};
-									
-									PartReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
-									
-									auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
+									Inspection::Reader PartReader{Reader};
+									auto PartResult{Inspection::g_TypeRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {})};
 									
 									if(PartResult->GetSuccess() == true)
 									{
-										Result->GetValue()->AppendField("OggStream", PartResult->GetValue());
+										Result->GetValue()->AppendField("AppleDoubleFile", PartResult->GetValue());
 										Reader.AdvancePosition(PartReader.GetConsumedLength());
 										if(Reader.IsAtEnd() == true)
 										{
@@ -475,11 +509,12 @@ namespace Inspection
 									else
 									{
 										Inspection::Reader PartReader{Reader};
-										auto PartResult{Inspection::g_TypeRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {})};
+										auto PartResult{Get_RIFF_Chunk(PartReader, {})};
 										
 										if(PartResult->GetSuccess() == true)
 										{
-											Result->GetValue()->AppendField("AppleDoubleFile", PartResult->GetValue());
+											Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
+											Result->GetValue()->SetName("RIFFFile");
 											Reader.AdvancePosition(PartReader.GetConsumedLength());
 											if(Reader.IsAtEnd() == true)
 											{
@@ -492,27 +527,7 @@ namespace Inspection
 										}
 										else
 										{
-											Inspection::Reader PartReader{Reader};
-											auto PartResult{Get_RIFF_Chunk(PartReader, {})};
-											
-											if(PartResult->GetSuccess() == true)
-											{
-												Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
-												Result->GetValue()->SetName("RIFFFile");
-												Reader.AdvancePosition(PartReader.GetConsumedLength());
-												if(Reader.IsAtEnd() == true)
-												{
-													Result->SetSuccess(true);
-												}
-												else
-												{
-													AppendUnkownContinuation(Result->GetValue(), Reader);
-												}
-											}
-											else
-											{
-												AppendUnkownContinuation(Result->GetValue(), Reader);
-											}
+											AppendUnkownContinuation(Result->GetValue(), Reader);
 										}
 									}
 								}
@@ -525,8 +540,32 @@ namespace Inspection
 			
 			return Result;
 		}
+		
+		std::unique_ptr<Inspection::Result> _GetGeneralLeastSignificantBitFirst(Inspection::Reader & Reader)
+		{
+			auto Result = Inspection::InitializeResult(Reader);
+			auto PartReader = Inspection::Reader{Reader};
+			auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
+									
+			if(PartResult->GetSuccess() == true)
+			{
+				Result->GetValue()->AppendField("OggStream", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				if(Reader.IsAtEnd() == true)
+				{
+					Result->SetSuccess(true);
+				}
+				else
+				{
+					AppendUnkownContinuation(Result->GetValue(), Reader);
+				}
+			}
+			Inspection::FinalizeResult(Result, Reader);
+			
+			return Result;
+		}
 
-		std::unique_ptr< Inspection::Result > _GetAsSpecificTypeSequence(Inspection::Buffer & Buffer)
+		std::unique_ptr<Inspection::Result> _GetAsSpecificTypeSequence(Inspection::Buffer & Buffer)
 		{
 			auto Reader = Inspection::Reader{Buffer};
 			
@@ -552,19 +591,7 @@ namespace Inspection
 			return Result;
 		}
 		
-		virtual void _Writer(std::unique_ptr< Inspection::Result > & Result) override
-		{
-			if(_Query != "")
-			{
-				_QueryWriter(Result->GetValue(), _Query);
-			}
-			else
-			{
-				Inspection::Inspector::_Writer(Result);
-			}
-		}
-	private:
-		std::vector< std::vector< std::string > > _TypeSequence;
+		std::vector<std::vector<std::string>> _TypeSequence;
 		std::string _Query;
 	};
 }
