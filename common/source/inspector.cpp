@@ -70,11 +70,6 @@ void Inspection::Inspector::_ProcessPath(const std::filesystem::directory_entry 
 	}
 }
 
-std::tuple< Inspection::Length, Inspection::Length > Inspection::Inspector::_GetStartAndEnd(const Inspection::Buffer & Buffer, const Inspection::Length & Start)
-{
-	return {Start, Buffer.GetLength()};
-}
-
 void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry & DirectoryEntry)
 {
 	auto & Path{DirectoryEntry.path()};
@@ -95,7 +90,8 @@ void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 		}
 		else
 		{
-			Inspection::Buffer Buffer{Address, Inspection::Length(FileSize, 0)};
+			auto Buffer = Inspection::Buffer{Address, Inspection::Length(FileSize, 0)};
+			
 			auto Result{std::make_unique< Inspection::Result >()};
 			
 			Result->GetValue()->SetName(Inspection::g_BrightGreen + Path.string() + Inspection::g_BrightWhite);
@@ -104,37 +100,10 @@ void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 			
 			LengthTag->AddTag("unit", "bytes and bits"s);
 			
-			Inspection::Length RunningStart{0, 0};
-			auto [Start, End]{_GetStartAndEnd(Buffer, Inspection::Length{0, 0})};
-			auto Continue{true};
+			auto InnerResult = _Getter(Buffer);
 			
-			while((Continue == true) && (Start != Buffer.GetLength()))
-			{
-				if(Start > RunningStart)
-				{
-					auto OtherDataField{Result->GetValue()->AppendField("OtherData")};
-					auto LengthTag{OtherDataField->AddTag("length", Start - RunningStart)};
-					
-					LengthTag->AddTag("unit", "bytes and bits"s);
-				}
-				
-				Inspection::Reader PartReader{Buffer, Start, End - Start};
-				auto PartResult{_Getter(PartReader, {})};
-				
-				Result->GetValue()->AppendField(PartResult->GetValue());
-				Continue = PartResult->GetSuccess();
-				Start += PartReader.GetConsumedLength();
-				RunningStart = Start;
-				std::tie(Start, End) = _GetStartAndEnd(Buffer, Start);
-			}
-			if(RunningStart < Buffer.GetLength())
-			{
-				auto OtherDataField{Result->GetValue()->AppendField("OtherData")};
-				auto LengthTag{OtherDataField->AddTag("length", Buffer.GetLength() - RunningStart)};
-				
-				LengthTag->AddTag("unit", "bytes and bits"s);
-			}
-			Result->SetSuccess(Continue);
+			Result->GetValue()->AppendFields(InnerResult->GetValue()->GetFields());
+			Result->SetSuccess(InnerResult->GetSuccess());
 			_Writer(Result);
 			munmap(Address, FileSize);
 		}

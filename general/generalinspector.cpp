@@ -60,20 +60,24 @@ namespace Inspection
 			_TypeSequence.emplace_back(Type);
 		}
 	protected:
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
+		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer)
 		{
 			if(_TypeSequence.size() == 0)
 			{
-				return _GetGeneral(Reader, Parameters);
+				return _GetGeneral(Buffer);
 			}
 			else
 			{
-				return _GetAsSpecificTypeSequence(Reader, Parameters);
+				return _GetAsSpecificTypeSequence(Buffer);
 			}
 		}
 		
-		std::unique_ptr< Inspection::Result > _GetGeneral(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
+		std::unique_ptr< Inspection::Result > _GetGeneral(Inspection::Buffer & Buffer)
 		{
+			auto Reader = Inspection::Reader{Buffer};
+			
+			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
+			
 			auto Result{Inspection::InitializeResult(Reader)};
 			Inspection::Reader PartReader{Reader};
 			auto PartResult{Inspection::Get_ID3_2_Tag(PartReader, {})};
@@ -449,8 +453,11 @@ namespace Inspection
 								}
 								else
 								{
-									Inspection::Reader PartReader{Reader};
-									auto PartResult{Inspection::Get_Ogg_Stream(PartReader, {})};
+									auto PartReader = Inspection::Reader{Buffer};
+									
+									PartReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
+									
+									auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
 									
 									if(PartResult->GetSuccess() == true)
 									{
@@ -519,8 +526,12 @@ namespace Inspection
 			return Result;
 		}
 
-		std::unique_ptr< Inspection::Result > _GetAsSpecificTypeSequence(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
+		std::unique_ptr< Inspection::Result > _GetAsSpecificTypeSequence(Inspection::Buffer & Buffer)
 		{
+			auto Reader = Inspection::Reader{Buffer};
+			
+			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
+			
 			auto Result{Inspection::InitializeResult(Reader)};
 			auto Continue{true};
 			
@@ -545,8 +556,7 @@ namespace Inspection
 		{
 			if(_Query != "")
 			{
-				assert(Result->GetValue()->GetFields().size() == 1);
-				_QueryWriter(Result->GetValue()->GetFields().front(), _Query);
+				_QueryWriter(Result->GetValue(), _Query);
 			}
 			else
 			{

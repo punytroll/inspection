@@ -10,8 +10,12 @@ namespace Inspection
 	class VorbisInspector : public Inspection::Inspector
 	{
 	protected:
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
+		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer)
 		{
+			auto Reader = Inspection::Reader{Buffer};
+			
+			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
+			
 			Inspection::Reader PartReader{Reader};
 			auto PartResult(Inspection::Get_Ogg_Stream(PartReader, {}));
 			

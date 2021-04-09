@@ -9539,9 +9539,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Stream(Inspection::Reade
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		
-		PartReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
-		
 		auto PartResult{Inspection::Get_Array_EndedByPredicate(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Ogg", "Page"})}, {"ElementName", "Page"s}, {"EndPredicate", std::function< bool (std::shared_ptr<Inspection::Value>) >{[](std::shared_ptr<Inspection::Value> ElementValue) { return std::any_cast< bool >(ElementValue->GetField("HeaderType")->GetField("EndOfStream")->GetData()); }}}})};
 		
 		Continue = PartResult->GetSuccess();

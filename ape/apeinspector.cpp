@@ -13,7 +13,35 @@ namespace Inspection
 	class APEInspector : public Inspection::Inspector
 	{
 	protected:
-		virtual std::tuple< Inspection::Length, Inspection::Length > _GetStartAndEnd(const Inspection::Buffer & Buffer, const Inspection::Length & StartAt) override
+		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer)
+		{
+			auto [Start, End] = _GetStartAndEnd(Buffer, Inspection::Length{0, 0});
+			auto Reader = Inspection::Reader{Buffer, Start, End - Start};
+			
+			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
+			
+			auto Result{Inspection::InitializeResult(Reader)};
+			auto Continue{Reader.HasRemaining()};
+			
+			// reading
+			if(Continue == true)
+			{
+				Inspection::Reader PartReader{Reader};
+				auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
+				
+				Continue = PartResult->GetSuccess();
+				Result->SetValue(PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				Result->GetValue()->SetName("APEv2 Tag");
+			}
+			// finalization
+			Result->SetSuccess(Continue);
+			Inspection::FinalizeResult(Result, Reader);
+			
+			return Result;
+		}
+	private:
+		std::tuple< Inspection::Length, Inspection::Length > _GetStartAndEnd(const Inspection::Buffer & Buffer, const Inspection::Length & StartAt)
 		{
 			auto Found{false};
 			auto Start{0ul};
@@ -173,29 +201,6 @@ namespace Inspection
 			{
 				return {Buffer.GetLength(), Buffer.GetLength()};
 			}
-		}
-		
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
-		{
-			auto Result{Inspection::InitializeResult(Reader)};
-			auto Continue{Reader.HasRemaining()};
-			
-			// reading
-			if(Continue == true)
-			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				Result->GetValue()->SetName("APEv2 Tag");
-			}
-			// finalization
-			Result->SetSuccess(Continue);
-			Inspection::FinalizeResult(Result, Reader);
-			
-			return Result;
 		}
 	};
 }

@@ -20,20 +20,12 @@ namespace Inspection
 			_WithFrames = true;
 		}
 	protected:
-		virtual std::tuple< Inspection::Length, Inspection::Length > _GetStartAndEnd(const Inspection::Buffer & Buffer, const Inspection::Length & StartAt) override
+		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer)
 		{
-			if(StartAt == Inspection::Length{0, 0})
-			{
-				return {{0, 0}, Buffer.GetLength()};
-			}
-			else
-			{
-				return {Buffer.GetLength(), Buffer.GetLength()};
-			}
-		}
-		
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
-		{
+			auto Reader = Inspection::Reader{Buffer};
+			
+			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
+			
 			auto Result{Inspection::InitializeResult(Reader)};
 			auto Continue{true};
 			

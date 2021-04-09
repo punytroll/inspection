@@ -10,8 +10,12 @@ namespace Inspection
 	class ASFInspector : public Inspection::Inspector
 	{
 	protected:
-		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
+		virtual std::unique_ptr< Inspection::Result > _Getter(Inspection::Buffer & Buffer)
 		{
+			auto Reader = Inspection::Reader{Buffer};
+			
+			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
+			
 			auto Result{Inspection::InitializeResult(Reader)};
 			auto Continue{true};
 			
