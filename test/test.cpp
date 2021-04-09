@@ -14,8 +14,8 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0xf3, 0x24};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
 			Inspection::ReadResult ReadResult;
 			
 			assert(Reader.Read2Bits(ReadResult) == true);
@@ -67,8 +67,8 @@ int main(void)
 			assert(ReadResult.Data == 0x00);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 			
@@ -131,8 +131,8 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0xf3, 0x24, 0x76};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{3, 0}};
-			Inspection::Reader Reader{Buffer};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{3, 0}};
+			auto Reader = Inspection::Reader{Buffer};
 			Inspection::ReadResult ReadResult;
 			
 			assert(Reader.Read3Bits(ReadResult) == true);
@@ -184,8 +184,8 @@ int main(void)
 			assert(ReadResult.Data == 0x06);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{3, 0}};
-			Inspection::Reader Reader{Buffer};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{3, 0}};
+			auto Reader = Inspection::Reader{Buffer};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 			
@@ -248,8 +248,8 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0xf3, 0x24};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
 			Inspection::ReadResult ReadResult;
 			
 			assert(Reader.Read6Bits(ReadResult) == true);
@@ -270,8 +270,8 @@ int main(void)
 			assert((ReadResult.OutputLength == Inspection::Length{0, 0}));
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 			
@@ -305,8 +305,8 @@ int main(void)
 	
 	{
 		// read an unsigned integer with 0 bits from an empty reader
-		Inspection::Buffer Buffer{Buffer0, Inspection::Length{0, 0}};
-		Inspection::Reader Reader{Buffer};
+		auto Buffer = Inspection::Buffer{Buffer0, Inspection::Length{0, 0}};
+		auto Reader = Inspection::Reader{Buffer};
 		auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
 		
 		assert(Result->GetSuccess() == true);
@@ -316,8 +316,8 @@ int main(void)
 	}
 	{
 		// read an unsigned integer with 0 bits from the start of a non-empty reader
-		Inspection::Buffer Buffer{Buffer1, Inspection::Length{1, 0}};
-		Inspection::Reader Reader{Buffer};
+		auto Buffer = Inspection::Buffer{Buffer1, Inspection::Length{1, 0}};
+		auto Reader = Inspection::Reader{Buffer};
 		auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
 		
 		assert(Result->GetSuccess() == true);
@@ -331,17 +331,17 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
@@ -353,17 +353,17 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
@@ -375,17 +375,17 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
@@ -397,17 +397,17 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
@@ -419,17 +419,17 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Printable_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Printable_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Printable_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Printable_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
@@ -441,9 +441,9 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			
@@ -457,9 +457,9 @@ int main(void)
 			assert(Data[4] == 0x65);
 		}
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			
@@ -478,9 +478,9 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer3, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer3, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			
@@ -494,9 +494,9 @@ int main(void)
 			assert(Data[4] == 0x00);
 		}
 		{
-			Inspection::Buffer Buffer{Buffer3, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer3, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			
@@ -515,17 +515,17 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer2, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
@@ -537,17 +537,17 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer4, Inspection::Length{6, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer4, Inspection::Length{6, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{6, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
@@ -559,25 +559,25 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer1, Inspection::Length{0, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer1, Inspection::Length{0, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer1, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer1, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer4, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer4, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
@@ -589,41 +589,41 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{4, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{5, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{6, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{6, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
@@ -635,57 +635,57 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{4, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{5, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{6, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{6, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{7, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{7, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
@@ -697,57 +697,57 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{4, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{4, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{5, 5}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 5}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{6, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{6, 7}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 7}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			Inspection::Buffer Buffer{Buffer5, Inspection::Length{7, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {})};
+			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{7, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
@@ -765,41 +765,41 @@ int main(void)
 		std::uint8_t BufferUTF8CodePointEmojiComponentRedHair[] = {0xf0, 0x9f, 0xa6, 0xb0};
 		
 		{
-			Inspection::Buffer Buffer{BufferUTF8CodePointLatinSmallLetterA, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF8CodePointLatinSmallLetterA, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x00000061);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF8CodePointCopyrightSign, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF8CodePointCopyrightSign, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x000000a9);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF8CodePointGreekCapitalLetterTheta, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF8CodePointGreekCapitalLetterTheta, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x00000398);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF8CodePointThaiCharacterDoDek, Inspection::Length{3, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF8CodePointThaiCharacterDoDek, Inspection::Length{3, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x00000e14);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF8CodePointEmojiComponentRedHair, Inspection::Length{4, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF8CodePointEmojiComponentRedHair, Inspection::Length{4, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x0001f9b0);
@@ -812,23 +812,23 @@ int main(void)
 		std::uint8_t BufferUCS2Termination[] = {0x00, 0x00};
 		
 		{
-			Inspection::Buffer Buffer{BufferUCS2Termination, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUCS2Termination, Inspection::Length{1, 7}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{1, 7}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUCS2Termination, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x00000000);
@@ -842,23 +842,23 @@ int main(void)
 		std::uint8_t BufferUCS2Termination[] = {0x00, 0x00};
 		
 		{
-			Inspection::Buffer Buffer{BufferUCS2Termination, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUCS2Termination, Inspection::Length{1, 7}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{1, 7}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUCS2Termination, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x00000000);
@@ -872,16 +872,16 @@ int main(void)
 		std::uint8_t BufferUTF16Termination[] = {0x00, 0x00};
 		
 		{
-			Inspection::Buffer Buffer{BufferUTF16Termination, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF16Termination, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result->GetValue()->GetData()) == 0x0000);
@@ -895,16 +895,16 @@ int main(void)
 		std::uint8_t BufferUTF16Termination[] = {0x00, 0x00};
 		
 		{
-			Inspection::Buffer Buffer{BufferUTF16Termination, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF16Termination, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result->GetValue()->GetData()) == 0x0000);
@@ -918,30 +918,30 @@ int main(void)
 		std::uint8_t BufferUTF16BELatinSmallLetterA[] = {0x00, 0x61};
 		
 		{
-			Inspection::Buffer Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{0, 5}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{0, 5}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{1, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{1, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x00000061);
@@ -955,16 +955,16 @@ int main(void)
 		std::uint8_t BufferUTF16LatinSmallLetterA[] = {0x61, 0x00};
 		
 		{
-			Inspection::Buffer Buffer{BufferUTF16LatinSmallLetterA, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16LatinSmallLetterA, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferUTF16LatinSmallLetterA, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferUTF16LatinSmallLetterA, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x00000061);
@@ -978,16 +978,16 @@ int main(void)
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
 		
 		{
-			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_Character_Alphabetic(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_Character_Alphabetic(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_Character_Alphabetic(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_Character_Alphabetic(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) == 0x61);
@@ -1001,16 +1001,16 @@ int main(void)
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
 		
 		{
-			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_Character_AlphaNumeric(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_Character_AlphaNumeric(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_Character_AlphaNumeric(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_Character_AlphaNumeric(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) == 0x61);
@@ -1024,16 +1024,16 @@ int main(void)
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
 		
 		{
-			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Reader, {})};
+			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) == 0x61);
@@ -1047,24 +1047,24 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_1Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_SignedInteger_1Bit(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result1{Inspection::Get_SignedInteger_1Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_SignedInteger_1Bit(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result1->GetValue()->GetData()) == -1);
+			assert(std::any_cast<std::int8_t>(Result1->GetValue()->GetData()) == -0x01);
 			
-			auto Result2{Inspection::Get_SignedInteger_1Bit(Reader, {})};
+			auto Result2 = Inspection::Get_SignedInteger_1Bit(Reader, {});
 			
 			assert(Result2->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result2->GetValue()->GetData()) == 0);
+			assert(std::any_cast<std::int8_t>(Result2->GetValue()->GetData()) == 0x00);
 		}
 	}
 	
@@ -1075,54 +1075,54 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 3}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 3}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result1{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result1->GetValue()->GetData()) == -16);
+			assert(std::any_cast<std::int8_t>(Result1->GetValue()->GetData()) == -0x10);
 			
-			auto Result2{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Result2 = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result2->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result2->GetValue()->GetData()) == -9);
+			assert(std::any_cast<std::int8_t>(Result2->GetValue()->GetData()) == -0x09);
 			
-			auto Result3{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Result3 = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result3->GetValue()->GetData()) == 1);
+			assert(std::any_cast<std::int8_t>(Result3->GetValue()->GetData()) == 0x01);
 			
-			auto Result4{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Result4 = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result4->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result4->GetValue()->GetData()) == -12);
+			assert(std::any_cast<std::int8_t>(Result4->GetValue()->GetData()) == -0x0c);
 			
-			auto Result5{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Result5 = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result5->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result5->GetValue()->GetData()) == -2);
+			assert(std::any_cast<std::int8_t>(Result5->GetValue()->GetData()) == -0x02);
 			
-			auto Result6{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Result6 = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result6->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result6->GetValue()->GetData()) == 4);
+			assert(std::any_cast<std::int8_t>(Result6->GetValue()->GetData()) == 0x04);
 			
-			auto Result7{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Result7 = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result7->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result7->GetValue()->GetData()) == 8);
+			assert(std::any_cast<std::int8_t>(Result7->GetValue()->GetData()) == 0x08);
 			
-			auto Result8{Inspection::Get_SignedInteger_5Bit(Reader, {})};
+			auto Result8 = Inspection::Get_SignedInteger_5Bit(Reader, {});
 			
 			assert(Result8->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result8->GetValue()->GetData()) == 15);
+			assert(std::any_cast<std::int8_t>(Result8->GetValue()->GetData()) == 0x0f);
 		}
 	}
 	
@@ -1130,22 +1130,27 @@ int main(void)
 	// Inspection::Get_SignedInteger_8Bit                                                        //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
-		std::uint8_t RawBuffer[] = {0x64};
+		std::uint8_t RawBuffer[] = {0x64, 0xc3};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 5}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_8Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 5}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_SignedInteger_8Bit(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_8Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_SignedInteger_8Bit(Reader, {});
 			
-			assert(Result->GetSuccess() == true);
-			assert(std::any_cast<std::int8_t>(Result->GetValue()->GetData()) == 0x64);
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result1->GetValue()->GetData()) == 0x64);
+			
+			auto Result2 = Inspection::Get_SignedInteger_8Bit(Reader, {});
+			
+			assert(Result2->GetSuccess() == true);
+			assert(std::any_cast<std::int8_t>(Result2->GetValue()->GetData()) == -0x3d);
 		}
 	}
 	
@@ -1156,37 +1161,37 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x64, 0x30};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_SignedInteger_12Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::int16_t>(Result->GetValue()->GetData()) == 0x0643);
@@ -1200,9 +1205,9 @@ int main(void)
 		std::uint8_t RawBufferASCIILatinSmallLetterA[] = {0x61, 0x62, 0x00, 0x00};
 		
 		{
-			Inspection::Buffer Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{0, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{0, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("ended by error") == true);
@@ -1211,9 +1216,9 @@ int main(void)
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "a");
@@ -1223,9 +1228,9 @@ int main(void)
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{2, 6}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{2, 6}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "ab");
@@ -1235,9 +1240,9 @@ int main(void)
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{3, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBufferASCIILatinSmallLetterA, Inspection::Length{3, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ASCII_String_Printable_EndedByTermination(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "ab");
@@ -1251,9 +1256,9 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x43, 0x62, 0xa6, 0x9e, 0x30};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 3}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 3}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
@@ -1261,9 +1266,9 @@ int main(void)
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 1}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 1}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
@@ -1271,9 +1276,9 @@ int main(void)
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 6}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 6}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
@@ -1281,9 +1286,9 @@ int main(void)
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{4, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{4, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
@@ -1291,9 +1296,9 @@ int main(void)
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{4, 4}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{4, 4}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_UnsignedInteger_36Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint64_t>(Result->GetValue()->GetData()) == 0x00000004362a69e3);
@@ -1308,9 +1313,9 @@ int main(void)
 		std::uint8_t RawBuffer_Not_ISO_IEC_8859_1_1998_Character[] = {0x87};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer_ISO_IEC_8859_1_1998_LatinSmallLetterA, Inspection::Length{0, 5}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer_ISO_IEC_8859_1_1998_LatinSmallLetterA, Inspection::Length{0, 5}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
@@ -1318,16 +1323,16 @@ int main(void)
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer_ISO_IEC_8859_1_1998_LatinSmallLetterA, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer_ISO_IEC_8859_1_1998_LatinSmallLetterA, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer_Not_ISO_IEC_8859_1_1998_Character, Inspection::Length{1, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer_Not_ISO_IEC_8859_1_1998_Character, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_Character(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
@@ -1342,54 +1347,54 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{0, 2}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 2}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result1{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
-			assert(std::any_cast<std::uint8_t>(Result1->GetValue()->GetData()) == 16);
+			assert(std::any_cast<std::uint8_t>(Result1->GetValue()->GetData()) == 0x10);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result2->GetSuccess() == true);
-			assert(std::any_cast<std::uint8_t>(Result2->GetValue()->GetData()) == 23);
+			assert(std::any_cast<std::uint8_t>(Result2->GetValue()->GetData()) == 0x17);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
-			assert(std::any_cast<std::uint8_t>(Result3->GetValue()->GetData()) == 1);
+			assert(std::any_cast<std::uint8_t>(Result3->GetValue()->GetData()) == 0x01);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result4->GetSuccess() == true);
-			assert(std::any_cast<std::uint8_t>(Result4->GetValue()->GetData()) == 20);
+			assert(std::any_cast<std::uint8_t>(Result4->GetValue()->GetData()) == 0x14);
 			
-			auto Result5{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Result5 = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result5->GetSuccess() == true);
-			assert(std::any_cast<std::uint8_t>(Result5->GetValue()->GetData()) == 30);
+			assert(std::any_cast<std::uint8_t>(Result5->GetValue()->GetData()) == 0x1e);
 			
-			auto Result6{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Result6 = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result6->GetSuccess() == true);
-			assert(std::any_cast<std::uint8_t>(Result6->GetValue()->GetData()) == 4);
+			assert(std::any_cast<std::uint8_t>(Result6->GetValue()->GetData()) == 0x04);
 			
-			auto Result7{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Result7 = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result7->GetSuccess() == true);
-			assert(std::any_cast<std::uint8_t>(Result7->GetValue()->GetData()) == 8);
+			assert(std::any_cast<std::uint8_t>(Result7->GetValue()->GetData()) == 0x08);
 			
-			auto Result8{Inspection::Get_UnsignedInteger_5Bit(Reader, {})};
+			auto Result8 = Inspection::Get_UnsignedInteger_5Bit(Reader, {});
 			
 			assert(Result8->GetSuccess() == true);
-			assert(std::any_cast<std::uint8_t>(Result8->GetValue()->GetData()) == 15);
+			assert(std::any_cast<std::uint8_t>(Result8->GetValue()->GetData()) == 0x0f);
 		}
 	}
 	
@@ -1400,34 +1405,34 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{4, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result1{Inspection::Get_UnsignedInteger_6Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{4, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_6Bit(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result1->GetValue()->GetData()) == 0x21);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_6Bit(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_6Bit(Reader, {});
 			
 			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result2->GetValue()->GetData()) == 0x1c);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_6Bit(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_6Bit(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result3->GetValue()->GetData()) == 0x0d);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_6Bit(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_6Bit(Reader, {});
 			
 			assert(Result4->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result4->GetValue()->GetData()) == 0x0f);
 			
-			auto Result5{Inspection::Get_UnsignedInteger_6Bit(Reader, {})};
+			auto Result5 = Inspection::Get_UnsignedInteger_6Bit(Reader, {});
 			
 			assert(Result5->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result5->GetValue()->GetData()) == 0x04);
 			
-			auto Result6{Inspection::Get_UnsignedInteger_6Bit(Reader, {})};
+			auto Result6 = Inspection::Get_UnsignedInteger_6Bit(Reader, {});
 			
 			assert(Result6->GetSuccess() == false);
 		}
@@ -1440,29 +1445,29 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result1{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x010b);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {});
 			
 			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x010d);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0078);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {});
 			
 			assert(Result4->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result4->GetValue()->GetData()) == 0x0110);
 			
-			auto Result5{Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {})};
+			auto Result5 = Inspection::Get_UnsignedInteger_9Bit_BigEndian(Reader, {});
 			
 			assert(Result5->GetSuccess() == false);
 		}
@@ -1475,24 +1480,24 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{5, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result1{Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x0217);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {});
 			
 			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x0034);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x03c4);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_10Bit_BigEndian(Reader, {});
 			
 			assert(Result4->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result4->GetValue()->GetData()) == 0x010f);
@@ -1506,44 +1511,44 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0x51, 0xea, 0xa9, 0x34, 0xb2};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{11, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result1{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{11, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x042e);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {});
 			
 			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x00d3);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0622);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {});
 			
 			assert(Result4->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result4->GetValue()->GetData()) == 0x00f6);
 			
-			auto Result5{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			auto Result5 = Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {});
 			
 			assert(Result5->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result5->GetValue()->GetData()) == 0x06a8);
 			
-			auto Result6{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			auto Result6 = Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {});
 			
 			assert(Result6->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result6->GetValue()->GetData()) == 0x07aa);
 			
-			auto Result7{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			auto Result7 = Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {});
 			
 			assert(Result7->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result7->GetValue()->GetData()) == 0x0526);
 			
-			auto Result8{Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {})};
+			auto Result8 = Inspection::Get_UnsignedInteger_11Bit_BigEndian(Reader, {});
 			
 			assert(Result8->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result8->GetValue()->GetData()) == 0x04b2);
@@ -1557,25 +1562,24 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{6, 0}};
-			Inspection::Reader Reader{Buffer};
-			
-			auto Result1{Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{6, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x085c);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {});
 			
-			assert(Result1->GetSuccess() == true);
+			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x034f);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0110);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_12Bit_BigEndian(Reader, {});
 			
 			assert(Result4->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result4->GetValue()->GetData()) == 0x0f6d);
@@ -1589,31 +1593,31 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{1, 1}};
-			Inspection::Reader Reader{Buffer};
-			auto Result{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 1}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{6, 0}};
-			Inspection::Reader Reader{Buffer};
-			auto Result1{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{6, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x10b8);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {});
 			
 			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x0d3c);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0887);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_13Bit_BigEndian(Reader, {});
 			
 			assert(Result4->GetSuccess() == false);
 		}
@@ -1626,25 +1630,24 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{6, 0}};
-			Inspection::Reader Reader{Buffer};
-			
-			auto Result1{Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{6, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x2170);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {});
 			
-			assert(Result1->GetSuccess() == true);
+			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x34f1);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x043d);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_14Bit_BigEndian(Reader, {});
 			
 			assert(Result4->GetSuccess() == false);
 		}
@@ -1657,25 +1660,24 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0xab};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{7, 0}};
-			Inspection::Reader Reader{Buffer};
-			
-			auto Result1{Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{7, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0x85c3);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {});
 			
-			assert(Result1->GetSuccess() == true);
+			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x4f11);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x0f6d);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_16Bit_BigEndian(Reader, {});
 			
 			assert(Result4->GetSuccess() == false);
 		}
@@ -1688,25 +1690,24 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0xab};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{7, 0}};
-			Inspection::Reader Reader{Buffer};
-			
-			auto Result1{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{7, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result1->GetValue()->GetData()) == 0xc385);
 			
-			auto Result2{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {})};
+			auto Result2 = Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {});
 			
-			assert(Result1->GetSuccess() == true);
+			assert(Result2->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result2->GetValue()->GetData()) == 0x114f);
 			
-			auto Result3{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {})};
+			auto Result3 = Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {});
 			
 			assert(Result3->GetSuccess() == true);
 			assert(std::any_cast<std::uint16_t>(Result3->GetValue()->GetData()) == 0x6d0f);
 			
-			auto Result4{Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {})};
+			auto Result4 = Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Reader, {});
 			
 			assert(Result4->GetSuccess() == false);
 		}
@@ -1719,15 +1720,14 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x45, 0x8d};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{2, 0}};
-			Inspection::Reader Reader{Buffer};
-			
-			auto Result1{Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result1 = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader, {});
 			
 			assert(Result1->GetSuccess() == true);
 			assert(std::any_cast<std::uint8_t>(Result1->GetValue()->GetData()) == 0x45);
 			
-			auto Result2{Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader, {})};
+			auto Result2 = Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Reader, {});
 			
 			assert(Result2->GetSuccess() == false);
 		}
@@ -1740,43 +1740,38 @@ int main(void)
 		std::uint8_t RawBuffer[] = {0x45, 0x33, 0x4f, 0x11, 0x80, 0x80, 0x80, 0x80};
 		
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
-			Inspection::Reader Reader{Buffer};
-			
-			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{8, 0}};
+			auto Reader = Inspection::Reader{Buffer};
+			auto Result = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<std::uint32_t>(Result->GetValue()->GetData()) == 0x08ace791);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
-			Inspection::Reader Reader{Buffer, Inspection::Length{1, 0}, Inspection::Length{4, 0}};
-			
-			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
-			
-			assert(Result->GetSuccess() == false);
-		}
-		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
-			Inspection::Reader Reader{Buffer, Inspection::Length{2, 0}, Inspection::Length{4, 0}};
-			
-			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{8, 0}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{1, 0}, Inspection::Length{4, 0}};
+			auto Result = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
-			Inspection::Reader Reader{Buffer, Inspection::Length{3, 0}, Inspection::Length{4, 0}};
-			
-			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{8, 0}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{2, 0}, Inspection::Length{4, 0}};
+			auto Result = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			Inspection::Buffer Buffer{RawBuffer, Inspection::Length{8, 0}};
-			Inspection::Reader Reader{Buffer, Inspection::Length{4, 0}, Inspection::Length{4, 0}};
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{8, 0}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{3, 0}, Inspection::Length{4, 0}};
+			auto Result = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {});
 			
-			auto Result{Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {})};
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{8, 0}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{4, 0}, Inspection::Length{4, 0}};
+			auto Result = Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
