@@ -18,10 +18,10 @@ namespace Inspection
 	class EvaluationResult
 	{
 	public:
-		std::optional< bool > AbortEvaluation;
-		std::optional< bool > DataIsValid;
-		std::optional< bool > EngineError;
-		std::optional< bool > StructureIsValid;
+		std::optional<bool> AbortEvaluation;
+		std::optional<bool> DataIsValid;
+		std::optional<bool> EngineError;
+		std::optional<bool> StructureIsValid;
 	};
 	
 	namespace Algorithms
@@ -32,28 +32,28 @@ namespace Inspection
 		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
 		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend);
 		
-		template< typename Type >
+		template<typename Type>
 		Type Cast(const std::any & Any)
 		{
 			if(Any.type() == typeid(float))
 			{
-				return static_cast< Type >(std::any_cast< float >(Any));
+				return static_cast<Type>(std::any_cast<float>(Any));
 			}
 			else if(Any.type() == typeid(std::uint8_t))
 			{
-				return static_cast< Type >(std::any_cast< std::uint8_t >(Any));
+				return static_cast<Type>(std::any_cast<std::uint8_t>(Any));
 			}
 			else if(Any.type() == typeid(std::uint16_t))
 			{
-				return static_cast< Type >(std::any_cast< std::uint16_t >(Any));
+				return static_cast<Type>(std::any_cast<std::uint16_t>(Any));
 			}
 			else if(Any.type() == typeid(std::uint32_t))
 			{
-				return static_cast< Type >(std::any_cast< std::uint32_t >(Any));
+				return static_cast<Type>(std::any_cast<std::uint32_t>(Any));
 			}
 			else if(Any.type() == typeid(std::uint64_t))
 			{
-				return static_cast< Type >(std::any_cast< std::uint64_t >(Any));
+				return static_cast<Type>(std::any_cast<std::uint64_t>(Any));
 			}
 			else
 			{
@@ -62,34 +62,34 @@ namespace Inspection
 			}
 		}
 		
-		template< typename Type >
+		template<typename Type>
 		Type GetDataFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
 		{
-			return Inspection::Algorithms::Cast< Type >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement));
+			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement));
 		}
 		
-		template< typename Type >
+		template<typename Type>
 		Type GetDataFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
 		{
-			Type Result{};
+			auto Result = Type{};
 			
 			if(Value.DataType == Inspection::TypeDefinition::DataType::DataReference)
 			{
 				assert(Value.DataReference);
 				
-				auto & Any{Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, Value.DataReference.value())};
+				auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, Value.DataReference.value());
 				
 				if(Any.type() == typeid(std::uint8_t))
 				{
-					Result = std::any_cast< std::uint8_t >(Any);
+					Result = std::any_cast<std::uint8_t>(Any);
 				}
 				else if(Any.type() == typeid(std::uint16_t))
 				{
-					Result = std::any_cast< std::uint16_t >(Any);
+					Result = std::any_cast<std::uint16_t>(Any);
 				}
 				else if(Any.type() == typeid(std::uint32_t))
 				{
-					Result = std::any_cast< std::uint32_t >(Any);
+					Result = std::any_cast<std::uint32_t>(Any);
 				}
 				else
 				{
@@ -99,7 +99,7 @@ namespace Inspection
 			else if(Value.DataType == Inspection::TypeDefinition::DataType::String)
 			{
 				assert(Value.String);
-				Result = from_string_cast< Type >(Value.String.value());
+				Result = from_string_cast<Type>(Value.String.value());
 			}
 			else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger64Bit)
 			{
@@ -114,7 +114,7 @@ namespace Inspection
 			return Result;
 		}
 		
-		template< typename Type >
+		template<typename Type>
 		Type GetDataFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement)
 		{
 			switch(Statement.Type)
@@ -123,13 +123,13 @@ namespace Inspection
 				{
 					assert(Statement.Cast != nullptr);
 					
-					return Inspection::Algorithms::GetDataFromCast< Type >(ExecutionContext, *(Statement.Cast));
+					return Inspection::Algorithms::GetDataFromCast<Type>(ExecutionContext, *(Statement.Cast));
 				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
 					assert(Statement.Value != nullptr);
 					
-					return Inspection::Algorithms::GetDataFromValue< Type >(ExecutionContext, *(Statement.Value));
+					return Inspection::Algorithms::GetDataFromValue<Type>(ExecutionContext, *(Statement.Value));
 				}
 			default:
 				{
@@ -140,7 +140,7 @@ namespace Inspection
 		
 		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference)
 		{
-			auto Value{ExecutionContext.GetValueFromDataReference(DataReference)};
+			auto Value = ExecutionContext.GetValueFromDataReference(DataReference);
 			
 			assert(Value != nullptr);
 			
@@ -245,7 +245,7 @@ namespace Inspection
 			}
 		}
 		
-		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector< Inspection::TypeDefinition::Tag > & Tags, std::shared_ptr< Inspection::Value > Target)
+		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<Inspection::TypeDefinition::Tag> & Tags, std::shared_ptr<Inspection::Value> Target)
 		{
 			for(auto & Tag : Tags)
 			{
@@ -261,12 +261,12 @@ namespace Inspection
 			}
 		}
 		
-		template< typename DataType >
-		bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target)
+		template<typename DataType>
+		bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr<Inspection::Value> Target)
 		{
-			bool Result{false};
-			auto BaseValueString{to_string_cast(std::any_cast< const DataType & >(Target->GetData()))};
-			auto ElementIterator{std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; })};
+			bool Result = false;
+			auto BaseValueString = to_string_cast(std::any_cast<const DataType &>(Target->GetData()));
+			auto ElementIterator = std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; });
 			
 			if(ElementIterator != Enumeration.Elements.end())
 			{
@@ -332,7 +332,7 @@ namespace Inspection
 			{
 			case Inspection::TypeDefinition::DataType::Length:
 				{
-					auto Any{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement)};
+					auto Any = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement);
 					
 					assert(Any.type() == typeid(Inspection::Length));
 					
@@ -353,16 +353,16 @@ namespace Inspection
 			}
 		}
 		
-		template< typename Type >
+		template<typename Type>
 		bool Equals(const std::any & One, const std::any & Two)
 		{
-			return std::any_cast< const Type & >(One) == std::any_cast< const Type & >(Two);
+			return std::any_cast<const Type &>(One) == std::any_cast<const Type &>(Two);
 		}
 		
 		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value1, const Inspection::TypeDefinition::Value & Value2)
 		{
-			auto Any1{Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value1)};
-			auto Any2{Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value2)};
+			auto Any1 = Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value1);
+			auto Any2 = Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value2);
 			
 			if((Any1.has_value() == true) && (Any2.has_value() == true))
 			{
@@ -370,23 +370,23 @@ namespace Inspection
 				{
 					if(Any1.type() == typeid(std::uint8_t))
 					{
-						return Inspection::Algorithms::Equals< std::uint8_t >(Any1, Any2);
+						return Inspection::Algorithms::Equals<std::uint8_t>(Any1, Any2);
 					}
 					else if(Any1.type() == typeid(std::uint16_t))
 					{
-						return Inspection::Algorithms::Equals< std::uint16_t >(Any1, Any2);
+						return Inspection::Algorithms::Equals<std::uint16_t>(Any1, Any2);
 					}
 					else if(Any1.type() == typeid(std::uint32_t))
 					{
-						return Inspection::Algorithms::Equals< std::uint32_t >(Any1, Any2);
+						return Inspection::Algorithms::Equals<std::uint32_t>(Any1, Any2);
 					}
 					else if(Any1.type() == typeid(Inspection::GUID))
 					{
-						return Inspection::Algorithms::Equals< Inspection::GUID >(Any1, Any2);
+						return Inspection::Algorithms::Equals<Inspection::GUID>(Any1, Any2);
 					}
 					else if(Any1.type() == typeid(std::string))
 					{
-						return Inspection::Algorithms::Equals< std::string >(Any1, Any2);
+						return Inspection::Algorithms::Equals<std::string>(Any1, Any2);
 					}
 					else
 					{
@@ -422,12 +422,12 @@ namespace Inspection
 		
 		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor)
 		{
-			auto AnyDivident{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Dividend)};
-			auto AnyDivisor{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Divisor)};
+			auto AnyDivident = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Dividend);
+			auto AnyDivisor = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Divisor);
 			
 			if((AnyDivident.type() == typeid(float)) && (AnyDivisor.type() == typeid(float)))
 			{
-				return std::any_cast< float >(AnyDivident) / std::any_cast< float >(AnyDivisor);
+				return std::any_cast<float>(AnyDivident) / std::any_cast<float>(AnyDivisor);
 			}
 			else
 			{
@@ -439,12 +439,12 @@ namespace Inspection
 		
 		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend)
 		{
-			auto AnyMinuend{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Minuend)};
-			auto AnySubtrahend{Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Subtrahend)};
+			auto AnyMinuend = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Minuend);
+			auto AnySubtrahend = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Subtrahend);
 			
 			if((AnyMinuend.type() == typeid(Inspection::Length)) && (AnySubtrahend.type() == typeid(Inspection::Length)))
 			{
-				return std::any_cast< const Inspection::Length & >(AnyMinuend) - std::any_cast< const Inspection::Length & >(AnySubtrahend);
+				return std::any_cast<const Inspection::Length &>(AnyMinuend) - std::any_cast<const Inspection::Length &>(AnySubtrahend);
 			}
 			else
 			{
@@ -455,7 +455,7 @@ namespace Inspection
 		}
 	}
 	
-	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map< std::string, std::any > & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions)
+	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map<std::string, std::any> & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions)
 	{
 		for(auto & ParameterDefinition : ParameterDefinitions.Parameters)
 		{
@@ -494,7 +494,7 @@ namespace Inspection
 					{
 						assert(ParameterDefinition.Statement.Value->Parameters);
 						
-						std::unordered_map< std::string, std::any > InnerParameters;
+						std::unordered_map<std::string, std::any> InnerParameters;
 						
 						FillNewParameters(ExecutionContext, InnerParameters, ParameterDefinition.Statement.Value->Parameters.value());
 						NewParameters.emplace(ParameterDefinition.Name, InnerParameters);
@@ -528,25 +528,25 @@ Inspection::TypeDefinition::Type::~Type(void)
 	delete _Part;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	// reading
 	if(Continue == true)
 	{
 		if(_HardcodedGetter != nullptr)
 		{
-			auto HardcodedResult{_HardcodedGetter(Reader, Parameters)};
+			auto HardcodedResult = _HardcodedGetter(Reader, Parameters);
 			
 			Continue = HardcodedResult->GetSuccess();
 			Result->SetValue(HardcodedResult->GetValue());
 		}
 		else if(_Part != nullptr)
 		{
-			Inspection::ExecutionContext ExecutionContext;
-			Inspection::TypeDefinition::Part TypePart;
+			auto ExecutionContext = Inspection::ExecutionContext{};
+			auto TypePart = Inspection::TypeDefinition::Part{};
 			
 			TypePart.Type = Inspection::TypeDefinition::Part::Type::Type;
 			ExecutionContext.Push(TypePart, *Result, Reader, Parameters);
@@ -555,7 +555,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 			
 			if(_Part->Length)
 			{
-				auto Length{std::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, _Part->Length.value()))};
+				auto Length{std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, _Part->Length.value()))};
 				
 				if(Reader.Has(Length) == true)
 				{
@@ -573,7 +573,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 			}
 			if(PartReader != nullptr)
 			{
-				std::unordered_map< std::string, std::any > PartParameters;
+				std::unordered_map<std::string, std::any> PartParameters;
 				
 				if(_Part->Parameters)
 				{
@@ -659,7 +659,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::Get(Insp
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
 	assert(Alternative.Type == Inspection::TypeDefinition::Part::Type::Alternative);
 	
@@ -675,7 +675,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 		
 		if(AlternativePart.Length)
 		{
-			auto Length{std::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, AlternativePart.Length.value()))};
+			auto Length{std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, AlternativePart.Length.value()))};
 			
 			if(Reader.Has(Length) == true)
 			{
@@ -692,7 +692,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 		}
 		if(AlternativePartReader != nullptr)
 		{
-			std::unordered_map< std::string, std::any > AlternativePartParameters;
+			std::unordered_map<std::string, std::any> AlternativePartParameters;
 			
 			if(AlternativePart.Parameters)
 			{
@@ -781,7 +781,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetAlte
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Array, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
 	assert(Array.Type == Inspection::TypeDefinition::Part::Type::Array);
 	
@@ -797,7 +797,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	{
 	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
 		{
-			std::unordered_map< std::string, std::any > ElementParameters;
+			std::unordered_map<std::string, std::any> ElementParameters;
 			
 			if(Array.Array->ElementParameters.has_value() == true)
 			{
@@ -858,7 +858,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		}
 	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
 		{
-			std::unordered_map< std::string, std::any > ElementParameters;
+			std::unordered_map<std::string, std::any> ElementParameters;
 			
 			if(Array.Array->ElementParameters)
 			{
@@ -873,7 +873,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 			
 			for(auto Field : IterateField->GetFields())
 			{
-				ElementProperties.emplace_back(std::any_cast< const Inspection::Length & >(Field->GetTag("position")->GetData()), std::any_cast< const Inspection::Length & >(Field->GetTag("length")->GetData()));
+				ElementProperties.emplace_back(std::any_cast<const Inspection::Length &>(Field->GetTag("position")->GetData()), std::any_cast<const Inspection::Length &>(Field->GetTag("length")->GetData()));
 			}
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
 			
@@ -900,7 +900,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		}
 	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
 		{
-			std::unordered_map< std::string, std::any > ElementParameters;
+			std::unordered_map<std::string, std::any> ElementParameters;
 			
 			if(Array.Array->ElementParameters)
 			{
@@ -952,7 +952,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 		}
 	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
 		{
-			std::unordered_map< std::string, std::any > ElementParameters;
+			std::unordered_map<std::string, std::any> ElementParameters;
 			
 			if(Array.Array->ElementParameters)
 			{
@@ -1016,7 +1016,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetArra
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
 	assert(Field.Type == Inspection::TypeDefinition::Part::Type::Field);
 	
@@ -1040,17 +1040,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 		
 		if(FieldPart.Length)
 		{
-			auto Length{std::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, FieldPart.Length.value()))};
-			
-			if(Reader.Has(Length) == true)
-			{
-				FieldPartReader = new Inspection::Reader{Reader, Length};
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
-				Continue = false;
-			}
+			FieldPartReader = new Inspection::Reader{Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, FieldPart.Length.value()))};
 		}
 		else
 		{
@@ -1058,7 +1048,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 		}
 		if(FieldPartReader != nullptr)
 		{
-			std::unordered_map< std::string, std::any > FieldPartParameters;
+			std::unordered_map<std::string, std::any> FieldPartParameters;
 			
 			if(FieldPart.Parameters)
 			{
@@ -1068,7 +1058,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 			{
 			case Inspection::TypeDefinition::Part::Type::Alternative:
 				{
-					auto AlternativeResult{_GetAlternative(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					auto AlternativeResult = _GetAlternative(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters);
 					
 					Continue = AlternativeResult->GetSuccess();
 					Result->SetValue(AlternativeResult->GetValue());
@@ -1077,7 +1067,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 				}
 			case Inspection::TypeDefinition::Part::Type::Field:
 				{
-					auto FieldResult{_GetField(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					auto FieldResult = _GetField(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters);
 					
 					Continue = FieldResult->GetSuccess();
 					assert(FieldPart.FieldName);
@@ -1087,7 +1077,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 				}
 			case Inspection::TypeDefinition::Part::Type::Fields:
 				{
-					auto FieldsResult{_GetFields(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					auto FieldsResult = _GetFields(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters);
 					
 					Continue = FieldsResult->GetSuccess();
 					Result->SetValue(FieldsResult->GetValue());
@@ -1096,7 +1086,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 				}
 			case Inspection::TypeDefinition::Part::Type::Forward:
 				{
-					auto ForwardResult{_GetForward(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					auto ForwardResult = _GetForward(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters);
 					
 					Continue = ForwardResult->GetSuccess();
 					Result->SetValue(ForwardResult->GetValue());
@@ -1105,7 +1095,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 				}
 			case Inspection::TypeDefinition::Part::Type::Sequence:
 				{
-					auto SequenceResult{_GetSequence(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters)};
+					auto SequenceResult = _GetSequence(ExecutionContext, FieldPart, *FieldPartReader, FieldPartParameters);
 					
 					Continue = SequenceResult->GetSuccess();
 					Result->SetValue(SequenceResult->GetValue());
@@ -1140,7 +1130,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	{
 		if(Field.Interpretation)
 		{
-			auto EvaluationResult{_ApplyInterpretation(ExecutionContext, Field.Interpretation.value(), Result->GetValue())};
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Field.Interpretation.value(), Result->GetValue());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1184,17 +1174,17 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
 	assert(Fields.Type == Inspection::TypeDefinition::Part::Type::Fields);
 	
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	ExecutionContext.Push(Fields, *Result, Reader, Parameters);
 	assert(Fields.TypeReference);
 	
-	auto FieldsResult{Inspection::g_TypeRepository.GetType(Fields.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
+	auto FieldsResult = Inspection::g_TypeRepository.GetType(Fields.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
 	
 	Continue = FieldsResult->GetSuccess();
 	Result->SetValue(FieldsResult->GetValue());
@@ -1203,7 +1193,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	{
 		if(Fields.Interpretation)
 		{
-			auto EvaluationResult{_ApplyInterpretation(ExecutionContext, Fields.Interpretation.value(), Result->GetValue())};
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Fields.Interpretation.value(), Result->GetValue());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1247,17 +1237,17 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetFiel
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
 	assert(Forward.Type == Inspection::TypeDefinition::Part::Type::Forward);
 	
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	ExecutionContext.Push(Forward, *Result, Reader, Parameters);
 	assert(Forward.TypeReference);
 	
-	auto ForwardResult{Inspection::g_TypeRepository.GetType(Forward.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
+	auto ForwardResult = Inspection::g_TypeRepository.GetType(Forward.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
 	
 	Continue = ForwardResult->GetSuccess();
 	Result->SetValue(ForwardResult->GetValue());
@@ -1281,7 +1271,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForw
 	{
 		if(Forward.Interpretation)
 		{
-			auto EvaluationResult{_ApplyInterpretation(ExecutionContext, Forward.Interpretation.value(), Result->GetValue())};
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Forward.Interpretation.value(), Result->GetValue());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1325,33 +1315,23 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetForw
 	return Result;
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
 	assert(Sequence.Type == Inspection::TypeDefinition::Part::Type::Sequence);
 	
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	ExecutionContext.Push(Sequence, *Result, Reader, Parameters);
 	assert(Sequence.Parts);
 	for(auto SequencePartIterator = std::begin(Sequence.Parts.value()); ((Continue == true) && (SequencePartIterator != std::end(Sequence.Parts.value()))); ++SequencePartIterator)
 	{
-		auto & SequencePart{*SequencePartIterator};
-		Inspection::Reader * SequencePartReader{nullptr};
+		auto & SequencePart = *SequencePartIterator;
+		Inspection::Reader * SequencePartReader = nullptr;
 		
 		if(SequencePart.Length)
 		{
-			auto Length{std::any_cast< const Inspection::Length & >(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, SequencePart.Length.value()))};
-			
-			if(Reader.Has(Length) == true)
-			{
-				SequencePartReader = new Inspection::Reader{Reader, Length};
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
-				Continue = false;
-			}
+			SequencePartReader = new Inspection::Reader{Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, SequencePart.Length.value()))};
 		}
 		else
 		{
@@ -1359,7 +1339,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 		}
 		if(SequencePartReader != nullptr)
 		{
-			std::unordered_map< std::string, std::any > SequencePartParameters;
+			std::unordered_map<std::string, std::any> SequencePartParameters;
 			
 			if(SequencePart.Parameters)
 			{
@@ -1369,7 +1349,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 			{
 			case Inspection::TypeDefinition::Part::Type::Alternative:
 				{
-					auto AlternativeResult{_GetAlternative(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
+					auto AlternativeResult = _GetAlternative(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters);
 					
 					Continue = AlternativeResult->GetSuccess();
 					Result->GetValue()->AppendFields(AlternativeResult->GetValue()->GetFields());
@@ -1378,7 +1358,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 				}
 			case Inspection::TypeDefinition::Part::Type::Array:
 				{
-					auto ArrayResult{_GetArray(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
+					auto ArrayResult = _GetArray(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters);
 					
 					Continue = ArrayResult->GetSuccess();
 					assert(SequencePart.FieldName);
@@ -1388,7 +1368,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 				}
 			case Inspection::TypeDefinition::Part::Type::Field:
 				{
-					auto FieldResult{_GetField(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
+					auto FieldResult = _GetField(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters);
 					
 					Continue = FieldResult->GetSuccess();
 					assert(SequencePart.FieldName);
@@ -1398,7 +1378,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 				}
 			case Inspection::TypeDefinition::Part::Type::Fields:
 				{
-					auto FieldsResult{_GetFields(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
+					auto FieldsResult = _GetFields(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters);
 					
 					Continue = FieldsResult->GetSuccess();
 					Result->GetValue()->AppendFields(FieldsResult->GetValue()->GetFields());
@@ -1407,7 +1387,7 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 				}
 			case Inspection::TypeDefinition::Part::Type::Forward:
 				{
-					auto ForwardResult{_GetForward(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters)};
+					auto ForwardResult = _GetForward(ExecutionContext, SequencePart, *SequencePartReader, SequencePartParameters);
 					
 					Continue = ForwardResult->GetSuccess();
 					Result->SetValue(ForwardResult->GetValue());
@@ -1445,25 +1425,25 @@ std::unique_ptr< Inspection::Result > Inspection::TypeDefinition::Type::_GetSequ
 	return Result;
 }
 
-Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr< Inspection::Value > Target) const
+Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr<Inspection::Value> Target) const
 {
-	Inspection::EvaluationResult Result;
+	auto Result = Inspection::EvaluationResult{};
 	
 	if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::String)
 	{
-		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration< std::string >(ExecutionContext, Enumeration, Target);
+		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration<std::string>(ExecutionContext, Enumeration, Target);
 	}
 	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger8Bit)
 	{
-		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration< std::uint8_t >(ExecutionContext, Enumeration, Target);
+		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration<std::uint8_t>(ExecutionContext, Enumeration, Target);
 	}
 	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger16Bit)
 	{
-		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration< std::uint16_t >(ExecutionContext, Enumeration, Target);
+		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration<std::uint16_t>(ExecutionContext, Enumeration, Target);
 	}
 	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger32Bit)
 	{
-		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration< std::uint32_t >(ExecutionContext, Enumeration, Target);
+		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration<std::uint32_t>(ExecutionContext, Enumeration, Target);
 	}
 	else
 	{
@@ -1474,9 +1454,9 @@ Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration
 	return Result;
 }
 	
-Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr< Inspection::Value > Target) const
+Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr<Inspection::Value> Target) const
 {
-	Inspection::EvaluationResult Result;
+	auto Result = Inspection::EvaluationResult{};
 	
 	switch(Interpretation.Type)
 	{
@@ -1484,7 +1464,7 @@ Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretat
 		{
 			assert(Interpretation.ApplyEnumeration);
 			
-			auto EvaluationResult{_ApplyEnumeration(ExecutionContext, Interpretation.ApplyEnumeration->Enumeration, Target)};
+			auto EvaluationResult = _ApplyEnumeration(ExecutionContext, Interpretation.ApplyEnumeration->Enumeration, Target);
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1504,8 +1484,8 @@ Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretat
 
 void Inspection::TypeDefinition::Type::Load(std::istream & InputStream)
 {
-	XML::Document Document{InputStream};
-	auto DocumentElement{Document.GetDocumentElement()};
+	auto Document = XML::Document{InputStream};
+	auto DocumentElement = Document.GetDocumentElement();
 	
 	assert(DocumentElement != nullptr);
 	assert(DocumentElement->GetName() == "type");
@@ -1521,7 +1501,7 @@ void Inspection::TypeDefinition::Type::_LoadCast(Inspection::TypeDefinition::Cas
 		{
 			assert(Cast.DataType == Inspection::TypeDefinition::DataType::Unknown);
 			
-			auto CastChildElement{dynamic_cast< const XML::Element * >(CastChildNode)};
+			auto CastChildElement = dynamic_cast<const XML::Element *>(CastChildNode);
 			
 			Cast.DataType = Inspection::TypeDefinition::GetDataTypeFromString(CastElement->GetName());
 			_LoadStatement(Cast.Statement, CastChildElement);
@@ -1532,13 +1512,13 @@ void Inspection::TypeDefinition::Type::_LoadCast(Inspection::TypeDefinition::Cas
 
 void Inspection::TypeDefinition::Type::_LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement)
 {
-	bool First{true};
+	bool First = true;
 	
 	for(auto DivideChildNode : DivideElement->GetChilds())
 	{
 		if(DivideChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto DivideChildElement{dynamic_cast< const XML::Element * >(DivideChildNode)};
+			auto DivideChildElement = dynamic_cast<const XML::Element *>(DivideChildNode);
 			
 			if(First == true)
 			{
@@ -1560,7 +1540,7 @@ void Inspection::TypeDefinition::Type::_LoadInterpretation(Inspection::TypeDefin
 	{
 		if(InterpretationChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto InterpretationChildElement{dynamic_cast< const XML::Element * >(InterpretationChildNode)};
+			auto InterpretationChildElement = dynamic_cast<const XML::Element *>(InterpretationChildNode);
 			
 			if(InterpretationChildElement->GetName() == "apply-enumeration")
 			{
@@ -1570,7 +1550,7 @@ void Inspection::TypeDefinition::Type::_LoadInterpretation(Inspection::TypeDefin
 				{
 					if(InterpretationApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
 					{
-						auto InterpretationApplyEnumerationChildElement{dynamic_cast< const XML::Element * >(InterpretationApplyEnumerationChildNode)};
+						auto InterpretationApplyEnumerationChildElement = dynamic_cast<const XML::Element *>(InterpretationApplyEnumerationChildNode);
 						
 						if(InterpretationApplyEnumerationChildElement->GetName() == "enumeration")
 						{
@@ -1600,29 +1580,29 @@ void Inspection::TypeDefinition::Type::_LoadEnumeration(Inspection::TypeDefiniti
 	{
 		if(EnumerationChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto EnumerationChildElement{dynamic_cast< const XML::Element * >(EnumerationChildNode)};
+			auto EnumerationChildElement = dynamic_cast<const XML::Element *>(EnumerationChildNode);
 			
 			if(EnumerationChildElement->GetName() == "element")
 			{
 				Enumeration.Elements.emplace_back();
 				
-				auto & Element{Enumeration.Elements.back()};
+				auto & Element = Enumeration.Elements.back();
 				
 				assert(EnumerationChildElement->HasAttribute("base-value") == true);
 				Element.BaseValue = EnumerationChildElement->GetAttribute("base-value");
 				assert(EnumerationChildElement->HasAttribute("valid") == true);
-				Element.Valid = from_string_cast< bool >(EnumerationChildElement->GetAttribute("valid"));
+				Element.Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
 				for(auto EnumerationElementChildNode : EnumerationChildElement->GetChilds())
 				{
 					if(EnumerationElementChildNode->GetNodeType() == XML::NodeType::Element)
 					{
-						auto EnumerationElementChildElement{dynamic_cast< const XML::Element * >(EnumerationElementChildNode)};
+						auto EnumerationElementChildElement = dynamic_cast<const XML::Element *>(EnumerationElementChildNode);
 						
 						if(EnumerationElementChildElement->GetName() == "tag")
 						{
 							Element.Tags.emplace_back();
 							
-							auto & Tag{Element.Tags.back()};
+							auto & Tag = Element.Tags.back();
 							
 							_LoadTag(Tag, EnumerationElementChildElement);
 						}
@@ -1637,18 +1617,18 @@ void Inspection::TypeDefinition::Type::_LoadEnumeration(Inspection::TypeDefiniti
 			{
 				assert(!Enumeration.FallbackElement);
 				Enumeration.FallbackElement.emplace();
-				Enumeration.FallbackElement->Valid = from_string_cast< bool >(EnumerationChildElement->GetAttribute("valid"));
+				Enumeration.FallbackElement->Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
 				for(auto EnumerationFallbackElementChildNode : EnumerationChildElement->GetChilds())
 				{
 					if(EnumerationFallbackElementChildNode->GetNodeType() == XML::NodeType::Element)
 					{
-						auto EnumerationFallbackElementChildElement{dynamic_cast< const XML::Element * >(EnumerationFallbackElementChildNode)};
+						auto EnumerationFallbackElementChildElement = dynamic_cast<const XML::Element *>(EnumerationFallbackElementChildNode);
 						
 						if(EnumerationFallbackElementChildElement->GetName() == "tag")
 						{
 							Enumeration.FallbackElement->Tags.emplace_back();
 							
-							auto & Tag{Enumeration.FallbackElement->Tags.back()};
+							auto & Tag = Enumeration.FallbackElement->Tags.back();
 							
 							_LoadTag(Tag, EnumerationFallbackElementChildElement);
 						}
@@ -1669,13 +1649,13 @@ void Inspection::TypeDefinition::Type::_LoadEnumeration(Inspection::TypeDefiniti
 
 void Inspection::TypeDefinition::Type::_LoadEquals(Inspection::TypeDefinition::Equals & Equals, const XML::Element * EqualsElement)
 {
-	bool First{true};
+	bool First = true;
 	
 	for(auto EqualsChildNode : EqualsElement->GetChilds())
 	{
 		if(EqualsChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto EqualsChildElement{dynamic_cast< const XML::Element * >(EqualsChildNode)};
+			auto EqualsChildElement = dynamic_cast<const XML::Element *>(EqualsChildNode);
 			
 			if(First == true)
 			{
@@ -1697,20 +1677,25 @@ void Inspection::TypeDefinition::Type::_LoadFieldReference(Inspection::TypeDefin
 	{
 		FieldReference.Root = Inspection::TypeDefinition::FieldReference::Root::Current;
 	}
-	else
+	else if(FieldReferenceElement->GetAttribute("root") == "type")
 	{
 		FieldReference.Root = Inspection::TypeDefinition::FieldReference::Root::Type;
+	}
+	else
+	{
+		assert(false);
 	}
 	for(auto FieldReferenceChildNode : FieldReferenceElement->GetChilds())
 	{
 		if(FieldReferenceChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto FieldReferenceChildElement{dynamic_cast< const XML::Element * >(FieldReferenceChildNode)};
+			auto FieldReferenceChildElement = dynamic_cast<const XML::Element *>(FieldReferenceChildNode);
 			
+			assert(FieldReferenceChildElement != nullptr);
 			assert(FieldReferenceChildElement->GetName() == "field");
 			assert(FieldReferenceChildElement->GetChilds().size() == 1);
 			
-			auto FieldReferenceFieldText{dynamic_cast< const XML::Text * >(FieldReferenceChildElement->GetChild(0))};
+			auto FieldReferenceFieldText = dynamic_cast<const XML::Text *>(FieldReferenceChildElement->GetChild(0));
 			
 			assert(FieldReferenceFieldText != nullptr);
 			FieldReference.Parts.emplace_back();
@@ -1725,8 +1710,9 @@ void Inspection::TypeDefinition::Type::_LoadLength(Inspection::TypeDefinition::L
 	{
 		if(LengthChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto LengthChildElement{dynamic_cast< const XML::Element * >(LengthChildNode)};
+			auto LengthChildElement = dynamic_cast<const XML::Element *>(LengthChildNode);
 			
+			assert(LengthChildElement != nullptr);
 			if(LengthChildElement->GetName() == "bytes")
 			{
 				_LoadStatementFromWithin(Length.Bytes, LengthChildElement);
@@ -1756,13 +1742,14 @@ void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinitio
 	{
 		if(ParametersChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto ParametersChildElement{dynamic_cast< const XML::Element * >(ParametersChildNode)};
+			auto ParametersChildElement = dynamic_cast<const XML::Element *>(ParametersChildNode);
 			
+			assert(ParametersChildElement != nullptr);
 			if(ParametersChildElement->GetName() == "parameter")
 			{
 				Parameters.Parameters.emplace_back();
 				
-				auto & Parameter{Parameters.Parameters.back()};
+				auto & Parameter = Parameters.Parameters.back();
 				
 				_LoadParameter(Parameter, ParametersChildElement);
 			}
@@ -1783,6 +1770,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 	else if(PartElement->GetName() == "array")
 	{
 		Part.Type = Inspection::TypeDefinition::Part::Type::Array;
+		assert(PartElement->HasAttribute("name") == true);
 		Part.FieldName = PartElement->GetAttribute("name");
 		Part.Array.emplace();
 	}
@@ -1793,6 +1781,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 	else if(PartElement->GetName() == "field")
 	{
 		Part.Type = Inspection::TypeDefinition::Part::Type::Field;
+		assert(PartElement->HasAttribute("name") == true);
 		Part.FieldName = PartElement->GetAttribute("name");
 	}
 	else if(PartElement->GetName() == "fields")
@@ -1811,8 +1800,9 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 	{
 		if(PartChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto PartChildElement{dynamic_cast< const XML::Element * >(PartChildNode)};
+			auto PartChildElement = dynamic_cast<const XML::Element *>(PartChildNode);
 			
+			assert(PartChildElement != nullptr);
 			if(PartChildElement->GetName() == "type-reference")
 			{
 				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Fields) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
@@ -1839,13 +1829,13 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			{
 				Part.Verifications.emplace_back();
 				
-				auto & Verification{Part.Verifications.back()};
+				auto & Verification = Part.Verifications.back();
 				
 				for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
 				{
 					if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
 					{
-						_LoadStatement(Verification, dynamic_cast< XML::Element * >(GetterPartVerificationChildNode));
+						_LoadStatement(Verification, dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode));
 					}
 				}
 			}
@@ -1854,7 +1844,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward) || (Part.Type == Inspection::TypeDefinition::Part::Type::Sequence));
 				Part.Tags.emplace_back();
 				
-				auto & Tag{Part.Tags.back()};
+				auto & Tag = Part.Tags.back();
 				
 				_LoadTag(Tag, PartChildElement);
 			}
@@ -1867,7 +1857,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				}
 				Part.Parts->emplace_back();
 				
-				auto & ContainedPart{Part.Parts->back()};
+				auto & ContainedPart = Part.Parts->back();
 				
 				_LoadPart(ContainedPart, PartChildElement);
 			}
@@ -1886,14 +1876,14 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
 					Part.Array->IterateForEachField.emplace();
 					
-					XML::Element * FieldReferenceElement{nullptr};
+					const XML::Element * FieldReferenceElement{nullptr};
 					
 					for(auto PartIterateChildNode : PartChildElement->GetChilds())
 					{
 						if(PartIterateChildNode->GetNodeType() == XML::NodeType::Element)
 						{
 							assert(FieldReferenceElement == nullptr);
-							FieldReferenceElement = dynamic_cast< XML::Element * >(PartIterateChildNode);
+							FieldReferenceElement = dynamic_cast<const XML::Element *>(PartIterateChildNode);
 						}
 					}
 					assert(FieldReferenceElement != nullptr);
@@ -1920,7 +1910,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
 				assert(PartChildElement->GetChilds().size() == 1);
 				
-				auto ElementNameText{dynamic_cast< const XML::Text * >(PartChildElement->GetChild(0))};
+				auto ElementNameText = dynamic_cast<const XML::Text *>(PartChildElement->GetChild(0));
 				
 				assert(ElementNameText != nullptr);
 				Part.Array->ElementName = ElementNameText->GetText();
@@ -1947,14 +1937,15 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 
 void Inspection::TypeDefinition::Type::_LoadSubtract(Inspection::TypeDefinition::Subtract & Subtract, const XML::Element * SubtractElement)
 {
-	bool First{true};
+	bool First = true;
 	
 	for(auto SubtractChildNode : SubtractElement->GetChilds())
 	{
 		if(SubtractChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto SubtractChildElement{dynamic_cast< const XML::Element * >(SubtractChildNode)};
+			auto SubtractChildElement = dynamic_cast<const XML::Element *>(SubtractChildNode);
 			
+			assert(SubtractChildElement != nullptr);
 			if(First == true)
 			{
 				_LoadStatement(Subtract.Minuend, SubtractChildElement);
@@ -2019,7 +2010,7 @@ void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition
 
 void Inspection::TypeDefinition::Type::_LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement)
 {
-	XML::Element * StatementElement{nullptr};
+	const XML::Element * StatementElement{nullptr};
 	
 	if(ParentElement->GetChilds().size() > 0)
 	{
@@ -2027,7 +2018,7 @@ void Inspection::TypeDefinition::Type::_LoadStatementFromWithin(Inspection::Type
 		{
 			if(ChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				StatementElement = dynamic_cast< XML::Element * >(ChildNode);
+				StatementElement = dynamic_cast<const XML::Element *>(ChildNode);
 				
 				break;
 			}
@@ -2057,13 +2048,14 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 	{
 		if(TypeChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto TypeChildElement{dynamic_cast< const XML::Element * >(TypeChildNode)};
+			auto TypeChildElement = dynamic_cast<const XML::Element *>(TypeChildNode);
 			
+			assert(TypeChildElement != nullptr);
 			if(TypeChildElement->GetName() == "hardcoded")
 			{
 				assert(TypeChildElement->GetChilds().size() == 1);
 				
-				auto HardcodedText{dynamic_cast< const XML::Text * >(TypeChildElement->GetChild(0))};
+				auto HardcodedText = dynamic_cast<const XML::Text *>(TypeChildElement->GetChild(0));
 				
 				assert(HardcodedText != nullptr);
 				if(HardcodedText->GetText() == "Get_APE_Flags")
@@ -2475,12 +2467,13 @@ void Inspection::TypeDefinition::Type::_LoadTypeReference(Inspection::TypeDefini
 	{
 		if(TypeReferenceChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto TypeReferenceChildElement{dynamic_cast< const XML::Element * >(TypeReferenceChildNode)};
+			auto TypeReferenceChildElement = dynamic_cast<const XML::Element *>(TypeReferenceChildNode);
 			
+			assert(TypeReferenceChildElement != nullptr);
 			assert(TypeReferenceChildElement->GetName() == "part");
 			assert(TypeReferenceChildElement->GetChilds().size() == 1);
 			
-			auto TypeReferencePartText{dynamic_cast< const XML::Text * >(TypeReferenceChildElement->GetChild(0))};
+			auto TypeReferencePartText = dynamic_cast<const XML::Text *>(TypeReferenceChildElement->GetChild(0));
 			
 			assert(TypeReferencePartText != nullptr);
 			TypeReference.Parts.push_back(TypeReferencePartText->GetText());
@@ -2500,7 +2493,7 @@ void Inspection::TypeDefinition::Type::_LoadValueFromWithin(Inspection::TypeDefi
 		{
 			if(ChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				_LoadValue(Value, dynamic_cast< XML::Element * >(ChildNode));
+				_LoadValue(Value, dynamic_cast<const XML::Element *>(ChildNode));
 			}
 		}
 	}
@@ -2524,10 +2517,10 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		Value.DataType = Inspection::TypeDefinition::DataType::Boolean;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.Boolean = from_string_cast< bool >(TextNode->GetText());
+		Value.Boolean = from_string_cast<bool>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "data-reference")
 	{
@@ -2550,16 +2543,16 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		{
 			if(DataReferenceChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				auto & DataReferencePartDescriptors{Value.DataReference->PartDescriptors};
-				auto DataReferencePartDescriptor{DataReferencePartDescriptors.emplace(DataReferencePartDescriptors.end())};
-				auto DataReferenceChildElement{dynamic_cast< const XML::Element * >(DataReferenceChildNode)};
+				auto & DataReferencePartDescriptors = Value.DataReference->PartDescriptors;
+				auto DataReferencePartDescriptor = DataReferencePartDescriptors.emplace(DataReferencePartDescriptors.end());
+				auto DataReferenceChildElement = dynamic_cast<const XML::Element *>(DataReferenceChildNode);
 				
 				if(DataReferenceChildElement->GetName() == "field")
 				{
 					assert(DataReferenceChildElement->GetChilds().size() == 1);
 					DataReferencePartDescriptor->Type = Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Field;
 					
-					auto SubText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
+					auto SubText = dynamic_cast<const XML::Text *>(DataReferenceChildElement->GetChild(0));
 					
 					assert(SubText != nullptr);
 					DataReferencePartDescriptor->DetailName = SubText->GetText();
@@ -2569,7 +2562,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 					assert(DataReferenceChildElement->GetChilds().size() == 1);
 					DataReferencePartDescriptor->Type = Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Tag;
 					
-					auto TagText{dynamic_cast< const XML::Text * >(DataReferenceChildElement->GetChild(0))};
+					auto TagText = dynamic_cast<const XML::Text *>(DataReferenceChildElement->GetChild(0));
 					
 					assert(TagText != nullptr);
 					DataReferencePartDescriptor->DetailName = TagText->GetText();
@@ -2586,7 +2579,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		Value.DataType = Inspection::TypeDefinition::DataType::GUID;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
 		Value.GUID.emplace(TextNode->GetText());
@@ -2626,7 +2619,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		Value.ParameterReference.emplace();
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
 		Value.ParameterReference->Name = TextNode->GetText();
@@ -2642,17 +2635,17 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		Value.DataType = Inspection::TypeDefinition::DataType::SinglePrecisionReal;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.SinglePrecisionReal = from_string_cast< float >(TextNode->GetText());
+		Value.SinglePrecisionReal = from_string_cast<float>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "string")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::String;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
 		Value.String = TextNode->GetText();
@@ -2668,40 +2661,40 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger8Bit = from_string_cast< std::uint8_t >(TextNode->GetText());
+		Value.UnsignedInteger8Bit = from_string_cast<std::uint8_t>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-16bit")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger16Bit = from_string_cast< std::uint16_t >(TextNode->GetText());
+		Value.UnsignedInteger16Bit = from_string_cast<std::uint16_t>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-32bit")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger32Bit = from_string_cast< std::uint32_t >(TextNode->GetText());
+		Value.UnsignedInteger32Bit = from_string_cast<std::uint32_t>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-64bit")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
-		auto TextNode{dynamic_cast< const XML::Text * >(ValueElement->GetChild(0))};
+		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger64Bit = from_string_cast< std::uint64_t >(TextNode->GetText());
+		Value.UnsignedInteger64Bit = from_string_cast<std::uint64_t>(TextNode->GetText());
 	}
 	else
 	{
