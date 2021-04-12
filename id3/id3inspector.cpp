@@ -34,10 +34,8 @@ namespace Inspection
 			
 			if(_ID3v1Only == true)
 			{
-				Reader.SetPosition(Reader.GetCompleteLength() - Inspection::Length(128, 0));
-				
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {})};
+				auto PartReader = Inspection::Reader{Reader, Reader.GetCompleteLength() - Inspection::Length{128, 0}};
+				auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
 				if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -55,9 +53,7 @@ namespace Inspection
 				
 				if(Reader.GetCompleteLength() >= Inspection::Length(128, 0))
 				{
-					Reader.SetPosition(Reader.GetCompleteLength() - Inspection::Length(128, 0));
-					
-					Inspection::Reader PartReader{Reader};
+					auto PartReader = Inspection::Reader{Reader, Reader.GetCompleteLength() - Inspection::Length{128, 0}};
 					
 					ID3v1TagResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 					if(ID3v1TagResult->GetSuccess() == true)
@@ -72,7 +68,6 @@ namespace Inspection
 						}
 					}
 				}
-				Reader.SetPosition(Inspection::Length(0, 0));
 				
 				Inspection::Reader PartReader{Reader};
 				auto ID3v2TagResult{Inspection::Get_ID3_2_Tag(PartReader, {})};
@@ -80,7 +75,6 @@ namespace Inspection
 				Result->GetValue()->AppendField("ID3v2", ID3v2TagResult->GetValue());
 				Continue = ((ID3v1TagResult != nullptr) && (ID3v1TagResult->GetSuccess() == true)) || ID3v2TagResult->GetSuccess();
 			}
-			Reader.SetPosition(Reader.GetCompleteLength());
 			// finalization
 			Result->SetSuccess(Continue);
 			Inspection::FinalizeResult(Result, Reader);

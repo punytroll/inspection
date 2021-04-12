@@ -3819,14 +3819,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_1_Genre(Inspection::Read
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "Frame_Header"})->Get(PartReader, {})};
+		auto PartReader = Inspection::Reader{Reader};
+		auto PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "Frame_Header"})->Get(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -3835,82 +3835,56 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		auto FieldStart{Reader.GetConsumedLength()};
-		const std::string & Identifier{std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData())};
-		auto ClaimedSize{Inspection::Length(std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0)};
+		Result->GetValue()->AddTag("content", Result->GetValue()->GetField("Identifier")->GetTag("interpretation")->GetData());
+		
+		auto ClaimedSize  = Inspection::Length(std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0);
+		auto PartReader = Inspection::Reader{Reader, ClaimedSize};
+		const auto & Identifier = std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData());
+		auto PartResult = std::unique_ptr<Inspection::Result>{};
 		
 		if(Identifier == "COM")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "FrameBody", "COM"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "FrameBody", "COM"})->Get(PartReader, {});
 		}
 		else if(Identifier == "PIC")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "FrameBody", "PIC"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "FrameBody", "PIC"})->Get(PartReader, {});
 		}
 		else if((Identifier == "TAL") || (Identifier == "TCM") || (Identifier == "TCP") || (Identifier == "TEN") || (Identifier == "TP1") || (Identifier == "TP2") || (Identifier == "TPA") || (Identifier == "TRK") || (Identifier == "TT1") || (Identifier == "TT2") || (Identifier == "TYE"))
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "FrameBody", "T__"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "FrameBody", "T__"})->Get(PartReader, {});
 		}
 		else if(Identifier == "TCO")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::Get_ID3_2_2_Frame_Body_TCO(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::Get_ID3_2_2_Frame_Body_TCO(PartReader, {});
 		}
 		else if(Identifier == "UFI")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "FrameBody", "UFI"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.2", "FrameBody", "UFI"})->Get(PartReader, {});
 		}
 		else
 		{
 			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
-			
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendField("Data", PartResult->GetValue());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 		}
-		
-		auto HandledSize{Reader.GetConsumedLength() - FieldStart};
-		
-		if(HandledSize > ClaimedSize)
-		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
-			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
-		}
-		else if(HandledSize < ClaimedSize)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+		if(PartReader.HasRemaining() == true)
 		{
 			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("handled size", to_string_cast(PartReader.GetConsumedLength()));
+			Result->GetValue()->AddTag("error", "See at the end of the frame for superfluous data."s);
+			
+			auto RestReader = Inspection::Reader{PartReader};
+			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
+			
+			Continue = RestResult->GetSuccess();
+			Result->GetValue()->AppendField("Rest", RestResult->GetValue());
+			Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
+			Reader.AdvancePosition(RestReader.GetConsumedLength());
 		}
-		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
 	// finalization
 	Result->SetSuccess(Continue);
@@ -4079,14 +4053,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_TextStringAccordingT
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.3", "Frame_Header"})->Get(PartReader, {})};
+		auto PartReader = Inspection::Reader{Reader};
+		auto PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.3", "Frame_Header"})->Get(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -4095,10 +4069,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		auto ClaimedSize{Inspection::Length{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0}};
-		Inspection::Reader PartReader{Reader, ClaimedSize};
-		const std::string & Identifier{std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData())};
-		std::unique_ptr<Inspection::Result> PartResult;
+		Result->GetValue()->AddTag("content", Result->GetValue()->GetField("Identifier")->GetTag("interpretation")->GetData());
+		
+		auto ClaimedSize = Inspection::Length{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0};
+		auto PartReader = Inspection::Reader{Reader, ClaimedSize};
+		const auto & Identifier = std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData());
+		auto PartResult = std::unique_ptr<Inspection::Result>{};
 		
 		if(Identifier == "APIC")
 		{
@@ -4191,8 +4167,8 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame(Inspection::Re
 			Result->GetValue()->AddTag("handled size", to_string_cast(PartReader.GetConsumedLength()));
 			Result->GetValue()->AddTag("error", "See at the end of the frame for superfluous data."s);
 			
-			Inspection::Reader RestReader{PartReader};
-			auto RestResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {})};
+			auto RestReader = Inspection::Reader{PartReader};
+			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
 			
 			Continue = RestResult->GetSuccess();
 			Result->GetValue()->AppendField("Rest", RestResult->GetValue());
@@ -4966,14 +4942,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_TextStringAccordingT
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "Frame_Header"})->Get(PartReader, {})};
+		auto PartReader = Inspection::Reader{Reader};
+		auto PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "Frame_Header"})->Get(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -4984,145 +4960,82 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame(Inspection::Re
 	{
 		Result->GetValue()->AddTag("content", Result->GetValue()->GetField("Identifier")->GetTag("interpretation")->GetData());
 		
-		auto FieldStart{Reader.GetConsumedLength()};
-		const std::string & Identifier{std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData())};
-		auto ClaimedSize{Inspection::Length(std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0)};
+		auto ClaimedSize = Inspection::Length(std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0);
+		auto PartReader = Inspection::Reader{Reader, ClaimedSize};
+		const auto & Identifier = std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData());
+		auto PartResult = std::unique_ptr<Inspection::Result>{};
 		
 		if(Identifier == "APIC")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "APIC"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "APIC"})->Get(PartReader, {});
 		}
 		else if(Identifier == "COMM")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "COMM"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "COMM"})->Get(PartReader, {});
 		}
 		else if(Identifier == "MCDI")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "MCDI"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "MCDI"})->Get(PartReader, {});
 		}
 		else if(Identifier == "POPM")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::Get_ID3_2_4_Frame_Body_POPM(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::Get_ID3_2_4_Frame_Body_POPM(PartReader, {});
 		}
 		else if(Identifier == "PRIV")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "PRIV"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "PRIV"})->Get(PartReader, {});
 		}
 		else if((Identifier == "TALB") || (Identifier == "TBPM") || (Identifier == "TCOM") || (Identifier == "TCON") || (Identifier == "TCOP") || (Identifier == "TDRC") || (Identifier == "TDRL") || (Identifier == "TDTG") || (Identifier == "TENC") || (Identifier == "TIT2") || (Identifier == "TLAN") || (Identifier == "TLEN") || (Identifier == "TPE1") || (Identifier == "TPE2") || (Identifier == "TPOS") || (Identifier == "TPUB") || (Identifier == "TRCK") || (Identifier == "TSOP") || (Identifier == "TSSE") || (Identifier == "TYER"))
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "T___"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "T___"})->Get(PartReader, {});
 		}
 		else if(Identifier == "TCMP")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::Get_ID3_2_4_Frame_Body_TCMP(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::Get_ID3_2_4_Frame_Body_TCMP(PartReader, {});
 		}
 		else if(Identifier == "TXXX")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "TXXX"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "TXXX"})->Get(PartReader, {});
 		}
 		else if(Identifier == "UFID")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "UFID"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "UFID"})->Get(PartReader, {});
 		}
 		else if(Identifier == "USLT")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "USLT"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "USLT"})->Get(PartReader, {});
 		}
 		else if(Identifier == "WCOM")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "W___"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "W___"})->Get(PartReader, {});
 		}
 		else if(Identifier == "WXXX")
 		{
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "WXXX"})->Get(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "FrameBody", "WXXX"})->Get(PartReader, {});
 		}
 		else
 		{
 			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
-			
-			Inspection::Reader PartReader{Reader, ClaimedSize};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendField("Data", PartResult->GetValue());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 		}
-		
-		auto HandledSize{Reader.GetConsumedLength() - FieldStart};
-		
-		if(HandledSize > ClaimedSize)
-		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed smaller than the actually handled size."s);
-			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
-		}
-		else if(HandledSize < ClaimedSize)
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+		if(PartReader.HasRemaining() == true)
 		{
 			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
 			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AddTag("handled size", to_string_cast(HandledSize));
+			Result->GetValue()->AddTag("handled size", to_string_cast(PartReader.GetConsumedLength()));
+			Result->GetValue()->AddTag("error", "See at the end of the frame for superfluous data."s);
+			
+			auto RestReader = Inspection::Reader{PartReader};
+			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
+			
+			Continue = RestResult->GetSuccess();
+			Result->GetValue()->AppendField("Rest", RestResult->GetValue());
+			Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
+			Reader.AdvancePosition(RestReader.GetConsumedLength());
 		}
-		Reader.SetPosition(FieldStart + ClaimedSize);
 	}
 	// finalization
 	Result->SetSuccess(Continue);

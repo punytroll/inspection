@@ -109,13 +109,6 @@ namespace Inspection
 			return _ReadPositionInInput == _EndPositionInInput;
 		}
 		
-		void SetPosition(const Inspection::Length & Position)
-		{
-			_ReadPositionInInput = _StartPositionInInput + Position;
-			assert(_ReadPositionInInput >= _StartPositionInInput);
-			assert(_ReadPositionInInput <= _EndPositionInInput);
-		}
-		
 		const Inspection::Buffer & GetBuffer(void) const
 		{
 			assert(_Buffer != nullptr);
