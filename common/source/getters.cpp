@@ -195,14 +195,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Apple_AppleDouble_File(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"Apple", "AppleDouble_Header"})->Get(PartReader, {})};
+		auto PartReader = Inspection::Reader{Reader};
+		auto PartResult = Inspection::g_TypeRepository.GetType({"Apple", "AppleDouble_Header"})->Get(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Header", PartResult->GetValue());
@@ -211,48 +211,47 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Apple_AppleDouble_File(Inspe
 	// reading
 	if(Continue == true)
 	{
-		auto & EntryDescriptorFields{Result->GetValue()->GetField("Header")->GetField("EntryDescriptors")->GetFields()};
+		const auto & EntryDescriptorFields = Result->GetValue()->GetField("Header")->GetField("EntryDescriptors")->GetFields();
 		
 		if(EntryDescriptorFields.size() > 0)
 		{
-			auto StartPosition{Reader.GetReadPositionInInput()};
-			auto EntriesField{Result->GetValue()->AppendField("Entries")};
+			auto EntriesField = Result->GetValue()->AppendField("Entries");
 			
 			EntriesField->AddTag("array"s);
 			
-			auto EntryDescriptorFieldIterator{std::begin(EntryDescriptorFields)};
-			Inspection::Length FurthestPosition{Reader.GetReadPositionInInput()};
-			auto EntryIndex{0};
+			auto EntryDescriptorFieldIterator = std::begin(EntryDescriptorFields);
+			auto FurthestReader = std::unique_ptr<Inspection::Reader>{};
+			auto EntryIndex = 0;
 			
 			while((Continue == true) && (EntryDescriptorFieldIterator != std::end(EntryDescriptorFields)))
 			{
-				auto EntryDescriptorField{*EntryDescriptorFieldIterator};
-				Inspection::Reader EntryReader{Reader, Inspection::Length{std::any_cast<std::uint32_t>(EntryDescriptorField->GetField("Offset")->GetData()), 0}, Inspection::Length{std::any_cast<std::uint32_t>(EntryDescriptorField->GetField("Length")->GetData()), 0}};
-				std::unique_ptr<Inspection::Result> EntryResult;
+				auto EntryDescriptorField = *EntryDescriptorFieldIterator;
+				auto EntryReader = std::make_unique<Inspection::Reader>(Reader, Inspection::Length{std::any_cast<std::uint32_t>(EntryDescriptorField->GetField("Offset")->GetData()), 0}, Inspection::Length{std::any_cast<std::uint32_t>(EntryDescriptorField->GetField("Length")->GetData()), 0});
+				auto EntryResult = std::unique_ptr<Inspection::Result>{};
 				
 				switch(std::any_cast<std::uint32_t>(EntryDescriptorField->GetField("EntryID")->GetData()))
 				{
 				case 9:
 					{
-						EntryResult = Inspection::g_TypeRepository.GetType({"Apple", "AppleSingleDouble_Entry_FinderInfo"})->Get(EntryReader, {});
+						EntryResult = Inspection::g_TypeRepository.GetType({"Apple", "AppleSingleDouble_Entry_FinderInfo"})->Get(*EntryReader, {});
 						
 						break;
 					}
 				default:
 					{
-						EntryResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(EntryReader, {});
+						EntryResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(*EntryReader, {});
 						
 						break;
 					}
 				}
 				Continue = EntryResult->GetSuccess();
 				
-				auto EntryField{EntriesField->AppendField("Entry", EntryResult->GetValue())};
+				auto EntryField = EntriesField->AppendField("Entry", EntryResult->GetValue());
 				
 				EntryField->AddTag("element index in array", EntryIndex);
-				if((Continue == true) && (EntryReader.GetReadPositionInInput() > FurthestPosition))
+				if((Continue == true) && ((FurthestReader == nullptr) || (EntryReader->GetConsumedLength() > FurthestReader->GetConsumedLength())))
 				{
-					FurthestPosition = EntryReader.GetReadPositionInInput();
+					FurthestReader = std::move(EntryReader);
 				}
 				++EntryDescriptorFieldIterator;
 				++EntryIndex;
@@ -266,7 +265,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Apple_AppleDouble_File(Inspe
 				EntriesField->AddTag("ended by failure"s);
 			}
 			EntriesField->AddTag("number of elements", EntryIndex);
-			Reader.AdvancePosition(FurthestPosition - StartPosition);
+			Reader.AdvancePosition(FurthestReader->GetConsumedLength());
 		}
 	}
 	// finalization
