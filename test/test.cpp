@@ -393,28 +393,6 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength                             //
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	{
-		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer};
-			auto Result = Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Reader, {});
-			
-			assert(Result->GetSuccess() == true);
-			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
-		}
-		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
-			auto Reader = Inspection::Reader{Buffer};
-			auto Result = Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Reader, {});
-			
-			assert(Result->GetSuccess() == false);
-			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_ASCII_String_Printable_EndedByLength                                      //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{

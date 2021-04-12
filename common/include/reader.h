@@ -43,12 +43,6 @@ namespace Inspection
 			_ReadPositionInInput += Offset;
 		}
 		
-		void MoveBackPosition(const Inspection::Length & Offset)
-		{
-			assert(_ReadPositionInInput - Offset >= _StartPositionInInput);
-			_ReadPositionInInput -= Offset;
-		}
-		
 		const Inspection::Length & GetReadPositionInInput(void) const
 		{
 			return _ReadPositionInInput;

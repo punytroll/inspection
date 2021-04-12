@@ -846,59 +846,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumericOrS
 	return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_EndedByInvalidOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
-	
-	Result->GetValue()->AddTag("string"s);
-	Result->GetValue()->AddTag("character set", "ASCII"s);
-	Result->GetValue()->AddTag("encoding", "ASCII"s);
-	Result->GetValue()->AddTag("printable"s);
-	// reading
-	if(Continue == true)
-	{
-		std::stringstream Value;
-		auto NumberOfCharacters{0ul};
-		ReadResult ReadResult;
-		
-		while((Continue == true) && (Reader.HasRemaining() == true))
-		{
-			if((Continue = Reader.Read8Bits(ReadResult)) == true)
-			{
-				if(Is_ASCII_Character_Printable(ReadResult.Data) == true)
-				{
-					NumberOfCharacters += 1;
-					Value << ReadResult.Data;
-				}
-				else
-				{
-					Result->GetValue()->AddTag("ended by invalid character '" + to_string_cast(ReadResult.Data) + '\'');
-					Reader.MoveBackPosition(Inspection::Length{1, 0});
-					
-					break;
-				}
-			}
-			else
-			{
-				Result->GetValue()->AddTag("ended by error"s);
-				AppendReadErrorTag(Result->GetValue(), ReadResult);
-			}
-		}
-		if(Reader.IsAtEnd() == true)
-		{
-			Result->GetValue()->AddTag("ended by length"s);
-		}
-		Result->GetValue()->AddTag(to_string_cast(NumberOfCharacters) + " characters");
-		Result->GetValue()->SetData(Value.str());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
 	auto Result{Inspection::InitializeResult(Reader)};
