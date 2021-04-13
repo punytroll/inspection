@@ -1001,13 +1001,13 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 {
 	assert(Field.Type == Inspection::TypeDefinition::Part::Type::Field);
 	
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto Continue{true};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto Continue = true;
 	
 	ExecutionContext.Push(Field, *Result, Reader, Parameters);
 	if(Field.TypeReference)
 	{
-		auto FieldResult{Inspection::g_TypeRepository.GetType(Field.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters())};
+		auto FieldResult = Inspection::g_TypeRepository.GetType(Field.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
 		
 		Continue = FieldResult->GetSuccess();
 		Result->SetValue(FieldResult->GetValue());
@@ -1016,20 +1016,20 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	{
 		assert(Field.Parts->size() == 1);
 		
-		auto & FieldPart{Field.Parts->front()};
-		Inspection::Reader * FieldPartReader{nullptr};
+		auto & FieldPart = Field.Parts->front();
+		auto FieldPartReader = std::unique_ptr<Inspection::Reader>{};
 		
 		if(FieldPart.Length)
 		{
-			FieldPartReader = new Inspection::Reader{Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, FieldPart.Length.value()))};
+			FieldPartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, FieldPart.Length.value())));
 		}
 		else
 		{
-			FieldPartReader = new Inspection::Reader{Reader};
+			FieldPartReader = std::make_unique<Inspection::Reader>(Reader);
 		}
 		if(FieldPartReader != nullptr)
 		{
-			std::unordered_map<std::string, std::any> FieldPartParameters;
+			auto FieldPartParameters = std::unordered_map<std::string, std::any>{};
 			
 			if(FieldPart.Parameters)
 			{
@@ -1308,19 +1308,19 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	for(auto SequencePartIterator = std::begin(Sequence.Parts.value()); ((Continue == true) && (SequencePartIterator != std::end(Sequence.Parts.value()))); ++SequencePartIterator)
 	{
 		auto & SequencePart = *SequencePartIterator;
-		Inspection::Reader * SequencePartReader = nullptr;
+		auto SequencePartReader = std::unique_ptr<Inspection::Reader>{};
 		
 		if(SequencePart.Length)
 		{
-			SequencePartReader = new Inspection::Reader{Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, SequencePart.Length.value()))};
+			SequencePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, SequencePart.Length.value())));
 		}
 		else
 		{
-			SequencePartReader = new Inspection::Reader{Reader};
+			SequencePartReader = std::make_unique<Inspection::Reader>(Reader);
 		}
 		if(SequencePartReader != nullptr)
 		{
-			std::unordered_map<std::string, std::any> SequencePartParameters;
+			auto SequencePartParameters = std::unordered_map<std::string, std::any>{};
 			
 			if(SequencePart.Parameters)
 			{
