@@ -46,6 +46,7 @@ bool Inspection::Reader::Read0Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 0};
 	ReadResult.InputLength = Inspection::Length{0, 0};
 	ReadResult.OutputLength = Inspection::Length{0, 0};
 	
@@ -56,6 +57,7 @@ bool Inspection::Reader::Read1Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 1};
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 1}) == true)
@@ -92,6 +94,7 @@ bool Inspection::Reader::Read2Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 2};
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 2}) == true)
@@ -142,6 +145,7 @@ bool Inspection::Reader::Read3Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 3};
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 3}) == true)
@@ -192,6 +196,7 @@ bool Inspection::Reader::Read4Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 4};
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 4}) == true)
@@ -242,6 +247,7 @@ bool Inspection::Reader::Read5Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 5};
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 5}) == true)
@@ -292,6 +298,7 @@ bool Inspection::Reader::Read6Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 6};
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 6}) == true)
@@ -342,6 +349,7 @@ bool Inspection::Reader::Read7Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 7};
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 7}) == true)
@@ -392,6 +400,7 @@ bool Inspection::Reader::Read8Bits(Inspection::ReadResult & ReadResult)
 {
 	ReadResult.Success = _Buffer != nullptr;
 	ReadResult.Data = 0;
+	ReadResult.RequestedLength = Inspection::Length{0, 8};
 	if(ReadResult.Success == true)
 	{
 		if(Has(Inspection::Length{0, 8}) == true)

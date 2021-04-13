@@ -1190,7 +1190,7 @@ int main(void)
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("ended by error") == true);
 			assert(Result->GetValue()->HasTag("error") == true);
-			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("requested length") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
@@ -1202,7 +1202,7 @@ int main(void)
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "a");
 			assert(Result->GetValue()->HasTag("ended by error") == true);
 			assert(Result->GetValue()->HasTag("error") == true);
-			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("requested length") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
@@ -1214,7 +1214,7 @@ int main(void)
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "ab");
 			assert(Result->GetValue()->HasTag("ended by error") == true);
 			assert(Result->GetValue()->HasTag("error") == true);
-			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("requested length") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
@@ -1240,7 +1240,7 @@ int main(void)
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
-			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("requested length") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
@@ -1250,7 +1250,7 @@ int main(void)
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
-			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("requested length") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
@@ -1260,7 +1260,7 @@ int main(void)
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
-			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("requested length") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
@@ -1270,7 +1270,7 @@ int main(void)
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
-			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("requested length") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{
@@ -1297,7 +1297,7 @@ int main(void)
 			
 			assert(Result->GetSuccess() == false);
 			assert(Result->GetValue()->HasTag("error") == true);
-			assert(Result->GetValue()->GetTag("error")->HasTag("data length") == true);
+			assert(Result->GetValue()->GetTag("error")->HasTag("requested length") == true);
 			assert(Result->GetValue()->GetTag("error")->HasTag("remaining length") == true);
 		}
 		{

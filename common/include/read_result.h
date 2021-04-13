@@ -8,6 +8,7 @@ namespace Inspection
 		std::uint8_t Data;
 		Inspection::Length InputLength;
 		Inspection::Length OutputLength;
+		Inspection::Length RequestedLength;
 		bool Success;
 	};
 }

@@ -23,7 +23,7 @@ bool g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples{false};
 
 std::shared_ptr<Inspection::Value> AppendLengthTag(std::shared_ptr<Inspection::Value> Value, const Inspection::Length & Length, const std::string & LengthName = "length"s)
 {
-	auto Result{Value->AddTag(LengthName, Length)};
+	auto Result = Value->AddTag(LengthName, Length);
 	
 	Result->AddTag("unit", "bytes and bits"s);
 	
@@ -34,9 +34,9 @@ std::shared_ptr<Inspection::Value> AppendReadErrorTag(std::shared_ptr<Inspection
 {
 	assert(ReadResult.Success == false);
 	
-	auto Result{Value->AddTag("error", "Could not read enought data."s)};
+	auto Result = Value->AddTag("error", "Could not read enough data."s);
 	
-	AppendLengthTag(Result, ReadResult.OutputLength, "data length");
+	AppendLengthTag(Result, ReadResult.RequestedLength, "requested length");
 	AppendLengthTag(Result, ReadResult.InputLength, "remaining length");
 	
 	return Result;
