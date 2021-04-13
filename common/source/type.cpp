@@ -551,29 +551,19 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			TypePart.Type = Inspection::TypeDefinition::Part::Type::Type;
 			ExecutionContext.Push(TypePart, *Result, Reader, Parameters);
 			
-			Inspection::Reader * PartReader{nullptr};
+			auto PartReader = std::unique_ptr<Inspection::Reader>{};
 			
 			if(_Part->Length)
 			{
-				auto Length{std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, _Part->Length.value()))};
-				
-				if(Reader.Has(Length) == true)
-				{
-					PartReader = new Inspection::Reader{Reader, Length};
-				}
-				else
-				{
-					Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
-					Continue = false;
-				}
+				PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, _Part->Length.value())));
 			}
 			else
 			{
-				PartReader = new Inspection::Reader{Reader};
+				PartReader = std::make_unique<Inspection::Reader>(Reader);
 			}
 			if(PartReader != nullptr)
 			{
-				std::unordered_map<std::string, std::any> PartParameters;
+				auto PartParameters = std::unordered_map<std::string, std::any>{};
 				
 				if(_Part->Parameters)
 				{
@@ -583,7 +573,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 				{
 				case Inspection::TypeDefinition::Part::Type::Alternative:
 					{
-						auto SequenceResult{_GetAlternative(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						auto SequenceResult = _GetAlternative(ExecutionContext, *_Part, *PartReader, PartParameters);
 						
 						Continue = SequenceResult->GetSuccess();
 						Result->SetValue(SequenceResult->GetValue());
@@ -592,7 +582,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::Part::Type::Array:
 					{
-						auto ArrayResult{_GetArray(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						auto ArrayResult = _GetArray(ExecutionContext, *_Part, *PartReader, PartParameters);
 						
 						Continue = ArrayResult->GetSuccess();
 						Result->GetValue()->AppendField(_Part->FieldName.value(), ArrayResult->GetValue());
@@ -601,7 +591,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::Part::Type::Sequence:
 					{
-						auto SequenceResult{_GetSequence(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						auto SequenceResult = _GetSequence(ExecutionContext, *_Part, *PartReader, PartParameters);
 						
 						Continue = SequenceResult->GetSuccess();
 						Result->SetValue(SequenceResult->GetValue());
@@ -610,7 +600,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::Part::Type::Field:
 					{
-						auto FieldResult{_GetField(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						auto FieldResult = _GetField(ExecutionContext, *_Part, *PartReader, PartParameters);
 						
 						Continue = FieldResult->GetSuccess();
 						Result->GetValue()->AppendField(_Part->FieldName.value(), FieldResult->GetValue());
@@ -619,7 +609,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::Part::Type::Fields:
 					{
-						auto FieldsResult{_GetFields(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						auto FieldsResult = _GetFields(ExecutionContext, *_Part, *PartReader, PartParameters);
 						
 						Continue = FieldsResult->GetSuccess();
 						Result->GetValue()->AppendFields(FieldsResult->GetValue()->GetFields());
@@ -628,7 +618,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::Part::Type::Forward:
 					{
-						auto ForwardResult{_GetForward(ExecutionContext, *_Part, *PartReader, PartParameters)};
+						auto ForwardResult = _GetForward(ExecutionContext, *_Part, *PartReader, PartParameters);
 						
 						Continue = ForwardResult->GetSuccess();
 						Result->SetValue(ForwardResult->GetValue());
@@ -663,36 +653,27 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 {
 	assert(Alternative.Type == Inspection::TypeDefinition::Part::Type::Alternative);
 	
-	auto Result{Inspection::InitializeResult(Reader)};
-	auto FoundAlternative{false};
+	auto Result = Inspection::InitializeResult(Reader);
+	auto FoundAlternative = false;
 	
 	ExecutionContext.Push(Alternative, *Result, Reader, Parameters);
 	assert(Alternative.Parts.has_value() == true);
 	for(auto AlternativePartIterator = std::begin(Alternative.Parts.value()); ((FoundAlternative == false) && (AlternativePartIterator != std::end(Alternative.Parts.value()))); ++AlternativePartIterator)
 	{
-		auto & AlternativePart{*AlternativePartIterator};
-		Inspection::Reader * AlternativePartReader{nullptr};
+		auto & AlternativePart = *AlternativePartIterator;
+		auto AlternativePartReader = std::unique_ptr<Inspection::Reader>{};
 		
 		if(AlternativePart.Length)
 		{
-			auto Length{std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, AlternativePart.Length.value()))};
-			
-			if(Reader.Has(Length) == true)
-			{
-				AlternativePartReader = new Inspection::Reader{Reader, Length};
-			}
-			else
-			{
-				Result->GetValue()->AddTag("error", "At least " + to_string_cast(Length) + " bytes and bits are necessary to read this part.");
-			}
+			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, AlternativePart.Length.value())));
 		}
 		else
 		{
-			AlternativePartReader = new Inspection::Reader{Reader};
+			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader);
 		}
 		if(AlternativePartReader != nullptr)
 		{
-			std::unordered_map<std::string, std::any> AlternativePartParameters;
+			auto AlternativePartParameters = std::unordered_map<std::string, std::any>{};
 			
 			if(AlternativePart.Parameters)
 			{
@@ -702,7 +683,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 			{
 			case Inspection::TypeDefinition::Part::Type::Array:
 				{
-					auto ArrayResult{_GetArray(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					auto ArrayResult = _GetArray(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters);
 					
 					FoundAlternative = ArrayResult->GetSuccess();
 					if(FoundAlternative == true)
@@ -715,7 +696,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 				}
 			case Inspection::TypeDefinition::Part::Type::Field:
 				{
-					auto FieldResult{_GetField(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					auto FieldResult = _GetField(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters);
 					
 					FoundAlternative = FieldResult->GetSuccess();
 					if(FoundAlternative == true)
@@ -728,7 +709,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 				}
 			case Inspection::TypeDefinition::Part::Type::Fields:
 				{
-					auto FieldsResult{_GetFields(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					auto FieldsResult = _GetFields(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters);
 					
 					FoundAlternative = FieldsResult->GetSuccess();
 					if(FoundAlternative == true)
@@ -740,7 +721,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 				}
 			case Inspection::TypeDefinition::Part::Type::Forward:
 				{
-					auto ForwardResult{_GetForward(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					auto ForwardResult = _GetForward(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters);
 					
 					FoundAlternative = ForwardResult->GetSuccess();
 					if(FoundAlternative == true)
@@ -752,7 +733,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 				}
 			case Inspection::TypeDefinition::Part::Type::Sequence:
 				{
-					auto SequenceResult{_GetSequence(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters)};
+					auto SequenceResult = _GetSequence(ExecutionContext, AlternativePart, *AlternativePartReader, AlternativePartParameters);
 					
 					FoundAlternative = SequenceResult->GetSuccess();
 					if(FoundAlternative == true)

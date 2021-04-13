@@ -10328,15 +10328,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_LittleEn
 	Result->GetValue()->AddTag("signed"s);
 	Result->GetValue()->AddTag("32bit"s);
 	Result->GetValue()->AddTag("little endian"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 32}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 32}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
@@ -10756,15 +10747,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_1Bit(Inspect
 	Result->GetValue()->AddTag("integer"s);
 	Result->GetValue()->AddTag("unsigned"s);
 	Result->GetValue()->AddTag("1bit"s);
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{0, 1}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{0, 1}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
