@@ -78,11 +78,6 @@ namespace Inspection
 			return _EndPositionInInput - _ReadPositionInInput;
 		}
 		
-		Inspection::Length GetCompleteLength(void) const
-		{
-			return _EndPositionInInput - _StartPositionInInput;
-		}
-		
 		bool Has(const Inspection::Length & Length) const
 		{
 			return _ReadPositionInInput + Length <= _EndPositionInInput;

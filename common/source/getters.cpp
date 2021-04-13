@@ -2657,7 +2657,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_EndedByLength(Ins
 	}
 	else
 	{
-		Result->GetValue()->AddTag("error", "Of the requested " + to_string_cast(Reader.GetCompleteLength()) + " bytes and bits, only " + to_string_cast(Reader.GetConsumedLength() - Inspection::Length{0, 1}) + " could be read as unset data.");
+		Result->GetValue()->AddTag("error", "Only " + to_string_cast(Reader.GetConsumedLength() - Inspection::Length{0, 1}) + " could be read as unset data.");
 	}
 	// finalization
 	Result->SetSuccess(Continue);
