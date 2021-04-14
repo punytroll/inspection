@@ -20,8 +20,8 @@ namespace Inspection
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			
-			auto Result{Inspection::InitializeResult(Reader)};
-			auto Continue{Reader.HasRemaining()};
+			auto Result = std::make_unique<Inspection::Result>();
+			auto Continue = Reader.HasRemaining();
 			
 			// reading
 			if(Continue == true)
@@ -30,13 +30,11 @@ namespace Inspection
 				auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
+				Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
 				Result->GetValue()->SetName("APEv2 Tag");
 			}
 			// finalization
 			Result->SetSuccess(Continue);
-			Inspection::FinalizeResult(Result, Reader);
 			
 			return Result;
 		}

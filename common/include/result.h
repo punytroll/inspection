@@ -46,24 +46,6 @@ namespace Inspection
 		bool _Success;
 		std::shared_ptr< Value > _Value;
 	};
-	
-	inline std::unique_ptr< Inspection::Result > InitializeResult(const Inspection::Buffer & Buffer)
-	{
-		return std::make_unique< Inspection::Result >();
-	}
-	
-	inline std::unique_ptr< Inspection::Result > InitializeResult(const Inspection::Reader & Reader)
-	{
-		return std::make_unique< Inspection::Result >();
-	}
-	
-	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Buffer & Buffer)
-	{
-	}
-	
-	inline void FinalizeResult(std::unique_ptr< Inspection::Result > & Result, const Inspection::Reader & Reader)
-	{
-	}
 }
 
 #endif

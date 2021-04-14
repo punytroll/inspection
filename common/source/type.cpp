@@ -530,7 +530,7 @@ Inspection::TypeDefinition::Type::~Type(void)
 
 std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -644,7 +644,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -653,7 +652,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 {
 	assert(Alternative.Type == Inspection::TypeDefinition::Part::Type::Alternative);
 	
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto FoundAlternative = false;
 	
 	ExecutionContext.Push(Alternative, *Result, Reader, Parameters);
@@ -757,7 +756,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(FoundAlternative);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -766,7 +764,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 {
 	assert(Array.Type == Inspection::TypeDefinition::Part::Type::Array);
 	
-	auto Result{Inspection::InitializeResult(Reader)};
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue{true};
 	
 	ExecutionContext.Push(Array, *Result, Reader, Parameters);
@@ -992,7 +990,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1001,7 +998,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 {
 	assert(Field.Type == Inspection::TypeDefinition::Part::Type::Field);
 	
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	ExecutionContext.Push(Field, *Result, Reader, Parameters);
@@ -1150,7 +1147,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1159,7 +1155,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 {
 	assert(Fields.Type == Inspection::TypeDefinition::Part::Type::Fields);
 	
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	ExecutionContext.Push(Fields, *Result, Reader, Parameters);
@@ -1213,7 +1209,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1222,7 +1217,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 {
 	assert(Forward.Type == Inspection::TypeDefinition::Part::Type::Forward);
 	
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	ExecutionContext.Push(Forward, *Result, Reader, Parameters);
@@ -1291,7 +1286,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -1300,7 +1294,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 {
 	assert(Sequence.Type == Inspection::TypeDefinition::Part::Type::Sequence);
 	
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	ExecutionContext.Push(Sequence, *Result, Reader, Parameters);
@@ -1401,7 +1395,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

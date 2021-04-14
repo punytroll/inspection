@@ -16,13 +16,23 @@ namespace Inspection
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 			
-			Inspection::Reader PartReader{Reader};
-			auto PartResult(Inspection::Get_Ogg_Stream(PartReader, {}));
+			auto Result = std::make_unique<Inspection::Result>();
+			auto Continue = true;
 			
-			PartResult->GetValue()->SetName("OggStream");
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			// reading
+			if(Continue == true)
+			{
+				auto PartReader = Inspection::Reader{Reader};
+				auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
+				
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendField("OggStream", PartResult->GetValue());
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+			}
+			// finalization
+			Result->SetSuccess(Continue);
 			
-			return PartResult;
+			return Result;
 		}
 	};
 }

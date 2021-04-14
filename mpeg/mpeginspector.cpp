@@ -15,8 +15,8 @@ namespace Inspection
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			
-			auto Result{Inspection::InitializeResult(Reader)};
-			auto Continue{true};
+			auto Result = std::make_unique<Inspection::Result>();
+			auto Continue = true;
 			
 			// reading
 			if(Continue == true)
@@ -25,18 +25,11 @@ namespace Inspection
 				auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				PartResult->GetValue()->SetName("MPEGStream");
+				Result->GetValue()->AppendField("MPEGStream", PartResult->GetValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
-			// verification
-			if(Continue == true)
-			{
-				Continue = Reader.IsAtEnd();
-			}
 			// finalization
-			Result->SetSuccess(Continue);
-			Inspection::FinalizeResult(Result, Reader);
+			Result->SetSuccess((Continue == true) && (Reader.IsAtEnd() == true));
 			
 			return Result;
 		}

@@ -27,8 +27,8 @@ namespace Inspection
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			
-			auto Result{Inspection::InitializeResult(Reader)};
-			auto Continue{true};
+			auto Result = std::make_unique<Inspection::Result>();
+			auto Continue = true;
 			
 			Result->GetValue()->SetName("ID3Tags");
 			
@@ -77,7 +77,6 @@ namespace Inspection
 			}
 			// finalization
 			Result->SetSuccess(Continue);
-			Inspection::FinalizeResult(Result, Reader);
 			
 			return Result;
 		}

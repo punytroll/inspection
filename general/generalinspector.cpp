@@ -115,9 +115,9 @@ namespace Inspection
 		
 		std::unique_ptr<Inspection::Result> _GetGeneralMostSignificantBitFirst(Inspection::Reader & Reader)
 		{
-			auto Result{Inspection::InitializeResult(Reader)};
-			Inspection::Reader PartReader{Reader};
-			auto PartResult{Inspection::Get_ID3_2_Tag(PartReader, {})};
+			auto Result = std::make_unique<Inspection::Result>();
+			auto PartReader = Inspection::Reader{Reader};
+			auto PartResult = Inspection::Get_ID3_2_Tag(PartReader, {});
 			
 			if(PartResult->GetSuccess() == true)
 			{
@@ -536,14 +536,13 @@ namespace Inspection
 					}
 				}
 			}
-			Inspection::FinalizeResult(Result, Reader);
 			
 			return Result;
 		}
 		
 		std::unique_ptr<Inspection::Result> _GetGeneralLeastSignificantBitFirst(Inspection::Reader & Reader)
 		{
-			auto Result = Inspection::InitializeResult(Reader);
+			auto Result = std::make_unique<Inspection::Result>();
 			auto PartReader = Inspection::Reader{Reader};
 			auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
 									
@@ -560,7 +559,6 @@ namespace Inspection
 					AppendUnkownContinuation(Result->GetValue(), Reader);
 				}
 			}
-			Inspection::FinalizeResult(Result, Reader);
 			
 			return Result;
 		}
@@ -571,8 +569,8 @@ namespace Inspection
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			
-			auto Result{Inspection::InitializeResult(Reader)};
-			auto Continue{true};
+			auto Result = std::make_unique<Inspection::Result>();
+			auto Continue = true;
 			
 			for(auto Index = 0ul; Index < _TypeSequence.size(); ++Index)
 			{
@@ -586,7 +584,6 @@ namespace Inspection
 			}
 			// finalization
 			Result->SetSuccess(Continue);
-			Inspection::FinalizeResult(Result, Reader);
 			
 			return Result;
 		}

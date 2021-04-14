@@ -16,8 +16,8 @@ namespace Inspection
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			
-			auto Result{Inspection::InitializeResult(Reader)};
-			auto Continue{true};
+			auto Result = std::make_unique<Inspection::Result>();
+			auto Continue = true;
 			
 			// reading
 			if(Continue == true)
@@ -27,12 +27,10 @@ namespace Inspection
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
-				Result->GetValue()->SetName("RIFFFile");
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			// finalization
 			Result->SetSuccess(Continue);
-			Inspection::FinalizeResult(Result, Reader);
 			
 			return Result;
 		}

@@ -48,7 +48,7 @@ std::shared_ptr<Inspection::Value> AppendReadErrorTag(std::shared_ptr<Inspection
 
 std::unique_ptr<Inspection::Result> Inspection::Get_APE_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -127,14 +127,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Flags(Inspection::Reader
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -188,14 +187,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Apple_AppleDouble_File(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -270,14 +268,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Apple_AppleDouble_File(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("array"s);
@@ -355,14 +352,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Array_AtLeastOne_EndedByFail
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Array_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("array"s);
@@ -422,14 +418,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Array_EndedByLength(Inspecti
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Array_EndedByNumberOfElements(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("array"s);
@@ -497,14 +492,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Array_EndedByNumberOfElement
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Array_EndedByPredicate(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("array"s);
@@ -570,14 +564,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Array_EndedByPredicate(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_Alphabetic(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("character");
@@ -608,14 +601,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_Alphabetic(I
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_AlphaNumeric(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("character");
@@ -646,14 +638,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_AlphaNumeric
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("character");
@@ -684,14 +675,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_Character_AlphaNumeric
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -736,14 +726,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Alphabetic_Ende
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -788,14 +777,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumeric_En
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -840,14 +828,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_AlphaNumericOrS
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -892,14 +879,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -950,14 +936,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
 	}
 	//finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_CreationDate(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -981,14 +966,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_CreationDate(Inspection:
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1092,14 +1076,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedContentDescripti
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1129,14 +1112,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedStreamProperties
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1332,14 +1314,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedStreamProperties
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_GUID(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1361,14 +1342,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_GUID(Inspection::Reader 
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_FileProperties_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1396,14 +1376,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_FileProperties_Flags(Ins
 	//~ }
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_IndexPlaceholderObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1418,14 +1397,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_IndexPlaceholderObjectDa
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	auto & DataType{std::any_cast<const std::string &>(Parameters.at("DataType"))};
 	
@@ -1511,14 +1489,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_MetadataLibrary_Descript
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_Metadata_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	auto & DataType{std::any_cast<const std::string &>(Parameters.at("DataType"))};
 	
@@ -1587,14 +1564,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_Metadata_DescriptionReco
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_Object(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1760,14 +1736,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_Object(Inspection::Reade
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1800,14 +1775,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamBitrateProperties_
 	//~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamProperties_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -1857,14 +1831,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamProperties_Flags(I
 	//~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("AudioMedia"s);
@@ -1967,14 +1940,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamProperties_TypeSpe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamPropertiesObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -2097,14 +2069,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamPropertiesObjectDa
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_4Bit_MostSignificantBitFirst(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("bitset"s);
@@ -2133,14 +2104,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_4Bit_MostSignificantB
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("bitset"s);
@@ -2174,14 +2144,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_8Bit_LeastSignificant
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_16Bit_BigEndian_LeastSignificantBitFirstPerByte(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("bitset"s);
@@ -2232,14 +2201,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_16Bit_BigEndian_Least
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_16Bit_LittleEndian_LeastSignificantBitFirstPerByte(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("bitset"s);
@@ -2290,14 +2258,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_16Bit_LittleEndian_Le
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("bitset"s);
@@ -2382,14 +2349,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_BitSet_32Bit_LittleEndian_Le
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Boolean_1Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("boolean"s);
@@ -2410,14 +2376,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Boolean_1Bit(Inspection::Rea
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("buffer"s);
@@ -2448,14 +2413,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("buffer"s);
@@ -2492,14 +2456,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Buffer_UnsignedInteger_8Bit_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Data_Set_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("set data"s);
@@ -2526,14 +2489,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Set_EndedByLength(Inspe
 		AppendLengthTag(Result->GetValue(), Reader.GetConsumedLength());
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Data_SetOrUnset_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("any data"s);
@@ -2544,14 +2506,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_SetOrUnset_EndedByLengt
 	AppendLengthTag(Result->GetValue(), RemainingOutputLength);
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_Until16BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("unset data"s);
@@ -2591,14 +2552,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_Until16BitAlignme
 	AppendLengthTag(Result->GetValue(), LengthUntil16BitAlignment);
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("unset data"s);
@@ -2630,14 +2590,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_EndedByLength(Ins
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_Until8BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -2653,14 +2612,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_Until8BitAlignmen
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_ApplicationBlock_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -2685,14 +2643,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_ApplicationBlock_Data(I
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Frame_Header(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -2928,14 +2885,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Frame_Header(Inspection
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_MetaDataBlock(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3019,14 +2975,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_MetaDataBlock(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Stream_Header(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3066,14 +3021,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Stream_Header(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3092,14 +3046,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_StreamInfoBlock_BitsPer
 		Result->GetValue()->AddTag("value", static_cast< std::uint8_t >(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) + 1));
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3118,14 +3071,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_StreamInfoBlock_NumberO
 		Result->GetValue()->AddTag("value", static_cast< std::uint8_t >(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) + 1));
 	}
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3176,14 +3128,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe(Inspection::Re
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_CalculateBitsPerSample(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3215,14 +3166,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_CalculateBitsP
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Data_LPC(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t PredictorOrder)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3292,14 +3242,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Data_LPC(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Header(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3344,14 +3293,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Header(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3398,7 +3346,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3410,7 +3357,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual(Inspe
  **/
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3445,14 +3392,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice(
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice_Partition(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3500,7 +3446,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
@@ -3512,7 +3457,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice2
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3606,14 +3551,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_GUID_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	GUID Value;
 	
@@ -3731,14 +3675,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_GUID_LittleEndian(Inspection
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_1_Genre(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3780,14 +3723,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_1_Genre(Inspection::Read
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3856,14 +3798,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame(Inspection::Re
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame_Body_TCO(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3889,14 +3830,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame_Body_TCO(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Tag_Header_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3932,14 +3872,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Tag_Header_Flags(Ins
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -3973,14 +3912,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_TextStringAccordingT
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4014,14 +3952,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_TextStringAccordingT
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4146,14 +4083,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame(Inspection::Re
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_PCNT(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4194,14 +4130,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_PCNT(Insp
 	}
 	// reading
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_POPM(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4282,14 +4217,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_POPM(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_PRIV(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4436,14 +4370,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_PRIV(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TCMP(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4476,14 +4409,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TCMP(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TCON(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4509,14 +4441,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TCON(Insp
 	}
 	// finalization
 	Result->SetSuccess(true);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TFLT(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4557,14 +4488,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TFLT(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TLAN(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4596,14 +4526,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TLAN(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TSRC(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4653,14 +4582,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TSRC(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Header_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4755,14 +4683,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Header_Flags(I
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Tag_Header_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4802,14 +4729,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Tag_Header_Flags(Ins
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4852,14 +4778,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_TextStringAccordingT
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -4902,14 +4827,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_TextStringAccordingT
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5006,14 +4930,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame(Inspection::Re
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_POPM(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5095,14 +5018,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_POPM(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_TCMP(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5139,14 +5061,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_TCMP(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5229,14 +5150,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader(I
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagIsAnUpdate(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5256,14 +5176,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader_F
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flag_Data_TagRestrictions(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5298,14 +5217,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader_F
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5348,14 +5266,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader_F
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_Header_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5397,14 +5314,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_Header_Flags(Ins
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5475,14 +5391,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_TextStringAccordingT
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_TextStringAccordingToEncoding_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5553,14 +5468,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_TextStringAccordingT
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5757,14 +5671,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag_Header(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -5847,14 +5760,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag_Header(Inspection:
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_ReplayGainAdjustment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("standard", "Hydrogenaudio ReplayGain"s);
@@ -5912,14 +5824,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_ReplayGainAdjustment(Ins
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -5950,14 +5861,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_7Bit_Syn
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_28Bit_SynchSafe_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -6037,14 +5947,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_28Bit_Sy
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_35Bit_SynchSafe_40Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -6140,14 +6049,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_UnsignedInteger_35Bit_Sy
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_GUID(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -6176,14 +6084,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_GUID(Inspection::Reader 
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_IEC_60908_1999_TableOfContents_Track(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -6263,14 +6170,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_IEC_60908_1999_TableOfConten
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_IEC_60908_1999_TableOfContents_Track_Control(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -6330,14 +6236,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_IEC_60908_1999_TableOfConten
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_IEC_60908_1999_TableOfContents_Tracks(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -6364,14 +6269,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_IEC_60908_1999_TableOfConten
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_639_2_1998_Code(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -6404,14 +6308,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_639_2_1998_Code(Inspecti
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_Character(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("character"s);
@@ -6442,14 +6345,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_Characte
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -6498,14 +6400,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -6556,14 +6457,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
 	}
 	//finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -6637,14 +6537,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -6720,14 +6619,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -6801,14 +6699,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_8859_1_1998_String_E
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_ByteOrderMark(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -6852,14 +6749,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_B
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -6890,14 +6786,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_Character_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// verification
@@ -6929,14 +6824,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -6968,14 +6862,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -7007,14 +6900,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_C
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7064,14 +6956,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_BigEndian_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7144,14 +7035,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7201,14 +7091,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithoutByteOrderMark_LittleEndian_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7281,14 +7170,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7330,14 +7218,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7379,14 +7266,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_CodePoint(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -7506,14 +7392,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_C
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7552,14 +7437,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7608,14 +7492,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7687,14 +7570,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_S
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_ByteOrderMark(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -7738,14 +7620,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7787,14 +7668,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_String_WithByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7836,14 +7716,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -7891,14 +7770,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -7930,14 +7808,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -7987,14 +7864,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -8068,14 +7944,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16B
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -8123,14 +7998,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -8162,14 +8036,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByNumberOfCodePoints(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -8232,14 +8105,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -8289,14 +8161,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -8380,14 +8251,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationOrLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -8461,14 +8331,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_String_WithoutByteOrderMark_EndedByTerminationAndNumberOfCodePoints(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("string"s);
@@ -8554,14 +8423,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16L
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_IEEE_60559_2011_binary32(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("floating point"s);
@@ -8616,14 +8484,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_IEEE_60559_2011_bina
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_Frame(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -8678,14 +8545,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_Frame(Inspection::Rea
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_BitRateIndex(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -8960,14 +8826,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_BitRateIn
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_Mode(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9022,14 +8887,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_Mode(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_ModeExtension(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9116,14 +8980,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_ModeExten
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Packet(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9183,14 +9046,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Packet(Inspection::Reade
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Page(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9320,14 +9182,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Page(Inspection::Reader 
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Page_HeaderType(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9351,14 +9212,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Page_HeaderType(Inspecti
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Stream(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9373,14 +9233,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Stream(Inspection::Reade
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_AudioPacket(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9419,14 +9278,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_AudioPacket(Inspe
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_CommentHeader(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9456,14 +9314,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_CommentHeader(Ins
 	}
 	//finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_CommentHeader_WithoutFramingFlag(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9510,14 +9367,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_CommentHeader_Wit
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_HeaderPacket(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9579,14 +9435,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_HeaderPacket(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_IdentificationHeader(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9686,14 +9541,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_IdentificationHea
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_Chunk(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9806,14 +9660,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_Chunk(Inspection::Reade
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_ChunkData_fmt_(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9862,14 +9715,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_ChunkData_fmt_(Inspecti
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_ChannelMask(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -9981,14 +9833,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_ChunkData_fmt__FormatSp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_ChunkData_fmt__FormatSpecificFields_Extensible_SubFormat(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -10017,14 +9868,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_RIFF_ChunkData_fmt__FormatSp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	auto Bits{std::any_cast<std::uint8_t>(Parameters.at("Bits"))};
 	
@@ -10093,14 +9943,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_BigEndian(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_1Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10122,14 +9971,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_1Bit(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_5Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10152,14 +10000,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_5Bit(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_8Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10182,14 +10029,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_8Bit(Inspectio
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_12Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10224,14 +10070,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_12Bit_BigEndia
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10281,14 +10126,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_BigEndia
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10338,14 +10182,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_LittleEn
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_RiceEncoded(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	// reading
@@ -10398,14 +10241,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_RiceEnco
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_String_ASCII_ByTemplate(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto & Template{std::any_cast<const std::string &>(Parameters.at("Template"))};
 	auto Continue = true;
 	
@@ -10457,14 +10299,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_String_ASCII_ByTemplate(Insp
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	auto Bits{std::any_cast<std::uint8_t>(Parameters.at("Bits"))};
 	
@@ -10676,14 +10517,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_BigEndian(In
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_0Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10701,14 +10541,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_0Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_1Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10730,14 +10569,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_1Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_2Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10759,14 +10597,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_2Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_3Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10788,14 +10625,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_3Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_4Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10817,14 +10653,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_4Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_5Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10846,14 +10681,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_5Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_6Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10875,14 +10709,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_6Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_7Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10904,14 +10737,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_7Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10933,14 +10765,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit(Inspect
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	std::uint8_t Value{0};
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -10978,14 +10809,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_8Bit_Alterna
 	{
 		Result->GetValue()->SetData(Value);
 	}
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_9Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11017,14 +10847,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_9Bit_BigEndi
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_10Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11056,14 +10885,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_10Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_11Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11095,14 +10923,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_11Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_12Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11134,14 +10961,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_12Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_13Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11173,14 +10999,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_13Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_14Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11211,14 +11036,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_14Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_15Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11250,14 +11074,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_15Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_16Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11289,14 +11112,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_16Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_16Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11328,14 +11150,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_16Bit_Little
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_17Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11376,14 +11197,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_17Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11424,14 +11244,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_20Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_24Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11472,14 +11291,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_24Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer");
@@ -11710,14 +11528,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_AlternativeUnary(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11753,14 +11570,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_Altern
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11810,14 +11626,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11867,14 +11682,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_32Bit_Little
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_36Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -11933,14 +11747,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_36Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_36Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer");
@@ -12237,14 +12050,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_36Bit_UTF_8_
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_64Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -12330,14 +12142,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_64Bit_BigEnd
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_64Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	auto Result = Inspection::InitializeResult(Reader);
+	auto Result = std::make_unique<Inspection::Result>();
 	auto Continue = true;
 	
 	Result->GetValue()->AddTag("integer"s);
@@ -12423,7 +12234,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_64Bit_Little
 	}
 	// finalization
 	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
 	
 	return Result;
 }

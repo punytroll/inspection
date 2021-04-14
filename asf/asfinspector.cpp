@@ -16,8 +16,8 @@ namespace Inspection
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			
-			auto Result{Inspection::InitializeResult(Reader)};
-			auto Continue{true};
+			auto Result = std::make_unique<Inspection::Result>();
+			auto Continue = true;
 			
 			// reading
 			if(Continue == true)
@@ -26,13 +26,11 @@ namespace Inspection
 				auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "File"}, PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
-				Result->SetValue(PartResult->GetValue());
-				Result->GetValue()->SetName("ASFFile");
+				Result->GetValue()->AppendField("ASFFile", PartResult->GetValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			// finalization
 			Result->SetSuccess(Continue);
-			Inspection::FinalizeResult(Result, Reader);
 			
 			return Result;
 		}
