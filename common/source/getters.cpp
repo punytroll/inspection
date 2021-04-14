@@ -2549,37 +2549,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Data_SetOrUnset_EndedByLengt
 	return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_Data_SetOrUnset_Until16BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-	auto Result = Inspection::InitializeResult(Reader);
-	auto Continue = true;
-	
-	Result->GetValue()->AddTag("any data"s);
-	Result->GetValue()->AddTag("until 16bit alignment");
-	
-	Inspection::Length LengthUntil16BitAlignment;
-	auto OutOfAlignmentBits{Reader.GetReadPositionInInput().GetTotalBits() % 16};
-	
-	if(OutOfAlignmentBits > 0)
-	{
-		LengthUntil16BitAlignment.Set(0, 16 - OutOfAlignmentBits);
-		if(Reader.Has(LengthUntil16BitAlignment) == true)
-		{
-			Reader.AdvancePosition(LengthUntil16BitAlignment);
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "The next 16bit alignment is not inside the reader's available data length.");
-		}
-	}
-	AppendLengthTag(Result->GetValue(), LengthUntil16BitAlignment);
-	// finalization
-	Result->SetSuccess(Continue);
-	Inspection::FinalizeResult(Result, Reader);
-	
-	return Result;
-}
-
 std::unique_ptr<Inspection::Result> Inspection::Get_Data_Unset_Until16BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
 	auto Result = Inspection::InitializeResult(Reader);

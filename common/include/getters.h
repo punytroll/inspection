@@ -55,7 +55,6 @@ namespace Inspection
 	std::unique_ptr<Inspection::Result> Get_Buffer_UnsignedInteger_8Bit_Zeroed_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_Data_Set_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_Data_SetOrUnset_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-	std::unique_ptr<Inspection::Result> Get_Data_SetOrUnset_Until16BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_Data_Unset_Until16BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_Data_Unset_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_Data_Unset_Until8BitAlignment(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
