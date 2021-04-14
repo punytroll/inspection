@@ -8,6 +8,8 @@
 #include "result.h"
 #include "type_repository.h"
 
+using namespace std::string_literals;
+
 namespace Inspection
 {
 	class APEInspector : public Inspection::Inspector
@@ -21,20 +23,39 @@ namespace Inspection
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			
 			auto Result = std::make_unique<Inspection::Result>();
-			auto Continue = Reader.HasRemaining();
+			auto Continue = true;
+			auto Found = false;
+			auto LastEnd = Inspection::Length{0, 0};
 			
-			// reading
-			if(Continue == true)
+			while((Continue == true) && (LastEnd < Buffer.GetLength()))
 			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
+				auto [Start, End] = _GetStartAndEnd(Buffer, LastEnd);
 				
-				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
-				Result->GetValue()->SetName("APEv2 Tag");
+				if(Start != LastEnd)
+				{
+					auto OtherDataValue = Result->GetValue()->AppendField("OtherData");
+					auto LengthTag = OtherDataValue->AddTag("length", Start - LastEnd);
+					
+					LengthTag->AddTag("unit", "bytes and bits"s);
+				}
+				if(Start != Buffer.GetLength())
+				{
+					auto PartReader = Inspection::Reader{Reader, Start, End - Start};
+					auto PartResult = Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {});
+					
+					Found = true;
+					Continue = PartResult->GetSuccess();
+					Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
+					LastEnd = Start + PartReader.GetConsumedLength();
+					std::tie(Start, End) = _GetStartAndEnd(Buffer, LastEnd);
+				}
+				else
+				{
+					LastEnd = End;
+				}
 			}
 			// finalization
-			Result->SetSuccess(Continue);
+			Result->SetSuccess((Continue == true) && (Found == true));
 			
 			return Result;
 		}
