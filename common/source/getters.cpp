@@ -6845,39 +6845,40 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_B
 	// reading
 	if(Continue == true)
 	{
-		if(Reader.Has(Inspection::Length{2, 0}) == true)
-		{
-			Inspection::Reader PartReader{Reader, Inspection::Length{2, 0}};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
-			
-			Continue = PartResult->GetSuccess();
-			Result->SetValue(PartResult->GetValue());
-			Reader.AdvancePosition(PartReader.GetConsumedLength());
-		}
-		else
-		{
-			Result->GetValue()->AddTag("error", "At least " + to_string_cast(Inspection::Length{2, 0}) + " bytes and bits are necessary to read a byte order mark.");
-			Continue = false;
-		}
-	}
-	// verification
-	if(Continue == true)
-	{
-		const std::vector< std::uint8_t > & Bytes{std::any_cast< const std::vector< std::uint8_t > & >(Result->GetValue()->GetData())};
+		auto ReadResult1 = Inspection::ReadResult{};
 		
-		if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Result->GetValue()->AddTag("interpretation", "BigEndian"s);
-		}
-		else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
-		{
-			Result->GetValue()->AddTag("interpretation", "LittleEndian"s);
+			auto ReadResult2 = Inspection::ReadResult{};
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				auto Data = std::vector<std::uint8_t>{ReadResult1.Data, ReadResult2.Data};
+				
+				Result->GetValue()->SetData(Data);
+				if((Data[0] == 0xfe) && (Data[1] == 0xff))
+				{
+					Result->GetValue()->AddTag("interpretation", "BigEndian"s);
+				}
+				else if((Data[0] == 0xff) && (Data[1] == 0xfe))
+				{
+					Result->GetValue()->AddTag("interpretation", "LittleEndian"s);
+				}
+				else
+				{
+					Result->GetValue()->AddTag("error", "The byte combination is not a valid ISO/IEC 10646-1:1993 UCS-2 byte order mark."s);
+					Result->GetValue()->AddTag("interpretation", nullptr);
+					Continue = false;
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
 		}
 		else
 		{
-			Result->GetValue()->AddTag("error", "The byte combination is not a valid byte order mark."s);
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
@@ -7727,43 +7728,43 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ISO_IEC_10646_1_1993_UTF_16_
 	auto Result = Inspection::InitializeResult(Reader);
 	auto Continue = true;
 	
-	// verification
-	if(Continue == true)
-	{
-		if(Reader.Has(Inspection::Length{2, 0}) == false)
-		{
-			Result->GetValue()->AddTag("error", "The available length needs to be at least " + to_string_cast(Inspection::Length{2, 0}) + ".");
-			Continue = false;
-		}
-	}
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{2, 0}};
-		auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+		auto ReadResult1 = Inspection::ReadResult{};
 		
-		Continue = PartResult->GetSuccess();
-		Result->SetValue(PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// verification
-	if(Continue == true)
-	{
-		const std::vector< std::uint8_t > & Bytes{std::any_cast< const std::vector< std::uint8_t > & >(Result->GetValue()->GetData())};
-		
-		if((Bytes[0] == 0xfe) && (Bytes[1] == 0xff))
+		if((Continue = Reader.Read8Bits(ReadResult1)) == true)
 		{
-			Result->GetValue()->AddTag("interpretation", "BigEndian"s);
-		}
-		else if((Bytes[0] == 0xff) && (Bytes[1] == 0xfe))
-		{
-			Result->GetValue()->AddTag("interpretation", "LittleEndian"s);
+			auto ReadResult2 = Inspection::ReadResult{};
+			
+			if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+			{
+				auto Data = std::vector<std::uint8_t>{ReadResult1.Data, ReadResult2.Data};
+				
+				Result->GetValue()->SetData(Data);
+				if((Data[0] == 0xfe) && (Data[1] == 0xff))
+				{
+					Result->GetValue()->AddTag("interpretation", "BigEndian"s);
+				}
+				else if((Data[0] == 0xff) && (Data[1] == 0xfe))
+				{
+					Result->GetValue()->AddTag("interpretation", "LittleEndian"s);
+				}
+				else
+				{
+					Result->GetValue()->AddTag("error", "The byte combination is not a valid ISO/IEC 10646-1:1993 UTF-16 byte order mark."s);
+					Result->GetValue()->AddTag("interpretation", nullptr);
+					Continue = false;
+				}
+			}
+			else
+			{
+				AppendReadErrorTag(Result->GetValue(), ReadResult2);
+			}
 		}
 		else
 		{
-			Result->GetValue()->AddTag("error", "The byte combination is not a valid byte order mark."s);
-			Result->GetValue()->AddTag("interpretation", nullptr);
-			Continue = false;
+			AppendReadErrorTag(Result->GetValue(), ReadResult1);
 		}
 	}
 	// finalization
