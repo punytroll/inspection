@@ -4190,12 +4190,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_PCNT(Insp
 	// reading
 	if(Continue == true)
 	{
-		auto RemainingOutputLength{Reader.CalculateRemainingOutputLength()};
+		auto RemainingLengthInReaderOutput = Reader.CalculateRemainingOutputLength();
 		
-		if(RemainingOutputLength < Inspection::Length{4, 0})
+		if(RemainingLengthInReaderOutput < Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 			
 			Continue = false;
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
@@ -4203,19 +4203,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_PCNT(Insp
 			Result->GetValue()->GetField("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(RemainingOutputLength == Inspection::Length{4, 0})
+		else if(RemainingLengthInReaderOutput == Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {})};
+			auto PartResult = Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {});
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(RemainingOutputLength > Inspection::Length{4, 0})
+		else if(RemainingLengthInReaderOutput > Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 			
 			Continue = false;
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
@@ -4239,7 +4239,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_POPM(Insp
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {})};
+		auto PartResult = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("EMailToUser", PartResult->GetValue());
@@ -4249,7 +4249,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_POPM(Insp
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_UnsignedInteger_8Bit(PartReader, {})};
+		auto PartResult = Inspection::Get_UnsignedInteger_8Bit(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Rating", PartResult->GetValue());
@@ -4259,7 +4259,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_POPM(Insp
 	// interpretation
 	if(Continue == true)
 	{
-		auto Rating{std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Rating")->GetData())};
+		auto Rating = std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Rating")->GetData());
 		
 		if(Rating > 0)
 		{
@@ -4273,18 +4273,18 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_POPM(Insp
 	// reading
 	if(Continue == true)
 	{
-		auto RemainingOutputLength{Reader.CalculateRemainingOutputLength()};
+		auto RemainingLengthInReaderOutput = Reader.CalculateRemainingOutputLength();
 		
-		if(RemainingOutputLength == Inspection::Length{0, 0})
+		if(RemainingLengthInReaderOutput == Inspection::Length{0, 0})
 		{
-			auto FieldValue{Result->GetValue()->AppendField("Counter")};
+			auto PartValue = Result->GetValue()->AppendField("Counter");
 			
-			FieldValue->SetName("Counter");
+			PartValue->AddTag("omitted"s);
 		}
-		else if(RemainingOutputLength < Inspection::Length{4, 0})
+		else if(RemainingLengthInReaderOutput < Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 			
 			Continue = false;
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
@@ -4292,21 +4292,20 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_POPM(Insp
 			Result->GetValue()->GetField("Counter")->AddTag("error", "The Counter field is too short, as it must be at least four bytes long."s);
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(RemainingOutputLength == Inspection::Length{4, 0})
+		else if(RemainingLengthInReaderOutput == Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {})};
+			auto PartResult = Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {});
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(RemainingOutputLength > Inspection::Length{4, 0})
+		else if(RemainingLengthInReaderOutput > Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 			
-			//~ Continue = false;
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Result->GetValue()->GetField("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
@@ -5052,7 +5051,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_POPM(Insp
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {})};
+		auto PartResult = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTermination(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("EMailToUser", PartResult->GetValue());
@@ -5062,7 +5061,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_POPM(Insp
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_UnsignedInteger_8Bit(PartReader, {})};
+		auto PartResult = Inspection::Get_UnsignedInteger_8Bit(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Rating", PartResult->GetValue());
@@ -5072,7 +5071,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_POPM(Insp
 	// interpretation
 	if(Continue == true)
 	{
-		auto Rating{std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Rating")->GetData())};
+		auto Rating = std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Rating")->GetData());
 		
 		if(Rating > 0)
 		{
@@ -5086,20 +5085,18 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_POPM(Insp
 	// reading
 	if(Continue == true)
 	{
-		auto RemainingOutputLength{Reader.CalculateRemainingOutputLength()};
+		auto RemainingLengthInReaderOutput = Reader.CalculateRemainingOutputLength();
 		
-		if(RemainingOutputLength == Inspection::Length{0, 0})
+		if(RemainingLengthInReaderOutput == Inspection::Length{0, 0})
 		{
-			auto CounterValue{std::make_shared< Inspection::Value >()};
+			auto PartValue = Result->GetValue()->AppendField("Counter");
 			
-			CounterValue->SetName("Counter");
-			CounterValue->AddTag("omitted"s);
-			Result->GetValue()->AppendField(CounterValue);
+			PartValue->AddTag("omitted"s);
 		}
-		else if(RemainingOutputLength < Inspection::Length{4, 0})
+		else if(RemainingLengthInReaderOutput < Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 			
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Result->GetValue()->GetField("Counter")->AddTag("standard", "ID3 2.4"s);
@@ -5107,19 +5104,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_POPM(Insp
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 			Continue = false;
 		}
-		else if(RemainingOutputLength == Inspection::Length{4, 0})
+		else if(RemainingLengthInReaderOutput == Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {})};
+			auto PartResult = Inspection::Get_UnsignedInteger_32Bit_BigEndian(PartReader, {});
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		else if(RemainingOutputLength > Inspection::Length{4, 0})
+		else if(RemainingLengthInReaderOutput > Inspection::Length{4, 0})
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 			
 			Result->GetValue()->AppendField("Counter", PartResult->GetValue());
 			Result->GetValue()->GetField("Counter")->AddTag("error", "This program doesn't support printing a counter with more than four bytes yet."s);
