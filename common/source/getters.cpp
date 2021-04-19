@@ -3138,7 +3138,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_StreamInfoBlock_NumberO
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_UnsignedInteger_3Bit(Reader, {})};
+		auto PartResult{Inspection::Get_UnsignedInteger_3Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
@@ -3589,7 +3589,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 				Result->GetValue()->AddTag("interpretation", "SUBFRAME_FIXED"s);
 				
 				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::Get_UnsignedInteger_3Bit(Reader, {})};
+				auto PartResult{Inspection::Get_UnsignedInteger_3Bit(PartReader, {})};
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Order", PartResult->GetValue());
@@ -6235,7 +6235,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_IEC_60908_1999_TableOfConten
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_UnsignedInteger_4Bit(Reader, {})};
+		auto PartResult{Inspection::Get_UnsignedInteger_4Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("ADR", PartResult->GetValue());
@@ -8726,7 +8726,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_BitRateIn
 	if(Continue == true)
 	{
 		Inspection::Reader PartReader{Reader};
-		auto PartResult{Inspection::Get_UnsignedInteger_4Bit(Reader, {})};
+		auto PartResult{Inspection::Get_UnsignedInteger_4Bit(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->SetValue(PartResult->GetValue());
