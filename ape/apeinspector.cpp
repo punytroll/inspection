@@ -17,8 +17,7 @@ namespace Inspection
 	protected:
 		virtual std::unique_ptr< Inspection::Result > _Getter(const Inspection::Buffer & Buffer)
 		{
-			auto [Start, End] = _GetStartAndEnd(Buffer, Inspection::Length{0, 0});
-			auto Reader = Inspection::Reader{Buffer, Start, End - Start};
+			auto Reader = Inspection::Reader{Buffer};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			
@@ -29,7 +28,7 @@ namespace Inspection
 			
 			while((Continue == true) && (LastEnd < Buffer.GetLength()))
 			{
-				auto [Start, End] = _GetStartAndEnd(Buffer, LastEnd);
+				auto Start = _GetStartOfNextAPETAGS(Buffer, LastEnd);
 				
 				if(Start != LastEnd)
 				{
@@ -40,18 +39,17 @@ namespace Inspection
 				}
 				if(Start != Buffer.GetLength())
 				{
-					auto PartReader = Inspection::Reader{Reader, Start, End - Start};
+					auto PartReader = Inspection::Reader{Reader, Start, Buffer.GetLength() - Start};
 					auto PartResult = Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {});
 					
 					Found = true;
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
 					LastEnd = Start + PartReader.GetConsumedLength();
-					std::tie(Start, End) = _GetStartAndEnd(Buffer, LastEnd);
 				}
 				else
 				{
-					LastEnd = End;
+					LastEnd = Buffer.GetLength();
 				}
 			}
 			// finalization
@@ -60,7 +58,7 @@ namespace Inspection
 			return Result;
 		}
 	private:
-		std::tuple< Inspection::Length, Inspection::Length > _GetStartAndEnd(const Inspection::Buffer & Buffer, const Inspection::Length & StartAt)
+		Inspection::Length _GetStartOfNextAPETAGS(const Inspection::Buffer & Buffer, const Inspection::Length & StartAt)
 		{
 			auto Found{false};
 			auto Start{0ul};
@@ -214,11 +212,11 @@ namespace Inspection
 			}
 			if(Found == true)
 			{
-				return {{Start, 0}, Buffer.GetLength()};
+				return Inspection::Length{Start, 0};
 			}
 			else
 			{
-				return {Buffer.GetLength(), Buffer.GetLength()};
+				return Buffer.GetLength();
 			}
 		}
 	};
