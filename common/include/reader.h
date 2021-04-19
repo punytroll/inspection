@@ -104,12 +104,6 @@ namespace Inspection
 			return _ReadPositionInInput == _EndPositionInInput;
 		}
 		
-		const Inspection::Buffer & GetBuffer(void) const
-		{
-			assert(_Buffer != nullptr);
-			return *_Buffer;
-		}
-		
 		void SetBitstreamType(Inspection::Reader::BitstreamType BitstreamType)
 		{
 			assert(_ReadPositionInInput.GetBits() == 0);
