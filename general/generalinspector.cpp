@@ -96,7 +96,7 @@ namespace Inspection
 			// reading most significant bit first
 			if(Result->GetSuccess() == false)
 			{
-				auto Reader = Inspection::Reader{Buffer};
+				auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
 				
 				Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 				Result = _GetGeneralMostSignificantBitFirst(Reader);
@@ -104,7 +104,7 @@ namespace Inspection
 			// reading least significant bit first
 			if(Result->GetSuccess() == false)
 			{
-				auto Reader = Inspection::Reader{Buffer};
+				auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
 				
 				Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 				Result = _GetGeneralLeastSignificantBitFirst(Reader);
@@ -565,7 +565,7 @@ namespace Inspection
 
 		std::unique_ptr<Inspection::Result> _GetAsSpecificTypeSequence(const Inspection::Buffer & Buffer)
 		{
-			auto Reader = Inspection::Reader{Buffer};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			

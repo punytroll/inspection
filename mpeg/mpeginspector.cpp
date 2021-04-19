@@ -11,7 +11,7 @@ namespace Inspection
 	protected:
 		virtual std::unique_ptr< Inspection::Result > _Getter(const Inspection::Buffer & Buffer)
 		{
-			auto Reader = Inspection::Reader{Buffer};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
 			

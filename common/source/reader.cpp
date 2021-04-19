@@ -2,11 +2,6 @@
 #include "read_result.h"
 #include "reader.h"
 
-Inspection::Reader::Reader(const Inspection::Buffer & Buffer) :
-	Inspection::Reader{&Buffer, Inspection::Length{0, 0}, Buffer.GetLength(), Inspection::Reader::BitstreamType::MostSignificantBitFirst}
-{
-}
-
 Inspection::Reader::Reader(const Inspection::Reader & Reader) :
 	Inspection::Reader{Reader._Buffer, Reader._ReadPositionInInput, Reader._EndPositionInInput, Reader._BitstreamType}
 {

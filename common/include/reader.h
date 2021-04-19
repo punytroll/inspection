@@ -22,7 +22,6 @@ namespace Inspection
 		
 		friend class Inspection::Buffer;
 		
-		explicit Reader(const Inspection::Buffer & Buffer);
 		explicit Reader(const Inspection::Reader & Reader);
 		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & Length);
 		explicit Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
