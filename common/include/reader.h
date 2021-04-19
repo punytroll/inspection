@@ -20,11 +20,9 @@ namespace Inspection
 			MostSignificantBitFirst
 		};
 		
-		friend class Inspection::Buffer;
-		
+		explicit Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
 		explicit Reader(const Inspection::Reader & Reader);
 		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & Length);
-		explicit Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
 		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
 		bool Read0Bits(Inspection::ReadResult & ReadResult);
 		bool Read1Bits(Inspection::ReadResult & ReadResult);
