@@ -24,7 +24,6 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // the GeneralInspector is able to recognize these following forms:                              //
 //                                                                                               //
-// - most significant bit first:                                                                 //
 //     - ID3v2Tag                                                                                //
 //     - ID3v2Tag FLACStream                                                                     //
 //     - ID3v2Tag FLACStream ID3v1Tag                                                            //
@@ -43,10 +42,8 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 //     - FLACStream                                                                              //
 //     - ASFFile                                                                                 //
 //     - AppleSingle                                                                             //
-//     - RIFFFile                                                                                //
-//                                                                                               //
-// - least significant bit first                                                                 //
 //     - OggStream                                                                               //
+//     - RIFFFile                                                                                //
 //                                                                                               //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -92,59 +89,36 @@ namespace Inspection
 		std::unique_ptr<Inspection::Result> _GetGeneral(const Inspection::Buffer & Buffer)
 		{
 			auto Result = std::make_unique<Inspection::Result>();
-			
-			// reading most significant bit first
-			if(Result->GetSuccess() == false)
-			{
-				auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
-				
-				Reader.SetBitstreamType(Inspection::Reader::BitstreamType::MostSignificantBitFirst);
-				Result = _GetGeneralMostSignificantBitFirst(Reader);
-			}
-			// reading least significant bit first
-			if(Result->GetSuccess() == false)
-			{
-				auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
-				
-				Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
-				Result = _GetGeneralLeastSignificantBitFirst(Reader);
-			}
-			
-			return Result;
-		}
-		
-		std::unique_ptr<Inspection::Result> _GetGeneralMostSignificantBitFirst(Inspection::Reader & Reader)
-		{
-			auto Result = std::make_unique<Inspection::Result>();
-			auto PartReader = Inspection::Reader{Reader};
+			auto MSBFReader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto PartReader = Inspection::Reader{MSBFReader};
 			auto PartResult = Inspection::Get_ID3_2_Tag(PartReader, {});
 			
 			if(PartResult->GetSuccess() == true)
 			{
 				Result->GetValue()->AppendField("ID3v2Tag", PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				if(Reader.IsAtEnd() == true)
+				MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+				if(MSBFReader.IsAtEnd() == true)
 				{
 					Result->SetSuccess(true);
 				}
 				else
 				{
-					Inspection::Reader PartReader{Reader};
+					auto PartReader = Inspection::Reader{MSBFReader};
+					auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
 					
-					PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
 					if(PartResult->GetSuccess() == true)
 					{
 						Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
-						Reader.AdvancePosition(PartReader.GetConsumedLength());
-						if(Reader.IsAtEnd() == true)
+						MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+						if(MSBFReader.IsAtEnd() == true)
 						{
 							Result->SetSuccess(true);
 						}
 						else
 						{
-							Inspection::Reader PartReader{Reader};
+							auto PartReader = Inspection::Reader{MSBFReader};
+							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							
-							PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							if(PartResult->GetSuccess() == true)
 							{
 								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -155,54 +129,54 @@ namespace Inspection
 								{
 									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 								}
-								Reader.AdvancePosition(PartReader.GetConsumedLength());
-								if(Reader.IsAtEnd() == true)
+								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+								if(MSBFReader.IsAtEnd() == true)
 								{
 									Result->SetSuccess(true);
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Reader);
+									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 								}
 							}
 							else
 							{
 								
-								AppendUnkownContinuation(Result->GetValue(), Reader);
+								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 							}
 						}
 					}
 					else
 					{
-						Inspection::Reader PartReader{Reader};
+						auto PartReader = Inspection::Reader{MSBFReader};
+						auto PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
 						
-						PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
 						if(PartResult->GetSuccess() == true)
 						{
 							Result->GetValue()->AppendField("MPEG1Stream", PartResult->GetValue());
-							Reader.AdvancePosition(PartReader.GetConsumedLength());
-							if(Reader.IsAtEnd() == true)
+							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+							if(MSBFReader.IsAtEnd() == true)
 							{
 								Result->SetSuccess(true);
 							}
 							else
 							{
-								Inspection::Reader PartReader{Reader};
+								auto PartReader = Inspection::Reader{MSBFReader};
 								auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
 								
 								if(PartResult->GetSuccess() == true)
 								{
 									Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
-									Reader.AdvancePosition(PartReader.GetConsumedLength());
-									if(Reader.IsAtEnd() == true)
+									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+									if(MSBFReader.IsAtEnd() == true)
 									{
 										Result->SetSuccess(true);
 									}
 									else
 									{
-										Inspection::Reader PartReader{Reader};
+										auto PartReader = Inspection::Reader{MSBFReader};
+										auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 										
-										PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 										if(PartResult->GetSuccess() == true)
 										{
 											if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -213,27 +187,27 @@ namespace Inspection
 											{
 												Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 											}
-											Reader.AdvancePosition(PartReader.GetConsumedLength());
-											if(Reader.IsAtEnd() == true)
+											MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+											if(MSBFReader.IsAtEnd() == true)
 											{
 												Result->SetSuccess(true);
 											}
 											else
 											{
-												AppendUnkownContinuation(Result->GetValue(), Reader);
+												AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 											}
 										}
 										else
 										{
-											AppendUnkownContinuation(Result->GetValue(), Reader);
+											AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 										}
 									}
 								}
 								else
 								{
-									Inspection::Reader PartReader{Reader};
+									auto PartReader = Inspection::Reader{MSBFReader};
+									auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 									
-									PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 									if(PartResult->GetSuccess() == true)
 									{
 										if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -244,28 +218,28 @@ namespace Inspection
 										{
 											Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 										}
-										Reader.AdvancePosition(PartReader.GetConsumedLength());
-										if(Reader.IsAtEnd() == true)
+										MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+										if(MSBFReader.IsAtEnd() == true)
 										{
 											Result->SetSuccess(true);
 										}
 										else
 										{
-											AppendUnkownContinuation(Result->GetValue(), Reader);
+											AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 										}
 									}
 									else
 									{
-										AppendUnkownContinuation(Result->GetValue(), Reader);
+										AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 									}
 								}
 							}
 						}
 						else
 						{
-							Inspection::Reader PartReader{Reader};
+							auto PartReader = Inspection::Reader{MSBFReader};
+							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							
-							PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							if(PartResult->GetSuccess() == true)
 							{
 								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -276,19 +250,19 @@ namespace Inspection
 								{
 									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 								}
-								Reader.AdvancePosition(PartReader.GetConsumedLength());
-								if(Reader.IsAtEnd() == true)
+								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+								if(MSBFReader.IsAtEnd() == true)
 								{
 									Result->SetSuccess(true);
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Reader);
+									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 								}
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), Reader);
+								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 							}
 						}
 					}
@@ -296,35 +270,35 @@ namespace Inspection
 			}
 			else
 			{
-				Inspection::Reader PartReader{Reader};
+				auto PartReader = Inspection::Reader{MSBFReader};
+				auto PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
 				
-				PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
 				if(PartResult->GetSuccess() == true)
 				{
 					Result->GetValue()->AppendField("MPEG1Stream", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					if(Reader.IsAtEnd() == true)
+					MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+					if(MSBFReader.IsAtEnd() == true)
 					{
 						Result->SetSuccess(true);
 					}
 					else
 					{
-						Inspection::Reader PartReader{Reader};
+						auto PartReader = Inspection::Reader{MSBFReader};
 						auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
 						
 						if(PartResult->GetSuccess() == true)
 						{
 							Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
-							Reader.AdvancePosition(PartReader.GetConsumedLength());
-							if(Reader.IsAtEnd() == true)
+							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+							if(MSBFReader.IsAtEnd() == true)
 							{
 								Result->SetSuccess(true);
 							}
 							else
 							{
-								Inspection::Reader PartReader{Reader};
+								auto PartReader = Inspection::Reader{MSBFReader};
+								auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 								
-								PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 								if(PartResult->GetSuccess() == true)
 								{
 									if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -335,27 +309,27 @@ namespace Inspection
 									{
 										Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 									}
-									Reader.AdvancePosition(PartReader.GetConsumedLength());
-									if(Reader.IsAtEnd() == true)
+									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+									if(MSBFReader.IsAtEnd() == true)
 									{
 										Result->SetSuccess(true);
 									}
 									else
 									{
-										AppendUnkownContinuation(Result->GetValue(), Reader);
+										AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 									}
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Reader);
+									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 								}
 							}
 						}
 						else
 						{
-							Inspection::Reader PartReader{Reader};
+							auto PartReader = Inspection::Reader{MSBFReader};
+							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							
-							PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							if(PartResult->GetSuccess() == true)
 							{
 								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -366,41 +340,41 @@ namespace Inspection
 								{
 									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 								}
-								Reader.AdvancePosition(PartReader.GetConsumedLength());
-								if(Reader.IsAtEnd() == true)
+								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+								if(MSBFReader.IsAtEnd() == true)
 								{
 									Result->SetSuccess(true);
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Reader);
+									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 								}
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), Reader);
+								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 							}
 						}
 					}
 				}
 				else
 				{
-					Inspection::Reader PartReader{Reader};
+					auto PartReader = Inspection::Reader{MSBFReader};
 					auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
 					
 					if(PartResult->GetSuccess() == true)
 					{
 						Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
-						Reader.AdvancePosition(PartReader.GetConsumedLength());
-						if(Reader.IsAtEnd() == true)
+						MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+						if(MSBFReader.IsAtEnd() == true)
 						{
 							Result->SetSuccess(true);
 						}
 						else
 						{
-							Inspection::Reader PartReader{Reader};
+							auto PartReader = Inspection::Reader{MSBFReader};
+							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							
-							PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							if(PartResult->GetSuccess() == true)
 							{
 								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -411,27 +385,27 @@ namespace Inspection
 								{
 									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 								}
-								Reader.AdvancePosition(PartReader.GetConsumedLength());
-								if(Reader.IsAtEnd() == true)
+								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+								if(MSBFReader.IsAtEnd() == true)
 								{
 									Result->SetSuccess(true);
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Reader);
+									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 								}
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), Reader);
+								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 							}
 						}
 					}
 					else
 					{
-						Inspection::Reader PartReader{Reader};
+						auto PartReader = Inspection::Reader{MSBFReader};
+						auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 						
-						PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 						if(PartResult->GetSuccess() == true)
 						{
 							if(PartResult->GetValue()->HasField("AlbumTrack") == true)
@@ -442,121 +416,120 @@ namespace Inspection
 							{
 								Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
 							}
-							Reader.AdvancePosition(PartReader.GetConsumedLength());
-							if(Reader.IsAtEnd() == true)
+							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+							if(MSBFReader.IsAtEnd() == true)
 							{
 								Result->SetSuccess(true);
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), Reader);
+								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 							}
 						}
 						else
 						{
-							Inspection::Reader PartReader{Reader};
+							auto PartReader = Inspection::Reader{MSBFReader};
+							auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
 							
-							PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
 							if(PartResult->GetSuccess() == true)
 							{
 								Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
-								Reader.AdvancePosition(PartReader.GetConsumedLength());
-								if(Reader.IsAtEnd() == true)
+								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+								if(MSBFReader.IsAtEnd() == true)
 								{
 									Result->SetSuccess(true);
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), Reader);
+									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 								}
 							}
 							else
 							{
-								Inspection::Reader PartReader{Reader};
+								auto PartReader = Inspection::Reader{MSBFReader};
+								auto PartResult = Inspection::g_TypeRepository.Get({"ASF", "File"}, PartReader, {});
 								
-								PartResult = Inspection::g_TypeRepository.Get({"ASF", "File"}, PartReader, {});
 								if(PartResult->GetSuccess() == true)
 								{
 									Result->GetValue()->AppendField("ASFFile", PartResult->GetValue());
-									Reader.AdvancePosition(PartReader.GetConsumedLength());
-									if(Reader.IsAtEnd() == true)
+									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+									if(MSBFReader.IsAtEnd() == true)
 									{
 										Result->SetSuccess(true);
 									}
 									else
 									{
-										AppendUnkownContinuation(Result->GetValue(), Reader);
+										AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 									}
 								}
 								else
 								{
-									Inspection::Reader PartReader{Reader};
-									auto PartResult{Inspection::g_TypeRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {})};
+									auto PartReader = Inspection::Reader{MSBFReader};
+									auto PartResult = Inspection::g_TypeRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {});
 									
 									if(PartResult->GetSuccess() == true)
 									{
 										Result->GetValue()->AppendField("AppleDoubleFile", PartResult->GetValue());
-										Reader.AdvancePosition(PartReader.GetConsumedLength());
-										if(Reader.IsAtEnd() == true)
+										MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+										if(MSBFReader.IsAtEnd() == true)
 										{
 											Result->SetSuccess(true);
 										}
 										else
 										{
-											AppendUnkownContinuation(Result->GetValue(), Reader);
+											AppendUnkownContinuation(Result->GetValue(), MSBFReader);
 										}
 									}
 									else
 									{
-										Inspection::Reader PartReader{Reader};
-										auto PartResult{Get_RIFF_Chunk(PartReader, {})};
+										auto LSBFReader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+										
+										LSBFReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
+										
+										auto PartReader = Inspection::Reader{LSBFReader};
+										auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
 										
 										if(PartResult->GetSuccess() == true)
 										{
-											Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
-											Result->GetValue()->SetName("RIFFFile");
-											Reader.AdvancePosition(PartReader.GetConsumedLength());
-											if(Reader.IsAtEnd() == true)
+											Result->GetValue()->AppendField("OggStream", PartResult->GetValue());
+											LSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+											if(LSBFReader.IsAtEnd() == true)
 											{
 												Result->SetSuccess(true);
 											}
 											else
 											{
-												AppendUnkownContinuation(Result->GetValue(), Reader);
+												AppendUnkownContinuation(Result->GetValue(), LSBFReader);
 											}
 										}
 										else
 										{
-											AppendUnkownContinuation(Result->GetValue(), Reader);
+											auto PartReader = Inspection::Reader{MSBFReader};
+											auto PartResult = Get_RIFF_Chunk(PartReader, {});
+											
+											if(PartResult->GetSuccess() == true)
+											{
+												Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
+												MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+												if(MSBFReader.IsAtEnd() == true)
+												{
+													Result->SetSuccess(true);
+												}
+												else
+												{
+													AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+												}
+											}
+											else
+											{
+												AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+											}
 										}
 									}
 								}
 							}
 						}
 					}
-				}
-			}
-			
-			return Result;
-		}
-		
-		std::unique_ptr<Inspection::Result> _GetGeneralLeastSignificantBitFirst(Inspection::Reader & Reader)
-		{
-			auto Result = std::make_unique<Inspection::Result>();
-			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
-									
-			if(PartResult->GetSuccess() == true)
-			{
-				Result->GetValue()->AppendField("OggStream", PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				if(Reader.IsAtEnd() == true)
-				{
-					Result->SetSuccess(true);
-				}
-				else
-				{
-					AppendUnkownContinuation(Result->GetValue(), Reader);
 				}
 			}
 			
@@ -574,9 +547,9 @@ namespace Inspection
 			
 			for(auto Index = 0ul; Index < _TypeSequence.size(); ++Index)
 			{
-				auto & TypeParts{_TypeSequence[Index]};
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.Get(TypeParts, PartReader, {})};
+				auto & TypeParts = _TypeSequence[Index];
+				auto PartReader = Inspection::Reader{Reader};
+				auto PartResult = Inspection::g_TypeRepository.Get(TypeParts, PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField(TypeParts.back(), PartResult->GetValue());
@@ -595,19 +568,19 @@ namespace Inspection
 
 int main(int argc, char ** argv)
 {
-	Inspection::GeneralInspector Inspector;
-	std::string TypesPrefix{"--types="};
-	std::string QueryPrefix{"--query="};
-	auto NumberOfArguments{argc};
-	auto ArgumentIndex{0};
+	auto Inspector = Inspection::GeneralInspector{};
+	auto TypesPrefix = "--types="s;
+	auto QueryPrefix = "--query="s;
+	auto NumberOfArguments = argc;
+	auto ArgumentIndex = 0;
 	
 	while(++ArgumentIndex < NumberOfArguments)
 	{
-		std::string Argument{argv[ArgumentIndex]};
+		auto Argument = std::string{argv[ArgumentIndex]};
 		
 		if(Argument.compare(0, QueryPrefix.size(), QueryPrefix) == 0)
 		{
-			auto Query{Argument.substr(QueryPrefix.size())};
+			auto Query = Argument.substr(QueryPrefix.size());
 			
 			if((Query.size() > 0) && (Query[0] != '/'))
 			{
@@ -626,8 +599,8 @@ int main(int argc, char ** argv)
 		}
 		else if(Argument.compare(0, TypesPrefix.size(), TypesPrefix) == 0)
 		{
-			auto Types{Argument.substr(TypesPrefix.size())};
-			auto TypesParts{Inspection::SplitString(Types, ';')};
+			auto Types = Argument.substr(TypesPrefix.size());
+			auto TypesParts = Inspection::SplitString(Types, ';');
 			
 			for(auto & TypeParts : TypesParts)
 			{
@@ -640,7 +613,7 @@ int main(int argc, char ** argv)
 		}
 	}
 	
-	int Result{0};
+	auto Result = 0;
 	
 	if(Inspector.GetPathCount() == 0)
 	{
