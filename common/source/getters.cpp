@@ -3012,7 +3012,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Stream_Header(Inspectio
 		if(LastMetaDataBlock == false)
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Array_EndedByPredicate(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"FLAC", "MetaDataBlock"})}, {"ElementName", "MetaDataBlock"s}, {"EndPredicate", std::function< bool (std::shared_ptr<Inspection::Value>) >{[](std::shared_ptr<Inspection::Value> PartValue) { return std::any_cast< bool >(PartValue->GetField("Header")->GetField("LastMetaDataBlock")->GetData()); }}}})};
+			auto PartResult{Inspection::Get_Array_EndedByPredicate(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"FLAC", "MetaDataBlock"})}, {"ElementName", "MetaDataBlock"s}, {"EndPredicate", std::function< bool (std::shared_ptr<Inspection::Value>) >{[](std::shared_ptr<Inspection::Value> PartValue) { return std::any_cast< bool >(PartValue->GetField("Header")->GetField("LastMetaDataBlock")->GetData()); }}}})};
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("MetaDataBlocks", PartResult->GetValue());
@@ -3179,7 +3179,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Data_LPC(Inspe
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Number", "Integer", "Unsigned", "BigEndian"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Bits", BitsPerSample}}}, {"NumberOfElements", static_cast<std::uint64_t>(PredictorOrder)}})};
+		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Unsigned", "BigEndian"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Bits", BitsPerSample}}}, {"NumberOfElements", static_cast<std::uint64_t>(PredictorOrder)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("WarmUpSamples", PartResult->GetValue());
@@ -3384,7 +3384,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice(
 		auto FrameBlockSize{std::any_cast<std::uint16_t>(Parameters.at("FrameBlockSize"))};
 		auto NumberOfPartitions{std::any_cast<std::uint16_t>(Result->GetValue()->GetField("PartitionOrder")->GetTag("number of partitions")->GetData())};
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"FLAC", "Subframe_Residual_Rice_Partition"})}, {"NumberOfElements", static_cast<std::uint64_t>(NumberOfPartitions)}, {"ElementName", "Partition"s}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"NumberOfSamples", static_cast<std::uint32_t>(FrameBlockSize / NumberOfPartitions)}, {"PredictorOrder", PredictorOrder}}}})};
+		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"FLAC", "Subframe_Residual_Rice_Partition"})}, {"NumberOfElements", static_cast<std::uint64_t>(NumberOfPartitions)}, {"ElementName", "Partition"s}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"NumberOfSamples", static_cast<std::uint32_t>(FrameBlockSize / NumberOfPartitions)}, {"PredictorOrder", PredictorOrder}}}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Partitions", PartResult->GetValue());
@@ -3422,7 +3422,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice_
 		if(ElementIndexInArray == 0)
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Number", "Integer", "Signed", "32Bit_RiceEncoded"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Rice", Rice}}}, {"NumberOfElements", static_cast<std::uint64_t>(NumberOfSamples - PredictorOrder)}})};
+			auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Signed", "32Bit_RiceEncoded"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Rice", Rice}}}, {"NumberOfElements", static_cast<std::uint64_t>(NumberOfSamples - PredictorOrder)}})};
 			
 			Continue = PartResult->GetSuccess();
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
@@ -3434,7 +3434,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice_
 		else
 		{
 			auto PartReader = Inspection::Reader{Reader};
-			auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Number", "Integer", "Signed", "32Bit_RiceEncoded"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Rice", Rice}}}, {"NumberOfElements", static_cast<std::uint64_t> (NumberOfSamples)}})};
+			auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Signed", "32Bit_RiceEncoded"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Rice", Rice}}}, {"NumberOfElements", static_cast<std::uint64_t> (NumberOfSamples)}})};
 			
 			Continue = PartResult->GetSuccess();
 			if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
@@ -3782,10 +3782,10 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame(Inspection::Re
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 		if(PartReader.HasRemaining() == true)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
-			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AddTag("handled size", to_string_cast(PartReader.GetConsumedLength()));
-			Result->GetValue()->AddTag("error", "See at the end of the frame for superfluous data."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
+			AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
+			AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
+			AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
 			
 			auto RestReader = Inspection::Reader{PartReader};
 			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
@@ -3826,6 +3826,43 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame_Body_TCO(Inspe
 		if(std::get<0>(Interpretation) == true)
 		{
 			Result->GetValue()->GetField("Information")->AddTag("interpretation", std::get<1>(Interpretation));
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Tag_Body(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	// reading
+	if(Continue == true)
+	{
+		auto PartReader = Inspection::Reader{Reader};
+		auto PartResult = Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"ID3", "v2.2", "Frame"})}, {"ElementName", "Frame"s}});
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Frames", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		if(Reader.IsAtEnd() == false)
+		{
+			auto PartReader = Inspection::Reader{Reader};
+			auto PartResult = Inspection::Get_Data_Unset_EndedByLength(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Padding", PartResult->GetValue());
+			if(Continue == true)
+			{
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+			}
 		}
 	}
 	// finalization
@@ -4067,10 +4104,10 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame(Inspection::Re
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 		if(PartReader.HasRemaining() == true)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
-			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AddTag("handled size", to_string_cast(PartReader.GetConsumedLength()));
-			Result->GetValue()->AddTag("error", "See at the end of the frame for superfluous data."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
+			AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
+			AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
+			AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
 			
 			auto RestReader = Inspection::Reader{PartReader};
 			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
@@ -4687,6 +4724,51 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Header_Flags(I
 	return Result;
 }
 
+std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Tag_Body(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	// reading
+	if(Continue == true)
+	{
+		if(std::any_cast<bool>(Parameters.at("ExtendedHeader")) == true)
+		{
+			throw Inspection::NotImplementedException("ID3 2.3 extended header");
+		}
+	}
+	// reading
+	if(Continue == true)
+	{
+		auto PartReader = Inspection::Reader{Reader};
+		auto PartResult = Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"ID3", "v2.3", "Frame"})}, {"ElementName", "Frame"s}});
+		
+		Continue = PartResult->GetSuccess();
+		Result->GetValue()->AppendField("Frames", PartResult->GetValue());
+		Reader.AdvancePosition(PartReader.GetConsumedLength());
+	}
+	// reading
+	if(Continue == true)
+	{
+		if(Reader.IsAtEnd() == false)
+		{
+			auto PartReader = Inspection::Reader{Reader};
+			auto PartResult = Inspection::Get_Data_Unset_EndedByLength(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Padding", PartResult->GetValue());
+			if(Continue == true)
+			{
+				Reader.AdvancePosition(PartReader.GetConsumedLength());
+			}
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Tag_Header_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
 	auto Result = std::make_unique<Inspection::Result>();
@@ -4914,10 +4996,10 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame(Inspection::Re
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 		if(PartReader.HasRemaining() == true)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size."s);
-			Result->GetValue()->AddTag("claimed size", to_string_cast(ClaimedSize));
-			Result->GetValue()->AddTag("handled size", to_string_cast(PartReader.GetConsumedLength()));
-			Result->GetValue()->AddTag("error", "See at the end of the frame for superfluous data."s);
+			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
+			AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
+			AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
+			AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
 			
 			auto RestReader = Inspection::Reader{PartReader};
 			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
@@ -5056,6 +5138,59 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame_Body_TCMP(Insp
 			{
 				PartValue->AddTag("error", "The value \"" + Information + "\" could not interpreted.");
 				PartValue->AddTag("interpretation", nullptr);
+			}
+		}
+	}
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_Body(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	// reading
+	if(Continue == true)
+	{
+		if(std::any_cast<bool>(Parameters.at("ExtendedHeader")) == true)
+		{
+			auto PartReader = Inspection::Reader{Reader};
+			auto PartResult = Inspection::Get_ID3_2_4_Tag_ExtendedHeader(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("ExtendedHeader", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+	}
+	if(Continue == true)
+	{
+		// reading
+		if(Continue == true)
+		{
+			auto PartReader = Inspection::Reader{Reader};
+			auto PartResult = Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"ID3", "v2.4", "Frame"})}, {"ElementName", "Frame"s}});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Frames", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		// reading
+		if(Continue == true)
+		{
+			if(Reader.IsAtEnd() == false)
+			{
+				auto PartReader = Inspection::Reader{Reader};
+				auto PartResult = Inspection::Get_Data_Unset_EndedByLength(PartReader, {});
+				
+				Continue = PartResult->GetSuccess();
+				Result->GetValue()->AppendField("Padding", PartResult->GetValue());
+				if(Continue == true)
+				{
+					Reader.AdvancePosition(PartReader.GetConsumedLength());
+				}
 			}
 		}
 	}
@@ -5481,7 +5616,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_ID3_2_Tag_Header(PartReader, {})};
+		auto PartResult = Inspection::Get_ID3_2_Tag_Header(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("TagHeader", PartResult->GetValue());
@@ -5490,183 +5625,50 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
 	// reading
 	if(Continue == true)
 	{
-		auto MajorVersion{std::any_cast<std::uint8_t>(Result->GetValue()->GetField("TagHeader")->GetField("MajorVersion")->GetData())};
-		auto Size{Inspection::Length{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("TagHeader")->GetField("Size")->GetData()), 0}};
+		auto ClaimedSize = Inspection::Length{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("TagHeader")->GetField("Size")->GetData()), 0};
+		auto PartReader = Inspection::Reader{Reader, ClaimedSize};
+		auto MajorVersion = std::any_cast<std::uint8_t>(Result->GetValue()->GetField("TagHeader")->GetField("MajorVersion")->GetData());
+		auto PartResult = std::unique_ptr<Inspection::Result>{};
 		
 		if(MajorVersion == 0x02)
 		{
-			// reading
-			if(Continue == true)
-			{
-				Inspection::Reader PartReader{Reader, Size};
-				auto PartResult{Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"ID3", "v2.2", "Frame"})}, {"ElementName", "Frame"s}})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				Size -= PartReader.GetConsumedLength();
-			}
-			// reading
-			if(Continue == true)
-			{
-				if(Size > Inspection::Length{0, 0})
-				{
-					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Inspection::Get_Data_Unset_EndedByLength(PartReader, {})};
-					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("Padding", PartResult->GetValue());
-					if(Continue == true)
-					{
-						Reader.AdvancePosition(PartReader.GetConsumedLength());
-						Size -= PartReader.GetConsumedLength();
-					}
-				}
-			}
-			// reading
-			if(Continue == false)
-			{
-				if(Size > Inspection::Length{0, 0})
-				{
-					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Inspection::Get_ID3_2_2_Frame(PartReader, {})};
-					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					Size -= PartReader.GetConsumedLength();
-				}
-			}
+			PartResult = Inspection::Get_ID3_2_2_Tag_Body(PartReader, {});
 		}
 		else if(MajorVersion == 0x03)
 		{
-			// reading
-			if(Continue == true)
-			{
-				if(std::any_cast< bool >(Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()) == true)
-				{
-					throw Inspection::NotImplementedException("ID3 2.3 extended header");
-				}
-			}
-			// reading
-			if(Continue == true)
-			{
-				auto & Unsynchronization{Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("Unsynchronization")->GetData()};
-				Inspection::Reader PartReader{Reader, Size};
-				auto PartResult{Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"ID3", "v2.3", "Frame"})}, {"ElementName", "Frame"s}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Unsynchronization", Unsynchronization}}}})};
-				
-				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-				Reader.AdvancePosition(PartReader.GetConsumedLength());
-				Size -= PartReader.GetConsumedLength();
-			}
-			// reading
-			if(Continue == true)
-			{
-				if(Size > Inspection::Length{0, 0})
-				{
-					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Inspection::Get_Data_Unset_EndedByLength(PartReader, {})};
-					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("Padding", PartResult->GetValue());
-					if(Continue == true)
-					{
-						Reader.AdvancePosition(PartReader.GetConsumedLength());
-						Size -= PartReader.GetConsumedLength();
-					}
-				}
-			}
-			// reading
-			if(Continue == false)
-			{
-				if(Size > Inspection::Length{0, 0})
-				{
-					auto & Unsynchronization{Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("Unsynchronization")->GetData()};
-					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Inspection::Get_ID3_2_3_Frame(PartReader, {{"Unsynchronization", Unsynchronization}})};
-					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("Frame", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					Size -= PartReader.GetConsumedLength();
-				}
-			}
+			PartResult = Inspection::Get_ID3_2_3_Tag_Body(PartReader, {{"ExtendedHeader", Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()}});
 		}
 		else if(MajorVersion == 0x04)
 		{
-			// reading
-			if(Continue == true)
-			{
-				if(std::any_cast< bool >(Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()) == true)
-				{
-					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Inspection::Get_ID3_2_4_Tag_ExtendedHeader(PartReader, {})};
-					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("ExtendedHeader", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					Size -= PartReader.GetConsumedLength();
-				}
-			}
-			if(Continue == true)
-			{
-				// reading
-				if(Continue == true)
-				{
-					Inspection::Reader PartReader{Reader, Size};
-					auto PartResult{Inspection::Get_Array_AtLeastOne_EndedByFailureOrLength_ResetPositionOnFailure(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"ID3", "v2.4", "Frame"})}, {"ElementName", "Frame"s}})};
-					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("Frames", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
-					Size -= PartReader.GetConsumedLength();
-				}
-				// reading
-				if(Continue == true)
-				{
-					if(Size > Inspection::Length{0, 0})
-					{
-						Inspection::Reader PartReader{Reader, Size};
-						auto PartResult{Inspection::Get_Data_Unset_EndedByLength(PartReader, {})};
-						
-						Continue = PartResult->GetSuccess();
-						Result->GetValue()->AppendField("Padding", PartResult->GetValue());
-						if(Continue == true)
-						{
-							Reader.AdvancePosition(PartReader.GetConsumedLength());
-							Size -= PartReader.GetConsumedLength();
-						}
-					}
-				}
-				// reading
-				if(Continue == false)
-				{
-					if(Size > Inspection::Length{0, 0})
-					{
-						Inspection::Reader PartReader{Reader, Size};
-						auto PartResult{Inspection::Get_ID3_2_4_Frame(PartReader, {})};
-						
-						Continue = PartResult->GetSuccess();
-						Result->GetValue()->AppendField("Frame", PartResult->GetValue());
-						Reader.AdvancePosition(PartReader.GetConsumedLength());
-						Size -= PartReader.GetConsumedLength();
-					}
-				}
-			}
+			PartResult = Inspection::Get_ID3_2_4_Tag_Body(PartReader, {{"ExtendedHeader", Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()}});
 		}
 		else
 		{
 			Result->GetValue()->AddTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
-			Continue = false;
 		}
-		// verification
-		if(Continue == true)
+		if(PartResult != nullptr)
 		{
-			if(Size > Inspection::Length{0, 0})
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendFields(PartResult->GetValue()->GetFields());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			if(PartReader.IsAtEnd() == false)
 			{
-				Result->GetValue()->AddTag("error", "There are " + to_string_cast(Size) + " bytes and bits remaining.");
+				Result->GetValue()->AddTag("error", "The tag size is claimed larger than the actually handled size. See at the end of the tag for superfluous data."s);
+				AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
+				AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
+				AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
+				
+				auto RestReader = Inspection::Reader{PartReader};
+				auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
+				
+				Result->GetValue()->AppendField("Rest", RestResult->GetValue());
+				Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the tag."s);
+				PartReader.AdvancePosition(RestReader.GetConsumedLength());
 			}
+		}
+		else
+		{
+			Continue = false;
 		}
 	}
 	// finalization
@@ -6251,7 +6253,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_IEC_60908_1999_TableOfConten
 		auto FirstTrackNumber{std::any_cast<std::uint8_t>(Parameters.at("FirstTrackNumber"))};
 		auto LastTrackNumber{std::any_cast<std::uint8_t>(Parameters.at("LastTrackNumber"))};
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"IEC_60908_1999", "TableOfContents_Track"})}, {"ElementName", "Track"s}, {"NumberOfElements", static_cast<std::uint64_t>(LastTrackNumber - FirstTrackNumber + 1)}})};
+		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"IEC_60908_1999", "TableOfContents_Track"})}, {"ElementName", "Track"s}, {"NumberOfElements", static_cast<std::uint64_t>(LastTrackNumber - FirstTrackNumber + 1)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Tracks", PartResult->GetValue());
@@ -9140,7 +9142,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Page(Inspection::Reader 
 	{
 		auto PageSegments{std::any_cast<std::uint8_t>(Result->GetValue()->GetField("PageSegments")->GetData())};
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Number", "Integer", "Unsigned", "8Bit"})}, {"NumberOfElements", static_cast<std::uint64_t>(PageSegments)}})};
+		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Unsigned", "8Bit"})}, {"NumberOfElements", static_cast<std::uint64_t>(PageSegments)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("SegmentTable", PartResult->GetValue());
@@ -9225,7 +9227,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Stream(Inspection::Reade
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_Array_EndedByPredicate(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Ogg", "Page"})}, {"ElementName", "Page"s}, {"EndPredicate", std::function< bool (std::shared_ptr<Inspection::Value>) >{[](std::shared_ptr<Inspection::Value> ElementValue) { return std::any_cast< bool >(ElementValue->GetField("HeaderType")->GetField("EndOfStream")->GetData()); }}}})};
+		auto PartResult{Inspection::Get_Array_EndedByPredicate(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Ogg", "Page"})}, {"ElementName", "Page"s}, {"EndPredicate", std::function< bool (std::shared_ptr<Inspection::Value>) >{[](std::shared_ptr<Inspection::Value> ElementValue) { return std::any_cast< bool >(ElementValue->GetField("HeaderType")->GetField("EndOfStream")->GetData()); }}}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Pages", PartResult->GetValue());
@@ -9359,7 +9361,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_CommentHeader_Wit
 	{
 		auto UserCommentListLength{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("UserCommentListLength")->GetData())};
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector< std::string >{"Ogg", "Vorbis", "CommentHeader_UserComment"})}, {"ElementName", "UserComment"s}, {"NumberOfElements", static_cast<std::uint64_t>(UserCommentListLength)}})};
+		auto PartResult{Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Ogg", "Vorbis", "CommentHeader_UserComment"})}, {"ElementName", "UserComment"s}, {"NumberOfElements", static_cast<std::uint64_t>(UserCommentListLength)}})};
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("UserCommentList", PartResult->GetValue());
