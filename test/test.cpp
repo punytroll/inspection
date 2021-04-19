@@ -296,49 +296,49 @@ int main(void)
 		}
 	}
 	
-	std::uint8_t Buffer0[] = {};
-	std::uint8_t Buffer1[] = {0x00};
-	std::uint8_t Buffer2[] = {0x61, 0x62, 0x63, 0x64, 0x65};
-	std::uint8_t Buffer5[] = {0x61, 0x62, 0x63, 0x64, 0x65, 0x00, 0x00};
-	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_UnsignedInteger_0Bit                                                      //
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
-		// read an unsigned integer with 0 bits from an empty reader
-		auto Buffer = Inspection::Buffer{Buffer0, Inspection::Length{0, 0}};
-		auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
-		auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
+		std::uint8_t RawBuffer[] = {0x00};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 0}};
 		
-		assert(Result->GetSuccess() == true);
-		assert(Reader.GetReadPositionInInput() == Inspection::Length(0, 0));
-		assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
-		assert(Reader.CalculateRemainingOutputLength() == Inspection::Length(0, 0));
-	}
-	{
-		// read an unsigned integer with 0 bits from the start of a non-empty reader
-		auto Buffer = Inspection::Buffer{Buffer1, Inspection::Length{1, 0}};
-		auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
-		auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
-		
-		assert(Result->GetSuccess() == true);
-		assert(Reader.GetReadPositionInInput() == Inspection::Length(0, 0));
-		assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
-		assert(Reader.CalculateRemainingOutputLength() == Inspection::Length(1, 0));
+		{
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{0, 0}};
+			auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(Reader.GetReadPositionInInput() == Inspection::Length(0, 0));
+			assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
+			assert(Reader.CalculateRemainingOutputLength() == Inspection::Length(0, 0));
+		}
+		{
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
+			auto Result{Get_UnsignedInteger_0Bit(Reader, {})};
+			
+			assert(Result->GetSuccess() == true);
+			assert(Reader.GetReadPositionInInput() == Inspection::Length(0, 0));
+			assert(Reader.GetConsumedLength() == Inspection::Length(0, 0));
+			assert(Reader.CalculateRemainingOutputLength() == Inspection::Length(1, 0));
+		}
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_ASCII_String_Alphabetic_EndedByLength                                     //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t RawBuffer[] = {0x61, 0x62, 0x63, 0x64, 0x65};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 4}};
 			auto Result = Inspection::Get_ASCII_String_Alphabetic_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
@@ -350,17 +350,18 @@ int main(void)
 	// Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength                                   //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t RawBuffer[] = {0x61, 0x62, 0x63, 0x64, 0x65};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 4}};
 			auto Result = Inspection::Get_ASCII_String_AlphaNumeric_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
@@ -372,17 +373,18 @@ int main(void)
 	// Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength                            //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t RawBuffer[] = {0x61, 0x62, 0x63, 0x64, 0x65};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 4}};
 			auto Result = Inspection::Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
@@ -394,17 +396,18 @@ int main(void)
 	// Inspection::Get_ASCII_String_Printable_EndedByLength                                      //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t RawBuffer[] = {0x61, 0x62, 0x63, 0x64, 0x65};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_ASCII_String_Printable_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 4}};
 			auto Result = Inspection::Get_ASCII_String_Printable_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
@@ -416,9 +419,11 @@ int main(void)
 	// Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength                                 //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t RawBuffer[] = {0x61, 0x62, 0x63, 0x64, 0x65};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -433,8 +438,7 @@ int main(void)
 			assert(Data[4] == 0x65);
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 4}};
 			auto Result = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
@@ -491,17 +495,18 @@ int main(void)
 	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength                                  //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t RawBuffer[] = {0x61, 0x62, 0x63, 0x64, 0x65};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{5, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer2, Inspection::Length{4, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 4}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
@@ -566,41 +571,39 @@ int main(void)
 	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength                     //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t Buffer5[] = {0x61, 0x62, 0x63, 0x64, 0x65, 0x00, 0x00};
+		auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{7, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 2}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 2}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 2}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 2}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{6, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 2}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{6, 2}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -612,57 +615,53 @@ int main(void)
 	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength                  //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t Buffer5[] = {0x61, 0x62, 0x63, 0x64, 0x65, 0x00, 0x00};
+		auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{7, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 4}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 4}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{6, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{6, 4}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{7, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{7, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -674,57 +673,53 @@ int main(void)
 	// Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength          //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
+		std::uint8_t Buffer5[] = {0x61, 0x62, 0x63, 0x64, 0x65, 0x00, 0x00};
+		auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{7, 0}};
+		
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{4, 2}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 2}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcd");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{5, 5}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{5, 5}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{6, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{6, 7}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{6, 7}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 			assert(std::any_cast<const std::string &>(Result->GetValue()->GetData()) == "abcde");
 		}
 		{
-			auto Buffer = Inspection::Buffer{Buffer5, Inspection::Length{7, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{7, 0}};
 			auto Result = Inspection::Get_ISO_IEC_8859_1_1998_String_EndedByTerminationUntilLengthOrLength(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -788,24 +783,22 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUCS2Termination[] = {0x00, 0x00};
+		auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{2, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{1, 7}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 7}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_BigEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -818,24 +811,22 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUCS2Termination[] = {0x00, 0x00};
+		auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{2, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{1, 7}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 7}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUCS2Termination, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UCS_2_CodePoint_LittleEndian(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -848,17 +839,16 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF16Termination[] = {0x00, 0x00};
+		auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{2, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodeUnit(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -871,17 +861,16 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF16Termination[] = {0x00, 0x00};
+		auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{2, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16Termination, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodeUnit(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -894,31 +883,28 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF16BELatinSmallLetterA[] = {0x00, 0x61};
+		auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{2, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{0, 5}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{0, 5}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{1, 2}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 2}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16BELatinSmallLetterA, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16BE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -931,17 +917,16 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferUTF16LatinSmallLetterA[] = {0x61, 0x00};
+		auto Buffer = Inspection::Buffer{BufferUTF16LatinSmallLetterA, Inspection::Length{2, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16LatinSmallLetterA, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferUTF16LatinSmallLetterA, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			auto Result = Inspection::Get_ISO_IEC_10646_1_1993_UTF_16LE_CodePoint(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -954,17 +939,16 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
+		auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{0, 4}};
 			auto Result = Inspection::Get_ASCII_Character_Alphabetic(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ASCII_Character_Alphabetic(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -977,17 +961,16 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
+		auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{0, 4}};
 			auto Result = Inspection::Get_ASCII_Character_AlphaNumeric(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ASCII_Character_AlphaNumeric(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
@@ -1000,17 +983,16 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t BufferASCIILatinSmallLetterA[] = {0x61};
+		auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{0, 4}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{0, 4}};
 			auto Result = Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Reader, {});
 			
 			assert(Result->GetSuccess() == false);
 		}
 		{
-			auto Buffer = Inspection::Buffer{BufferASCIILatinSmallLetterA, Inspection::Length{1, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{1, 0}};
 			auto Result = Inspection::Get_ASCII_Character_AlphaNumericOrSpace(Reader, {});
 			
 			assert(Result->GetSuccess() == true);
