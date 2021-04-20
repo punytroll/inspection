@@ -24,6 +24,8 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length) :
 	Inspection::Reader{Reader._Buffer, StartPositionInInput, StartPositionInInput + Length, Reader._BitstreamType}
 {
+	assert(Reader._ReadPositionInInput + Length <= Reader._EndPositionInInput);
+	assert(_EndPositionInInput <= Reader._EndPositionInInput);
 }
 
 Inspection::Reader::Reader(const Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType) :
