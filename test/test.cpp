@@ -12,10 +12,10 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t RawBuffer[] = {0xf3, 0x24};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			Inspection::ReadResult ReadResult;
 			
 			assert(Reader.Read2Bits(ReadResult) == true);
@@ -67,8 +67,7 @@ int main(void)
 			assert(ReadResult.Data == 0x00);
 		}
 		{
-			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 			
@@ -129,10 +128,10 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t RawBuffer[] = {0xf3, 0x24, 0x76};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{3, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{3, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{3, 0}};
 			Inspection::ReadResult ReadResult;
 			
 			assert(Reader.Read3Bits(ReadResult) == true);
@@ -184,8 +183,7 @@ int main(void)
 			assert(ReadResult.Data == 0x06);
 		}
 		{
-			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{3, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{3, 0}};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 			
@@ -246,10 +244,10 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		std::uint8_t RawBuffer[] = {0xf3, 0x24};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
 		
 		{
-			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			Inspection::ReadResult ReadResult;
 			
 			assert(Reader.Read6Bits(ReadResult) == true);
@@ -270,8 +268,7 @@ int main(void)
 			assert((ReadResult.OutputLength == Inspection::Length{0, 0}));
 		}
 		{
-			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{2, 0}};
-			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{2, 0}};
 			
 			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 			
