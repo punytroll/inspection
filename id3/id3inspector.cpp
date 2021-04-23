@@ -51,6 +51,12 @@ namespace Inspection
 					if(Buffer.GetLength() >= Inspection::Length{128, 0})
 					{
 						auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
+						
+						if(PartReader.GetReadPositionInInput() >= Inspection::Length{0, 0})
+						{
+							_AppendOtherData(Result->GetValue(), PartReader.GetReadPositionInInput());
+						}
+						
 						auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 						
 						Continue = PartResult->GetSuccess();
@@ -80,6 +86,10 @@ namespace Inspection
 					Continue = PartResult->GetSuccess();
 					Result->GetValue()->AppendField("ID3v2", PartResult->GetValue());
 					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					if(Reader.GetReadPositionInInput() < Buffer.GetLength())
+					{
+						_AppendOtherData(Result->GetValue(), Buffer.GetLength() - Reader.GetReadPositionInInput());
+					}
 					
 					break;
 				}
@@ -102,6 +112,12 @@ namespace Inspection
 						if(Buffer.GetLength() >= Inspection::Length{128, 0})
 						{
 							auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
+							
+							if(Reader.GetReadPositionInInput() < PartReader.GetReadPositionInInput())
+							{
+								_AppendOtherData(Result->GetValue(), PartReader.GetReadPositionInInput() - Reader.GetReadPositionInInput());
+							}
+							
 							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 							
 							Continue = PartResult->GetSuccess();
