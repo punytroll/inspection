@@ -30,8 +30,6 @@ namespace Inspection
 			auto Result = std::make_unique<Inspection::Result>();
 			auto Continue = true;
 			
-			Result->GetValue()->SetName("ID3Tags");
-			
 			if(_ID3v1Only == true)
 			{
 				auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
@@ -69,8 +67,8 @@ namespace Inspection
 					}
 				}
 				
-				Inspection::Reader PartReader{Reader};
-				auto ID3v2TagResult{Inspection::Get_ID3_2_Tag(PartReader, {})};
+				auto PartReader = Inspection::Reader{Reader};
+				auto ID3v2TagResult = Inspection::Get_ID3_2_Tag(PartReader, {});
 				
 				Result->GetValue()->AppendField("ID3v2", ID3v2TagResult->GetValue());
 				Continue = ((ID3v1TagResult != nullptr) && (ID3v1TagResult->GetSuccess() == true)) || ID3v2TagResult->GetSuccess();
@@ -87,13 +85,13 @@ namespace Inspection
 
 int main(int argc, char **argv)
 {
-	Inspection::ID3Inspector Inspector;
-	auto NumberOfArguments{argc};
-	auto ArgumentIndex{0};
+	auto Inspector = Inspection::ID3Inspector{};
+	auto NumberOfArguments = argc;
+	auto ArgumentIndex = 0;
 
 	while(++ArgumentIndex < NumberOfArguments)
 	{
-		std::string Argument{argv[ArgumentIndex]};
+		auto Argument = std::string{argv[ArgumentIndex]};
 		
 		if(Argument == "--id3v1-only")
 		{
@@ -105,7 +103,7 @@ int main(int argc, char **argv)
 		}
 	}
 	
-	int Result{0};
+	auto Result = 0;
 	
 	if(Inspector.GetPathCount() == 0)
 	{
