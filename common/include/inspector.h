@@ -21,6 +21,7 @@ namespace Inspection
 		virtual std::unique_ptr< Inspection::Result > _Getter(const Inspection::Buffer & Buffer) = 0;
 		virtual void _Writer(std::unique_ptr< Inspection::Result > & Result);
 		void _QueryWriter(std::shared_ptr< Inspection::Value > Value, const std::string & Query);
+		void _AppendOtherData(std::shared_ptr<Inspection::Value> Value, const Inspection::Length & Length);
 	private:
 		void _ProcessPath(const std::filesystem::directory_entry & DirectoryEntry);
 		void _ProcessFile(const std::filesystem::directory_entry & DirectoryEntry);

@@ -265,3 +265,11 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 		}
 	}
 }
+
+void Inspection::Inspector::_AppendOtherData(std::shared_ptr<Inspection::Value> Value, const Inspection::Length & Length)
+{
+	auto OtherDataValue = Value->AppendField("OtherData");
+	auto LengthTag = OtherDataValue->AddTag("length", Length);
+	
+	LengthTag->AddTag("unit", "bytes and bits"s);
+}
