@@ -6,6 +6,8 @@
 #include "result.h"
 #include "type_repository.h"
 
+using namespace std::string_literals;
+
 namespace Inspection
 {
 	class ID3Inspector : public Inspection::Inspector
@@ -32,24 +34,32 @@ namespace Inspection
 			
 			if(_ID3v1Only == true)
 			{
-				auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
-				auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
-				
-				Continue = PartResult->GetSuccess();
-				if(PartResult->GetValue()->HasField("AlbumTrack") == true)
+				if(Buffer.GetLength() >= Inspection::Length{128, 0})
 				{
-					Result->GetValue()->AppendField("ID3v1.1", PartResult->GetValue());
+					auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
+					auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+					
+					Continue = PartResult->GetSuccess();
+					if(PartResult->GetValue()->HasField("AlbumTrack") == true)
+					{
+						Result->GetValue()->AppendField("ID3v1.1", PartResult->GetValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendField("ID3v1", PartResult->GetValue());
+					}
 				}
 				else
 				{
-					Result->GetValue()->AppendField("ID3v1", PartResult->GetValue());
+					Result->GetValue()->AddTag("error", "Not enough data for an ID3v1 tag."s);
+					Continue = false;
 				}
 			}
 			else
 			{
 				std::unique_ptr< Inspection::Result > ID3v1TagResult;
 				
-				if(Buffer.GetLength() >= Inspection::Length(128, 0))
+				if(Buffer.GetLength() >= Inspection::Length{128, 0})
 				{
 					auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
 					
