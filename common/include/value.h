@@ -83,6 +83,14 @@ namespace Inspection
 			return Tag;
 		}
 		
+		void AddTags(const std::list<std::shared_ptr<Inspection::Value>> & Tags)
+		{
+			for(auto Tag : Tags)
+			{
+				_Tags.push_back(Tag);
+			}
+		}
+		
 		const std::any & GetData(void)
 		{
 			return _Data;
