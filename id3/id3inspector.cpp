@@ -34,7 +34,7 @@ namespace Inspection
 			
 			if(_ID3v1Only == true)
 			{
-				auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}};
+				auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
 				auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
@@ -53,7 +53,7 @@ namespace Inspection
 				
 				if(Buffer.GetLength() >= Inspection::Length(128, 0))
 				{
-					auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}};
+					auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
 					
 					ID3v1TagResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
 					if(ID3v1TagResult->GetSuccess() == true)
