@@ -8499,7 +8499,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_Frame(Inspection::Rea
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"MPEG", "1", "FrameHeader"})->Get(PartReader, {})};
+		auto PartResult = Inspection::g_TypeRepository.GetType({"MPEG", "1", "FrameHeader"})->Get(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendField("Header", PartResult->GetValue());
@@ -8508,12 +8508,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_Frame(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		auto ProtectionBit{std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Header")->GetField("ProtectionBit")->GetData())};
+		auto ProtectionBit = std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Header")->GetField("ProtectionBit")->GetData());
 		
 		if(ProtectionBit == 0x00)
 		{
-			Inspection::Reader PartReader{Reader, Inspection::Length{0, 16}};
-			auto PartResult{Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {})};
+			auto PartReader = Inspection::Reader{Reader, Inspection::Length{0, 16}};
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("ErrorCheck", PartResult->GetValue());
@@ -8523,27 +8523,33 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_Frame(Inspection::Rea
 	// reading
 	if(Continue == true)
 	{
-		auto LayerDescription{std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Header")->GetField("LayerDescription")->GetData())};
-		auto BitRate{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Header")->GetField("BitRateIndex")->GetTag("value")->GetData())};
-		auto SamplingFrequency{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Header")->GetField("SamplingFrequency")->GetTag("value")->GetData())};
-		auto PaddingBit{std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Header")->GetField("PaddingBit")->GetData())};
-		auto FrameLength{0ul};
+		auto LayerDescription = std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Header")->GetField("LayerDescription")->GetData());
+		auto BitRate = std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Header")->GetField("BitRateIndex")->GetTag("value")->GetData());
+		auto SamplingFrequency = std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Header")->GetField("SamplingFrequency")->GetTag("value")->GetData());
+		auto PaddingBit = std::any_cast<std::uint8_t>(Result->GetValue()->GetField("Header")->GetField("PaddingBit")->GetData());
+		auto FrameLength = Inspection::Length{};
 		
 		if(LayerDescription == 0x03)
 		{
-			FrameLength = (12 * BitRate / SamplingFrequency + PaddingBit) * 4;
+			FrameLength.Set((12 * BitRate / SamplingFrequency + PaddingBit) * 4, 0);
 		}
 		else if((LayerDescription == 0x01) || (LayerDescription == 0x02))
 		{
-			FrameLength = 144 * BitRate / SamplingFrequency + PaddingBit;
+			FrameLength.Set(144 * BitRate / SamplingFrequency + PaddingBit, 0);
 		}
-		
-		Inspection::Reader PartReader{Reader, Inspection::Length{FrameLength, 0} - Reader.GetConsumedLength()};
-		auto PartResult{Inspection::Get_Data_SetOrUnset_EndedByLength(PartReader, {})};
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("AudioData", PartResult->GetValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
+		if(Reader.Has(FrameLength) == true)
+		{
+			auto PartReader = Inspection::Reader{Reader, FrameLength - Reader.GetConsumedLength()};
+			auto PartResult = Inspection::Get_Data_SetOrUnset_EndedByLength(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("AudioData", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else
+		{
+			Continue = false;
+		}
 	}
 	// finalization
 	Result->SetSuccess(Continue);
