@@ -3,36 +3,56 @@
 #include "reader.h"
 
 Inspection::Reader::Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length) :
-	Inspection::Reader{Buffer, StartPositionInInput, StartPositionInInput + Length, Inspection::Reader::BitstreamType::MostSignificantBitFirst}
+	_BufferCore{std::make_unique<Inspection::Reader::BufferCore>(Buffer, StartPositionInInput, StartPositionInInput + Length, Inspection::Reader::BitstreamType::MostSignificantBitFirst)}
 {
 }
 
-Inspection::Reader::Reader(const Inspection::Reader & Reader) :
-	Inspection::Reader{Reader._BufferCore->_Buffer, Reader._BufferCore->_ReadPositionInInput, Reader._BufferCore->_EndPositionInInput, Reader._BufferCore->_BitstreamType}
+Inspection::Reader::Reader(const Inspection::Reader & Reader)
 {
-	assert(Reader._BufferCore->_ReadPositionInInput <= Reader._BufferCore->_EndPositionInInput);
-	assert(_BufferCore->_EndPositionInInput <= Reader._BufferCore->_EndPositionInInput);
+	if(Reader._BufferCore != nullptr)
+	{
+		assert(Reader._BufferCore->_ReadPositionInInput <= Reader._BufferCore->_EndPositionInInput);
+		_BufferCore = std::make_unique<Inspection::Reader::BufferCore>(Reader._BufferCore->_Buffer, Reader._BufferCore->_ReadPositionInInput, Reader._BufferCore->_EndPositionInInput, Reader._BufferCore->_BitstreamType);
+		assert(_BufferCore->_StartPositionInInput <= _BufferCore->_Buffer.GetLength());
+		assert(_BufferCore->_EndPositionInInput <= _BufferCore->_Buffer.GetLength());
+		assert(_BufferCore->_EndPositionInInput <= Reader._BufferCore->_EndPositionInInput);
+	}
+	else
+	{
+		assert(false);
+	}
 }
 
-Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::Length & Length) :
-	Inspection::Reader{Reader._BufferCore->_Buffer, Reader._BufferCore->_ReadPositionInInput, Reader._BufferCore->_ReadPositionInInput + Length, Reader._BufferCore->_BitstreamType}
+Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::Length & Length)
 {
-	assert(Reader._BufferCore->_ReadPositionInInput + Length <= Reader._BufferCore->_EndPositionInInput);
-	assert(_BufferCore->_EndPositionInInput <= Reader._BufferCore->_EndPositionInInput);
+	if(Reader._BufferCore != nullptr)
+	{
+		assert(Reader._BufferCore->_ReadPositionInInput + Length <= Reader._BufferCore->_EndPositionInInput);
+		_BufferCore = std::make_unique<Inspection::Reader::BufferCore>(Reader._BufferCore->_Buffer, Reader._BufferCore->_ReadPositionInInput, Reader._BufferCore->_ReadPositionInInput + Length, Reader._BufferCore->_BitstreamType);
+		assert(_BufferCore->_EndPositionInInput <= Reader._BufferCore->_EndPositionInInput);
+		assert(_BufferCore->_StartPositionInInput <= _BufferCore->_Buffer.GetLength());
+		assert(_BufferCore->_EndPositionInInput <= _BufferCore->_Buffer.GetLength());
+	}
+	else
+	{
+		assert(false);
+	}
 }
 
-Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length) :
-	Inspection::Reader{Reader._BufferCore->_Buffer, StartPositionInInput, StartPositionInInput + Length, Reader._BufferCore->_BitstreamType}
+Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length)
 {
-	assert(Reader._BufferCore->_ReadPositionInInput + Length <= Reader._BufferCore->_EndPositionInInput);
-	assert(_BufferCore->_EndPositionInInput <= Reader._BufferCore->_EndPositionInInput);
-}
-
-Inspection::Reader::Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType) :
-	_BufferCore{std::make_unique<Inspection::Reader::BufferCore>(Buffer, StartPositionInInput, EndPositionInInput, BitstreamType)}
-{
-	assert(_BufferCore->_StartPositionInInput <= Buffer.GetLength());
-	assert(_BufferCore->_EndPositionInInput <= Buffer.GetLength());
+	if(Reader._BufferCore != nullptr)
+	{
+		assert(Reader._BufferCore->_ReadPositionInInput + Length <= Reader._BufferCore->_EndPositionInInput);
+		_BufferCore = std::make_unique<Inspection::Reader::BufferCore>(Reader._BufferCore->_Buffer, StartPositionInInput, StartPositionInInput + Length, Reader._BufferCore->_BitstreamType);
+		assert(_BufferCore->_EndPositionInInput <= Reader._BufferCore->_EndPositionInInput);
+		assert(_BufferCore->_StartPositionInInput <= _BufferCore->_Buffer.GetLength());
+		assert(_BufferCore->_EndPositionInInput <= _BufferCore->_Buffer.GetLength());
+	}
+	else
+	{
+		assert(false);
+	}
 }
 
 void Inspection::Reader::AdvancePosition(const Inspection::Length & Offset)

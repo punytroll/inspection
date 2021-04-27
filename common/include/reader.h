@@ -66,8 +66,6 @@ namespace Inspection
 			Inspection::Length _StartPositionInInput;
 		};
 		
-		Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType);
-		
 		std::unique_ptr<Inspection::Reader::BufferCore> _BufferCore;
 	};
 }
