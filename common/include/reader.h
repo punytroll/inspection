@@ -27,6 +27,7 @@ namespace Inspection
 		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
 		
 		void AdvancePosition(const Inspection::Length & Offset);
+		const Inspection::Buffer & GetBuffer(void) const;
 		const Inspection::Length & GetReadPositionInInput(void) const;
 		Inspection::Length GetConsumedLength(void) const;
 		Inspection::Length CalculateRemainingOutputLength(void) const;

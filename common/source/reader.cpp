@@ -48,6 +48,18 @@ void Inspection::Reader::AdvancePosition(const Inspection::Length & Offset)
 	}
 }
 
+const Inspection::Buffer & Inspection::Reader::GetBuffer(void) const
+{
+	if(_BufferCore != nullptr)
+	{
+		return _BufferCore->_Buffer;
+	}
+	else
+	{
+		assert(false);
+	}
+}
+
 const Inspection::Length & Inspection::Reader::GetReadPositionInInput(void) const
 {
 	if(_BufferCore != nullptr)
