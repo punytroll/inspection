@@ -31,3 +31,8 @@ Inspection::ID3DeUnsynchronizationEagerFilter::ID3DeUnsynchronizationEagerFilter
 		}
 	}
 }
+
+Inspection::Length Inspection::ID3DeUnsynchronizationEagerFilter::GetOutputLength(void) const
+{
+	return Inspection::Length{_Output.size(), 0};
+}

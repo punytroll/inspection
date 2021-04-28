@@ -1,4 +1,5 @@
 #include "buffer.h"
+#include "id3_de_unsynchronization_eager_filter.h"
 #include "read_result.h"
 #include "reader.h"
 
@@ -156,6 +157,10 @@ bool Inspection::Reader::HasRemaining(void) const
 	if(_BufferCore != nullptr)
 	{
 		return _BufferCore->_ReadPositionInInput < _BufferCore->_EndPositionInInput;
+	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		return _ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput < _ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter.GetOutputLength();
 	}
 	else
 	{
