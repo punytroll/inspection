@@ -23,6 +23,11 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader)
 		assert(_BufferCore->_EndPositionInInput <= _BufferCore->_Buffer.GetLength());
 		assert(_BufferCore->_EndPositionInInput <= Reader._BufferCore->_EndPositionInInput);
 	}
+	else if(Reader._ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		_ID3DeUnsynchronizationEagerFilterCore = std::make_unique<Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore>(Reader._ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter);
+		_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput = Reader._ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput;
+	}
 	else
 	{
 		assert(false);
