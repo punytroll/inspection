@@ -7,6 +7,11 @@ Inspection::Reader::Reader(const Inspection::Buffer & Buffer, const Inspection::
 {
 }
 
+Inspection::Reader::Reader(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter) :
+	_ID3DeUnsynchronizationEagerFilterCore{std::make_unique<Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore>(ID3DeUnsynchronizationEagerFilter)}
+{
+}
+
 Inspection::Reader::Reader(const Inspection::Reader & Reader)
 {
 	if(Reader._BufferCore != nullptr)
@@ -634,4 +639,9 @@ bool Inspection::Reader::BufferCore::Read8Bits(Inspection::ReadResult & ReadResu
 	}
 	
 	return ReadResult.Success;
+}
+
+Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore::ID3DeUnsynchronizationEagerFilterCore(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter) :
+	_ID3DeUnsynchronizationEagerFilter{ID3DeUnsynchronizationEagerFilter}
+{
 }

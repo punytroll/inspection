@@ -11,6 +11,7 @@
 namespace Inspection
 {
 	class Buffer;
+	class ID3DeUnsynchronizationEagerFilter;
 	
 	class Reader
 	{
@@ -22,6 +23,7 @@ namespace Inspection
 		};
 		
 		explicit Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
+		explicit Reader(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter);
 		explicit Reader(const Inspection::Reader & Reader);
 		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & Length);
 		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
@@ -66,7 +68,15 @@ namespace Inspection
 			Inspection::Length _StartPositionInInput;
 		};
 		
+		class ID3DeUnsynchronizationEagerFilterCore
+		{
+		public:
+			ID3DeUnsynchronizationEagerFilterCore(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter);
+			Inspection::ID3DeUnsynchronizationEagerFilter & _ID3DeUnsynchronizationEagerFilter;
+		};
+		
 		std::unique_ptr<Inspection::Reader::BufferCore> _BufferCore;
+		std::unique_ptr<Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore> _ID3DeUnsynchronizationEagerFilterCore;
 	};
 }
 

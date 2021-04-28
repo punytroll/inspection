@@ -9,6 +9,7 @@
 #include "getters.h"
 #include "guid.h"
 #include "helper.h"
+#include "id3_de_unsynchronization_eager_filter.h"
 #include "id3_helper.h"
 #include "not_implemented_exception.h"
 #include "reader.h"
@@ -5636,7 +5637,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
 		}
 		else if(MajorVersion == 0x03)
 		{
-			PartResult = Inspection::Get_ID3_2_3_Tag_Body(PartReader, {{"ExtendedHeader", Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()}});
+			if(std::any_cast<bool>(Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("Unsynchronization")->GetData()) == true)
+			{
+				auto ID3DeUnsynchronizationEagerFilter = Inspection::ID3DeUnsynchronizationEagerFilter{PartReader.GetBuffer(), PartReader.GetReadPositionInInput(), ClaimedSize};
+				auto FilterReader = Inspection::Reader{ID3DeUnsynchronizationEagerFilter};
+				
+				PartResult = Inspection::Get_ID3_2_3_Tag_Body(FilterReader, {{"ExtendedHeader", Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()}});
+				assert(FilterReader.HasRemaining() == false);
+				PartReader.AdvancePosition(ClaimedSize);
+			}
+			else
+			{
+				PartResult = Inspection::Get_ID3_2_3_Tag_Body(PartReader, {{"ExtendedHeader", Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()}});
+			}
 		}
 		else if(MajorVersion == 0x04)
 		{
