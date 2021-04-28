@@ -304,6 +304,10 @@ bool Inspection::Reader::Read8Bits(Inspection::ReadResult & ReadResult)
 	{
 		return _BufferCore->Read8Bits(ReadResult);
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		return _ID3DeUnsynchronizationEagerFilterCore->Read8Bits(ReadResult);
+	}
 	else
 	{
 		assert(false);
@@ -664,4 +668,16 @@ bool Inspection::Reader::BufferCore::Read8Bits(Inspection::ReadResult & ReadResu
 Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore::ID3DeUnsynchronizationEagerFilterCore(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter) :
 	_ID3DeUnsynchronizationEagerFilter{ID3DeUnsynchronizationEagerFilter}
 {
+}
+
+bool Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore::Read8Bits(Inspection::ReadResult & ReadResult)
+{
+	auto Result = _ID3DeUnsynchronizationEagerFilter.Read8Bits(_ReadPositionInFilterOutput, ReadResult);
+	
+	if(Result == true)
+	{
+		_ReadPositionInFilterOutput += ReadResult.OutputLength;
+	}
+	
+	return Result;
 }
