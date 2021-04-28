@@ -10,6 +10,7 @@ Inspection::Reader::Reader(const Inspection::Buffer & Buffer, const Inspection::
 Inspection::Reader::Reader(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter) :
 	_ID3DeUnsynchronizationEagerFilterCore{std::make_unique<Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore>(ID3DeUnsynchronizationEagerFilter)}
 {
+	_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput = Inspection::Length{0, 0};
 }
 
 Inspection::Reader::Reader(const Inspection::Reader & Reader)

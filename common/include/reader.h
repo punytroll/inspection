@@ -73,6 +73,7 @@ namespace Inspection
 		public:
 			ID3DeUnsynchronizationEagerFilterCore(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter);
 			Inspection::ID3DeUnsynchronizationEagerFilter & _ID3DeUnsynchronizationEagerFilter;
+			Inspection::Length _ReadPositionInFilterOutput;
 		};
 		
 		std::unique_ptr<Inspection::Reader::BufferCore> _BufferCore;
