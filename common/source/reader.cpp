@@ -53,7 +53,7 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 	{
 		_ID3DeUnsynchronizationEagerFilterCore = std::make_unique<Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore>(Reader._ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter);
 		_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput = Reader._ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput;
-		_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput = Length;
+		_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput = Reader._ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput + Length;
 		_ID3DeUnsynchronizationEagerFilterCore->_ProducedLengthInOutput = Inspection::Length{0, 0};
 		assert(_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput <= _ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter.GetOutputLength());
 	}
