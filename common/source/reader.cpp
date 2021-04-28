@@ -13,6 +13,7 @@ Inspection::Reader::Reader(Inspection::ID3DeUnsynchronizationEagerFilter & ID3De
 {
 	_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput = Inspection::Length{0, 0};
 	_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput = ID3DeUnsynchronizationEagerFilter.GetOutputLength();
+	_ID3DeUnsynchronizationEagerFilterCore->_ProducedLengthInOutput = Inspection::Length{0, 0};
 }
 
 Inspection::Reader::Reader(const Inspection::Reader & Reader)
@@ -30,6 +31,7 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader)
 		_ID3DeUnsynchronizationEagerFilterCore = std::make_unique<Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore>(Reader._ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter);
 		_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput = Reader._ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput;
 		_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput = Reader._ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput;
+		_ID3DeUnsynchronizationEagerFilterCore->_ProducedLengthInOutput = Inspection::Length{0, 0};
 	}
 	else
 	{
@@ -52,6 +54,7 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 		_ID3DeUnsynchronizationEagerFilterCore = std::make_unique<Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore>(Reader._ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter);
 		_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput = Reader._ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput;
 		_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput = Length;
+		_ID3DeUnsynchronizationEagerFilterCore->_ProducedLengthInOutput = Inspection::Length{0, 0};
 		assert(_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput <= _ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter.GetOutputLength());
 	}
 	else
@@ -118,6 +121,10 @@ Inspection::Length Inspection::Reader::GetConsumedLength(void) const
 	if(_BufferCore != nullptr)
 	{
 		return _BufferCore->_ReadPositionInBuffer - _BufferCore->_StartPositionInBuffer;
+	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		return _ID3DeUnsynchronizationEagerFilterCore->_ProducedLengthInOutput;
 	}
 	else
 	{
@@ -681,6 +688,7 @@ bool Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore::Read8Bits(Inspec
 	if(Result == true)
 	{
 		_ReadPositionInFilterOutput += ReadResult.OutputLength;
+		_ProducedLengthInOutput += ReadResult.OutputLength;
 	}
 	
 	return Result;
