@@ -59,6 +59,34 @@ bool Inspection::ID3DeUnsynchronizationEagerFilter::Read1Bits(const Inspection::
 	return ReadResult.Success;
 }
 
+bool Inspection::ID3DeUnsynchronizationEagerFilter::Read4Bits(const Inspection::Length & ReadPositionInOutput, Inspection::ReadResult & ReadResult)
+{
+	ReadResult.RequestedLength = Inspection::Length{0, 4};
+	ReadResult.InputLength = Inspection::Length{0, 0};
+	if(ReadPositionInOutput + Inspection::Length{0, 4} <= GetOutputLength())
+	{
+		ReadResult.OutputLength = Inspection::Length{0, 4};
+		if(ReadPositionInOutput.GetBits() < 5)
+		{
+			ReadResult.Data = (_Output[ReadPositionInOutput.GetBytes()] >> (4 - ReadPositionInOutput.GetBits())) & 0x0f;
+		}
+		else
+		{
+			ReadResult.Data = (_Output[ReadPositionInOutput.GetBytes()] << (ReadPositionInOutput.GetBits() - 4)) | ((_Output[ReadPositionInOutput.GetBytes() + 1] >> (12 - ReadPositionInOutput.GetBits())) & 0x0f);
+		}
+		ReadResult.Success = true;
+		
+	}
+	else
+	{
+		ReadResult.OutputLength = Inspection::Length{0, 0};
+		ReadResult.Data = 0;
+		ReadResult.Success = false;
+	}
+	
+	return ReadResult.Success;
+}
+
 bool Inspection::ID3DeUnsynchronizationEagerFilter::Read8Bits(const Inspection::Length & ReadPositionInOutput, Inspection::ReadResult & ReadResult)
 {
 	ReadResult.RequestedLength = Inspection::Length{0, 8};

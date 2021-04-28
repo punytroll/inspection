@@ -73,6 +73,7 @@ namespace Inspection
 		public:
 			ID3DeUnsynchronizationEagerFilterCore(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter);
 			bool Read1Bits(Inspection::ReadResult & ReadResult);
+			bool Read4Bits(Inspection::ReadResult & ReadResult);
 			bool Read8Bits(Inspection::ReadResult & ReadResult);
 			Inspection::ID3DeUnsynchronizationEagerFilter & _ID3DeUnsynchronizationEagerFilter;
 			Inspection::Length _ReadPositionInFilterOutput;

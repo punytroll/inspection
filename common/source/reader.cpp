@@ -277,6 +277,10 @@ bool Inspection::Reader::Read4Bits(Inspection::ReadResult & ReadResult)
 	{
 		return _BufferCore->Read4Bits(ReadResult);
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		return _ID3DeUnsynchronizationEagerFilterCore->Read4Bits(ReadResult);
+	}
 	else
 	{
 		assert(false);
@@ -694,6 +698,19 @@ Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore::ID3DeUnsynchronizatio
 bool Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore::Read1Bits(Inspection::ReadResult & ReadResult)
 {
 	auto Result = _ID3DeUnsynchronizationEagerFilter.Read1Bits(_ReadPositionInFilterOutput, ReadResult);
+	
+	if(Result == true)
+	{
+		_ReadPositionInFilterOutput += ReadResult.OutputLength;
+		_ProducedLengthInOutput += ReadResult.OutputLength;
+	}
+	
+	return Result;
+}
+
+bool Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore::Read4Bits(Inspection::ReadResult & ReadResult)
+{
+	auto Result = _ID3DeUnsynchronizationEagerFilter.Read4Bits(_ReadPositionInFilterOutput, ReadResult);
 	
 	if(Result == true)
 	{
