@@ -86,6 +86,12 @@ void Inspection::Reader::AdvancePosition(const Inspection::Length & Offset)
 		assert(_BufferCore->_ReadPositionInBuffer + Offset <= _BufferCore->_EndPositionInBuffer);
 		_BufferCore->_ReadPositionInBuffer += Offset;
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		assert(_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput + Offset <= _ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput);
+		_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput += Offset;
+		_ID3DeUnsynchronizationEagerFilterCore->_ProducedLengthInOutput += Offset;
+	}
 	else
 	{
 		assert(false);
