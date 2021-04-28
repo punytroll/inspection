@@ -183,6 +183,10 @@ bool Inspection::Reader::IsAtEnd(void) const
 	{
 		return _BufferCore->_ReadPositionInInput == _BufferCore->_EndPositionInInput;
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		return _ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput == _ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput;
+	}
 	else
 	{
 		assert(false);
