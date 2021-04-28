@@ -144,6 +144,10 @@ Inspection::Length Inspection::Reader::CalculateRemainingOutputLength(void) cons
 	{
 		return _BufferCore->_EndPositionInBuffer - _BufferCore->_ReadPositionInBuffer;
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		return _ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput - _ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput;
+	}
 	else
 	{
 		assert(false);
