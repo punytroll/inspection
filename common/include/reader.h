@@ -51,7 +51,7 @@ namespace Inspection
 		class BufferCore
 		{
 		public:
-			BufferCore(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType);
+			BufferCore(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInBuffer, const Inspection::Length & EndPositionInBuffer, Inspection::Reader::BitstreamType BitstreamType);
 			bool Read0Bits(Inspection::ReadResult & ReadResult);
 			bool Read1Bits(Inspection::ReadResult & ReadResult);
 			bool Read2Bits(Inspection::ReadResult & ReadResult);
@@ -63,9 +63,9 @@ namespace Inspection
 			bool Read8Bits(Inspection::ReadResult & ReadResult);
 			Inspection::Reader::BitstreamType _BitstreamType;
 			const Inspection::Buffer & _Buffer;
-			Inspection::Length _EndPositionInInput;
-			Inspection::Length _ReadPositionInInput;
-			Inspection::Length _StartPositionInInput;
+			Inspection::Length _EndPositionInBuffer;
+			Inspection::Length _ReadPositionInBuffer;
+			Inspection::Length _StartPositionInBuffer;
 		};
 		
 		class ID3DeUnsynchronizationEagerFilterCore
