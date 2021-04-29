@@ -15,3 +15,12 @@ ID3v2.2 is not specific on whether UCS-2 strings must contain a byte order marke
 ID3v2.2, in section 3.2, specifies all string to be represented in ISO/IEC 8859-1. In particular, this applies to the three character string "image format" in a PIC frame.
 
 ASF is vague in the description of field Codec Name Length of Codec Entries in Codec List Objects: it specifies "the number of Unicode characters stored in the Codec Name field". The content of the Codec Name field is a UTF16LE string, which means, that characters might also be 32 bits long with surrogate pairs. Additionally, some Unicode code points are not really characters, but parts of a glyph. To address the latter issue, I will assume, that this actually means the number of code points, although I am pretty sure, that this will fail when we hit the first surrogate pair code point.
+
+ID3v2.3
+=======
+
+1) It is not stated clearly WHAT is being unsynchronized under the unsynchronization scheme!
+Therefore is is equally unclear, WHAT needs to be de-unsynchronized when reading the tag. Without having read the Unsynchronization flag from the tag header, it would be wrong to set up any de-unsynchronization mechanism, because, while writing the tag, unsynchronization is not strictly necessary, even in the face of false synchronizations. (see ID3v2.3 chapter 5) I think it is only logical, that, should we choose to get rid of false synchronizations while writing the tag, AFTER unsynchronizing, all of the tag is synchronization free. Since the header takes measures to be free of false synchronizations (ASCII characters and synch-free integers), only the tag body (everything after the 10 byte header) requires to be handled by de-unsynchronizing.
+
+2) It is not stated clearly whether the size of a frame is given as BEFORE or AFTER unsychronization has been performed while writing the tag.
+My guess would be BEFORE! As stated in point 1), the unsynchronization is probably run on all of the tag body, without heed for frame content. I think, therefore, that the unsychronization is performed AFTER the frames have been assembled - with sizes, that do not take the unsynchronization into account.

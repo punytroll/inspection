@@ -102,6 +102,7 @@ void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 			auto InnerResult = _Getter(Buffer);
 			
 			Result->GetValue()->AppendFields(InnerResult->GetValue()->GetFields());
+			Result->GetValue()->AddTags(InnerResult->GetValue()->GetTags());
 			Result->SetSuccess(InnerResult->GetSuccess());
 			_Writer(Result);
 			munmap(Address, FileSize);
@@ -264,4 +265,12 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 			assert(false);
 		}
 	}
+}
+
+void Inspection::Inspector::_AppendOtherData(std::shared_ptr<Inspection::Value> Value, const Inspection::Length & Length)
+{
+	auto OtherDataValue = Value->AppendField("OtherData");
+	auto LengthTag = OtherDataValue->AddTag("length", Length);
+	
+	LengthTag->AddTag("unit", "bytes and bits"s);
 }

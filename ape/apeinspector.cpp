@@ -32,10 +32,7 @@ namespace Inspection
 				
 				if(Start != LastEnd)
 				{
-					auto OtherDataValue = Result->GetValue()->AppendField("OtherData");
-					auto LengthTag = OtherDataValue->AddTag("length", Start - LastEnd);
-					
-					LengthTag->AddTag("unit", "bytes and bits"s);
+					_AppendOtherData(Result->GetValue(), Start - LastEnd);
 				}
 				if(Start != Buffer.GetLength())
 				{
