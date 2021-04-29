@@ -37,6 +37,15 @@ def get_text(nodes):
 			texts.append(node.data)
 	return "".join(texts)
 
+def get_space_appended(list):
+	return " ".join(list)
+
+def get_s_if_greater_one(number):
+	if number > 1:
+		return "s"
+	else:
+		return ""
+
 class Execute(object):
 	def __init__(self):
 		self.command = None
@@ -44,6 +53,7 @@ class Execute(object):
 
 class Test(object):
 	def __init__(self):
+		self.description = None
 		self.expected_output = None
 		self.execute = Execute()
 
@@ -58,7 +68,9 @@ for node in tests_element.childNodes:
 		test = Test()
 		for node in test_element.childNodes:
 			if node.nodeType == Node.ELEMENT_NODE:
-				if node.tagName == "execute":
+				if node.tagName == "description":
+					test.description = get_text(node.childNodes)
+				elif node.tagName == "execute":
 					execute_element = node
 					for node in execute_element.childNodes:
 						if node.nodeType == Node.ELEMENT_NODE:
@@ -70,24 +82,30 @@ for node in tests_element.childNodes:
 					test.expected_output = get_text(node.childNodes)
 		tests.append(test)
 
+magnitude_of_number_of_tests = len(str(len(tests)))
 number_of_tests = 0
 number_of_successes = 0
 number_of_failures = 0
 for test in tests:
 	number_of_tests += 1
-	print("Running \"" + test.execute.command + " " + " ".join(test.execute.arguments) + "\"")
+	if test.description != None:
+		print(f"{BrightWhite}[{BrightBlue}{str(number_of_tests).zfill(magnitude_of_number_of_tests)}{BrightWhite}]{Reset} {BrightYellow}{test.description}{Reset}")
+	else:
+		print(f"{BrightWhite}[{BrightBlue}{str(number_of_tests).zfill(magnitude_of_number_of_tests)}{BrightWhite}]{Reset}")
+	print(f"    Running \"{test.execute.command} {get_space_appended(test.execute.arguments)}\"")
 	result = subprocess.run([test.execute.command] + test.execute.arguments, stdout=subprocess.PIPE)
 	result = result.stdout.decode("utf-8")
 	if result == test.expected_output:
 		number_of_successes += 1
-		print("    => \"" + BrightGreen + result + Reset + "\"")
+		print(f"        => \"{BrightGreen}{result}{Reset}\"")
 	else:
 		number_of_failures += 1
-		print("    => \"" + BrightRed + result + Reset + "\"")
-		print("Test failed! Expected output was \"" + BrightBlue + test.expected_output + Reset + "\".")
+		print(f"        => \"{BrightRed}{result}{Reset}\"")
+		print(f"    Test failed! Expected output was \"{BrightBlue}{test.expected_output}{Reset}\".")
+	print()
 print()
 if number_of_failures == 0:
-	print("All " + Yellow + str(number_of_successes) + Reset + " test(s) " + BrightGreen + "successful" + Reset + ".")
+	print(f"All {Yellow}{str(number_of_successes)}{Reset} test{get_s_if_greater_one(number_of_successes)} {BrightGreen}succeeded{Reset}.")
 else:
-	print("Out of " + Yellow + str(number_of_tests) + Reset + " test(s), " + Yellow + str(number_of_successes) + Reset + " test(s) were " + BrightGreen + "successful" + Reset + " and " + Yellow + str(number_of_failures) + Reset + " test(s) " + BrightRed + "failed" + Reset + ".")
+	print(f"Out of {Yellow}{str(number_of_tests)}{Reset} test{get_s_if_greater_one(number_of_tests)}, {Yellow}{str(number_of_successes)}{Reset} test{get_s_if_greater_one(number_of_successes)} {BrightGreen}succeeded{Reset} and {Yellow}{str(number_of_failures)}{Reset} test{get_s_if_greater_one(number_of_failures)} {BrightRed}failed{Reset}.")
 	exit(1)
