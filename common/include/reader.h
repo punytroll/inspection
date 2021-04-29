@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <memory>
 
 #include "length.h"
 #include "read_result.h"
@@ -10,6 +11,7 @@
 namespace Inspection
 {
 	class Buffer;
+	class ID3DeUnsynchronizationEagerFilter;
 	
 	class Reader
 	{
@@ -21,9 +23,21 @@ namespace Inspection
 		};
 		
 		explicit Reader(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
+		explicit Reader(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter);
 		explicit Reader(const Inspection::Reader & Reader);
 		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & Length);
 		explicit Reader(const Inspection::Reader & Reader, const Inspection::Length & StartPositionInInput, const Inspection::Length & Length);
+		
+		void AdvancePosition(const Inspection::Length & Offset);
+		const Inspection::Buffer & GetBuffer(void) const;
+		const Inspection::Length & GetReadPositionInInput(void) const;
+		Inspection::Length GetConsumedLength(void) const;
+		Inspection::Length CalculateRemainingOutputLength(void) const;
+		Inspection::Length CalculateRemainingInputLength(void) const;
+		bool Has(const Inspection::Length & Length) const;
+		bool HasRemaining(void) const;
+		bool IsAtEnd(void) const;
+		void SetBitstreamType(Inspection::Reader::BitstreamType BitstreamType);
 		bool Read0Bits(Inspection::ReadResult & ReadResult);
 		bool Read1Bits(Inspection::ReadResult & ReadResult);
 		bool Read2Bits(Inspection::ReadResult & ReadResult);
@@ -33,86 +47,42 @@ namespace Inspection
 		bool Read6Bits(Inspection::ReadResult & ReadResult);
 		bool Read7Bits(Inspection::ReadResult & ReadResult);
 		bool Read8Bits(Inspection::ReadResult & ReadResult);
-		
-		void AdvancePosition(const Inspection::Length & Offset)
-		{
-			assert(_ReadPositionInInput + Offset <= _EndPositionInInput);
-			_ReadPositionInInput += Offset;
-		}
-		
-		const Inspection::Length & GetReadPositionInInput(void) const
-		{
-			return _ReadPositionInInput;
-		}
-		
-		Inspection::Length GetConsumedLength(void) const
-		{
-			return _ReadPositionInInput - _StartPositionInInput;
-		}
-		
-		/**
-		 * @brief This function calculates and returns the length of the data, that can still be
-		 *     read from the data source, using this reader.
-		 * @note This call might be very expensive, if the reader is based on a data source that
-		 *     transform its data.
-		 **/
-		Inspection::Length CalculateRemainingOutputLength(void) const
-		{
-			return _EndPositionInInput - _ReadPositionInInput;
-		}
-		
-		/**
-		 * @brief This function calculates and returns the length of the data, that needs to be
-		 *     processed on the base data source, in order to reach the end of this reader.
-		 * @note If the result is larger than 0.0 bytes and bits, this is not saying, that
-		 *     something can actually be read from the reader. All remaining input data might be
-		 *     filtered out when transforming to output data.
-		 * @note This call might be very expensive, if the reader is based on a data source that
-		 *     transforms its data.
-		 **/
-		Inspection::Length CalculateRemainingInputLength(void) const
-		{
-			return _EndPositionInInput - _ReadPositionInInput;
-		}
-		
-		bool Has(const Inspection::Length & Length) const
-		{
-			return _ReadPositionInInput + Length <= _EndPositionInInput;
-		}
-		
-		/**
-		 * This function is valid for filters as well. It returns true, as long
-		 * as the read position is not equal to the end position.
-		 * Caveat: For generatoring filters (those that may create data out of
-		 *   thin air once they reach the end of the data) this may return true
-		 *   even if the positions are equal!
-		 **/
-		bool HasRemaining(void) const
-		{
-			return _ReadPositionInInput < _EndPositionInInput;
-		}
-		
-		/**
-		 * This function is valid for filters as well. It return true, if the
-		 * read position equals the end position.
-		 **/
-		bool IsAtEnd(void) const
-		{
-			return _ReadPositionInInput == _EndPositionInInput;
-		}
-		
-		void SetBitstreamType(Inspection::Reader::BitstreamType BitstreamType)
-		{
-			assert(_ReadPositionInInput.GetBits() == 0);
-			_BitstreamType = BitstreamType;
-		}
 	private:
-		Reader(const Inspection::Buffer * Buffer, const Inspection::Length & StartPositionInInput, const Inspection::Length & EndPositionInInput, Inspection::Reader::BitstreamType BitstreamType);
-		Inspection::Reader::BitstreamType _BitstreamType;
-		const Inspection::Buffer * _Buffer;
-		Inspection::Length _EndPositionInInput;
-		Inspection::Length _ReadPositionInInput;
-		Inspection::Length _StartPositionInInput;
+		class BufferCore
+		{
+		public:
+			BufferCore(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInBuffer, const Inspection::Length & EndPositionInBuffer, Inspection::Reader::BitstreamType BitstreamType);
+			bool Read0Bits(Inspection::ReadResult & ReadResult);
+			bool Read1Bits(Inspection::ReadResult & ReadResult);
+			bool Read2Bits(Inspection::ReadResult & ReadResult);
+			bool Read3Bits(Inspection::ReadResult & ReadResult);
+			bool Read4Bits(Inspection::ReadResult & ReadResult);
+			bool Read5Bits(Inspection::ReadResult & ReadResult);
+			bool Read6Bits(Inspection::ReadResult & ReadResult);
+			bool Read7Bits(Inspection::ReadResult & ReadResult);
+			bool Read8Bits(Inspection::ReadResult & ReadResult);
+			Inspection::Reader::BitstreamType _BitstreamType;
+			const Inspection::Buffer & _Buffer;
+			Inspection::Length _EndPositionInBuffer;
+			Inspection::Length _ReadPositionInBuffer;
+			Inspection::Length _StartPositionInBuffer;
+		};
+		
+		class ID3DeUnsynchronizationEagerFilterCore
+		{
+		public:
+			ID3DeUnsynchronizationEagerFilterCore(Inspection::ID3DeUnsynchronizationEagerFilter & ID3DeUnsynchronizationEagerFilter);
+			bool Read1Bits(Inspection::ReadResult & ReadResult);
+			bool Read4Bits(Inspection::ReadResult & ReadResult);
+			bool Read8Bits(Inspection::ReadResult & ReadResult);
+			Inspection::ID3DeUnsynchronizationEagerFilter & _ID3DeUnsynchronizationEagerFilter;
+			Inspection::Length _ReadPositionInFilterOutput;
+			Inspection::Length _EndPositionInFilterOutput;
+			Inspection::Length _ProducedLengthInOutput;
+		};
+		
+		std::unique_ptr<Inspection::Reader::BufferCore> _BufferCore;
+		std::unique_ptr<Inspection::Reader::ID3DeUnsynchronizationEagerFilterCore> _ID3DeUnsynchronizationEagerFilterCore;
 	};
 }
 
