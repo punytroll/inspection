@@ -1,5 +1,257 @@
 <tests>
 	<test>
+		<description>If unsynchronization has been performed, this one bit needs to be set.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/data</argument>
+		</execute>
+		<expected-output>00000001</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on the flag bit field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/tag:data/data</argument>
+		</execute>
+		<expected-output>80</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on the flag bit field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/has-tag:bitset</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on the flag bit field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on the flag bit field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/has-tag:least significant bit first</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The flag Unsynchronization needs to be set. This is an interpretation of the flags field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:Unsynchronization/data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on flag field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:Unsynchronization/tag:bit index/data</argument>
+		</execute>
+		<expected-output>7</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on flag field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:Unsynchronization/tag:bit name/data</argument>
+		</execute>
+		<expected-output>a</expected-output>
+	</test>
+	<test>
+		<description>The flag ExtendedHeader must not be set fot his test.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:ExtendedHeader/data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on flag field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:ExtendedHeader/tag:bit index/data</argument>
+		</execute>
+		<expected-output>6</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on flag field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:ExtendedHeader/tag:bit name/data</argument>
+		</execute>
+		<expected-output>b</expected-output>
+	</test>
+	<test>
+		<description>The flag ExperimentalIndicator must not be set for this test.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on flag field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/tag:bit index/data</argument>
+		</execute>
+		<expected-output>5</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on flag field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/tag:bit name/data</argument>
+		</execute>
+		<expected-output>c</expected-output>
+	</test>
+	<test>
+		<description>This is the frame that will be unsynchronized.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>MCDI</expected-output>
+	</test>
+	<test>
+		<description>Unfortunately, I have no example of unsynchronization in valuable payload data. Instead, I have an MCDI frame with bogus FF FF data at the end, but that data is unsynchronized which disturbs the following frame, if not de-unsynchronized correctly. Here we check for the bogus end error.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/tag:error/data</argument>
+		</execute>
+		<expected-output>The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data.</expected-output>
+	</test>
+	<test>
+		<description>The claimed size of the frame.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/tag:claimed size/data</argument>
+		</execute>
+		<expected-output>158.0</expected-output>
+	</test>
+	<test>
+		<description>The unit for the claimed size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/tag:claimed size/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>This size of the frame must equal the claimed size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/field:Size/data</argument>
+		</execute>
+		<expected-output>158</expected-output>
+	</test>
+	<test>
+		<description>The handled size of the frame without the bogus FF FF.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/tag:handled size/data</argument>
+		</execute>
+		<expected-output>156.0</expected-output>
+	</test>
+	<test>
+		<description>The unit for the handled size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/tag:handled size/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The rest size in the frame. The bogus FF FF at the end.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/tag:rest size/data</argument>
+		</execute>
+		<expected-output>2.0</expected-output>
+	</test>
+	<test>
+		<description>The unit for the rest size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/tag:rest size/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The bogus data at the end of the frame. Unsynchronized, this reads ff 00 ff.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/field:Rest/data</argument>
+		</execute>
+		<expected-output>ff ff</expected-output>
+	</test>
+	<test>
+		<description>The error tag for the rest data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/field:Rest/tag:error/data</argument>
+		</execute>
+		<expected-output>This is additional unparsed data at the end of the frame.</expected-output>
+	</test>
+	<test>
+		<description>The length of the rest data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/field:Rest/tag:length/data</argument>
+		</execute>
+		<expected-output>2.0</expected-output>
+	</test>
+	<test>
+		<description>The unit for the length of the rest data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:5]/field:Rest/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>This is the frame following the frame that is unsynchronized. It needs to be available and the right one.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3v2Tag/field:Frames/field:Frame:[tag:element index in array/is-data:6]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>TLEN</expected-output>
+	</test>
+	<test>
 		<description>The language field of the COMM frame must be "eng".</description>
 		<execute>
 			<command>../generalinspector</command>
