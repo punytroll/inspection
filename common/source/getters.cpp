@@ -5633,10 +5633,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
 		
 		if(MajorVersion == 0x02)
 		{
+			Result->GetValue()->AddTag("version", "v2.2"s);
 			PartResult = Inspection::Get_ID3_2_2_Tag_Body(PartReader, {});
 		}
 		else if(MajorVersion == 0x03)
 		{
+			Result->GetValue()->AddTag("version", "v2.3"s);
 			if(std::any_cast<bool>(Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("Unsynchronization")->GetData()) == true)
 			{
 				auto ID3DeUnsynchronizationEagerFilter = Inspection::ID3DeUnsynchronizationEagerFilter{PartReader.GetBuffer(), PartReader.GetReadPositionInInput(), ClaimedSize};
@@ -5653,10 +5655,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
 		}
 		else if(MajorVersion == 0x04)
 		{
+			Result->GetValue()->AddTag("version", "v2.3"s);
 			PartResult = Inspection::Get_ID3_2_4_Tag_Body(PartReader, {{"ExtendedHeader", Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()}});
 		}
 		else
 		{
+			Result->GetValue()->AddTag("version", "unknown"s);
 			Result->GetValue()->AddTag("error", "Unknown major version \"" + to_string_cast(MajorVersion) + "\".");
 		}
 		if(PartResult != nullptr)
