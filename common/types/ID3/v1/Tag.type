@@ -1,103 +1,103 @@
 <type>
-	<sequence>
-		<field name="Identifier">
-			<type-reference>
-				<part>String</part>
-				<part>ASCII</part>
-				<part>ByTemplate</part>
-			</type-reference>
-			<parameters>
-				<parameter name="Template">
-					<string>TAG</string>
-				</parameter>
-			</parameters>
-		</field>
-		<field name="Title">
-			<type-reference>
-				<part>String</part>
-				<part>ISO_IEC_8859_1_1998</part>
-				<part>EndedByTerminationUntilLengthOrLength</part>
-			</type-reference>
-			<length>
-				<bytes>
-					<unsigned-integer-64bit>30</unsigned-integer-64bit>
-				</bytes>
-				<bits>
-					<unsigned-integer-64bit>0</unsigned-integer-64bit>
-				</bits>
-			</length>
-		</field>
-		<field name="Artist">
-			<type-reference>
-				<part>String</part>
-				<part>ISO_IEC_8859_1_1998</part>
-				<part>EndedByTerminationUntilLengthOrLength</part>
-			</type-reference>
-			<length>
-				<bytes>
-					<unsigned-integer-64bit>30</unsigned-integer-64bit>
-				</bytes>
-				<bits>
-					<unsigned-integer-64bit>0</unsigned-integer-64bit>
-				</bits>
-			</length>
-		</field>
-		<field name="Album">
-			<type-reference>
-				<part>String</part>
-				<part>ISO_IEC_8859_1_1998</part>
-				<part>EndedByTerminationUntilLengthOrLength</part>
-			</type-reference>
-			<length>
-				<bytes>
-					<unsigned-integer-64bit>30</unsigned-integer-64bit>
-				</bytes>
-				<bits>
-					<unsigned-integer-64bit>0</unsigned-integer-64bit>
-				</bits>
-			</length>
-		</field>
-		<field name="Year">
-			<length>
-				<bytes>
-					<unsigned-integer-64bit>4</unsigned-integer-64bit>
-				</bytes>
-				<bits>
-					<unsigned-integer-64bit>0</unsigned-integer-64bit>
-				</bits>
-			</length>
-			<alternative>
-				<forward>
-					<type-reference>
-						<part>String</part>
-						<part>ISO_IEC_8859_1_1998</part>
-						<part>EndedByTerminationUntilLengthOrLength</part>
-					</type-reference>
-				</forward>
-				<sequence>
-					<tag name="error">
-						<string>The "Year" field must be four bytes long and any unused bytes at the end must be filled with binary zeros.</string>
-					</tag>
-					<tag name="standard">
-						<string>ID3v1</string>
-					</tag>
-					<field name="String">
+	<alternative>
+		<sequence>
+			<field name="Identifier">
+				<type-reference>
+					<part>String</part>
+					<part>ASCII</part>
+					<part>ByTemplate</part>
+				</type-reference>
+				<parameters>
+					<parameter name="Template">
+						<string>TAG</string>
+					</parameter>
+				</parameters>
+			</field>
+			<field name="Title">
+				<type-reference>
+					<part>String</part>
+					<part>ISO_IEC_8859_1_1998</part>
+					<part>EndedByTerminationUntilLengthOrLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>30</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+			<field name="Artist">
+				<type-reference>
+					<part>String</part>
+					<part>ISO_IEC_8859_1_1998</part>
+					<part>EndedByTerminationUntilLengthOrLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>30</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+			<field name="Album">
+				<type-reference>
+					<part>String</part>
+					<part>ISO_IEC_8859_1_1998</part>
+					<part>EndedByTerminationUntilLengthOrLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>30</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+			<field name="Year">
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>4</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+				<alternative>
+					<forward>
 						<type-reference>
 							<part>String</part>
 							<part>ISO_IEC_8859_1_1998</part>
-							<part>EndedByTermination</part>
+							<part>EndedByTerminationUntilLengthOrLength</part>
 						</type-reference>
-					</field>
-					<field name="Rest">
-						<type-reference>
-							<part>Data</part>
-							<part>SetOrUnset_EndedByLength</part>
-						</type-reference>
-					</field>
-				</sequence>
-			</alternative>
-		</field>
-		<alternative>
+					</forward>
+					<sequence>
+						<tag name="error">
+							<string>The "Year" field must be four bytes long and any unused bytes at the end must be filled with binary zeros.</string>
+						</tag>
+						<tag name="standard">
+							<string>ID3v1</string>
+						</tag>
+						<field name="String">
+							<type-reference>
+								<part>String</part>
+								<part>ISO_IEC_8859_1_1998</part>
+								<part>EndedByTermination</part>
+							</type-reference>
+						</field>
+						<field name="Rest">
+							<type-reference>
+								<part>Data</part>
+								<part>SetOrUnset_EndedByLength</part>
+							</type-reference>
+						</field>
+					</sequence>
+				</alternative>
+			</field>
 			<field name="Comment">
 				<type-reference>
 					<part>String</part>
@@ -113,38 +113,148 @@
 					</bits>
 				</length>
 			</field>
-			<sequence>
-				<field name="Comment">
-					<type-reference>
-						<part>String</part>
-						<part>ISO_IEC_8859_1_1998</part>
-						<part>EndedByTerminationUntilLength</part>
-					</type-reference>
-					<length>
-						<bytes>
-							<unsigned-integer-64bit>29</unsigned-integer-64bit>
-						</bytes>
-						<bits>
-							<unsigned-integer-64bit>0</unsigned-integer-64bit>
-						</bits>
-					</length>
-				</field>
-				<field name="AlbumTrack">
-					<type-reference>
-						<part>Number</part>
-						<part>Integer</part>
-						<part>Unsigned</part>
-						<part>8Bit</part>
-					</type-reference>
-				</field>
-			</sequence>
-		</alternative>
-		<field name="Genre">
-			<type-reference>
-				<part>ID3</part>
-				<part>v1</part>
-				<part>Genre</part>
-			</type-reference>
-		</field>
-	</sequence>
+			<field name="Genre">
+				<type-reference>
+					<part>ID3</part>
+					<part>v1</part>
+					<part>Genre</part>
+				</type-reference>
+			</field>
+			<tag name="version">
+				<string>ID3v1</string>
+			</tag>
+		</sequence>
+		<sequence>
+			<field name="Identifier">
+				<type-reference>
+					<part>String</part>
+					<part>ASCII</part>
+					<part>ByTemplate</part>
+				</type-reference>
+				<parameters>
+					<parameter name="Template">
+						<string>TAG</string>
+					</parameter>
+				</parameters>
+			</field>
+			<field name="Title">
+				<type-reference>
+					<part>String</part>
+					<part>ISO_IEC_8859_1_1998</part>
+					<part>EndedByTerminationUntilLengthOrLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>30</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+			<field name="Artist">
+				<type-reference>
+					<part>String</part>
+					<part>ISO_IEC_8859_1_1998</part>
+					<part>EndedByTerminationUntilLengthOrLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>30</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+			<field name="Album">
+				<type-reference>
+					<part>String</part>
+					<part>ISO_IEC_8859_1_1998</part>
+					<part>EndedByTerminationUntilLengthOrLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>30</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+			<field name="Year">
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>4</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+				<alternative>
+					<forward>
+						<type-reference>
+							<part>String</part>
+							<part>ISO_IEC_8859_1_1998</part>
+							<part>EndedByTerminationUntilLengthOrLength</part>
+						</type-reference>
+					</forward>
+					<sequence>
+						<tag name="error">
+							<string>The "Year" field must be four bytes long and any unused bytes at the end must be filled with binary zeros.</string>
+						</tag>
+						<tag name="standard">
+							<string>ID3v1</string>
+						</tag>
+						<field name="String">
+							<type-reference>
+								<part>String</part>
+								<part>ISO_IEC_8859_1_1998</part>
+								<part>EndedByTermination</part>
+							</type-reference>
+						</field>
+						<field name="Rest">
+							<type-reference>
+								<part>Data</part>
+								<part>SetOrUnset_EndedByLength</part>
+							</type-reference>
+						</field>
+					</sequence>
+				</alternative>
+			</field>
+			<field name="Comment">
+				<type-reference>
+					<part>String</part>
+					<part>ISO_IEC_8859_1_1998</part>
+					<part>EndedByTerminationUntilLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>29</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+			<field name="AlbumTrack">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>8Bit</part>
+				</type-reference>
+			</field>
+			<field name="Genre">
+				<type-reference>
+					<part>ID3</part>
+					<part>v1</part>
+					<part>Genre</part>
+				</type-reference>
+			</field>
+			<tag name="version">
+				<string>ID3v1.1</string>
+			</tag>
+		</sequence>
+	</alternative>
 </type>
