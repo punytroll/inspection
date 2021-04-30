@@ -1,4 +1,5 @@
 #include <deque>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,27 @@ void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspec
 	
 	ErrorValue->AddTag("position", to_string_cast(Reader.GetReadPositionInInput()));
 	ErrorValue->AddTag("remaining length", to_string_cast(Reader.CalculateRemainingInputLength()));
+}
+
+std::string Join(const std::vector<std::string> & Strings, const std::string & Separator = ".")
+{
+	auto Result = std::stringstream{};
+	auto First = true;
+	
+	for(auto & String : Strings)
+	{
+		if(First == false)
+		{
+			Result << Separator;
+		}
+		else
+		{
+			First = false;
+		}
+		Result << String;
+	}
+	
+	return Result.str();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,11 +113,12 @@ namespace Inspection
 			auto Result = std::make_unique<Inspection::Result>();
 			auto MSBFReader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
 			auto PartReader = Inspection::Reader{MSBFReader};
-			auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v2_Tag"}, PartReader, {});
+			auto PartType = std::vector<std::string>{"ID3", "v2_Tag"};
+			auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 			
 			if(PartResult->GetSuccess() == true)
 			{
-				Result->GetValue()->AppendField("ID3v2Tag", PartResult->GetValue());
+				Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 				MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 				if(MSBFReader.IsAtEnd() == true)
 				{
@@ -104,11 +127,12 @@ namespace Inspection
 				else
 				{
 					auto PartReader = Inspection::Reader{MSBFReader};
-					auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
+					auto PartType = std::vector<std::string>{"FLAC", "Stream"};
+					auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 					
 					if(PartResult->GetSuccess() == true)
 					{
-						Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
+						Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 						MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 						if(MSBFReader.IsAtEnd() == true)
 						{
@@ -117,18 +141,12 @@ namespace Inspection
 						else
 						{
 							auto PartReader = Inspection::Reader{MSBFReader};
-							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+							auto PartType = std::vector<std::string>{"ID3", "v1", "Tag"};
+							auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
-								{
-									Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
-								}
-								else
-								{
-									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
-								}
+								Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -149,11 +167,12 @@ namespace Inspection
 					else
 					{
 						auto PartReader = Inspection::Reader{MSBFReader};
-						auto PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
+						auto PartType = std::vector<std::string>{"MPEG", "1", "Stream"};
+						auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 						
 						if(PartResult->GetSuccess() == true)
 						{
-							Result->GetValue()->AppendField("MPEG1Stream", PartResult->GetValue());
+							Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 							if(MSBFReader.IsAtEnd() == true)
 							{
@@ -162,11 +181,12 @@ namespace Inspection
 							else
 							{
 								auto PartReader = Inspection::Reader{MSBFReader};
-								auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
+								auto PartType = std::vector<std::string>{"APE", "Tag"};
+								auto PartResult{Inspection::g_TypeRepository.Get(PartType, PartReader, {})};
 								
 								if(PartResult->GetSuccess() == true)
 								{
-									Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
+									Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 									if(MSBFReader.IsAtEnd() == true)
 									{
@@ -175,18 +195,12 @@ namespace Inspection
 									else
 									{
 										auto PartReader = Inspection::Reader{MSBFReader};
-										auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+										auto PartType = std::vector<std::string>{"ID3", "v1", "Tag"};
+										auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 										
 										if(PartResult->GetSuccess() == true)
 										{
-											if(PartResult->GetValue()->HasField("AlbumTrack") == true)
-											{
-												Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
-											}
-											else
-											{
-												Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
-											}
+											Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 											MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 											if(MSBFReader.IsAtEnd() == true)
 											{
@@ -206,18 +220,12 @@ namespace Inspection
 								else
 								{
 									auto PartReader = Inspection::Reader{MSBFReader};
-									auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+									auto PartType = std::vector<std::string>{"ID3", "v1", "Tag"};
+									auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 									
 									if(PartResult->GetSuccess() == true)
 									{
-										if(PartResult->GetValue()->HasField("AlbumTrack") == true)
-										{
-											Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
-										}
-										else
-										{
-											Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
-										}
+										Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 										MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 										if(MSBFReader.IsAtEnd() == true)
 										{
@@ -238,18 +246,12 @@ namespace Inspection
 						else
 						{
 							auto PartReader = Inspection::Reader{MSBFReader};
-							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+							auto PartType = std::vector<std::string>{"ID3", "v1", "Tag"};
+							auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
-								{
-									Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
-								}
-								else
-								{
-									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
-								}
+								Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -271,11 +273,12 @@ namespace Inspection
 			else
 			{
 				auto PartReader = Inspection::Reader{MSBFReader};
-				auto PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
+				auto PartType = std::vector<std::string>{"MPEG", "1", "Stream"};
+				auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 				
 				if(PartResult->GetSuccess() == true)
 				{
-					Result->GetValue()->AppendField("MPEG1Stream", PartResult->GetValue());
+					Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 					MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 					if(MSBFReader.IsAtEnd() == true)
 					{
@@ -284,11 +287,12 @@ namespace Inspection
 					else
 					{
 						auto PartReader = Inspection::Reader{MSBFReader};
-						auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
+						auto PartType = std::vector<std::string>{"APE", "Tag"};
+						auto PartResult{Inspection::g_TypeRepository.Get(PartType, PartReader, {})};
 						
 						if(PartResult->GetSuccess() == true)
 						{
-							Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
+							Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 							if(MSBFReader.IsAtEnd() == true)
 							{
@@ -297,18 +301,12 @@ namespace Inspection
 							else
 							{
 								auto PartReader = Inspection::Reader{MSBFReader};
-								auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+								auto PartType = std::vector<std::string>{"ID3", "v1", "Tag"};
+								auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 								
 								if(PartResult->GetSuccess() == true)
 								{
-									if(PartResult->GetValue()->HasField("AlbumTrack") == true)
-									{
-										Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
-									}
-									else
-									{
-										Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
-									}
+									Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 									if(MSBFReader.IsAtEnd() == true)
 									{
@@ -328,18 +326,12 @@ namespace Inspection
 						else
 						{
 							auto PartReader = Inspection::Reader{MSBFReader};
-							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+							auto PartType = std::vector<std::string>{"ID3", "v1", "Tag"};
+							auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
-								{
-									Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
-								}
-								else
-								{
-									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
-								}
+								Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -360,11 +352,12 @@ namespace Inspection
 				else
 				{
 					auto PartReader = Inspection::Reader{MSBFReader};
-					auto PartResult{Inspection::g_TypeRepository.Get({"APE", "Tag"}, PartReader, {})};
+					auto PartType = std::vector<std::string>{"APE", "Tag"};
+					auto PartResult{Inspection::g_TypeRepository.Get(PartType, PartReader, {})};
 					
 					if(PartResult->GetSuccess() == true)
 					{
-						Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
+						Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 						MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 						if(MSBFReader.IsAtEnd() == true)
 						{
@@ -373,18 +366,12 @@ namespace Inspection
 						else
 						{
 							auto PartReader = Inspection::Reader{MSBFReader};
-							auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+							auto PartType = std::vector<std::string>{"ID3", "v1", "Tag"};
+							auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
-								{
-									Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
-								}
-								else
-								{
-									Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
-								}
+								Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -404,18 +391,12 @@ namespace Inspection
 					else
 					{
 						auto PartReader = Inspection::Reader{MSBFReader};
-						auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v1", "Tag"}, PartReader, {});
+						auto PartType = std::vector<std::string>{"ID3", "v1", "Tag"};
+						auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 						
 						if(PartResult->GetSuccess() == true)
 						{
-							if(PartResult->GetValue()->HasField("AlbumTrack") == true)
-							{
-								Result->GetValue()->AppendField("ID3v1.1Tag", PartResult->GetValue());
-							}
-							else
-							{
-								Result->GetValue()->AppendField("ID3v1Tag", PartResult->GetValue());
-							}
+							Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 							if(MSBFReader.IsAtEnd() == true)
 							{
@@ -429,11 +410,12 @@ namespace Inspection
 						else
 						{
 							auto PartReader = Inspection::Reader{MSBFReader};
-							auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
+							auto PartType = std::vector<std::string>{"FLAC", "Stream"};
+							auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
+								Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -447,11 +429,12 @@ namespace Inspection
 							else
 							{
 								auto PartReader = Inspection::Reader{MSBFReader};
-								auto PartResult = Inspection::g_TypeRepository.Get({"ASF", "File"}, PartReader, {});
+								auto PartType = std::vector<std::string>{"ASF", "File"};
+								auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 								
 								if(PartResult->GetSuccess() == true)
 								{
-									Result->GetValue()->AppendField("ASFFile", PartResult->GetValue());
+									Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 									if(MSBFReader.IsAtEnd() == true)
 									{
@@ -465,11 +448,12 @@ namespace Inspection
 								else
 								{
 									auto PartReader = Inspection::Reader{MSBFReader};
-									auto PartResult = Inspection::g_TypeRepository.Get({"Apple", "AppleDouble_File"}, PartReader, {});
+									auto PartType = std::vector<std::string>{"Apple", "AppleDouble_File"};
+									auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 									
 									if(PartResult->GetSuccess() == true)
 									{
-										Result->GetValue()->AppendField("AppleDoubleFile", PartResult->GetValue());
+										Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 										MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 										if(MSBFReader.IsAtEnd() == true)
 										{
@@ -487,11 +471,12 @@ namespace Inspection
 										LSBFReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 										
 										auto PartReader = Inspection::Reader{LSBFReader};
-										auto PartResult = Inspection::g_TypeRepository.Get({"Ogg", "Stream"}, PartReader, {});
+										auto PartType = std::vector<std::string>{"Ogg", "Stream"};
+										auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 										
 										if(PartResult->GetSuccess() == true)
 										{
-											Result->GetValue()->AppendField("OggStream", PartResult->GetValue());
+											Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 											LSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 											if(LSBFReader.IsAtEnd() == true)
 											{
@@ -505,11 +490,12 @@ namespace Inspection
 										else
 										{
 											auto PartReader = Inspection::Reader{MSBFReader};
-											auto PartResult = Inspection::g_TypeRepository.Get({"RIFF", "Chunk"}, PartReader, {});
+											auto PartType = std::vector<std::string>{"RIFF", "Chunk"};
+											auto PartResult = Inspection::g_TypeRepository.Get(PartType, PartReader, {});
 											
 											if(PartResult->GetSuccess() == true)
 											{
-												Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
+												Result->GetValue()->AppendField(Join(PartType), PartResult->GetValue());
 												MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 												if(MSBFReader.IsAtEnd() == true)
 												{
@@ -552,7 +538,7 @@ namespace Inspection
 				auto PartResult = Inspection::g_TypeRepository.Get(TypeParts, PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField(TypeParts.back(), PartResult->GetValue());
+				Result->GetValue()->AppendField(Join(TypeParts), PartResult->GetValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			// finalization
