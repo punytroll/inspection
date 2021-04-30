@@ -91,7 +91,7 @@ namespace Inspection
 			auto Result = std::make_unique<Inspection::Result>();
 			auto MSBFReader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
 			auto PartReader = Inspection::Reader{MSBFReader};
-			auto PartResult = Inspection::Get_ID3_2_Tag(PartReader, {});
+			auto PartResult = Inspection::g_TypeRepository.Get({"ID3", "v2_Tag"}, PartReader, {});
 			
 			if(PartResult->GetSuccess() == true)
 			{
@@ -487,7 +487,7 @@ namespace Inspection
 										LSBFReader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
 										
 										auto PartReader = Inspection::Reader{LSBFReader};
-										auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
+										auto PartResult = Inspection::g_TypeRepository.Get({"Ogg", "Stream"}, PartReader, {});
 										
 										if(PartResult->GetSuccess() == true)
 										{
@@ -505,7 +505,7 @@ namespace Inspection
 										else
 										{
 											auto PartReader = Inspection::Reader{MSBFReader};
-											auto PartResult = Get_RIFF_Chunk(PartReader, {});
+											auto PartResult = Inspection::g_TypeRepository.Get({"RIFF", "Chunk"}, PartReader, {});
 											
 											if(PartResult->GetSuccess() == true)
 											{

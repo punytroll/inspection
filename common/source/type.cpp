@@ -2316,6 +2316,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				{
 					Type._HardcodedGetter = Inspection::Get_Ogg_Page;
 				}
+				else if(HardcodedText->GetText() == "Get_Ogg_Stream")
+				{
+					Type._HardcodedGetter = Inspection::Get_Ogg_Stream;
+				}
 				else if(HardcodedText->GetText() == "Get_RIFF_Chunk")
 				{
 					Type._HardcodedGetter = Inspection::Get_RIFF_Chunk;
