@@ -9,15 +9,15 @@
 #include "type_repository.h"
 #include "type_library_path.h"
 
-std::string JoinSeparated(const std::vector< std::string > & Strings, const std::string & Separator)
+std::string JoinSeparated(const std::vector<std::string> & Strings, const std::string & Separator)
 {
 	if(Strings.empty() == true)
 	{
-		return std::string();
+		return std::string{};
 	}
 	else
 	{
-		return std::accumulate(Strings.begin() + 1, Strings.end(), Strings[0], [](const std::string & Start, const std::string & String) { return Start + "/" + String; } );
+		return std::accumulate(Strings.begin() + 1, Strings.end(), Strings[0], [](auto & Start, auto & String) { return Start + "/" + String; } );
 	}
 }
 
@@ -42,8 +42,8 @@ namespace Inspection
 			}
 		}
 		
-		std::map< std::string, Inspection::TypeDefinition::Type * > _Types;
-		std::map< std::string, Module * > _Modules;
+		std::map<std::string, Inspection::TypeDefinition::Type *> _Types;
+		std::map<std::string, Module *> _Modules;
 		std::string _Path;
 	};
 }
@@ -60,24 +60,24 @@ Inspection::TypeRepository::~TypeRepository(void)
 	_RootModule = nullptr;
 }
 
-const Inspection::TypeDefinition::Type * Inspection::TypeRepository::GetType(const std::vector< std::string > & PathParts)
+const Inspection::TypeDefinition::Type * Inspection::TypeRepository::GetType(const std::vector<std::string> & PathParts)
 {
 	return _GetOrLoadType(PathParts);
 }
 
-std::unique_ptr< Inspection::Result > Inspection::TypeRepository::Get(const std::vector< std::string > & PathParts, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
+std::unique_ptr<Inspection::Result> Inspection::TypeRepository::Get(const std::vector<std::string> & PathParts, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
 	return _GetOrLoadType(PathParts)->Get(Reader, Parameters);
 }
 
-Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(const std::vector< std::string > & PathParts)
+Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(const std::vector<std::string> & PathParts)
 {
-	auto Module{_GetOrLoadModule(std::vector< std::string >{PathParts.begin(), PathParts.end() - 1})};
-	Inspection::TypeDefinition::Type * Result{nullptr};
+	auto Module = _GetOrLoadModule(std::vector<std::string>{PathParts.begin(), PathParts.end() - 1});
+	auto Result = (Inspection::TypeDefinition::Type *)nullptr;
 	
 	if(Module != nullptr)
 	{
-		auto TypeIterator{Module->_Types.find(PathParts.back())};
+		auto TypeIterator = Module->_Types.find(PathParts.back());
 		
 		if(TypeIterator != Module->_Types.end())
 		{
@@ -85,14 +85,14 @@ Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(co
 		}
 		else
 		{
-			auto TypePath{Module->_Path + '/' + PathParts.back() + ".type"};
+			auto TypePath = Module->_Path + '/' + PathParts.back() + ".type";
 			
 			if((std::filesystem::exists(TypePath) == true) && (std::filesystem::is_regular_file(TypePath) == true))
 			{
-				Result = new Inspection::TypeDefinition::Type{this};
+				Result = new Inspection::TypeDefinition::Type{PathParts, this};
 				try
 				{
-					std::ifstream InputFileStream{TypePath};
+					auto InputFileStream = std::ifstream{TypePath};
 					
 					Result->Load(InputFileStream);
 				}
@@ -116,14 +116,14 @@ Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(co
 	return Result;
 }
 
-Inspection::Module * Inspection::TypeRepository::_GetOrLoadModule(const std::vector< std::string > & ModulePathParts)
+Inspection::Module * Inspection::TypeRepository::_GetOrLoadModule(const std::vector<std::string> & ModulePathParts)
 {
-	Inspection::Module * Result{_RootModule};
+	auto Result = _RootModule;
 	
 	for(auto ModulePathPart : ModulePathParts)
 	{
-		auto ModulePath{Result->_Path + '/' + ModulePathPart};
-		auto ModuleIterator{Result->_Modules.find(ModulePathPart)};
+		auto ModulePath = Result->_Path + '/' + ModulePathPart;
+		auto ModuleIterator = Result->_Modules.find(ModulePathPart);
 		
 		if(ModuleIterator != Result->_Modules.end())
 		{
@@ -133,7 +133,7 @@ Inspection::Module * Inspection::TypeRepository::_GetOrLoadModule(const std::vec
 		{
 			if((std::filesystem::exists(ModulePath) == true) && (std::filesystem::is_directory(ModulePath) == true))
 			{
-				auto NewModule{new Module{}};
+				auto NewModule = new Module{};
 				
 				NewModule->_Path = ModulePath;
 				Result->_Modules.insert(std::make_pair(ModulePathPart, NewModule));

@@ -517,8 +517,9 @@ namespace Inspection
 	}
 }
 
-Inspection::TypeDefinition::Type::Type(Inspection::TypeRepository * TypeRepository) :
+Inspection::TypeDefinition::Type::Type(const std::vector<std::string> & PathParts, Inspection::TypeRepository * TypeRepository) :
 	_Part{nullptr},
+	_PathParts{PathParts},
 	_TypeRepository{TypeRepository}
 {
 }
@@ -646,6 +647,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 	Result->SetSuccess(Continue);
 	
 	return Result;
+}
+
+const std::vector<std::string> Inspection::TypeDefinition::Type::GetPathParts(void) const
+{
+	return _PathParts;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
