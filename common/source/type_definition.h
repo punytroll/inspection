@@ -82,7 +82,7 @@ namespace Inspection
 			};
 			
 			Inspection::TypeDefinition::DataReference::Root Root;
-			std::vector< Inspection::TypeDefinition::DataReference::PartDescriptor > PartDescriptors;
+			std::vector<Inspection::TypeDefinition::DataReference::PartDescriptor> PartDescriptors;
 		};
 		
 		class FieldReference
@@ -101,7 +101,7 @@ namespace Inspection
 			};
 			
 			Inspection::TypeDefinition::FieldReference::Root Root;
-			std::vector< Inspection::TypeDefinition::FieldReference::Part > Parts;
+			std::vector<Inspection::TypeDefinition::FieldReference::Part> Parts;
 		};
 		
 		class LengthReference
@@ -130,13 +130,13 @@ namespace Inspection
 		class Parameters
 		{
 		public:
-			std::vector< Inspection::TypeDefinition::Parameter > Parameters;
+			std::vector<Inspection::TypeDefinition::Parameter> Parameters;
 		};
 		
 		class TypeReference
 		{
 		public:
-			std::vector< std::string > Parts;
+			std::vector<std::string> Parts;
 		};
 		
 		class Statement
@@ -270,20 +270,20 @@ namespace Inspection
 		{
 		public:
 			Inspection::TypeDefinition::DataType DataType;
-			std::optional< bool > Boolean;
-			std::optional< Inspection::TypeDefinition::DataReference > DataReference;
-			std::optional< Inspection::GUID > GUID;
-			std::optional< Inspection::TypeDefinition::Length > Length;
-			std::optional< Inspection::TypeDefinition::LengthReference > LengthReference;
-			std::optional< Inspection::TypeDefinition::ParameterReference > ParameterReference;
-			std::optional< Inspection::TypeDefinition::Parameters > Parameters;
-			std::optional< float > SinglePrecisionReal;
-			std::optional< std::string > String;
-			std::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-			std::optional< std::uint8_t > UnsignedInteger8Bit;
-			std::optional< std::uint16_t > UnsignedInteger16Bit;
-			std::optional< std::uint32_t > UnsignedInteger32Bit;
-			std::optional< std::uint64_t > UnsignedInteger64Bit;
+			std::optional<bool> Boolean;
+			std::optional<Inspection::TypeDefinition::DataReference> DataReference;
+			std::optional<Inspection::GUID> GUID;
+			std::optional<Inspection::TypeDefinition::Length> Length;
+			std::optional<Inspection::TypeDefinition::LengthReference> LengthReference;
+			std::optional<Inspection::TypeDefinition::ParameterReference> ParameterReference;
+			std::optional<Inspection::TypeDefinition::Parameters> Parameters;
+			std::optional<float> SinglePrecisionReal;
+			std::optional<std::string> String;
+			std::optional<Inspection::TypeDefinition::TypeReference > TypeReference;
+			std::optional<std::uint8_t> UnsignedInteger8Bit;
+			std::optional<std::uint16_t> UnsignedInteger16Bit;
+			std::optional<std::uint32_t> UnsignedInteger32Bit;
+			std::optional<std::uint64_t> UnsignedInteger64Bit;
 		};
 		
 		class Parameter
@@ -313,7 +313,7 @@ namespace Inspection
 			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
 			
 			std::string Name;
-			std::optional< Inspection::TypeDefinition::Statement > Statement;
+			std::optional<Inspection::TypeDefinition::Statement> Statement;
 		};
 		
 		class Enumeration
@@ -323,12 +323,12 @@ namespace Inspection
 			{
 			public:
 				std::string BaseValue;
-				std::vector< Inspection::TypeDefinition::Tag > Tags;
+				std::vector<Inspection::TypeDefinition::Tag> Tags;
 				bool Valid;
 			};
 			Inspection::TypeDefinition::DataType BaseDataType;
-			std::vector< Inspection::TypeDefinition::Enumeration::Element > Elements;
-			std::optional< Inspection::TypeDefinition::Enumeration::Element > FallbackElement;
+			std::vector<Inspection::TypeDefinition::Enumeration::Element> Elements;
+			std::optional<Inspection::TypeDefinition::Enumeration::Element> FallbackElement;
 		};
 		
 		class ApplyEnumeration
@@ -345,7 +345,7 @@ namespace Inspection
 				ApplyEnumeration
 			};
 			
-			std::optional< Inspection::TypeDefinition::ApplyEnumeration > ApplyEnumeration;
+			std::optional<Inspection::TypeDefinition::ApplyEnumeration> ApplyEnumeration;
 			Inspection::TypeDefinition::Interpretation::Type Type;
 		};
 		
@@ -361,10 +361,10 @@ namespace Inspection
 			};
 			
 			Inspection::TypeDefinition::Array::IterateType IterateType;
-			std::optional< Inspection::TypeDefinition::FieldReference > IterateForEachField;
-			std::optional< Inspection::TypeDefinition::Statement > IterateNumberOfElements;
-			std::optional< std::string > ElementName;
-			std::optional< Inspection::TypeDefinition::Parameters > ElementParameters;
+			std::optional<Inspection::TypeDefinition::FieldReference> IterateForEachField;
+			std::optional<Inspection::TypeDefinition::Statement> IterateNumberOfElements;
+			std::optional<std::string> ElementName;
+			std::optional<Inspection::TypeDefinition::Parameters> ElementParameters;
 			Inspection::TypeDefinition::TypeReference ElementType;
 		};
 		
@@ -390,16 +390,16 @@ namespace Inspection
 			
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
 			
-			std::optional< Inspection::TypeDefinition::Array > Array;
-			std::optional< Inspection::TypeDefinition::Parameters > Parameters;
-			std::optional< std::string > FieldName;
-			std::optional< Inspection::TypeDefinition::TypeReference > TypeReference;
-			std::optional< Inspection::TypeDefinition::Interpretation > Interpretation;
-			std::optional< Inspection::TypeDefinition::Statement > Length;
-			std::optional< std::vector< Inspection::TypeDefinition::Part > > Parts;
-			std::vector< Inspection::TypeDefinition::Tag > Tags;
+			std::optional<Inspection::TypeDefinition::Array> Array;
+			std::optional<Inspection::TypeDefinition::Parameters> Parameters;
+			std::optional<std::string> FieldName;
+			std::optional<Inspection::TypeDefinition::TypeReference> TypeReference;
+			std::optional<Inspection::TypeDefinition::Interpretation> Interpretation;
+			std::optional<Inspection::TypeDefinition::Statement> Length;
+			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
+			std::vector<Inspection::TypeDefinition::Tag> Tags;
 			Inspection::TypeDefinition::Part::Type Type;
-			std::vector< Inspection::TypeDefinition::Statement > Verifications;
+			std::vector<Inspection::TypeDefinition::Statement> Verifications;
 		};
 		
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);
