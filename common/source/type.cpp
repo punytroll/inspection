@@ -777,7 +777,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 	Result->GetValue()->AddTag("array");
 	assert(Array.Array.has_value() == true);
 	
-	
 	switch(Array.Array->IterateType)
 	{
 	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
@@ -1165,7 +1164,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	auto Continue = true;
 	
 	ExecutionContext.Push(Fields, *Result, Reader, Parameters);
-	assert(Fields.TypeReference);
+	assert(Fields.TypeReference.has_value() == true);
 	
 	auto FieldsResult = Inspection::g_TypeRepository.GetType(Fields.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
 	
@@ -1227,7 +1226,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	auto Continue = true;
 	
 	ExecutionContext.Push(Forward, *Result, Reader, Parameters);
-	assert(Forward.TypeReference);
+	assert(Forward.TypeReference.has_value() == true);
 	
 	auto ForwardResult = Inspection::g_TypeRepository.GetType(Forward.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
 	
@@ -1304,7 +1303,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	auto Continue = true;
 	
 	ExecutionContext.Push(Sequence, *Result, Reader, Parameters);
-	assert(Sequence.Parts);
+	assert(Sequence.Parts.has_value() == true);
 	for(auto SequencePartIterator = std::begin(Sequence.Parts.value()); ((Continue == true) && (SequencePartIterator != std::end(Sequence.Parts.value()))); ++SequencePartIterator)
 	{
 		auto & SequencePart = *SequencePartIterator;
@@ -1442,7 +1441,7 @@ Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretat
 	{
 	case Inspection::TypeDefinition::Interpretation::Type::ApplyEnumeration:
 		{
-			assert(Interpretation.ApplyEnumeration);
+			assert(Interpretation.ApplyEnumeration.has_value() == true);
 			
 			auto EvaluationResult = _ApplyEnumeration(ExecutionContext, Interpretation.ApplyEnumeration->Enumeration, Target);
 			
@@ -1844,7 +1843,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			else if(PartChildElement->GetName() == "iterate")
 			{
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
-				assert(Part.Array);
+				assert(Part.Array.has_value() == true);
 				assert(PartChildElement->HasAttribute("type") == true);
 				if(PartChildElement->GetAttribute("type") == "at-least-one-until-failure-or-length")
 				{
@@ -1888,6 +1887,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			else if(PartChildElement->GetName() == "element-name")
 			{
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
+				assert(Part.Array.has_value() == true);
 				assert(PartChildElement->GetChilds().size() == 1);
 				
 				auto ElementNameText = dynamic_cast<const XML::Text *>(PartChildElement->GetChild(0));
@@ -1898,11 +1898,13 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			else if(PartChildElement->GetName() == "element-type")
 			{
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
+				assert(Part.Array.has_value() == true);
 				_LoadTypeReference(Part.Array->ElementType, PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "element-parameters")
 			{
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
+				assert(Part.Array.has_value() == true);
 				Part.Array->ElementParameters.emplace();
 				_LoadParameters(Part.Array->ElementParameters.value(), PartChildElement);
 			}
