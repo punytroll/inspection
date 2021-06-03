@@ -163,6 +163,10 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromD
 							
 							break;
 						}
+					default:
+						{
+							assert(false);
+						}
 					}
 				}
 				
@@ -281,6 +285,10 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromF
 					// skipped intentionally
 					
 					break;
+				}
+			default:
+				{
+					assert(false);
 				}
 			}
 		}
