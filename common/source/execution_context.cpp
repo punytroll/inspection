@@ -20,7 +20,7 @@
 
 #include "execution_context.h"
 
-Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters) :
+Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) :
 	_Parameters{Parameters},
 	_Part{Part},
 	_Reader{Reader},
@@ -28,7 +28,7 @@ Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition:
 {
 }
 
-void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map< std::string, std::any > & Parameters)
+void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
 	_ExecutionStack.emplace_back(Part, Result, Reader, Parameters);
 }
@@ -54,10 +54,10 @@ Inspection::Length Inspection::ExecutionContext::CalculateLengthFromReference(co
 	return std::next(std::begin(_ExecutionStack))->_Reader.GetConsumedLength();
 }
 
-std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference)
+std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference)
 {
-	std::shared_ptr< Inspection::Value > Result;
-	std::list< Inspection::ExecutionContext::Element >::iterator ExecutionStackIterator;
+	auto Result = std::shared_ptr<Inspection::Value>{};
+	auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element>::iterator{};
 	
 	switch(DataReference.Root)
 	{
@@ -82,7 +82,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromD
 	}
 	Result = ExecutionStackIterator->_Result.GetValue();
 	
-	auto PartIterator{std::begin(DataReference.PartDescriptors)};
+	auto PartIterator = std::begin(DataReference.PartDescriptors);
 	
 	while(PartIterator != std::end(DataReference.PartDescriptors))
 	{
@@ -186,10 +186,10 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetValueFromD
 	return Result;
 }
 
-std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference)
+std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference)
 {
-	std::shared_ptr< Inspection::Value > Result;
-	std::list< Inspection::ExecutionContext::Element >::iterator ExecutionStackIterator;
+	auto Result = std::shared_ptr<Inspection::Value>{};
+	auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element>::iterator{};
 	
 	switch(FieldReference.Root)
 	{
@@ -214,7 +214,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromF
 	}
 	Result = ExecutionStackIterator->_Result.GetValue();
 	
-	auto PartIterator{std::begin(FieldReference.Parts)};
+	auto PartIterator = std::begin(FieldReference.Parts);
 	
 	while(PartIterator != std::end(FieldReference.Parts))
 	{
@@ -299,7 +299,7 @@ std::shared_ptr< Inspection::Value > Inspection::ExecutionContext::GetFieldFromF
 
 const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference)
 {
-	auto ExecutionStackIterator{std::rbegin(_ExecutionStack)};
+	auto ExecutionStackIterator = std::rbegin(_ExecutionStack);
 	
 	while(ExecutionStackIterator != std::rend(_ExecutionStack))
 	{
@@ -317,9 +317,9 @@ const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterRefer
 	throw std::runtime_error{"Could not find named parameter \"" + ParameterReference.Name + "\"."};
 }
 
-std::unordered_map< std::string, std::any > Inspection::ExecutionContext::GetAllParameters(void)
+std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllParameters(void)
 {
-	std::unordered_map< std::string, std::any > Result;
+	auto Result = std::unordered_map<std::string, std::any>{};
 	
 	for(auto ExecutionStackElement : _ExecutionStack)
 	{
