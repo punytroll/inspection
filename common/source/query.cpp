@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "any_printing.h"
+#include "output_operators.h"
 #include "query.h"
 
 std::vector< std::string > Inspection::SplitString(const std::string & String, char Delimiter)

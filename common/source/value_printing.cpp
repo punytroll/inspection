@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 
-#include "any_printing.h"
 #include "colors.h"
+#include "output_operators.h"
 #include "value.h"
 #include "value_printing.h"
 
@@ -40,7 +40,7 @@ static void PrintValue(Inspection::Value & Value, const std::string & Indentatio
 		{
 			std::cout << Inspection::g_BrightCyan;
 		}
-		std::cout << Value.GetData();
+		Inspection::operator<<(std::cout, Value.GetData());
 	}
 	if(Value.GetTags().empty() == false)
 	{
@@ -83,7 +83,7 @@ static void PrintValue(Inspection::Value & Value, const std::string & Indentatio
 				{
 					std::cout << Inspection::g_BrightBlack;
 				}
-				std::cout << Tag->GetData();
+				Inspection::operator<<(std::cout, Tag->GetData());
 			}
 			if(Tag->GetFields().size() > 0)
 			{
@@ -116,7 +116,7 @@ static void PrintValue(Inspection::Value & Value, const std::string & Indentatio
 					}
 					if(SubTag->GetData().has_value() == true)
 					{
-						std::cout << SubTag->GetData();
+						Inspection::operator<<(std::cout, SubTag->GetData());
 					}
 					if(SubTag->GetFields().size() > 0)
 					{
@@ -149,7 +149,7 @@ static void PrintValue(Inspection::Value & Value, const std::string & Indentatio
 							}
 							if(SubSubTag->GetData().has_value() == true)
 							{
-								std::cout << SubSubTag->GetData();
+								Inspection::operator<<(std::cout, SubSubTag->GetData());
 							}
 							if(SubSubTag->GetFields().size() > 0)
 							{

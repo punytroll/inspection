@@ -2,11 +2,12 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "any_printing.h"
 #include "buffer.h"
 #include "colors.h"
 #include "exception_printing.h"
+#include "helper.h"
 #include "inspector.h"
+#include "output_operators.h"
 #include "query.h"
 #include "reader.h"
 #include "value_printing.h"
@@ -259,7 +260,7 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 		else if(QueryPartSpecifications[0] == "type")
 		{
 			assert(QueryPartSpecifications.size() == 1);
-			std::cout << GetTypeName(Value->GetData().type());
+			std::cout << Inspection::GetTypeName(Value->GetData().type());
 		}
 		else
 		{

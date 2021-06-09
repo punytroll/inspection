@@ -956,3 +956,27 @@ std::string Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(const std::str
 		throw std::invalid_argument("The ISO 639-2:1998 (alpha-3) code '" + ISO_639_2_1998_Code + "' is unknown.");
 	}
 }
+
+std::string Inspection::GetTypeName(const std::type_info & TypeInformation)
+{
+	if(TypeInformation == typeid(float))
+	{
+		return "single precision real";
+	}
+	else if(TypeInformation == typeid(nullptr))
+	{
+		return "nothing";
+	}
+	else if(TypeInformation == typeid(std::string))
+	{
+		return "string";
+	}
+	else if(TypeInformation == typeid(bool))
+	{
+		return "boolean";
+	}
+	else
+	{
+		assert(false);
+	}
+}
