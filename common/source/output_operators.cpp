@@ -93,15 +93,11 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & A
 		}
 		else if(Any.type() == typeid(Inspection::GUID))
 		{
-			auto Value = std::any_cast<const Inspection::GUID &>(Any);
-			
-			OStream << std::hex << std::setw(8) << std::right << std::setfill('0') << Value.Data1 << '-' << std::setw(4) << std::right << std::setfill('0') << Value.Data2 << '-' << std::setw(4) << std::right << std::setfill('0') << Value.Data3 << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Data4[0]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Data4[1]) << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Data4[2]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Data4[3]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Data4[4]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Data4[5]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Data4[6]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Data4[7]);
+			OStream << std::any_cast<const Inspection::GUID &>(Any);
 		}
 		else if(Any.type() == typeid(Inspection::DateTime))
 		{
-			auto Value = std::any_cast<const Inspection::DateTime &>(Any);
-			
-			OStream << Value.Year << '/' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(Value.Month) << '/' << std::setw(2) << static_cast<std::uint32_t>(Value.Day) << ' ' << std::setw(2) << static_cast<std::uint32_t>(Value.Hour) << ':' << std::setw(2) << static_cast<std::uint32_t>(Value.Minute) << ':' << std::setw(2) << static_cast<std::uint32_t>(Value.Second);
+			OStream << std::any_cast<const Inspection::DateTime &>(Any);
 		}
 		else if(Any.type() == typeid(std::vector<std::uint8_t>))
 		{
@@ -141,6 +137,16 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & A
 	}
 	
 	return OStream;
+}
+
+std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::DateTime & DateTime)
+{
+	return OStream << DateTime.Year << '/' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(DateTime.Month) << '/' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Day) << ' ' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Hour) << ':' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Minute) << ':' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Second);
+}
+
+std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::GUID & GUID)
+{
+	return OStream << std::hex << std::setw(8) << std::right << std::setfill('0') << GUID.Data1 << '-' << std::setw(4) << std::right << std::setfill('0') << GUID.Data2 << '-' << std::setw(4) << std::right << std::setfill('0') << GUID.Data3 << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[0]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[1]) << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[2]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[3]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[4]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[5]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[6]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[7]);
 }
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::Length & Length)
