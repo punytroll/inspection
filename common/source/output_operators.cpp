@@ -11,7 +11,7 @@
 #include "output_operators.h"
 
 template < >
-inline std::string to_string_cast<Inspection::Length>(const Inspection::Length & Value)
+std::string to_string_cast<Inspection::Length>(const Inspection::Length & Value)
 {
 	return static_cast<std::ostringstream &>(std::ostringstream{} << Value).str();
 }
@@ -125,7 +125,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & A
 		}
 		else if(Any.type() == typeid(Inspection::Length))
 		{
-			OStream << to_string_cast(std::any_cast<const Inspection::Length &>(Any));
+			OStream << std::any_cast<const Inspection::Length &>(Any);
 		}
 		else if(Any.type() == typeid(nullptr))
 		{
