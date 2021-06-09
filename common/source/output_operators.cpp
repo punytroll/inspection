@@ -10,6 +10,12 @@
 #include "length.h"
 #include "output_operators.h"
 
+template < >
+inline std::string to_string_cast<Inspection::Length>(const Inspection::Length & Value)
+{
+	return static_cast<std::ostringstream &>(std::ostringstream{} << Value).str();
+}
+
 std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & Any)
 {
 	if(Any.has_value() == false)
@@ -135,4 +141,9 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & A
 	}
 	
 	return OStream;
+}
+
+std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::Length & Length)
+{
+	return OStream << Length.GetBytes() << '.' << Length.GetBits();
 }

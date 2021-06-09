@@ -166,14 +166,4 @@ namespace Inspection
 	};
 }
 
-template < >
-inline std::string to_string_cast< Inspection::Length >(const Inspection::Length & Value)
-{
-	std::ostringstream StringStream;
-	
-	StringStream << Value.GetBytes() << '.' << Value.GetBits();
-	
-	return StringStream.str();
-}
-
 #endif

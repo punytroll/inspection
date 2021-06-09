@@ -6,7 +6,10 @@
 
 namespace Inspection
 {
+	class Length;
+	
 	std::ostream & operator<<(std::ostream & OStream, const std::any & Any);
+	std::ostream & operator<<(std::ostream & OStream, const Inspection::Length & Length);
 }
 
 #endif
