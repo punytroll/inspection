@@ -17,7 +17,7 @@ std::string JoinSeparated(const std::vector<std::string> & Strings, const std::s
 	}
 	else
 	{
-		return std::accumulate(Strings.begin() + 1, Strings.end(), Strings[0], [](auto & Start, auto & String) { return Start + "/" + String; } );
+		return std::accumulate(Strings.begin() + 1, Strings.end(), Strings[0], [](const auto & Start, const auto & String) { return Start + "/" + String; } );
 	}
 }
 
