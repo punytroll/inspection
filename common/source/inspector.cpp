@@ -10,7 +10,6 @@
 #include "output_operators.h"
 #include "query.h"
 #include "reader.h"
-#include "value_printing.h"
 
 using namespace std::string_literals;
 
@@ -115,7 +114,7 @@ void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 
 void Inspection::Inspector::_Writer(std::unique_ptr< Inspection::Result > & Result)
 {
-	PrintValue(*(Result->GetValue()));
+	std::cout << *(Result->GetValue());
 	if(Result->GetSuccess() == false)
 	{
 		std::cout << Inspection::g_BrightRed << "Parsing does not give valid." << Inspection::g_BrightWhite << std::endl;
@@ -188,7 +187,7 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 			}
 			if(Index + 1 == QueryParts.size())
 			{
-				PrintValue(*Value);
+				std::cout << *Value;
 			}
 		}
 		else if(QueryPartSpecifications[0] == "data")
@@ -207,7 +206,7 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 			Value = Value->GetTag(QueryPartSpecifications[1]);
 			if(Index + 1 == QueryParts.size())
 			{
-				PrintValue(*Value);
+				std::cout << *Value;
 			}
 		}
 		else if(QueryPartSpecifications[0] == "has-tag")

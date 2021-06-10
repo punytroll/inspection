@@ -10,7 +10,6 @@
 #include "result.h"
 #include "type.h"
 #include "type_repository.h"
-#include "value_printing.h"
 
 using namespace std::string_literals;
 

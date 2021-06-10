@@ -91,7 +91,7 @@ namespace Inspection
 			}
 		}
 		
-		const std::any & GetData(void)
+		const std::any & GetData(void) const
 		{
 			return _Data;
 		}
@@ -135,7 +135,7 @@ namespace Inspection
 			throw std::invalid_argument("Could not find a field named \"" + Name + "\".");
 		}
 		
-		const std::list<std::shared_ptr<Inspection::Value>> & GetFields(void)
+		const std::list<std::shared_ptr<Inspection::Value>> & GetFields(void) const
 		{
 			return _Fields;
 		}

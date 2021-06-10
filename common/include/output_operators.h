@@ -9,11 +9,13 @@ namespace Inspection
 	class DateTime;
 	class GUID;
 	class Length;
+	class Value;
 	
 	std::ostream & operator<<(std::ostream & OStream, const std::any & Any);
 	std::ostream & operator<<(std::ostream & OStream, const Inspection::DateTime & DateTime);
 	std::ostream & operator<<(std::ostream & OStream, const Inspection::GUID & GUID);
 	std::ostream & operator<<(std::ostream & OStream, const Inspection::Length & Length);
+	std::ostream & operator<<(std::ostream & OStream, const Inspection::Value & Value);
 }
 
 #endif

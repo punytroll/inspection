@@ -3,7 +3,6 @@
 #include "buffer.h"
 #include "getters.h"
 #include "result.h"
-#include "value_printing.h"
 
 int main(void)
 {
