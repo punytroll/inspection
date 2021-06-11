@@ -2529,29 +2529,29 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		{
 			if(DataReferenceChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				auto & DataReferencePartDescriptors = Value.DataReference->PartDescriptors;
-				auto DataReferencePartDescriptor = DataReferencePartDescriptors.emplace(DataReferencePartDescriptors.end());
+				auto & DataReferenceParts = Value.DataReference->Parts;
+				auto DataReferencePart = DataReferenceParts.emplace(DataReferenceParts.end());
 				auto DataReferenceChildElement = dynamic_cast<const XML::Element *>(DataReferenceChildNode);
 				
 				if(DataReferenceChildElement->GetName() == "field")
 				{
 					assert(DataReferenceChildElement->GetChilds().size() == 1);
-					DataReferencePartDescriptor->Type = Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Field;
+					DataReferencePart->Type = Inspection::TypeDefinition::DataReference::Part::Type::Field;
 					
 					auto SubText = dynamic_cast<const XML::Text *>(DataReferenceChildElement->GetChild(0));
 					
 					assert(SubText != nullptr);
-					DataReferencePartDescriptor->DetailName = SubText->GetText();
+					DataReferencePart->DetailName = SubText->GetText();
 				}
 				else if(DataReferenceChildElement->GetName() == "tag")
 				{
 					assert(DataReferenceChildElement->GetChilds().size() == 1);
-					DataReferencePartDescriptor->Type = Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Tag;
+					DataReferencePart->Type = Inspection::TypeDefinition::DataReference::Part::Type::Tag;
 					
 					auto TagText = dynamic_cast<const XML::Text *>(DataReferenceChildElement->GetChild(0));
 					
 					assert(TagText != nullptr);
-					DataReferencePartDescriptor->DetailName = TagText->GetText();
+					DataReferencePart->DetailName = TagText->GetText();
 				}
 				else
 				{

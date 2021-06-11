@@ -62,7 +62,7 @@ namespace Inspection
 		class DataReference
 		{
 		public:
-			class PartDescriptor
+			class Part
 			{
 			public:
 				enum class Type
@@ -71,7 +71,7 @@ namespace Inspection
 					Tag
 				};
 				
-				Inspection::TypeDefinition::DataReference::PartDescriptor::Type Type;
+				Inspection::TypeDefinition::DataReference::Part::Type Type;
 				std::string DetailName;
 			};
 			
@@ -82,7 +82,7 @@ namespace Inspection
 			};
 			
 			Inspection::TypeDefinition::DataReference::Root Root;
-			std::vector<Inspection::TypeDefinition::DataReference::PartDescriptor> PartDescriptors;
+			std::vector<Inspection::TypeDefinition::DataReference::Part> Parts;
 		};
 		
 		class FieldReference

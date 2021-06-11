@@ -82,13 +82,13 @@ std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::GetValueFromDat
 	}
 	Result = ExecutionStackIterator->_Result.GetValue();
 	
-	auto PartIterator = std::begin(DataReference.PartDescriptors);
+	auto PartIterator = std::begin(DataReference.Parts);
 	
-	while(PartIterator != std::end(DataReference.PartDescriptors))
+	while(PartIterator != std::end(DataReference.Parts))
 	{
 		switch(PartIterator->Type)
 		{
-		case Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Field:
+		case Inspection::TypeDefinition::DataReference::Part::Type::Field:
 			{
 				// we are looking for a field
 				// maybe, the field is already in the result
@@ -172,7 +172,7 @@ std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::GetValueFromDat
 				
 				break;
 			}
-		case Inspection::TypeDefinition::DataReference::PartDescriptor::Type::Tag:
+		case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
 			{
 				// we are looking for a tag
 				Result = Result->GetTag(PartIterator->DetailName);
