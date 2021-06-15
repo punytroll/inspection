@@ -33,6 +33,11 @@ namespace Inspection
 {
 	class Result;
 	
+	namespace TypeDefinition
+	{
+		class Type;
+	}
+	
 	class ExecutionContext
 	{
 	private:
@@ -47,6 +52,7 @@ namespace Inspection
 			Inspection::Result & _Result;
 		};
 	public:
+		ExecutionContext(const Inspection::TypeDefinition::Type & Type);
 		void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 		void Pop(void);
 		Inspection::Result & GetTopLevelResult(void) const;
@@ -58,6 +64,7 @@ namespace Inspection
 		std::uint32_t GetExecutionStackSize(void) const;
 	private:
 		std::list<Inspection::ExecutionContext::Element> _ExecutionStack;
+		const Inspection::TypeDefinition::Type & _Type;
 	};
 }
 

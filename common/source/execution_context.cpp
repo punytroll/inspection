@@ -19,12 +19,18 @@
 #include <any>
 
 #include "execution_context.h"
+#include "type.h"
 
 Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) :
 	_Parameters{Parameters},
 	_Part{Part},
 	_Reader{Reader},
 	_Result{Result}
+{
+}
+
+Inspection::ExecutionContext::ExecutionContext(const Inspection::TypeDefinition::Type & Type) :
+	_Type{Type}
 {
 }
 

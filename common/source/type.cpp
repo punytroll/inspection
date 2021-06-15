@@ -546,7 +546,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 		}
 		else if(_Part != nullptr)
 		{
-			auto ExecutionContext = Inspection::ExecutionContext{};
+			auto ExecutionContext = Inspection::ExecutionContext{*this};
 			auto TypePart = Inspection::TypeDefinition::Part{};
 			
 			TypePart.Type = Inspection::TypeDefinition::Part::Type::Type;
