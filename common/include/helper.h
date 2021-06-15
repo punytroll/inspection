@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "date_time.h"
 #include "guid.h"
@@ -116,6 +117,7 @@ namespace Inspection
 	
 	// helpers for the engine
 	std::string GetTypeName(const std::type_info & TypeInformation);
+	std::string JoinWithSeparator(const std::vector<std::string> & Strings, const std::string & Separator);
 }
 
 #endif

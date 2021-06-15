@@ -1,25 +1,13 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-#include <numeric>
 #include <string>
 
+#include "helper.h"
 #include "result.h"
 #include "type.h"
 #include "type_repository.h"
 #include "type_library_path.h"
-
-std::string JoinSeparated(const std::vector<std::string> & Strings, const std::string & Separator)
-{
-	if(Strings.empty() == true)
-	{
-		return std::string{};
-	}
-	else
-	{
-		return std::accumulate(Strings.begin() + 1, Strings.end(), Strings[0], [](const auto & Start, const auto & String) { return Start + "/" + String; } );
-	}
-}
 
 namespace Inspection
 {
@@ -110,7 +98,7 @@ Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(co
 	}
 	else
 	{
-		std::cerr << "Could not find/load the module at \"" + JoinSeparated(PathParts, "/") + "\"." << std::endl;
+		std::cerr << "Could not find/load the module at \"" + Inspection::JoinWithSeparator(PathParts, "/") + "\"." << std::endl;
 	}
 	
 	return Result;

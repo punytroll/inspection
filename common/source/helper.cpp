@@ -1,4 +1,5 @@
 #include <cassert>
+#include <numeric>
 #include <sstream>
 #include <vector>
 
@@ -978,5 +979,17 @@ std::string Inspection::GetTypeName(const std::type_info & TypeInformation)
 	else
 	{
 		assert(false);
+	}
+}
+
+std::string Inspection::JoinWithSeparator(const std::vector<std::string> & Strings, const std::string & Separator)
+{
+	if(Strings.empty() == true)
+	{
+		return std::string{};
+	}
+	else
+	{
+		return std::accumulate(Strings.begin() + 1, Strings.end(), Strings[0], [&Separator](const auto & Start, const auto & String) { return Start + Separator + String; } );
 	}
 }
