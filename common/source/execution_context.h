@@ -63,6 +63,7 @@ namespace Inspection
 		std::unordered_map<std::string, std::any> GetAllParameters(void);
 		std::uint32_t GetExecutionStackSize(void) const;
 	private:
+		std::shared_ptr<Inspection::Value> _GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, std::shared_ptr<Inspection::Value> Current);
 		std::list<Inspection::ExecutionContext::Element> _ExecutionStack;
 		const Inspection::TypeDefinition::Type & _Type;
 	};

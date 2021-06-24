@@ -63,129 +63,129 @@ Inspection::Length Inspection::ExecutionContext::CalculateLengthFromReference(co
 std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference)
 {
 	auto Result = std::shared_ptr<Inspection::Value>{};
-	auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element>::iterator{};
 	
+	assert(_ExecutionStack.size() > 0);
 	switch(DataReference.Root)
 	{
 	case Inspection::TypeDefinition::DataReference::Root::Current:
 		{
-			assert(_ExecutionStack.size() > 0);
-			ExecutionStackIterator = std::prev(std::end(_ExecutionStack));
+			Result = _GetValueFromDataReferenceFromCurrent(DataReference.Parts, _ExecutionStack.back()._Result.GetValue());
 			
 			break;
 		}
 	case Inspection::TypeDefinition::DataReference::Root::Type:
 		{
-			assert(_ExecutionStack.size() > 0);
-			ExecutionStackIterator = std::begin(_ExecutionStack);
+			auto ExecutionStackIterator = std::begin(_ExecutionStack);
+			
+			Result = ExecutionStackIterator->_Result.GetValue();
+			
+			auto PartIterator = std::begin(DataReference.Parts);
+			
+			while(PartIterator != std::end(DataReference.Parts))
+			{
+				switch(PartIterator->Type)
+				{
+				case Inspection::TypeDefinition::DataReference::Part::Type::Field:
+					{
+						// we are looking for a field
+						// maybe, the field is already in the result
+						if(Result->HasField(PartIterator->DetailName) == true)
+						{
+							Result = Result->GetField(PartIterator->DetailName);
+							++PartIterator;
+						}
+						// if not, the field might be in the current stack
+						else
+						{
+							++ExecutionStackIterator;
+							Result = ExecutionStackIterator->_Result.GetValue();
+							switch(ExecutionStackIterator->_Part.Type)
+							{
+							case Inspection::TypeDefinition::Part::Type::Alternative:
+								{
+									assert(false);
+									
+									break;
+								}
+							case Inspection::TypeDefinition::Part::Type::Array:
+								{
+									assert(false);
+									
+									break;
+								}
+							case Inspection::TypeDefinition::Part::Type::Field:
+								{
+									if(Result->HasField(PartIterator->DetailName) == true)
+									{
+										Result = Result->GetField(PartIterator->DetailName);
+										++PartIterator;
+									}
+									
+									break;
+								}
+							case Inspection::TypeDefinition::Part::Type::Fields:
+								{
+									// fields are flattened onto the parent, behaving just like a sequence
+									if(Result->HasField(PartIterator->DetailName) == true)
+									{
+										Result = Result->GetField(PartIterator->DetailName);
+										++PartIterator;
+									}
+									
+									break;
+								}
+							case Inspection::TypeDefinition::Part::Type::Forward:
+								{
+									if(Result->HasField(PartIterator->DetailName) == true)
+									{
+										Result = Result->GetField(PartIterator->DetailName);
+										++PartIterator;
+									}
+									
+									break;
+								}
+							case Inspection::TypeDefinition::Part::Type::Sequence:
+								{
+									if(Result->HasField(PartIterator->DetailName) == true)
+									{
+										Result = Result->GetField(PartIterator->DetailName);
+										++PartIterator;
+									}
+									
+									break;
+								}
+							case Inspection::TypeDefinition::Part::Type::Type:
+								{
+									// skipped intentionally
+									assert(false);
+									
+									break;
+								}
+							default:
+								{
+									assert(false);
+								}
+							}
+						}
+						
+						break;
+					}
+				case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
+					{
+						// we are looking for a tag
+						Result = Result->GetTag(PartIterator->DetailName);
+						++PartIterator;
+						
+						break;
+					}
+				}
+			}
 			
 			break;
 		}
 	default:
 		{
 			assert(false);
-		}
-	}
-	Result = ExecutionStackIterator->_Result.GetValue();
-	
-	auto PartIterator = std::begin(DataReference.Parts);
-	
-	while(PartIterator != std::end(DataReference.Parts))
-	{
-		switch(PartIterator->Type)
-		{
-		case Inspection::TypeDefinition::DataReference::Part::Type::Field:
-			{
-				// we are looking for a field
-				// maybe, the field is already in the result
-				if(Result->HasField(PartIterator->DetailName) == true)
-				{
-					Result = Result->GetField(PartIterator->DetailName);
-					++PartIterator;
-				}
-				// if not, the field might be in the current stack
-				else
-				{
-					++ExecutionStackIterator;
-					Result = ExecutionStackIterator->_Result.GetValue();
-					switch(ExecutionStackIterator->_Part.Type)
-					{
-					case Inspection::TypeDefinition::Part::Type::Alternative:
-						{
-							assert(false);
-							
-							break;
-						}
-					case Inspection::TypeDefinition::Part::Type::Array:
-						{
-							assert(false);
-							
-							break;
-						}
-					case Inspection::TypeDefinition::Part::Type::Field:
-						{
-							if(Result->HasField(PartIterator->DetailName) == true)
-							{
-								Result = Result->GetField(PartIterator->DetailName);
-								++PartIterator;
-							}
-							
-							break;
-						}
-					case Inspection::TypeDefinition::Part::Type::Fields:
-						{
-							// fields are flattened onto the parent, behaving just like a sequence
-							if(Result->HasField(PartIterator->DetailName) == true)
-							{
-								Result = Result->GetField(PartIterator->DetailName);
-								++PartIterator;
-							}
-							
-							break;
-						}
-					case Inspection::TypeDefinition::Part::Type::Forward:
-						{
-							if(Result->HasField(PartIterator->DetailName) == true)
-							{
-								Result = Result->GetField(PartIterator->DetailName);
-								++PartIterator;
-							}
-							
-							break;
-						}
-					case Inspection::TypeDefinition::Part::Type::Sequence:
-						{
-							if(Result->HasField(PartIterator->DetailName) == true)
-							{
-								Result = Result->GetField(PartIterator->DetailName);
-								++PartIterator;
-							}
-							
-							break;
-						}
-					case Inspection::TypeDefinition::Part::Type::Type:
-						{
-							// skipped intentionally
-							
-							break;
-						}
-					default:
-						{
-							assert(false);
-						}
-					}
-				}
-				
-				break;
-			}
-		case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
-			{
-				// we are looking for a tag
-				Result = Result->GetTag(PartIterator->DetailName);
-				++PartIterator;
-				
-				break;
-			}
 		}
 	}
 	
@@ -338,4 +338,33 @@ std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllPa
 std::uint32_t Inspection::ExecutionContext::GetExecutionStackSize(void) const
 {
 	return _ExecutionStack.size();
+}
+
+std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::_GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, std::shared_ptr<Inspection::Value> Current)
+{
+	auto Result = Current;
+	auto EndIterator = std::end(Parts);
+	
+	for(auto PartIterator = std::begin(Parts); (Result != nullptr) && (PartIterator != EndIterator); ++PartIterator)
+	{
+		switch(PartIterator->Type)
+		{
+		case Inspection::TypeDefinition::DataReference::Part::Type::Field:
+			{
+				// we are looking for a field
+				Result = Result->GetField(PartIterator->DetailName);
+				
+				break;
+			}
+		case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
+			{
+				// we are looking for a tag
+				Result = Result->GetTag(PartIterator->DetailName);
+				
+				break;
+			}
+		}
+	}
+	
+	return Result;
 }
