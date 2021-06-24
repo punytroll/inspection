@@ -8,6 +8,7 @@
 #include "colors.h"
 #include "date_time.h"
 #include "guid.h"
+#include "internal_output_operators.h"
 #include "length.h"
 #include "output_operators.h"
 #include "value.h"
@@ -344,4 +345,69 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::
 std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::Value & Value)
 {
 	return _PrintValue(OStream, Value, "");
+}
+
+std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference & DataReference)
+{
+	OStream << "DataReference[" << DataReference.Root << ", {";
+	
+	auto First = true;
+	
+	for(auto & Part : DataReference.Parts)
+	{
+		if(First == false)
+		{
+			OStream << ", ";
+		}
+		else
+		{
+			First = false;
+		}
+		OStream << Part;
+	}
+	
+	return OStream << "}]";
+}
+
+std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Root & Root)
+{
+	switch(Root)
+	{
+	case Inspection::TypeDefinition::DataReference::Root::Type:
+		{
+			return OStream << "Type";
+		}
+	case Inspection::TypeDefinition::DataReference::Root::Current:
+		{
+			return OStream << "Current";
+		}
+	default:
+		{
+			assert(false);
+		}
+	}
+}
+
+std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference::Part & Part)
+{
+	return OStream << "Part[" << Part.Type << ", \"" << Part.DetailName << "\"]";
+}
+
+std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Part::Type & Type)
+{
+	switch(Type)
+	{
+	case Inspection::TypeDefinition::DataReference::Part::Type::Field:
+		{
+			return OStream << "Field";
+		}
+	case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
+		{
+			return OStream << "Tag";
+		}
+	default:
+		{
+			assert(false);
+		}
+	}
 }
