@@ -28,35 +28,153 @@ namespace Inspection
 			
 			auto Result = std::make_unique<Inspection::Result>();
 			auto Continue = true;
+			auto Found = false;
+			auto LastEnd = Inspection::Length{0, 0};
 			
 			// reading
-			if(Continue == true)
+			while((Continue == true) && (LastEnd < Buffer.GetLength()))
 			{
-				if(_WithFrames == true)
+				auto Start = _GetStartOfNextFLAC(Buffer, LastEnd);
+				
+				if(Start != LastEnd)
 				{
-					Inspection::Reader PartReader{Reader};
-					auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {})};
+					_AppendOtherData(Result->GetValue(), Start - LastEnd);
+				}
+				if(Start != Buffer.GetLength())
+				{
+					Found = true;
 					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					auto PartReader = Inspection::Reader{Reader, Start, Buffer.GetLength() - Start};
+					
+					if(_WithFrames == true)
+					{
+						auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
+						
+						Continue = PartResult->GetSuccess();
+						Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
+						LastEnd = Start + PartReader.GetConsumedLength();
+					}
+					else
+					{
+						auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream_Header"}, PartReader, {});
+						
+						Continue = PartResult->GetSuccess();
+						Result->GetValue()->AppendField("FLACStreamHeader", PartResult->GetValue());
+						LastEnd = Start + PartReader.GetConsumedLength();
+					}
 				}
 				else
 				{
-					Inspection::Reader PartReader{Reader};
-					auto PartResult{Inspection::g_TypeRepository.Get({"FLAC", "Stream_Header"}, PartReader, {})};
-					
-					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("FLACStreamHeader", PartResult->GetValue());
-					Reader.AdvancePosition(PartReader.GetConsumedLength());
+					LastEnd = Buffer.GetLength();
 				}
 			}
 			// finalization
-			Result->SetSuccess(Continue);
+			Result->SetSuccess((Continue == true) && (Found == true));
 			
 			return Result;
 		}
 	private:
+		Inspection::Length _GetStartOfNextFLAC(const Inspection::Buffer & Buffer, const Inspection::Length & StartAt)
+		{
+			auto Found = false;
+			auto Start = 0ul;
+			auto Position = StartAt.GetBytes();
+			
+			if(StartAt.GetBits() != 0)
+			{
+				Position += 1;
+			}
+			
+			auto State = 0ul;
+			auto Length = Buffer.GetLength().GetBytes();
+			
+			while((Found == false) && (Position < Length))
+			{
+				auto Byte = Buffer.GetData()[Position];
+				
+				switch(State)
+				{
+				case 0:
+					{
+						if(Byte == 'f')
+						{
+							Start = Position;
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 1:
+					{
+						if(Byte == 'L')
+						{
+							State = 2;
+						}
+						else if(Byte == 'f')
+						{
+							Start = Position;
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 2:
+					{
+						if(Byte == 'a')
+						{
+							State = 3;
+						}
+						else if(Byte == 'f')
+						{
+							Start = Position;
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				case 3:
+					{
+						if(Byte == 'C')
+						{
+							Found = true;
+						}
+						else if(Byte == 'f')
+						{
+							Start = Position;
+							State = 1;
+						}
+						else
+						{
+							State = 0;
+						}
+						
+						break;
+					}
+				}
+				Position += 1;
+			}
+			if(Found == true)
+			{
+				return Inspection::Length{Start, 0};
+			}
+			else
+			{
+				return Buffer.GetLength();
+			}
+		}
+		
 		bool _WithFrames;
 	};
 }
