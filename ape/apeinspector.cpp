@@ -26,6 +26,7 @@ namespace Inspection
 			auto Found = false;
 			auto LastEnd = Inspection::Length{0, 0};
 			
+			// reading
 			while((Continue == true) && (LastEnd < Buffer.GetLength()))
 			{
 				auto Start = _GetStartOfNextAPETAGS(Buffer, LastEnd);
@@ -97,6 +98,7 @@ namespace Inspection
 						}
 						else if(Byte == 'A')
 						{
+							Start = Position;
 							State = 1;
 						}
 						else
@@ -114,6 +116,7 @@ namespace Inspection
 						}
 						else if(Byte == 'A')
 						{
+							Start = Position;
 							State = 1;
 						}
 						else
@@ -131,6 +134,7 @@ namespace Inspection
 						}
 						else if(Byte == 'A')
 						{
+							Start = Position;
 							State = 1;
 						}
 						else
@@ -161,6 +165,7 @@ namespace Inspection
 						}
 						else if(Byte == 'A')
 						{
+							Start = Position;
 							State = 1;
 						}
 						else
@@ -178,6 +183,7 @@ namespace Inspection
 						}
 						else if(Byte == 'A')
 						{
+							Start = Position;
 							State = 1;
 						}
 						else
@@ -195,6 +201,7 @@ namespace Inspection
 						}
 						else if(Byte == 'A')
 						{
+							Start = Position;
 							State = 1;
 						}
 						else
