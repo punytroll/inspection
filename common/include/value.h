@@ -159,6 +159,11 @@ namespace Inspection
 		{
 			_Name = Name;
 		}
+		
+		void ClearFields(void)
+		{
+			_Fields.clear();
+		}
 	private:
 		std::any _Data;
 		std::string _Name;

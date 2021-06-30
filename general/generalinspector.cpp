@@ -53,9 +53,19 @@ namespace Inspection
 	class GeneralInspector : public Inspection::Inspector
 	{
 	public:
+		GeneralInspector(void) :
+			_TopLevel{false}
+		{
+		}
+		
 		void SetQuery(const std::string & Query)
 		{
 			_Query = Query;
+		}
+		
+		void SetTopLevel(bool TopLevel)
+		{
+			_TopLevel = TopLevel;
 		}
 		
 		void PushType(const std::vector<std::string> & Type)
@@ -83,6 +93,13 @@ namespace Inspection
 			}
 			else
 			{
+				if(_TopLevel == true)
+				{
+					for(auto TopLevelField : Result->GetValue()->GetFields())
+					{
+						TopLevelField->ClearFields();
+					}
+				}
 				Inspection::Inspector::_Writer(Result);
 			}
 		}
@@ -526,6 +543,7 @@ namespace Inspection
 			return Result;
 		}
 		
+		bool _TopLevel;
 		std::vector<std::vector<std::string>> _TypeSequence;
 		std::string _Query;
 	};
@@ -561,6 +579,10 @@ int main(int argc, char ** argv)
 		else if(Argument == "--verbose")
 		{
 			g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples = true;
+		}
+		else if(Argument == "--top-level")
+		{
+			Inspector.SetTopLevel(true);
 		}
 		else if(Argument.compare(0, TypesPrefix.size(), TypesPrefix) == 0)
 		{
