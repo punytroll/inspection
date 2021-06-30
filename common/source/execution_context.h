@@ -20,18 +20,17 @@
 #define COMMON_EXECUTION_CONTEXT_H
 
 #include <any>
-#include <cassert>
-#include <functional>
 #include <list>
-#include <memory>
 #include <unordered_map>
 
-#include "result.h"
 #include "type_definition.h"
 
 namespace Inspection
 {
+	class Length;
+	class Reader;
 	class Result;
+	class Value;
 	
 	namespace TypeDefinition
 	{
@@ -57,13 +56,13 @@ namespace Inspection
 		void Pop(void);
 		Inspection::Result & GetTopLevelResult(void) const;
 		Inspection::Length CalculateLengthFromReference(const Inspection::TypeDefinition::LengthReference & LengthReference);
-		std::shared_ptr<Inspection::Value> GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference);
-		std::shared_ptr<Inspection::Value> GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference);
+		Inspection::Value * GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference);
+		Inspection::Value * GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference);
 		const std::any & GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference);
 		std::unordered_map<std::string, std::any> GetAllParameters(void);
 		std::uint32_t GetExecutionStackSize(void) const;
 	private:
-		std::shared_ptr<Inspection::Value> _GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, std::shared_ptr<Inspection::Value> Current);
+		Inspection::Value * _GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, Inspection::Value * Current);
 		std::list<Inspection::ExecutionContext::Element> _ExecutionStack;
 		const Inspection::TypeDefinition::Type & _Type;
 	};
