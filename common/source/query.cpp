@@ -78,7 +78,7 @@ std::vector<std::string> Inspection::SplitString(const std::string & String, cha
 	return Result;
 }
 
-bool Inspection::EvaluateTestQuery(std::shared_ptr<Inspection::Value> Value, const std::string & Query)
+bool Inspection::EvaluateTestQuery(Inspection::Value * Value, const std::string & Query)
 {
 	auto QueryParts = Inspection::SplitString(Query, '/');
 	auto Result = false;

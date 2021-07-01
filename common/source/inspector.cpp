@@ -102,8 +102,8 @@ void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 			
 			auto InnerResult = _Getter(Buffer);
 			
-			Result->GetValue()->AppendFields(InnerResult->GetValue()->GetFields());
-			Result->GetValue()->AddTags(InnerResult->GetValue()->GetTags());
+			Result->GetValue()->AppendFields(InnerResult->GetValue()->ExtractFields());
+			Result->GetValue()->AddTags(InnerResult->GetValue()->ExtractTags());
 			Result->SetSuccess(InnerResult->GetSuccess());
 			_Writer(Result);
 			munmap(Address, FileSize);
@@ -121,7 +121,7 @@ void Inspection::Inspector::_Writer(std::unique_ptr< Inspection::Result > & Resu
 	}
 }
 
-void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Value, const std::string & Query)
+void Inspection::Inspector::_QueryWriter(Inspection::Value * Value, const std::string & Query)
 {
 	auto QueryParts{Inspection::SplitString(Query.substr(1), '/')};
 	
@@ -138,17 +138,17 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 			}
 			else if(QueryPartSpecifications.size() == 3)
 			{
-				std::shared_ptr< Inspection::Value > MatchingField;
+				auto MatchingField = static_cast<Inspection::Value *>(nullptr);
 				
 				if((QueryPartSpecifications[2][0] == '[') && (QueryPartSpecifications[2][QueryPartSpecifications[2].size() - 1] == ']'))
 				{
 					auto TestQuery{QueryPartSpecifications[2].substr(1, QueryPartSpecifications[2].size() - 2)};
 					
-					for(auto Field : Value->GetFields())
+					for(auto & Field : Value->GetFields())
 					{
-						if((Field->GetName() == QueryPartSpecifications[1]) && (Inspection::EvaluateTestQuery(Field, TestQuery) == true))
+						if((Field->GetName() == QueryPartSpecifications[1]) && (Inspection::EvaluateTestQuery(Field.get(), TestQuery) == true))
 						{
-							MatchingField = Field;
+							MatchingField = Field.get();
 							
 							break;
 						}
@@ -159,13 +159,13 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 					auto WantedIndex{from_string_cast< std::uint64_t >(QueryPartSpecifications[2])};
 					std::uint64_t Index{0};
 					
-					for(auto Field : Value->GetFields())
+					for(auto & Field : Value->GetFields())
 					{
 						if(Field->GetName() == QueryPartSpecifications[1])
 						{
 							if(WantedIndex == Index)
 							{
-								MatchingField = Field;
+								MatchingField = Field.get();
 								
 								break;
 							}
@@ -268,7 +268,7 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 	}
 }
 
-void Inspection::Inspector::_AppendOtherData(std::shared_ptr<Inspection::Value> Value, const Inspection::Length & Length)
+void Inspection::Inspector::_AppendOtherData(Inspection::Value * Value, const Inspection::Length & Length)
 {
 	auto OtherDataValue = Value->AppendField("OtherData");
 	auto LengthTag = OtherDataValue->AddTag("length", Length);

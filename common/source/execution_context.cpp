@@ -75,7 +75,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 	{
 	case Inspection::TypeDefinition::DataReference::Root::Current:
 		{
-			Result = _GetValueFromDataReferenceFromCurrent(DataReference.Parts, _ExecutionStack.back()._Result.GetValue().get());
+			Result = _GetValueFromDataReferenceFromCurrent(DataReference.Parts, _ExecutionStack.back()._Result.GetValue());
 			
 			break;
 		}
@@ -83,7 +83,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 		{
 			auto ExecutionStackIterator = std::begin(_ExecutionStack);
 			
-			Result = ExecutionStackIterator->_Result.GetValue().get();
+			Result = ExecutionStackIterator->_Result.GetValue();
 			
 			auto PartIterator = std::begin(DataReference.Parts);
 			
@@ -97,14 +97,14 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 						// maybe, the field is already in the result
 						if(Result->HasField(PartIterator->DetailName) == true)
 						{
-							Result = Result->GetField(PartIterator->DetailName).get();
+							Result = Result->GetField(PartIterator->DetailName);
 							++PartIterator;
 						}
 						// if not, the field might be in the current stack
 						else
 						{
 							++ExecutionStackIterator;
-							Result = ExecutionStackIterator->_Result.GetValue().get();
+							Result = ExecutionStackIterator->_Result.GetValue();
 							switch(ExecutionStackIterator->_Part.Type)
 							{
 							case Inspection::TypeDefinition::Part::Type::Alternative:
@@ -123,7 +123,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 								{
 									if(Result->HasField(PartIterator->DetailName) == true)
 									{
-										Result = Result->GetField(PartIterator->DetailName).get();
+										Result = Result->GetField(PartIterator->DetailName);
 										++PartIterator;
 									}
 									
@@ -134,7 +134,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 									// fields are flattened onto the parent, behaving just like a sequence
 									if(Result->HasField(PartIterator->DetailName) == true)
 									{
-										Result = Result->GetField(PartIterator->DetailName).get();
+										Result = Result->GetField(PartIterator->DetailName);
 										++PartIterator;
 									}
 									
@@ -144,7 +144,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 								{
 									if(Result->HasField(PartIterator->DetailName) == true)
 									{
-										Result = Result->GetField(PartIterator->DetailName).get();
+										Result = Result->GetField(PartIterator->DetailName);
 										++PartIterator;
 									}
 									
@@ -154,7 +154,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 								{
 									if(Result->HasField(PartIterator->DetailName) == true)
 									{
-										Result = Result->GetField(PartIterator->DetailName).get();
+										Result = Result->GetField(PartIterator->DetailName);
 										++PartIterator;
 									}
 									
@@ -179,7 +179,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 				case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
 					{
 						// we are looking for a tag
-						Result = Result->GetTag(PartIterator->DetailName).get();
+						Result = Result->GetTag(PartIterator->DetailName);
 						++PartIterator;
 						
 						break;
@@ -224,7 +224,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 			assert(false);
 		}
 	}
-	Result = ExecutionStackIterator->_Result.GetValue().get();
+	Result = ExecutionStackIterator->_Result.GetValue();
 	
 	auto PartIterator = std::begin(FieldReference.Parts);
 	
@@ -233,14 +233,14 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 		// maybe, the field is already in the result
 		if(Result->HasField(PartIterator->FieldName) == true)
 		{
-			Result = Result->GetField(PartIterator->FieldName).get();
+			Result = Result->GetField(PartIterator->FieldName);
 			++PartIterator;
 		}
 		// if not, the field might be in the current stack
 		else
 		{
 			++ExecutionStackIterator;
-			Result = ExecutionStackIterator->_Result.GetValue().get();
+			Result = ExecutionStackIterator->_Result.GetValue();
 			switch(ExecutionStackIterator->_Part.Type)
 			{
 			case Inspection::TypeDefinition::Part::Type::Alternative:
@@ -259,7 +259,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 				{
 					if(Result->HasField(PartIterator->FieldName) == true)
 					{
-						Result = Result->GetField(PartIterator->FieldName).get();
+						Result = Result->GetField(PartIterator->FieldName);
 						++PartIterator;
 					}
 					
@@ -270,7 +270,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 					// fields are flattened onto the parent, behaving just like a sequence
 					if(Result->HasField(PartIterator->FieldName) == true)
 					{
-						Result = Result->GetField(PartIterator->FieldName).get();
+						Result = Result->GetField(PartIterator->FieldName);
 						++PartIterator;
 					}
 					
@@ -286,7 +286,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 				{
 					if(Result->HasField(PartIterator->FieldName) == true)
 					{
-						Result = Result->GetField(PartIterator->FieldName).get();
+						Result = Result->GetField(PartIterator->FieldName);
 						++PartIterator;
 					}
 					
@@ -358,14 +358,14 @@ Inspection::Value * Inspection::ExecutionContext::_GetValueFromDataReferenceFrom
 		case Inspection::TypeDefinition::DataReference::Part::Type::Field:
 			{
 				// we are looking for a field
-				Result = Result->GetField(PartIterator->DetailName).get();
+				Result = Result->GetField(PartIterator->DetailName);
 				
 				break;
 			}
 		case Inspection::TypeDefinition::DataReference::Part::Type::Tag:
 			{
 				// we are looking for a tag
-				Result = Result->GetTag(PartIterator->DetailName).get();
+				Result = Result->GetTag(PartIterator->DetailName);
 				
 				break;
 			}

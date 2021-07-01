@@ -16,78 +16,82 @@ namespace Inspection
 		{
 		}
 		
-		std::shared_ptr<Inspection::Value> AppendField(std::shared_ptr<Inspection::Value> Field)
+		Inspection::Value * AppendField(std::unique_ptr<Inspection::Value> Field)
 		{
-			_Fields.push_back(Field);
+			auto Result = Field.get();
 			
-			return Field;
+			_Fields.push_back(std::move(Field));
+			
+			return Result;
 		}
 		
-		std::shared_ptr<Inspection::Value> AppendField(const std::string & Name, std::shared_ptr<Inspection::Value> Field)
+		Inspection::Value * AppendField(const std::string & Name, std::unique_ptr<Inspection::Value> Field)
 		{
 			Field->SetName(Name);
 			
-			return AppendField(Field);
+			return AppendField(std::move(Field));
 		}
 		
-		std::shared_ptr<Inspection::Value> AppendField(const std::string & Name)
+		Inspection::Value * AppendField(const std::string & Name)
 		{
-			auto Field{std::make_shared<Inspection::Value>()};
+			auto Field = std::make_unique<Inspection::Value>();
 			
 			Field->SetName(Name);
 			
-			return AppendField(Field);
+			return AppendField(std::move(Field));
 		}
 		
 		template<typename DataType>
-		std::shared_ptr<Inspection::Value> AppendField(const std::string & Name, const DataType & Data)
+		Inspection::Value * AppendField(const std::string & Name, const DataType & Data)
 		{
-			auto Result{AppendField(Name)};
+			auto Result = AppendField(Name);
 			
 			Result->SetData(Data);
 			
 			return Result;
 		}
 		
-		void AppendFields(const std::list<std::shared_ptr<Inspection::Value>> & Fields)
+		void AppendFields(std::list<std::unique_ptr<Inspection::Value>> && Fields)
 		{
-			for(auto Field : Fields)
+			for(auto & Field : Fields)
 			{
-				_Fields.push_back(Field);
+				_Fields.push_back(std::move(Field));
 			}
 		}
 		
-		std::shared_ptr<Inspection::Value> AddTag(std::shared_ptr<Inspection::Value> Tag)
+		Inspection::Value * AddTag(std::unique_ptr<Inspection::Value> Tag)
 		{
-			_Tags.push_back(Tag);
+			auto Result = Tag.get();
 			
-			return Tag;
+			_Tags.push_back(std::move(Tag));
+			
+			return Result;
 		}
 		
-		std::shared_ptr<Inspection::Value> AddTag(const std::string & Name)
+		Inspection::Value * AddTag(const std::string & Name)
 		{
-			auto Tag{std::make_shared<Inspection::Value>()};
+			auto Tag = std::make_unique<Inspection::Value>();
 			
 			Tag->SetName(Name);
 			
-			return AddTag(Tag);
+			return AddTag(std::move(Tag));
 		}
 		
 		template<typename DataType>
-		std::shared_ptr<Inspection::Value> AddTag(const std::string & Name, const DataType & Data)
+		Inspection::Value * AddTag(const std::string & Name, const DataType & Data)
 		{
-			auto Tag{AddTag(Name)};
+			auto Tag = AddTag(Name);
 			
 			Tag->SetData(Data);
 			
 			return Tag;
 		}
 		
-		void AddTags(const std::list<std::shared_ptr<Inspection::Value>> & Tags)
+		void AddTags(std::list<std::unique_ptr<Inspection::Value>> && Tags)
 		{
-			for(auto Tag : Tags)
+			for(auto & Tag : Tags)
 			{
-				_Tags.push_back(Tag);
+				_Tags.push_back(std::move(Tag));
 			}
 		}
 		
@@ -106,48 +110,58 @@ namespace Inspection
 			return _Name;
 		}
 		
-		const std::list<std::shared_ptr<Inspection::Value>> & GetTags(void) const
+		std::list<std::unique_ptr<Inspection::Value>> ExtractTags(void)
+		{
+			return std::move(_Tags);
+		}
+		
+		const std::list<std::unique_ptr<Inspection::Value>> & GetTags(void) const
 		{
 			return _Tags;
 		}
 		
-		std::shared_ptr<Inspection::Value> GetTag(const std::string & Name)
+		Inspection::Value * GetTag(const std::string & Name)
 		{
 			for(auto & Tag : _Tags)
 			{
 				if(Tag->GetName() == Name)
 				{
-					return Tag;
+					return Tag.get();
 				}
 			}
 			throw std::invalid_argument("Could not find a tag named \"" + Name + "\".");
 		}
 		
-		std::shared_ptr<Inspection::Value> GetField(const std::string & Name)
+		Inspection::Value * GetField(const std::string & Name)
 		{
 			for(auto & Field : _Fields)
 			{
 				if(Field->GetName() == Name)
 				{
-					return Field;
+					return Field.get();
 				}
 			}
 			throw std::invalid_argument("Could not find a field named \"" + Name + "\".");
 		}
 		
-		const std::list<std::shared_ptr<Inspection::Value>> & GetFields(void) const
+		std::list<std::unique_ptr<Inspection::Value>> ExtractFields(void)
+		{
+			return std::move(_Fields);
+		}
+		
+		const std::list<std::unique_ptr<Inspection::Value>> & GetFields(void) const
 		{
 			return _Fields;
 		}
 		
 		bool HasTag(const std::string & Name)
 		{
-			return std::find_if(std::begin(_Tags), std::end(_Tags), [&Name](const std::shared_ptr<Inspection::Value> & Tag) { return Tag->GetName() == Name; }) != std::end(_Tags);
+			return std::find_if(std::begin(_Tags), std::end(_Tags), [&Name](auto & Tag) { return Tag->GetName() == Name; }) != std::end(_Tags);
 		}
 		
 		bool HasField(const std::string & Name)
 		{
-			return std::find_if(std::begin(_Fields), std::end(_Fields), [&Name](const std::shared_ptr<Inspection::Value> & Field) { return Field->GetName() == Name; }) != std::end(_Fields);
+			return std::find_if(std::begin(_Fields), std::end(_Fields), [&Name](auto & Field) { return Field->GetName() == Name; }) != std::end(_Fields);
 		}
 		
 		void SetData(const std::any & Data)
@@ -167,8 +181,8 @@ namespace Inspection
 	private:
 		std::any _Data;
 		std::string _Name;
-		std::list<std::shared_ptr<Inspection::Value>> _Tags;
-		std::list<std::shared_ptr<Inspection::Value>> _Fields;
+		std::list<std::unique_ptr<Inspection::Value>> _Tags;
+		std::list<std::unique_ptr<Inspection::Value>> _Fields;
 	};
 }
 
