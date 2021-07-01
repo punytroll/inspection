@@ -72,8 +72,8 @@ namespace Inspection
 			void _LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
 			void _LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement);
 			void _LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement);
-			Inspection::EvaluationResult _ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr<Inspection::Value> Target) const;
-			Inspection::EvaluationResult _ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr<Inspection::Value> Target) const;
+			Inspection::EvaluationResult _ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, Inspection::Value * Target) const;
+			Inspection::EvaluationResult _ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target) const;
 			std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)> _HardcodedGetter;
 			Inspection::TypeDefinition::Part * _Part;
 			std::vector<std::string> _PathParts;

@@ -245,7 +245,7 @@ namespace Inspection
 			}
 		}
 		
-		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<Inspection::TypeDefinition::Tag> & Tags, std::shared_ptr<Inspection::Value> Target)
+		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<Inspection::TypeDefinition::Tag> & Tags, Inspection::Value * Target)
 		{
 			for(auto & Tag : Tags)
 			{
@@ -262,7 +262,7 @@ namespace Inspection
 		}
 		
 		template<typename DataType>
-		bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr<Inspection::Value> Target)
+		bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target)
 		{
 			bool Result = false;
 			auto BaseValueString = to_string_cast(std::any_cast<const DataType &>(Target->GetData()));
@@ -1113,7 +1113,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	{
 		if(Field.Interpretation)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Field.Interpretation.value(), Result->GetValue());
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Field.Interpretation.value(), Result->GetValue().get());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1175,7 +1175,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	{
 		if(Fields.Interpretation)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Fields.Interpretation.value(), Result->GetValue());
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Fields.Interpretation.value(), Result->GetValue().get());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1252,7 +1252,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	{
 		if(Forward.Interpretation)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Forward.Interpretation.value(), Result->GetValue());
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Forward.Interpretation.value(), Result->GetValue().get());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1404,7 +1404,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	return Result;
 }
 
-Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, std::shared_ptr<Inspection::Value> Target) const
+Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target) const
 {
 	auto Result = Inspection::EvaluationResult{};
 	
@@ -1433,7 +1433,7 @@ Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration
 	return Result;
 }
 	
-Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, std::shared_ptr<Inspection::Value> Target) const
+Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, Inspection::Value * Target) const
 {
 	auto Result = Inspection::EvaluationResult{};
 	
