@@ -14,9 +14,9 @@
 
 using namespace std::string_literals;
 
-void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspection::Reader & Reader)
+void AppendUnkownContinuation(Inspection::Value * Value, Inspection::Reader & Reader)
 {
-	auto ErrorValue{Value->AppendField("error", "Unknown continuation."s)};
+	auto ErrorValue = Value->AppendField("error", "Unknown continuation."s);
 	
 	ErrorValue->AddTag("position", to_string_cast(Reader.GetReadPositionInInput()));
 	ErrorValue->AddTag("remaining length", to_string_cast(Reader.CalculateRemainingInputLength()));
@@ -150,13 +150,13 @@ namespace Inspection
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+									AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 								}
 							}
 							else
 							{
 								
-								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+								AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 							}
 						}
 					}
@@ -204,12 +204,12 @@ namespace Inspection
 											}
 											else
 											{
-												AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+												AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 											}
 										}
 										else
 										{
-											AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+											AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 										}
 									}
 								}
@@ -229,12 +229,12 @@ namespace Inspection
 										}
 										else
 										{
-											AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+											AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 										}
 									}
 									else
 									{
-										AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+										AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 									}
 								}
 							}
@@ -255,12 +255,12 @@ namespace Inspection
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+									AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 								}
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+								AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 							}
 						}
 					}
@@ -310,12 +310,12 @@ namespace Inspection
 									}
 									else
 									{
-										AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+										AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 									}
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+									AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 								}
 							}
 						}
@@ -335,12 +335,12 @@ namespace Inspection
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+									AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 								}
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+								AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 							}
 						}
 					}
@@ -375,12 +375,12 @@ namespace Inspection
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+									AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 								}
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+								AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 							}
 						}
 					}
@@ -400,7 +400,7 @@ namespace Inspection
 							}
 							else
 							{
-								AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+								AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 							}
 						}
 						else
@@ -419,7 +419,7 @@ namespace Inspection
 								}
 								else
 								{
-									AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+									AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 								}
 							}
 							else
@@ -438,7 +438,7 @@ namespace Inspection
 									}
 									else
 									{
-										AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+										AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 									}
 								}
 								else
@@ -457,7 +457,7 @@ namespace Inspection
 										}
 										else
 										{
-											AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+											AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 										}
 									}
 									else
@@ -480,7 +480,7 @@ namespace Inspection
 											}
 											else
 											{
-												AppendUnkownContinuation(Result->GetValue(), LSBFReader);
+												AppendUnkownContinuation(Result->GetValue().get(), LSBFReader);
 											}
 										}
 										else
@@ -499,12 +499,12 @@ namespace Inspection
 												}
 												else
 												{
-													AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+													AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 												}
 											}
 											else
 											{
-												AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+												AppendUnkownContinuation(Result->GetValue().get(), MSBFReader);
 											}
 										}
 									}
