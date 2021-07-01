@@ -94,14 +94,23 @@ for test in tests:
         print(f"{BrightWhite}[{BrightBlue}{str(number_of_tests).zfill(magnitude_of_number_of_tests)}{BrightWhite}]{Reset}")
     print(f"    Running \"{test.execute.command} {get_space_appended(test.execute.arguments)}\"")
     result = subprocess.run([test.execute.command] + test.execute.arguments, stdout=subprocess.PIPE)
-    result = result.stdout.decode("utf-8")
-    if result == test.expected_output:
-        number_of_successes += 1
-        print(f"        => \"{BrightGreen}{result}{Reset}\"")
+    if result.returncode == 0:
+        result = result.stdout.decode("utf-8")
+        if test.expected_output != None:
+            if result == test.expected_output:
+                number_of_successes += 1
+                print(f"        => \"{BrightGreen}{result}{Reset}\"")
+            else:
+                number_of_failures += 1
+                print(f"        => \"{BrightRed}{result}{Reset}\"")
+                print(f"    Test failed! Expected output was \"{BrightBlue}{test.expected_output}{Reset}\".")
+        else:
+            number_of_successes += 1
+            print(f"        => {BrightGreen}Succeeded{Reset}")
     else:
         number_of_failures += 1
-        print(f"        => \"{BrightRed}{result}{Reset}\"")
-        print(f"    Test failed! Expected output was \"{BrightBlue}{test.expected_output}{Reset}\".")
+        print(f"        => {BrightRed}Failed{Reset}")
+        print(f"    Test failed! The return code of the test was {BrightBlue}{result.returncode}{Reset} instead of {BrightYellow}0{Reset}.")
     print()
 print()
 if number_of_failures == 0:
