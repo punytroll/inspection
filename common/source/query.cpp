@@ -6,12 +6,12 @@
 #include "output_operators.h"
 #include "query.h"
 
-std::vector< std::string > Inspection::SplitString(const std::string & String, char Delimiter)
+std::vector<std::string> Inspection::SplitString(const std::string & String, char Delimiter)
 {
-	std::vector< std::string > Result;
-	auto BracketLevel{0};
-	auto IsEscaped{false};
-	std::string Part;
+	auto Result = std::vector<std::string>{};
+	auto BracketLevel = 0;
+	auto IsEscaped = false;
+	auto Part = std::string{};
 	
 	for(auto Character : String)
 	{
@@ -78,15 +78,15 @@ std::vector< std::string > Inspection::SplitString(const std::string & String, c
 	return Result;
 }
 
-bool Inspection::EvaluateTestQuery(std::shared_ptr< Inspection::Value > Value, const std::string & Query)
+bool Inspection::EvaluateTestQuery(std::shared_ptr<Inspection::Value> Value, const std::string & Query)
 {
-	auto QueryParts{Inspection::SplitString(Query, '/')};
-	auto Result{false};
+	auto QueryParts = Inspection::SplitString(Query, '/');
+	auto Result = false;
 	
 	for(auto Index = 0ul; Index < QueryParts.size(); ++Index)
 	{
-		auto QueryPart{QueryParts[Index]};
-		auto QueryPartSpecifications{SplitString(QueryPart, ':')};
+		auto QueryPart = QueryParts[Index];
+		auto QueryPartSpecifications = SplitString(QueryPart, ':');
 		
 		if(QueryPartSpecifications[0] == "field")
 		{
@@ -97,7 +97,7 @@ bool Inspection::EvaluateTestQuery(std::shared_ptr< Inspection::Value > Value, c
 		}
 		else if(QueryPartSpecifications[0] == "data")
 		{
-			std::stringstream Output;
+			auto Output = std::stringstream{};
 			
 			Output << Value->GetData();
 			Result = Output.str() == "true";
@@ -123,7 +123,7 @@ bool Inspection::EvaluateTestQuery(std::shared_ptr< Inspection::Value > Value, c
 		}
 		else if(QueryPartSpecifications[0] == "is-data")
 		{
-			std::stringstream Output;
+			auto Output = std::stringstream{};
 			
 			Output << Value->GetData();
 			Result = Output.str() == QueryPartSpecifications[1];

@@ -8,8 +8,8 @@
 
 namespace Inspection
 {
-	std::vector< std::string > SplitString(const std::string & String, char Delimiter);
-	bool EvaluateTestQuery(std::shared_ptr< Inspection::Value > Value, const std::string & Query);
+	std::vector<std::string> SplitString(const std::string & String, char Delimiter);
+	bool EvaluateTestQuery(std::shared_ptr<Inspection::Value> Value, const std::string & Query);
 }
 
 #endif

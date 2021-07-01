@@ -771,7 +771,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 	assert(Array.Type == Inspection::TypeDefinition::Part::Type::Array);
 	
 	auto Result = std::make_unique<Inspection::Result>();
-	auto Continue{true};
+	auto Continue = true;
 	
 	ExecutionContext.Push(Array, *Result, Reader, Parameters);
 	Result->GetValue()->AddTag("array");
@@ -781,23 +781,23 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 	{
 	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
 		{
-			std::unordered_map<std::string, std::any> ElementParameters;
+			auto ElementParameters = std::unordered_map<std::string, std::any>{};
 			
 			if(Array.Array->ElementParameters.has_value() == true)
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
 			}
 			
-			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
-			std::uint64_t ElementIndexInArray{0};
+			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
+			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
 			{
-				Inspection::Reader ElementReader{Reader};
+				auto ElementReader = Inspection::Reader{Reader};
 				
 				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 				
-				auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
+				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
 				
 				Continue = ElementResult->GetSuccess();
 				if(Continue == true)
@@ -842,18 +842,18 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
 		{
-			std::unordered_map<std::string, std::any> ElementParameters;
+			auto ElementParameters = std::unordered_map<std::string, std::any>{};
 			
 			if(Array.Array->ElementParameters)
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
 			}
 			
-			auto IterateField{ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateForEachField.value())};
+			auto IterateField = ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateForEachField.value());
 			
 			assert(IterateField != nullptr);
 			
-			std::vector< std::pair< Inspection::Length, Inspection::Length > > ElementProperties;
+			auto ElementProperties = std::vector<std::pair<Inspection::Length, Inspection::Length>>{};
 			
 			for(auto Field : IterateField->GetFields())
 			{
@@ -861,17 +861,17 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			}
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
 			
-			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
-			auto NumberOfAppendedElements{0};
+			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
+			auto NumberOfAppendedElements = static_cast<std::uint64_t>(0);
 			
-			for(auto ElementPropertiesIndex = 0ul; (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
+			for(auto ElementPropertiesIndex = static_cast<std::uint64_t>(0); (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
 			{
-				auto & Properties{ElementProperties[ElementPropertiesIndex]};
+				auto & Properties = ElementProperties[ElementPropertiesIndex];
 				
 				assert(Reader.GetReadPositionInInput() == Properties.first);
 				
-				Inspection::Reader ElementReader{Reader, Properties.second};
-				auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
+				auto ElementReader = Inspection::Reader{Reader, Properties.second};
+				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
 				
 				Continue = ElementResult->GetSuccess();
 				Result->GetValue()->AppendField(Array.Array->ElementName.value(), ElementResult->GetValue());
@@ -884,26 +884,26 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
 		{
-			std::unordered_map<std::string, std::any> ElementParameters;
+			auto ElementParameters = std::unordered_map<std::string, std::any>{};
 			
 			if(Array.Array->ElementParameters)
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
 			}
 			
-			auto NumberOfRequiredElements{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Array.Array->IterateNumberOfElements.value())};
-			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
-			std::uint64_t ElementIndexInArray{0};
+			auto NumberOfRequiredElements = Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Array.Array->IterateNumberOfElements.value());
+			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
+			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while(true)
 			{
 				if(ElementIndexInArray < NumberOfRequiredElements)
 				{
-					Inspection::Reader ElementReader{Reader};
+					auto ElementReader = Inspection::Reader{Reader};
 					
 					ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 					
-					auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
+					auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
 					
 					Continue = ElementResult->GetSuccess();
 					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
@@ -936,23 +936,23 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
 		{
-			std::unordered_map<std::string, std::any> ElementParameters;
+			auto ElementParameters = std::unordered_map<std::string, std::any>{};
 			
 			if(Array.Array->ElementParameters)
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
 			}
 			
-			auto ElementType{Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts)};
-			std::uint64_t ElementIndexInArray{0};
+			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
+			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
 			{
-				Inspection::Reader ElementReader{Reader};
+				auto ElementReader = Inspection::Reader{Reader};
 				
 				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
 				
-				auto ElementResult{ElementType->Get(ElementReader, ElementParameters)};
+				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
 				
 				Continue = ElementResult->GetSuccess();
 				if(Continue == true)
