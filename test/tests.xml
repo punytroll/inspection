@@ -1,5 +1,12 @@
 <tests>
 	<test>
+		<description>We expect the id3inspector to run successfully.</description>
+		<execute>
+			<command>../id3inspector</command>
+			<argument>../examples/004_ID3_1.1</argument>
+		</execute>
+	</test>
+	<test>
 		<description>If unsynchronization has been performed, this one bit needs to be set.</description>
 		<execute>
 			<command>../generalinspector</command>

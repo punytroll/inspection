@@ -104,8 +104,8 @@ namespace Inspection
 						if(Continue == true)
 						{
 							Result->GetValue()->AppendField("ID3v2", PartResult->GetValue());
+							Reader.AdvancePosition(PartReader.GetConsumedLength());
 						}
-						Reader.AdvancePosition(PartReader.GetConsumedLength());
 					}
 					// ID3v1
 					{
@@ -131,8 +131,8 @@ namespace Inspection
 								{
 									Result->GetValue()->AppendField("ID3v1", PartResult->GetValue());
 								}
+								Reader.AdvancePosition(PartReader.GetConsumedLength());
 							}
-							Reader.AdvancePosition(PartReader.GetConsumedLength());
 						}
 					}
 					
