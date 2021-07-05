@@ -144,7 +144,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 		auto PartResult{Inspection::Get_UnsignedInteger_32Bit_LittleEndian(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("ItemValueSize", PartResult->GetValue());
+		Result->GetValue()->AppendField("ItemValueSize", PartResult->ExtractValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
@@ -154,7 +154,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 		auto PartResult{Inspection::Get_APE_Flags(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("ItemFlags", PartResult->GetValue());
+		Result->GetValue()->AppendField("ItemFlags", PartResult->ExtractValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
@@ -164,7 +164,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 		auto PartResult{Inspection::Get_ASCII_String_Printable_EndedByTermination(PartReader, {})};
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("ItemKey", PartResult->GetValue());
+		Result->GetValue()->AppendField("ItemKey", PartResult->ExtractValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
 	// reading
@@ -178,7 +178,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 			auto PartResult{Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(PartReader, {})};
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendField("ItemValue", PartResult->GetValue());
+			Result->GetValue()->AppendField("ItemValue", PartResult->ExtractValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else
