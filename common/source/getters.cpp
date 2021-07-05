@@ -178,7 +178,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 			auto PartResult = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(PartReader, {});
 			
 			Continue = PartResult->GetSuccess();
-			Result->GetValue()->AppendField("ItemValue", PartResult->GetValue());
+			Result->GetValue()->AppendField("ItemValue", PartResult->ExtractValue());
 			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 		else if(ItemValueType == 0x01)
