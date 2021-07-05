@@ -170,12 +170,21 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 	// reading
 	if(Continue == true)
 	{
-		auto ItemValueType{std::any_cast<std::uint8_t>(Result->GetValue()->GetField("ItemFlags")->GetField("ItemValueType")->GetData())};
+		auto ItemValueType = std::any_cast<std::uint8_t>(Result->GetValue()->GetField("ItemFlags")->GetField("ItemValueType")->GetData());
 		
-		if(ItemValueType == 0)
+		if(ItemValueType == 0x00)
 		{
-			Inspection::Reader PartReader{Reader, Inspection::Length{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("ItemValueSize")->GetData()), 0}};
-			auto PartResult{Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(PartReader, {})};
+			auto PartReader = Inspection::Reader{Reader, Inspection::Length{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("ItemValueSize")->GetData()), 0}};
+			auto PartResult = Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_String_EndedByLength(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("ItemValue", PartResult->GetValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+		}
+		else if(ItemValueType == 0x01)
+		{
+			auto PartReader = Inspection::Reader{Reader, Inspection::Length{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("ItemValueSize")->GetData()), 0}};
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendField("ItemValue", PartResult->GetValue());
@@ -183,7 +192,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 		}
 		else
 		{
-			throw Inspection::NotImplementedException("Can only interpret UTF-8 item values.");
+			throw Inspection::NotImplementedException("Cannot interpret item values with value type " + to_string_cast(ItemValueType) + ".");
 		}
 	}
 	// finalization
