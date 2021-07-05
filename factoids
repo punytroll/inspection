@@ -24,3 +24,9 @@ Therefore is is equally unclear, WHAT needs to be de-unsynchronized when reading
 
 2) It is not stated clearly whether the size of a frame is given as BEFORE or AFTER unsychronization has been performed while writing the tag.
 My guess would be BEFORE! As stated in point 1), the unsynchronization is probably run on all of the tag body, without heed for frame content. I think, therefore, that the unsychronization is performed AFTER the frames have been assembled - with sizes, that do not take the unsynchronization into account.
+
+ID3v1 in combination with ID3v2
+===============================
+
+1) Although highly implausible, it is absolutely possible to successfully read an ID3v1 tag from the 128 bytes at the end of a file, which ONLY contains a carefully prepared ID3v2 tag. There is no indication in the specification, that these two tags MUST NOT overlap!
+=> I will consider an overlap to be impossible!

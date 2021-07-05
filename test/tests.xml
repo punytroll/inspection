@@ -1,9 +1,16 @@
 <tests>
 	<test>
-		<description>We expect the id3inspector to run successfully.</description>
+		<description>The id3inspector must run successfully on this example.</description>
 		<execute>
 			<command>../id3inspector</command>
 			<argument>../examples/004_ID3_1.1</argument>
+		</execute>
+	</test>
+	<test>
+		<description>The id3inspector must run successfully on this example.</description>
+		<execute>
+			<command>../id3inspector</command>
+			<argument>../examples/008_ID3_2.3_MCDI_unsynchronized</argument>
 		</execute>
 	</test>
 	<test>

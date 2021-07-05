@@ -108,8 +108,9 @@ namespace Inspection
 						}
 					}
 					// ID3v1
+					// is only attempted to be read, if there is enough data remaining AFTER the ID3v2 tag
 					{
-						if(Buffer.GetLength() >= Inspection::Length{128, 0})
+						if(Reader.GetReadPositionInInput() + Inspection::Length{128, 0} <= Buffer.GetLength())
 						{
 							auto PartReader = Inspection::Reader{Reader, Buffer.GetLength() - Inspection::Length{128, 0}, Inspection::Length{128, 0}};
 							
