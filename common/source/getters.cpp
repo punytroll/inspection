@@ -4608,14 +4608,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame_Body_TSRC(Insp
 				CountryCodeValue->AddTag("standard", "ISRC Bulletin 2015/01"s);
 				CountryCodeValue->AddTag("error", "The ISRC string needs to contain a two letter country code from ISO 3166-1 alpha-2."s);
 				CountryCodeValue->AddTag("interpretation", nullptr);
-				Continue = false;
 			}
 		}
 		else
 		{
 			Result->GetValue()->GetField("Information")->AddTag("standard", "ID3 2.3"s);
 			Result->GetValue()->GetField("Information")->AddTag("error", "The TSRC frame needs to contain a twelve letter ISRC code from ISRC Bulletin 2015/01."s);
-			Continue = false;
 		}
 	}
 	// finalization
