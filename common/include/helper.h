@@ -101,6 +101,7 @@ namespace Inspection
 	// getters
 	std::string Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(const std::string & ISO_3166_1_Alpha_2_CountryCode);
 	Inspection::DateTime Get_DateTime_FromMicrosoftFileTime(std::uint64_t FileTime);
+	Inspection::DateTime Get_DateTime_FromUnixTimeStamp(std::uint64_t UnixTimeStamp);
 	Inspection::GUID Get_GUID_FromString_WithCurlyBraces(const std::string & String);
 	std::string Get_GUID_Interpretation(const Inspection::GUID & GUID);
 	std::string Get_ID3_1_Genre(std::uint8_t GenreNumber);
@@ -108,7 +109,7 @@ namespace Inspection
 	std::string Get_ID3_2_PictureType_Interpretation(std::uint8_t Value);
 	std::string Get_ID3_2_3_FileType_Interpretation(const std::string & Value);
 	std::string Get_LanguageName_From_ISO_639_2_1998_Code(const std::string & ISO_639_2_1998_Code);
-	std::uint32_t Get_Unix_TimeStamp_FromWindowsFileTime(std::uint64_t FileTime);
+	std::uint64_t Get_Unix_TimeStamp_FromWindowsFileTime(std::uint64_t FileTime);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalDigit(char HexadecimalDigit);
 	std::uint8_t Get_UnsignedInteger_8Bit_FromHexadecimalString(const std::string & HexadecimalString);
 	std::uint16_t Get_UnsignedInteger_16Bit_FromHexadecimalString(const std::string & HexadecimalString);
