@@ -1,12 +1,15 @@
 #include <cassert>
 #include <numeric>
 #include <sstream>
+#include <time.h>
 #include <vector>
 
 #include "explode.h"
 #include "helper.h"
 #include "string_cast.h"
 #include "unknown_value_exception.h"
+
+using namespace std::string_literals;
 
 /// Top-level ASF Object GUIDs
 /// Taken from "Advanced Systems Format (ASF) Specification", Revision 01.20.05, Microsoft Corporation, June 2010, chapter 10.1
@@ -982,7 +985,7 @@ std::string Inspection::GetTypeName(const std::type_info & TypeInformation)
 	}
 	else
 	{
-		assert(false);
+		throw std::invalid_argument("Don't know how to handle type '"s + TypeInformation.name() + "'.");
 	}
 }
 
