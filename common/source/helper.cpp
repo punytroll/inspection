@@ -149,10 +149,14 @@ std::string Inspection::Get_CountryName_From_ISO_3166_1_Alpha_2_CountryCode(cons
 
 Inspection::DateTime Inspection::Get_DateTime_FromMicrosoftFileTime(std::uint64_t FileTime)
 {
-	Inspection::DateTime Result;
-	time_t UnixTimeStamp{Get_Unix_TimeStamp_FromWindowsFileTime(FileTime)};
-	
-	auto UnixTime{gmtime(&UnixTimeStamp)};
+	return Inspection::Get_DateTime_FromUnixTimeStamp(Get_Unix_TimeStamp_FromWindowsFileTime(FileTime));
+}
+
+Inspection::DateTime Inspection::Get_DateTime_FromUnixTimeStamp(std::uint64_t UnixTimeStamp)
+{
+	auto Result = Inspection::DateTime{};
+	time_t LocalUnixTimeStamp = UnixTimeStamp;
+	auto UnixTime = gmtime(&LocalUnixTimeStamp);
 	
 	Result.Year = UnixTime->tm_year + 1900;
 	Result.Month = UnixTime->tm_mon + 1;
@@ -695,7 +699,7 @@ std::string Inspection::Get_ID3_2_3_FileType_Interpretation(const std::string & 
 	}
 }
 
-std::uint32_t Inspection::Get_Unix_TimeStamp_FromWindowsFileTime(std::uint64_t FileTime)
+std::uint64_t Inspection::Get_Unix_TimeStamp_FromWindowsFileTime(std::uint64_t FileTime)
 {
 	const auto SecondsToUnixEpoch{11644473600ull};
 	const auto WindowsTick{10000000ull};
