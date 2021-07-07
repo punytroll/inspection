@@ -263,6 +263,7 @@ void Inspection::Inspector::_QueryWriter(std::shared_ptr< Inspection::Value > Va
 		}
 		else
 		{
+			std::cerr << "Unkown query part specification \"" << QueryPartSpecifications[0] << "\"." << std::endl;
 			assert(false);
 		}
 	}
