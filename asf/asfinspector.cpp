@@ -22,11 +22,11 @@ namespace Inspection
 			// reading
 			if(Continue == true)
 			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.Get({"ASF", "File"}, PartReader, {})};
+				auto PartReader = Inspection::Reader{Reader};
+				auto PartResult = Inspection::g_TypeRepository.Get({"ASF", "File"}, PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("ASFFile", PartResult->GetValue());
+				Result->GetValue()->AppendField("ASFFile", PartResult->ExtractValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			// finalization
