@@ -22,11 +22,11 @@ namespace Inspection
 			// reading
 			if(Continue == true)
 			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Get_RIFF_Chunk(PartReader, {})};
+				auto PartReader = Inspection::Reader{Reader};
+				auto PartResult = Get_RIFF_Chunk(PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("RIFFChunk", PartResult->GetValue());
+				Result->GetValue()->AppendField("RIFFChunk", PartResult->ExtractValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			// finalization

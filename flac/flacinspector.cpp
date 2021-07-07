@@ -51,7 +51,7 @@ namespace Inspection
 						auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream"}, PartReader, {});
 						
 						Continue = PartResult->GetSuccess();
-						Result->GetValue()->AppendField("FLACStream", PartResult->GetValue());
+						Result->GetValue()->AppendField("FLACStream", PartResult->ExtractValue());
 						LastEnd = Start + PartReader.GetConsumedLength();
 					}
 					else
@@ -59,7 +59,7 @@ namespace Inspection
 						auto PartResult = Inspection::g_TypeRepository.Get({"FLAC", "Stream_Header"}, PartReader, {});
 						
 						Continue = PartResult->GetSuccess();
-						Result->GetValue()->AppendField("FLACStreamHeader", PartResult->GetValue());
+						Result->GetValue()->AppendField("FLACStreamHeader", PartResult->ExtractValue());
 						LastEnd = Start + PartReader.GetConsumedLength();
 					}
 				}

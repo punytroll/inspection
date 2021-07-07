@@ -26,7 +26,7 @@ namespace Inspection
 				auto PartResult = Inspection::Get_Ogg_Stream(PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("OggStream", PartResult->GetValue());
+				Result->GetValue()->AppendField("OggStream", PartResult->ExtractValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			// finalization

@@ -62,11 +62,11 @@ namespace Inspection
 						Continue = PartResult->GetSuccess();
 						if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 						{
-							Result->GetValue()->AppendField("ID3v1.1", PartResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1.1", PartResult->ExtractValue());
 						}
 						else
 						{
-							Result->GetValue()->AppendField("ID3v1", PartResult->GetValue());
+							Result->GetValue()->AppendField("ID3v1", PartResult->ExtractValue());
 						}
 						Reader.AdvancePosition(PartReader.GetConsumedLength());
 					}
@@ -84,7 +84,7 @@ namespace Inspection
 					auto PartResult = Inspection::Get_ID3_2_Tag(PartReader, {});
 					
 					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("ID3v2", PartResult->GetValue());
+					Result->GetValue()->AppendField("ID3v2", PartResult->ExtractValue());
 					Reader.AdvancePosition(PartReader.GetConsumedLength());
 					if(Reader.GetReadPositionInInput() < Buffer.GetLength())
 					{
@@ -103,7 +103,7 @@ namespace Inspection
 						Continue = PartResult->GetSuccess();
 						if(Continue == true)
 						{
-							Result->GetValue()->AppendField("ID3v2", PartResult->GetValue());
+							Result->GetValue()->AppendField("ID3v2", PartResult->ExtractValue());
 							Reader.AdvancePosition(PartReader.GetConsumedLength());
 						}
 					}
@@ -126,11 +126,11 @@ namespace Inspection
 							{
 								if(PartResult->GetValue()->HasField("AlbumTrack") == true)
 								{
-									Result->GetValue()->AppendField("ID3v1.1", PartResult->GetValue());
+									Result->GetValue()->AppendField("ID3v1.1", PartResult->ExtractValue());
 								}
 								else
 								{
-									Result->GetValue()->AppendField("ID3v1", PartResult->GetValue());
+									Result->GetValue()->AppendField("ID3v1", PartResult->ExtractValue());
 								}
 								Reader.AdvancePosition(PartReader.GetConsumedLength());
 							}

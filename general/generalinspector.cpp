@@ -14,9 +14,9 @@
 
 using namespace std::string_literals;
 
-void AppendUnkownContinuation(std::shared_ptr< Inspection::Value > Value, Inspection::Reader & Reader)
+void AppendUnkownContinuation(Inspection::Value * Value, Inspection::Reader & Reader)
 {
-	auto ErrorValue{Value->AppendField("error", "Unknown continuation."s)};
+	auto ErrorValue = Value->AppendField("error", "Unknown continuation."s);
 	
 	ErrorValue->AddTag("position", to_string_cast(Reader.GetReadPositionInInput()));
 	ErrorValue->AddTag("remaining length", to_string_cast(Reader.CalculateRemainingInputLength()));
@@ -95,7 +95,7 @@ namespace Inspection
 			{
 				if(_TopLevel == true)
 				{
-					for(auto TopLevelField : Result->GetValue()->GetFields())
+					for(auto & TopLevelField : Result->GetValue()->GetFields())
 					{
 						TopLevelField->ClearFields();
 					}
@@ -114,7 +114,7 @@ namespace Inspection
 			
 			if(PartResult->GetSuccess() == true)
 			{
-				Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+				Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 				MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 				if(MSBFReader.IsAtEnd() == true)
 				{
@@ -128,7 +128,7 @@ namespace Inspection
 					
 					if(PartResult->GetSuccess() == true)
 					{
-						Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+						Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 						MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 						if(MSBFReader.IsAtEnd() == true)
 						{
@@ -142,7 +142,7 @@ namespace Inspection
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -168,7 +168,7 @@ namespace Inspection
 						
 						if(PartResult->GetSuccess() == true)
 						{
-							Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+							Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 							if(MSBFReader.IsAtEnd() == true)
 							{
@@ -182,7 +182,7 @@ namespace Inspection
 								
 								if(PartResult->GetSuccess() == true)
 								{
-									Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+									Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 									if(MSBFReader.IsAtEnd() == true)
 									{
@@ -196,7 +196,7 @@ namespace Inspection
 										
 										if(PartResult->GetSuccess() == true)
 										{
-											Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+											Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 											MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 											if(MSBFReader.IsAtEnd() == true)
 											{
@@ -221,7 +221,7 @@ namespace Inspection
 									
 									if(PartResult->GetSuccess() == true)
 									{
-										Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+										Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 										MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 										if(MSBFReader.IsAtEnd() == true)
 										{
@@ -247,7 +247,7 @@ namespace Inspection
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -274,7 +274,7 @@ namespace Inspection
 				
 				if(PartResult->GetSuccess() == true)
 				{
-					Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+					Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 					MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 					if(MSBFReader.IsAtEnd() == true)
 					{
@@ -288,7 +288,7 @@ namespace Inspection
 						
 						if(PartResult->GetSuccess() == true)
 						{
-							Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+							Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 							if(MSBFReader.IsAtEnd() == true)
 							{
@@ -302,7 +302,7 @@ namespace Inspection
 								
 								if(PartResult->GetSuccess() == true)
 								{
-									Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+									Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 									if(MSBFReader.IsAtEnd() == true)
 									{
@@ -327,7 +327,7 @@ namespace Inspection
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -353,7 +353,7 @@ namespace Inspection
 					
 					if(PartResult->GetSuccess() == true)
 					{
-						Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+						Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 						MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 						if(MSBFReader.IsAtEnd() == true)
 						{
@@ -367,7 +367,7 @@ namespace Inspection
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -392,7 +392,7 @@ namespace Inspection
 						
 						if(PartResult->GetSuccess() == true)
 						{
-							Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+							Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 							MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 							if(MSBFReader.IsAtEnd() == true)
 							{
@@ -411,7 +411,7 @@ namespace Inspection
 							
 							if(PartResult->GetSuccess() == true)
 							{
-								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+								Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 								MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 								if(MSBFReader.IsAtEnd() == true)
 								{
@@ -430,7 +430,7 @@ namespace Inspection
 								
 								if(PartResult->GetSuccess() == true)
 								{
-									Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+									Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 									MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 									if(MSBFReader.IsAtEnd() == true)
 									{
@@ -449,7 +449,7 @@ namespace Inspection
 									
 									if(PartResult->GetSuccess() == true)
 									{
-										Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+										Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 										MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 										if(MSBFReader.IsAtEnd() == true)
 										{
@@ -472,7 +472,7 @@ namespace Inspection
 										
 										if(PartResult->GetSuccess() == true)
 										{
-											Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+											Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 											LSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 											if(LSBFReader.IsAtEnd() == true)
 											{
@@ -491,7 +491,7 @@ namespace Inspection
 											
 											if(PartResult->GetSuccess() == true)
 											{
-												Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->GetValue());
+												Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
 												MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
 												if(MSBFReader.IsAtEnd() == true)
 												{
@@ -534,7 +534,7 @@ namespace Inspection
 				auto PartResult = Inspection::g_TypeRepository.Get(TypeParts, PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField(Inspection::JoinWithSeparator(TypeParts, "."), PartResult->GetValue());
+				Result->GetValue()->AppendField(Inspection::JoinWithSeparator(TypeParts, "."), PartResult->ExtractValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			// finalization

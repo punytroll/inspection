@@ -1,6 +1,8 @@
 #ifndef INSPECTION_COMMON_RESULT_H
 #define INSPECTION_COMMON_RESULT_H
 
+#include <utility>
+
 #include "buffer.h"
 #include "length.h"
 #include "reader.h"
@@ -13,7 +15,7 @@ namespace Inspection
 	public:
 		Result(void) :
 			_Success(false),
-			_Value(std::make_shared< Inspection::Value >())
+			_Value(std::make_unique<Inspection::Value>())
 		{
 		}
 		
@@ -26,9 +28,14 @@ namespace Inspection
 			return _Success;
 		}
 		
-		std::shared_ptr< Value > & GetValue(void)
+		std::unique_ptr<Inspection::Value> ExtractValue(void)
 		{
-			return _Value;
+			return std::move(_Value);
+		}
+		
+		Inspection::Value * GetValue(void)
+		{
+			return _Value.get();
 		}
 		
 		void SetSuccess(bool Success)
@@ -36,15 +43,13 @@ namespace Inspection
 			_Success = Success;
 		}
 		
-		std::shared_ptr< Value > SetValue(std::shared_ptr< Value > Value)
+		void SetValue(std::unique_ptr<Inspection::Value> Value)
 		{
-			_Value = Value;
-			
-			return _Value;
+			_Value = std::move(Value);
 		}
 	private:
 		bool _Success;
-		std::shared_ptr< Value > _Value;
+		std::unique_ptr<Inspection::Value> _Value;
 	};
 }
 

@@ -102,7 +102,7 @@ std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Val
 				
 				auto FirstSubTag = true;
 				
-				for(auto SubTag : Tag->GetTags())
+				for(auto & SubTag : Tag->GetTags())
 				{
 					if(FirstSubTag == false)
 					{
@@ -135,7 +135,7 @@ std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Val
 						
 						auto FirstSubSubTag = true;
 						
-						for(auto SubSubTag : SubTag->GetTags())
+						for(auto & SubSubTag : SubTag->GetTags())
 						{
 							if(FirstSubSubTag == false)
 							{

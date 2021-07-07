@@ -42,7 +42,7 @@ namespace Inspection
 					
 					Found = true;
 					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("APEv2Tag", PartResult->GetValue());
+					Result->GetValue()->AppendField("APEv2Tag", PartResult->ExtractValue());
 					LastEnd = Start + PartReader.GetConsumedLength();
 				}
 				else

@@ -17,9 +17,15 @@
 **/
 
 #include <any>
+#include <cassert>
+#include <list>
+#include <unordered_map>
 
 #include "execution_context.h"
+#include "length.h"
+#include "result.h"
 #include "type.h"
+#include "value.h"
 
 Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) :
 	_Parameters{Parameters},
@@ -60,9 +66,9 @@ Inspection::Length Inspection::ExecutionContext::CalculateLengthFromReference(co
 	return std::next(std::begin(_ExecutionStack))->_Reader.GetConsumedLength();
 }
 
-std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference)
+Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference)
 {
-	auto Result = std::shared_ptr<Inspection::Value>{};
+	auto Result = static_cast<Inspection::Value *>(nullptr);
 	
 	assert(_ExecutionStack.size() > 0);
 	switch(DataReference.Root)
@@ -192,9 +198,9 @@ std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::GetValueFromDat
 	return Result;
 }
 
-std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference)
+Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference)
 {
-	auto Result = std::shared_ptr<Inspection::Value>{};
+	auto Result = static_cast<Inspection::Value *>(nullptr);
 	auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element>::iterator{};
 	
 	switch(FieldReference.Root)
@@ -340,7 +346,7 @@ std::uint32_t Inspection::ExecutionContext::GetExecutionStackSize(void) const
 	return _ExecutionStack.size();
 }
 
-std::shared_ptr<Inspection::Value> Inspection::ExecutionContext::_GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, std::shared_ptr<Inspection::Value> Current)
+Inspection::Value * Inspection::ExecutionContext::_GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, Inspection::Value * Current)
 {
 	auto Result = Current;
 	auto EndIterator = std::end(Parts);
