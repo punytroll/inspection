@@ -1,5 +1,129 @@
 <tests>
 	<test>
+		<description>The apeinspector must run successfully on this example.</description>
+		<execute>
+			<command>../apeinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+		</execute>
+	</test>
+	<test>
+		<description>The size of the binary item tag must match.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemValueSize/data</argument>
+		</execute>
+		<expected-output>45804</expected-output>
+	</test>
+	<test>
+		<description>The item flags of the binary item must indicate binary data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemFlags/data</argument>
+		</execute>
+		<expected-output>00000000000000000000000000000010</expected-output>
+	</test>
+	<test>
+		<description>The item value type of the binary item must be 1 to indicate binary data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemFlags/field:ItemValueType/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>The interpretation of the item value type of the binary item must indicate binary data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemFlags/field:ItemValueType/tag:bit indices/data</argument>
+		</execute>
+		<expected-output>1 to 2</expected-output>
+	</test>
+	<test>
+		<description>The ItemKey for the binary data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemKey/data</argument>
+		</execute>
+		<expected-output>COVER ART (FRONT)</expected-output>
+	</test>
+	<test>
+		<description>The ItemValue is the binary data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemValue/has-data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The ItemValue is the binary data in a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemValue/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The ItemValue is the binary data of integers.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemValue/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The ItemValue is the binary data of 8bit values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemValue/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The ItemValue is the binary data of unsigned values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemValue/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The ItemValue has a specific length.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemValue/tag:length/data</argument>
+		</execute>
+		<expected-output>45804.0</expected-output>
+	</test>
+	<test>
+		<description>The ItemValue has a specific length.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemValue/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The interpretation of the item value type of the binary item must indicate binary data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemFlags/field:ItemValueType/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Item contains binary information</expected-output>
+	</test>
+	<test>
 		<description>The id3inspector must run successfully on this example.</description>
 		<execute>
 			<command>../id3inspector</command>
