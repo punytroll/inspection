@@ -3255,14 +3255,6 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/011_id3_2.2_PIC_JPG</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:11]/field:ImageFormat/tag:mime-type/data</argument>
-		</execute>
-		<expected-output>image/jpeg</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/011_id3_2.2_PIC_JPG</argument>
 			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:11]/field:PictureType/data</argument>
 		</execute>
 		<expected-output>5</expected-output>
@@ -3586,14 +3578,6 @@
 			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:3]/field:CodecEntries/field:CodecEntry:[tag:element index in array/is-data:0]/field:CodecInformation/data</argument>
 		</execute>
 		<expected-output>61 01</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/asf/001_short.wma</argument>
-			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:3]/field:CodecEntries/field:CodecEntry:[tag:element index in array/is-data:0]/field:CodecInformation/has-tag:buffer</argument>
-		</execute>
-		<expected-output>true</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -4074,14 +4058,6 @@
 			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:ContentDescriptors/field:ContentDescriptor:[tag:element index in array/is-data:16]/field:Value/has-tag:little endian</argument>
 		</execute>
 		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/asf/002_long.wma</argument>
-			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:2]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:0]/field:GUID/tag:interpretation/data</argument>
-		</execute>
-		<expected-output>ASF_Language_List_Object</expected-output>
 	</test>
 	<test>
 		<execute>
