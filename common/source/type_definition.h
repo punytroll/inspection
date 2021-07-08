@@ -32,6 +32,7 @@ namespace Inspection
 	
 	namespace TypeDefinition
 	{
+		class Add;
 		class Cast;
 		class Divide;
 		class Equals;
@@ -145,6 +146,7 @@ namespace Inspection
 			enum class Type
 			{
 				Unknown,
+				Add,
 				Cast,
 				Divide,
 				Equals,
@@ -154,6 +156,7 @@ namespace Inspection
 			
 			Statement(void) :
 				Type{Inspection::TypeDefinition::Statement::Type::Unknown},
+				Add{nullptr},
 				Cast{nullptr},
 				Divide{nullptr},
 				Equals{nullptr},
@@ -166,12 +169,14 @@ namespace Inspection
 			
 			Statement(Inspection::TypeDefinition::Statement && Statement) :
 				Type{Statement.Type},
+				Add{Statement.Add},
 				Cast{Statement.Cast},
 				Divide{Statement.Divide},
 				Equals{Statement.Equals},
 				Subtract{Statement.Subtract},
 				Value{Statement.Value}
 			{
+				Statement.Add = nullptr;
 				Statement.Cast = nullptr;
 				Statement.Divide = nullptr;
 				Statement.Equals = nullptr;
@@ -183,11 +188,27 @@ namespace Inspection
 			
 			Inspection::TypeDefinition::Statement::Type Type;
 			// content depending on type
+			Inspection::TypeDefinition::Add * Add;
 			Inspection::TypeDefinition::Cast * Cast;
 			Inspection::TypeDefinition::Divide * Divide;
 			Inspection::TypeDefinition::Equals * Equals;
 			Inspection::TypeDefinition::Subtract * Subtract;
 			Inspection::TypeDefinition::Value * Value;
+		};
+		
+		class Add
+		{
+		public:
+			Add(void)
+			{
+			}
+			
+			Add(Inspection::TypeDefinition::Add && Add) = default;
+			
+			Add(const Inspection::TypeDefinition::Add & Add) = delete;
+			
+			Inspection::TypeDefinition::Statement Summand1;
+			Inspection::TypeDefinition::Statement Summand2;
 		};
 		
 		class Cast

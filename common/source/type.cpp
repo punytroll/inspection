@@ -26,6 +26,7 @@ namespace Inspection
 	
 	namespace Algorithms
 	{
+		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Summand1, const Inspection::TypeDefinition::Statement & Summand2);
 		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor);
 		std::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast);
 		std::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement);
@@ -295,6 +296,12 @@ namespace Inspection
 		{
 			switch(Statement.Type)
 			{
+			case Inspection::TypeDefinition::Statement::Type::Add:
+				{
+					assert(Statement.Add != nullptr);
+					
+					return Inspection::Algorithms::Add(ExecutionContext, Statement.Add->Summand1, Statement.Add->Summand2);
+				}
 			case Inspection::TypeDefinition::Statement::Type::Cast:
 				{
 					assert(Statement.Cast != nullptr);
@@ -342,15 +349,36 @@ namespace Inspection
 				{
 					return Inspection::Algorithms::GetDataFromCast< float >(ExecutionContext, Cast);
 				}
+			case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
+				{
+					return Inspection::Algorithms::GetDataFromCast<std::uint8_t>(ExecutionContext, Cast);
+				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
 				{
-					return Inspection::Algorithms::GetDataFromCast< std::uint64_t >(ExecutionContext, Cast);
+					return Inspection::Algorithms::GetDataFromCast<std::uint64_t>(ExecutionContext, Cast);
 				}
 			default:
 				{
 					assert(false);
 				}
 			}
+		}
+		
+		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Summand1, const Inspection::TypeDefinition::Statement & Summand2)
+		{
+			auto AnySummand1 = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Summand1);
+			auto AnySummand2 = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Summand2);
+			
+			if((AnySummand1.type() == typeid(std::uint8_t)) && (AnySummand2.type() == typeid(std::uint8_t)))
+			{
+				return static_cast<std::uint8_t>(std::any_cast<std::uint8_t>(AnySummand1) + std::any_cast<std::uint8_t>(AnySummand2));
+			}
+			else
+			{
+				assert(false);
+			}
+			
+			return nullptr;
 		}
 		
 		template<typename Type>
@@ -1471,6 +1499,30 @@ void Inspection::TypeDefinition::Type::Load(std::istream & InputStream)
 	_LoadType(*this, DocumentElement);
 }
 
+void Inspection::TypeDefinition::Type::_LoadAdd(Inspection::TypeDefinition::Add & Add, const XML::Element * AddElement)
+{
+	bool First = true;
+	
+	for(auto AddChildNode : AddElement->GetChilds())
+	{
+		if(AddChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto AddChildElement = dynamic_cast<const XML::Element *>(AddChildNode);
+			
+			assert(AddChildElement != nullptr);
+			if(First == true)
+			{
+				_LoadStatement(Add.Summand1, AddChildElement);
+				First = false;
+			}
+			else
+			{
+				_LoadStatement(Add.Summand2, AddChildElement);
+			}
+		}
+	}
+}
+
 void Inspection::TypeDefinition::Type::_LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement)
 {
 	assert(Cast.DataType == Inspection::TypeDefinition::DataType::Unknown);
@@ -1945,7 +1997,13 @@ void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition
 {
 	assert(StatementElement != nullptr);
 	assert(Statement.Type == Inspection::TypeDefinition::Statement::Type::Unknown);
-	if(StatementElement->GetName() == "divide")
+	if(StatementElement->GetName() == "add")
+	{
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Add;
+		Statement.Add = new Inspection::TypeDefinition::Add{};
+		_LoadAdd(*(Statement.Add), StatementElement);
+	}
+	else if(StatementElement->GetName() == "divide")
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Divide;
 		Statement.Divide = new Inspection::TypeDefinition::Divide{};
@@ -1964,6 +2022,12 @@ void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition
 		_LoadSubtract(*(Statement.Subtract), StatementElement);
 	}
 	else if((StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
+	{
+		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Statement.Cast = new Inspection::TypeDefinition::Cast{};
+		_LoadCast(*(Statement.Cast), StatementElement);
+	}
+	else if((StatementElement->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
 		Statement.Cast = new Inspection::TypeDefinition::Cast{};
@@ -2155,14 +2219,6 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_FLAC_Stream_Header")
 				{
 					Type._HardcodedGetter = Inspection::Get_FLAC_Stream_Header;
-				}
-				else if(HardcodedText->GetText() == "Get_FLAC_StreamInfoBlock_BitsPerSample")
-				{
-					Type._HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample;
-				}
-				else if(HardcodedText->GetText() == "Get_FLAC_StreamInfoBlock_NumberOfChannels")
-				{
-					Type._HardcodedGetter = Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels;
 				}
 				else if(HardcodedText->GetText() == "Get_FLAC_Subframe_CalculateBitsPerSample")
 				{
@@ -2375,6 +2431,10 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				else if(HardcodedText->GetText() == "Get_UnsignedInteger_4Bit")
 				{
 					Type._HardcodedGetter = Inspection::Get_UnsignedInteger_4Bit;
+				}
+				else if(HardcodedText->GetText() == "Get_UnsignedInteger_5Bit")
+				{
+					Type._HardcodedGetter = Inspection::Get_UnsignedInteger_5Bit;
 				}
 				else if(HardcodedText->GetText() == "Get_UnsignedInteger_7Bit")
 				{
