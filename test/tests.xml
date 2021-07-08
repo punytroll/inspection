@@ -1,5 +1,48 @@
 <tests>
 	<test>
+		<description>The id3inspector must be able to read this file.</description>
+		<execute>
+			<command>../id3inspector</command>
+			<argument>../examples/067_ID3_2.3_TEXT_8859-1</argument>
+		</execute>
+	</test>
+	<test>
+		<description>The identifier of the frame in question is TEXT.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/067_ID3_2.3_TEXT_8859-1</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>TEXT</expected-output>
+	</test>
+	<test>
+		<description>The interpretation of the frame in question is correct.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/067_ID3_2.3_TEXT_8859-1</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Lyricist/Text writer</expected-output>
+	</test>
+	<test>
+		<description>The TEXT frame must have a text encoding.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/067_ID3_2.3_TEXT_8859-1</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:TextEncoding/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>The TEXT frame must have a text encoding.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/067_ID3_2.3_TEXT_8859-1</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Information/data</argument>
+		</execute>
+		<expected-output>Test lyricist</expected-output>
+	</test>
+	<test>
 		<description>The apeinspector must run successfully on this example.</description>
 		<execute>
 			<command>../apeinspector</command>
