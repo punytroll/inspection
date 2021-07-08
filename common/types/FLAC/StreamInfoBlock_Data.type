@@ -42,15 +42,31 @@
 		</field>
 		<field name="NumberOfChannels">
 			<type-reference>
-				<part>FLAC</part>
-				<part>StreamInfoBlock_NumberOfChannels</part>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>3Bit</part>
 			</type-reference>
+			<tag name="value">
+				<add>
+					<data-reference root="current"/>
+					<unsigned-integer-8bit>1</unsigned-integer-8bit>
+				</add>
+			</tag>
 		</field>
 		<field name="BitsPerSample">
 			<type-reference>
-				<part>FLAC</part>
-				<part>StreamInfoBlock_BitsPerSample</part>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>5Bit</part>
 			</type-reference>
+			<tag name="value">
+				<add>
+					<data-reference root="current"/>
+					<unsigned-integer-8bit>1</unsigned-integer-8bit>
+				</add>
+			</tag>
 		</field>
 		<field name="TotalSamplesPerChannel">
 			<type-reference>

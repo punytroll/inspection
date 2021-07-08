@@ -37,7 +37,6 @@ namespace Inspection
 	std::unique_ptr<Inspection::Result> Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_ASF_FileProperties_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_ASF_GUID(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-	std::unique_ptr<Inspection::Result> Get_ASF_IndexPlaceholderObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_ASF_Metadata_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_ASF_Object(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
@@ -62,8 +61,6 @@ namespace Inspection
 	std::unique_ptr<Inspection::Result> Get_FLAC_Frame_Header(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_FLAC_MetaDataBlock(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_FLAC_Stream_Header(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-	std::unique_ptr<Inspection::Result> Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-	std::unique_ptr<Inspection::Result> Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_FLAC_Subframe(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample);
 	std::unique_ptr<Inspection::Result> Get_FLAC_Subframe_CalculateBitsPerSample(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 	std::unique_ptr<Inspection::Result> Get_FLAC_Subframe_Data_LPC(Inspection::Reader & Reader, std::uint16_t FrameBlockSize, std::uint8_t BitsPerSample, std::uint8_t Order);

@@ -23,6 +23,7 @@ namespace Inspection
 	
 	namespace TypeDefinition
 	{
+		class Add;
 		class Cast;
 		class Divide;
 		class Enumeration;
@@ -54,6 +55,7 @@ namespace Inspection
 			std::unique_ptr<Inspection::Result> _GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
 			std::unique_ptr<Inspection::Result> _GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
 			std::unique_ptr<Inspection::Result> _GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
+			void _LoadAdd(Inspection::TypeDefinition::Add & Add, const XML::Element * AddElement);
 			void _LoadCast(Inspection::TypeDefinition::Cast & Cast, const XML::Element * CastElement);
 			void _LoadDivide(Inspection::TypeDefinition::Divide & Divide, const XML::Element * DivideElement);
 			void _LoadEnumeration(Inspection::TypeDefinition::Enumeration & Enumeration, const XML::Element * EnumerationElement);

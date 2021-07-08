@@ -1,0 +1,8 @@
+<type>
+	<field name="Data">
+		<type-reference>
+			<part>Data</part>
+			<part>Unset_EndedByLength</part>
+		</type-reference>
+	</field>
+</type>

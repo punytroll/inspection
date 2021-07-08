@@ -1392,27 +1392,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_FileProperties_Flags(Ins
 	return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ASF_IndexPlaceholderObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-	auto Result = std::make_unique<Inspection::Result>();
-	auto Continue = true;
-	
-	// reading
-	if(Continue == true)
-	{
-		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult = Inspection::Get_Data_Unset_EndedByLength(PartReader, {});
-		
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Data", PartResult->ExtractValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// finalization
-	Result->SetSuccess(Continue);
-	
-	return Result;
-}
-
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
 	auto Result = std::make_unique<Inspection::Result>();
@@ -1685,7 +1664,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_Object(Inspection::Reade
 		else if(GUID == Inspection::g_ASF_IndexPlaceholderObjectGUID)
 		{
 			auto PartReader = Inspection::Reader{Reader, Size - Reader.GetConsumedLength()};
-			auto PartResult = Inspection::Get_ASF_IndexPlaceholderObjectData(PartReader, {});
+			auto PartResult = Inspection::g_TypeRepository.GetType({"ASF", "ObjectData", "IndexPlaceholder"})->Get(PartReader, {});
 			
 			Continue = PartResult->GetSuccess();
 			Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
@@ -3035,56 +3014,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Stream_Header(Inspectio
 		}
 	}
 	// finalization
-	Result->SetSuccess(Continue);
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_StreamInfoBlock_BitsPerSample(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-	auto Result = std::make_unique<Inspection::Result>();
-	auto Continue = true;
-	
-	// reading
-	if(Continue == true)
-	{
-		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult = Inspection::Get_UnsignedInteger_5Bit(PartReader, {});
-		
-		Continue = PartResult->GetSuccess();
-		Result->SetValue(PartResult->ExtractValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Result->GetValue()->AddTag("value", static_cast<std::uint8_t>(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) + 1));
-	}
-	Result->SetSuccess(Continue);
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_StreamInfoBlock_NumberOfChannels(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-	auto Result = std::make_unique<Inspection::Result>();
-	auto Continue = true;
-	
-	// reading
-	if(Continue == true)
-	{
-		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult = Inspection::Get_UnsignedInteger_3Bit(PartReader, {});
-		
-		Continue = PartResult->GetSuccess();
-		Result->SetValue(PartResult->ExtractValue());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-	}
-	// interpretation
-	if(Continue == true)
-	{
-		Result->GetValue()->AddTag("value", static_cast<std::uint8_t>(std::any_cast<std::uint8_t>(Result->GetValue()->GetData()) + 1));
-	}
 	Result->SetSuccess(Continue);
 	
 	return Result;
@@ -5334,7 +5263,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader_F
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"})->Get(PartReader, {})};
+		auto PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.4", "Tag_ExtendedHeader_Flag_Header"})->Get(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
 		Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
@@ -5353,10 +5282,10 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Tag_ExtendedHeader_F
 	if(Continue == true)
 	{
 		auto PartReader = Inspection::Reader{Reader};
-		auto PartResult{Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {})};
+		auto PartResult = Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendField("Restrictions", PartResult->GetValue());
+		Result->GetValue()->AppendField("Restrictions", PartResult->ExtractValue());
 		PartResult->GetValue()->AddTag("error", "This program is missing the interpretation of the tag restriction flags."s);
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
