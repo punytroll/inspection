@@ -59,6 +59,8 @@ class Run(object):
         self.return_code = None
         self.output = None
         self.statistics = Statistics()
+        self.number = None
+        self.error_output = None
 
 class Test(object):
     def __init__(self):
@@ -85,6 +87,12 @@ def get_s_if_greater_one(number):
     else:
         return ""
 
+def get_bool_value(text):
+    if text == "True":
+        return True
+    else:
+        return False
+
 def build_test_dictionary(test_list):
     result = dict()
     for test in test_list:
@@ -104,7 +112,7 @@ def read_last_run_statistics():
         with open(".test_statistics.csv", "r") as file:
             for line in file:
                 line_parts = line[:-1].split(",")
-                result[line_parts[0]] = (bool(line_parts[1]), float(line_parts[2]))
+                result[line_parts[0]] = (get_bool_value(line_parts[1]), float(line_parts[2]))
     except FileNotFoundError:
         pass
     return result
@@ -115,11 +123,15 @@ def test_runner(test_queue, finished_queue):
         try:
             test = test_queue.get_nowait()
             start_time = time.perf_counter()
-            result = subprocess.run([test.setup.execute.command] + test.setup.execute.arguments, stdout=subprocess.PIPE)
+            try:
+                result = subprocess.run([test.setup.execute.command] + test.setup.execute.arguments, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                test.this_run.return_code = result.returncode
+                test.this_run.output = result.stdout.decode("utf-8")
+                test.this_run.error_output = result.stderr.decode("utf-8")
+            except FileNotFoundError as exception:
+                test.this_run.error_output = str(exception)
             end_time = time.perf_counter()
             test.this_run.statistics.runtime = end_time - start_time
-            test.this_run.return_code = result.returncode
-            test.this_run.output = result.stdout.decode("utf-8")
             finished_queue.put_nowait(test)
         except queue.Empty:
             break
@@ -174,7 +186,6 @@ def add_last_run_statistics(test_list):
             test.last_run_statistics = Statistics()
             test.last_run_statistics.success = last_run_statistics[test_hash][0]
             test.last_run_statistics.runtime = last_run_statistics[test_hash][1]
-            del last_run_statistics[test_hash]
 
 def sort_test_list(test_list):
     def key_function(test):
@@ -209,6 +220,7 @@ def execute_test_suite(test_suite_file_path):
             break
         else:
             number_of_tests += 1
+            finished_test.this_run.number = number_of_tests
             print(f"{BrightWhite}[{BrightBlue}{str(number_of_tests).zfill(magnitude_of_number_of_tests)}{BrightWhite} / {BrightBlue}{len(test_list)}{BrightWhite}]{Reset}", end = "")
             if finished_test.setup.description != None:
                 print(f" {BrightYellow}{finished_test.setup.description}{Reset}")
@@ -219,22 +231,27 @@ def execute_test_suite(test_suite_file_path):
                 if finished_test.setup.expected_output != None:
                     if finished_test.this_run.output == finished_test.setup.expected_output:
                         number_of_successes += 1
-                        print(f"        => \"{BrightGreen}{finished_test.this_run.output}{Reset}\"")
+                        print(f"        => \"{BrightGreen}Succeeded{Reset}\" {BrightWhite}({Reset}with output \"{Green}{finished_test.this_run.output}{Reset}\"{BrightWhite})")
                         finished_test.this_run.statistics.success = True
                     else:
                         number_of_failures += 1
-                        print(f"        => \"{BrightRed}{finished_test.this_run.output}{Reset}\"")
-                        print(f"    Test failed! Expected output was \"{BrightBlue}{finished_test.setup.expected_output}{Reset}\".")
+                        print(f"        => \"{BrightRed}Failed{Reset}\" {BrightWhite}({Reset}with output \"{Red}{finished_test.this_run.output}{Reset}\" instead of \"{Green}{finished_test.setup.expected_output}{Reset}\"{BrightWhite})")
                         finished_test.this_run.statistics.success = False
                 else:
                     number_of_successes += 1
                     print(f"        => {BrightGreen}Succeeded{Reset}")
                     finished_test.this_run.statistics.success = True
-            else:
+            elif finished_test.this_run.return_code == None:
                 number_of_failures += 1
                 print(f"        => {BrightRed}Failed{Reset}")
-                print(f"    Test failed! The return code of the test was {BrightBlue}{finished_test.this_run.return_code}{Reset} instead of {BrightYellow}0{Reset}.")
                 finished_test.this_run.statistics.success = False
+            else:
+                number_of_failures += 1
+                print(f"        => {BrightRed}Failed{Reset} {BrightWhite}({Reset}error code was {Red}{finished_test.this_run.return_code}{Reset} instead of {Green}0{BrightWhite})")
+                finished_test.this_run.statistics.success = False
+            if len(finished_test.this_run.error_output) > 0:
+                print(f"{BrightRed}Error output{BrightWhite}:{Reset}")
+                print(f"{Red}{finished_test.this_run.error_output}{Reset}")
             print()
             finished_tests.append(finished_test)
     print()
@@ -245,6 +262,18 @@ def execute_test_suite(test_suite_file_path):
         print(f"All {Yellow}{str(number_of_successes)}{Reset} test{get_s_if_greater_one(number_of_successes)} {BrightGreen}succeeded{Reset}.")
     else:
         print(f"Out of {Yellow}{str(number_of_tests)}{Reset} test{get_s_if_greater_one(number_of_tests)}, {Yellow}{str(number_of_successes)}{Reset} test{get_s_if_greater_one(number_of_successes)} {BrightGreen}succeeded{Reset} and {Yellow}{str(number_of_failures)}{Reset} test{get_s_if_greater_one(number_of_failures)} {BrightRed}failed{Reset}.")
+        print("    Failed tests: ", end = "")
+        first = True
+        for finished_test in finished_tests:
+            if finished_test.this_run.statistics.success == False:
+                if first == False:
+                    print(f"{BrightWhite}, ", end = "")
+                else:
+                    first = False
+                print(f"{BrightRed}{finished_test.this_run.number}", end = "")
+                if len(finished_test.this_run.error_output) > 0:
+                    print(f"{Reset} {BrightWhite}({Red}with error output{BrightWhite})", end = "")
+        print(Reset)
     # write statistics file
     with open(".test_statistics.csv", "w") as file:
         for test in finished_tests:
