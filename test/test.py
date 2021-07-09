@@ -224,7 +224,7 @@ def execute_test_suite(test_suite_file_path):
                     else:
                         number_of_failures += 1
                         print(f"        => \"{BrightRed}{finished_test.this_run.output}{Reset}\"")
-                        print(f"    Test failed! Expected output was \"{BrightBlue}{test.setup.expected_output}{Reset}\".")
+                        print(f"    Test failed! Expected output was \"{BrightBlue}{finished_test.setup.expected_output}{Reset}\".")
                         finished_test.this_run.statistics.success = False
                 else:
                     number_of_successes += 1
