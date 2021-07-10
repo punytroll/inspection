@@ -702,6 +702,14 @@
 							<string>User defined URL link frame</string>
 						</tag>
 					</element>
+					<fallback-element valid="false">
+						<tag name="standard">
+							<string>ID3 2.4</string>
+						</tag>
+						<tag name="interpretation">
+							<nothing/>
+						</tag>
+					</fallback-element>
 				</enumeration>
 			</apply-enumeration>
 		</interpretation>
