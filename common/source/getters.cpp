@@ -3716,25 +3716,33 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame(Inspection::Re
 		else
 		{
 			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
-			PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
+			
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Data", PartResult->ExtractValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-		if(PartReader.HasRemaining() == true)
+		if(PartResult != nullptr)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
-			AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
-			AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
-			AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
-			
-			auto RestReader = Inspection::Reader{PartReader};
-			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
-			
-			Continue = RestResult->GetSuccess();
-			Result->GetValue()->AppendField("Rest", RestResult->ExtractValue());
-			Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
-			Reader.AdvancePosition(RestReader.GetConsumedLength());
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			if(PartReader.HasRemaining() == true)
+			{
+				Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
+				AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
+				AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
+				AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
+				
+				auto RestReader = Inspection::Reader{PartReader};
+				auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
+				
+				Continue = RestResult->GetSuccess();
+				Result->GetValue()->AppendField("Rest", RestResult->ExtractValue());
+				Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
+				Reader.AdvancePosition(RestReader.GetConsumedLength());
+			}
 		}
 	}
 	// finalization
@@ -4036,25 +4044,33 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame(Inspection::Re
 		else
 		{
 			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
-			PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
+			
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Data", PartResult->ExtractValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-		if(PartReader.HasRemaining() == true)
+		if(PartResult != nullptr)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
-			AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
-			AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
-			AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
-			
-			auto RestReader = Inspection::Reader{PartReader};
-			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
-			
-			Continue = RestResult->GetSuccess();
-			Result->GetValue()->AppendField("Rest", RestResult->ExtractValue());
-			Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
-			Reader.AdvancePosition(RestReader.GetConsumedLength());
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			if(PartReader.HasRemaining() == true)
+			{
+				Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
+				AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
+				AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
+				AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
+				
+				auto RestReader = Inspection::Reader{PartReader};
+				auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
+				
+				Continue = RestResult->GetSuccess();
+				Result->GetValue()->AppendField("Rest", RestResult->ExtractValue());
+				Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
+				Reader.AdvancePosition(RestReader.GetConsumedLength());
+			}
 		}
 	}
 	// finalization
@@ -4924,25 +4940,33 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame(Inspection::Re
 		else
 		{
 			Result->GetValue()->AddTag("error", "The frame identifier \"" + Identifier + "\" has no associated handler."s);
-			PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
+			
+			auto PartResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("Data", PartResult->ExtractValue());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
-		Continue = PartResult->GetSuccess();
-		Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-		Reader.AdvancePosition(PartReader.GetConsumedLength());
-		if(PartReader.HasRemaining() == true)
+		if(PartResult != nullptr)
 		{
-			Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
-			AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
-			AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
-			AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
-			
-			auto RestReader = Inspection::Reader{PartReader};
-			auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
-			
-			Continue = RestResult->GetSuccess();
-			Result->GetValue()->AppendField("Rest", RestResult->ExtractValue());
-			Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
-			Reader.AdvancePosition(RestReader.GetConsumedLength());
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
+			if(PartReader.HasRemaining() == true)
+			{
+				Result->GetValue()->AddTag("error", "The frame size is claimed larger than the actually handled size. See at the end of the frame for superfluous data."s);
+				AppendLengthTag(Result->GetValue(), ClaimedSize, "claimed size");
+				AppendLengthTag(Result->GetValue(), PartReader.GetConsumedLength(), "handled size");
+				AppendLengthTag(Result->GetValue(), PartReader.CalculateRemainingOutputLength(), "rest size");
+				
+				auto RestReader = Inspection::Reader{PartReader};
+				auto RestResult = Inspection::Get_Buffer_UnsignedInteger_8Bit_EndedByLength(RestReader, {});
+				
+				Continue = RestResult->GetSuccess();
+				Result->GetValue()->AppendField("Rest", RestResult->ExtractValue());
+				Result->GetValue()->GetField("Rest")->AddTag("error", "This is additional unparsed data at the end of the frame."s);
+				Reader.AdvancePosition(RestReader.GetConsumedLength());
+			}
 		}
 	}
 	// finalization

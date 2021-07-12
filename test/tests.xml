@@ -1,5 +1,57 @@
 <tests>
 	<test>
+		<description>The id3inspector must be able to read this file, even with missing handlers.</description>
+		<execute>
+			<command>../id3inspector</command>
+			<argument>../examples/069_ID3_2.4_TYYY</argument>
+		</execute>
+	</test>
+	<test>
+		<description>The frame containes an error tag to indicate the missing handler.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/069_ID3_2.4_TYYY</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/tag:error/data</argument>
+		</execute>
+		<expected-output>The frame identifier "TYYY" has no associated handler.</expected-output>
+	</test>
+	<test>
+		<description>The identifier of the frame in question is TYYY.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/069_ID3_2.4_TYYY</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>TYYY</expected-output>
+	</test>
+	<test>
+		<description>The identifier of the frame is TYYY without an interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/069_ID3_2.4_TYYY</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>nothing</expected-output>
+	</test>
+	<test>
+		<description>The missing interpretation results in an error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/069_ID3_2.4_TYYY</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/tag:error/data</argument>
+		</execute>
+		<expected-output>Could find no enumeration element for the base value "TYYY".</expected-output>
+	</test>
+	<test>
+		<description>The missing handler results in a Data field.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/069_ID3_2.4_TYYY</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Data/data</argument>
+		</execute>
+		<expected-output>00 54 65 73 74 00</expected-output>
+	</test>
+	<test>
 		<description>The id3inspector must be able to read this file.</description>
 		<execute>
 			<command>../id3inspector</command>
