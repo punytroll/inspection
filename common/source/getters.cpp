@@ -8508,7 +8508,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_Frame(Inspection::Rea
 		{
 			FrameLength.Set(144 * BitRate / SamplingFrequency + PaddingBit, 0);
 		}
-		if(Reader.Has(FrameLength) == true)
+		if(Reader.Has(FrameLength - Reader.GetConsumedLength()) == true)
 		{
 			auto PartReader = Inspection::Reader{Reader, FrameLength - Reader.GetConsumedLength()};
 			auto PartResult = Inspection::Get_Data_SetOrUnset_EndedByLength(PartReader, {});
