@@ -11,6 +11,7 @@ check: all
 clean:
 	$(RM) test
 	$(RM) test.o
+	$(RM) .test_statistics.csv
 
 common:
 	$(MAKE) -C ../common
