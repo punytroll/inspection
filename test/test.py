@@ -231,11 +231,11 @@ def execute_test_suite(test_suite_file_path):
                 if finished_test.setup.expected_output != None:
                     if finished_test.this_run.output == finished_test.setup.expected_output:
                         number_of_successes += 1
-                        print(f"        => \"{BrightGreen}Succeeded{Reset}\" {BrightWhite}({Reset}with output \"{Green}{finished_test.this_run.output}{Reset}\"{BrightWhite})")
+                        print(f"        => {BrightGreen}Succeeded{Reset} {BrightWhite}({Reset}with output \"{Green}{finished_test.this_run.output}{Reset}\"{BrightWhite})")
                         finished_test.this_run.statistics.success = True
                     else:
                         number_of_failures += 1
-                        print(f"        => \"{BrightRed}Failed{Reset}\" {BrightWhite}({Reset}with output \"{Red}{finished_test.this_run.output}{Reset}\" instead of \"{Green}{finished_test.setup.expected_output}{Reset}\"{BrightWhite})")
+                        print(f"        => {BrightRed}Failed{Reset} {BrightWhite}({Reset}with output \"{Red}{finished_test.this_run.output}{Reset}\" instead of \"{Green}{finished_test.setup.expected_output}{Reset}\"{BrightWhite})")
                         finished_test.this_run.statistics.success = False
                 else:
                     number_of_successes += 1
