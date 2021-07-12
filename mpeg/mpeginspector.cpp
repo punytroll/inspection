@@ -21,11 +21,11 @@ namespace Inspection
 			// reading
 			if(Continue == true)
 			{
-				Inspection::Reader PartReader{Reader};
-				auto PartResult{Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {})};
+				auto PartReader = Inspection::Reader{Reader};
+				auto PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
 				
 				Continue = PartResult->GetSuccess();
-				Result->GetValue()->AppendField("MPEGStream", PartResult->GetValue());
+				Result->GetValue()->AppendField("MPEGStream", PartResult->ExtractValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
 			// finalization
@@ -40,18 +40,18 @@ int main(int argc, char ** argv)
 {
 	std::cout << "This program is intentionally strict according to MPEG-1 audio (ISO/IEC 11172-3)!" << std::endl;
 	
-	Inspection::MPEGInspector Inspector;
+	auto Inspector = Inspection::MPEGInspector{};
 	auto NumberOfArguments{argc};
 	auto ArgumentIndex{0};
 	
 	while(++ArgumentIndex < NumberOfArguments)
 	{
-		std::string Argument{argv[ArgumentIndex]};
+		auto Argument = std::string{argv[ArgumentIndex]};
 		
 		Inspector.PushPath(Argument);
 	}
 	
-	int Result{0};
+	auto Result = 0;
 	
 	if(Inspector.GetPathCount() == 0)
 	{
