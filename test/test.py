@@ -231,11 +231,11 @@ def execute_test_suite(test_suite_file_path):
                 if finished_test.setup.expected_output != None:
                     if finished_test.this_run.output == finished_test.setup.expected_output:
                         number_of_successes += 1
-                        print(f"        => {BrightGreen}Succeeded{Reset} {BrightWhite}({Reset}with output \"{Green}{finished_test.this_run.output}{Reset}\"{BrightWhite})")
+                        print(f"        => {BrightGreen}Succeeded{Reset} (with output \"{Green}{finished_test.this_run.output}{Reset}\")")
                         finished_test.this_run.statistics.success = True
                     else:
                         number_of_failures += 1
-                        print(f"        => {BrightRed}Failed{Reset} {BrightWhite}({Reset}with output \"{Red}{finished_test.this_run.output}{Reset}\" instead of \"{Green}{finished_test.setup.expected_output}{Reset}\"{BrightWhite})")
+                        print(f"        => {BrightRed}Failed{Reset} (with output \"{Red}{finished_test.this_run.output}{Reset}\" instead of \"{Green}{finished_test.setup.expected_output}{Reset}\")")
                         finished_test.this_run.statistics.success = False
                 else:
                     number_of_successes += 1
@@ -247,10 +247,10 @@ def execute_test_suite(test_suite_file_path):
                 finished_test.this_run.statistics.success = False
             else:
                 number_of_failures += 1
-                print(f"        => {BrightRed}Failed{Reset} {BrightWhite}({Reset}error code was {Red}{finished_test.this_run.return_code}{Reset} instead of {Green}0{BrightWhite})")
+                print(f"        => {BrightRed}Failed{Reset} (error code was {Red}{finished_test.this_run.return_code}{Reset} instead of {Green}0{Reset})")
                 finished_test.this_run.statistics.success = False
             if len(finished_test.this_run.error_output) > 0:
-                print(f"{BrightRed}Error output{BrightWhite}:{Reset}")
+                print(f"{BrightRed}Error output{Reset}:")
                 print(f"{Red}{finished_test.this_run.error_output}{Reset}")
             print()
             finished_tests.append(finished_test)
@@ -267,12 +267,12 @@ def execute_test_suite(test_suite_file_path):
         for finished_test in finished_tests:
             if finished_test.this_run.statistics.success == False:
                 if first == False:
-                    print(f"{BrightWhite}, ", end = "")
+                    print(f", ", end = "")
                 else:
                     first = False
-                print(f"{BrightRed}{finished_test.this_run.number}", end = "")
+                print(f"{BrightRed}{finished_test.this_run.number}{Reset}", end = "")
                 if len(finished_test.this_run.error_output) > 0:
-                    print(f"{Reset} {BrightWhite}({Red}with error output{BrightWhite})", end = "")
+                    print(f" {BrightWhite}({Red}with error output{BrightWhite}){Reset}", end = "")
         print(Reset)
     # write statistics file
     with open(".test_statistics.csv", "w") as file:
