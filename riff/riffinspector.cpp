@@ -59,7 +59,7 @@ int main(int argc, char ** argv)
 	}
 	else
 	{
-		Inspector.Process();
+		Result = ((Inspector.Process() == true) ? (0) : (1));
 	}
 	
 	return Result;

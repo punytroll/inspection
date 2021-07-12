@@ -15,7 +15,7 @@ namespace Inspection
 	public:
 		virtual ~Inspector(void);
 		std::uint_fast32_t GetPathCount(void) const;
-		void Process(void);
+		bool Process(void);
 		void PushPath(const std::filesystem::path & Path);
 	protected:
 		virtual std::unique_ptr< Inspection::Result > _Getter(const Inspection::Buffer & Buffer) = 0;
@@ -23,8 +23,8 @@ namespace Inspection
 		void _QueryWriter(Inspection::Value * Value, const std::string & Query);
 		void _AppendOtherData(Inspection::Value * Value, const Inspection::Length & Length);
 	private:
-		void _ProcessPath(const std::filesystem::directory_entry & DirectoryEntry);
-		void _ProcessFile(const std::filesystem::directory_entry & DirectoryEntry);
+		bool _ProcessPath(const std::filesystem::directory_entry & DirectoryEntry);
+		bool _ProcessFile(const std::filesystem::directory_entry & DirectoryEntry);
 		std::deque< std::filesystem::path > _Paths;
 	};
 }
