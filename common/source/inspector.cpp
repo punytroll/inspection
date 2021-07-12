@@ -22,19 +22,24 @@ std::uint_fast32_t Inspection::Inspector::GetPathCount(void) const
 	return _Paths.size();
 }
 
-void Inspection::Inspector::Process(void)
+bool Inspection::Inspector::Process(void)
 {
+	auto Result = true;
+	
 	for(auto Path : _Paths)
 	{
 		try
 		{
-			_ProcessPath(std::filesystem::directory_entry(Path));
+			Result &= _ProcessPath(std::filesystem::directory_entry(Path));
 		}
 		catch(const std::exception & Exception)
 		{
 			Inspection::PrintExceptions(Exception);
+			Result = false;
 		}
 	}
+	
+	return Result;
 }
 
 void Inspection::Inspector::PushPath(const std::filesystem::path & Path)
@@ -42,8 +47,10 @@ void Inspection::Inspector::PushPath(const std::filesystem::path & Path)
 	_Paths.push_back(Path);
 }
 
-void Inspection::Inspector::_ProcessPath(const std::filesystem::directory_entry & DirectoryEntry)
+bool Inspection::Inspector::_ProcessPath(const std::filesystem::directory_entry & DirectoryEntry)
 {
+	auto Result = true;
+	
 	if(DirectoryEntry.exists() == true)
 	{
 		if(DirectoryEntry.is_directory() == true)
@@ -52,27 +59,32 @@ void Inspection::Inspector::_ProcessPath(const std::filesystem::directory_entry 
 			{
 				if(DirectoryEntry.is_regular_file() == true)
 				{
-					_ProcessFile(DirectoryEntry);
+					Result &= _ProcessFile(DirectoryEntry);
 				}
 			}
 		}
 		else if(DirectoryEntry.is_regular_file() == true)
 		{
-			_ProcessFile(DirectoryEntry);
+			Result &= _ProcessFile(DirectoryEntry);
 		}
 		else
 		{
 			throw std::runtime_error('"' + DirectoryEntry.path().string() + "\" is no file or directory!");
+			Result = false;
 		}
 	}
 	else
 	{
 		throw std::runtime_error('"' + DirectoryEntry.path().string() + "\" does not exist!");
+		Result = false;
 	}
+	
+	return Result;
 }
 
-void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry & DirectoryEntry)
+bool Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry & DirectoryEntry)
 {
+	auto Result = false;
 	auto & Path{DirectoryEntry.path()};
 	auto FileDescriptor{open(Path.c_str(), O_RDONLY)};
 	
@@ -92,24 +104,27 @@ void Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 		else
 		{
 			auto Buffer = Inspection::Buffer{Address, Inspection::Length(FileSize, 0)};
-			auto Result = std::make_unique< Inspection::Result >();
+			auto FileResult = std::make_unique<Inspection::Result>();
 			
-			Result->GetValue()->SetName(Inspection::g_BrightGreen + Path.string() + Inspection::g_BrightWhite);
+			FileResult->GetValue()->SetName(Inspection::g_BrightGreen + Path.string() + Inspection::g_BrightWhite);
 			
-			auto LengthTag = Result->GetValue()->AddTag("length", Buffer.GetLength());
+			auto LengthTag = FileResult->GetValue()->AddTag("length", Buffer.GetLength());
 			
 			LengthTag->AddTag("unit", "bytes and bits"s);
 			
 			auto InnerResult = _Getter(Buffer);
 			
-			Result->GetValue()->AppendFields(InnerResult->GetValue()->ExtractFields());
-			Result->GetValue()->AddTags(InnerResult->GetValue()->ExtractTags());
-			Result->SetSuccess(InnerResult->GetSuccess());
-			_Writer(Result);
+			FileResult->GetValue()->AppendFields(InnerResult->GetValue()->ExtractFields());
+			FileResult->GetValue()->AddTags(InnerResult->GetValue()->ExtractTags());
+			FileResult->SetSuccess(InnerResult->GetSuccess());
+			_Writer(FileResult);
 			munmap(Address, FileSize);
+			Result = FileResult->GetSuccess();
 		}
 		close(FileDescriptor);
 	}
+	
+	return Result;
 }
 
 void Inspection::Inspector::_Writer(std::unique_ptr< Inspection::Result > & Result)
