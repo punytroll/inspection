@@ -8017,14 +8017,6 @@
 		<execute>
 			<command>../generalinspector</command>
 			<argument>../examples/023_id3_2.4_TSOP</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/tag:content/data</argument>
-		</execute>
-		<expected-output>Performer sort order</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/023_id3_2.4_TSOP</argument>
 			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
 		</execute>
 		<expected-output>TSOP</expected-output>
@@ -8052,14 +8044,6 @@
 			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Informations/field:Information:[tag:element index in array/is-data:0]/tag:value/data</argument>
 		</execute>
 		<expected-output>Keys, Alicia</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/024_id3_2.4_TCMP</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/tag:content/data</argument>
-		</execute>
-		<expected-output>Part of a compilation</expected-output>
 	</test>
 	<test>
 		<execute>

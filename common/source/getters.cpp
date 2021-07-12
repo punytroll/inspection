@@ -3688,8 +3688,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_2_Frame(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->AddTag("content", Result->GetValue()->GetField("Identifier")->GetTag("interpretation")->GetData());
-		
 		auto ClaimedSize  = Inspection::Length(std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0);
 		auto PartReader = Inspection::Reader{Reader, ClaimedSize};
 		const auto & Identifier = std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData());
@@ -3954,8 +3952,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Frame(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->AddTag("content", Result->GetValue()->GetField("Identifier")->GetTag("interpretation")->GetData());
-		
 		auto ClaimedSize = Inspection::Length{std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0};
 		auto PartReader = Inspection::Reader{Reader, ClaimedSize};
 		const auto & Identifier = std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData());
@@ -4872,8 +4868,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_4_Frame(Inspection::Re
 	// reading
 	if(Continue == true)
 	{
-		Result->GetValue()->AddTag("content", Result->GetValue()->GetField("Identifier")->GetTag("interpretation")->GetData());
-		
 		auto ClaimedSize = Inspection::Length(std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Size")->GetData()), 0);
 		auto PartReader = Inspection::Reader{Reader, ClaimedSize};
 		const auto & Identifier = std::any_cast<const std::string &>(Result->GetValue()->GetField("Identifier")->GetData());
