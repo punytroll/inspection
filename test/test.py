@@ -271,8 +271,23 @@ def execute_test_suite(test_suite_file_path):
                 else:
                     first = False
                 print(f"{BrightRed}{finished_test.this_run.number}{Reset}", end = "")
+                reasons = []
+                if finished_test.this_run.return_code != 0:
+                    reasons.append("wrong result code")
                 if len(finished_test.this_run.error_output) > 0:
-                    print(f" {BrightWhite}({Red}with error output{BrightWhite}){Reset}", end = "")
+                    reasons.append("error output")
+                if finished_test.this_run.output != finished_test.setup.expected_output:
+                    reasons.append("wrong output")
+                if len(reasons) > 0:
+                    print(f" {BrightWhite}({Red}with ", end = "")
+                    for index, reason in enumerate(reasons):
+                        if len(reasons) > 1:
+                            if index + 1 == len(reasons):
+                                print(" and ", end = "")
+                            elif index > 0:
+                                print(", ", end = "")
+                        print(reason, end = "")
+                    print(f"{BrightWhite}){Reset}", end = "")
         print(Reset)
     # write statistics file
     with open(".test_statistics.csv", "w") as file:
