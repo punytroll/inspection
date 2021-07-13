@@ -1,11 +1,20 @@
 <tests>
 	<test>
-		<description>The mpeginspector will not be able to parse this file completely and will return 1.</description>
+		<description>The mpeginspector will not be able to parse this file completely (because of the trailing tags) and will return with an error.</description>
 		<execute>
 			<command>../mpeginspector</command>
 			<argument>../examples/001_mpeg1stream_apev2tag_id3v1tag</argument>
 		</execute>
 		<expected-return-code>1</expected-return-code>
+	</test>
+	<test>
+		<description>In seek mode, the mpeginspector will be able to parse this file successfully (skipping trailing tags).</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>--seek</argument>
+			<argument>../examples/001_mpeg1stream_apev2tag_id3v1tag</argument>
+		</execute>
+		<expected-return-code>0</expected-return-code>
 	</test>
 	<test>
 		<description>The id3inspector must be able to read this file, even with missing handlers.</description>
