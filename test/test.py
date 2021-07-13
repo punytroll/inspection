@@ -1,10 +1,10 @@
 import hashlib
 from optparse import OptionParser
-from sys import exit
 from xml.dom.minidom import Node, parse
 import os
 import queue
 import subprocess
+import sys
 import threading
 import time
 
@@ -38,6 +38,7 @@ class Setup(object):
     def __init__(self):
         self.description = None
         self.expected_output = None
+        self.expected_return_code = None
         self.execute = Execute()
     
     def __str__(self):
@@ -68,6 +69,9 @@ class Test(object):
         self.last_run_statistics = None
         self.this_run = Run()
     
+    def is_expect_nothing(self):
+        return self.setup.expected_output == None and self.setup.expected_return_code == None
+    
     def __str__(self):
         return f"Test({self.setup}, {self.last_run_statistics})"
 
@@ -81,11 +85,17 @@ def get_text(nodes):
 def get_space_appended(list):
     return " ".join(list)
 
-def get_s_if_greater_one(number):
-    if number > 1:
-        return "s"
-    else:
+def get_s_as_appropriate(number):
+    if number == 1:
         return ""
+    else:
+        return "s"
+
+def get_was_were_as_appropriate(number):
+    if number == 1:
+        return "was"
+    else:
+        return "were"
 
 def get_bool_value(text):
     if text == "True":
@@ -174,6 +184,8 @@ def load_tests_from_test_suite(test_suite_file_path):
                                     test.setup.execute.arguments.append(get_text(node.childNodes))
                     elif node.tagName == "expected-output":
                         test.setup.expected_output = get_text(node.childNodes)
+                    elif node.tagName == "expected-return-code":
+                        test.setup.expected_return_code = int(get_text(node.childNodes))
             result.append(test)
     return result
 
@@ -209,6 +221,7 @@ def execute_test_suite(test_suite_file_path):
     number_of_tests = 0
     number_of_successes = 0
     number_of_failures = 0
+    number_of_no_expects = 0
     finished_tests = list()
     finished_queue = queue.SimpleQueue()
     scheduler_thread = threading.Thread(target = test_scheduler, args = (test_list, finished_queue))
@@ -227,7 +240,14 @@ def execute_test_suite(test_suite_file_path):
             else:
                 print()
             print(f"    Running \"{finished_test.setup.execute.command} {get_space_appended(finished_test.setup.execute.arguments)}\"")
-            if finished_test.this_run.return_code == 0:
+            if finished_test.is_expect_nothing() == True:
+                print(f"        !! {BrightYellow}We are expecting nothing from this run!{White}")
+                number_of_no_expects += 1
+            if finished_test.this_run.return_code == None:
+                number_of_failures += 1
+                print(f"        => {BrightRed}Failed{Reset} (could not be run)")
+                finished_test.this_run.statistics.success = False
+            elif finished_test.setup.expected_return_code == None or finished_test.this_run.return_code == finished_test.setup.expected_return_code:
                 if finished_test.setup.expected_output != None:
                     if finished_test.this_run.output == finished_test.setup.expected_output:
                         number_of_successes += 1
@@ -241,13 +261,9 @@ def execute_test_suite(test_suite_file_path):
                     number_of_successes += 1
                     print(f"        => {BrightGreen}Succeeded{Reset}")
                     finished_test.this_run.statistics.success = True
-            elif finished_test.this_run.return_code == None:
-                number_of_failures += 1
-                print(f"        => {BrightRed}Failed{Reset}")
-                finished_test.this_run.statistics.success = False
             else:
                 number_of_failures += 1
-                print(f"        => {BrightRed}Failed{Reset} (error code was {Red}{finished_test.this_run.return_code}{Reset} instead of {Green}0{Reset})")
+                print(f"        => {BrightRed}Failed{Reset} (error code was {Red}{finished_test.this_run.return_code}{Reset} instead of {Green}{finished_test.setup.expected_return_code}{Reset})")
                 finished_test.this_run.statistics.success = False
             if len(finished_test.this_run.error_output) > 0:
                 print(f"{BrightRed}Error output{Reset}:")
@@ -259,9 +275,9 @@ def execute_test_suite(test_suite_file_path):
     scheduler_thread.join()
     # output summary
     if number_of_failures == 0:
-        print(f"All {Yellow}{str(number_of_successes)}{Reset} test{get_s_if_greater_one(number_of_successes)} {BrightGreen}succeeded{Reset}.")
+        print(f"All {Yellow}{number_of_successes}{Reset} test{get_s_as_appropriate(number_of_successes)} {BrightGreen}succeeded{Reset}.")
     else:
-        print(f"Out of {Yellow}{str(number_of_tests)}{Reset} test{get_s_if_greater_one(number_of_tests)}, {Yellow}{str(number_of_successes)}{Reset} test{get_s_if_greater_one(number_of_successes)} {BrightGreen}succeeded{Reset} and {Yellow}{str(number_of_failures)}{Reset} test{get_s_if_greater_one(number_of_failures)} {BrightRed}failed{Reset}.")
+        print(f"Out of {Yellow}{number_of_tests}{Reset} test{get_s_as_appropriate(number_of_tests)}, {Yellow}{number_of_successes}{Reset} test{get_s_as_appropriate(number_of_successes)} {BrightGreen}succeeded{Reset} and {Yellow}{number_of_failures}{Reset} test{get_s_as_appropriate(number_of_failures)} {BrightRed}failed{Reset}.")
         print("    Failed tests: ", end = "")
         first = True
         for finished_test in finished_tests:
@@ -289,13 +305,23 @@ def execute_test_suite(test_suite_file_path):
                         print(reason, end = "")
                     print(f"{BrightWhite}){Reset}", end = "")
         print(Reset)
+    if number_of_no_expects > 0:
+        print(f"{BrightYellow}There {get_was_were_as_appropriate(number_of_no_expects)} {number_of_no_expects} test{get_s_as_appropriate(number_of_no_expects)} without any expectations:{Reset}", end = "")
+        for index, finished_test in enumerate(finished_tests):
+            if finished_test.is_expect_nothing() == True:
+                if index > 0:
+                    print(", ", end = "")
+                print(f"{Yellow}{finished_test.this_run.number}{Reset}", end = "")
+        print()
     # write statistics file
     with open(".test_statistics.csv", "w") as file:
         for test in finished_tests:
             file.write(f"{test.setup.get_hash()},{test.this_run.statistics.success},{test.this_run.statistics.runtime}\n")
     # exit, possibly with error code
     if number_of_failures > 0:
-        exit(1)
+        return False
+    else:
+        return True
 
 if __name__ == "__main__":
     return_code = 1
@@ -307,4 +333,6 @@ if __name__ == "__main__":
     if options.test_suite == None:
         print("Set a test suite with '--in'.")
     else:
-        execute_test_suite(options.test_suite)
+        if execute_test_suite(options.test_suite) == True:
+            return_code = 0
+    exit(return_code)
