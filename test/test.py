@@ -127,33 +127,50 @@ def read_last_run_statistics():
         pass
     return result
 
-def test_runner(test_queue, finished_queue):
+def test_runner(test_queue, finished_queue, barrier):
     while True:
         test = None
         try:
             test = test_queue.get_nowait()
-            start_time = time.perf_counter()
-            try:
-                result = subprocess.run([test.setup.execute.command] + test.setup.execute.arguments, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                test.this_run.return_code = result.returncode
-                test.this_run.output = result.stdout.decode("utf-8")
-                test.this_run.error_output = result.stderr.decode("utf-8")
-            except FileNotFoundError as exception:
-                test.this_run.error_output = str(exception)
-            end_time = time.perf_counter()
-            test.this_run.statistics.runtime = end_time - start_time
-            finished_queue.put_nowait(test)
+            # if the "test" object is a string, we are meant to wait at the barrier
+            if type(test) == str:
+                barrier.wait()
+            else:
+                start_time = time.perf_counter()
+                try:
+                    result = subprocess.run([test.setup.execute.command] + test.setup.execute.arguments, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    test.this_run.return_code = result.returncode
+                    test.this_run.output = result.stdout.decode("utf-8")
+                    test.this_run.error_output = result.stderr.decode("utf-8")
+                except FileNotFoundError as exception:
+                    test.this_run.error_output = str(exception)
+                end_time = time.perf_counter()
+                test.this_run.statistics.runtime = end_time - start_time
+                finished_queue.put_nowait(test)
         except queue.Empty:
             break
 
 def test_scheduler(test_list, finished_queue):
-    test_queue = queue.SimpleQueue()
-    for test in test_list:
-        test_queue.put_nowait(test)
+    # we will spawn twice as many threads as we have CPUs
     number_of_threads = os.cpu_count() * 2
+    test_queue = queue.SimpleQueue()
+    last_test = None
+    for test in test_list:
+        if last_test != None:
+            if last_test.last_run_statistics == None and test.last_run_statistics != None:
+                # insert enough "barrier" strings, so that every thread can get one
+                for index in range(number_of_threads):
+                    test_queue.put_nowait("barrier after new tests")
+            elif last_test.last_run_statistics != None and last_test.last_run_statistics.success == False and test.last_run_statistics != None and test.last_run_statistics.success == True:
+                # insert enough "barrier" strings, so that every thread can get one
+                for index in range(number_of_threads):
+                    test_queue.put_nowait("barrier after failed tests")
+        test_queue.put_nowait(test)
+        last_test = test
+    barrier = threading.Barrier(number_of_threads)
     threads = list()
     for thread_index in range(number_of_threads):
-        thread = threading.Thread(target = test_runner, args = (test_queue, finished_queue))
+        thread = threading.Thread(target = test_runner, args = (test_queue, finished_queue, barrier))
         thread.start()
         threads.append(thread)
     for thread in threads:
@@ -235,6 +252,10 @@ def execute_test_suite(test_suite_file_path):
             number_of_tests += 1
             finished_test.this_run.number = number_of_tests
             print(f"{BrightWhite}[{BrightBlue}{str(number_of_tests).zfill(magnitude_of_number_of_tests)}{BrightWhite} / {BrightBlue}{len(test_list)}{BrightWhite}]{Reset}", end = "")
+            if finished_test.last_run_statistics == None:
+                print(f" [{BrightMagenta}NEW{Reset}]", end = "")
+            elif finished_test.last_run_statistics.success == False:
+                print(f" [{BrightMagenta}FAILED PREVIOUSLY{Reset}]", end = "")
             if finished_test.setup.description != None:
                 print(f" {BrightYellow}{finished_test.setup.description}{Reset}")
             else:
