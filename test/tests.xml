@@ -1,5 +1,90 @@
 <tests>
 	<test>
+		<description>The mpeginspector will not be able to parse this file completely (because of the trailing tags) and will return with an error.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>../examples/001_mpeg1stream_apev2tag_id3v1tag</argument>
+		</execute>
+		<expected-return-code>1</expected-return-code>
+	</test>
+	<test>
+		<description>In seek mode, the mpeginspector will be able to parse this file successfully (skipping trailing tags).</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>--seek</argument>
+			<argument>../examples/001_mpeg1stream_apev2tag_id3v1tag</argument>
+		</execute>
+		<expected-return-code>0</expected-return-code>
+	</test>
+	<test>
+		<description>The mpeginspector must be able to parse the file successfully.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>../examples/003_mpeg1stream</argument>
+		</execute>
+		<expected-return-code>0</expected-return-code>
+	</test>
+	<test>
+		<description>The mpeginspector must be able to parse the file successfully in seek mode as well.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>--seek</argument>
+			<argument>../examples/003_mpeg1stream</argument>
+		</execute>
+		<expected-return-code>0</expected-return-code>
+	</test>
+	<test>
+		<description>The mpeginspector wil not be able to parse the file because of the trailing APE tag.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>../examples/005_mpegstream_apev2tag</argument>
+		</execute>
+		<expected-return-code>1</expected-return-code>
+	</test>
+	<test>
+		<description>The mpeginspector must be able to parse the file successfully when in seek mode.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>--seek</argument>
+			<argument>../examples/005_mpegstream_apev2tag</argument>
+		</execute>
+		<expected-return-code>0</expected-return-code>
+	</test>
+	<test>
+		<description>The mpeginspector wil not be able to parse the file because of the trailing ID3v1 tag.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>../examples/006_mpegstream_id3v1tag</argument>
+		</execute>
+		<expected-return-code>1</expected-return-code>
+	</test>
+	<test>
+		<description>The mpeginspector must be able to parse the file successfully when in seek mode.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>--seek</argument>
+			<argument>../examples/006_mpegstream_id3v1tag</argument>
+		</execute>
+		<expected-return-code>0</expected-return-code>
+	</test>
+	<test>
+		<description>The mpeginspector wil not be able to parse the file because of all the tags.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>../examples/009_id3v2tag_mpeg1stream_apev2tag_id3v1tag</argument>
+		</execute>
+		<expected-return-code>1</expected-return-code>
+	</test>
+	<test>
+		<description>The mpeginspector must be able to parse the file successfully when in seek mode.</description>
+		<execute>
+			<command>../mpeginspector</command>
+			<argument>--seek</argument>
+			<argument>../examples/009_id3v2tag_mpeg1stream_apev2tag_id3v1tag</argument>
+		</execute>
+		<expected-return-code>0</expected-return-code>
+	</test>
+	<test>
 		<description>The id3inspector must be able to read this file, even with missing handlers.</description>
 		<execute>
 			<command>../id3inspector</command>
