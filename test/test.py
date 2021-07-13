@@ -150,23 +150,27 @@ def test_runner(test_queue, finished_queue, barrier):
         except queue.Empty:
             break
 
-def test_scheduler(test_list, finished_queue):
-    # we will spawn twice as many threads as we have CPUs
-    number_of_threads = os.cpu_count() * 2
-    test_queue = queue.SimpleQueue()
+def gather_tests_in_queue(test_list, number_of_threads):
+    result = queue.SimpleQueue()
     last_test = None
     for test in test_list:
         if last_test != None:
             if last_test.last_run_statistics == None and test.last_run_statistics != None:
                 # insert enough "barrier" strings, so that every thread can get one
                 for index in range(number_of_threads):
-                    test_queue.put_nowait("barrier after new tests")
+                    result.put_nowait("barrier after new tests")
             elif last_test.last_run_statistics != None and last_test.last_run_statistics.success == False and test.last_run_statistics != None and test.last_run_statistics.success == True:
                 # insert enough "barrier" strings, so that every thread can get one
                 for index in range(number_of_threads):
-                    test_queue.put_nowait("barrier after failed tests")
-        test_queue.put_nowait(test)
+                    result.put_nowait("barrier after failed tests")
+        result.put_nowait(test)
         last_test = test
+    return result
+
+def test_scheduler(test_list, finished_queue):
+    # we will spawn twice as many threads as we have CPUs
+    number_of_threads = os.cpu_count() * 2
+    test_queue = gather_tests_in_queue(test_list, number_of_threads)
     barrier = threading.Barrier(number_of_threads)
     threads = list()
     for thread_index in range(number_of_threads):
