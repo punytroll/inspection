@@ -119,7 +119,8 @@ bool Inspection::EvaluateTestQuery(Inspection::Value * Value, const std::string 
 		}
 		else if(QueryPartSpecifications[0] == "has-data")
 		{
-			return Value->GetData().has_value();
+			assert(QueryPartSpecifications.size() == 1);
+			Result = Value->GetData().has_value();
 		}
 		else if(QueryPartSpecifications[0] == "is-data")
 		{
