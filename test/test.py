@@ -270,7 +270,6 @@ def execute_test_suite(test_suite_file_path):
                 print(f"{Red}{finished_test.this_run.error_output}{Reset}")
             print()
             finished_tests.append(finished_test)
-    print()
     # clean up scheduler thread
     scheduler_thread.join()
     # output summary
