@@ -75,6 +75,13 @@ class Test(object):
     def __str__(self):
         return f"Test({self.setup}, {self.last_run_statistics})"
 
+class TestSuiteStatistics(object):
+    def __init__(self):
+        self.number_of_tests = 0
+        self.number_of_failed_tests = 0
+        self.number_of_succeeded_tests = 0
+        self.number_of_expect_nothing_tests = 0
+
 def get_text(nodes):
     texts = list()
     for node in nodes:
@@ -235,27 +242,18 @@ def sort_test_list(test_list):
     # sorting the test list by (new, success, runtime)
     test_list.sort(key = key_function)
 
-def execute_test_suite(test_suite_file_path):
-    test_list = load_tests_from_test_suite(test_suite_file_path)
-    sort_test_list(test_list)
-    magnitude_of_number_of_tests = len(str(len(test_list)))
-    number_of_tests = 0
-    number_of_successes = 0
-    number_of_failures = 0
-    number_of_no_expects = 0
-    finished_tests = list()
-    finished_queue = queue.SimpleQueue()
-    scheduler_thread = threading.Thread(target = test_scheduler, args = (test_list, finished_queue))
-    scheduler_thread.start()
-    # while the scheduler is waiting for the workers to finish, the main thread prints out information about finished tests
+def print_finished_tests(finished_tests_queue, test_suite_statistics):
+    result = list()
+    magnitude_of_number_of_tests = len(str(test_suite_statistics.number_of_tests))
+    number_of_test = 0
     while True:
-        finished_test = finished_queue.get()
+        finished_test = finished_tests_queue.get()
         if finished_test == None:
             break
         else:
-            number_of_tests += 1
-            finished_test.this_run.number = number_of_tests
-            print(f"{BrightWhite}[{BrightBlue}{str(number_of_tests).zfill(magnitude_of_number_of_tests)}{BrightWhite} / {BrightBlue}{len(test_list)}{BrightWhite}]{Reset}", end = "")
+            number_of_test += 1
+            finished_test.this_run.number = number_of_test
+            print(f"{BrightWhite}[{BrightBlue}{str(number_of_test).zfill(magnitude_of_number_of_tests)}{BrightWhite} / {BrightBlue}{test_suite_statistics.number_of_tests}{BrightWhite}]{Reset}", end = "")
             if finished_test.last_run_statistics == None:
                 print(f" [{BrightMagenta}NEW{Reset}]", end = "")
             elif finished_test.last_run_statistics.success == False:
@@ -267,44 +265,44 @@ def execute_test_suite(test_suite_file_path):
             print(f"    Running \"{finished_test.setup.execute.command} {get_space_appended(finished_test.setup.execute.arguments)}\"")
             if finished_test.is_expect_nothing() == True:
                 print(f"        !! {BrightYellow}We are expecting nothing from this run!{White}")
-                number_of_no_expects += 1
+                test_suite_statistics.number_of_expect_nothing_tests += 1
             if finished_test.this_run.return_code == None:
-                number_of_failures += 1
+                test_suite_statistics.number_of_failed_tests += 1
                 print(f"        => {BrightRed}Failed{Reset} (could not be run)")
                 finished_test.this_run.statistics.success = False
             elif finished_test.setup.expected_return_code == None or finished_test.this_run.return_code == finished_test.setup.expected_return_code:
                 if finished_test.setup.expected_output != None:
                     if finished_test.this_run.output == finished_test.setup.expected_output:
-                        number_of_successes += 1
+                        test_suite_statistics.number_of_succeeded_tests += 1
                         print(f"        => {BrightGreen}Succeeded{Reset} (with output \"{Green}{finished_test.this_run.output}{Reset}\")")
                         finished_test.this_run.statistics.success = True
                     else:
-                        number_of_failures += 1
+                        test_suite_statistics.number_of_failed_tests += 1
                         print(f"        => {BrightRed}Failed{Reset} (with output \"{Red}{finished_test.this_run.output}{Reset}\" instead of \"{Green}{finished_test.setup.expected_output}{Reset}\")")
                         finished_test.this_run.statistics.success = False
                 else:
-                    number_of_successes += 1
+                    test_suite_statistics.number_of_succeeded_tests += 1
                     print(f"        => {BrightGreen}Succeeded{Reset}")
                     finished_test.this_run.statistics.success = True
             else:
-                number_of_failures += 1
+                test_suite_statistics.number_of_failed_tests += 1
                 print(f"        => {BrightRed}Failed{Reset} (error code was {Red}{finished_test.this_run.return_code}{Reset} instead of {Green}{finished_test.setup.expected_return_code}{Reset})")
                 finished_test.this_run.statistics.success = False
             if len(finished_test.this_run.error_output) > 0:
                 print(f"{BrightRed}Error output{Reset}:")
                 print(f"{Red}{finished_test.this_run.error_output}{Reset}")
             print()
-            finished_tests.append(finished_test)
-    # clean up scheduler thread
-    scheduler_thread.join()
-    # output summary
-    if number_of_failures == 0:
-        print(f"All {Yellow}{number_of_successes}{Reset} test{get_s_as_appropriate(number_of_successes)} {BrightGreen}succeeded{Reset}.")
+            result.append(finished_test)
+    return result
+
+def print_summary(test_suite_statistics, finished_tests_list):
+    if test_suite_statistics.number_of_failed_tests == 0:
+        print(f"All {Yellow}{test_suite_statistics.number_of_succeeded_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_succeeded_tests)} {BrightGreen}succeeded{Reset}.")
     else:
-        print(f"Out of {Yellow}{number_of_tests}{Reset} test{get_s_as_appropriate(number_of_tests)}, {Yellow}{number_of_successes}{Reset} test{get_s_as_appropriate(number_of_successes)} {BrightGreen}succeeded{Reset} and {Yellow}{number_of_failures}{Reset} test{get_s_as_appropriate(number_of_failures)} {BrightRed}failed{Reset}.")
+        print(f"Out of {Yellow}{test_suite_statistics.number_of_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_tests)}, {Yellow}{test_suite_statistics.number_of_succeeded_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_succeeded_tests)} {BrightGreen}succeeded{Reset} and {Yellow}{test_suite_statistics.number_of_failed_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_failed_tests)} {BrightRed}failed{Reset}.")
         print("    Failed tests: ", end = "")
         first = True
-        for finished_test in finished_tests:
+        for finished_test in finished_tests_list:
             if finished_test.this_run.statistics.success == False:
                 if first == False:
                     print(f", ", end = "")
@@ -329,20 +327,37 @@ def execute_test_suite(test_suite_file_path):
                         print(reason, end = "")
                     print(f"{BrightWhite}){Reset}", end = "")
         print(Reset)
-    if number_of_no_expects > 0:
-        print(f"{BrightYellow}There {get_was_were_as_appropriate(number_of_no_expects)} {number_of_no_expects} test{get_s_as_appropriate(number_of_no_expects)} without any expectations:{Reset}", end = "")
-        for index, finished_test in enumerate(finished_tests):
+    if test_suite_statistics.number_of_expect_nothing_tests > 0:
+        print(f"{BrightYellow}There {get_was_were_as_appropriate(test_suite_statistics.number_of_expect_nothing_tests)} {test_suite_statistics.number_of_expect_nothing_tests} test{get_s_as_appropriate(test_suite_statistics.number_of_expect_nothing_tests)} without any expectations:{Reset}", end = "")
+        for index, finished_test in enumerate(finished_tests_list):
             if finished_test.is_expect_nothing() == True:
                 if index > 0:
                     print(", ", end = "")
                 print(f"{Yellow}{finished_test.this_run.number}{Reset}", end = "")
         print()
+
+def execute_test_suite(test_suite_file_path):
+    # prepare prioritized list of tests
+    test_list = load_tests_from_test_suite(test_suite_file_path)
+    sort_test_list(test_list)
+    # this queue is used for returning tests that have been run from the runner threads
+    finished_tests_queue = queue.SimpleQueue()
+    scheduler_thread = threading.Thread(target = test_scheduler, args = (test_list, finished_tests_queue))
+    scheduler_thread.start()
+    # while the scheduler is waiting for the runners to finish, the main thread prints out information about finished tests as they come in
+    test_suite_statistics = TestSuiteStatistics()
+    test_suite_statistics.number_of_tests = len(test_list)
+    finished_tests = print_finished_tests(finished_tests_queue, test_suite_statistics)
+    # clean up scheduler thread
+    scheduler_thread.join()
+    # print summary
+    print_summary(test_suite_statistics, finished_tests)
     # write statistics file
     with open(".test_statistics.csv", "w") as file:
         for test in finished_tests:
             file.write(f"{test.setup.get_hash()},{test.this_run.statistics.success},{test.this_run.statistics.runtime}\n")
     # exit, possibly with error code
-    if number_of_failures > 0:
+    if test_suite_statistics.number_of_failed_tests > 0:
         return False
     else:
         return True
