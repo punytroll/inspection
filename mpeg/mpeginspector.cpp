@@ -42,7 +42,7 @@ namespace Inspection
 					auto PartResult = Inspection::g_TypeRepository.Get({"MPEG", "1", "Stream"}, PartReader, {});
 					
 					Continue = PartResult->GetSuccess();
-					Result->GetValue()->AppendField("MPEGStream", PartResult->ExtractValue());
+					Result->GetValue()->AppendField("MPEG.1.Stream", PartResult->ExtractValue());
 					Reader.AdvancePosition(PartReader.GetConsumedLength());
 				}
 			}
