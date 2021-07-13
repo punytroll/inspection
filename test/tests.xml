@@ -1,5 +1,536 @@
 <tests>
 	<test>
+		<description>The POPM frame has a specific identifier.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>POPM</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame identifier has a specific interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Popularimeter</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a specific size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Size/data</argument>
+		</execute>
+		<expected-output>19</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has an EMail field with an email.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/data</argument>
+		</execute>
+		<expected-output>mail@test.com</expected-output>
+	</test>
+	<test>
+		<description>The email in the POPM frame is a string.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The string in the POPM frame's email field is in a specific character set.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/tag:character set/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<description>The string in the POPM frame's email field is in a specific encoding.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<description>The string in the POPM frame's email field is ended by termination.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The string in the POPM frame's email field has a specific length.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:13 characters + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Rating field with a value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/data</argument>
+		</execute>
+		<expected-output>100</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame is an integer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame is unsigned.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame is 8 bit wide.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame has a standard tag alongside its interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3 2.4</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame has an interpretation tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>100 / 255</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Counter field with a specific value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>4128</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is an integer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is unsigned.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is 32 bit wide.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is stored in big endian.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/073_ID3_2.4_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:big endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a specific identifier.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/070_ID3_2.3_PCNT_4_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>PCNT</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame identifier has a specific interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/070_ID3_2.3_PCNT_4_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Play counter</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a specific data size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/070_ID3_2.3_PCNT_4_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Size/data</argument>
+		</execute>
+		<expected-output>4</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a specific number.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/070_ID3_2.3_PCNT_4_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>12290</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with an integer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/070_ID3_2.3_PCNT_4_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with an unsigned integer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/070_ID3_2.3_PCNT_4_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a 32bit value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/070_ID3_2.3_PCNT_4_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a number in big endian.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/070_ID3_2.3_PCNT_4_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:big endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Counter field with no value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/075_ID3_2.4_POPM_counter_omitted</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>The value of the POPM frame's Counter field is omitted.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/075_ID3_2.4_POPM_counter_omitted</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:omitted</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Index_Placeholder_Object has a specific GUID.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:5]/field:GUID/data</argument>
+		</execute>
+		<expected-output>d9aade20-7c17-4f9c-bc28-8555dd98e2a2</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Index_Placeholder_Object has its interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:5]/field:GUID/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>ASF_Index_Placeholder_Object</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Index_Placeholder_Object has a specific size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:5]/field:Size/data</argument>
+		</execute>
+		<expected-output>34</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Index_Placeholder_Object data is empty.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:5]/field:Data/has-data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Index_Placeholder_Object has unset data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:5]/field:Data/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Index_Placeholder_Object has a specific amout of unset data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:5]/field:Data/tag:length/data</argument>
+		</execute>
+		<expected-output>10.0</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Index_Placeholder_Object data length is given in bytes and bits.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:5]/field:Data/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Counter field with a specific value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/077_ID3_2.4_POPM_counter_7_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>00 00 10 20 09 f2 10</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/077_ID3_2.4_POPM_counter_7_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of integers.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/077_ID3_2.4_POPM_counter_7_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of unsigned values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/077_ID3_2.4_POPM_counter_7_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of 32 bit wide values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/077_ID3_2.4_POPM_counter_7_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a specific length.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/077_ID3_2.4_POPM_counter_7_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/data</argument>
+		</execute>
+		<expected-output>7.0</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a length in bytes and bits.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/077_ID3_2.4_POPM_counter_7_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has an error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/077_ID3_2.4_POPM_counter_7_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:error/data</argument>
+		</execute>
+		<expected-output>This program doesn't support printing a counter with more than four bytes yet.</expected-output>
+	</test>
+	<test>
+		<description>The PCNT has a specific identifier.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>PCNT</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame identifier has a specific interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Play counter</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a specific data size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Size/data</argument>
+		</execute>
+		<expected-output>3</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field which can only be displayed as a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>00 00 30</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with an unsigned integer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a buffer of 8bit values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a buffer of size 3.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/data</argument>
+		</execute>
+		<expected-output>3.0</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a buffer length given in bytes and bits.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a standard tag alongside the error.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with an error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/071_ID3_2.3_PCNT_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:error/data</argument>
+		</execute>
+		<expected-output>The Counter field is too short, as it must be at least four bytes long.</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Rating field with a value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/074_ID3_2.4_POPM_unknown_rating</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame has a standard tag alongside its interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/074_ID3_2.4_POPM_unknown_rating</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3 2.4</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame has an interpretation tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/074_ID3_2.4_POPM_unknown_rating</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>nothing</expected-output>
+	</test>
+	<test>
 		<description>The mpeginspector will not be able to parse this file completely (because of the trailing tags) and will return with an error.</description>
 		<execute>
 			<command>../mpeginspector</command>
@@ -83,6 +614,87 @@
 			<argument>../examples/009_id3v2tag_mpeg1stream_apev2tag_id3v1tag</argument>
 		</execute>
 		<expected-return-code>0</expected-return-code>
+	</test>
+	<test>
+		<description>The POPM frame has a Counter field with a specific value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>00 30</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of integers.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of unsigned values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of 32 bit wide values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a specific length.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/data</argument>
+		</execute>
+		<expected-output>2.0</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a length in bytes and bits.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a standard alongside its error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3 2.4</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has an error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/076_ID3_2.4_POPM_counter_2_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:error/data</argument>
+		</execute>
+		<expected-output>The Counter field is too short, as it must be at least four bytes long.</expected-output>
 	</test>
 	<test>
 		<description>The id3inspector must be able to read this file, even with missing handlers.</description>
@@ -190,6 +802,69 @@
 		<expected-return-code>0</expected-return-code>
 	</test>
 	<test>
+		<description>The ASF_Padding_Object has a specific GUID.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:3]/field:GUID/data</argument>
+		</execute>
+		<expected-output>1806d474-cadf-4509-a4ba-9aabcb96aae8</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Padding_Object has its interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:3]/field:GUID/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>ASF_Padding_Object</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Padding_Object has a specific size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:3]/field:Size/data</argument>
+		</execute>
+		<expected-output>3952</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Padding_Object data is empty.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:3]/field:Data/has-data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Padding_Object has unset data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:3]/field:Data/has-tag:unset data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Padding_Object has a specific amout of unset data.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:3]/field:Data/tag:length/data</argument>
+		</execute>
+		<expected-output>3928.0</expected-output>
+	</test>
+	<test>
+		<description>The ASF_Padding_Object data length is given in bytes and bits.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:1]/field:AdditionalExtendedHeaders/field:AdditionalExtendedHeader:[tag:element index in array/is-data:3]/field:Data/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
 		<description>The identifier of the frame in question is TEXT.</description>
 		<execute>
 			<command>../generalinspector</command>
@@ -224,6 +899,96 @@
 			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Information/data</argument>
 		</execute>
 		<expected-output>Test lyricist</expected-output>
+	</test>
+	<test>
+		<description>The PCNT has a specific identifier.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>PCNT</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame identifier has a specific interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Play counter</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a specific data size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Size/data</argument>
+		</execute>
+		<expected-output>6</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field which can only be displayed as a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>00 00 30 04 41 20</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with an unsigned integer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a buffer of 8bit values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a buffer of size 3.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/data</argument>
+		</execute>
+		<expected-output>6.0</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with a buffer length given in bytes and bits.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The PCNT frame has a Counter field with an error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/072_ID3_2.3_PCNT_6_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:error/data</argument>
+		</execute>
+		<expected-output>This program doesn't support printing a counter with more than four bytes yet.</expected-output>
 	</test>
 	<test>
 		<description>The apeinspector must run successfully on this example.</description>
@@ -3540,38 +4305,6 @@
 			<argument>--query=/field:ID3.v2_Tag/field:Padding/tag:length/tag:unit/data</argument>
 		</execute>
 		<expected-output>bytes and bits</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/data</argument>
-		</execute>
-		<expected-output>test@mail.com</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:string</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:ended by termination</argument>
-		</execute>
-		<expected-output>true</expected-output>
-	</test>
-	<test>
-		<execute>
-			<command>../generalinspector</command>
-			<argument>../examples/id3/034_2.3_POPM_rating_unknown_counter_omitted.mp3</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:13 characters + termination</argument>
-		</execute>
-		<expected-output>true</expected-output>
 	</test>
 	<test>
 		<execute>
@@ -9243,5 +9976,383 @@
 			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:URL/tag:encoding/data</argument>
 		</execute>
 		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a specific identifier.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/data</argument>
+		</execute>
+		<expected-output>POPM</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame identifier has a specific interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Identifier/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>Popularimeter</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a specific size.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Size/data</argument>
+		</execute>
+		<expected-output>19</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has an EMail field with an email.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/data</argument>
+		</execute>
+		<expected-output>test@mail.com</expected-output>
+	</test>
+	<test>
+		<description>The email in the POPM frame is a string.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:string</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The string in the POPM frame's email field is in a specific character set.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/tag:character set/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<description>The string in the POPM frame's email field is in a specific encoding.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/tag:encoding/data</argument>
+		</execute>
+		<expected-output>ISO/IEC 8859-1:1998</expected-output>
+	</test>
+	<test>
+		<description>The string in the POPM frame's email field is ended by termination.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:ended by termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The string in the POPM frame's email field has a specific length.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:EMailToUser/has-tag:13 characters + termination</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Rating field with a value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/data</argument>
+		</execute>
+		<expected-output>100</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame is an integer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame is unsigned.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame is 8 bit wide.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/has-tag:8bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame has a standard tag alongside its interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame has an interpretation tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>100 / 255</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Counter field with a specific value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>147699</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is an integer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is unsigned.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is 32 bit wide.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:32bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is stored in big endian.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/078_ID3_2.3_POPM</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:big endian</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Rating field with a value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/079_ID3_2.3_POPM_unknown_rating</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame has a standard tag alongside its interpretation.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/079_ID3_2.3_POPM_unknown_rating</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<description>The rating in the POPM frame has an interpretation tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/079_ID3_2.3_POPM_unknown_rating</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Rating/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>nothing</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Counter field with no value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/080_ID3_2.3_POPM_counter_omitted</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-data</argument>
+		</execute>
+		<expected-output>false</expected-output>
+	</test>
+	<test>
+		<description>The value of the POPM frame's Counter field is omitted.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/080_ID3_2.3_POPM_counter_omitted</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:omitted</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Counter field with a specific value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/082_ID3_2.3_POPM_counter_5_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>00 02 40 f3 45</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/082_ID3_2.3_POPM_counter_5_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of integers.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/082_ID3_2.3_POPM_counter_5_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of unsigned values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/082_ID3_2.3_POPM_counter_5_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of 32 bit wide values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/082_ID3_2.3_POPM_counter_5_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a specific length.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/082_ID3_2.3_POPM_counter_5_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/data</argument>
+		</execute>
+		<expected-output>5.0</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a length in bytes and bits.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/082_ID3_2.3_POPM_counter_5_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has an error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/082_ID3_2.3_POPM_counter_5_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:error/data</argument>
+		</execute>
+		<expected-output>This program doesn't support printing a counter with more than four bytes yet.</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame has a Counter field with a specific value.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/data</argument>
+		</execute>
+		<expected-output>00 02 40</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:buffer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of integers.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of unsigned values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field is a buffer of 32 bit wide values.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/has-tag:8bit values</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a specific length.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/data</argument>
+		</execute>
+		<expected-output>3.0</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a length in bytes and bits.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bytes and bits</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has a standard alongside its error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:standard/data</argument>
+		</execute>
+		<expected-output>ID3 2.3</expected-output>
+	</test>
+	<test>
+		<description>The POPM frame's Counter field has an error tag.</description>
+		<execute>
+			<command>../generalinspector</command>
+			<argument>../examples/081_ID3_2.3_POPM_counter_3_bytes</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:Frames/field:Frame:[tag:element index in array/is-data:0]/field:Counter/tag:error/data</argument>
+		</execute>
+		<expected-output>The Counter field is too short, as it must be at least four bytes long.</expected-output>
 	</test>
 </tests>
