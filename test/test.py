@@ -132,7 +132,7 @@ def test_runner(test_queue, finished_queue, barrier):
         test = None
         try:
             test = test_queue.get_nowait()
-            # if the "test" object is a string, we are meant to wait at the barrier
+            # if the "test" object is a barrier token (any string), we are meant to wait at the barrier
             if type(test) == str:
                 barrier.wait()
             else:
@@ -156,11 +156,11 @@ def gather_tests_in_queue(test_list, number_of_threads):
     for test in test_list:
         if last_test != None:
             if last_test.last_run_statistics == None and test.last_run_statistics != None:
-                # insert enough "barrier" strings, so that every thread can get one
+                # insert enough "barrier" tokens, so that every thread can get one
                 for index in range(number_of_threads):
                     result.put_nowait("barrier after new tests")
             elif last_test.last_run_statistics != None and last_test.last_run_statistics.success == False and test.last_run_statistics != None and test.last_run_statistics.success == True:
-                # insert enough "barrier" strings, so that every thread can get one
+                # insert enough "barrier" tokens, so that every thread can get one
                 for index in range(number_of_threads):
                     result.put_nowait("barrier after failed tests")
         result.put_nowait(test)
