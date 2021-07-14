@@ -284,10 +284,17 @@ void Inspection::Inspector::_QueryWriter(Inspection::Value * Value, const std::s
 	}
 }
 
-void Inspection::Inspector::_AppendOtherData(Inspection::Value * Value, const Inspection::Length & Length)
+Inspection::Value * Inspection::Inspector::_AppendOtherData(Inspection::Value * Value, const Inspection::Length & Length)
 {
-	auto OtherDataValue = Value->AppendField("OtherData");
-	auto LengthTag = OtherDataValue->AddTag("length", Length);
+	return _AppendLengthField(Value, "OtherData", Length);
+}
+
+Inspection::Value * Inspection::Inspector::_AppendLengthField(Inspection::Value * Value, const std::string & FieldName, const Inspection::Length & Length)
+{
+	auto Result = Value->AppendField(FieldName);
+	auto LengthTag = Result->AddTag("length", Length);
 	
 	LengthTag->AddTag("unit", "bytes and bits"s);
+	
+	return Result;
 }

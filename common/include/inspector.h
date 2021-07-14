@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <deque>
 #include <filesystem>
+#include <string>
 #include <unordered_map>
 
 #include "result.h"
@@ -21,7 +22,8 @@ namespace Inspection
 		virtual std::unique_ptr< Inspection::Result > _Getter(const Inspection::Buffer & Buffer) = 0;
 		virtual void _Writer(std::unique_ptr< Inspection::Result > & Result);
 		void _QueryWriter(Inspection::Value * Value, const std::string & Query);
-		void _AppendOtherData(Inspection::Value * Value, const Inspection::Length & Length);
+		Inspection::Value * _AppendOtherData(Inspection::Value * Value, const Inspection::Length & Length);
+		Inspection::Value * _AppendLengthField(Inspection::Value * Value, const std::string & FieldName, const Inspection::Length & Length);
 	private:
 		bool _ProcessPath(const std::filesystem::directory_entry & DirectoryEntry);
 		bool _ProcessFile(const std::filesystem::directory_entry & DirectoryEntry);

@@ -537,6 +537,16 @@ namespace Inspection
 				Result->GetValue()->AppendField(Inspection::JoinWithSeparator(TypeParts, "."), PartResult->ExtractValue());
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 			}
+			if(Continue == true)
+			{
+				if(Reader.IsAtEnd() == false)
+				{
+					auto MoreDataValue = _AppendLengthField(Result->GetValue(), "MoreData", Reader.CalculateRemainingInputLength());
+					
+					MoreDataValue->AddTag("error", "Additional data after the parsed data."s);
+					Continue = false;
+				}
+			}
 			// finalization
 			Result->SetSuccess(Continue);
 			
