@@ -1,0 +1,3 @@
+[submodule "libraries/xml_parser"]
+	path = libraries/xml_parser
+	url = https://github.com/punytroll/xml_parser.git
