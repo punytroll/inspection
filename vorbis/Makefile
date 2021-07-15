@@ -11,7 +11,7 @@ clean:
 common:
 	$(MAKE) -C ../common
 
-../vorbisinspector: vorbisinspector.o ../common/libcommon.a
+../vorbisinspector: vorbisinspector.o ../common/libcommon.a ../libraries/xml_parser/build/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 vorbisinspector.o: vorbisinspector.cpp ../common/include/*.h

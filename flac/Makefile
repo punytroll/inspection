@@ -11,7 +11,7 @@ clean:
 common:
 	$(MAKE) -C ../common
 
-../flacinspector: flacinspector.o ../common/libcommon.a
+../flacinspector: flacinspector.o ../common/libcommon.a ../libraries/xml_parser/build/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 flacinspector.o: flacinspector.cpp ../common/include/*.h

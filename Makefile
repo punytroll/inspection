@@ -1,6 +1,7 @@
 default: all
 
 all:
+	$(MAKE) -C libraries
 	$(MAKE) -C common
 	$(MAKE) -C ape
 	$(MAKE) -C asf
@@ -13,9 +14,11 @@ all:
 	$(MAKE) -C vorbis
 
 check: all
+	$(MAKE) $@ -C libraries
 	$(MAKE) $@ -C test
 
 clean:
+	$(MAKE) $@ -C libraries
 	$(MAKE) $@ -C common
 	$(MAKE) $@ -C ape
 	$(MAKE) $@ -C asf

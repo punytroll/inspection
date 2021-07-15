@@ -11,7 +11,7 @@ clean:
 common:
 	$(MAKE) -C ../common
 
-../id3inspector: id3inspector.o ../common/libcommon.a
+../id3inspector: id3inspector.o ../common/libcommon.a ../libraries/xml_parser/build/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 id3inspector.o: id3inspector.cpp ../common/include/*.h

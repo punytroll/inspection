@@ -11,7 +11,7 @@ clean:
 common:
 	$(MAKE) -C ../common
 
-../generalinspector: generalinspector.o ../common/libcommon.a
+../generalinspector: generalinspector.o ../common/libcommon.a ../libraries/xml_parser/build/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 generalinspector.o: generalinspector.cpp ../common/include/*.h

@@ -11,7 +11,7 @@ clean:
 common:
 	$(MAKE) -C ../common
 
-../mpeginspector: mpeginspector.o ../common/libcommon.a
+../mpeginspector: mpeginspector.o ../common/libcommon.a ../libraries/xml_parser/build/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 mpeginspector.o: mpeginspector.cpp ../common/include/*.h

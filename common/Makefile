@@ -47,13 +47,13 @@ clean-recursive: clean-here
 
 $(DEPENDENCY_DIRECTORY)/%.dep: %
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
+	$(CXX) $(CXXFLAGS) -Iinclude -I../libraries/xml_parser/include -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
 
 $(OBJECT_DIRECTORY)/%.o: %.cpp
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude -c $< -o $@
+	$(CXX) $(CXXFLAGS) -Iinclude -I../libraries/xml_parser/include -c $< -o $@
 
 libcommon.a: $(OBJECT_FILES)
 	ar rcs $@ $(OBJECT_FILES)
 
-.PHONY: default all all-here all-recursive check clean clean-here clean-recursive
+.PHONY: default all all-here all-recursive check clean clean-here clean-recursive xml_parser

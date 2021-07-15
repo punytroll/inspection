@@ -16,7 +16,7 @@ clean:
 common:
 	$(MAKE) -C ../common
 
-test: test.o ../common/libcommon.a
+test: test.o ../common/libcommon.a ../libraries/xml_parser/build/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 test.o: test.cpp ../common/include/*.h

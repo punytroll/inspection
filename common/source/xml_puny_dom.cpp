@@ -23,7 +23,8 @@
 #include <stack>
 #include <stdexcept>
 
-#include "xml_parser.h"
+#include <xml_parser/xml_parser.h>
+
 #include "xml_puny_dom.h"
 
 namespace XML
