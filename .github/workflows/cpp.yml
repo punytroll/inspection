@@ -1,4 +1,5 @@
-name: C++
+name: Build & Test
+
 on:
   push:
     branches:
@@ -7,12 +8,16 @@ on:
     branches:
     - master
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: make
+    - name: Check out repository with submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Build
       run: make
-    - name: make check
+    - name: Test
       run: make check
