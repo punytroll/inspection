@@ -19,6 +19,7 @@
 #ifndef COMMON_TYPE_DEFINITION_H
 #define COMMON_TYPE_DEFINITION_H
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -199,62 +200,53 @@ namespace Inspection
 		class Add
 		{
 		public:
-			Add(void)
-			{
-			}
-			
+			Add(void);
 			Add(Inspection::TypeDefinition::Add && Add) = default;
-			
 			Add(const Inspection::TypeDefinition::Add & Add) = delete;
-			
-			Inspection::TypeDefinition::Statement Summand1;
-			Inspection::TypeDefinition::Statement Summand2;
+			virtual ~Add(void);
+			Inspection::TypeDefinition::Add & operator=(Inspection::TypeDefinition::Add && Add) = delete;
+			Inspection::TypeDefinition::Add & operator=(const Inspection::TypeDefinition::Add & Add) = delete;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Summand1;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Summand2;
 		};
 		
 		class Cast
 		{
 		public:
-			Cast(void) :
-				DataType{Inspection::TypeDefinition::DataType::Unknown}
-			{
-			}
-			
+			Cast(void);
 			Cast(Inspection::TypeDefinition::Cast && Cast) = default;
-			
 			Cast(const Inspection::TypeDefinition::Cast & Cast) = delete;
-			
+			virtual ~Cast(void);
+			Inspection::TypeDefinition::Cast & operator=(Inspection::TypeDefinition::Cast && Cast) = delete;
+			Inspection::TypeDefinition::Cast & operator=(const Inspection::TypeDefinition::Cast & Cast) = delete;
 			Inspection::TypeDefinition::DataType DataType;
-			Inspection::TypeDefinition::Statement Statement;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement;
 		};
 		
 		class Divide
 		{
 		public:
-			Divide(void)
-			{
-			}
-			
+			Divide(void);
 			Divide(Inspection::TypeDefinition::Divide && Divide) = default;
-			
 			Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
-			
-			Inspection::TypeDefinition::Statement Dividend;
-			Inspection::TypeDefinition::Statement Divisor;
+			virtual ~Divide(void);
+			Inspection::TypeDefinition::Divide & operator=(Inspection::TypeDefinition::Divide && Divide) = delete;
+			Inspection::TypeDefinition::Divide & operator=(const Inspection::TypeDefinition::Divide & Divide) = delete;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Dividend;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Divisor;
 		};
 		
 		class Equals
 		{
 		public:
-			Equals(void)
-			{
-			}
-			
+			Equals(void);
 			Equals(Inspection::TypeDefinition::Equals && Equals) = default;
-			
 			Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
-			
-			Inspection::TypeDefinition::Statement Statement1;
-			Inspection::TypeDefinition::Statement Statement2;
+			virtual ~Equals(void);
+			Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
+			Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement1;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement2;
 		};
 		
 		class Length
@@ -275,16 +267,14 @@ namespace Inspection
 		class Subtract
 		{
 		public:
-			Subtract(void)
-			{
-			}
-			
+			Subtract(void);
 			Subtract(Inspection::TypeDefinition::Subtract && Subtract) = default;
-			
 			Subtract(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
-			
-			Inspection::TypeDefinition::Statement Minuend;
-			Inspection::TypeDefinition::Statement Subtrahend;
+			virtual ~Subtract(void);
+			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
+			Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Minuend;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Subtrahend;
 		};
 		
 		class Value

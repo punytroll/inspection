@@ -20,6 +20,47 @@
 
 #include "type_definition.h"
 
+Inspection::TypeDefinition::Add::Add(void)
+{
+}
+
+Inspection::TypeDefinition::Add::~Add(void)
+{
+}
+
+Inspection::TypeDefinition::Cast::Cast(void) :
+	DataType{Inspection::TypeDefinition::DataType::Unknown}
+{
+}
+
+Inspection::TypeDefinition::Cast::~Cast(void)
+{
+}
+
+Inspection::TypeDefinition::Divide::Divide(void)
+{
+}
+
+Inspection::TypeDefinition::Divide::~Divide(void)
+{
+}
+
+Inspection::TypeDefinition::Equals::Equals(void)
+{
+}
+
+Inspection::TypeDefinition::Equals::~Equals(void)
+{
+}
+
+Inspection::TypeDefinition::Subtract::Subtract(void)
+{
+}
+
+Inspection::TypeDefinition::Subtract::~Subtract(void)
+{
+}
+
 Inspection::TypeDefinition::Statement::~Statement(void)
 {
 	delete Cast;

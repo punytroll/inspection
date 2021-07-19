@@ -66,7 +66,7 @@ namespace Inspection
 		template<typename Type>
 		Type GetDataFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
 		{
-			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement));
+			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Cast.Statement)));
 		}
 		
 		template<typename Type>
@@ -300,7 +300,7 @@ namespace Inspection
 				{
 					assert(Statement.Add != nullptr);
 					
-					return Inspection::Algorithms::Add(ExecutionContext, Statement.Add->Summand1, Statement.Add->Summand2);
+					return Inspection::Algorithms::Add(ExecutionContext, *(Statement.Add->Summand1), *(Statement.Add->Summand2));
 				}
 			case Inspection::TypeDefinition::Statement::Type::Cast:
 				{
@@ -312,13 +312,13 @@ namespace Inspection
 				{
 					assert(Statement.Divide != nullptr);
 					
-					return Inspection::Algorithms::Divide(ExecutionContext, Statement.Divide->Dividend, Statement.Divide->Divisor);
+					return Inspection::Algorithms::Divide(ExecutionContext, *(Statement.Divide->Dividend), *(Statement.Divide->Divisor));
 				}
 			case Inspection::TypeDefinition::Statement::Type::Subtract:
 				{
 					assert(Statement.Subtract != nullptr);
 					
-					return Inspection::Algorithms::Subtract(ExecutionContext, Statement.Subtract->Minuend, Statement.Subtract->Subtrahend);
+					return Inspection::Algorithms::Subtract(ExecutionContext, *(Statement.Subtract->Minuend), *(Statement.Subtract->Subtrahend));
 				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
@@ -339,7 +339,7 @@ namespace Inspection
 			{
 			case Inspection::TypeDefinition::DataType::Length:
 				{
-					auto Any = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Cast.Statement);
+					auto Any = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Cast.Statement));
 					
 					assert(Any.type() == typeid(Inspection::Length));
 					
@@ -1162,7 +1162,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
 					assert(Statement.Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, Statement.Equals->Statement1, Statement.Equals->Statement2);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement.Equals->Statement1), *(Statement.Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1224,7 +1224,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
 					assert(Statement.Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, Statement.Equals->Statement1, Statement.Equals->Statement2);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement.Equals->Statement1), *(Statement.Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1301,7 +1301,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
 					assert(Statement.Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, Statement.Equals->Statement1, Statement.Equals->Statement2);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement.Equals->Statement1), *(Statement.Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1512,12 +1512,12 @@ void Inspection::TypeDefinition::Type::_LoadAdd(Inspection::TypeDefinition::Add 
 			assert(AddChildElement != nullptr);
 			if(First == true)
 			{
-				_LoadStatement(Add.Summand1, AddChildElement);
+				Add.Summand1 = _LoadStatement(AddChildElement);
 				First = false;
 			}
 			else
 			{
-				_LoadStatement(Add.Summand2, AddChildElement);
+				Add.Summand2 = _LoadStatement(AddChildElement);
 			}
 		}
 	}
@@ -1535,7 +1535,7 @@ void Inspection::TypeDefinition::Type::_LoadCast(Inspection::TypeDefinition::Cas
 			auto CastChildElement = dynamic_cast<const XML::Element *>(CastChildNode);
 			
 			Cast.DataType = Inspection::TypeDefinition::GetDataTypeFromString(CastElement->GetName());
-			_LoadStatement(Cast.Statement, CastChildElement);
+			Cast.Statement = _LoadStatement(CastChildElement);
 		}
 	}
 	assert(Cast.DataType != Inspection::TypeDefinition::DataType::Unknown);
@@ -1553,12 +1553,12 @@ void Inspection::TypeDefinition::Type::_LoadDivide(Inspection::TypeDefinition::D
 			
 			if(First == true)
 			{
-				_LoadStatement(Divide.Dividend, DivideChildElement);
+				Divide.Dividend = _LoadStatement(DivideChildElement);
 				First = false;
 			}
 			else
 			{
-				_LoadStatement(Divide.Divisor, DivideChildElement);
+				Divide.Divisor = _LoadStatement(DivideChildElement);
 			}
 		}
 	}
@@ -1690,12 +1690,12 @@ void Inspection::TypeDefinition::Type::_LoadEquals(Inspection::TypeDefinition::E
 			
 			if(First == true)
 			{
-				_LoadStatement(Equals.Statement1, EqualsChildElement);
+				Equals.Statement1 = _LoadStatement(EqualsChildElement);
 				First = false;
 			}
 			else
 			{
-				_LoadStatement(Equals.Statement2, EqualsChildElement);
+				Equals.Statement2 = _LoadStatement(EqualsChildElement);
 			}
 		}
 	}
@@ -1982,15 +1982,80 @@ void Inspection::TypeDefinition::Type::_LoadSubtract(Inspection::TypeDefinition:
 			assert(SubtractChildElement != nullptr);
 			if(First == true)
 			{
-				_LoadStatement(Subtract.Minuend, SubtractChildElement);
+				Subtract.Minuend = _LoadStatement(SubtractChildElement);
 				First = false;
 			}
 			else
 			{
-				_LoadStatement(Subtract.Subtrahend, SubtractChildElement);
+				Subtract.Subtrahend = _LoadStatement(SubtractChildElement);
 			}
 		}
 	}
+}
+
+std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinition::Type::_LoadStatement(const XML::Element * StatementElement)
+{
+	assert(StatementElement != nullptr);
+	
+	auto Result = std::make_unique<Inspection::TypeDefinition::Statement>();
+	
+	if(StatementElement->GetName() == "add")
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Add;
+		Result->Add = new Inspection::TypeDefinition::Add{};
+		_LoadAdd(*(Result->Add), StatementElement);
+	}
+	else if(StatementElement->GetName() == "divide")
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Divide;
+		Result->Divide = new Inspection::TypeDefinition::Divide{};
+		_LoadDivide(*(Result->Divide), StatementElement);
+	}
+	else if(StatementElement->GetName() == "equals")
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Equals;
+		Result->Equals = new Inspection::TypeDefinition::Equals{};
+		_LoadEquals(*(Result->Equals), StatementElement);
+	}
+	else if(StatementElement->GetName() == "subtract")
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Subtract;
+		Result->Subtract = new Inspection::TypeDefinition::Subtract{};
+		_LoadSubtract(*(Result->Subtract), StatementElement);
+	}
+	else if((StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Result->Cast = new Inspection::TypeDefinition::Cast{};
+		_LoadCast(*(Result->Cast), StatementElement);
+	}
+	else if((StatementElement->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(StatementElement) == true))
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Result->Cast = new Inspection::TypeDefinition::Cast{};
+		_LoadCast(*(Result->Cast), StatementElement);
+	}
+	else if((StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(StatementElement) == true))
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Result->Cast = new Inspection::TypeDefinition::Cast{};
+		_LoadCast(*(Result->Cast), StatementElement);
+	}
+	else if((StatementElement->GetName() == "single-precision-real") && (XML::HasOneChildElement(StatementElement) == true))
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Result->Cast = new Inspection::TypeDefinition::Cast{};
+		_LoadCast(*(Result->Cast), StatementElement);
+	}
+	else
+	{
+		Result->Type = Inspection::TypeDefinition::Statement::Type::Value;
+		Result->Value = new Inspection::TypeDefinition::Value{};
+		_LoadValue(*(Result->Value), StatementElement);
+	}
+	assert(Result->Type != Inspection::TypeDefinition::Statement::Type::Unknown);
+	
+	return Result;
 }
 
 void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
