@@ -155,46 +155,21 @@ namespace Inspection
 				Value
 			};
 			
-			Statement(void) :
-				Type{Inspection::TypeDefinition::Statement::Type::Unknown},
-				Add{nullptr},
-				Cast{nullptr},
-				Divide{nullptr},
-				Equals{nullptr},
-				Subtract{nullptr},
-				Value{nullptr}
-			{
-			}
-			
+			Statement(void);
 			Statement(const Inspection::TypeDefinition::Statement & Statement) = delete;
-			
-			Statement(Inspection::TypeDefinition::Statement && Statement) :
-				Type{Statement.Type},
-				Add{Statement.Add},
-				Cast{Statement.Cast},
-				Divide{Statement.Divide},
-				Equals{Statement.Equals},
-				Subtract{Statement.Subtract},
-				Value{Statement.Value}
-			{
-				Statement.Add = nullptr;
-				Statement.Cast = nullptr;
-				Statement.Divide = nullptr;
-				Statement.Equals = nullptr;
-				Statement.Subtract = nullptr;
-				Statement.Value = nullptr;
-			}
-			
-			~Statement(void);
+			Statement(Inspection::TypeDefinition::Statement && Statement) = default;
+			virtual ~Statement(void);
+			Inspection::TypeDefinition::Statement & operator=(Inspection::TypeDefinition::Statement && Statement) = delete;
+			Inspection::TypeDefinition::Statement & operator=(const Inspection::TypeDefinition::Statement & Statement) = delete;
 			
 			Inspection::TypeDefinition::Statement::Type Type;
 			// content depending on type
-			Inspection::TypeDefinition::Add * Add;
-			Inspection::TypeDefinition::Cast * Cast;
-			Inspection::TypeDefinition::Divide * Divide;
-			Inspection::TypeDefinition::Equals * Equals;
-			Inspection::TypeDefinition::Subtract * Subtract;
-			Inspection::TypeDefinition::Value * Value;
+			std::unique_ptr<Inspection::TypeDefinition::Add> Add;
+			std::unique_ptr<Inspection::TypeDefinition::Cast> Cast;
+			std::unique_ptr<Inspection::TypeDefinition::Divide> Divide;
+			std::unique_ptr<Inspection::TypeDefinition::Equals> Equals;
+			std::unique_ptr<Inspection::TypeDefinition::Subtract> Subtract;
+			std::unique_ptr<Inspection::TypeDefinition::Value> Value;
 		};
 		
 		class Add

@@ -61,11 +61,13 @@ Inspection::TypeDefinition::Subtract::~Subtract(void)
 {
 }
 
+Inspection::TypeDefinition::Statement::Statement(void) :
+	Type{Inspection::TypeDefinition::Statement::Type::Unknown}
+{
+}
+
 Inspection::TypeDefinition::Statement::~Statement(void)
 {
-	delete Cast;
-	delete Equals;
-	delete Value;
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFromString(const std::string & String)

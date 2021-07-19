@@ -2002,55 +2002,55 @@ std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinitio
 	if(StatementElement->GetName() == "add")
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Add;
-		Result->Add = new Inspection::TypeDefinition::Add{};
+		Result->Add = std::make_unique<Inspection::TypeDefinition::Add>();
 		_LoadAdd(*(Result->Add), StatementElement);
 	}
 	else if(StatementElement->GetName() == "divide")
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Divide;
-		Result->Divide = new Inspection::TypeDefinition::Divide{};
+		Result->Divide = std::make_unique<Inspection::TypeDefinition::Divide>();
 		_LoadDivide(*(Result->Divide), StatementElement);
 	}
 	else if(StatementElement->GetName() == "equals")
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Equals;
-		Result->Equals = new Inspection::TypeDefinition::Equals{};
+		Result->Equals = std::make_unique<Inspection::TypeDefinition::Equals>();
 		_LoadEquals(*(Result->Equals), StatementElement);
 	}
 	else if(StatementElement->GetName() == "subtract")
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Subtract;
-		Result->Subtract = new Inspection::TypeDefinition::Subtract{};
+		Result->Subtract = std::make_unique<Inspection::TypeDefinition::Subtract>();
 		_LoadSubtract(*(Result->Subtract), StatementElement);
 	}
 	else if((StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = new Inspection::TypeDefinition::Cast{};
+		Result->Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
 		_LoadCast(*(Result->Cast), StatementElement);
 	}
 	else if((StatementElement->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = new Inspection::TypeDefinition::Cast{};
+		Result->Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
 		_LoadCast(*(Result->Cast), StatementElement);
 	}
 	else if((StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = new Inspection::TypeDefinition::Cast{};
+		Result->Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
 		_LoadCast(*(Result->Cast), StatementElement);
 	}
 	else if((StatementElement->GetName() == "single-precision-real") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = new Inspection::TypeDefinition::Cast{};
+		Result->Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
 		_LoadCast(*(Result->Cast), StatementElement);
 	}
 	else
 	{
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Value;
-		Result->Value = new Inspection::TypeDefinition::Value{};
+		Result->Value = std::make_unique<Inspection::TypeDefinition::Value>();
 		_LoadValue(*(Result->Value), StatementElement);
 	}
 	assert(Result->Type != Inspection::TypeDefinition::Statement::Type::Unknown);
@@ -2065,55 +2065,55 @@ void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition
 	if(StatementElement->GetName() == "add")
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Add;
-		Statement.Add = new Inspection::TypeDefinition::Add{};
+		Statement.Add = std::make_unique<Inspection::TypeDefinition::Add>();
 		_LoadAdd(*(Statement.Add), StatementElement);
 	}
 	else if(StatementElement->GetName() == "divide")
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Divide;
-		Statement.Divide = new Inspection::TypeDefinition::Divide{};
+		Statement.Divide = std::make_unique<Inspection::TypeDefinition::Divide>();
 		_LoadDivide(*(Statement.Divide), StatementElement);
 	}
 	else if(StatementElement->GetName() == "equals")
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Equals;
-		Statement.Equals = new Inspection::TypeDefinition::Equals{};
+		Statement.Equals = std::make_unique<Inspection::TypeDefinition::Equals>();
 		_LoadEquals(*(Statement.Equals), StatementElement);
 	}
 	else if(StatementElement->GetName() == "subtract")
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Subtract;
-		Statement.Subtract = new Inspection::TypeDefinition::Subtract{};
+		Statement.Subtract = std::make_unique<Inspection::TypeDefinition::Subtract>();
 		_LoadSubtract(*(Statement.Subtract), StatementElement);
 	}
 	else if((StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Statement.Cast = new Inspection::TypeDefinition::Cast{};
+		Statement.Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
 		_LoadCast(*(Statement.Cast), StatementElement);
 	}
 	else if((StatementElement->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Statement.Cast = new Inspection::TypeDefinition::Cast{};
+		Statement.Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
 		_LoadCast(*(Statement.Cast), StatementElement);
 	}
 	else if((StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Statement.Cast = new Inspection::TypeDefinition::Cast{};
+		Statement.Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
 		_LoadCast(*(Statement.Cast), StatementElement);
 	}
 	else if((StatementElement->GetName() == "single-precision-real") && (XML::HasOneChildElement(StatementElement) == true))
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Statement.Cast = new Inspection::TypeDefinition::Cast{};
+		Statement.Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
 		_LoadCast(*(Statement.Cast), StatementElement);
 	}
 	else
 	{
 		Statement.Type = Inspection::TypeDefinition::Statement::Type::Value;
-		Statement.Value = new Inspection::TypeDefinition::Value{};
+		Statement.Value = std::make_unique<Inspection::TypeDefinition::Value>();
 		_LoadValue(*(Statement.Value), StatementElement);
 	}
 	assert(Statement.Type != Inspection::TypeDefinition::Statement::Type::Unknown);
