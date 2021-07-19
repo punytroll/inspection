@@ -76,9 +76,9 @@ namespace Inspection
 			
 			if(Value.DataType == Inspection::TypeDefinition::DataType::DataReference)
 			{
-				assert(Value.DataReference);
+				assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(Value.Data) == true);
 				
-				auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, Value.DataReference.value());
+				auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, std::get<Inspection::TypeDefinition::DataReference>(Value.Data));
 				
 				if(Any.type() == typeid(std::uint8_t))
 				{
@@ -99,13 +99,13 @@ namespace Inspection
 			}
 			else if(Value.DataType == Inspection::TypeDefinition::DataType::String)
 			{
-				assert(Value.String);
-				Result = from_string_cast<Type>(Value.String.value());
+				assert(std::holds_alternative<std::string>(Value.Data) == true);
+				Result = from_string_cast<Type>(std::get<std::string>(Value.Data));
 			}
 			else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger64Bit)
 			{
-				assert(Value.UnsignedInteger64Bit);
-				Result = Value.UnsignedInteger64Bit.value();
+				assert(std::holds_alternative<std::uint64_t>(Value.Data) == true);
+				Result = std::get<std::uint64_t>(Value.Data);
 			}
 			else
 			{
@@ -159,33 +159,33 @@ namespace Inspection
 			{
 			case Inspection::TypeDefinition::DataType::Boolean:
 				{
-					assert(Value.Boolean);
+					assert(std::holds_alternative<bool>(Value.Data) == true);
 					
-					return Value.Boolean.value();
+					return std::get<bool>(Value.Data);
 				}
 			case Inspection::TypeDefinition::DataType::DataReference:
 				{
-					assert(Value.DataReference);
+					assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(Value.Data) == true);
 					
-					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, Value.DataReference.value());
+					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, std::get<Inspection::TypeDefinition::DataReference>(Value.Data));
 				}
 			case Inspection::TypeDefinition::DataType::GUID:
 				{
-					assert(Value.GUID);
+					assert(std::holds_alternative<Inspection::GUID>(Value.Data) == true);
 					
-					return Value.GUID.value();
+					return std::get<Inspection::GUID>(Value.Data);
 				}
 			case Inspection::TypeDefinition::DataType::Length:
 				{
-					assert(Value.Length);
+					assert(std::holds_alternative<Inspection::TypeDefinition::Length>(Value.Data) == true);
 					
-					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Value.Length->Bytes), Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Value.Length->Bits)};
+					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, std::get<Inspection::TypeDefinition::Length>(Value.Data).Bytes), Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, std::get<Inspection::TypeDefinition::Length>(Value.Data).Bits)};
 				}
 			case Inspection::TypeDefinition::DataType::LengthReference:
 				{
-					assert(Value.LengthReference);
+					assert(std::holds_alternative<Inspection::TypeDefinition::LengthReference>(Value.Data) == true);
 					
-					return ExecutionContext.CalculateLengthFromReference(Value.LengthReference.value());
+					return ExecutionContext.CalculateLengthFromReference(std::get<Inspection::TypeDefinition::LengthReference>(Value.Data));
 				}
 			case Inspection::TypeDefinition::DataType::Nothing:
 				{
@@ -193,51 +193,51 @@ namespace Inspection
 				}
 			case Inspection::TypeDefinition::DataType::ParameterReference:
 				{
-					assert(Value.ParameterReference);
+					assert(std::holds_alternative<Inspection::TypeDefinition::ParameterReference>(Value.Data) == true);
 					
-					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, Value.ParameterReference.value());
+					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, std::get<Inspection::TypeDefinition::ParameterReference>(Value.Data));
 				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
-					assert(Value.SinglePrecisionReal);
+					assert(std::holds_alternative<float>(Value.Data) == true);
 					
-					return Value.SinglePrecisionReal.value();
+					return std::get<float>(Value.Data);
 				}
 			case Inspection::TypeDefinition::DataType::String:
 				{
-					assert(Value.String);
+					assert(std::holds_alternative<std::string>(Value.Data) == true);
 					
-					return Value.String.value();
+					return std::get<std::string>(Value.Data);
 				}
 			case Inspection::TypeDefinition::DataType::TypeReference:
 				{
-					assert(Value.TypeReference);
+					assert(std::holds_alternative<Inspection::TypeDefinition::TypeReference>(Value.Data) == true);
 					
-					return Inspection::g_TypeRepository.GetType(Value.TypeReference->Parts);
+					return Inspection::g_TypeRepository.GetType(std::get<Inspection::TypeDefinition::TypeReference>(Value.Data).Parts);
 				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
 				{
-					assert(Value.UnsignedInteger8Bit);
+					assert(std::holds_alternative<std::uint8_t>(Value.Data) == true);
 					
-					return Value.UnsignedInteger8Bit.value();
+					return std::get<std::uint8_t>(Value.Data);
 				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
 				{
-					assert(Value.UnsignedInteger16Bit);
+					assert(std::holds_alternative<std::uint16_t>(Value.Data) == true);
 					
-					return Value.UnsignedInteger16Bit.value();
+					return std::get<std::uint16_t>(Value.Data);
 				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
 				{
-					assert(Value.UnsignedInteger32Bit);
+					assert(std::holds_alternative<std::uint32_t>(Value.Data) == true);
 					
-					return Value.UnsignedInteger32Bit.value();
+					return std::get<std::uint32_t>(Value.Data);
 				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
 				{
-					assert(Value.UnsignedInteger64Bit);
+					assert(std::holds_alternative<std::uint64_t>(Value.Data) == true);
 					
-					return Value.UnsignedInteger64Bit.value();
+					return std::get<std::uint64_t>(Value.Data);
 				}
 			default:
 				{
@@ -501,30 +501,31 @@ namespace Inspection
 					assert(ParameterDefinition.Statement.Value != nullptr);
 					if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::String)
 					{
+						assert(std::holds_alternative<std::string>(ParameterDefinition.Statement.Value->Data) == true);
 						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
 					}
 					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
 					{
-						assert(ParameterDefinition.Statement.Value->DataReference);
+						assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(ParameterDefinition.Statement.Value->Data) == true);
 						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
 					}
 					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
 					{
-						assert(ParameterDefinition.Statement.Value->TypeReference);
+						assert(std::holds_alternative<Inspection::TypeDefinition::TypeReference>(ParameterDefinition.Statement.Value->Data) == true);
 						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
 					}
 					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
 					{
-						assert(ParameterDefinition.Statement.Value->ParameterReference);
+						assert(std::holds_alternative<Inspection::TypeDefinition::ParameterReference>(ParameterDefinition.Statement.Value->Data) == true);
 						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
 					}
 					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
 					{
-						assert(ParameterDefinition.Statement.Value->Parameters);
+						assert(std::holds_alternative<Inspection::TypeDefinition::Parameters>(ParameterDefinition.Statement.Value->Data) == true);
 						
-						std::unordered_map<std::string, std::any> InnerParameters;
+						auto InnerParameters = std::unordered_map<std::string, std::any>{};
 						
-						FillNewParameters(ExecutionContext, InnerParameters, ParameterDefinition.Statement.Value->Parameters.value());
+						FillNewParameters(ExecutionContext, InnerParameters, std::get<Inspection::TypeDefinition::Parameters>(ParameterDefinition.Statement.Value->Data));
 						NewParameters.emplace(ParameterDefinition.Name, InnerParameters);
 						
 						break;
@@ -2631,20 +2632,22 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.Boolean = from_string_cast<bool>(TextNode->GetText());
+		Value.Data = from_string_cast<bool>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "data-reference")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::DataReference;
-		Value.DataReference.emplace();
+		
+		auto & DataReference = Value.Data.emplace<Inspection::TypeDefinition::DataReference>();
+		
 		assert(ValueElement->HasAttribute("root") == true);
 		if(ValueElement->GetAttribute("root") == "current")
 		{
-			Value.DataReference->Root = Inspection::TypeDefinition::DataReference::Root::Current;
+			DataReference.Root = Inspection::TypeDefinition::DataReference::Root::Current;
 		}
 		else if(ValueElement->GetAttribute("root") == "type")
 		{
-			Value.DataReference->Root = Inspection::TypeDefinition::DataReference::Root::Type;
+			DataReference.Root = Inspection::TypeDefinition::DataReference::Root::Type;
 		}
 		else
 		{
@@ -2654,7 +2657,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		{
 			if(DataReferenceChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				auto & DataReferenceParts = Value.DataReference->Parts;
+				auto & DataReferenceParts = DataReference.Parts;
 				auto DataReferencePart = DataReferenceParts.emplace(DataReferenceParts.end());
 				auto DataReferenceChildElement = dynamic_cast<const XML::Element *>(DataReferenceChildNode);
 				
@@ -2693,22 +2696,26 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.GUID.emplace(TextNode->GetText());
+		Value.Data.emplace<Inspection::GUID>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "length")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::Length;
-		Value.Length.emplace();
-		_LoadLength(Value.Length.value(), ValueElement);
+		
+		auto & Length = Value.Data.emplace<Inspection::TypeDefinition::Length>();
+		
+		_LoadLength(Length, ValueElement);
 	}
 	else if(ValueElement->GetName() == "length-reference")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::LengthReference;
-		Value.LengthReference.emplace();
+		
+		auto & LengthReference = Value.Data.emplace<Inspection::TypeDefinition::LengthReference>();
+		
 		assert(ValueElement->HasAttribute("root") == true);
 		if(ValueElement->GetAttribute("root") == "type")
 		{
-			Value.LengthReference->Root = Inspection::TypeDefinition::LengthReference::Root::Type;
+			LengthReference.Root = Inspection::TypeDefinition::LengthReference::Root::Type;
 		}
 		else
 		{
@@ -2717,7 +2724,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		assert(ValueElement->HasAttribute("name") == true);
 		if(ValueElement->GetAttribute("name") == "consumed")
 		{
-			Value.LengthReference->Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
+			LengthReference.Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
 		}
 		else
 		{
@@ -2727,19 +2734,23 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 	else if(ValueElement->GetName() == "parameter-reference")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::ParameterReference;
-		Value.ParameterReference.emplace();
+		
+		auto & ParameterReference = Value.Data.emplace<Inspection::TypeDefinition::ParameterReference>();
+		
 		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.ParameterReference->Name = TextNode->GetText();
+		ParameterReference.Name = TextNode->GetText();
 	}
 	else if(ValueElement->GetName() == "parameters")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::Parameters;
-		Value.Parameters.emplace();
-		_LoadParameters(Value.Parameters.value(), ValueElement);
+		
+		auto & Parameters = Value.Data.emplace<Inspection::TypeDefinition::Parameters>();
+		
+		_LoadParameters(Parameters, ValueElement);
 	}
 	else if(ValueElement->GetName() == "single-precision-real")
 	{
@@ -2749,7 +2760,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.SinglePrecisionReal = from_string_cast<float>(TextNode->GetText());
+		Value.Data = from_string_cast<float>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "string")
 	{
@@ -2759,13 +2770,15 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.String = TextNode->GetText();
+		Value.Data = std::string{TextNode->GetText()};
 	}
 	else if(ValueElement->GetName() == "type-reference")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::TypeReference;
-		Value.TypeReference.emplace();
-		_LoadTypeReference(Value.TypeReference.value(), ValueElement);
+		
+		auto & TypeReference = Value.Data.emplace<Inspection::TypeDefinition::TypeReference>();
+		
+		_LoadTypeReference(TypeReference, ValueElement);
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-8bit")
 	{
@@ -2775,7 +2788,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger8Bit = from_string_cast<std::uint8_t>(TextNode->GetText());
+		Value.Data = from_string_cast<std::uint8_t>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-16bit")
 	{
@@ -2785,7 +2798,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger16Bit = from_string_cast<std::uint16_t>(TextNode->GetText());
+		Value.Data = from_string_cast<std::uint16_t>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-32bit")
 	{
@@ -2795,7 +2808,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger32Bit = from_string_cast<std::uint32_t>(TextNode->GetText());
+		Value.Data = from_string_cast<std::uint32_t>(TextNode->GetText());
 	}
 	else if(ValueElement->GetName() == "unsigned-integer-64bit")
 	{
@@ -2805,7 +2818,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Value.UnsignedInteger64Bit = from_string_cast<std::uint64_t>(TextNode->GetText());
+		Value.Data = from_string_cast<std::uint64_t>(TextNode->GetText());
 	}
 	else
 	{

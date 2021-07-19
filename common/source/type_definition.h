@@ -22,6 +22,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "guid.h"
@@ -256,20 +257,7 @@ namespace Inspection
 		{
 		public:
 			Inspection::TypeDefinition::DataType DataType;
-			std::optional<bool> Boolean;
-			std::optional<Inspection::TypeDefinition::DataReference> DataReference;
-			std::optional<Inspection::GUID> GUID;
-			std::optional<Inspection::TypeDefinition::Length> Length;
-			std::optional<Inspection::TypeDefinition::LengthReference> LengthReference;
-			std::optional<Inspection::TypeDefinition::ParameterReference> ParameterReference;
-			std::optional<Inspection::TypeDefinition::Parameters> Parameters;
-			std::optional<float> SinglePrecisionReal;
-			std::optional<std::string> String;
-			std::optional<Inspection::TypeDefinition::TypeReference > TypeReference;
-			std::optional<std::uint8_t> UnsignedInteger8Bit;
-			std::optional<std::uint16_t> UnsignedInteger16Bit;
-			std::optional<std::uint32_t> UnsignedInteger32Bit;
-			std::optional<std::uint64_t> UnsignedInteger64Bit;
+			std::variant<bool, Inspection::TypeDefinition::DataReference, Inspection::GUID, Inspection::TypeDefinition::Length, Inspection::TypeDefinition::LengthReference, Inspection::TypeDefinition::ParameterReference, Inspection::TypeDefinition::Parameters, float, std::string, Inspection::TypeDefinition::TypeReference, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		};
 		
 		class Parameter
