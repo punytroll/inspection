@@ -16,9 +16,12 @@ clean-xml_parser:
 xml_parser: xml_parser/build
 	cmake --build $<
 
-xml_parser/build:
+xml_parser/build: xml_parser/CMakeLists.txt
 	mkdir $@ && \
 	cd $@ && \
 	cmake ..
+
+xml_parser/CMakeLists.txt:
+	git submodule update --init xml_parser
 
 .PHONY: xml_parser check-xml_parser
