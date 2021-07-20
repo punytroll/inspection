@@ -133,7 +133,7 @@ namespace Inspection
 		class Parameters
 		{
 		public:
-			std::vector<Inspection::TypeDefinition::Parameter> Parameters;
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> Parameters;
 		};
 		
 		class TypeReference
@@ -254,7 +254,7 @@ namespace Inspection
 		{
 		public:
 			Inspection::TypeDefinition::DataType DataType;
-			std::variant<bool, Inspection::TypeDefinition::DataReference, Inspection::GUID, Inspection::TypeDefinition::Length, Inspection::TypeDefinition::LengthReference, Inspection::TypeDefinition::ParameterReference, Inspection::TypeDefinition::Parameters, float, std::string, Inspection::TypeDefinition::TypeReference, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+			std::variant<bool, Inspection::TypeDefinition::DataReference, Inspection::GUID, Inspection::TypeDefinition::Length, Inspection::TypeDefinition::LengthReference, Inspection::TypeDefinition::ParameterReference, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, Inspection::TypeDefinition::TypeReference, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		};
 		
 		class Parameter
@@ -263,8 +263,8 @@ namespace Inspection
 			Parameter(void);
 			Parameter(Inspection::TypeDefinition::Parameter && Parameter) = default;
 			Parameter(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
-			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
-			Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
+			Inspection::TypeDefinition::Parameter & operator=(Inspection::TypeDefinition::Parameter && Parameter) = delete;
+			Inspection::TypeDefinition::Parameter & operator=(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
 			std::string Name;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement;
 		};
@@ -329,7 +329,7 @@ namespace Inspection
 			std::optional<Inspection::TypeDefinition::FieldReference> IterateForEachField;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> IterateNumberOfElements;
 			std::optional<std::string> ElementName;
-			std::optional<Inspection::TypeDefinition::Parameters> ElementParameters;
+			std::unique_ptr<Inspection::TypeDefinition::Parameters> ElementParameters;
 			Inspection::TypeDefinition::TypeReference ElementType;
 		};
 		
@@ -356,7 +356,7 @@ namespace Inspection
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
 			
 			std::optional<Inspection::TypeDefinition::Array> Array;
-			std::optional<Inspection::TypeDefinition::Parameters> Parameters;
+			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::optional<std::string> FieldName;
 			std::optional<Inspection::TypeDefinition::TypeReference> TypeReference;
 			std::optional<Inspection::TypeDefinition::Interpretation> Interpretation;

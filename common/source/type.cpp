@@ -485,48 +485,48 @@ namespace Inspection
 	
 	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map<std::string, std::any> & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions)
 	{
-		for(auto & ParameterDefinition : ParameterDefinitions.Parameters)
+		for(auto & Parameter : ParameterDefinitions.Parameters)
 		{
-			switch(ParameterDefinition.Statement->Type)
+			switch(Parameter->Statement->Type)
 			{
 			case Inspection::TypeDefinition::Statement::Type::Cast:
 				{
-					assert(ParameterDefinition.Statement->Cast != nullptr);
-					NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *(ParameterDefinition.Statement->Cast)));
+					assert(Parameter->Statement->Cast != nullptr);
+					NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *(Parameter->Statement->Cast)));
 					
 					break;
 				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
-					assert(ParameterDefinition.Statement->Value != nullptr);
-					if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::String)
+					assert(Parameter->Statement->Value != nullptr);
+					if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::String)
 					{
-						assert(std::holds_alternative<std::string>(ParameterDefinition.Statement->Value->Data) == true);
-						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement->Value)));
+						assert(std::holds_alternative<std::string>(Parameter->Statement->Value->Data) == true);
+						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
 					}
-					else if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
+					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(ParameterDefinition.Statement->Value->Data) == true);
-						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement->Value)));
+						assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(Parameter->Statement->Value->Data) == true);
+						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
 					}
-					else if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
+					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::TypeReference>(ParameterDefinition.Statement->Value->Data) == true);
-						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement->Value)));
+						assert(std::holds_alternative<Inspection::TypeDefinition::TypeReference>(Parameter->Statement->Value->Data) == true);
+						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
 					}
-					else if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
+					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::ParameterReference>(ParameterDefinition.Statement->Value->Data) == true);
-						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement->Value)));
+						assert(std::holds_alternative<Inspection::TypeDefinition::ParameterReference>(Parameter->Statement->Value->Data) == true);
+						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
 					}
-					else if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
+					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::Parameters>(ParameterDefinition.Statement->Value->Data) == true);
+						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Parameter->Statement->Value->Data) == true);
 						
 						auto InnerParameters = std::unordered_map<std::string, std::any>{};
 						
-						FillNewParameters(ExecutionContext, InnerParameters, std::get<Inspection::TypeDefinition::Parameters>(ParameterDefinition.Statement->Value->Data));
-						NewParameters.emplace(ParameterDefinition.Name, InnerParameters);
+						FillNewParameters(ExecutionContext, InnerParameters, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Parameter->Statement->Value->Data)));
+						NewParameters.emplace(Parameter->Name, InnerParameters);
 						
 						break;
 					}
@@ -595,9 +595,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			{
 				auto PartParameters = std::unordered_map<std::string, std::any>{};
 				
-				if(_Part->Parameters)
+				if(_Part->Parameters != nullptr)
 				{
-					FillNewParameters(ExecutionContext, PartParameters, _Part->Parameters.value());
+					FillNewParameters(ExecutionContext, PartParameters, *(_Part->Parameters));
 				}
 				switch(_Part->Type)
 				{
@@ -709,9 +709,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 		{
 			auto AlternativePartParameters = std::unordered_map<std::string, std::any>{};
 			
-			if(AlternativePart.Parameters)
+			if(AlternativePart.Parameters != nullptr)
 			{
-				FillNewParameters(ExecutionContext, AlternativePartParameters, AlternativePart.Parameters.value());
+				FillNewParameters(ExecutionContext, AlternativePartParameters, *(AlternativePart.Parameters));
 			}
 			switch(AlternativePart.Type)
 			{
@@ -812,9 +812,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		{
 			auto ElementParameters = std::unordered_map<std::string, std::any>{};
 			
-			if(Array.Array->ElementParameters.has_value() == true)
+			if(Array.Array->ElementParameters != nullptr)
 			{
-				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
+				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
 			}
 			
 			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
@@ -875,7 +875,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			if(Array.Array->ElementParameters)
 			{
-				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
+				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
 			}
 			
 			auto IterateField = ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateForEachField.value());
@@ -917,7 +917,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			if(Array.Array->ElementParameters)
 			{
-				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
+				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
 			}
 			
 			auto NumberOfRequiredElements = Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(Array.Array->IterateNumberOfElements));
@@ -969,7 +969,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			if(Array.Array->ElementParameters)
 			{
-				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
+				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
 			}
 			
 			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
@@ -1062,9 +1062,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		{
 			auto FieldPartParameters = std::unordered_map<std::string, std::any>{};
 			
-			if(FieldPart.Parameters)
+			if(FieldPart.Parameters != nullptr)
 			{
-				FillNewParameters(ExecutionContext, FieldPartParameters, FieldPart.Parameters.value());
+				FillNewParameters(ExecutionContext, FieldPartParameters, *(FieldPart.Parameters));
 			}
 			switch(FieldPart.Type)
 			{
@@ -1350,9 +1350,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 		{
 			auto SequencePartParameters = std::unordered_map<std::string, std::any>{};
 			
-			if(SequencePart.Parameters)
+			if(SequencePart.Parameters != nullptr)
 			{
-				FillNewParameters(ExecutionContext, SequencePartParameters, SequencePart.Parameters.value());
+				FillNewParameters(ExecutionContext, SequencePartParameters, *(SequencePart.Parameters));
 			}
 			switch(SequencePart.Type)
 			{
@@ -1753,15 +1753,21 @@ void Inspection::TypeDefinition::Type::_LoadLength(Inspection::TypeDefinition::L
 	}
 }
 
-void Inspection::TypeDefinition::Type::_LoadParameter(Inspection::TypeDefinition::Parameter & Parameter, const XML::Element * ParameterElement)
+std::unique_ptr<Inspection::TypeDefinition::Parameter> Inspection::TypeDefinition::Type::_LoadParameter(const XML::Element * ParameterElement)
 {
+	auto Result = std::make_unique<Inspection::TypeDefinition::Parameter>();
+	
 	assert(ParameterElement->HasAttribute("name") == true);
-	Parameter.Name = ParameterElement->GetAttribute("name");
-	Parameter.Statement = _LoadStatementFromWithin(ParameterElement);
+	Result->Name = ParameterElement->GetAttribute("name");
+	Result->Statement = _LoadStatementFromWithin(ParameterElement);
+	
+	return Result;
 }
 
-void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinition::Parameters & Parameters, const XML::Element * ParametersElement)
+std::unique_ptr<Inspection::TypeDefinition::Parameters>  Inspection::TypeDefinition::Type::_LoadParameters(const XML::Element * ParametersElement)
 {
+	auto Result = std::make_unique<Inspection::TypeDefinition::Parameters>();
+	
 	for(auto ParametersChildNode : ParametersElement->GetChilds())
 	{
 		if(ParametersChildNode->GetNodeType() == XML::NodeType::Element)
@@ -1771,11 +1777,7 @@ void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinitio
 			assert(ParametersChildElement != nullptr);
 			if(ParametersChildElement->GetName() == "parameter")
 			{
-				Parameters.Parameters.emplace_back();
-				
-				auto & Parameter = Parameters.Parameters.back();
-				
-				_LoadParameter(Parameter, ParametersChildElement);
+				Result->Parameters.push_back(_LoadParameter(ParametersChildElement));
 			}
 			else
 			{
@@ -1783,6 +1785,8 @@ void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinitio
 			}
 		}
 	}
+	
+	return Result;
 }
 
 void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement)
@@ -1845,8 +1849,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			else if(PartChildElement->GetName() == "parameters")
 			{
 				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Fields) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
-				Part.Parameters.emplace();
-				_LoadParameters(Part.Parameters.value(), PartChildElement);
+				Part.Parameters = _LoadParameters(PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "verification")
 			{
@@ -1940,8 +1943,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			{
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
 				assert(Part.Array.has_value() == true);
-				Part.Array->ElementParameters.emplace();
-				_LoadParameters(Part.Array->ElementParameters.value(), PartChildElement);
+				Part.Array->ElementParameters = _LoadParameters(PartChildElement);
 			}
 			else
 			{
@@ -2672,10 +2674,7 @@ void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Va
 	else if(ValueElement->GetName() == "parameters")
 	{
 		Value.DataType = Inspection::TypeDefinition::DataType::Parameters;
-		
-		auto & Parameters = Value.Data.emplace<Inspection::TypeDefinition::Parameters>();
-		
-		_LoadParameters(Parameters, ValueElement);
+		Value.Data = _LoadParameters(ValueElement);
 	}
 	else if(ValueElement->GetName() == "single-precision-real")
 	{
