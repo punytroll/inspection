@@ -246,18 +246,18 @@ namespace Inspection
 			}
 		}
 		
-		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<Inspection::TypeDefinition::Tag> & Tags, Inspection::Value * Target)
+		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
 		{
 			for(auto & Tag : Tags)
 			{
-				if(Tag.Statement)
+				if(Tag->Statement)
 				{
-					assert((Tag.Statement->Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag.Statement->Value != nullptr));
-					Target->AddTag(Tag.Name, GetAnyFromValue(ExecutionContext, *(Tag.Statement->Value)));
+					assert((Tag->Statement->Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag->Statement->Value != nullptr));
+					Target->AddTag(Tag->Name, GetAnyFromValue(ExecutionContext, *(Tag->Statement->Value)));
 				}
 				else
 				{
-					Target->AddTag(Tag.Name);
+					Target->AddTag(Tag->Name);
 				}
 			}
 		}
@@ -1127,13 +1127,13 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	{
 		for(auto & Tag : Field.Tags)
 		{
-			if(Tag.Statement)
+			if(Tag->Statement)
 			{
-				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag.Statement)));
+				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag->Statement)));
 			}
 			else
 			{
-				Result->GetValue()->AddTag(Tag.Name);
+				Result->GetValue()->AddTag(Tag->Name);
 			}
 		}
 	}
@@ -1266,13 +1266,13 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	{
 		for(auto & Tag : Forward.Tags)
 		{
-			if(Tag.Statement)
+			if(Tag->Statement)
 			{
-				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag.Statement)));
+				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag->Statement)));
 			}
 			else
 			{
-				Result->GetValue()->AddTag(Tag.Name);
+				Result->GetValue()->AddTag(Tag->Name);
 			}
 		}
 	}
@@ -1416,13 +1416,13 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	{
 		for(auto & Tag : Sequence.Tags)
 		{
-			if(Tag.Statement)
+			if(Tag->Statement)
 			{
-				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag.Statement)));
+				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag->Statement)));
 			}
 			else
 			{
-				Result->GetValue()->AddTag(Tag.Name);
+				Result->GetValue()->AddTag(Tag->Name);
 			}
 		}
 	}
@@ -1632,11 +1632,7 @@ void Inspection::TypeDefinition::Type::_LoadEnumeration(Inspection::TypeDefiniti
 						
 						if(EnumerationElementChildElement->GetName() == "tag")
 						{
-							Element.Tags.emplace_back();
-							
-							auto & Tag = Element.Tags.back();
-							
-							_LoadTag(Tag, EnumerationElementChildElement);
+							Element.Tags.push_back(_LoadTag(EnumerationElementChildElement));
 						}
 						else
 						{
@@ -1658,11 +1654,7 @@ void Inspection::TypeDefinition::Type::_LoadEnumeration(Inspection::TypeDefiniti
 						
 						if(EnumerationFallbackElementChildElement->GetName() == "tag")
 						{
-							Enumeration.FallbackElement->Tags.emplace_back();
-							
-							auto & Tag = Enumeration.FallbackElement->Tags.back();
-							
-							_LoadTag(Tag, EnumerationFallbackElementChildElement);
+							Enumeration.FallbackElement->Tags.push_back(_LoadTag(EnumerationFallbackElementChildElement));
 						}
 						else
 						{
@@ -1869,11 +1861,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			else if(PartChildElement->GetName() == "tag")
 			{
 				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward) || (Part.Type == Inspection::TypeDefinition::Part::Type::Sequence));
-				Part.Tags.emplace_back();
-				
-				auto & Tag = Part.Tags.back();
-				
-				_LoadTag(Tag, PartChildElement);
+				Part.Tags.push_back(_LoadTag(PartChildElement));
 			}
 			else if((PartChildElement->GetName() == "alternative") || (PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward") || (PartChildElement->GetName() == "array"))
 			{
@@ -2077,14 +2065,18 @@ std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinitio
 	return _LoadStatement(StatementElement);
 }
 
-void Inspection::TypeDefinition::Type::_LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement)
+std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Type::_LoadTag(const XML::Element * TagElement)
 {
+	auto Result = std::make_unique<Inspection::TypeDefinition::Tag>();
+	
 	assert(TagElement->HasAttribute("name") == true);
-	Tag.Name = TagElement->GetAttribute("name");
+	Result->Name = TagElement->GetAttribute("name");
 	if(XML::HasChildElements(TagElement) == true)
 	{
-		Tag.Statement = _LoadStatementFromWithin(TagElement);
+		Result->Statement = _LoadStatementFromWithin(TagElement);
 	}
+	
+	return Result;
 }
 
 void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement)

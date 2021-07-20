@@ -288,7 +288,7 @@ namespace Inspection
 			{
 			public:
 				std::string BaseValue;
-				std::vector<Inspection::TypeDefinition::Tag> Tags;
+				std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> Tags;
 				bool Valid;
 			};
 			Inspection::TypeDefinition::DataType BaseDataType;
@@ -362,7 +362,7 @@ namespace Inspection
 			std::optional<Inspection::TypeDefinition::Interpretation> Interpretation;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Length;
 			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
-			std::vector<Inspection::TypeDefinition::Tag> Tags;
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> Tags;
 			Inspection::TypeDefinition::Part::Type Type;
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Statement>> Verifications;
 		};
