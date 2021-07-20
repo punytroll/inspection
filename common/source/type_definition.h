@@ -228,16 +228,13 @@ namespace Inspection
 		class Length
 		{
 		public:
-			Length(void)
-			{
-			}
-			
+			Length(void);
 			Length(Inspection::TypeDefinition::Length && Length) = default;
-			
 			Length(const Inspection::TypeDefinition::Length & Length) = delete;
-			
-			Inspection::TypeDefinition::Statement Bytes;
-			Inspection::TypeDefinition::Statement Bits;
+			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
+			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Bytes;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Bits;
 		};
 		
 		class Subtract
@@ -263,31 +260,25 @@ namespace Inspection
 		class Parameter
 		{
 		public:
-			Parameter(void)
-			{
-			}
-			
+			Parameter(void);
 			Parameter(Inspection::TypeDefinition::Parameter && Parameter) = default;
-			
 			Parameter(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
-			
+			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
+			Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
 			std::string Name;
-			Inspection::TypeDefinition::Statement Statement;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement;
 		};
 		
 		class Tag
 		{
 		public:
-			Tag(void)
-			{
-			}
-			
+			Tag(void);
 			Tag(Inspection::TypeDefinition::Tag && Tag) = default;
-			
 			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
-			
+			Inspection::TypeDefinition::Tag & operator=(Inspection::TypeDefinition::Tag && Tag) = delete;
+			Inspection::TypeDefinition::Tag & operator=(const Inspection::TypeDefinition::Tag & Tag) = delete;
 			std::string Name;
-			std::optional<Inspection::TypeDefinition::Statement> Statement;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement;
 		};
 		
 		class Enumeration
@@ -336,7 +327,7 @@ namespace Inspection
 			
 			Inspection::TypeDefinition::Array::IterateType IterateType;
 			std::optional<Inspection::TypeDefinition::FieldReference> IterateForEachField;
-			std::optional<Inspection::TypeDefinition::Statement> IterateNumberOfElements;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> IterateNumberOfElements;
 			std::optional<std::string> ElementName;
 			std::optional<Inspection::TypeDefinition::Parameters> ElementParameters;
 			Inspection::TypeDefinition::TypeReference ElementType;
@@ -369,11 +360,11 @@ namespace Inspection
 			std::optional<std::string> FieldName;
 			std::optional<Inspection::TypeDefinition::TypeReference> TypeReference;
 			std::optional<Inspection::TypeDefinition::Interpretation> Interpretation;
-			std::optional<Inspection::TypeDefinition::Statement> Length;
+			std::unique_ptr<Inspection::TypeDefinition::Statement> Length;
 			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
 			std::vector<Inspection::TypeDefinition::Tag> Tags;
 			Inspection::TypeDefinition::Part::Type Type;
-			std::vector<Inspection::TypeDefinition::Statement> Verifications;
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Statement>> Verifications;
 		};
 		
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);

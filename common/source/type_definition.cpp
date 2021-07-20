@@ -53,11 +53,11 @@ Inspection::TypeDefinition::Equals::~Equals(void)
 {
 }
 
-Inspection::TypeDefinition::Subtract::Subtract(void)
+Inspection::TypeDefinition::Length::Length(void)
 {
 }
 
-Inspection::TypeDefinition::Subtract::~Subtract(void)
+Inspection::TypeDefinition::Parameter::Parameter(void)
 {
 }
 
@@ -67,6 +67,18 @@ Inspection::TypeDefinition::Statement::Statement(void) :
 }
 
 Inspection::TypeDefinition::Statement::~Statement(void)
+{
+}
+
+Inspection::TypeDefinition::Subtract::Subtract(void)
+{
+}
+
+Inspection::TypeDefinition::Subtract::~Subtract(void)
+{
+}
+
+Inspection::TypeDefinition::Tag::Tag(void)
 {
 }
 

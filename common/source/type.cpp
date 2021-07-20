@@ -179,7 +179,7 @@ namespace Inspection
 				{
 					assert(std::holds_alternative<Inspection::TypeDefinition::Length>(Value.Data) == true);
 					
-					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, std::get<Inspection::TypeDefinition::Length>(Value.Data).Bytes), Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, std::get<Inspection::TypeDefinition::Length>(Value.Data).Bits)};
+					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(std::get<Inspection::TypeDefinition::Length>(Value.Data).Bytes)), Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(std::get<Inspection::TypeDefinition::Length>(Value.Data).Bits))};
 				}
 			case Inspection::TypeDefinition::DataType::LengthReference:
 				{
@@ -487,45 +487,45 @@ namespace Inspection
 	{
 		for(auto & ParameterDefinition : ParameterDefinitions.Parameters)
 		{
-			switch(ParameterDefinition.Statement.Type)
+			switch(ParameterDefinition.Statement->Type)
 			{
 			case Inspection::TypeDefinition::Statement::Type::Cast:
 				{
-					assert(ParameterDefinition.Statement.Cast != nullptr);
-					NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *(ParameterDefinition.Statement.Cast)));
+					assert(ParameterDefinition.Statement->Cast != nullptr);
+					NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *(ParameterDefinition.Statement->Cast)));
 					
 					break;
 				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
-					assert(ParameterDefinition.Statement.Value != nullptr);
-					if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::String)
+					assert(ParameterDefinition.Statement->Value != nullptr);
+					if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::String)
 					{
-						assert(std::holds_alternative<std::string>(ParameterDefinition.Statement.Value->Data) == true);
-						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
+						assert(std::holds_alternative<std::string>(ParameterDefinition.Statement->Value->Data) == true);
+						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement->Value)));
 					}
-					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
+					else if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(ParameterDefinition.Statement.Value->Data) == true);
-						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
+						assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(ParameterDefinition.Statement->Value->Data) == true);
+						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement->Value)));
 					}
-					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
+					else if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::TypeReference>(ParameterDefinition.Statement.Value->Data) == true);
-						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
+						assert(std::holds_alternative<Inspection::TypeDefinition::TypeReference>(ParameterDefinition.Statement->Value->Data) == true);
+						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement->Value)));
 					}
-					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
+					else if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::ParameterReference>(ParameterDefinition.Statement.Value->Data) == true);
-						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement.Value)));
+						assert(std::holds_alternative<Inspection::TypeDefinition::ParameterReference>(ParameterDefinition.Statement->Value->Data) == true);
+						NewParameters.emplace(ParameterDefinition.Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(ParameterDefinition.Statement->Value)));
 					}
-					else if(ParameterDefinition.Statement.Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
+					else if(ParameterDefinition.Statement->Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::Parameters>(ParameterDefinition.Statement.Value->Data) == true);
+						assert(std::holds_alternative<Inspection::TypeDefinition::Parameters>(ParameterDefinition.Statement->Value->Data) == true);
 						
 						auto InnerParameters = std::unordered_map<std::string, std::any>{};
 						
-						FillNewParameters(ExecutionContext, InnerParameters, std::get<Inspection::TypeDefinition::Parameters>(ParameterDefinition.Statement.Value->Data));
+						FillNewParameters(ExecutionContext, InnerParameters, std::get<Inspection::TypeDefinition::Parameters>(ParameterDefinition.Statement->Value->Data));
 						NewParameters.emplace(ParameterDefinition.Name, InnerParameters);
 						
 						break;
@@ -583,9 +583,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			
 			auto PartReader = std::unique_ptr<Inspection::Reader>{};
 			
-			if(_Part->Length)
+			if(_Part->Length != nullptr)
 			{
-				PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, _Part->Length.value())));
+				PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(_Part->Length))));
 			}
 			else
 			{
@@ -697,9 +697,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 		auto & AlternativePart = *AlternativePartIterator;
 		auto AlternativePartReader = std::unique_ptr<Inspection::Reader>{};
 		
-		if(AlternativePart.Length)
+		if(AlternativePart.Length != nullptr)
 		{
-			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, AlternativePart.Length.value())));
+			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(AlternativePart.Length))));
 		}
 		else
 		{
@@ -920,7 +920,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 				FillNewParameters(ExecutionContext, ElementParameters, Array.Array->ElementParameters.value());
 			}
 			
-			auto NumberOfRequiredElements = Inspection::Algorithms::GetDataFromStatement< std::uint64_t >(ExecutionContext, Array.Array->IterateNumberOfElements.value());
+			auto NumberOfRequiredElements = Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(Array.Array->IterateNumberOfElements));
 			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
@@ -1050,9 +1050,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		auto & FieldPart = Field.Parts->front();
 		auto FieldPartReader = std::unique_ptr<Inspection::Reader>{};
 		
-		if(FieldPart.Length)
+		if(FieldPart.Length != nullptr)
 		{
-			FieldPartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, FieldPart.Length.value())));
+			FieldPartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(FieldPart.Length))));
 		}
 		else
 		{
@@ -1129,7 +1129,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		{
 			if(Tag.Statement)
 			{
-				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement.value()));
+				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag.Statement)));
 			}
 			else
 			{
@@ -1158,12 +1158,12 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	{
 		for(auto & Statement : Field.Verifications)
 		{
-			switch(Statement.Type)
+			switch(Statement->Type)
 			{
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
-					assert(Statement.Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement.Equals->Statement1), *(Statement.Equals->Statement2));
+					assert(Statement->Equals);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement->Equals->Statement1), *(Statement->Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1220,12 +1220,12 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	{
 		for(auto & Statement : Fields.Verifications)
 		{
-			switch(Statement.Type)
+			switch(Statement->Type)
 			{
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
-					assert(Statement.Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement.Equals->Statement1), *(Statement.Equals->Statement2));
+					assert(Statement->Equals);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement->Equals->Statement1), *(Statement->Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1268,7 +1268,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 		{
 			if(Tag.Statement)
 			{
-				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement.value()));
+				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag.Statement)));
 			}
 			else
 			{
@@ -1297,12 +1297,12 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	{
 		for(auto & Statement : Forward.Verifications)
 		{
-			switch(Statement.Type)
+			switch(Statement->Type)
 			{
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
-					assert(Statement.Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement.Equals->Statement1), *(Statement.Equals->Statement2));
+					assert(Statement->Equals);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement->Equals->Statement1), *(Statement->Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1338,9 +1338,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 		auto & SequencePart = *SequencePartIterator;
 		auto SequencePartReader = std::unique_ptr<Inspection::Reader>{};
 		
-		if(SequencePart.Length)
+		if(SequencePart.Length != nullptr)
 		{
-			SequencePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, SequencePart.Length.value())));
+			SequencePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(SequencePart.Length))));
 		}
 		else
 		{
@@ -1418,7 +1418,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 		{
 			if(Tag.Statement)
 			{
-				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Tag.Statement.value()));
+				Result->GetValue()->AddTag(Tag.Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag.Statement)));
 			}
 			else
 			{
@@ -1747,11 +1747,13 @@ void Inspection::TypeDefinition::Type::_LoadLength(Inspection::TypeDefinition::L
 			assert(LengthChildElement != nullptr);
 			if(LengthChildElement->GetName() == "bytes")
 			{
-				_LoadStatementFromWithin(Length.Bytes, LengthChildElement);
+				Length.Bytes = std::make_unique<Inspection::TypeDefinition::Statement>();
+				_LoadStatementFromWithin(*(Length.Bytes), LengthChildElement);
 			}
 			else if(LengthChildElement->GetName() == "bits")
 			{
-				_LoadStatementFromWithin(Length.Bits, LengthChildElement);
+				Length.Bits = std::make_unique<Inspection::TypeDefinition::Statement>();
+				_LoadStatementFromWithin(*(Length.Bits), LengthChildElement);
 			}
 			else
 			{
@@ -1765,7 +1767,8 @@ void Inspection::TypeDefinition::Type::_LoadParameter(Inspection::TypeDefinition
 {
 	assert(ParameterElement->HasAttribute("name") == true);
 	Parameter.Name = ParameterElement->GetAttribute("name");
-	_LoadStatementFromWithin(Parameter.Statement, ParameterElement);
+	Parameter.Statement = std::make_unique<Inspection::TypeDefinition::Statement>();
+	_LoadStatementFromWithin(*(Parameter.Statement), ParameterElement);
 }
 
 void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinition::Parameters & Parameters, const XML::Element * ParametersElement)
@@ -1848,8 +1851,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			}
 			else if(PartChildElement->GetName() == "length")
 			{
-				Part.Length.emplace();
-				_LoadStatement(Part.Length.value(), PartChildElement);
+				Part.Length = _LoadStatement(PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "parameters")
 			{
@@ -1859,15 +1861,11 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			}
 			else if(PartChildElement->GetName() == "verification")
 			{
-				Part.Verifications.emplace_back();
-				
-				auto & Verification = Part.Verifications.back();
-				
 				for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
 				{
 					if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
 					{
-						_LoadStatement(Verification, dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode));
+						Part.Verifications.push_back(_LoadStatement(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
 					}
 				}
 			}
@@ -1924,8 +1922,8 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				else if(PartChildElement->GetAttribute("type") == "number-of-elements")
 				{
 					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
-					Part.Array->IterateNumberOfElements.emplace();
-					_LoadStatementFromWithin(Part.Array->IterateNumberOfElements.value(), PartChildElement);
+					Part.Array->IterateNumberOfElements = std::make_unique<Inspection::TypeDefinition::Statement>();
+					_LoadStatementFromWithin(*(Part.Array->IterateNumberOfElements), PartChildElement);
 				}
 				else if(PartChildElement->GetAttribute("type") == "until-failure-or-length")
 				{
@@ -2149,8 +2147,8 @@ void Inspection::TypeDefinition::Type::_LoadTag(Inspection::TypeDefinition::Tag 
 	Tag.Name = TagElement->GetAttribute("name");
 	if(XML::HasChildElements(TagElement) == true)
 	{
-		Tag.Statement.emplace();
-		_LoadStatementFromWithin(Tag.Statement.value(), TagElement);
+		Tag.Statement = std::make_unique<Inspection::TypeDefinition::Statement>();
+		_LoadStatementFromWithin(*(Tag.Statement), TagElement);
 	}
 }
 
