@@ -1747,13 +1747,11 @@ void Inspection::TypeDefinition::Type::_LoadLength(Inspection::TypeDefinition::L
 			assert(LengthChildElement != nullptr);
 			if(LengthChildElement->GetName() == "bytes")
 			{
-				Length.Bytes = std::make_unique<Inspection::TypeDefinition::Statement>();
-				_LoadStatementFromWithin(*(Length.Bytes), LengthChildElement);
+				Length.Bytes = _LoadStatementFromWithin(LengthChildElement);
 			}
 			else if(LengthChildElement->GetName() == "bits")
 			{
-				Length.Bits = std::make_unique<Inspection::TypeDefinition::Statement>();
-				_LoadStatementFromWithin(*(Length.Bits), LengthChildElement);
+				Length.Bits = _LoadStatementFromWithin( LengthChildElement);
 			}
 			else
 			{
@@ -1767,8 +1765,7 @@ void Inspection::TypeDefinition::Type::_LoadParameter(Inspection::TypeDefinition
 {
 	assert(ParameterElement->HasAttribute("name") == true);
 	Parameter.Name = ParameterElement->GetAttribute("name");
-	Parameter.Statement = std::make_unique<Inspection::TypeDefinition::Statement>();
-	_LoadStatementFromWithin(*(Parameter.Statement), ParameterElement);
+	Parameter.Statement = _LoadStatementFromWithin(ParameterElement);
 }
 
 void Inspection::TypeDefinition::Type::_LoadParameters(Inspection::TypeDefinition::Parameters & Parameters, const XML::Element * ParametersElement)
@@ -1922,8 +1919,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				else if(PartChildElement->GetAttribute("type") == "number-of-elements")
 				{
 					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
-					Part.Array->IterateNumberOfElements = std::make_unique<Inspection::TypeDefinition::Statement>();
-					_LoadStatementFromWithin(*(Part.Array->IterateNumberOfElements), PartChildElement);
+					Part.Array->IterateNumberOfElements = _LoadStatementFromWithin(PartChildElement);
 				}
 				else if(PartChildElement->GetAttribute("type") == "until-failure-or-length")
 				{
@@ -2057,70 +2053,9 @@ std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinitio
 	return Result;
 }
 
-void Inspection::TypeDefinition::Type::_LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement)
+std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinition::Type::_LoadStatementFromWithin(const XML::Element * ParentElement)
 {
-	assert(StatementElement != nullptr);
-	assert(Statement.Type == Inspection::TypeDefinition::Statement::Type::Unknown);
-	if(StatementElement->GetName() == "add")
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Add;
-		Statement.Add = std::make_unique<Inspection::TypeDefinition::Add>();
-		_LoadAdd(*(Statement.Add), StatementElement);
-	}
-	else if(StatementElement->GetName() == "divide")
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Divide;
-		Statement.Divide = std::make_unique<Inspection::TypeDefinition::Divide>();
-		_LoadDivide(*(Statement.Divide), StatementElement);
-	}
-	else if(StatementElement->GetName() == "equals")
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Equals;
-		Statement.Equals = std::make_unique<Inspection::TypeDefinition::Equals>();
-		_LoadEquals(*(Statement.Equals), StatementElement);
-	}
-	else if(StatementElement->GetName() == "subtract")
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Subtract;
-		Statement.Subtract = std::make_unique<Inspection::TypeDefinition::Subtract>();
-		_LoadSubtract(*(Statement.Subtract), StatementElement);
-	}
-	else if((StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Statement.Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
-		_LoadCast(*(Statement.Cast), StatementElement);
-	}
-	else if((StatementElement->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(StatementElement) == true))
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Statement.Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
-		_LoadCast(*(Statement.Cast), StatementElement);
-	}
-	else if((StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(StatementElement) == true))
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Statement.Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
-		_LoadCast(*(Statement.Cast), StatementElement);
-	}
-	else if((StatementElement->GetName() == "single-precision-real") && (XML::HasOneChildElement(StatementElement) == true))
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Statement.Cast = std::make_unique<Inspection::TypeDefinition::Cast>();
-		_LoadCast(*(Statement.Cast), StatementElement);
-	}
-	else
-	{
-		Statement.Type = Inspection::TypeDefinition::Statement::Type::Value;
-		Statement.Value = std::make_unique<Inspection::TypeDefinition::Value>();
-		_LoadValue(*(Statement.Value), StatementElement);
-	}
-	assert(Statement.Type != Inspection::TypeDefinition::Statement::Type::Unknown);
-}
-
-void Inspection::TypeDefinition::Type::_LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement)
-{
-	const XML::Element * StatementElement{nullptr};
+	auto StatementElement = static_cast<const XML::Element *>(nullptr);
 	
 	if(ParentElement->GetChilds().size() > 0)
 	{
@@ -2138,7 +2073,8 @@ void Inspection::TypeDefinition::Type::_LoadStatementFromWithin(Inspection::Type
 			throw std::domain_error{"To read a statment from an element with childs, at least one of them needs to be an element."};
 		}
 	}
-	_LoadStatement(Statement, StatementElement);
+	
+	return _LoadStatement(StatementElement);
 }
 
 void Inspection::TypeDefinition::Type::_LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement)
@@ -2147,8 +2083,7 @@ void Inspection::TypeDefinition::Type::_LoadTag(Inspection::TypeDefinition::Tag 
 	Tag.Name = TagElement->GetAttribute("name");
 	if(XML::HasChildElements(TagElement) == true)
 	{
-		Tag.Statement = std::make_unique<Inspection::TypeDefinition::Statement>();
-		_LoadStatementFromWithin(*(Tag.Statement), TagElement);
+		Tag.Statement = _LoadStatementFromWithin(TagElement);
 	}
 }
 

@@ -66,8 +66,6 @@ namespace Inspection
 			void _LoadParameter(Inspection::TypeDefinition::Parameter & Parameter, const XML::Element * ParameterElement);
 			void _LoadParameters(Inspection::TypeDefinition::Parameters & Parameters, const XML::Element * ParametersElement);
 			void _LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement);
-			void _LoadStatement(Inspection::TypeDefinition::Statement & Statement, const XML::Element * StatementElement);
-			void _LoadStatementFromWithin(Inspection::TypeDefinition::Statement & Statement, const XML::Element * ParentElement);
 			void _LoadSubtract(Inspection::TypeDefinition::Subtract & Subtract, const XML::Element * SubtractElement);
 			void _LoadTag(Inspection::TypeDefinition::Tag & Tag, const XML::Element * TagElement);
 			void _LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement);
@@ -76,6 +74,7 @@ namespace Inspection
 			void _LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement);
 			//
 			std::unique_ptr<Inspection::TypeDefinition::Statement> _LoadStatement(const XML::Element * StatementElement);
+			std::unique_ptr<Inspection::TypeDefinition::Statement> _LoadStatementFromWithin(const XML::Element * ParentElement);
 			//
 			Inspection::EvaluationResult _ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, Inspection::Value * Target) const;
 			Inspection::EvaluationResult _ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target) const;
