@@ -63,7 +63,6 @@ namespace Inspection
 			void _LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement);
 			void _LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement);
 			void _LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement);
-			void _LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement);
 			//
 			std::unique_ptr<Inspection::TypeDefinition::Add> _LoadAdd(const XML::Element * AddElement);
 			std::unique_ptr<Inspection::TypeDefinition::Cast> _LoadCast(const XML::Element * CastElement);

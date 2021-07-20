@@ -2528,28 +2528,6 @@ void Inspection::TypeDefinition::Type::_LoadTypeReference(Inspection::TypeDefini
 	}
 }
 
-void Inspection::TypeDefinition::Type::_LoadValueFromWithin(Inspection::TypeDefinition::Value & Value, const XML::Element * ParentElement)
-{
-	if(ParentElement->GetChilds().size() == 0)
-	{
-		_LoadValue(Value, nullptr);
-	}
-	else
-	{
-		for(auto ChildNode : ParentElement->GetChilds())
-		{
-			if(ChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				_LoadValue(Value, dynamic_cast<const XML::Element *>(ChildNode));
-			}
-		}
-	}
-	if(Value.DataType == Inspection::TypeDefinition::DataType::Unknown)
-	{
-		throw std::domain_error{"No valid value description."};
-	}
-}
-
 void Inspection::TypeDefinition::Type::_LoadValue(Inspection::TypeDefinition::Value & Value, const XML::Element * ValueElement)
 {
 	assert(ValueElement != nullptr);
