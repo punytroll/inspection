@@ -377,6 +377,32 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 	return Result;
 }
 
+std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDefinition::LengthReference::Load(const XML::Element * Element)
+{
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::LengthReference>{new Inspection::TypeDefinition::LengthReference{}};
+	
+	assert(Element->HasAttribute("root") == true);
+	if(Element->GetAttribute("root") == "type")
+	{
+		Result->Root = Inspection::TypeDefinition::LengthReference::Root::Type;
+	}
+	else
+	{
+		assert(false);
+	}
+	assert(Element->HasAttribute("name") == true);
+	if(Element->GetAttribute("name") == "consumed")
+	{
+		Result->Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
+	}
+	else
+	{
+		assert(false);
+	}
+	
+	return Result;
+}
+
 std::unique_ptr<Inspection::TypeDefinition::Parameter> Inspection::TypeDefinition::Parameter::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Parameter>{new Inspection::TypeDefinition::Parameter{}};
@@ -388,7 +414,21 @@ std::unique_ptr<Inspection::TypeDefinition::Parameter> Inspection::TypeDefinitio
 	return Result;
 }
 
-std::unique_ptr<Inspection::TypeDefinition::Parameters>  Inspection::TypeDefinition::Parameters::Load(const XML::Element * Element)
+std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Inspection::TypeDefinition::ParameterReference::Load(const XML::Element * Element)
+{
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::ParameterReference>{new Inspection::TypeDefinition::ParameterReference{}};
+	
+	assert((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
+	
+	auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
+	
+	assert(TextNode != nullptr);
+	Result->Name = TextNode->GetText();
+	
+	return Result;
+}
+
+std::unique_ptr<Inspection::TypeDefinition::Parameters> Inspection::TypeDefinition::Parameters::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Parameters>{new Inspection::TypeDefinition::Parameters{}};
 	
@@ -400,11 +440,16 @@ std::unique_ptr<Inspection::TypeDefinition::Parameters>  Inspection::TypeDefinit
 			
 			assert(ChildElement != nullptr);
 			assert(ChildElement->GetName() == "parameter");
-			Result->Parameters.push_back(Inspection::TypeDefinition::Parameter::Load(ChildElement));
+			Result->_Parameters.push_back(Inspection::TypeDefinition::Parameter::Load(ChildElement));
 		}
 	}
 	
 	return Result;
+}
+
+const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> & Inspection::TypeDefinition::Parameters::GetParameters(void) const
+{
+	return _Parameters;
 }
 
 Inspection::TypeDefinition::Statement::Statement(void) :
@@ -608,40 +653,12 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	else if(Element->GetName() == "length-reference")
 	{
 		Result->DataType = Inspection::TypeDefinition::DataType::LengthReference;
-		
-		auto & LengthReference = Result->Data.emplace<Inspection::TypeDefinition::LengthReference>();
-		
-		assert(Element->HasAttribute("root") == true);
-		if(Element->GetAttribute("root") == "type")
-		{
-			LengthReference.Root = Inspection::TypeDefinition::LengthReference::Root::Type;
-		}
-		else
-		{
-			assert(false);
-		}
-		assert(Element->HasAttribute("name") == true);
-		if(Element->GetAttribute("name") == "consumed")
-		{
-			LengthReference.Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
-		}
-		else
-		{
-			assert(false);
-		}
+		Result->Data = Inspection::TypeDefinition::LengthReference::Load(Element);
 	}
 	else if(Element->GetName() == "parameter-reference")
 	{
 		Result->DataType = Inspection::TypeDefinition::DataType::ParameterReference;
-		
-		auto & ParameterReference = Result->Data.emplace<Inspection::TypeDefinition::ParameterReference>();
-		
-		assert((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		ParameterReference.Name = TextNode->GetText();
+		Result->Data = Inspection::TypeDefinition::ParameterReference::Load(Element);
 	}
 	else if(Element->GetName() == "parameters")
 	{

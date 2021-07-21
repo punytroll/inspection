@@ -110,7 +110,7 @@ namespace Inspection
 				Type
 			};
 		public:
-			static std::unique_ptr<Inspection::TypeDefinition::FieldReference> Load(const XML::Element * FieldReferenceElement);
+			static std::unique_ptr<Inspection::TypeDefinition::FieldReference> Load(const XML::Element * Element);
 		public:
 			Inspection::TypeDefinition::FieldReference::Root Root;
 			std::vector<std::string> Parts;
@@ -125,6 +125,8 @@ namespace Inspection
 		class LengthReference
 		{
 		public:
+			static std::unique_ptr<Inspection::TypeDefinition::LengthReference> Load(const XML::Element * Element);
+		public:
 			enum class Name
 			{
 				Consumed
@@ -134,15 +136,29 @@ namespace Inspection
 			{
 				Type
 			};
-			
+		public:
 			Inspection::TypeDefinition::LengthReference::Name Name;
 			Inspection::TypeDefinition::LengthReference::Root Root;
+		private:
+			LengthReference(void) = default;
+			LengthReference(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
+			LengthReference(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
+			Inspection::TypeDefinition::LengthReference & operator=(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
+			Inspection::TypeDefinition::LengthReference & operator=(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
 		};
 		
 		class ParameterReference
 		{
 		public:
+			static std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Load(const XML::Element * Element);
+		public:
 			std::string Name;
+		private:
+			ParameterReference(void) = default;
+			ParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
+			ParameterReference(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
+			Inspection::TypeDefinition::ParameterReference & operator=(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
+			Inspection::TypeDefinition::ParameterReference & operator=(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
 		};
 		
 		class Parameters
@@ -150,7 +166,15 @@ namespace Inspection
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Parameters> Load(const XML::Element * Element);
 		public:
-			std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> Parameters;
+			const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> & GetParameters(void) const;
+		private:
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> _Parameters;
+		private:
+			Parameters(void) = default;
+			Parameters(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
+			Parameters(Inspection::TypeDefinition::Parameters && Parameters) = delete;
+			Inspection::TypeDefinition::Parameters & operator=(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
+			Inspection::TypeDefinition::Parameters & operator=(Inspection::TypeDefinition::Parameters && Parameters) = delete;
 		};
 		
 		class TypeReference
@@ -307,7 +331,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Value> Load(const XML::Element * Element);
 		public:
 			Inspection::TypeDefinition::DataType DataType;
-			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, Inspection::TypeDefinition::LengthReference, Inspection::TypeDefinition::ParameterReference, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::unique_ptr<Inspection::TypeDefinition::TypeReference>, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::LengthReference>, std::unique_ptr<Inspection::TypeDefinition::ParameterReference>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::unique_ptr<Inspection::TypeDefinition::TypeReference>, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		private:
 			Value(void) = default;
 			Value(const Inspection::TypeDefinition::Value & Value) = delete;

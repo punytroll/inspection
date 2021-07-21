@@ -183,9 +183,9 @@ namespace Inspection
 				}
 			case Inspection::TypeDefinition::DataType::LengthReference:
 				{
-					assert(std::holds_alternative<Inspection::TypeDefinition::LengthReference>(Value.Data) == true);
+					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::LengthReference>>(Value.Data) == true);
 					
-					return ExecutionContext.CalculateLengthFromReference(std::get<Inspection::TypeDefinition::LengthReference>(Value.Data));
+					return ExecutionContext.CalculateLengthFromReference(*(std::get<std::unique_ptr<Inspection::TypeDefinition::LengthReference>>(Value.Data)));
 				}
 			case Inspection::TypeDefinition::DataType::Nothing:
 				{
@@ -193,9 +193,9 @@ namespace Inspection
 				}
 			case Inspection::TypeDefinition::DataType::ParameterReference:
 				{
-					assert(std::holds_alternative<Inspection::TypeDefinition::ParameterReference>(Value.Data) == true);
+					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Value.Data) == true);
 					
-					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, std::get<Inspection::TypeDefinition::ParameterReference>(Value.Data));
+					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Value.Data)));
 				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
@@ -485,7 +485,7 @@ namespace Inspection
 	
 	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map<std::string, std::any> & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions)
 	{
-		for(auto & Parameter : ParameterDefinitions.Parameters)
+		for(auto & Parameter : ParameterDefinitions.GetParameters())
 		{
 			switch(Parameter->Statement->Type)
 			{
@@ -516,7 +516,7 @@ namespace Inspection
 					}
 					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::ParameterReference>(Parameter->Statement->Value->Data) == true);
+						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Parameter->Statement->Value->Data) == true);
 						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
 					}
 					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
