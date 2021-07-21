@@ -122,15 +122,19 @@ namespace Inspection
 			{
 			case Inspection::TypeDefinition::Statement::Type::Cast:
 				{
-					assert(Statement.Cast != nullptr);
+					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Statement);
 					
-					return Inspection::Algorithms::GetDataFromCast<Type>(ExecutionContext, *(Statement.Cast));
+					assert(Cast != nullptr);
+					
+					return Inspection::Algorithms::GetDataFromCast<Type>(ExecutionContext, *Cast);
 				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
-					assert(Statement.Value != nullptr);
+					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Statement);
 					
-					return Inspection::Algorithms::GetDataFromValue<Type>(ExecutionContext, *(Statement.Value));
+					assert(Value != nullptr);
+					
+					return Inspection::Algorithms::GetDataFromValue<Type>(ExecutionContext, *Value);
 				}
 			default:
 				{
@@ -252,8 +256,12 @@ namespace Inspection
 			{
 				if(Tag->Statement)
 				{
-					assert((Tag->Statement->Type == Inspection::TypeDefinition::Statement::Type::Value) && (Tag->Statement->Value != nullptr));
-					Target->AddTag(Tag->Name, GetAnyFromValue(ExecutionContext, *(Tag->Statement->Value)));
+					assert(Tag->Statement->Type == Inspection::TypeDefinition::Statement::Type::Value);
+					
+					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Tag->Statement.get());
+					
+					assert(Value != nullptr);
+					Target->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
 				}
 				else
 				{
@@ -298,33 +306,43 @@ namespace Inspection
 			{
 			case Inspection::TypeDefinition::Statement::Type::Add:
 				{
-					assert(Statement.Add != nullptr);
+					auto Add = dynamic_cast<const Inspection::TypeDefinition::Add *>(&Statement);
 					
-					return Inspection::Algorithms::Add(ExecutionContext, *(Statement.Add->Summand1), *(Statement.Add->Summand2));
+					assert(Add != nullptr);
+					
+					return Inspection::Algorithms::Add(ExecutionContext, *(Add->Summand1), *(Add->Summand2));
 				}
 			case Inspection::TypeDefinition::Statement::Type::Cast:
 				{
-					assert(Statement.Cast != nullptr);
+					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Statement);
 					
-					return Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *(Statement.Cast));
+					assert(Cast != nullptr);
+					
+					return Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *Cast);
 				}
 			case Inspection::TypeDefinition::Statement::Type::Divide:
 				{
-					assert(Statement.Divide != nullptr);
+					auto Divide = dynamic_cast<const Inspection::TypeDefinition::Divide *>(&Statement);
 					
-					return Inspection::Algorithms::Divide(ExecutionContext, *(Statement.Divide->Dividend), *(Statement.Divide->Divisor));
+					assert(Divide != nullptr);
+					
+					return Inspection::Algorithms::Divide(ExecutionContext, *(Divide->Dividend), *(Divide->Divisor));
 				}
 			case Inspection::TypeDefinition::Statement::Type::Subtract:
 				{
-					assert(Statement.Subtract != nullptr);
+					auto Subtract = dynamic_cast<const Inspection::TypeDefinition::Subtract *>(&Statement);
 					
-					return Inspection::Algorithms::Subtract(ExecutionContext, *(Statement.Subtract->Minuend), *(Statement.Subtract->Subtrahend));
+					assert(Subtract != nullptr);
+					
+					return Inspection::Algorithms::Subtract(ExecutionContext, *(Subtract->Minuend), *(Subtract->Subtrahend));
 				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
-					assert(Statement.Value != nullptr);
+					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Statement);
 					
-					return Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Statement.Value));
+					assert(Value != nullptr);
+					
+					return Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value);
 				}
 			default:
 				{
@@ -430,12 +448,16 @@ namespace Inspection
 		{
 			if(Statement1.Type == Inspection::TypeDefinition::Statement::Type::Value)
 			{
-				assert(Statement1.Value != nullptr);
+				auto Value1 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Statement1);
+				
+				assert(Value1 != nullptr);
 				if(Statement2.Type == Inspection::TypeDefinition::Statement::Type::Value)
 				{
-					assert(Statement2.Value != nullptr);
+					auto Value2 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Statement2);
 					
-					return Inspection::Algorithms::Equals(ExecutionContext, *(Statement1.Value), *(Statement2.Value));
+					assert(Value2 != nullptr);
+					
+					return Inspection::Algorithms::Equals(ExecutionContext, *Value1, *Value2);
 				}
 				else
 				{
@@ -491,41 +513,45 @@ namespace Inspection
 			{
 			case Inspection::TypeDefinition::Statement::Type::Cast:
 				{
-					assert(Parameter->Statement->Cast != nullptr);
-					NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *(Parameter->Statement->Cast)));
+					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(Parameter->Statement.get());
+					
+					assert(Cast != nullptr);
+					NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *Cast));
 					
 					break;
 				}
 			case Inspection::TypeDefinition::Statement::Type::Value:
 				{
-					assert(Parameter->Statement->Value != nullptr);
-					if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::String)
+					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Parameter->Statement.get());
+					
+					assert(Value != nullptr);
+					if(Value->DataType == Inspection::TypeDefinition::DataType::String)
 					{
-						assert(std::holds_alternative<std::string>(Parameter->Statement->Value->Data) == true);
-						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
+						assert(std::holds_alternative<std::string>(Value->Data) == true);
+						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
 					}
-					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
+					else if(Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
 					{
-						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Parameter->Statement->Value->Data) == true);
-						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
+						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value->Data) == true);
+						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
 					}
-					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
+					else if(Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
 					{
-						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Parameter->Statement->Value->Data) == true);
-						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
+						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Value->Data) == true);
+						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
 					}
-					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
+					else if(Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
 					{
-						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Parameter->Statement->Value->Data) == true);
-						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
+						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Value->Data) == true);
+						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
 					}
-					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
+					else if(Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
 					{
-						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Parameter->Statement->Value->Data) == true);
+						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value->Data) == true);
 						
 						auto InnerParameters = std::unordered_map<std::string, std::any>{};
 						
-						FillNewParameters(ExecutionContext, InnerParameters, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Parameter->Statement->Value->Data)));
+						FillNewParameters(ExecutionContext, InnerParameters, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value->Data)));
 						NewParameters.emplace(Parameter->Name, InnerParameters);
 						
 						break;
@@ -1167,8 +1193,10 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 			{
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
-					assert(Statement->Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement->Equals->Statement1), *(Statement->Equals->Statement2));
+					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Statement.get());
+					
+					assert(Equals != nullptr);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Statement1), *(Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1229,8 +1257,10 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 			{
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
-					assert(Statement->Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement->Equals->Statement1), *(Statement->Equals->Statement2));
+					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Statement.get());
+					
+					assert(Equals != nullptr);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Statement1), *(Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1306,8 +1336,10 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 			{
 			case Inspection::TypeDefinition::Statement::Type::Equals:
 				{
-					assert(Statement->Equals);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Statement->Equals->Statement1), *(Statement->Equals->Statement2));
+					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Statement.get());
+					
+					assert(Equals != nullptr);
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Statement1), *(Equals->Statement2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);

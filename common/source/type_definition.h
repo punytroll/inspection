@@ -211,21 +211,16 @@ namespace Inspection
 			virtual ~Statement(void);
 		public:
 			Inspection::TypeDefinition::Statement::Type Type;
-			std::unique_ptr<Inspection::TypeDefinition::Add> Add;
-			std::unique_ptr<Inspection::TypeDefinition::Cast> Cast;
-			std::unique_ptr<Inspection::TypeDefinition::Divide> Divide;
-			std::unique_ptr<Inspection::TypeDefinition::Equals> Equals;
-			std::unique_ptr<Inspection::TypeDefinition::Subtract> Subtract;
-			std::unique_ptr<Inspection::TypeDefinition::Value> Value;
-		private:
+		protected:
 			Statement(void);
+		private:
 			Statement(const Inspection::TypeDefinition::Statement & Statement) = delete;
 			Statement(Inspection::TypeDefinition::Statement && Statement) = delete;
 			Inspection::TypeDefinition::Statement & operator=(const Inspection::TypeDefinition::Statement & Statement) = delete;
 			Inspection::TypeDefinition::Statement & operator=(Inspection::TypeDefinition::Statement && Statement) = delete;
 		};
 		
-		class Add
+		class Add : public Inspection::TypeDefinition::Statement
 		{
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Add> Load(const XML::Element * Element);
@@ -242,7 +237,7 @@ namespace Inspection
 			Inspection::TypeDefinition::Add & operator=(Inspection::TypeDefinition::Add && Add) = delete;
 		};
 		
-		class Cast
+		class Cast : public Inspection::TypeDefinition::Statement
 		{
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Cast> Load(const XML::Element * Element);
@@ -259,7 +254,7 @@ namespace Inspection
 			Inspection::TypeDefinition::Cast & operator=(Inspection::TypeDefinition::Cast && Cast) = delete;
 		};
 		
-		class Divide
+		class Divide : public Inspection::TypeDefinition::Statement
 		{
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Divide> Load(const XML::Element * Element);
@@ -276,7 +271,7 @@ namespace Inspection
 			Inspection::TypeDefinition::Divide & operator=(Inspection::TypeDefinition::Divide && Divide) = delete;
 		};
 		
-		class Equals
+		class Equals : public Inspection::TypeDefinition::Statement
 		{
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Equals> Load(const XML::Element * Element);
@@ -308,7 +303,7 @@ namespace Inspection
 			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
 		};
 		
-		class Subtract
+		class Subtract : public Inspection::TypeDefinition::Statement
 		{
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Subtract> Load(const XML::Element * Element);
@@ -325,7 +320,7 @@ namespace Inspection
 			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
 		};
 		
-		class Value
+		class Value : public Inspection::TypeDefinition::Statement
 		{
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Value> Load(const XML::Element * Element);

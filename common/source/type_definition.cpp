@@ -465,52 +465,52 @@ std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinitio
 {
 	assert(Element != nullptr);
 	
-	auto Result = std::unique_ptr<Inspection::TypeDefinition::Statement>{new Inspection::TypeDefinition::Statement{}};
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Statement>{};
 	
 	if(Element->GetName() == "add")
 	{
+		Result = Inspection::TypeDefinition::Add::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Add;
-		Result->Add = Inspection::TypeDefinition::Add::Load(Element);
 	}
 	else if(Element->GetName() == "divide")
 	{
+		Result = Inspection::TypeDefinition::Divide::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Divide;
-		Result->Divide = Inspection::TypeDefinition::Divide::Load(Element);
 	}
 	else if(Element->GetName() == "equals")
 	{
+		Result = Inspection::TypeDefinition::Equals::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Equals;
-		Result->Equals = Inspection::TypeDefinition::Equals::Load(Element);
 	}
 	else if(Element->GetName() == "subtract")
 	{
+		Result = Inspection::TypeDefinition::Subtract::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Subtract;
-		Result->Subtract = Inspection::TypeDefinition::Subtract::Load(Element);
 	}
 	else if((Element->GetName() == "length") && (XML::HasOneChildElement(Element) == true))
 	{
+		Result = Inspection::TypeDefinition::Cast::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = Inspection::TypeDefinition::Cast::Load(Element);
 	}
 	else if((Element->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(Element) == true))
 	{
+		Result = Inspection::TypeDefinition::Cast::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = Inspection::TypeDefinition::Cast::Load(Element);
 	}
 	else if((Element->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(Element) == true))
 	{
+		Result = Inspection::TypeDefinition::Cast::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = Inspection::TypeDefinition::Cast::Load(Element);
 	}
 	else if((Element->GetName() == "single-precision-real") && (XML::HasOneChildElement(Element) == true))
 	{
+		Result = Inspection::TypeDefinition::Cast::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = Inspection::TypeDefinition::Cast::Load(Element);
 	}
 	else
 	{
+		Result = Inspection::TypeDefinition::Value::Load(Element);
 		Result->Type = Inspection::TypeDefinition::Statement::Type::Value;
-		Result->Value = Inspection::TypeDefinition::Value::Load(Element);
 	}
 	assert(Result->Type != Inspection::TypeDefinition::Statement::Type::Unknown);
 	
