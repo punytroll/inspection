@@ -41,12 +41,12 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 			assert(ChildElement != nullptr);
 			if(First == true)
 			{
-				Result->Summand1 = Inspection::TypeDefinition::Statement::Load(ChildElement);
+				Result->Summand1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 				First = false;
 			}
 			else
 			{
-				Result->Summand2 = Inspection::TypeDefinition::Statement::Load(ChildElement);
+				Result->Summand2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
 	}
@@ -74,13 +74,13 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
 			
 			Result->DataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetName());
-			Result->Statement = Inspection::TypeDefinition::Statement::Load(ChildElement);
+			Result->Expression = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			
 			break;
 		}
 	}
 	assert(Result->DataType != Inspection::TypeDefinition::DataType::Unknown);
-	assert(Result->Statement != nullptr);
+	assert(Result->Expression != nullptr);
 	
 	return Result;
 }
@@ -156,12 +156,12 @@ std::unique_ptr<Inspection::TypeDefinition::Divide> Inspection::TypeDefinition::
 			
 			if(First == true)
 			{
-				Result->Dividend = Inspection::TypeDefinition::Statement::Load(ChildElement);
+				Result->Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
 				First = false;
 			}
 			else
 			{
-				Result->Divisor = Inspection::TypeDefinition::Statement::Load(ChildElement);
+				Result->Divisor = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
 	}
@@ -256,12 +256,12 @@ std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::
 			
 			if(First == true)
 			{
-				Result->Statement1 = Inspection::TypeDefinition::Statement::Load(ChildElement);
+				Result->Expression1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 				First = false;
 			}
 			else
 			{
-				Result->Statement2 = Inspection::TypeDefinition::Statement::Load(ChildElement);
+				Result->Expression2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
 	}
@@ -361,11 +361,11 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 			assert(ChildElement != nullptr);
 			if(ChildElement->GetName() == "bytes")
 			{
-				Result->Bytes = Inspection::TypeDefinition::Statement::LoadFromWithin(ChildElement);
+				Result->Bytes = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
 			}
 			else if(ChildElement->GetName() == "bits")
 			{
-				Result->Bits = Inspection::TypeDefinition::Statement::LoadFromWithin(ChildElement);
+				Result->Bits = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
 			}
 			else
 			{
@@ -409,7 +409,7 @@ std::unique_ptr<Inspection::TypeDefinition::Parameter> Inspection::TypeDefinitio
 	
 	assert(Element->HasAttribute("name") == true);
 	Result->Name = Element->GetAttribute("name");
-	Result->Statement = Inspection::TypeDefinition::Statement::LoadFromWithin(Element);
+	Result->Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
 	
 	return Result;
 }
@@ -452,74 +452,74 @@ const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> & Insp
 	return _Parameters;
 }
 
-Inspection::TypeDefinition::Statement::Statement(void) :
-	Type{Inspection::TypeDefinition::Statement::Type::Unknown}
+Inspection::TypeDefinition::Expression::Expression(void) :
+	Type{Inspection::TypeDefinition::Expression::Type::Unknown}
 {
 }
 
-Inspection::TypeDefinition::Statement::~Statement(void)
+Inspection::TypeDefinition::Expression::~Expression(void)
 {
 }
 
-std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinition::Statement::Load(const XML::Element * Element)
+std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::Load(const XML::Element * Element)
 {
 	assert(Element != nullptr);
 	
-	auto Result = std::unique_ptr<Inspection::TypeDefinition::Statement>{};
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Expression>{};
 	
 	if(Element->GetName() == "add")
 	{
 		Result = Inspection::TypeDefinition::Add::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Add;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Add;
 	}
 	else if(Element->GetName() == "divide")
 	{
 		Result = Inspection::TypeDefinition::Divide::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Divide;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Divide;
 	}
 	else if(Element->GetName() == "equals")
 	{
 		Result = Inspection::TypeDefinition::Equals::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Equals;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Equals;
 	}
 	else if(Element->GetName() == "subtract")
 	{
 		Result = Inspection::TypeDefinition::Subtract::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Subtract;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Subtract;
 	}
 	else if((Element->GetName() == "length") && (XML::HasOneChildElement(Element) == true))
 	{
 		Result = Inspection::TypeDefinition::Cast::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
 	}
 	else if((Element->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(Element) == true))
 	{
 		Result = Inspection::TypeDefinition::Cast::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
 	}
 	else if((Element->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(Element) == true))
 	{
 		Result = Inspection::TypeDefinition::Cast::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
 	}
 	else if((Element->GetName() == "single-precision-real") && (XML::HasOneChildElement(Element) == true))
 	{
 		Result = Inspection::TypeDefinition::Cast::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
 	}
 	else
 	{
 		Result = Inspection::TypeDefinition::Value::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Value;
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Value;
 	}
-	assert(Result->Type != Inspection::TypeDefinition::Statement::Type::Unknown);
+	assert(Result->Type != Inspection::TypeDefinition::Expression::Type::Unknown);
 	
 	return Result;
 }
 
-std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinition::Statement::LoadFromWithin(const XML::Element * Element)
+std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::LoadFromWithin(const XML::Element * Element)
 {
-	auto StatementElement = static_cast<const XML::Element *>(nullptr);
+	auto ExpressionElement = static_cast<const XML::Element *>(nullptr);
 	
 	if(Element->GetChilds().size() > 0)
 	{
@@ -527,18 +527,18 @@ std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinitio
 		{
 			if(ChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				StatementElement = dynamic_cast<const XML::Element *>(ChildNode);
+				ExpressionElement = dynamic_cast<const XML::Element *>(ChildNode);
 				
 				break;
 			}
 		}
-		if(StatementElement == nullptr)
+		if(ExpressionElement == nullptr)
 		{
 			assert(false);
 		}
 	}
 	
-	return Inspection::TypeDefinition::Statement::Load(StatementElement);
+	return Inspection::TypeDefinition::Expression::Load(ExpressionElement);
 }
 
 Inspection::TypeDefinition::Subtract::~Subtract(void)
@@ -559,12 +559,12 @@ std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition
 			assert(ChildElement != nullptr);
 			if(First == true)
 			{
-				Result->Minuend = Inspection::TypeDefinition::Statement::Load(ChildElement);
+				Result->Minuend = Inspection::TypeDefinition::Expression::Load(ChildElement);
 				First = false;
 			}
 			else
 			{
-				Result->Subtrahend = Inspection::TypeDefinition::Statement::Load(ChildElement);
+				Result->Subtrahend = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
 	}
@@ -580,7 +580,7 @@ std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Tag
 	Result->Name = Element->GetAttribute("name");
 	if(XML::HasChildElements(Element) == true)
 	{
-		Result->Statement = Inspection::TypeDefinition::Statement::LoadFromWithin(Element);
+		Result->Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
 	}
 	
 	return Result;

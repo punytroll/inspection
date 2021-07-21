@@ -26,12 +26,12 @@ namespace Inspection
 	
 	namespace Algorithms
 	{
-		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Summand1, const Inspection::TypeDefinition::Statement & Summand2);
-		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor);
+		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Summand1, const Inspection::TypeDefinition::Expression & Summand2);
+		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Dividend, const Inspection::TypeDefinition::Expression & Divisor);
 		std::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast);
-		std::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement);
+		std::any GetAnyFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression);
 		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
-		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend);
+		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Minuend, const Inspection::TypeDefinition::Expression & Subtrahend);
 		
 		template<typename Type>
 		Type Cast(const std::any & Any)
@@ -66,7 +66,7 @@ namespace Inspection
 		template<typename Type>
 		Type GetDataFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
 		{
-			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Cast.Statement)));
+			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Cast.Expression)));
 		}
 		
 		template<typename Type>
@@ -116,21 +116,21 @@ namespace Inspection
 		}
 		
 		template<typename Type>
-		Type GetDataFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement)
+		Type GetDataFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression)
 		{
-			switch(Statement.Type)
+			switch(Expression.Type)
 			{
-			case Inspection::TypeDefinition::Statement::Type::Cast:
+			case Inspection::TypeDefinition::Expression::Type::Cast:
 				{
-					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Statement);
+					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Expression);
 					
 					assert(Cast != nullptr);
 					
 					return Inspection::Algorithms::GetDataFromCast<Type>(ExecutionContext, *Cast);
 				}
-			case Inspection::TypeDefinition::Statement::Type::Value:
+			case Inspection::TypeDefinition::Expression::Type::Value:
 				{
-					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Statement);
+					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression);
 					
 					assert(Value != nullptr);
 					
@@ -183,7 +183,7 @@ namespace Inspection
 				{
 					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data) == true);
 					
-					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bytes)), Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bits))};
+					return Inspection::Length{Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bytes)), Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bits))};
 				}
 			case Inspection::TypeDefinition::DataType::LengthReference:
 				{
@@ -254,11 +254,11 @@ namespace Inspection
 		{
 			for(auto & Tag : Tags)
 			{
-				if(Tag->Statement)
+				if(Tag->Expression)
 				{
-					assert(Tag->Statement->Type == Inspection::TypeDefinition::Statement::Type::Value);
+					assert(Tag->Expression->Type == Inspection::TypeDefinition::Expression::Type::Value);
 					
-					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Tag->Statement.get());
+					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Tag->Expression.get());
 					
 					assert(Value != nullptr);
 					Target->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
@@ -300,45 +300,45 @@ namespace Inspection
 			return Result;
 		}
 		
-		std::any GetAnyFromStatement(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement)
+		std::any GetAnyFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression)
 		{
-			switch(Statement.Type)
+			switch(Expression.Type)
 			{
-			case Inspection::TypeDefinition::Statement::Type::Add:
+			case Inspection::TypeDefinition::Expression::Type::Add:
 				{
-					auto Add = dynamic_cast<const Inspection::TypeDefinition::Add *>(&Statement);
+					auto Add = dynamic_cast<const Inspection::TypeDefinition::Add *>(&Expression);
 					
 					assert(Add != nullptr);
 					
 					return Inspection::Algorithms::Add(ExecutionContext, *(Add->Summand1), *(Add->Summand2));
 				}
-			case Inspection::TypeDefinition::Statement::Type::Cast:
+			case Inspection::TypeDefinition::Expression::Type::Cast:
 				{
-					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Statement);
+					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Expression);
 					
 					assert(Cast != nullptr);
 					
 					return Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *Cast);
 				}
-			case Inspection::TypeDefinition::Statement::Type::Divide:
+			case Inspection::TypeDefinition::Expression::Type::Divide:
 				{
-					auto Divide = dynamic_cast<const Inspection::TypeDefinition::Divide *>(&Statement);
+					auto Divide = dynamic_cast<const Inspection::TypeDefinition::Divide *>(&Expression);
 					
 					assert(Divide != nullptr);
 					
 					return Inspection::Algorithms::Divide(ExecutionContext, *(Divide->Dividend), *(Divide->Divisor));
 				}
-			case Inspection::TypeDefinition::Statement::Type::Subtract:
+			case Inspection::TypeDefinition::Expression::Type::Subtract:
 				{
-					auto Subtract = dynamic_cast<const Inspection::TypeDefinition::Subtract *>(&Statement);
+					auto Subtract = dynamic_cast<const Inspection::TypeDefinition::Subtract *>(&Expression);
 					
 					assert(Subtract != nullptr);
 					
 					return Inspection::Algorithms::Subtract(ExecutionContext, *(Subtract->Minuend), *(Subtract->Subtrahend));
 				}
-			case Inspection::TypeDefinition::Statement::Type::Value:
+			case Inspection::TypeDefinition::Expression::Type::Value:
 				{
-					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Statement);
+					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression);
 					
 					assert(Value != nullptr);
 					
@@ -357,7 +357,7 @@ namespace Inspection
 			{
 			case Inspection::TypeDefinition::DataType::Length:
 				{
-					auto Any = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Cast.Statement));
+					auto Any = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Cast.Expression));
 					
 					assert(Any.type() == typeid(Inspection::Length));
 					
@@ -365,7 +365,7 @@ namespace Inspection
 				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
-					return Inspection::Algorithms::GetDataFromCast< float >(ExecutionContext, Cast);
+					return Inspection::Algorithms::GetDataFromCast<float>(ExecutionContext, Cast);
 				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
 				{
@@ -382,10 +382,10 @@ namespace Inspection
 			}
 		}
 		
-		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Summand1, const Inspection::TypeDefinition::Statement & Summand2)
+		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Summand1, const Inspection::TypeDefinition::Expression & Summand2)
 		{
-			auto AnySummand1 = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Summand1);
-			auto AnySummand2 = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Summand2);
+			auto AnySummand1 = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Summand1);
+			auto AnySummand2 = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Summand2);
 			
 			if((AnySummand1.type() == typeid(std::uint8_t)) && (AnySummand2.type() == typeid(std::uint8_t)))
 			{
@@ -444,16 +444,16 @@ namespace Inspection
 			return false;
 		}
 		
-		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Statement1, const Inspection::TypeDefinition::Statement & Statement2)
+		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression1, const Inspection::TypeDefinition::Expression & Expression2)
 		{
-			if(Statement1.Type == Inspection::TypeDefinition::Statement::Type::Value)
+			if(Expression1.Type == Inspection::TypeDefinition::Expression::Type::Value)
 			{
-				auto Value1 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Statement1);
+				auto Value1 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression1);
 				
 				assert(Value1 != nullptr);
-				if(Statement2.Type == Inspection::TypeDefinition::Statement::Type::Value)
+				if(Expression2.Type == Inspection::TypeDefinition::Expression::Type::Value)
 				{
-					auto Value2 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Statement2);
+					auto Value2 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression2);
 					
 					assert(Value2 != nullptr);
 					
@@ -470,10 +470,10 @@ namespace Inspection
 			}
 		}
 		
-		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Dividend, const Inspection::TypeDefinition::Statement & Divisor)
+		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Dividend, const Inspection::TypeDefinition::Expression & Divisor)
 		{
-			auto AnyDivident = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Dividend);
-			auto AnyDivisor = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Divisor);
+			auto AnyDivident = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Dividend);
+			auto AnyDivisor = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Divisor);
 			
 			if((AnyDivident.type() == typeid(float)) && (AnyDivisor.type() == typeid(float)))
 			{
@@ -487,10 +487,10 @@ namespace Inspection
 			return nullptr;
 		}
 		
-		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Statement & Minuend, const Inspection::TypeDefinition::Statement & Subtrahend)
+		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Minuend, const Inspection::TypeDefinition::Expression & Subtrahend)
 		{
-			auto AnyMinuend = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Minuend);
-			auto AnySubtrahend = Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, Subtrahend);
+			auto AnyMinuend = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Minuend);
+			auto AnySubtrahend = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Subtrahend);
 			
 			if((AnyMinuend.type() == typeid(Inspection::Length)) && (AnySubtrahend.type() == typeid(Inspection::Length)))
 			{
@@ -509,20 +509,20 @@ namespace Inspection
 	{
 		for(auto & Parameter : ParameterDefinitions.GetParameters())
 		{
-			switch(Parameter->Statement->Type)
+			switch(Parameter->Expression->Type)
 			{
-			case Inspection::TypeDefinition::Statement::Type::Cast:
+			case Inspection::TypeDefinition::Expression::Type::Cast:
 				{
-					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(Parameter->Statement.get());
+					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(Parameter->Expression.get());
 					
 					assert(Cast != nullptr);
 					NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *Cast));
 					
 					break;
 				}
-			case Inspection::TypeDefinition::Statement::Type::Value:
+			case Inspection::TypeDefinition::Expression::Type::Value:
 				{
-					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Parameter->Statement.get());
+					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Parameter->Expression.get());
 					
 					assert(Value != nullptr);
 					if(Value->DataType == Inspection::TypeDefinition::DataType::String)
@@ -611,7 +611,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			
 			if(_Part->Length != nullptr)
 			{
-				PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(_Part->Length))));
+				PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(_Part->Length))));
 			}
 			else
 			{
@@ -725,7 +725,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 		
 		if(AlternativePart.Length != nullptr)
 		{
-			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(AlternativePart.Length))));
+			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(AlternativePart.Length))));
 		}
 		else
 		{
@@ -951,7 +951,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			assert(Array.Array->ElementType != nullptr);
 			
 			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
-			auto NumberOfRequiredElements = Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(Array.Array->IterateNumberOfElements));
+			auto NumberOfRequiredElements = Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(Array.Array->IterateNumberOfElements));
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while(true)
@@ -1083,7 +1083,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		
 		if(FieldPart.Length != nullptr)
 		{
-			FieldPartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(FieldPart.Length))));
+			FieldPartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(FieldPart.Length))));
 		}
 		else
 		{
@@ -1158,9 +1158,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	{
 		for(auto & Tag : Field.Tags)
 		{
-			if(Tag->Statement)
+			if(Tag->Expression)
 			{
-				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag->Statement)));
+				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Tag->Expression)));
 			}
 			else
 			{
@@ -1187,16 +1187,16 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	// verification
 	if(Continue == true)
 	{
-		for(auto & Statement : Field.Verifications)
+		for(auto & Expression : Field.Verifications)
 		{
-			switch(Statement->Type)
+			switch(Expression->Type)
 			{
-			case Inspection::TypeDefinition::Statement::Type::Equals:
+			case Inspection::TypeDefinition::Expression::Type::Equals:
 				{
-					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Statement.get());
+					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
 					
 					assert(Equals != nullptr);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Statement1), *(Equals->Statement2));
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Expression1), *(Equals->Expression2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1251,16 +1251,16 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	// verification
 	if(Continue == true)
 	{
-		for(auto & Statement : Fields.Verifications)
+		for(auto & Expression : Fields.Verifications)
 		{
-			switch(Statement->Type)
+			switch(Expression->Type)
 			{
-			case Inspection::TypeDefinition::Statement::Type::Equals:
+			case Inspection::TypeDefinition::Expression::Type::Equals:
 				{
-					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Statement.get());
+					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
 					
 					assert(Equals != nullptr);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Statement1), *(Equals->Statement2));
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Expression1), *(Equals->Expression2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1301,9 +1301,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	{
 		for(auto & Tag : Forward.Tags)
 		{
-			if(Tag->Statement)
+			if(Tag->Expression)
 			{
-				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag->Statement)));
+				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Tag->Expression)));
 			}
 			else
 			{
@@ -1330,16 +1330,16 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	// verification
 	if(Continue == true)
 	{
-		for(auto & Statement : Forward.Verifications)
+		for(auto & Expression : Forward.Verifications)
 		{
-			switch(Statement->Type)
+			switch(Expression->Type)
 			{
-			case Inspection::TypeDefinition::Statement::Type::Equals:
+			case Inspection::TypeDefinition::Expression::Type::Equals:
 				{
-					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Statement.get());
+					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
 					
 					assert(Equals != nullptr);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Statement1), *(Equals->Statement2));
+					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Expression1), *(Equals->Expression2));
 					if(Continue == false)
 					{
 						Result->GetValue()->AddTag("error", "The value failed to verify."s);
@@ -1377,7 +1377,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 		
 		if(SequencePart.Length != nullptr)
 		{
-			SequencePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(SequencePart.Length))));
+			SequencePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(SequencePart.Length))));
 		}
 		else
 		{
@@ -1453,9 +1453,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	{
 		for(auto & Tag : Sequence.Tags)
 		{
-			if(Tag->Statement)
+			if(Tag->Expression)
 			{
-				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromStatement(ExecutionContext, *(Tag->Statement)));
+				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Tag->Expression)));
 			}
 			else
 			{
@@ -1590,7 +1590,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			}
 			else if(PartChildElement->GetName() == "length")
 			{
-				Part.Length = Inspection::TypeDefinition::Statement::Load(PartChildElement);
+				Part.Length = Inspection::TypeDefinition::Expression::Load(PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "parameters")
 			{
@@ -1603,7 +1603,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				{
 					if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
 					{
-						Part.Verifications.push_back(Inspection::TypeDefinition::Statement::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
+						Part.Verifications.push_back(Inspection::TypeDefinition::Expression::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
 					}
 				}
 			}
@@ -1654,7 +1654,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				else if(PartChildElement->GetAttribute("type") == "number-of-elements")
 				{
 					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
-					Part.Array->IterateNumberOfElements = Inspection::TypeDefinition::Statement::LoadFromWithin(PartChildElement);
+					Part.Array->IterateNumberOfElements = Inspection::TypeDefinition::Expression::LoadFromWithin(PartChildElement);
 				}
 				else if(PartChildElement->GetAttribute("type") == "until-failure-or-length")
 				{
