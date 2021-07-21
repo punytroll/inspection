@@ -231,9 +231,9 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 	while(PartIterator != std::end(FieldReference.Parts))
 	{
 		// maybe, the field is already in the result
-		if(Result->HasField(PartIterator->FieldName) == true)
+		if(Result->HasField(*PartIterator) == true)
 		{
-			Result = Result->GetField(PartIterator->FieldName);
+			Result = Result->GetField(*PartIterator);
 			++PartIterator;
 		}
 		// if not, the field might be in the current stack
@@ -257,9 +257,9 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 				}
 			case Inspection::TypeDefinition::Part::Type::Field:
 				{
-					if(Result->HasField(PartIterator->FieldName) == true)
+					if(Result->HasField(*PartIterator) == true)
 					{
-						Result = Result->GetField(PartIterator->FieldName);
+						Result = Result->GetField(*PartIterator);
 						++PartIterator;
 					}
 					
@@ -268,9 +268,9 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 			case Inspection::TypeDefinition::Part::Type::Fields:
 				{
 					// fields are flattened onto the parent, behaving just like a sequence
-					if(Result->HasField(PartIterator->FieldName) == true)
+					if(Result->HasField(*PartIterator) == true)
 					{
-						Result = Result->GetField(PartIterator->FieldName);
+						Result = Result->GetField(*PartIterator);
 						++PartIterator;
 					}
 					
@@ -284,9 +284,9 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 				}
 			case Inspection::TypeDefinition::Part::Type::Sequence:
 				{
-					if(Result->HasField(PartIterator->FieldName) == true)
+					if(Result->HasField(*PartIterator) == true)
 					{
-						Result = Result->GetField(PartIterator->FieldName);
+						Result = Result->GetField(*PartIterator);
 						++PartIterator;
 					}
 					

@@ -76,9 +76,9 @@ namespace Inspection
 			
 			if(Value.DataType == Inspection::TypeDefinition::DataType::DataReference)
 			{
-				assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(Value.Data) == true);
+				assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data) == true);
 				
-				auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, std::get<Inspection::TypeDefinition::DataReference>(Value.Data));
+				auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data)));
 				
 				if(Any.type() == typeid(std::uint8_t))
 				{
@@ -165,9 +165,9 @@ namespace Inspection
 				}
 			case Inspection::TypeDefinition::DataType::DataReference:
 				{
-					assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(Value.Data) == true);
+					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data) == true);
 					
-					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, std::get<Inspection::TypeDefinition::DataReference>(Value.Data));
+					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data)));
 				}
 			case Inspection::TypeDefinition::DataType::GUID:
 				{
@@ -177,9 +177,9 @@ namespace Inspection
 				}
 			case Inspection::TypeDefinition::DataType::Length:
 				{
-					assert(std::holds_alternative<Inspection::TypeDefinition::Length>(Value.Data) == true);
+					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data) == true);
 					
-					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(std::get<Inspection::TypeDefinition::Length>(Value.Data).Bytes)), Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(std::get<Inspection::TypeDefinition::Length>(Value.Data).Bits))};
+					return Inspection::Length{Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bytes)), Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bits))};
 				}
 			case Inspection::TypeDefinition::DataType::LengthReference:
 				{
@@ -211,9 +211,9 @@ namespace Inspection
 				}
 			case Inspection::TypeDefinition::DataType::TypeReference:
 				{
-					assert(std::holds_alternative<Inspection::TypeDefinition::TypeReference>(Value.Data) == true);
+					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Value.Data) == true);
 					
-					return Inspection::g_TypeRepository.GetType(std::get<Inspection::TypeDefinition::TypeReference>(Value.Data).Parts);
+					return Inspection::g_TypeRepository.GetType(std::get<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Value.Data)->Parts);
 				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
 				{
@@ -506,12 +506,12 @@ namespace Inspection
 					}
 					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::DataReference>(Parameter->Statement->Value->Data) == true);
+						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Parameter->Statement->Value->Data) == true);
 						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
 					}
 					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
 					{
-						assert(std::holds_alternative<Inspection::TypeDefinition::TypeReference>(Parameter->Statement->Value->Data) == true);
+						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Parameter->Statement->Value->Data) == true);
 						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *(Parameter->Statement->Value)));
 					}
 					else if(Parameter->Statement->Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
@@ -816,8 +816,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
 			}
+			assert(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
+			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -877,8 +878,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
 			}
+			assert(Array.Array->IterateForEachField != nullptr);
 			
-			auto IterateField = ExecutionContext.GetFieldFromFieldReference(Array.Array->IterateForEachField.value());
+			auto IterateField = ExecutionContext.GetFieldFromFieldReference(*(Array.Array->IterateForEachField));
 			
 			assert(IterateField != nullptr);
 			
@@ -889,8 +891,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 				ElementProperties.emplace_back(std::any_cast<const Inspection::Length &>(Field->GetTag("position")->GetData()), std::any_cast<const Inspection::Length &>(Field->GetTag("length")->GetData()));
 			}
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
+			assert(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
+			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
 			auto NumberOfAppendedElements = static_cast<std::uint64_t>(0);
 			
 			for(auto ElementPropertiesIndex = static_cast<std::uint64_t>(0); (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
@@ -919,9 +922,10 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
 			}
+			assert(Array.Array->ElementType != nullptr);
 			
+			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
 			auto NumberOfRequiredElements = Inspection::Algorithms::GetDataFromStatement<std::uint64_t>(ExecutionContext, *(Array.Array->IterateNumberOfElements));
-			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while(true)
@@ -971,8 +975,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			{
 				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
 			}
+			assert(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType.Parts);
+			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -1142,7 +1147,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	{
 		if(Field.Interpretation)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Field.Interpretation.value(), Result->GetValue());
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, *(Field.Interpretation), Result->GetValue());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1193,7 +1198,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	auto Continue = true;
 	
 	ExecutionContext.Push(Fields, *Result, Reader, Parameters);
-	assert(Fields.TypeReference.has_value() == true);
+	assert(Fields.TypeReference != nullptr);
 	
 	auto FieldsResult = Inspection::g_TypeRepository.GetType(Fields.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
 	
@@ -1204,7 +1209,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	{
 		if(Fields.Interpretation)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Fields.Interpretation.value(), Result->GetValue());
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, *(Fields.Interpretation), Result->GetValue());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1255,7 +1260,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	auto Continue = true;
 	
 	ExecutionContext.Push(Forward, *Result, Reader, Parameters);
-	assert(Forward.TypeReference.has_value() == true);
+	assert(Forward.TypeReference != nullptr);
 	
 	auto ForwardResult = Inspection::g_TypeRepository.GetType(Forward.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
 	
@@ -1281,7 +1286,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	{
 		if(Forward.Interpretation)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, Forward.Interpretation.value(), Result->GetValue());
+			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, *(Forward.Interpretation), Result->GetValue());
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1472,7 +1477,7 @@ Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretat
 		{
 			assert(Interpretation.ApplyEnumeration.has_value() == true);
 			
-			auto EvaluationResult = _ApplyEnumeration(ExecutionContext, Interpretation.ApplyEnumeration->Enumeration, Target);
+			auto EvaluationResult = _ApplyEnumeration(ExecutionContext, *(Interpretation.ApplyEnumeration->Enumeration), Target);
 			
 			if(EvaluationResult.AbortEvaluation)
 			{
@@ -1498,308 +1503,6 @@ void Inspection::TypeDefinition::Type::Load(std::istream & InputStream)
 	assert(DocumentElement != nullptr);
 	assert(DocumentElement->GetName() == "type");
 	_LoadType(*this, DocumentElement);
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Type::_LoadAdd(const XML::Element * AddElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Add>();
-	auto First = true;
-	
-	for(auto AddChildNode : AddElement->GetChilds())
-	{
-		if(AddChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto AddChildElement = dynamic_cast<const XML::Element *>(AddChildNode);
-			
-			assert(AddChildElement != nullptr);
-			if(First == true)
-			{
-				Result->Summand1 = _LoadStatement(AddChildElement);
-				First = false;
-			}
-			else
-			{
-				Result->Summand2 = _LoadStatement(AddChildElement);
-			}
-		}
-	}
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Type::_LoadCast(const XML::Element * CastElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Cast>();
-	
-	for(auto CastChildNode : CastElement->GetChilds())
-	{
-		if(CastChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto CastChildElement = dynamic_cast<const XML::Element *>(CastChildNode);
-			
-			Result->DataType = Inspection::TypeDefinition::GetDataTypeFromString(CastElement->GetName());
-			Result->Statement = _LoadStatement(CastChildElement);
-			
-			break;
-		}
-	}
-	assert(Result->DataType != Inspection::TypeDefinition::DataType::Unknown);
-	assert(Result->Statement != nullptr);
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Divide> Inspection::TypeDefinition::Type::_LoadDivide(const XML::Element * DivideElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Divide>();
-	auto First = true;
-	
-	for(auto DivideChildNode : DivideElement->GetChilds())
-	{
-		if(DivideChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto DivideChildElement = dynamic_cast<const XML::Element *>(DivideChildNode);
-			
-			if(First == true)
-			{
-				Result->Dividend = _LoadStatement(DivideChildElement);
-				First = false;
-			}
-			else
-			{
-				Result->Divisor = _LoadStatement(DivideChildElement);
-			}
-		}
-	}
-	
-	return Result;
-}
-
-void Inspection::TypeDefinition::Type::_LoadInterpretation(Inspection::TypeDefinition::Interpretation & Interpretation, const XML::Element * InterpretationElement)
-{
-	assert(InterpretationElement->GetName() == "interpretation");
-	for(auto InterpretationChildNode : InterpretationElement->GetChilds())
-	{
-		if(InterpretationChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto InterpretationChildElement = dynamic_cast<const XML::Element *>(InterpretationChildNode);
-			
-			if(InterpretationChildElement->GetName() == "apply-enumeration")
-			{
-				Interpretation.Type = Inspection::TypeDefinition::Interpretation::Type::ApplyEnumeration;
-				Interpretation.ApplyEnumeration.emplace();
-				for(auto InterpretationApplyEnumerationChildNode : InterpretationChildElement->GetChilds())
-				{
-					if(InterpretationApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto InterpretationApplyEnumerationChildElement = dynamic_cast<const XML::Element *>(InterpretationApplyEnumerationChildNode);
-						
-						if(InterpretationApplyEnumerationChildElement->GetName() == "enumeration")
-						{
-							_LoadEnumeration(Interpretation.ApplyEnumeration->Enumeration, InterpretationApplyEnumerationChildElement);
-						}
-						else
-						{
-							throw std::domain_error{"interpretation/apply-enumeration/" + InterpretationApplyEnumerationChildElement->GetName() + " not allowed."};
-						}
-					}
-				}
-			}
-			else
-			{
-				throw std::domain_error{"interpretation/" + InterpretationChildElement->GetName() + " not allowed."};
-			}
-		}
-	}
-}
-
-void Inspection::TypeDefinition::Type::_LoadEnumeration(Inspection::TypeDefinition::Enumeration & Enumeration, const XML::Element * EnumerationElement)
-{
-	assert(EnumerationElement != nullptr);
-	assert(EnumerationElement->GetName() == "enumeration");
-	Enumeration.BaseDataType = Inspection::TypeDefinition::GetDataTypeFromString(EnumerationElement->GetAttribute("base-data-type"));
-	for(auto EnumerationChildNode : EnumerationElement->GetChilds())
-	{
-		if(EnumerationChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto EnumerationChildElement = dynamic_cast<const XML::Element *>(EnumerationChildNode);
-			
-			if(EnumerationChildElement->GetName() == "element")
-			{
-				Enumeration.Elements.emplace_back();
-				
-				auto & Element = Enumeration.Elements.back();
-				
-				assert(EnumerationChildElement->HasAttribute("base-value") == true);
-				Element.BaseValue = EnumerationChildElement->GetAttribute("base-value");
-				assert(EnumerationChildElement->HasAttribute("valid") == true);
-				Element.Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
-				for(auto EnumerationElementChildNode : EnumerationChildElement->GetChilds())
-				{
-					if(EnumerationElementChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto EnumerationElementChildElement = dynamic_cast<const XML::Element *>(EnumerationElementChildNode);
-						
-						if(EnumerationElementChildElement->GetName() == "tag")
-						{
-							Element.Tags.push_back(_LoadTag(EnumerationElementChildElement));
-						}
-						else
-						{
-							throw std::domain_error{EnumerationElementChildElement->GetName()};
-						}
-					}
-				}
-			}
-			else if(EnumerationChildElement->GetName() == "fallback-element")
-			{
-				assert(!Enumeration.FallbackElement);
-				Enumeration.FallbackElement.emplace();
-				Enumeration.FallbackElement->Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
-				for(auto EnumerationFallbackElementChildNode : EnumerationChildElement->GetChilds())
-				{
-					if(EnumerationFallbackElementChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto EnumerationFallbackElementChildElement = dynamic_cast<const XML::Element *>(EnumerationFallbackElementChildNode);
-						
-						if(EnumerationFallbackElementChildElement->GetName() == "tag")
-						{
-							Enumeration.FallbackElement->Tags.push_back(_LoadTag(EnumerationFallbackElementChildElement));
-						}
-						else
-						{
-							throw std::domain_error{EnumerationFallbackElementChildElement->GetName()};
-						}
-					}
-				}
-			}
-			else
-			{
-				throw std::domain_error{EnumerationChildElement->GetName()};
-			}
-		}
-	}
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::Type::_LoadEquals(const XML::Element * EqualsElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Equals>();
-	auto First = true;
-	
-	for(auto EqualsChildNode : EqualsElement->GetChilds())
-	{
-		if(EqualsChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto EqualsChildElement = dynamic_cast<const XML::Element *>(EqualsChildNode);
-			
-			if(First == true)
-			{
-				Result->Statement1 = _LoadStatement(EqualsChildElement);
-				First = false;
-			}
-			else
-			{
-				Result->Statement2 = _LoadStatement(EqualsChildElement);
-			}
-		}
-	}
-	
-	return Result;
-}
-
-void Inspection::TypeDefinition::Type::_LoadFieldReference(Inspection::TypeDefinition::FieldReference & FieldReference, const XML::Element * FieldReferenceElement)
-{
-	assert(FieldReferenceElement->HasAttribute("root") == true);
-	if(FieldReferenceElement->GetAttribute("root") == "current")
-	{
-		FieldReference.Root = Inspection::TypeDefinition::FieldReference::Root::Current;
-	}
-	else if(FieldReferenceElement->GetAttribute("root") == "type")
-	{
-		FieldReference.Root = Inspection::TypeDefinition::FieldReference::Root::Type;
-	}
-	else
-	{
-		assert(false);
-	}
-	for(auto FieldReferenceChildNode : FieldReferenceElement->GetChilds())
-	{
-		if(FieldReferenceChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto FieldReferenceChildElement = dynamic_cast<const XML::Element *>(FieldReferenceChildNode);
-			
-			assert(FieldReferenceChildElement != nullptr);
-			assert(FieldReferenceChildElement->GetName() == "field");
-			assert(FieldReferenceChildElement->GetChilds().size() == 1);
-			
-			auto FieldReferenceFieldText = dynamic_cast<const XML::Text *>(FieldReferenceChildElement->GetChild(0));
-			
-			assert(FieldReferenceFieldText != nullptr);
-			FieldReference.Parts.emplace_back();
-			FieldReference.Parts.back().FieldName = FieldReferenceFieldText->GetText();
-		}
-	}
-}
-
-void Inspection::TypeDefinition::Type::_LoadLength(Inspection::TypeDefinition::Length & Length, const XML::Element * LengthElement)
-{
-	for(auto LengthChildNode : LengthElement->GetChilds())
-	{
-		if(LengthChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto LengthChildElement = dynamic_cast<const XML::Element *>(LengthChildNode);
-			
-			assert(LengthChildElement != nullptr);
-			if(LengthChildElement->GetName() == "bytes")
-			{
-				Length.Bytes = _LoadStatementFromWithin(LengthChildElement);
-			}
-			else if(LengthChildElement->GetName() == "bits")
-			{
-				Length.Bits = _LoadStatementFromWithin( LengthChildElement);
-			}
-			else
-			{
-				throw std::domain_error{"length/" + LengthChildElement->GetName() + " not allowed."};
-			}
-		}
-	}
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Parameter> Inspection::TypeDefinition::Type::_LoadParameter(const XML::Element * ParameterElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Parameter>();
-	
-	assert(ParameterElement->HasAttribute("name") == true);
-	Result->Name = ParameterElement->GetAttribute("name");
-	Result->Statement = _LoadStatementFromWithin(ParameterElement);
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Parameters>  Inspection::TypeDefinition::Type::_LoadParameters(const XML::Element * ParametersElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Parameters>();
-	
-	for(auto ParametersChildNode : ParametersElement->GetChilds())
-	{
-		if(ParametersChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto ParametersChildElement = dynamic_cast<const XML::Element *>(ParametersChildNode);
-			
-			assert(ParametersChildElement != nullptr);
-			if(ParametersChildElement->GetName() == "parameter")
-			{
-				Result->Parameters.push_back(_LoadParameter(ParametersChildElement));
-			}
-			else
-			{
-				throw std::domain_error{ParametersChildElement->GetName() + " not allowed."};
-			}
-		}
-	}
-	
-	return Result;
 }
 
 void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement)
@@ -1847,22 +1550,20 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			if(PartChildElement->GetName() == "type-reference")
 			{
 				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Fields) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
-				Part.TypeReference.emplace();
-				_LoadTypeReference(Part.TypeReference.value(), PartChildElement);
+				Part.TypeReference = Inspection::TypeDefinition::TypeReference::Load(PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "interpretation")
 			{
-				Part.Interpretation.emplace();
-				_LoadInterpretation(Part.Interpretation.value(), PartChildElement);
+				Part.Interpretation = Inspection::TypeDefinition::Interpretation::Load(PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "length")
 			{
-				Part.Length = _LoadStatement(PartChildElement);
+				Part.Length = Inspection::TypeDefinition::Statement::Load(PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "parameters")
 			{
 				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Fields) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward));
-				Part.Parameters = _LoadParameters(PartChildElement);
+				Part.Parameters = Inspection::TypeDefinition::Parameters::Load(PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "verification")
 			{
@@ -1870,14 +1571,14 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				{
 					if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
 					{
-						Part.Verifications.push_back(_LoadStatement(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
+						Part.Verifications.push_back(Inspection::TypeDefinition::Statement::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
 					}
 				}
 			}
 			else if(PartChildElement->GetName() == "tag")
 			{
 				assert((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward) || (Part.Type == Inspection::TypeDefinition::Part::Type::Sequence));
-				Part.Tags.push_back(_LoadTag(PartChildElement));
+				Part.Tags.push_back(Inspection::TypeDefinition::Tag::Load(PartChildElement));
 			}
 			else if((PartChildElement->GetName() == "alternative") || (PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward") || (PartChildElement->GetName() == "array"))
 			{
@@ -1886,9 +1587,8 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				{
 					Part.Parts.emplace();
 				}
-				Part.Parts->emplace_back();
 				
-				auto & ContainedPart = Part.Parts->back();
+				auto & ContainedPart = Part.Parts->emplace_back();
 				
 				_LoadPart(ContainedPart, PartChildElement);
 			}
@@ -1905,9 +1605,8 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				else if(PartChildElement->GetAttribute("type") == "for-each-field")
 				{
 					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
-					Part.Array->IterateForEachField.emplace();
 					
-					const XML::Element * FieldReferenceElement{nullptr};
+					auto FieldReferenceElement = static_cast<const XML::Element *>(nullptr);
 					
 					for(auto PartIterateChildNode : PartChildElement->GetChilds())
 					{
@@ -1918,12 +1617,12 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 						}
 					}
 					assert(FieldReferenceElement != nullptr);
-					_LoadFieldReference(Part.Array->IterateForEachField.value(), FieldReferenceElement);
+					Part.Array->IterateForEachField = Inspection::TypeDefinition::FieldReference::Load(FieldReferenceElement);
 				}
 				else if(PartChildElement->GetAttribute("type") == "number-of-elements")
 				{
 					Part.Array->IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
-					Part.Array->IterateNumberOfElements = _LoadStatementFromWithin(PartChildElement);
+					Part.Array->IterateNumberOfElements = Inspection::TypeDefinition::Statement::LoadFromWithin(PartChildElement);
 				}
 				else if(PartChildElement->GetAttribute("type") == "until-failure-or-length")
 				{
@@ -1950,13 +1649,13 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			{
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
 				assert(Part.Array.has_value() == true);
-				_LoadTypeReference(Part.Array->ElementType, PartChildElement);
+				Part.Array->ElementType = Inspection::TypeDefinition::TypeReference::Load(PartChildElement);
 			}
 			else if(PartChildElement->GetName() == "element-parameters")
 			{
 				assert(Part.Type == Inspection::TypeDefinition::Part::Type::Array);
 				assert(Part.Array.has_value() == true);
-				Part.Array->ElementParameters = _LoadParameters(PartChildElement);
+				Part.Array->ElementParameters = Inspection::TypeDefinition::Parameters::Load(PartChildElement);
 			}
 			else
 			{
@@ -1965,127 +1664,6 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			}
 		}
 	}
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition::Type::_LoadSubtract(const XML::Element * SubtractElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Subtract>();
-	auto First = true;
-	
-	for(auto SubtractChildNode : SubtractElement->GetChilds())
-	{
-		if(SubtractChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto SubtractChildElement = dynamic_cast<const XML::Element *>(SubtractChildNode);
-			
-			assert(SubtractChildElement != nullptr);
-			if(First == true)
-			{
-				Result->Minuend = _LoadStatement(SubtractChildElement);
-				First = false;
-			}
-			else
-			{
-				Result->Subtrahend = _LoadStatement(SubtractChildElement);
-			}
-		}
-	}
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinition::Type::_LoadStatement(const XML::Element * StatementElement)
-{
-	assert(StatementElement != nullptr);
-	
-	auto Result = std::make_unique<Inspection::TypeDefinition::Statement>();
-	
-	if(StatementElement->GetName() == "add")
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Add;
-		Result->Add = _LoadAdd(StatementElement);
-	}
-	else if(StatementElement->GetName() == "divide")
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Divide;
-		Result->Divide = _LoadDivide(StatementElement);
-	}
-	else if(StatementElement->GetName() == "equals")
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Equals;
-		Result->Equals = _LoadEquals(StatementElement);
-	}
-	else if(StatementElement->GetName() == "subtract")
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Subtract;
-		Result->Subtract = _LoadSubtract(StatementElement);
-	}
-	else if((StatementElement->GetName() == "length") && (XML::HasOneChildElement(StatementElement) == true))
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = _LoadCast(StatementElement);
-	}
-	else if((StatementElement->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(StatementElement) == true))
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = _LoadCast(StatementElement);
-	}
-	else if((StatementElement->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(StatementElement) == true))
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = _LoadCast(StatementElement);
-	}
-	else if((StatementElement->GetName() == "single-precision-real") && (XML::HasOneChildElement(StatementElement) == true))
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Cast;
-		Result->Cast = _LoadCast(StatementElement);
-	}
-	else
-	{
-		Result->Type = Inspection::TypeDefinition::Statement::Type::Value;
-		Result->Value = _LoadValue(StatementElement);
-	}
-	assert(Result->Type != Inspection::TypeDefinition::Statement::Type::Unknown);
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Statement> Inspection::TypeDefinition::Type::_LoadStatementFromWithin(const XML::Element * ParentElement)
-{
-	auto StatementElement = static_cast<const XML::Element *>(nullptr);
-	
-	if(ParentElement->GetChilds().size() > 0)
-	{
-		for(auto ChildNode : ParentElement->GetChilds())
-		{
-			if(ChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				StatementElement = dynamic_cast<const XML::Element *>(ChildNode);
-				
-				break;
-			}
-		}
-		if(StatementElement == nullptr)
-		{
-			throw std::domain_error{"To read a statment from an element with childs, at least one of them needs to be an element."};
-		}
-	}
-	
-	return _LoadStatement(StatementElement);
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Type::_LoadTag(const XML::Element * TagElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Tag>();
-	
-	assert(TagElement->HasAttribute("name") == true);
-	Result->Name = TagElement->GetAttribute("name");
-	if(XML::HasChildElements(TagElement) == true)
-	{
-		Result->Statement = _LoadStatementFromWithin(TagElement);
-	}
-	
-	return Result;
 }
 
 void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement)
@@ -2505,236 +2083,4 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 			}
 		}
 	}
-}
-
-void Inspection::TypeDefinition::Type::_LoadTypeReference(Inspection::TypeDefinition::TypeReference & TypeReference, const XML::Element * TypeReferenceElement)
-{
-	for(auto TypeReferenceChildNode : TypeReferenceElement->GetChilds())
-	{
-		if(TypeReferenceChildNode->GetNodeType() == XML::NodeType::Element)
-		{
-			auto TypeReferenceChildElement = dynamic_cast<const XML::Element *>(TypeReferenceChildNode);
-			
-			assert(TypeReferenceChildElement != nullptr);
-			assert(TypeReferenceChildElement->GetName() == "part");
-			assert(TypeReferenceChildElement->GetChilds().size() == 1);
-			
-			auto TypeReferencePartText = dynamic_cast<const XML::Text *>(TypeReferenceChildElement->GetChild(0));
-			
-			assert(TypeReferencePartText != nullptr);
-			TypeReference.Parts.push_back(TypeReferencePartText->GetText());
-		}
-	}
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::Type::_LoadValue(const XML::Element * ValueElement)
-{
-	auto Result = std::make_unique<Inspection::TypeDefinition::Value>();
-	
-	assert(ValueElement != nullptr);
-	if(ValueElement->GetName() == "nothing")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::Nothing;
-		assert(ValueElement->GetChilds().size() == 0);
-	}
-	else if(ValueElement->GetName() == "boolean")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::Boolean;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<bool>(TextNode->GetText());
-	}
-	else if(ValueElement->GetName() == "data-reference")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::DataReference;
-		
-		auto & DataReference = Result->Data.emplace<Inspection::TypeDefinition::DataReference>();
-		
-		assert(ValueElement->HasAttribute("root") == true);
-		if(ValueElement->GetAttribute("root") == "current")
-		{
-			DataReference.Root = Inspection::TypeDefinition::DataReference::Root::Current;
-		}
-		else if(ValueElement->GetAttribute("root") == "type")
-		{
-			DataReference.Root = Inspection::TypeDefinition::DataReference::Root::Type;
-		}
-		else
-		{
-			assert(false);
-		}
-		for(auto DataReferenceChildNode : ValueElement->GetChilds())
-		{
-			if(DataReferenceChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				auto & DataReferenceParts = DataReference.Parts;
-				auto DataReferencePart = DataReferenceParts.emplace(DataReferenceParts.end());
-				auto DataReferenceChildElement = dynamic_cast<const XML::Element *>(DataReferenceChildNode);
-				
-				if(DataReferenceChildElement->GetName() == "field")
-				{
-					assert(DataReferenceChildElement->GetChilds().size() == 1);
-					DataReferencePart->Type = Inspection::TypeDefinition::DataReference::Part::Type::Field;
-					
-					auto SubText = dynamic_cast<const XML::Text *>(DataReferenceChildElement->GetChild(0));
-					
-					assert(SubText != nullptr);
-					DataReferencePart->DetailName = SubText->GetText();
-				}
-				else if(DataReferenceChildElement->GetName() == "tag")
-				{
-					assert(DataReferenceChildElement->GetChilds().size() == 1);
-					DataReferencePart->Type = Inspection::TypeDefinition::DataReference::Part::Type::Tag;
-					
-					auto TagText = dynamic_cast<const XML::Text *>(DataReferenceChildElement->GetChild(0));
-					
-					assert(TagText != nullptr);
-					DataReferencePart->DetailName = TagText->GetText();
-				}
-				else
-				{
-					throw std::domain_error{DataReferenceChildElement->GetName() + " not allowed."};
-				}
-			}
-		}
-	}
-	else if(ValueElement->GetName() == "guid")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::GUID;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		Result->Data.emplace<Inspection::GUID>(TextNode->GetText());
-	}
-	else if(ValueElement->GetName() == "length")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::Length;
-		
-		auto & Length = Result->Data.emplace<Inspection::TypeDefinition::Length>();
-		
-		_LoadLength(Length, ValueElement);
-	}
-	else if(ValueElement->GetName() == "length-reference")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::LengthReference;
-		
-		auto & LengthReference = Result->Data.emplace<Inspection::TypeDefinition::LengthReference>();
-		
-		assert(ValueElement->HasAttribute("root") == true);
-		if(ValueElement->GetAttribute("root") == "type")
-		{
-			LengthReference.Root = Inspection::TypeDefinition::LengthReference::Root::Type;
-		}
-		else
-		{
-			assert(false);
-		}
-		assert(ValueElement->HasAttribute("name") == true);
-		if(ValueElement->GetAttribute("name") == "consumed")
-		{
-			LengthReference.Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
-		}
-		else
-		{
-			assert(false);
-		}
-	}
-	else if(ValueElement->GetName() == "parameter-reference")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::ParameterReference;
-		
-		auto & ParameterReference = Result->Data.emplace<Inspection::TypeDefinition::ParameterReference>();
-		
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		ParameterReference.Name = TextNode->GetText();
-	}
-	else if(ValueElement->GetName() == "parameters")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::Parameters;
-		Result->Data = _LoadParameters(ValueElement);
-	}
-	else if(ValueElement->GetName() == "single-precision-real")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::SinglePrecisionReal;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<float>(TextNode->GetText());
-	}
-	else if(ValueElement->GetName() == "string")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::String;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		Result->Data = std::string{TextNode->GetText()};
-	}
-	else if(ValueElement->GetName() == "type-reference")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::TypeReference;
-		
-		auto & TypeReference = Result->Data.emplace<Inspection::TypeDefinition::TypeReference>();
-		
-		_LoadTypeReference(TypeReference, ValueElement);
-	}
-	else if(ValueElement->GetName() == "unsigned-integer-8bit")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<std::uint8_t>(TextNode->GetText());
-	}
-	else if(ValueElement->GetName() == "unsigned-integer-16bit")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<std::uint16_t>(TextNode->GetText());
-	}
-	else if(ValueElement->GetName() == "unsigned-integer-32bit")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<std::uint32_t>(TextNode->GetText());
-	}
-	else if(ValueElement->GetName() == "unsigned-integer-64bit")
-	{
-		Result->DataType = Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
-		assert((ValueElement->GetChilds().size() == 1) && (ValueElement->GetChild(0)->GetNodeType() == XML::NodeType::Text));
-		
-		auto TextNode = dynamic_cast<const XML::Text *>(ValueElement->GetChild(0));
-		
-		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<std::uint64_t>(TextNode->GetText());
-	}
-	else
-	{
-		assert(false);
-	}
-	assert(Result->DataType != Inspection::TypeDefinition::DataType::Unknown);
-	
-	return Result;
 }

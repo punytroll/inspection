@@ -27,6 +27,11 @@
 
 #include "guid.h"
 
+namespace XML
+{
+	class Element;
+}
+
 namespace Inspection
 {
 	class Type;
@@ -83,28 +88,38 @@ namespace Inspection
 				Current,
 				Type
 			};
-			
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::DataReference> Load(const XML::Element * Element);
+		public:
 			Inspection::TypeDefinition::DataReference::Root Root;
 			std::vector<Inspection::TypeDefinition::DataReference::Part> Parts;
+		private:
+			DataReference(void) = default;
+			DataReference(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
+			DataReference(Inspection::TypeDefinition::DataReference && DataReference) = delete;
+			Inspection::TypeDefinition::DataReference & operator=(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
+			Inspection::TypeDefinition::DataReference & operator=(Inspection::TypeDefinition::DataReference && DataReference) = delete;
 		};
 		
 		class FieldReference
 		{
 		public:
-			class Part
-			{
-			public:
-				std::string FieldName;
-			};
-			
 			enum class Root
 			{
 				Current,
 				Type
 			};
-			
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::FieldReference> Load(const XML::Element * FieldReferenceElement);
+		public:
 			Inspection::TypeDefinition::FieldReference::Root Root;
-			std::vector<Inspection::TypeDefinition::FieldReference::Part> Parts;
+			std::vector<std::string> Parts;
+		private:
+			FieldReference(void) = default;
+			FieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
+			FieldReference(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
+			Inspection::TypeDefinition::FieldReference & operator=(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
+			Inspection::TypeDefinition::FieldReference & operator=(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
 		};
 		
 		class LengthReference
@@ -133,17 +148,30 @@ namespace Inspection
 		class Parameters
 		{
 		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Parameters> Load(const XML::Element * Element);
+		public:
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> Parameters;
 		};
 		
 		class TypeReference
 		{
 		public:
+			static std::unique_ptr<Inspection::TypeDefinition::TypeReference> Load(const XML::Element * TypeReferenceElement);
+		public:
 			std::vector<std::string> Parts;
+		private:
+			TypeReference(void) = default;
+			TypeReference(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
+			TypeReference(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
+			Inspection::TypeDefinition::TypeReference & operator=(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
+			Inspection::TypeDefinition::TypeReference & operator=(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
 		};
 		
 		class Statement
 		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Statement> Load(const XML::Element * Element);
+			static std::unique_ptr<Inspection::TypeDefinition::Statement> LoadFromWithin(const XML::Element * Element);
 		public:
 			enum class Type
 			{
@@ -155,134 +183,173 @@ namespace Inspection
 				Subtract,
 				Value
 			};
-			
-			Statement(void);
-			Statement(const Inspection::TypeDefinition::Statement & Statement) = delete;
-			Statement(Inspection::TypeDefinition::Statement && Statement) = default;
+		public:
 			virtual ~Statement(void);
-			Inspection::TypeDefinition::Statement & operator=(Inspection::TypeDefinition::Statement && Statement) = delete;
-			Inspection::TypeDefinition::Statement & operator=(const Inspection::TypeDefinition::Statement & Statement) = delete;
-			
+		public:
 			Inspection::TypeDefinition::Statement::Type Type;
-			// content depending on type
 			std::unique_ptr<Inspection::TypeDefinition::Add> Add;
 			std::unique_ptr<Inspection::TypeDefinition::Cast> Cast;
 			std::unique_ptr<Inspection::TypeDefinition::Divide> Divide;
 			std::unique_ptr<Inspection::TypeDefinition::Equals> Equals;
 			std::unique_ptr<Inspection::TypeDefinition::Subtract> Subtract;
 			std::unique_ptr<Inspection::TypeDefinition::Value> Value;
+		private:
+			Statement(void);
+			Statement(const Inspection::TypeDefinition::Statement & Statement) = delete;
+			Statement(Inspection::TypeDefinition::Statement && Statement) = delete;
+			Inspection::TypeDefinition::Statement & operator=(const Inspection::TypeDefinition::Statement & Statement) = delete;
+			Inspection::TypeDefinition::Statement & operator=(Inspection::TypeDefinition::Statement && Statement) = delete;
 		};
 		
 		class Add
 		{
 		public:
-			Add(void);
-			Add(Inspection::TypeDefinition::Add && Add) = default;
-			Add(const Inspection::TypeDefinition::Add & Add) = delete;
+			static std::unique_ptr<Inspection::TypeDefinition::Add> Load(const XML::Element * Element);
+		public:
 			virtual ~Add(void);
-			Inspection::TypeDefinition::Add & operator=(Inspection::TypeDefinition::Add && Add) = delete;
-			Inspection::TypeDefinition::Add & operator=(const Inspection::TypeDefinition::Add & Add) = delete;
+		public:
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Summand1;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Summand2;
+		private:
+			Add(void) = default;
+			Add(const Inspection::TypeDefinition::Add & Add) = delete;
+			Add(Inspection::TypeDefinition::Add && Add) = delete;
+			Inspection::TypeDefinition::Add & operator=(const Inspection::TypeDefinition::Add & Add) = delete;
+			Inspection::TypeDefinition::Add & operator=(Inspection::TypeDefinition::Add && Add) = delete;
 		};
 		
 		class Cast
 		{
 		public:
-			Cast(void);
-			Cast(Inspection::TypeDefinition::Cast && Cast) = default;
-			Cast(const Inspection::TypeDefinition::Cast & Cast) = delete;
+			static std::unique_ptr<Inspection::TypeDefinition::Cast> Load(const XML::Element * Element);
+		public:
 			virtual ~Cast(void);
-			Inspection::TypeDefinition::Cast & operator=(Inspection::TypeDefinition::Cast && Cast) = delete;
-			Inspection::TypeDefinition::Cast & operator=(const Inspection::TypeDefinition::Cast & Cast) = delete;
+		public:
 			Inspection::TypeDefinition::DataType DataType;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement;
+		private:
+			Cast(void);
+			Cast(const Inspection::TypeDefinition::Cast & Cast) = delete;
+			Cast(Inspection::TypeDefinition::Cast && Cast) = delete;
+			Inspection::TypeDefinition::Cast & operator=(const Inspection::TypeDefinition::Cast & Cast) = delete;
+			Inspection::TypeDefinition::Cast & operator=(Inspection::TypeDefinition::Cast && Cast) = delete;
 		};
 		
 		class Divide
 		{
 		public:
-			Divide(void);
-			Divide(Inspection::TypeDefinition::Divide && Divide) = default;
-			Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
+			static std::unique_ptr<Inspection::TypeDefinition::Divide> Load(const XML::Element * Element);
+		public:
 			virtual ~Divide(void);
-			Inspection::TypeDefinition::Divide & operator=(Inspection::TypeDefinition::Divide && Divide) = delete;
-			Inspection::TypeDefinition::Divide & operator=(const Inspection::TypeDefinition::Divide & Divide) = delete;
+		public:
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Dividend;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Divisor;
+		private:
+			Divide(void) = default;
+			Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
+			Divide(Inspection::TypeDefinition::Divide && Divide) = delete;
+			Inspection::TypeDefinition::Divide & operator=(const Inspection::TypeDefinition::Divide & Divide) = delete;
+			Inspection::TypeDefinition::Divide & operator=(Inspection::TypeDefinition::Divide && Divide) = delete;
 		};
 		
 		class Equals
 		{
 		public:
-			Equals(void);
-			Equals(Inspection::TypeDefinition::Equals && Equals) = default;
-			Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
+			static std::unique_ptr<Inspection::TypeDefinition::Equals> Load(const XML::Element * Element);
+		public:
 			virtual ~Equals(void);
-			Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
-			Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
+		public:
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement1;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement2;
+		private:
+			Equals(void) = default;
+			Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
+			Equals(Inspection::TypeDefinition::Equals && Equals) = delete;
+			Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
+			Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
 		};
 		
 		class Length
 		{
 		public:
-			Length(void);
-			Length(Inspection::TypeDefinition::Length && Length) = default;
-			Length(const Inspection::TypeDefinition::Length & Length) = delete;
-			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
-			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
+			static std::unique_ptr<Inspection::TypeDefinition::Length> Load(const XML::Element * Element);
+		public:
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Bytes;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Bits;
+		private:
+			Length(void) = default;
+			Length(const Inspection::TypeDefinition::Length & Length) = delete;
+			Length(Inspection::TypeDefinition::Length && Length) = delete;
+			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
+			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
 		};
 		
 		class Subtract
 		{
 		public:
-			Subtract(void);
-			Subtract(Inspection::TypeDefinition::Subtract && Subtract) = default;
-			Subtract(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
+			static std::unique_ptr<Inspection::TypeDefinition::Subtract> Load(const XML::Element * Element);
+		public:
 			virtual ~Subtract(void);
-			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
-			Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
+		public:
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Minuend;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Subtrahend;
+		private:
+			Subtract(void) = default;
+			Subtract(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
+			Subtract(Inspection::TypeDefinition::Subtract && Subtract) = delete;
+			Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
+			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
 		};
 		
 		class Value
 		{
 		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Value> Load(const XML::Element * Element);
+		public:
 			Inspection::TypeDefinition::DataType DataType;
-			std::variant<bool, Inspection::TypeDefinition::DataReference, Inspection::GUID, Inspection::TypeDefinition::Length, Inspection::TypeDefinition::LengthReference, Inspection::TypeDefinition::ParameterReference, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, Inspection::TypeDefinition::TypeReference, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, Inspection::TypeDefinition::LengthReference, Inspection::TypeDefinition::ParameterReference, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::unique_ptr<Inspection::TypeDefinition::TypeReference>, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+		private:
+			Value(void) = default;
+			Value(const Inspection::TypeDefinition::Value & Value) = delete;
+			Value(Inspection::TypeDefinition::Value && Value) = delete;
+			Inspection::TypeDefinition::Value & operator=(const Inspection::TypeDefinition::Value & Value) = delete;
+			Inspection::TypeDefinition::Value & operator=(Inspection::TypeDefinition::Value && Value) = delete;
 		};
 		
 		class Parameter
 		{
 		public:
-			Parameter(void);
-			Parameter(Inspection::TypeDefinition::Parameter && Parameter) = default;
-			Parameter(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
-			Inspection::TypeDefinition::Parameter & operator=(Inspection::TypeDefinition::Parameter && Parameter) = delete;
-			Inspection::TypeDefinition::Parameter & operator=(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
+			static std::unique_ptr<Inspection::TypeDefinition::Parameter> Load(const XML::Element * Element);
+		public:
 			std::string Name;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement;
+		private:
+			Parameter(void) = default;
+			Parameter(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
+			Parameter(Inspection::TypeDefinition::Parameter && Parameter) = delete;
+			Inspection::TypeDefinition::Parameter & operator=(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
+			Inspection::TypeDefinition::Parameter & operator=(Inspection::TypeDefinition::Parameter && Parameter) = delete;
 		};
 		
 		class Tag
 		{
 		public:
-			Tag(void);
-			Tag(Inspection::TypeDefinition::Tag && Tag) = default;
-			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
-			Inspection::TypeDefinition::Tag & operator=(Inspection::TypeDefinition::Tag && Tag) = delete;
-			Inspection::TypeDefinition::Tag & operator=(const Inspection::TypeDefinition::Tag & Tag) = delete;
+			static std::unique_ptr<Inspection::TypeDefinition::Tag> Load(const XML::Element * Element);
+		public:
 			std::string Name;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Statement;
+		private:
+			Tag(void) = default;
+			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
+			Tag(Inspection::TypeDefinition::Tag && Tag) = delete;
+			Inspection::TypeDefinition::Tag & operator=(const Inspection::TypeDefinition::Tag & Tag) = delete;
+			Inspection::TypeDefinition::Tag & operator=(Inspection::TypeDefinition::Tag && Tag) = delete;
 		};
 		
 		class Enumeration
 		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Enumeration> Load(const XML::Element * Element);
 		public:
 			class Element
 			{
@@ -291,27 +358,42 @@ namespace Inspection
 				std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> Tags;
 				bool Valid;
 			};
+		public:
 			Inspection::TypeDefinition::DataType BaseDataType;
 			std::vector<Inspection::TypeDefinition::Enumeration::Element> Elements;
 			std::optional<Inspection::TypeDefinition::Enumeration::Element> FallbackElement;
+		private:
+			Enumeration(void) = default;
+			Enumeration(const Inspection::TypeDefinition::Enumeration & Enumeration) = delete;
+			Enumeration(Inspection::TypeDefinition::Enumeration && Enumeration) = delete;
+			Inspection::TypeDefinition::Enumeration & operator=(const Inspection::TypeDefinition::Enumeration & Enumeration) = delete;
+			Inspection::TypeDefinition::Enumeration & operator=(Inspection::TypeDefinition::Enumeration && Enumeration) = delete;
 		};
 		
 		class ApplyEnumeration
 		{
 		public:
-			Inspection::TypeDefinition::Enumeration Enumeration;
+			std::unique_ptr<Inspection::TypeDefinition::Enumeration> Enumeration;
 		};
 		
 		class Interpretation
 		{
 		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Interpretation> Load(const XML::Element * Element);
+		public:
 			enum class Type
 			{
 				ApplyEnumeration
 			};
-			
+		public:
 			std::optional<Inspection::TypeDefinition::ApplyEnumeration> ApplyEnumeration;
 			Inspection::TypeDefinition::Interpretation::Type Type;
+		private:
+			Interpretation(void) = default;
+			Interpretation(const Inspection::TypeDefinition::Interpretation & Interpretation) = delete;
+			Interpretation(Inspection::TypeDefinition::Interpretation && Interpretation) = delete;
+			Inspection::TypeDefinition::Interpretation & operator=(const Inspection::TypeDefinition::Interpretation & Interpretation) = delete;
+			Inspection::TypeDefinition::Interpretation & operator=(Inspection::TypeDefinition::Interpretation && Interpretation) = delete;
 		};
 		
 		class Array
@@ -326,11 +408,11 @@ namespace Inspection
 			};
 			
 			Inspection::TypeDefinition::Array::IterateType IterateType;
-			std::optional<Inspection::TypeDefinition::FieldReference> IterateForEachField;
+			std::unique_ptr<Inspection::TypeDefinition::FieldReference> IterateForEachField;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> IterateNumberOfElements;
 			std::optional<std::string> ElementName;
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> ElementParameters;
-			Inspection::TypeDefinition::TypeReference ElementType;
+			std::unique_ptr<Inspection::TypeDefinition::TypeReference> ElementType;
 		};
 		
 		class Part
@@ -358,8 +440,8 @@ namespace Inspection
 			std::optional<Inspection::TypeDefinition::Array> Array;
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::optional<std::string> FieldName;
-			std::optional<Inspection::TypeDefinition::TypeReference> TypeReference;
-			std::optional<Inspection::TypeDefinition::Interpretation> Interpretation;
+			std::unique_ptr<Inspection::TypeDefinition::TypeReference> TypeReference;
+			std::unique_ptr<Inspection::TypeDefinition::Interpretation> Interpretation;
 			std::unique_ptr<Inspection::TypeDefinition::Statement> Length;
 			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> Tags;
