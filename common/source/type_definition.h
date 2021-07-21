@@ -288,21 +288,6 @@ namespace Inspection
 			Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
 		};
 		
-		class Length
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::Length> Load(const XML::Element * Element);
-		public:
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Bytes;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Bits;
-		private:
-			Length(void) = default;
-			Length(const Inspection::TypeDefinition::Length & Length) = delete;
-			Length(Inspection::TypeDefinition::Length && Length) = delete;
-			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
-			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
-		};
-		
 		class Subtract : public Inspection::TypeDefinition::Expression
 		{
 		public:
@@ -320,6 +305,8 @@ namespace Inspection
 			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
 		};
 		
+		class Length;
+		
 		class Value : public Inspection::TypeDefinition::Expression
 		{
 		public:
@@ -333,6 +320,21 @@ namespace Inspection
 			Value(Inspection::TypeDefinition::Value && Value) = delete;
 			Inspection::TypeDefinition::Value & operator=(const Inspection::TypeDefinition::Value & Value) = delete;
 			Inspection::TypeDefinition::Value & operator=(Inspection::TypeDefinition::Value && Value) = delete;
+		};
+		
+		class Length
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Length> Load(const XML::Element * Element);
+		public:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> Bytes;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> Bits;
+		private:
+			Length(void) = default;
+			Length(const Inspection::TypeDefinition::Length & Length) = delete;
+			Length(Inspection::TypeDefinition::Length && Length) = delete;
+			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
+			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
 		};
 		
 		class Parameter
