@@ -319,6 +319,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		Result = Inspection::TypeDefinition::Subtract::Load(Element);
 	}
+	else if(Element->GetName() == "type-reference")
+	{
+		Result = Inspection::TypeDefinition::TypeReference::Load(Element);
+	}
 	else if((Element->GetName() == "length") && (XML::HasOneChildElement(Element) == true))
 	{
 		Result = Inspection::TypeDefinition::Cast::Load(Element);
@@ -616,6 +620,11 @@ std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Tag
 	return Result;
 }
 
+Inspection::TypeDefinition::TypeReference::TypeReference(void) :
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::TypeReference}
+{
+}
+
 std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefinition::TypeReference::Load(const XML::Element * TypeReferenceElement)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::TypeReference>{new Inspection::TypeDefinition::TypeReference{}};
@@ -726,11 +735,6 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		assert(TextNode != nullptr);
 		Result->Data = std::string{TextNode->GetText()};
 	}
-	else if(Element->GetName() == "type-reference")
-	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::TypeReference;
-		Result->Data = Inspection::TypeDefinition::TypeReference::Load(Element);
-	}
 	else if(Element->GetName() == "unsigned-integer-8bit")
 	{
 		Result->_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
@@ -809,10 +813,6 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	else if(String == "string")
 	{
 		return Inspection::TypeDefinition::DataType::String;
-	}
-	else if(String == "type-reference")
-	{
-		return Inspection::TypeDefinition::DataType::TypeReference;
 	}
 	else if((String == "unsigned integer 8bit") || (String == "unsigned-integer-8bit"))
 	{

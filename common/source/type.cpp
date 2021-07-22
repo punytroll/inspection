@@ -24,6 +24,8 @@ namespace Inspection
 		std::optional<bool> StructureIsValid;
 	};
 	
+	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map<std::string, std::any> & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions);
+	
 	namespace Algorithms
 	{
 		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Summand1, const Inspection::TypeDefinition::Expression & Summand2);
@@ -206,6 +208,16 @@ namespace Inspection
 				{
 					return nullptr;
 				}
+			case Inspection::TypeDefinition::DataType::Parameters:
+				{
+					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value.Data) == true);
+					
+					auto Parameters = std::unordered_map<std::string, std::any>{};
+					
+					Inspection::FillNewParameters(ExecutionContext, Parameters, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value.Data)));
+					
+					return Parameters;
+				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
 					assert(std::holds_alternative<float>(Value.Data) == true);
@@ -217,12 +229,6 @@ namespace Inspection
 					assert(std::holds_alternative<std::string>(Value.Data) == true);
 					
 					return std::get<std::string>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::TypeReference:
-				{
-					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Value.Data) == true);
-					
-					return Inspection::g_TypeRepository.GetType(std::get<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Value.Data)->Parts);
 				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
 				{
@@ -348,6 +354,14 @@ namespace Inspection
 					assert(Subtract != nullptr);
 					
 					return Inspection::Algorithms::Subtract(ExecutionContext, *(Subtract->Minuend), *(Subtract->Subtrahend));
+				}
+			case Inspection::TypeDefinition::Expression::Type::TypeReference:
+				{
+					auto TypeReference = dynamic_cast<const Inspection::TypeDefinition::TypeReference *>(&Expression);
+					
+					assert(TypeReference != nullptr);
+					
+					return Inspection::g_TypeRepository.GetType(TypeReference->Parts);
 				}
 			case Inspection::TypeDefinition::Expression::Type::Value:
 				{
@@ -496,80 +510,7 @@ namespace Inspection
 	{
 		for(auto & Parameter : ParameterDefinitions.GetParameters())
 		{
-			switch(Parameter->Expression->GetExpressionType())
-			{
-			case Inspection::TypeDefinition::Expression::Type::Cast:
-				{
-					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(Parameter->Expression.get());
-					
-					assert(Cast != nullptr);
-					NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *Cast));
-					
-					break;
-				}
-			case Inspection::TypeDefinition::Expression::Type::ParameterReference:
-				{
-					auto ParameterReference = dynamic_cast<const Inspection::TypeDefinition::ParameterReference *>(Parameter->Expression.get());
-					
-					assert(ParameterReference != nullptr);
-					NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, *ParameterReference));
-					
-					break;
-				}
-			case Inspection::TypeDefinition::Expression::Type::Value:
-				{
-					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Parameter->Expression.get());
-					
-					assert(Value != nullptr);
-					switch(Value->GetDataType())
-					{
-					case Inspection::TypeDefinition::DataType::DataReference:
-						{
-							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value->Data) == true);
-							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
-							
-							break;
-						}
-					case Inspection::TypeDefinition::DataType::Parameters:
-						{
-							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value->Data) == true);
-							
-							auto InnerParameters = std::unordered_map<std::string, std::any>{};
-							
-							FillNewParameters(ExecutionContext, InnerParameters, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value->Data)));
-							NewParameters.emplace(Parameter->Name, InnerParameters);
-							
-							break;
-						}
-					case Inspection::TypeDefinition::DataType::String:
-						{
-							assert(std::holds_alternative<std::string>(Value->Data) == true);
-							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
-							
-							break;
-						}
-					case Inspection::TypeDefinition::DataType::TypeReference:
-						{
-							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Value->Data) == true);
-							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
-							
-							break;
-						}
-					default:
-						{
-							assert(false);
-							
-							break;
-						}
-					}
-					
-					break;
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
+			NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Parameter->Expression)));
 		}
 	}
 }

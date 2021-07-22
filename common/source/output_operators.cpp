@@ -412,6 +412,73 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 	}
 }
 
+std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataType & DataType)
+{
+	switch(DataType)
+	{
+	case Inspection::TypeDefinition::DataType::Unknown:
+		{
+			return OStream << "<unknown>";
+		}
+	case Inspection::TypeDefinition::DataType::Boolean:
+		{
+			return OStream << "boolean";
+		}
+	case Inspection::TypeDefinition::DataType::DataReference:
+		{
+			return OStream << "data-reference";
+		}
+	case Inspection::TypeDefinition::DataType::GUID:
+		{
+			return OStream << "guid";
+		}
+	case Inspection::TypeDefinition::DataType::Length:
+		{
+			return OStream << "length";
+		}
+	case Inspection::TypeDefinition::DataType::LengthReference:
+		{
+			return OStream << "length-reference";
+		}
+	case Inspection::TypeDefinition::DataType::Nothing:
+		{
+			return OStream << "nothing";
+		}
+	case Inspection::TypeDefinition::DataType::Parameters:
+		{
+			return OStream << "parameters";
+		}
+	case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
+		{
+			return OStream << "single-precision-real";
+		}
+	case Inspection::TypeDefinition::DataType::String:
+		{
+			return OStream << "string";
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
+		{
+			return OStream << "usigned-integer-8bit";
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
+		{
+			return OStream << "usigned-integer-16bit";
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
+		{
+			return OStream << "usigned-integer-32bit";
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
+		{
+			return OStream << "usigned-integer-64bit";
+		}
+	default:
+		{
+			assert(false);
+		}
+	}
+}
+
 std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::Expression::Type & Type)
 {
 	switch(Type)
@@ -439,6 +506,10 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 	case Inspection::TypeDefinition::Expression::Type::Subtract:
 		{
 			return OStream << "Subtract";
+		}
+	case Inspection::TypeDefinition::Expression::Type::TypeReference:
+		{
+			return OStream << "TypeReference";
 		}
 	case Inspection::TypeDefinition::Expression::Type::Value:
 		{

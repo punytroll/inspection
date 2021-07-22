@@ -59,7 +59,6 @@ namespace Inspection
 			Parameters,
 			SinglePrecisionReal,
 			String,
-			TypeReference,
 			UnsignedInteger8Bit,
 			UnsignedInteger16Bit,
 			UnsignedInteger32Bit,
@@ -176,20 +175,6 @@ namespace Inspection
 			Inspection::TypeDefinition::Parameters & operator=(Inspection::TypeDefinition::Parameters && Parameters) = delete;
 		};
 		
-		class TypeReference
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::TypeReference> Load(const XML::Element * TypeReferenceElement);
-		public:
-			std::vector<std::string> Parts;
-		private:
-			TypeReference(void) = default;
-			TypeReference(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
-			TypeReference(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
-			Inspection::TypeDefinition::TypeReference & operator=(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
-			Inspection::TypeDefinition::TypeReference & operator=(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
-		};
-		
 		class Expression
 		{
 		public:
@@ -204,6 +189,7 @@ namespace Inspection
 				Equals,
 				ParameterReference,
 				Subtract,
+				TypeReference,
 				Value
 			};
 		public:
@@ -321,6 +307,22 @@ namespace Inspection
 			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
 		};
 		
+		class TypeReference : public Inspection::TypeDefinition::Expression
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::TypeReference> Load(const XML::Element * Element);
+		public:
+			virtual ~TypeReference(void) = default;
+		public:
+			std::vector<std::string> Parts;
+		private:
+			TypeReference(void);
+			TypeReference(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
+			TypeReference(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
+			Inspection::TypeDefinition::TypeReference & operator=(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
+			Inspection::TypeDefinition::TypeReference & operator=(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
+		};
+		
 		class Length;
 		
 		class Value : public Inspection::TypeDefinition::Expression
@@ -331,7 +333,7 @@ namespace Inspection
 			virtual ~Value(void) = default;
 			Inspection::TypeDefinition::DataType GetDataType(void) const;
 		public:
-			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::LengthReference>, std::unique_ptr<Inspection::TypeDefinition::ParameterReference>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::unique_ptr<Inspection::TypeDefinition::TypeReference>, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::LengthReference>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		protected:
 			Value(void);
 			Value(Inspection::TypeDefinition::DataType DataType);
