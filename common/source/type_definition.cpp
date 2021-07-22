@@ -23,10 +23,6 @@
 #include "xml_helper.h"
 #include "xml_puny_dom.h"
 
-Inspection::TypeDefinition::Add::~Add(void)
-{
-}
-
 std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Add>{new Inspection::TypeDefinition::Add{}};
@@ -56,10 +52,6 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 
 Inspection::TypeDefinition::Cast::Cast(void) :
 	DataType{Inspection::TypeDefinition::DataType::Unknown}
-{
-}
-
-Inspection::TypeDefinition::Cast::~Cast(void)
 {
 }
 
@@ -137,10 +129,6 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 	}
 	
 	return Result;
-}
-
-Inspection::TypeDefinition::Divide::~Divide(void)
-{
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Divide> Inspection::TypeDefinition::Divide::Load(const XML::Element * Element)
@@ -239,10 +227,6 @@ std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinit
 	return Result;
 }
 
-Inspection::TypeDefinition::Equals::~Equals(void)
-{
-}
-
 std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::Equals::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Equals>{new Inspection::TypeDefinition::Equals{}};
@@ -267,6 +251,91 @@ std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::Expression::Expression(void) :
+	Type{Inspection::TypeDefinition::Expression::Type::Unknown}
+{
+}
+
+std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::Load(const XML::Element * Element)
+{
+	assert(Element != nullptr);
+	
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Expression>{};
+	
+	if(Element->GetName() == "add")
+	{
+		Result = Inspection::TypeDefinition::Add::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Add;
+	}
+	else if(Element->GetName() == "divide")
+	{
+		Result = Inspection::TypeDefinition::Divide::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Divide;
+	}
+	else if(Element->GetName() == "equals")
+	{
+		Result = Inspection::TypeDefinition::Equals::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Equals;
+	}
+	else if(Element->GetName() == "subtract")
+	{
+		Result = Inspection::TypeDefinition::Subtract::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Subtract;
+	}
+	else if((Element->GetName() == "length") && (XML::HasOneChildElement(Element) == true))
+	{
+		Result = Inspection::TypeDefinition::Cast::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
+	}
+	else if((Element->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(Element) == true))
+	{
+		Result = Inspection::TypeDefinition::Cast::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
+	}
+	else if((Element->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(Element) == true))
+	{
+		Result = Inspection::TypeDefinition::Cast::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
+	}
+	else if((Element->GetName() == "single-precision-real") && (XML::HasOneChildElement(Element) == true))
+	{
+		Result = Inspection::TypeDefinition::Cast::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
+	}
+	else
+	{
+		Result = Inspection::TypeDefinition::Value::Load(Element);
+		Result->Type = Inspection::TypeDefinition::Expression::Type::Value;
+	}
+	assert(Result->Type != Inspection::TypeDefinition::Expression::Type::Unknown);
+	
+	return Result;
+}
+
+std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::LoadFromWithin(const XML::Element * Element)
+{
+	auto ExpressionElement = static_cast<const XML::Element *>(nullptr);
+	
+	if(Element->GetChilds().size() > 0)
+	{
+		for(auto ChildNode : Element->GetChilds())
+		{
+			if(ChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				ExpressionElement = dynamic_cast<const XML::Element *>(ChildNode);
+				
+				break;
+			}
+		}
+		if(ExpressionElement == nullptr)
+		{
+			assert(false);
+		}
+	}
+	
+	return Inspection::TypeDefinition::Expression::Load(ExpressionElement);
 }
 
 std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefinition::FieldReference::Load(const XML::Element * Element)
@@ -452,99 +521,6 @@ const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> & Insp
 	return _Parameters;
 }
 
-Inspection::TypeDefinition::Expression::Expression(void) :
-	Type{Inspection::TypeDefinition::Expression::Type::Unknown}
-{
-}
-
-Inspection::TypeDefinition::Expression::~Expression(void)
-{
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::Load(const XML::Element * Element)
-{
-	assert(Element != nullptr);
-	
-	auto Result = std::unique_ptr<Inspection::TypeDefinition::Expression>{};
-	
-	if(Element->GetName() == "add")
-	{
-		Result = Inspection::TypeDefinition::Add::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Add;
-	}
-	else if(Element->GetName() == "divide")
-	{
-		Result = Inspection::TypeDefinition::Divide::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Divide;
-	}
-	else if(Element->GetName() == "equals")
-	{
-		Result = Inspection::TypeDefinition::Equals::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Equals;
-	}
-	else if(Element->GetName() == "subtract")
-	{
-		Result = Inspection::TypeDefinition::Subtract::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Subtract;
-	}
-	else if((Element->GetName() == "length") && (XML::HasOneChildElement(Element) == true))
-	{
-		Result = Inspection::TypeDefinition::Cast::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
-	}
-	else if((Element->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(Element) == true))
-	{
-		Result = Inspection::TypeDefinition::Cast::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
-	}
-	else if((Element->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(Element) == true))
-	{
-		Result = Inspection::TypeDefinition::Cast::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
-	}
-	else if((Element->GetName() == "single-precision-real") && (XML::HasOneChildElement(Element) == true))
-	{
-		Result = Inspection::TypeDefinition::Cast::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Cast;
-	}
-	else
-	{
-		Result = Inspection::TypeDefinition::Value::Load(Element);
-		Result->Type = Inspection::TypeDefinition::Expression::Type::Value;
-	}
-	assert(Result->Type != Inspection::TypeDefinition::Expression::Type::Unknown);
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::LoadFromWithin(const XML::Element * Element)
-{
-	auto ExpressionElement = static_cast<const XML::Element *>(nullptr);
-	
-	if(Element->GetChilds().size() > 0)
-	{
-		for(auto ChildNode : Element->GetChilds())
-		{
-			if(ChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				ExpressionElement = dynamic_cast<const XML::Element *>(ChildNode);
-				
-				break;
-			}
-		}
-		if(ExpressionElement == nullptr)
-		{
-			assert(false);
-		}
-	}
-	
-	return Inspection::TypeDefinition::Expression::Load(ExpressionElement);
-}
-
-Inspection::TypeDefinition::Subtract::~Subtract(void)
-{
-}
-
 std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition::Subtract::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Subtract>{new Inspection::TypeDefinition::Subtract{}};
@@ -608,6 +584,11 @@ std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefin
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::Value::Value(void) :
+	DataType{Inspection::TypeDefinition::DataType::Unknown}
+{
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::Value::Load(const XML::Element * Element)

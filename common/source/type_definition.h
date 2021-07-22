@@ -208,7 +208,7 @@ namespace Inspection
 				Value
 			};
 		public:
-			virtual ~Expression(void);
+			virtual ~Expression(void) = default;
 		public:
 			Inspection::TypeDefinition::Expression::Type Type;
 		protected:
@@ -225,7 +225,7 @@ namespace Inspection
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Add> Load(const XML::Element * Element);
 		public:
-			virtual ~Add(void);
+			virtual ~Add(void) = default;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand1;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand2;
@@ -242,7 +242,7 @@ namespace Inspection
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Cast> Load(const XML::Element * Element);
 		public:
-			virtual ~Cast(void);
+			virtual ~Cast(void) = default;
 		public:
 			Inspection::TypeDefinition::DataType DataType;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression;
@@ -259,7 +259,7 @@ namespace Inspection
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Divide> Load(const XML::Element * Element);
 		public:
-			virtual ~Divide(void);
+			virtual ~Divide(void) = default;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Dividend;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Divisor;
@@ -276,7 +276,7 @@ namespace Inspection
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Equals> Load(const XML::Element * Element);
 		public:
-			virtual ~Equals(void);
+			virtual ~Equals(void) = default;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression1;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression2;
@@ -293,7 +293,7 @@ namespace Inspection
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Subtract> Load(const XML::Element * Element);
 		public:
-			virtual ~Subtract(void);
+			virtual ~Subtract(void) = default;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Minuend;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Subtrahend;
@@ -312,10 +312,13 @@ namespace Inspection
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Value> Load(const XML::Element * Element);
 		public:
+			virtual ~Value(void) = default;
+		public:
 			Inspection::TypeDefinition::DataType DataType;
 			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::LengthReference>, std::unique_ptr<Inspection::TypeDefinition::ParameterReference>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::unique_ptr<Inspection::TypeDefinition::TypeReference>, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+		protected:
+			Value(void);
 		private:
-			Value(void) = default;
 			Value(const Inspection::TypeDefinition::Value & Value) = delete;
 			Value(Inspection::TypeDefinition::Value && Value) = delete;
 			Inspection::TypeDefinition::Value & operator=(const Inspection::TypeDefinition::Value & Value) = delete;
