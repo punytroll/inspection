@@ -411,3 +411,42 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		}
 	}
 }
+
+std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::Expression::Type & Type)
+{
+	switch(Type)
+	{
+	case Inspection::TypeDefinition::Expression::Type::Add:
+		{
+			return OStream << "Add";
+		}
+	case Inspection::TypeDefinition::Expression::Type::Cast:
+		{
+			return OStream << "Cast";
+		}
+	case Inspection::TypeDefinition::Expression::Type::Divide:
+		{
+			return OStream << "Divide";
+		}
+	case Inspection::TypeDefinition::Expression::Type::Equals:
+		{
+			return OStream << "Equals";
+		}
+	case Inspection::TypeDefinition::Expression::Type::ParameterReference:
+		{
+			return OStream << "ParameterReference";
+		}
+	case Inspection::TypeDefinition::Expression::Type::Subtract:
+		{
+			return OStream << "Subtract";
+		}
+	case Inspection::TypeDefinition::Expression::Type::Value:
+		{
+			return OStream << "Value";
+		}
+	default:
+		{
+			assert(false);
+		}
+	}
+}
