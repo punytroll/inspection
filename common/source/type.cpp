@@ -416,10 +416,10 @@ namespace Inspection
 			return std::any_cast<const Type &>(One) == std::any_cast<const Type &>(Two);
 		}
 		
-		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value1, const Inspection::TypeDefinition::Value & Value2)
+		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression1, const Inspection::TypeDefinition::Expression & Expression2)
 		{
-			auto Any1 = Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value1);
-			auto Any2 = Inspection::Algorithms::GetAnyFromValue(ExecutionContext, Value2);
+			auto Any1 = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Expression1);
+			auto Any2 = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Expression2);
 			
 			if((Any1.has_value() == true) && (Any2.has_value() == true))
 			{
@@ -453,32 +453,6 @@ namespace Inspection
 			}
 			
 			return false;
-		}
-		
-		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression1, const Inspection::TypeDefinition::Expression & Expression2)
-		{
-			if(Expression1.GetExpressionType() == Inspection::TypeDefinition::Expression::Type::Value)
-			{
-				auto Value1 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression1);
-				
-				assert(Value1 != nullptr);
-				if(Expression2.GetExpressionType() == Inspection::TypeDefinition::Expression::Type::Value)
-				{
-					auto Value2 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression2);
-					
-					assert(Value2 != nullptr);
-					
-					return Inspection::Algorithms::Equals(ExecutionContext, *Value1, *Value2);
-				}
-				else
-				{
-					assert(false);
-				}
-			}
-			else
-			{
-				assert(false);
-			}
 		}
 		
 		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Dividend, const Inspection::TypeDefinition::Expression & Divisor)
