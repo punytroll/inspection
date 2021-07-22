@@ -318,6 +318,7 @@ namespace Inspection
 			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::LengthReference>, std::unique_ptr<Inspection::TypeDefinition::ParameterReference>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::unique_ptr<Inspection::TypeDefinition::TypeReference>, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		protected:
 			Value(void);
+			Value(Inspection::TypeDefinition::DataType DataType);
 		private:
 			Value(const Inspection::TypeDefinition::Value & Value) = delete;
 			Value(Inspection::TypeDefinition::Value && Value) = delete;

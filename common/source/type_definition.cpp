@@ -603,8 +603,13 @@ std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefin
 }
 
 Inspection::TypeDefinition::Value::Value(void) :
+	Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::Unknown}
+{
+}
+
+Inspection::TypeDefinition::Value::Value(Inspection::TypeDefinition::DataType DataType) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::Expression::Type::Value},
-	_DataType{Inspection::TypeDefinition::DataType::Unknown}
+	_DataType{DataType}
 {
 }
 
