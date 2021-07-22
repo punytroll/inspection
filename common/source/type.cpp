@@ -74,7 +74,7 @@ namespace Inspection
 		{
 			auto Result = Type{};
 			
-			switch(Value.DataType)
+			switch(Value.GetDataType())
 			{
 			case Inspection::TypeDefinition::DataType::DataReference:
 				{
@@ -170,7 +170,7 @@ namespace Inspection
 		
 		std::any GetAnyFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
 		{
-			switch(Value.DataType)
+			switch(Value.GetDataType())
 			{
 			case Inspection::TypeDefinition::DataType::Boolean:
 				{
@@ -536,7 +536,7 @@ namespace Inspection
 					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Parameter->Expression.get());
 					
 					assert(Value != nullptr);
-					switch(Value->DataType)
+					switch(Value->GetDataType())
 					{
 					case Inspection::TypeDefinition::DataType::DataReference:
 						{
