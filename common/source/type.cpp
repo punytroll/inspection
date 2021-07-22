@@ -74,42 +74,53 @@ namespace Inspection
 		{
 			auto Result = Type{};
 			
-			if(Value.DataType == Inspection::TypeDefinition::DataType::DataReference)
+			switch(Value.DataType)
 			{
-				assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data) == true);
-				
-				auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data)));
-				
-				if(Any.type() == typeid(std::uint8_t))
+			case Inspection::TypeDefinition::DataType::DataReference:
 				{
-					Result = std::any_cast<std::uint8_t>(Any);
+					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data) == true);
+					
+					auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data)));
+					
+					if(Any.type() == typeid(std::uint8_t))
+					{
+						Result = std::any_cast<std::uint8_t>(Any);
+					}
+					else if(Any.type() == typeid(std::uint16_t))
+					{
+						Result = std::any_cast<std::uint16_t>(Any);
+					}
+					else if(Any.type() == typeid(std::uint32_t))
+					{
+						Result = std::any_cast<std::uint32_t>(Any);
+					}
+					else
+					{
+						assert(false);
+					}
+					
+					break;
 				}
-				else if(Any.type() == typeid(std::uint16_t))
+			case Inspection::TypeDefinition::DataType::String:
 				{
-					Result = std::any_cast<std::uint16_t>(Any);
+					assert(std::holds_alternative<std::string>(Value.Data) == true);
+					Result = from_string_cast<Type>(std::get<std::string>(Value.Data));
+					
+					break;
 				}
-				else if(Any.type() == typeid(std::uint32_t))
+			case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
 				{
-					Result = std::any_cast<std::uint32_t>(Any);
+					assert(std::holds_alternative<std::uint64_t>(Value.Data) == true);
+					Result = std::get<std::uint64_t>(Value.Data);
+					
+					break;
 				}
-				else
+			default:
 				{
 					assert(false);
+					
+					break;
 				}
-			}
-			else if(Value.DataType == Inspection::TypeDefinition::DataType::String)
-			{
-				assert(std::holds_alternative<std::string>(Value.Data) == true);
-				Result = from_string_cast<Type>(std::get<std::string>(Value.Data));
-			}
-			else if(Value.DataType == Inspection::TypeDefinition::DataType::UnsignedInteger64Bit)
-			{
-				assert(std::holds_alternative<std::uint64_t>(Value.Data) == true);
-				Result = std::get<std::uint64_t>(Value.Data);
-			}
-			else
-			{
-				assert(false);
 			}
 			
 			return Result;
@@ -525,40 +536,53 @@ namespace Inspection
 					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Parameter->Expression.get());
 					
 					assert(Value != nullptr);
-					if(Value->DataType == Inspection::TypeDefinition::DataType::String)
+					switch(Value->DataType)
 					{
-						assert(std::holds_alternative<std::string>(Value->Data) == true);
-						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
-					}
-					else if(Value->DataType == Inspection::TypeDefinition::DataType::DataReference)
-					{
-						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value->Data) == true);
-						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
-					}
-					else if(Value->DataType == Inspection::TypeDefinition::DataType::TypeReference)
-					{
-						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Value->Data) == true);
-						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
-					}
-					else if(Value->DataType == Inspection::TypeDefinition::DataType::ParameterReference)
-					{
-						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Value->Data) == true);
-						NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
-					}
-					else if(Value->DataType == Inspection::TypeDefinition::DataType::Parameters)
-					{
-						assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value->Data) == true);
-						
-						auto InnerParameters = std::unordered_map<std::string, std::any>{};
-						
-						FillNewParameters(ExecutionContext, InnerParameters, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value->Data)));
-						NewParameters.emplace(Parameter->Name, InnerParameters);
-						
-						break;
-					}
-					else
-					{
-						assert(false);
+					case Inspection::TypeDefinition::DataType::DataReference:
+						{
+							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value->Data) == true);
+							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
+							
+							break;
+						}
+					case Inspection::TypeDefinition::DataType::ParameterReference:
+						{
+							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Value->Data) == true);
+							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
+							
+							break;
+						}
+					case Inspection::TypeDefinition::DataType::Parameters:
+						{
+							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value->Data) == true);
+							
+							auto InnerParameters = std::unordered_map<std::string, std::any>{};
+							
+							FillNewParameters(ExecutionContext, InnerParameters, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value->Data)));
+							NewParameters.emplace(Parameter->Name, InnerParameters);
+							
+							break;
+						}
+					case Inspection::TypeDefinition::DataType::String:
+						{
+							assert(std::holds_alternative<std::string>(Value->Data) == true);
+							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
+							
+							break;
+						}
+					case Inspection::TypeDefinition::DataType::TypeReference:
+						{
+							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::TypeReference>>(Value->Data) == true);
+							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
+							
+							break;
+						}
+					default:
+						{
+							assert(false);
+							
+							break;
+						}
 					}
 					
 					break;
