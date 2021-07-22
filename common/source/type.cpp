@@ -24,8 +24,6 @@ namespace Inspection
 		std::optional<bool> StructureIsValid;
 	};
 	
-	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map<std::string, std::any> & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions);
-	
 	namespace Algorithms
 	{
 		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Summand1, const Inspection::TypeDefinition::Expression & Summand2);
@@ -34,6 +32,7 @@ namespace Inspection
 		std::any GetAnyFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression);
 		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
 		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Minuend, const Inspection::TypeDefinition::Expression & Subtrahend);
+		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters);
 		
 		template<typename Type>
 		Type Cast(const std::any & Any)
@@ -212,11 +211,7 @@ namespace Inspection
 				{
 					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value.Data) == true);
 					
-					auto Parameters = std::unordered_map<std::string, std::any>{};
-					
-					Inspection::FillNewParameters(ExecutionContext, Parameters, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value.Data)));
-					
-					return Parameters;
+					return Inspection::Algorithms::GetParameters(ExecutionContext, std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value.Data).get());
 				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
@@ -504,13 +499,20 @@ namespace Inspection
 			
 			return nullptr;
 		}
-	}
-	
-	void FillNewParameters(ExecutionContext & ExecutionContext, std::unordered_map<std::string, std::any> & NewParameters, const Inspection::TypeDefinition::Parameters & ParameterDefinitions)
-	{
-		for(auto & Parameter : ParameterDefinitions.GetParameters())
+		
+		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
 		{
-			NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Parameter->Expression)));
+			auto Result = std::unordered_map<std::string, std::any>{};
+			
+			if(Parameters != nullptr)
+			{
+				for(auto & Parameter : Parameters->GetParameters())
+				{
+					Result.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Parameter->Expression)));
+				}
+			}
+			
+			return Result;
 		}
 	}
 }
@@ -562,12 +564,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			}
 			if(PartReader != nullptr)
 			{
-				auto PartParameters = std::unordered_map<std::string, std::any>{};
+				auto PartParameters = Inspection::Algorithms::GetParameters(ExecutionContext, _Part->Parameters.get());
 				
-				if(_Part->Parameters != nullptr)
-				{
-					FillNewParameters(ExecutionContext, PartParameters, *(_Part->Parameters));
-				}
 				switch(_Part->Type)
 				{
 				case Inspection::TypeDefinition::Part::Type::Alternative:
@@ -676,12 +674,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 		}
 		if(AlternativePartReader != nullptr)
 		{
-			auto AlternativePartParameters = std::unordered_map<std::string, std::any>{};
+			auto AlternativePartParameters = Inspection::Algorithms::GetParameters(ExecutionContext, AlternativePart.Parameters.get());
 			
-			if(AlternativePart.Parameters != nullptr)
-			{
-				FillNewParameters(ExecutionContext, AlternativePartParameters, *(AlternativePart.Parameters));
-			}
 			switch(AlternativePart.Type)
 			{
 			case Inspection::TypeDefinition::Part::Type::Array:
@@ -779,12 +773,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 	{
 	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
 		{
-			auto ElementParameters = std::unordered_map<std::string, std::any>{};
+			auto ElementParameters = Inspection::Algorithms::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
 			
-			if(Array.Array->ElementParameters != nullptr)
-			{
-				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
-			}
 			assert(Array.Array->ElementType != nullptr);
 			
 			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
@@ -841,12 +831,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
 		{
-			auto ElementParameters = std::unordered_map<std::string, std::any>{};
+			auto ElementParameters = Inspection::Algorithms::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
 			
-			if(Array.Array->ElementParameters)
-			{
-				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
-			}
 			assert(Array.Array->IterateForEachField != nullptr);
 			
 			auto IterateField = ExecutionContext.GetFieldFromFieldReference(*(Array.Array->IterateForEachField));
@@ -885,12 +871,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
 		{
-			auto ElementParameters = std::unordered_map<std::string, std::any>{};
+			auto ElementParameters = Inspection::Algorithms::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
 			
-			if(Array.Array->ElementParameters)
-			{
-				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
-			}
 			assert(Array.Array->ElementType != nullptr);
 			
 			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
@@ -938,12 +920,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
 		{
-			auto ElementParameters = std::unordered_map<std::string, std::any>{};
+			auto ElementParameters = Inspection::Algorithms::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
 			
-			if(Array.Array->ElementParameters)
-			{
-				FillNewParameters(ExecutionContext, ElementParameters, *(Array.Array->ElementParameters));
-			}
 			assert(Array.Array->ElementType != nullptr);
 			
 			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
@@ -1034,12 +1012,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		}
 		if(FieldPartReader != nullptr)
 		{
-			auto FieldPartParameters = std::unordered_map<std::string, std::any>{};
+			auto FieldPartParameters = Inspection::Algorithms::GetParameters(ExecutionContext, FieldPart.Parameters.get());
 			
-			if(FieldPart.Parameters != nullptr)
-			{
-				FillNewParameters(ExecutionContext, FieldPartParameters, *(FieldPart.Parameters));
-			}
 			switch(FieldPart.Type)
 			{
 			case Inspection::TypeDefinition::Part::Type::Alternative:
@@ -1328,12 +1302,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 		}
 		if(SequencePartReader != nullptr)
 		{
-			auto SequencePartParameters = std::unordered_map<std::string, std::any>{};
+			auto SequencePartParameters = Inspection::Algorithms::GetParameters(ExecutionContext, SequencePart.Parameters.get());
 			
-			if(SequencePart.Parameters != nullptr)
-			{
-				FillNewParameters(ExecutionContext, SequencePartParameters, *(SequencePart.Parameters));
-			}
 			switch(SequencePart.Type)
 			{
 			case Inspection::TypeDefinition::Part::Type::Alternative:
