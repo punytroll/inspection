@@ -70,6 +70,8 @@ namespace Inspection
 		class DataReference
 		{
 		public:
+			static std::unique_ptr<Inspection::TypeDefinition::DataReference> Load(const XML::Element * Element);
+		public:
 			class Part
 			{
 			public:
@@ -78,9 +80,14 @@ namespace Inspection
 					Field,
 					Tag
 				};
-				
-				Inspection::TypeDefinition::DataReference::Part::Type Type;
+			public:
+				Part(Inspection::TypeDefinition::DataReference::Part::Type Type);
+			public:
+				Inspection::TypeDefinition::DataReference::Part::Type GetType(void) const;
+			public:
 				std::string DetailName;
+			private:
+				Inspection::TypeDefinition::DataReference::Part::Type _Type;
 			};
 			
 			enum class Root
@@ -89,9 +96,8 @@ namespace Inspection
 				Type
 			};
 		public:
-			static std::unique_ptr<Inspection::TypeDefinition::DataReference> Load(const XML::Element * Element);
+			Inspection::TypeDefinition::DataReference::Root GetRoot(void) const;
 		public:
-			Inspection::TypeDefinition::DataReference::Root Root;
 			std::vector<Inspection::TypeDefinition::DataReference::Part> Parts;
 		private:
 			DataReference(void) = default;
@@ -99,10 +105,14 @@ namespace Inspection
 			DataReference(Inspection::TypeDefinition::DataReference && DataReference) = delete;
 			Inspection::TypeDefinition::DataReference & operator=(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
 			Inspection::TypeDefinition::DataReference & operator=(Inspection::TypeDefinition::DataReference && DataReference) = delete;
+		private:
+			Inspection::TypeDefinition::DataReference::Root _Root;
 		};
 		
 		class FieldReference
 		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::FieldReference> Load(const XML::Element * Element);
 		public:
 			enum class Root
 			{
@@ -110,9 +120,8 @@ namespace Inspection
 				Type
 			};
 		public:
-			static std::unique_ptr<Inspection::TypeDefinition::FieldReference> Load(const XML::Element * Element);
+			Inspection::TypeDefinition::FieldReference::Root GetRoot(void) const;
 		public:
-			Inspection::TypeDefinition::FieldReference::Root Root;
 			std::vector<std::string> Parts;
 		private:
 			FieldReference(void) = default;
@@ -120,6 +129,8 @@ namespace Inspection
 			FieldReference(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
 			Inspection::TypeDefinition::FieldReference & operator=(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
 			Inspection::TypeDefinition::FieldReference & operator=(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
+		private:
+			Inspection::TypeDefinition::FieldReference::Root _Root;
 		};
 		
 		class LengthReference
@@ -137,14 +148,17 @@ namespace Inspection
 				Type
 			};
 		public:
-			Inspection::TypeDefinition::LengthReference::Name Name;
-			Inspection::TypeDefinition::LengthReference::Root Root;
+			Inspection::TypeDefinition::LengthReference::Name GetName(void) const;
+			Inspection::TypeDefinition::LengthReference::Root GetRoot(void) const;
 		private:
 			LengthReference(void) = default;
 			LengthReference(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
 			LengthReference(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
 			Inspection::TypeDefinition::LengthReference & operator=(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
 			Inspection::TypeDefinition::LengthReference & operator=(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
+		private:
+			Inspection::TypeDefinition::LengthReference::Name _Name;
+			Inspection::TypeDefinition::LengthReference::Root _Root;
 		};
 		
 		class ParameterReference

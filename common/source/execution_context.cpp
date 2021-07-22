@@ -57,8 +57,8 @@ Inspection::Result & Inspection::ExecutionContext::GetTopLevelResult(void) const
 
 Inspection::Length Inspection::ExecutionContext::CalculateLengthFromReference(const Inspection::TypeDefinition::LengthReference & LengthReference)
 {
-	assert(LengthReference.Root == Inspection::TypeDefinition::LengthReference::Root::Type);
-	assert(LengthReference.Name == Inspection::TypeDefinition::LengthReference::Name::Consumed);
+	assert(LengthReference.GetRoot() == Inspection::TypeDefinition::LengthReference::Root::Type);
+	assert(LengthReference.GetName() == Inspection::TypeDefinition::LengthReference::Name::Consumed);
 	assert(_ExecutionStack.size() >= 2);
 	
 	// Although the first element in the stack is the "type", its length is the last to be modified (right at the end).
@@ -71,7 +71,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 	auto Result = static_cast<Inspection::Value *>(nullptr);
 	
 	assert(_ExecutionStack.size() > 0);
-	switch(DataReference.Root)
+	switch(DataReference.GetRoot())
 	{
 	case Inspection::TypeDefinition::DataReference::Root::Current:
 		{
@@ -89,7 +89,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 			
 			while(PartIterator != std::end(DataReference.Parts))
 			{
-				switch(PartIterator->Type)
+				switch(PartIterator->GetType())
 				{
 				case Inspection::TypeDefinition::DataReference::Part::Type::Field:
 					{
@@ -203,7 +203,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 	auto Result = static_cast<Inspection::Value *>(nullptr);
 	auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element>::iterator{};
 	
-	switch(FieldReference.Root)
+	switch(FieldReference.GetRoot())
 	{
 	case Inspection::TypeDefinition::FieldReference::Root::Current:
 		{
@@ -353,7 +353,7 @@ Inspection::Value * Inspection::ExecutionContext::_GetValueFromDataReferenceFrom
 	
 	for(auto PartIterator = std::begin(Parts); (Result != nullptr) && (PartIterator != EndIterator); ++PartIterator)
 	{
-		switch(PartIterator->Type)
+		switch(PartIterator->GetType())
 		{
 		case Inspection::TypeDefinition::DataReference::Part::Type::Field:
 			{

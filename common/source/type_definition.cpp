@@ -83,6 +83,21 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 	return Result;
 }
 
+Inspection::TypeDefinition::DataReference::Part::Part(Inspection::TypeDefinition::DataReference::Part::Type Type) :
+	_Type{Type}
+{
+}
+
+Inspection::TypeDefinition::DataReference::Part::Type Inspection::TypeDefinition::DataReference::Part::GetType(void) const
+{
+	return _Type;
+}
+
+Inspection::TypeDefinition::DataReference::Root Inspection::TypeDefinition::DataReference::GetRoot(void) const
+{
+	return _Root;
+}
+
 std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefinition::DataReference::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::DataReference>{new Inspection::TypeDefinition::DataReference{}};
@@ -90,11 +105,11 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 	assert(Element->HasAttribute("root") == true);
 	if(Element->GetAttribute("root") == "current")
 	{
-		Result->Root = Inspection::TypeDefinition::DataReference::Root::Current;
+		Result->_Root = Inspection::TypeDefinition::DataReference::Root::Current;
 	}
 	else if(Element->GetAttribute("root") == "type")
 	{
-		Result->Root = Inspection::TypeDefinition::DataReference::Root::Type;
+		Result->_Root = Inspection::TypeDefinition::DataReference::Root::Type;
 	}
 	else
 	{
@@ -105,13 +120,12 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 		if(ChildNode->GetNodeType() == XML::NodeType::Element)
 		{
 			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-			auto & DataReferencePart = Result->Parts.emplace_back();
 			
 			if(ChildElement->GetName() == "field")
 			{
 				assert(ChildElement->GetChilds().size() == 1);
-				DataReferencePart.Type = Inspection::TypeDefinition::DataReference::Part::Type::Field;
 				
+				auto & DataReferencePart = Result->Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Field);
 				auto SubText = dynamic_cast<const XML::Text *>(ChildElement->GetChild(0));
 				
 				assert(SubText != nullptr);
@@ -120,8 +134,8 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 			else if(ChildElement->GetName() == "tag")
 			{
 				assert(ChildElement->GetChilds().size() == 1);
-				DataReferencePart.Type = Inspection::TypeDefinition::DataReference::Part::Type::Tag;
 				
+				auto & DataReferencePart = Result->Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Tag);
 				auto TagText = dynamic_cast<const XML::Text *>(ChildElement->GetChild(0));
 				
 				assert(TagText != nullptr);
@@ -349,6 +363,11 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	return Inspection::TypeDefinition::Expression::Load(ExpressionElement);
 }
 
+Inspection::TypeDefinition::FieldReference::Root Inspection::TypeDefinition::FieldReference::GetRoot(void) const
+{
+	return _Root;
+}
+
 std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefinition::FieldReference::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::FieldReference>{new Inspection::TypeDefinition::FieldReference{}};
@@ -356,11 +375,11 @@ std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefi
 	assert(Element->HasAttribute("root") == true);
 	if(Element->GetAttribute("root") == "current")
 	{
-		Result->Root = Inspection::TypeDefinition::FieldReference::Root::Current;
+		Result->_Root = Inspection::TypeDefinition::FieldReference::Root::Current;
 	}
 	else if(Element->GetAttribute("root") == "type")
 	{
-		Result->Root = Inspection::TypeDefinition::FieldReference::Root::Type;
+		Result->_Root = Inspection::TypeDefinition::FieldReference::Root::Type;
 	}
 	else
 	{
@@ -457,6 +476,16 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 	return Result;
 }
 
+Inspection::TypeDefinition::LengthReference::Root Inspection::TypeDefinition::LengthReference::GetRoot(void) const
+{
+	return _Root;
+}
+
+Inspection::TypeDefinition::LengthReference::Name Inspection::TypeDefinition::LengthReference::GetName(void) const
+{
+	return _Name;
+}
+
 std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDefinition::LengthReference::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::LengthReference>{new Inspection::TypeDefinition::LengthReference{}};
@@ -464,7 +493,7 @@ std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDef
 	assert(Element->HasAttribute("root") == true);
 	if(Element->GetAttribute("root") == "type")
 	{
-		Result->Root = Inspection::TypeDefinition::LengthReference::Root::Type;
+		Result->_Root = Inspection::TypeDefinition::LengthReference::Root::Type;
 	}
 	else
 	{
@@ -473,7 +502,7 @@ std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDef
 	assert(Element->HasAttribute("name") == true);
 	if(Element->GetAttribute("name") == "consumed")
 	{
-		Result->Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
+		Result->_Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
 	}
 	else
 	{

@@ -349,7 +349,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference & DataReference)
 {
-	OStream << "DataReference[" << DataReference.Root << ", {";
+	OStream << "DataReference[" << DataReference.GetRoot() << ", {";
 	
 	auto First = true;
 	
@@ -390,7 +390,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference::Part & Part)
 {
-	return OStream << "Part[" << Part.Type << ", \"" << Part.DetailName << "\"]";
+	return OStream << "Part[" << Part.GetType() << ", \"" << Part.DetailName << "\"]";
 }
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Part::Type & Type)
