@@ -206,12 +206,6 @@ namespace Inspection
 				{
 					return nullptr;
 				}
-			case Inspection::TypeDefinition::DataType::ParameterReference:
-				{
-					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Value.Data) == true);
-					
-					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Value.Data)));
-				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
 					assert(std::holds_alternative<float>(Value.Data) == true);
@@ -338,6 +332,14 @@ namespace Inspection
 					assert(Divide != nullptr);
 					
 					return Inspection::Algorithms::Divide(ExecutionContext, *(Divide->Dividend), *(Divide->Divisor));
+				}
+			case Inspection::TypeDefinition::Expression::Type::ParameterReference:
+				{
+					auto ParameterReference = dynamic_cast<const Inspection::TypeDefinition::ParameterReference *>(&Expression);
+					
+					assert(ParameterReference != nullptr);
+					
+					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, *ParameterReference);
 				}
 			case Inspection::TypeDefinition::Expression::Type::Subtract:
 				{
@@ -505,6 +507,15 @@ namespace Inspection
 					
 					break;
 				}
+			case Inspection::TypeDefinition::Expression::Type::ParameterReference:
+				{
+					auto ParameterReference = dynamic_cast<const Inspection::TypeDefinition::ParameterReference *>(Parameter->Expression.get());
+					
+					assert(ParameterReference != nullptr);
+					NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, *ParameterReference));
+					
+					break;
+				}
 			case Inspection::TypeDefinition::Expression::Type::Value:
 				{
 					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Parameter->Expression.get());
@@ -515,13 +526,6 @@ namespace Inspection
 					case Inspection::TypeDefinition::DataType::DataReference:
 						{
 							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value->Data) == true);
-							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
-							
-							break;
-						}
-					case Inspection::TypeDefinition::DataType::ParameterReference:
-						{
-							assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::ParameterReference>>(Value->Data) == true);
 							NewParameters.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
 							
 							break;

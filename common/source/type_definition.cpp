@@ -311,6 +311,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		Result = Inspection::TypeDefinition::Equals::Load(Element);
 	}
+	else if(Element->GetName() == "parameter-reference")
+	{
+		Result = Inspection::TypeDefinition::ParameterReference::Load(Element);
+	}
 	else if(Element->GetName() == "subtract")
 	{
 		Result = Inspection::TypeDefinition::Subtract::Load(Element);
@@ -523,6 +527,11 @@ std::unique_ptr<Inspection::TypeDefinition::Parameter> Inspection::TypeDefinitio
 	return Result;
 }
 
+Inspection::TypeDefinition::ParameterReference::ParameterReference(void) :
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::ParameterReference}
+{
+}
+
 std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Inspection::TypeDefinition::ParameterReference::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::ParameterReference>{new Inspection::TypeDefinition::ParameterReference{}};
@@ -692,11 +701,6 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		Result->_DataType = Inspection::TypeDefinition::DataType::LengthReference;
 		Result->Data = Inspection::TypeDefinition::LengthReference::Load(Element);
 	}
-	else if(Element->GetName() == "parameter-reference")
-	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::ParameterReference;
-		Result->Data = Inspection::TypeDefinition::ParameterReference::Load(Element);
-	}
 	else if(Element->GetName() == "parameters")
 	{
 		Result->_DataType = Inspection::TypeDefinition::DataType::Parameters;
@@ -793,10 +797,6 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	else if(String == "nothing")
 	{
 		return Inspection::TypeDefinition::DataType::Nothing;
-	}
-	else if(String == "parameter-reference")
-	{
-		return Inspection::TypeDefinition::DataType::ParameterReference;
 	}
 	else if(String == "parameters")
 	{

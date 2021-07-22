@@ -56,7 +56,6 @@ namespace Inspection
 			Nothing,
 			Length,
 			LengthReference,
-			ParameterReference,
 			Parameters,
 			SinglePrecisionReal,
 			String,
@@ -161,20 +160,6 @@ namespace Inspection
 			Inspection::TypeDefinition::LengthReference::Root _Root;
 		};
 		
-		class ParameterReference
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Load(const XML::Element * Element);
-		public:
-			std::string Name;
-		private:
-			ParameterReference(void) = default;
-			ParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
-			ParameterReference(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
-			Inspection::TypeDefinition::ParameterReference & operator=(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
-			Inspection::TypeDefinition::ParameterReference & operator=(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
-		};
-		
 		class Parameters
 		{
 		public:
@@ -217,6 +202,7 @@ namespace Inspection
 				Cast,
 				Divide,
 				Equals,
+				ParameterReference,
 				Subtract,
 				Value
 			};
@@ -300,6 +286,22 @@ namespace Inspection
 			Equals(Inspection::TypeDefinition::Equals && Equals) = delete;
 			Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
 			Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
+		};
+		
+		class ParameterReference : public Inspection::TypeDefinition::Expression
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Load(const XML::Element * Element);
+		public:
+			virtual ~ParameterReference(void) = default;
+		public:
+			std::string Name;
+		private:
+			ParameterReference(void);
+			ParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
+			ParameterReference(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
+			Inspection::TypeDefinition::ParameterReference & operator=(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
+			Inspection::TypeDefinition::ParameterReference & operator=(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
 		};
 		
 		class Subtract : public Inspection::TypeDefinition::Expression
