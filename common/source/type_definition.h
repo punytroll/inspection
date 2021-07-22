@@ -199,7 +199,6 @@ namespace Inspection
 		public:
 			enum class Type
 			{
-				Unknown,
 				Add,
 				Cast,
 				Divide,
@@ -209,15 +208,16 @@ namespace Inspection
 			};
 		public:
 			virtual ~Expression(void) = default;
-		public:
-			Inspection::TypeDefinition::Expression::Type Type;
+			Inspection::TypeDefinition::Expression::Type GetExpressionType(void) const;
 		protected:
-			Expression(void);
+			Expression(Inspection::TypeDefinition::Expression::Type ExpressionType);
 		private:
 			Expression(const Inspection::TypeDefinition::Expression & Expression) = delete;
 			Expression(Inspection::TypeDefinition::Expression && Expression) = delete;
 			Inspection::TypeDefinition::Expression & operator=(const Inspection::TypeDefinition::Expression & Expression) = delete;
 			Inspection::TypeDefinition::Expression & operator=(Inspection::TypeDefinition::Expression && Expression) = delete;
+		private:
+			Inspection::TypeDefinition::Expression::Type _ExpressionType;
 		};
 		
 		class Add : public Inspection::TypeDefinition::Expression
@@ -230,7 +230,7 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand1;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand2;
 		private:
-			Add(void) = default;
+			Add(void);
 			Add(const Inspection::TypeDefinition::Add & Add) = delete;
 			Add(Inspection::TypeDefinition::Add && Add) = delete;
 			Inspection::TypeDefinition::Add & operator=(const Inspection::TypeDefinition::Add & Add) = delete;
@@ -264,7 +264,7 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Dividend;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Divisor;
 		private:
-			Divide(void) = default;
+			Divide(void);
 			Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
 			Divide(Inspection::TypeDefinition::Divide && Divide) = delete;
 			Inspection::TypeDefinition::Divide & operator=(const Inspection::TypeDefinition::Divide & Divide) = delete;
@@ -281,7 +281,7 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression1;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression2;
 		private:
-			Equals(void) = default;
+			Equals(void);
 			Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
 			Equals(Inspection::TypeDefinition::Equals && Equals) = delete;
 			Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
@@ -298,7 +298,7 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Minuend;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Subtrahend;
 		private:
-			Subtract(void) = default;
+			Subtract(void);
 			Subtract(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
 			Subtract(Inspection::TypeDefinition::Subtract && Subtract) = delete;
 			Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;

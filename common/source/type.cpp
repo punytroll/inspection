@@ -118,7 +118,7 @@ namespace Inspection
 		template<typename Type>
 		Type GetDataFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression)
 		{
-			switch(Expression.Type)
+			switch(Expression.GetExpressionType())
 			{
 			case Inspection::TypeDefinition::Expression::Type::Cast:
 				{
@@ -256,7 +256,7 @@ namespace Inspection
 			{
 				if(Tag->Expression)
 				{
-					assert(Tag->Expression->Type == Inspection::TypeDefinition::Expression::Type::Value);
+					assert(Tag->Expression->GetExpressionType() == Inspection::TypeDefinition::Expression::Type::Value);
 					
 					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Tag->Expression.get());
 					
@@ -302,7 +302,7 @@ namespace Inspection
 		
 		std::any GetAnyFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression)
 		{
-			switch(Expression.Type)
+			switch(Expression.GetExpressionType())
 			{
 			case Inspection::TypeDefinition::Expression::Type::Add:
 				{
@@ -446,12 +446,12 @@ namespace Inspection
 		
 		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression1, const Inspection::TypeDefinition::Expression & Expression2)
 		{
-			if(Expression1.Type == Inspection::TypeDefinition::Expression::Type::Value)
+			if(Expression1.GetExpressionType() == Inspection::TypeDefinition::Expression::Type::Value)
 			{
 				auto Value1 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression1);
 				
 				assert(Value1 != nullptr);
-				if(Expression2.Type == Inspection::TypeDefinition::Expression::Type::Value)
+				if(Expression2.GetExpressionType() == Inspection::TypeDefinition::Expression::Type::Value)
 				{
 					auto Value2 = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression2);
 					
@@ -509,7 +509,7 @@ namespace Inspection
 	{
 		for(auto & Parameter : ParameterDefinitions.GetParameters())
 		{
-			switch(Parameter->Expression->Type)
+			switch(Parameter->Expression->GetExpressionType())
 			{
 			case Inspection::TypeDefinition::Expression::Type::Cast:
 				{
@@ -1189,7 +1189,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	{
 		for(auto & Expression : Field.Verifications)
 		{
-			switch(Expression->Type)
+			switch(Expression->GetExpressionType())
 			{
 			case Inspection::TypeDefinition::Expression::Type::Equals:
 				{
@@ -1253,7 +1253,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	{
 		for(auto & Expression : Fields.Verifications)
 		{
-			switch(Expression->Type)
+			switch(Expression->GetExpressionType())
 			{
 			case Inspection::TypeDefinition::Expression::Type::Equals:
 				{
@@ -1332,7 +1332,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	{
 		for(auto & Expression : Forward.Verifications)
 		{
-			switch(Expression->Type)
+			switch(Expression->GetExpressionType())
 			{
 			case Inspection::TypeDefinition::Expression::Type::Equals:
 				{
