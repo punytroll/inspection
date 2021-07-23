@@ -1,0 +1,22 @@
+root = ../..
+
+include $(root)/Makefile.include
+
+default: all
+
+all: common $(root)/asfinspector
+
+clean:
+	$(RM) $(root)/asfinspector
+	$(RM) asfinspector.o
+
+common:
+	$(MAKE) -C $(root)/common
+
+$(root)/asfinspector: asfinspector.o $(root)/common/libcommon.a $(root)/libraries/xml_parser/build/libxml_parser.a
+	$(CXX) $(LDFLAGS) $^ -o $@
+
+asfinspector.o: asfinspector.cpp $(root)/common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I$(root)/common/include
+
+.PHONY: common
