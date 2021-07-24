@@ -83,14 +83,9 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 	return Result;
 }
 
-Inspection::TypeDefinition::DataReference::Part::Part(Inspection::TypeDefinition::DataReference::Part::Type Type) :
-	_Type{Type}
+Inspection::TypeDefinition::DataReference::DataReference(void) :
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::DataReference}
 {
-}
-
-Inspection::TypeDefinition::DataReference::Part::Type Inspection::TypeDefinition::DataReference::Part::GetType(void) const
-{
-	return _Type;
 }
 
 Inspection::TypeDefinition::DataReference::Root Inspection::TypeDefinition::DataReference::GetRoot(void) const
@@ -149,6 +144,16 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::DataReference::Part::Part(Inspection::TypeDefinition::DataReference::Part::Type Type) :
+	_Type{Type}
+{
+}
+
+Inspection::TypeDefinition::DataReference::Part::Type Inspection::TypeDefinition::DataReference::Part::GetType(void) const
+{
+	return _Type;
 }
 
 Inspection::TypeDefinition::Divide::Divide(void) :
@@ -303,6 +308,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		Result = Inspection::TypeDefinition::Add::Load(Element);
 	}
+	else if(Element->GetName() == "data-reference")
+	{
+		Result = Inspection::TypeDefinition::DataReference::Load(Element);
+	}
 	else if(Element->GetName() == "divide")
 	{
 		Result = Inspection::TypeDefinition::Divide::Load(Element);
@@ -310,6 +319,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	else if(Element->GetName() == "equals")
 	{
 		Result = Inspection::TypeDefinition::Equals::Load(Element);
+	}
+	else if(Element->GetName() == "field-reference")
+	{
+		Result = Inspection::TypeDefinition::FieldReference::Load(Element);
 	}
 	else if(Element->GetName() == "length-reference")
 	{
@@ -699,11 +712,6 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		assert(TextNode != nullptr);
 		Result->Data = from_string_cast<bool>(TextNode->GetText());
 	}
-	else if(Element->GetName() == "data-reference")
-	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::DataReference;
-		Result->Data = Inspection::TypeDefinition::DataReference::Load(Element);
-	}
 	else if(Element->GetName() == "guid")
 	{
 		Result->_DataType = Inspection::TypeDefinition::DataType::GUID;
@@ -798,10 +806,6 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	if(String == "boolean")
 	{
 		return Inspection::TypeDefinition::DataType::Boolean;
-	}
-	else if(String == "data-reference")
-	{
-		return Inspection::TypeDefinition::DataType::DataReference;
 	}
 	else if(String == "length")
 	{

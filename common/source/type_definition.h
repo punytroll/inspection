@@ -51,7 +51,6 @@ namespace Inspection
 		{
 			Unknown,
 			Boolean,
-			DataReference,
 			GUID,
 			Nothing,
 			Length,
@@ -62,48 +61,6 @@ namespace Inspection
 			UnsignedInteger16Bit,
 			UnsignedInteger32Bit,
 			UnsignedInteger64Bit
-		};
-		
-		class DataReference
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::DataReference> Load(const XML::Element * Element);
-		public:
-			class Part
-			{
-			public:
-				enum class Type
-				{
-					Field,
-					Tag
-				};
-			public:
-				Part(Inspection::TypeDefinition::DataReference::Part::Type Type);
-			public:
-				Inspection::TypeDefinition::DataReference::Part::Type GetType(void) const;
-			public:
-				std::string DetailName;
-			private:
-				Inspection::TypeDefinition::DataReference::Part::Type _Type;
-			};
-			
-			enum class Root
-			{
-				Current,
-				Type
-			};
-		public:
-			Inspection::TypeDefinition::DataReference::Root GetRoot(void) const;
-		public:
-			std::vector<Inspection::TypeDefinition::DataReference::Part> Parts;
-		private:
-			DataReference(void) = default;
-			DataReference(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
-			DataReference(Inspection::TypeDefinition::DataReference && DataReference) = delete;
-			Inspection::TypeDefinition::DataReference & operator=(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
-			Inspection::TypeDefinition::DataReference & operator=(Inspection::TypeDefinition::DataReference && DataReference) = delete;
-		private:
-			Inspection::TypeDefinition::DataReference::Root _Root;
 		};
 		
 		class Parameters
@@ -132,6 +89,7 @@ namespace Inspection
 			{
 				Add,
 				Cast,
+				DataReference,
 				Divide,
 				Equals,
 				FieldReference,
@@ -187,6 +145,50 @@ namespace Inspection
 			Cast(Inspection::TypeDefinition::Cast && Cast) = delete;
 			Inspection::TypeDefinition::Cast & operator=(const Inspection::TypeDefinition::Cast & Cast) = delete;
 			Inspection::TypeDefinition::Cast & operator=(Inspection::TypeDefinition::Cast && Cast) = delete;
+		};
+		
+		class DataReference : public Inspection::TypeDefinition::Expression
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::DataReference> Load(const XML::Element * Element);
+		public:
+			class Part
+			{
+			public:
+				enum class Type
+				{
+					Field,
+					Tag
+				};
+			public:
+				Part(Inspection::TypeDefinition::DataReference::Part::Type Type);
+			public:
+				Inspection::TypeDefinition::DataReference::Part::Type GetType(void) const;
+			public:
+				std::string DetailName;
+			private:
+				Inspection::TypeDefinition::DataReference::Part::Type _Type;
+			};
+			
+			enum class Root
+			{
+				Current,
+				Type
+			};
+		public:
+			virtual ~DataReference(void) = default;
+		public:
+			Inspection::TypeDefinition::DataReference::Root GetRoot(void) const;
+		public:
+			std::vector<Inspection::TypeDefinition::DataReference::Part> Parts;
+		private:
+			DataReference(void);
+			DataReference(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
+			DataReference(Inspection::TypeDefinition::DataReference && DataReference) = delete;
+			Inspection::TypeDefinition::DataReference & operator=(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
+			Inspection::TypeDefinition::DataReference & operator=(Inspection::TypeDefinition::DataReference && DataReference) = delete;
+		private:
+			Inspection::TypeDefinition::DataReference::Root _Root;
 		};
 		
 		class Divide : public Inspection::TypeDefinition::Expression
@@ -338,7 +340,7 @@ namespace Inspection
 			virtual ~Value(void) = default;
 			Inspection::TypeDefinition::DataType GetDataType(void) const;
 		public:
-			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+			std::variant<bool, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		protected:
 			Value(void);
 			Value(Inspection::TypeDefinition::DataType DataType);

@@ -73,58 +73,25 @@ namespace Inspection
 		template<typename Type>
 		Type GetDataFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
 		{
-			auto Result = Type{};
-			
 			switch(Value.GetDataType())
 			{
-			case Inspection::TypeDefinition::DataType::DataReference:
-				{
-					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data) == true);
-					
-					auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data)));
-					
-					if(Any.type() == typeid(std::uint8_t))
-					{
-						Result = std::any_cast<std::uint8_t>(Any);
-					}
-					else if(Any.type() == typeid(std::uint16_t))
-					{
-						Result = std::any_cast<std::uint16_t>(Any);
-					}
-					else if(Any.type() == typeid(std::uint32_t))
-					{
-						Result = std::any_cast<std::uint32_t>(Any);
-					}
-					else
-					{
-						assert(false);
-					}
-					
-					break;
-				}
 			case Inspection::TypeDefinition::DataType::String:
 				{
 					assert(std::holds_alternative<std::string>(Value.Data) == true);
-					Result = from_string_cast<Type>(std::get<std::string>(Value.Data));
 					
-					break;
+					return from_string_cast<Type>(std::get<std::string>(Value.Data));
 				}
 			case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
 				{
 					assert(std::holds_alternative<std::uint64_t>(Value.Data) == true);
-					Result = std::get<std::uint64_t>(Value.Data);
 					
-					break;
+					return std::get<std::uint64_t>(Value.Data);
 				}
 			default:
 				{
 					assert(false);
-					
-					break;
 				}
 			}
-			
-			return Result;
 		}
 		
 		template<typename Type>
@@ -139,6 +106,33 @@ namespace Inspection
 					assert(Cast != nullptr);
 					
 					return Inspection::Algorithms::GetDataFromCast<Type>(ExecutionContext, *Cast);
+				}
+			case Inspection::TypeDefinition::Expression::Type::DataReference:
+				{
+					auto DataReference = dynamic_cast<const Inspection::TypeDefinition::DataReference *>(&Expression);
+					
+					assert(DataReference != nullptr);
+					
+					auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *DataReference);
+					
+					if(Any.type() == typeid(std::uint8_t))
+					{
+						return std::any_cast<std::uint8_t>(Any);
+					}
+					else if(Any.type() == typeid(std::uint16_t))
+					{
+						return std::any_cast<std::uint16_t>(Any);
+					}
+					else if(Any.type() == typeid(std::uint32_t))
+					{
+						return std::any_cast<std::uint32_t>(Any);
+					}
+					else
+					{
+						assert(false);
+					}
+					
+					break;
 				}
 			case Inspection::TypeDefinition::Expression::Type::Value:
 				{
@@ -178,12 +172,6 @@ namespace Inspection
 					assert(std::holds_alternative<bool>(Value.Data) == true);
 					
 					return std::get<bool>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::DataReference:
-				{
-					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data) == true);
-					
-					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::DataReference>>(Value.Data)));
 				}
 			case Inspection::TypeDefinition::DataType::GUID:
 				{
@@ -319,6 +307,14 @@ namespace Inspection
 					assert(Cast != nullptr);
 					
 					return Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *Cast);
+				}
+			case Inspection::TypeDefinition::Expression::Type::DataReference:
+				{
+					auto DataReference = dynamic_cast<const Inspection::TypeDefinition::DataReference *>(&Expression);
+					
+					assert(DataReference != nullptr);
+					
+					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *DataReference);
 				}
 			case Inspection::TypeDefinition::Expression::Type::Divide:
 				{

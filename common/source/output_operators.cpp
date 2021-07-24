@@ -424,10 +424,6 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "boolean";
 		}
-	case Inspection::TypeDefinition::DataType::DataReference:
-		{
-			return OStream << "data-reference";
-		}
 	case Inspection::TypeDefinition::DataType::GUID:
 		{
 			return OStream << "guid";
@@ -486,6 +482,10 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 	case Inspection::TypeDefinition::Expression::Type::Cast:
 		{
 			return OStream << "Cast";
+		}
+	case Inspection::TypeDefinition::Expression::Type::DataReference:
+		{
+			return OStream << "DataReference";
 		}
 	case Inspection::TypeDefinition::Expression::Type::Divide:
 		{
