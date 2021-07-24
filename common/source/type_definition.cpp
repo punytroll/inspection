@@ -311,6 +311,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		Result = Inspection::TypeDefinition::Equals::Load(Element);
 	}
+	else if(Element->GetName() == "length-reference")
+	{
+		Result = Inspection::TypeDefinition::LengthReference::Load(Element);
+	}
 	else if(Element->GetName() == "parameter-reference")
 	{
 		Result = Inspection::TypeDefinition::ParameterReference::Load(Element);
@@ -482,6 +486,11 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::LengthReference::LengthReference(void) :
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::LengthReference}
+{
 }
 
 Inspection::TypeDefinition::LengthReference::Root Inspection::TypeDefinition::LengthReference::GetRoot(void) const
@@ -704,11 +713,6 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	{
 		Result->_DataType = Inspection::TypeDefinition::DataType::Length;
 		Result->Data = Inspection::TypeDefinition::Length::Load(Element);
-	}
-	else if(Element->GetName() == "length-reference")
-	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::LengthReference;
-		Result->Data = Inspection::TypeDefinition::LengthReference::Load(Element);
 	}
 	else if(Element->GetName() == "parameters")
 	{

@@ -436,10 +436,6 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "length";
 		}
-	case Inspection::TypeDefinition::DataType::LengthReference:
-		{
-			return OStream << "length-reference";
-		}
 	case Inspection::TypeDefinition::DataType::Nothing:
 		{
 			return OStream << "nothing";
@@ -498,6 +494,10 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 	case Inspection::TypeDefinition::Expression::Type::Equals:
 		{
 			return OStream << "Equals";
+		}
+	case Inspection::TypeDefinition::Expression::Type::LengthReference:
+		{
+			return OStream << "LengthReference";
 		}
 	case Inspection::TypeDefinition::Expression::Type::ParameterReference:
 		{

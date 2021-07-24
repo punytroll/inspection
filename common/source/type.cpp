@@ -197,12 +197,6 @@ namespace Inspection
 					
 					return Inspection::Length{Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bytes)), Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bits))};
 				}
-			case Inspection::TypeDefinition::DataType::LengthReference:
-				{
-					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::LengthReference>>(Value.Data) == true);
-					
-					return ExecutionContext.CalculateLengthFromReference(*(std::get<std::unique_ptr<Inspection::TypeDefinition::LengthReference>>(Value.Data)));
-				}
 			case Inspection::TypeDefinition::DataType::Nothing:
 				{
 					return nullptr;
@@ -333,6 +327,14 @@ namespace Inspection
 					assert(Divide != nullptr);
 					
 					return Inspection::Algorithms::Divide(ExecutionContext, *(Divide->Dividend), *(Divide->Divisor));
+				}
+			case Inspection::TypeDefinition::Expression::Type::LengthReference:
+				{
+					auto LengthReference = dynamic_cast<const Inspection::TypeDefinition::LengthReference *>(&Expression);
+					
+					assert(LengthReference != nullptr);
+					
+					return ExecutionContext.CalculateLengthFromReference(*LengthReference);
 				}
 			case Inspection::TypeDefinition::Expression::Type::ParameterReference:
 				{

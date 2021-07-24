@@ -55,7 +55,6 @@ namespace Inspection
 			GUID,
 			Nothing,
 			Length,
-			LengthReference,
 			Parameters,
 			SinglePrecisionReal,
 			String,
@@ -131,34 +130,6 @@ namespace Inspection
 			Inspection::TypeDefinition::FieldReference::Root _Root;
 		};
 		
-		class LengthReference
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::LengthReference> Load(const XML::Element * Element);
-		public:
-			enum class Name
-			{
-				Consumed
-			};
-			
-			enum class Root
-			{
-				Type
-			};
-		public:
-			Inspection::TypeDefinition::LengthReference::Name GetName(void) const;
-			Inspection::TypeDefinition::LengthReference::Root GetRoot(void) const;
-		private:
-			LengthReference(void) = default;
-			LengthReference(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
-			LengthReference(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
-			Inspection::TypeDefinition::LengthReference & operator=(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
-			Inspection::TypeDefinition::LengthReference & operator=(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
-		private:
-			Inspection::TypeDefinition::LengthReference::Name _Name;
-			Inspection::TypeDefinition::LengthReference::Root _Root;
-		};
-		
 		class Parameters
 		{
 		public:
@@ -187,6 +158,7 @@ namespace Inspection
 				Cast,
 				Divide,
 				Equals,
+				LengthReference,
 				ParameterReference,
 				Subtract,
 				TypeReference,
@@ -274,6 +246,36 @@ namespace Inspection
 			Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
 		};
 		
+		class LengthReference : public Inspection::TypeDefinition::Expression
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::LengthReference> Load(const XML::Element * Element);
+		public:
+			enum class Name
+			{
+				Consumed
+			};
+			
+			enum class Root
+			{
+				Type
+			};
+		public:
+			virtual ~LengthReference(void) = default;
+		public:
+			Inspection::TypeDefinition::LengthReference::Name GetName(void) const;
+			Inspection::TypeDefinition::LengthReference::Root GetRoot(void) const;
+		private:
+			LengthReference(void);
+			LengthReference(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
+			LengthReference(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
+			Inspection::TypeDefinition::LengthReference & operator=(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
+			Inspection::TypeDefinition::LengthReference & operator=(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
+		private:
+			Inspection::TypeDefinition::LengthReference::Name _Name;
+			Inspection::TypeDefinition::LengthReference::Root _Root;
+		};
+		
 		class ParameterReference : public Inspection::TypeDefinition::Expression
 		{
 		public:
@@ -333,7 +335,7 @@ namespace Inspection
 			virtual ~Value(void) = default;
 			Inspection::TypeDefinition::DataType GetDataType(void) const;
 		public:
-			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::LengthReference>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+			std::variant<bool, std::unique_ptr<Inspection::TypeDefinition::DataReference>, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		protected:
 			Value(void);
 			Value(Inspection::TypeDefinition::DataType DataType);
