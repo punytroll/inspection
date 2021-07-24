@@ -495,6 +495,10 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "Equals";
 		}
+	case Inspection::TypeDefinition::Expression::Type::FieldReference:
+		{
+			return OStream << "FieldReference";
+		}
 	case Inspection::TypeDefinition::Expression::Type::LengthReference:
 		{
 			return OStream << "LengthReference";

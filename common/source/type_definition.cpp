@@ -375,6 +375,11 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	return Inspection::TypeDefinition::Expression::Load(ExpressionElement);
 }
 
+Inspection::TypeDefinition::FieldReference::FieldReference(void) :
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::FieldReference}
+{
+}
+
 Inspection::TypeDefinition::FieldReference::Root Inspection::TypeDefinition::FieldReference::GetRoot(void) const
 {
 	return _Root;

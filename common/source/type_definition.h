@@ -106,30 +106,6 @@ namespace Inspection
 			Inspection::TypeDefinition::DataReference::Root _Root;
 		};
 		
-		class FieldReference
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::FieldReference> Load(const XML::Element * Element);
-		public:
-			enum class Root
-			{
-				Current,
-				Type
-			};
-		public:
-			Inspection::TypeDefinition::FieldReference::Root GetRoot(void) const;
-		public:
-			std::vector<std::string> Parts;
-		private:
-			FieldReference(void) = default;
-			FieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
-			FieldReference(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
-			Inspection::TypeDefinition::FieldReference & operator=(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
-			Inspection::TypeDefinition::FieldReference & operator=(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
-		private:
-			Inspection::TypeDefinition::FieldReference::Root _Root;
-		};
-		
 		class Parameters
 		{
 		public:
@@ -158,6 +134,7 @@ namespace Inspection
 				Cast,
 				Divide,
 				Equals,
+				FieldReference,
 				LengthReference,
 				ParameterReference,
 				Subtract,
@@ -244,6 +221,32 @@ namespace Inspection
 			Equals(Inspection::TypeDefinition::Equals && Equals) = delete;
 			Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
 			Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
+		};
+		
+		class FieldReference : public Inspection::TypeDefinition::Expression
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::FieldReference> Load(const XML::Element * Element);
+		public:
+			enum class Root
+			{
+				Current,
+				Type
+			};
+		public:
+			virtual ~FieldReference(void) = default;
+		public:
+			Inspection::TypeDefinition::FieldReference::Root GetRoot(void) const;
+		public:
+			std::vector<std::string> Parts;
+		private:
+			FieldReference(void);
+			FieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
+			FieldReference(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
+			Inspection::TypeDefinition::FieldReference & operator=(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
+			Inspection::TypeDefinition::FieldReference & operator=(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
+		private:
+			Inspection::TypeDefinition::FieldReference::Root _Root;
 		};
 		
 		class LengthReference : public Inspection::TypeDefinition::Expression
