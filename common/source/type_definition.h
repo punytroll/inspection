@@ -63,6 +63,21 @@ namespace Inspection
 			UnsignedInteger64Bit
 		};
 		
+		enum class ExpressionType
+		{
+			Add,
+			Cast,
+			DataReference,
+			Divide,
+			Equals,
+			FieldReference,
+			LengthReference,
+			ParameterReference,
+			Subtract,
+			TypeReference,
+			Value
+		};
+		
 		class Parameters
 		{
 		public:
@@ -85,32 +100,18 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Expression> Load(const XML::Element * Element);
 			static std::unique_ptr<Inspection::TypeDefinition::Expression> LoadFromWithin(const XML::Element * Element);
 		public:
-			enum class Type
-			{
-				Add,
-				Cast,
-				DataReference,
-				Divide,
-				Equals,
-				FieldReference,
-				LengthReference,
-				ParameterReference,
-				Subtract,
-				TypeReference,
-				Value
-			};
-		public:
 			virtual ~Expression(void) = default;
-			Inspection::TypeDefinition::Expression::Type GetExpressionType(void) const;
+			virtual Inspection::TypeDefinition::DataType GetDataType(void) const = 0;
+			Inspection::TypeDefinition::ExpressionType GetExpressionType(void) const;
 		protected:
-			Expression(Inspection::TypeDefinition::Expression::Type ExpressionType);
+			Expression(Inspection::TypeDefinition::ExpressionType ExpressionType);
 		private:
 			Expression(const Inspection::TypeDefinition::Expression & Expression) = delete;
 			Expression(Inspection::TypeDefinition::Expression && Expression) = delete;
 			Inspection::TypeDefinition::Expression & operator=(const Inspection::TypeDefinition::Expression & Expression) = delete;
 			Inspection::TypeDefinition::Expression & operator=(Inspection::TypeDefinition::Expression && Expression) = delete;
 		private:
-			Inspection::TypeDefinition::Expression::Type _ExpressionType;
+			Inspection::TypeDefinition::ExpressionType _ExpressionType;
 		};
 		
 		class Add : public Inspection::TypeDefinition::Expression
@@ -119,6 +120,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Add> Load(const XML::Element * Element);
 		public:
 			virtual ~Add(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand1;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand2;
@@ -136,6 +138,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Cast> Load(const XML::Element * Element);
 		public:
 			virtual ~Cast(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			Inspection::TypeDefinition::DataType DataType;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression;
@@ -177,6 +180,7 @@ namespace Inspection
 			};
 		public:
 			virtual ~DataReference(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			Inspection::TypeDefinition::DataReference::Root GetRoot(void) const;
 		public:
@@ -197,6 +201,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Divide> Load(const XML::Element * Element);
 		public:
 			virtual ~Divide(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Dividend;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Divisor;
@@ -214,6 +219,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Equals> Load(const XML::Element * Element);
 		public:
 			virtual ~Equals(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression1;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression2;
@@ -237,6 +243,7 @@ namespace Inspection
 			};
 		public:
 			virtual ~FieldReference(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			Inspection::TypeDefinition::FieldReference::Root GetRoot(void) const;
 		public:
@@ -267,6 +274,7 @@ namespace Inspection
 			};
 		public:
 			virtual ~LengthReference(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			Inspection::TypeDefinition::LengthReference::Name GetName(void) const;
 			Inspection::TypeDefinition::LengthReference::Root GetRoot(void) const;
@@ -287,6 +295,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Load(const XML::Element * Element);
 		public:
 			virtual ~ParameterReference(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::string Name;
 		private:
@@ -303,6 +312,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Subtract> Load(const XML::Element * Element);
 		public:
 			virtual ~Subtract(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Minuend;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Subtrahend;
@@ -320,6 +330,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::TypeReference> Load(const XML::Element * Element);
 		public:
 			virtual ~TypeReference(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::vector<std::string> Parts;
 		private:
@@ -338,7 +349,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Value> Load(const XML::Element * Element);
 		public:
 			virtual ~Value(void) = default;
-			Inspection::TypeDefinition::DataType GetDataType(void) const;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::variant<bool, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		protected:

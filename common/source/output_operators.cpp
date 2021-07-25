@@ -471,51 +471,51 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 	}
 }
 
-std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::Expression::Type & Type)
+std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::ExpressionType & ExpressionType)
 {
-	switch(Type)
+	switch(ExpressionType)
 	{
-	case Inspection::TypeDefinition::Expression::Type::Add:
+	case Inspection::TypeDefinition::ExpressionType::Add:
 		{
 			return OStream << "Add";
 		}
-	case Inspection::TypeDefinition::Expression::Type::Cast:
+	case Inspection::TypeDefinition::ExpressionType::Cast:
 		{
 			return OStream << "Cast";
 		}
-	case Inspection::TypeDefinition::Expression::Type::DataReference:
+	case Inspection::TypeDefinition::ExpressionType::DataReference:
 		{
 			return OStream << "DataReference";
 		}
-	case Inspection::TypeDefinition::Expression::Type::Divide:
+	case Inspection::TypeDefinition::ExpressionType::Divide:
 		{
 			return OStream << "Divide";
 		}
-	case Inspection::TypeDefinition::Expression::Type::Equals:
+	case Inspection::TypeDefinition::ExpressionType::Equals:
 		{
 			return OStream << "Equals";
 		}
-	case Inspection::TypeDefinition::Expression::Type::FieldReference:
+	case Inspection::TypeDefinition::ExpressionType::FieldReference:
 		{
 			return OStream << "FieldReference";
 		}
-	case Inspection::TypeDefinition::Expression::Type::LengthReference:
+	case Inspection::TypeDefinition::ExpressionType::LengthReference:
 		{
 			return OStream << "LengthReference";
 		}
-	case Inspection::TypeDefinition::Expression::Type::ParameterReference:
+	case Inspection::TypeDefinition::ExpressionType::ParameterReference:
 		{
 			return OStream << "ParameterReference";
 		}
-	case Inspection::TypeDefinition::Expression::Type::Subtract:
+	case Inspection::TypeDefinition::ExpressionType::Subtract:
 		{
 			return OStream << "Subtract";
 		}
-	case Inspection::TypeDefinition::Expression::Type::TypeReference:
+	case Inspection::TypeDefinition::ExpressionType::TypeReference:
 		{
 			return OStream << "TypeReference";
 		}
-	case Inspection::TypeDefinition::Expression::Type::Value:
+	case Inspection::TypeDefinition::ExpressionType::Value:
 		{
 			return OStream << "Value";
 		}

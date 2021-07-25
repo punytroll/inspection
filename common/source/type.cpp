@@ -99,7 +99,7 @@ namespace Inspection
 		{
 			switch(Expression.GetExpressionType())
 			{
-			case Inspection::TypeDefinition::Expression::Type::Cast:
+			case Inspection::TypeDefinition::ExpressionType::Cast:
 				{
 					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Expression);
 					
@@ -107,7 +107,7 @@ namespace Inspection
 					
 					return Inspection::Algorithms::GetDataFromCast<Type>(ExecutionContext, *Cast);
 				}
-			case Inspection::TypeDefinition::Expression::Type::DataReference:
+			case Inspection::TypeDefinition::ExpressionType::DataReference:
 				{
 					auto DataReference = dynamic_cast<const Inspection::TypeDefinition::DataReference *>(&Expression);
 					
@@ -134,7 +134,7 @@ namespace Inspection
 					
 					break;
 				}
-			case Inspection::TypeDefinition::Expression::Type::Value:
+			case Inspection::TypeDefinition::ExpressionType::Value:
 				{
 					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression);
 					
@@ -244,7 +244,7 @@ namespace Inspection
 			{
 				if(Tag->Expression)
 				{
-					assert(Tag->Expression->GetExpressionType() == Inspection::TypeDefinition::Expression::Type::Value);
+					assert(Tag->Expression->GetExpressionType() == Inspection::TypeDefinition::ExpressionType::Value);
 					
 					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Tag->Expression.get());
 					
@@ -292,7 +292,7 @@ namespace Inspection
 		{
 			switch(Expression.GetExpressionType())
 			{
-			case Inspection::TypeDefinition::Expression::Type::Add:
+			case Inspection::TypeDefinition::ExpressionType::Add:
 				{
 					auto Add = dynamic_cast<const Inspection::TypeDefinition::Add *>(&Expression);
 					
@@ -300,7 +300,7 @@ namespace Inspection
 					
 					return Inspection::Algorithms::Add(ExecutionContext, *(Add->Summand1), *(Add->Summand2));
 				}
-			case Inspection::TypeDefinition::Expression::Type::Cast:
+			case Inspection::TypeDefinition::ExpressionType::Cast:
 				{
 					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Expression);
 					
@@ -308,7 +308,7 @@ namespace Inspection
 					
 					return Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *Cast);
 				}
-			case Inspection::TypeDefinition::Expression::Type::DataReference:
+			case Inspection::TypeDefinition::ExpressionType::DataReference:
 				{
 					auto DataReference = dynamic_cast<const Inspection::TypeDefinition::DataReference *>(&Expression);
 					
@@ -316,7 +316,7 @@ namespace Inspection
 					
 					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *DataReference);
 				}
-			case Inspection::TypeDefinition::Expression::Type::Divide:
+			case Inspection::TypeDefinition::ExpressionType::Divide:
 				{
 					auto Divide = dynamic_cast<const Inspection::TypeDefinition::Divide *>(&Expression);
 					
@@ -324,7 +324,7 @@ namespace Inspection
 					
 					return Inspection::Algorithms::Divide(ExecutionContext, *(Divide->Dividend), *(Divide->Divisor));
 				}
-			case Inspection::TypeDefinition::Expression::Type::LengthReference:
+			case Inspection::TypeDefinition::ExpressionType::LengthReference:
 				{
 					auto LengthReference = dynamic_cast<const Inspection::TypeDefinition::LengthReference *>(&Expression);
 					
@@ -332,7 +332,7 @@ namespace Inspection
 					
 					return ExecutionContext.CalculateLengthFromReference(*LengthReference);
 				}
-			case Inspection::TypeDefinition::Expression::Type::ParameterReference:
+			case Inspection::TypeDefinition::ExpressionType::ParameterReference:
 				{
 					auto ParameterReference = dynamic_cast<const Inspection::TypeDefinition::ParameterReference *>(&Expression);
 					
@@ -340,7 +340,7 @@ namespace Inspection
 					
 					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, *ParameterReference);
 				}
-			case Inspection::TypeDefinition::Expression::Type::Subtract:
+			case Inspection::TypeDefinition::ExpressionType::Subtract:
 				{
 					auto Subtract = dynamic_cast<const Inspection::TypeDefinition::Subtract *>(&Expression);
 					
@@ -348,7 +348,7 @@ namespace Inspection
 					
 					return Inspection::Algorithms::Subtract(ExecutionContext, *(Subtract->Minuend), *(Subtract->Subtrahend));
 				}
-			case Inspection::TypeDefinition::Expression::Type::TypeReference:
+			case Inspection::TypeDefinition::ExpressionType::TypeReference:
 				{
 					auto TypeReference = dynamic_cast<const Inspection::TypeDefinition::TypeReference *>(&Expression);
 					
@@ -356,7 +356,7 @@ namespace Inspection
 					
 					return Inspection::g_TypeRepository.GetType(TypeReference->Parts);
 				}
-			case Inspection::TypeDefinition::Expression::Type::Value:
+			case Inspection::TypeDefinition::ExpressionType::Value:
 				{
 					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression);
 					
@@ -1106,7 +1106,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		{
 			switch(Expression->GetExpressionType())
 			{
-			case Inspection::TypeDefinition::Expression::Type::Equals:
+			case Inspection::TypeDefinition::ExpressionType::Equals:
 				{
 					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
 					
@@ -1170,7 +1170,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 		{
 			switch(Expression->GetExpressionType())
 			{
-			case Inspection::TypeDefinition::Expression::Type::Equals:
+			case Inspection::TypeDefinition::ExpressionType::Equals:
 				{
 					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
 					
@@ -1249,7 +1249,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 		{
 			switch(Expression->GetExpressionType())
 			{
-			case Inspection::TypeDefinition::Expression::Type::Equals:
+			case Inspection::TypeDefinition::ExpressionType::Equals:
 				{
 					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
 					

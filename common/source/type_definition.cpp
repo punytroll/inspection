@@ -18,14 +18,20 @@
 
 #include <cassert>
 
+#include "not_implemented_exception.h"
 #include "string_cast.h"
 #include "type_definition.h"
 #include "xml_helper.h"
 #include "xml_puny_dom.h"
 
 Inspection::TypeDefinition::Add::Add(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::Expression::Type::Add}
+	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Add}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Add::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on an Add expression."};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add::Load(const XML::Element * Element)
@@ -56,9 +62,14 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 }
 
 Inspection::TypeDefinition::Cast::Cast(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::Expression::Type::Cast},
+	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Cast},
 	DataType{Inspection::TypeDefinition::DataType::Unknown}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Cast::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on a Cast expression."};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Cast::Load(const XML::Element * Element)
@@ -84,8 +95,13 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 }
 
 Inspection::TypeDefinition::DataReference::DataReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::DataReference}
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::DataReference}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::DataReference::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on a DataReference expression."};
 }
 
 Inspection::TypeDefinition::DataReference::Root Inspection::TypeDefinition::DataReference::GetRoot(void) const
@@ -157,8 +173,13 @@ Inspection::TypeDefinition::DataReference::Part::Type Inspection::TypeDefinition
 }
 
 Inspection::TypeDefinition::Divide::Divide(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::Expression::Type::Divide}
+	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Divide}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Divide::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on a Divide expression."};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Divide> Inspection::TypeDefinition::Divide::Load(const XML::Element * Element)
@@ -258,8 +279,13 @@ std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinit
 }
 
 Inspection::TypeDefinition::Equals::Equals(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::Expression::Type::Equals}
+	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Equals}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Equals::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on an Equals expression."};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::Equals::Load(const XML::Element * Element)
@@ -288,12 +314,12 @@ std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::
 	return Result;
 }
 
-Inspection::TypeDefinition::Expression::Expression(Inspection::TypeDefinition::Expression::Type ExpressionType) :
+Inspection::TypeDefinition::Expression::Expression(Inspection::TypeDefinition::ExpressionType ExpressionType) :
 	_ExpressionType{ExpressionType}
 {
 }
 
-Inspection::TypeDefinition::Expression::Type Inspection::TypeDefinition::Expression::GetExpressionType(void) const
+Inspection::TypeDefinition::ExpressionType Inspection::TypeDefinition::Expression::GetExpressionType(void) const
 {
 	return _ExpressionType;
 }
@@ -389,8 +415,13 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 }
 
 Inspection::TypeDefinition::FieldReference::FieldReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::FieldReference}
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::FieldReference}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::FieldReference::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on a FieldReference expression."};
 }
 
 Inspection::TypeDefinition::FieldReference::Root Inspection::TypeDefinition::FieldReference::GetRoot(void) const
@@ -507,8 +538,13 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 }
 
 Inspection::TypeDefinition::LengthReference::LengthReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::LengthReference}
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::LengthReference}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::LengthReference::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on a LengthReference expression."};
 }
 
 Inspection::TypeDefinition::LengthReference::Root Inspection::TypeDefinition::LengthReference::GetRoot(void) const
@@ -559,8 +595,13 @@ std::unique_ptr<Inspection::TypeDefinition::Parameter> Inspection::TypeDefinitio
 }
 
 Inspection::TypeDefinition::ParameterReference::ParameterReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::ParameterReference}
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::ParameterReference}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::ParameterReference::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on a ParameterReference expression."};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Inspection::TypeDefinition::ParameterReference::Load(const XML::Element * Element)
@@ -602,8 +643,13 @@ const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> & Insp
 }
 
 Inspection::TypeDefinition::Subtract::Subtract(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::Expression::Type::Subtract}
+	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Subtract}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Subtract::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on a Subtract expression."};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition::Subtract::Load(const XML::Element * Element)
@@ -648,8 +694,13 @@ std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Tag
 }
 
 Inspection::TypeDefinition::TypeReference::TypeReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::Expression::Type::TypeReference}
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::TypeReference}
 {
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::TypeReference::GetDataType(void) const
+{
+	throw Inspection::NotImplementedException{"Called GetDataType() on a TypeReference expression."};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefinition::TypeReference::Load(const XML::Element * TypeReferenceElement)
@@ -682,7 +733,7 @@ Inspection::TypeDefinition::Value::Value(void) :
 }
 
 Inspection::TypeDefinition::Value::Value(Inspection::TypeDefinition::DataType DataType) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::Expression::Type::Value},
+	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Value},
 	_DataType{DataType}
 {
 }
