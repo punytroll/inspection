@@ -30,7 +30,6 @@ namespace Inspection
 		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Dividend, const Inspection::TypeDefinition::Expression & Divisor);
 		std::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast);
 		std::any GetAnyFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression);
-		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
 		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Minuend, const Inspection::TypeDefinition::Expression & Subtrahend);
 		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters);
 		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters & Parameters);
@@ -69,20 +68,6 @@ namespace Inspection
 		Type GetDataFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
 		{
 			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Cast.GetExpression()));
-		}
-		
-		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference)
-		{
-			auto Value = ExecutionContext.GetValueFromDataReference(DataReference);
-			
-			assert(Value != nullptr);
-			
-			return Value->GetData();
-		}
-		
-		const std::any & GetAnyReferenceFromParameterReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::ParameterReference & ParameterReference)
-		{
-			return ExecutionContext.GetAnyReferenceFromParameterReference(ParameterReference);
 		}
 		
 		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
@@ -161,7 +146,11 @@ namespace Inspection
 					
 					assert(DataReference != nullptr);
 					
-					return Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *DataReference);
+					auto Value = ExecutionContext.GetValueFromDataReference(*DataReference);
+					
+					assert(Value != nullptr);
+					
+					return Value->GetData();
 				}
 			case Inspection::TypeDefinition::ExpressionType::Divide:
 				{
@@ -201,7 +190,7 @@ namespace Inspection
 					
 					assert(ParameterReference != nullptr);
 					
-					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, *ParameterReference);
+					return ExecutionContext.GetAnyReferenceFromParameterReference(*ParameterReference);
 				}
 			case Inspection::TypeDefinition::ExpressionType::Parameters:
 				{
