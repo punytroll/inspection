@@ -499,7 +499,7 @@ namespace Inspection
 			Part(void)
 			{
 			}
-				
+			
 			Part(Inspection::TypeDefinition::Part && Part) = default;
 			
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
