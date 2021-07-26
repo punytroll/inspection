@@ -17,9 +17,11 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference root="type">
-						<field>LanguageIDLength</field>
-					</data-reference>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>LanguageIDLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
 				</bytes>
 				<bits>
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>

@@ -48,9 +48,11 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference root="type">
-						<field>NameLength</field>
-					</data-reference>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>NameLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
 				</bytes>
 				<bits>
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>
@@ -65,9 +67,11 @@
 			</type-reference>
 			<length>
 				<bytes>
-					<data-reference root="type">
-						<field>DataLength</field>
-					</data-reference>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>DataLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
 				</bytes>
 				<bits>
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>

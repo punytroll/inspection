@@ -71,85 +71,6 @@ namespace Inspection
 			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Cast.GetExpression()));
 		}
 		
-		template<typename Type>
-		Type GetDataFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
-		{
-			switch(Value.GetDataType())
-			{
-			case Inspection::TypeDefinition::DataType::String:
-				{
-					assert(std::holds_alternative<std::string>(Value.Data) == true);
-					
-					return from_string_cast<Type>(std::get<std::string>(Value.Data));
-				}
-			case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
-				{
-					assert(std::holds_alternative<std::uint64_t>(Value.Data) == true);
-					
-					return std::get<std::uint64_t>(Value.Data);
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
-		
-		template<typename Type>
-		Type GetDataFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression)
-		{
-			switch(Expression.GetExpressionType())
-			{
-			case Inspection::TypeDefinition::ExpressionType::Cast:
-				{
-					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Expression);
-					
-					assert(Cast != nullptr);
-					
-					return Inspection::Algorithms::GetDataFromCast<Type>(ExecutionContext, *Cast);
-				}
-			case Inspection::TypeDefinition::ExpressionType::DataReference:
-				{
-					auto DataReference = dynamic_cast<const Inspection::TypeDefinition::DataReference *>(&Expression);
-					
-					assert(DataReference != nullptr);
-					
-					auto & Any = Inspection::Algorithms::GetAnyReferenceFromDataReference(ExecutionContext, *DataReference);
-					
-					if(Any.type() == typeid(std::uint8_t))
-					{
-						return std::any_cast<std::uint8_t>(Any);
-					}
-					else if(Any.type() == typeid(std::uint16_t))
-					{
-						return std::any_cast<std::uint16_t>(Any);
-					}
-					else if(Any.type() == typeid(std::uint32_t))
-					{
-						return std::any_cast<std::uint32_t>(Any);
-					}
-					else
-					{
-						assert(false);
-					}
-					
-					break;
-				}
-			case Inspection::TypeDefinition::ExpressionType::Value:
-				{
-					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression);
-					
-					assert(Value != nullptr);
-					
-					return Inspection::Algorithms::GetDataFromValue<Type>(ExecutionContext, *Value);
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
-		
 		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference)
 		{
 			auto Value = ExecutionContext.GetValueFromDataReference(DataReference);
@@ -319,7 +240,15 @@ namespace Inspection
 					
 					assert(Length != nullptr);
 					
-					return Inspection::Length{Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(Length->Bytes)), Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(Length->Bits))};
+					auto BytesAny = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Length->Bytes));
+					
+					assert(BytesAny.type() == typeid(std::uint64_t));
+					
+					auto BitsAny = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Length->Bits));
+					
+					assert(BitsAny.type() == typeid(std::uint64_t));
+					
+					return Inspection::Length{std::any_cast<std::uint64_t>(BytesAny), std::any_cast<std::uint64_t>(BitsAny)};
 				}
 			case Inspection::TypeDefinition::ExpressionType::LengthReference:
 				{
@@ -880,12 +809,16 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			assert(Array.Array->ElementType != nullptr);
 			
 			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
-			auto NumberOfRequiredElements = Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(Array.Array->IterateNumberOfElements));
+			auto NumberOfElementsAny = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Array.Array->IterateNumberOfElements));
+			
+			assert(NumberOfElementsAny.type() == typeid(std::uint64_t));
+			
+			auto NumberOfElements = std::any_cast<std::uint64_t>(NumberOfElementsAny);
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while(true)
 			{
-				if(ElementIndexInArray < NumberOfRequiredElements)
+				if(ElementIndexInArray < NumberOfElements)
 				{
 					auto ElementReader = Inspection::Reader{Reader};
 					
