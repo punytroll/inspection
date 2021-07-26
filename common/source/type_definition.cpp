@@ -29,6 +29,11 @@ Inspection::TypeDefinition::Add::Add(void) :
 {
 }
 
+std::any Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on an Add expression."};
+}
+
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Add::GetDataType(void) const
 {
 	throw Inspection::NotImplementedException{"Called GetDataType() on an Add expression."};
@@ -65,6 +70,11 @@ Inspection::TypeDefinition::Cast::Cast(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Cast},
 	_DataType{Inspection::TypeDefinition::DataType::Unknown}
 {
+}
+
+std::any Inspection::TypeDefinition::Cast::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a Cast expression."};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Cast::GetDataType(void) const
@@ -104,6 +114,11 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 Inspection::TypeDefinition::DataReference::DataReference(void) :
 	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::DataReference}
 {
+}
+
+std::any Inspection::TypeDefinition::DataReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a DataReference expression."};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::DataReference::GetDataType(void) const
@@ -182,6 +197,11 @@ Inspection::TypeDefinition::DataReference::Part::Type Inspection::TypeDefinition
 Inspection::TypeDefinition::Divide::Divide(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Divide}
 {
+}
+
+std::any Inspection::TypeDefinition::Divide::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a Divide expression."};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Divide::GetDataType(void) const
@@ -288,6 +308,11 @@ std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinit
 Inspection::TypeDefinition::Equals::Equals(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Equals}
 {
+}
+
+std::any Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on an Equals expression."};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Equals::GetDataType(void) const
@@ -439,6 +464,11 @@ Inspection::TypeDefinition::FieldReference::FieldReference(void) :
 {
 }
 
+std::any Inspection::TypeDefinition::FieldReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a FieldReference expression."};
+}
+
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::FieldReference::GetDataType(void) const
 {
 	throw Inspection::NotImplementedException{"Called GetDataType() on a FieldReference expression."};
@@ -533,6 +563,11 @@ Inspection::TypeDefinition::Length::Length(void) :
 {
 }
 
+std::any Inspection::TypeDefinition::Length::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a Length expression."};
+}
+
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Length::GetDataType(void) const
 {
 	return Inspection::TypeDefinition::DataType::Length;
@@ -570,6 +605,11 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 Inspection::TypeDefinition::LengthReference::LengthReference(void) :
 	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::LengthReference}
 {
+}
+
+std::any Inspection::TypeDefinition::LengthReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a LengthReference expression."};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::LengthReference::GetDataType(void) const
@@ -618,6 +658,11 @@ Inspection::TypeDefinition::ParameterReference::ParameterReference(void) :
 {
 }
 
+std::any Inspection::TypeDefinition::ParameterReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a ParameterReference expression."};
+}
+
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::ParameterReference::GetDataType(void) const
 {
 	throw Inspection::NotImplementedException{"Called GetDataType() on a ParameterReference expression."};
@@ -640,6 +685,11 @@ std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Inspection::Type
 Inspection::TypeDefinition::Parameters::Parameters(void) :
 	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::Parameters}
 {
+}
+
+std::any Inspection::TypeDefinition::Parameters::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a Parameters expression."};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Parameters::GetDataType(void) const
@@ -685,6 +735,11 @@ std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Inspection::T
 Inspection::TypeDefinition::Subtract::Subtract(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Subtract}
 {
+}
+
+std::any Inspection::TypeDefinition::Subtract::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a Subtract expression."};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Subtract::GetDataType(void) const
@@ -738,6 +793,11 @@ Inspection::TypeDefinition::TypeReference::TypeReference(void) :
 {
 }
 
+std::any Inspection::TypeDefinition::TypeReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a TypeReference expression."};
+}
+
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::TypeReference::GetDataType(void) const
 {
 	return Inspection::TypeDefinition::DataType::Type;
@@ -776,6 +836,11 @@ Inspection::TypeDefinition::Value::Value(Inspection::TypeDefinition::DataType Da
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Value},
 	_DataType{DataType}
 {
+}
+
+std::any Inspection::TypeDefinition::Value::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	throw Inspection::NotImplementedException{"Called GetAny() on a Value expression."};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Value::GetDataType(void) const

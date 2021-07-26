@@ -19,6 +19,7 @@
 #ifndef COMMON_TYPE_DEFINITION_H
 #define COMMON_TYPE_DEFINITION_H
 
+#include <any>
 #include <memory>
 #include <optional>
 #include <string>
@@ -34,6 +35,7 @@ namespace XML
 
 namespace Inspection
 {
+	class ExecutionContext;
 	class Type;
 	class Value;
 	
@@ -87,6 +89,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Expression> LoadFromWithin(const XML::Element * Element);
 		public:
 			virtual ~Expression(void) = default;
+			virtual std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const = 0;
 			virtual Inspection::TypeDefinition::DataType GetDataType(void) const = 0;
 			Inspection::TypeDefinition::ExpressionType GetExpressionType(void) const;
 		protected:
@@ -106,6 +109,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Add> Load(const XML::Element * Element);
 		public:
 			virtual ~Add(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand1;
@@ -124,6 +128,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Cast> Load(const XML::Element * Element);
 		public:
 			virtual ~Cast(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 			const Inspection::TypeDefinition::Expression & GetExpression(void) const;
 		private:
@@ -167,6 +172,7 @@ namespace Inspection
 			};
 		public:
 			virtual ~DataReference(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			Inspection::TypeDefinition::DataReference::Root GetRoot(void) const;
@@ -188,6 +194,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Divide> Load(const XML::Element * Element);
 		public:
 			virtual ~Divide(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Dividend;
@@ -206,6 +213,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Equals> Load(const XML::Element * Element);
 		public:
 			virtual ~Equals(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression1;
@@ -230,6 +238,7 @@ namespace Inspection
 			};
 		public:
 			virtual ~FieldReference(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			Inspection::TypeDefinition::FieldReference::Root GetRoot(void) const;
@@ -251,6 +260,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Length> Load(const XML::Element * Element);
 		public:
 			virtual ~Length(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Bytes;
@@ -279,6 +289,7 @@ namespace Inspection
 			};
 		public:
 			virtual ~LengthReference(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			Inspection::TypeDefinition::LengthReference::Name GetName(void) const;
@@ -300,6 +311,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Load(const XML::Element * Element);
 		public:
 			virtual ~ParameterReference(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::string Name;
@@ -332,6 +344,7 @@ namespace Inspection
 			};
 		public:
 			virtual ~Parameters(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 			const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> & GetParameters(void) const;
 		private:
@@ -350,6 +363,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Subtract> Load(const XML::Element * Element);
 		public:
 			virtual ~Subtract(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Minuend;
@@ -368,6 +382,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::TypeReference> Load(const XML::Element * Element);
 		public:
 			virtual ~TypeReference(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::vector<std::string> Parts;
@@ -387,6 +402,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Value> Load(const XML::Element * Element);
 		public:
 			virtual ~Value(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
 			std::variant<bool, Inspection::GUID, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
