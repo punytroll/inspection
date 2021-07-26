@@ -75,7 +75,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 	{
 	case Inspection::TypeDefinition::DataReference::Root::Current:
 		{
-			Result = _GetValueFromDataReferenceFromCurrent(DataReference.Parts, _ExecutionStack.back()._Result.GetValue());
+			Result = _GetValueFromDataReferenceFromCurrent(DataReference.GetParts(), _ExecutionStack.back()._Result.GetValue());
 			
 			break;
 		}
@@ -85,9 +85,11 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 			
 			Result = ExecutionStackIterator->_Result.GetValue();
 			
-			auto PartIterator = std::begin(DataReference.Parts);
+			const auto & Parts = DataReference.GetParts();
+			auto PartIterator = std::begin(Parts);
+			auto EndIterator = std::end(Parts);
 			
-			while(PartIterator != std::end(DataReference.Parts))
+			while(PartIterator != EndIterator)
 			{
 				switch(PartIterator->GetType())
 				{

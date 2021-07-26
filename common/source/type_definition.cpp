@@ -18,11 +18,45 @@
 
 #include <cassert>
 
+#include "execution_context.h"
+#include "length.h"
 #include "not_implemented_exception.h"
 #include "string_cast.h"
+#include "type.h"
 #include "type_definition.h"
+#include "type_repository.h"
+#include "value.h"
 #include "xml_helper.h"
 #include "xml_puny_dom.h"
+
+template<typename Type>
+Type CastTo(const std::any & Any)
+{
+	if(Any.type() == typeid(float))
+	{
+		return static_cast<Type>(std::any_cast<float>(Any));
+	}
+	else if(Any.type() == typeid(std::uint8_t))
+	{
+		return static_cast<Type>(std::any_cast<std::uint8_t>(Any));
+	}
+	else if(Any.type() == typeid(std::uint16_t))
+	{
+		return static_cast<Type>(std::any_cast<std::uint16_t>(Any));
+	}
+	else if(Any.type() == typeid(std::uint32_t))
+	{
+		return static_cast<Type>(std::any_cast<std::uint32_t>(Any));
+	}
+	else if(Any.type() == typeid(std::uint64_t))
+	{
+		return static_cast<Type>(std::any_cast<std::uint64_t>(Any));
+	}
+	else
+	{
+		assert(false);
+	}
+}
 
 Inspection::TypeDefinition::Add::Add(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Add}
@@ -31,7 +65,27 @@ Inspection::TypeDefinition::Add::Add(void) :
 
 std::any Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on an Add expression."};
+	assert(_Summand1 != nullptr);
+	
+	auto Summand1Any = _Summand1->GetAny(ExecutionContext);
+	
+	assert(_Summand2 != nullptr);
+	
+	auto Summand2Any = _Summand2->GetAny(ExecutionContext);
+	
+	if(Summand1Any.type() == Summand2Any.type())
+	{
+		if(Summand1Any.type() == typeid(std::uint8_t))
+		{
+			return static_cast<std::uint8_t>(std::any_cast<std::uint8_t>(Summand1Any) + std::any_cast<std::uint8_t>(Summand2Any));
+		}
+		else
+		{
+			assert(false);
+		}
+	}
+	
+	return nullptr;
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Add::GetDataType(void) const
@@ -53,12 +107,12 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 			assert(ChildElement != nullptr);
 			if(First == true)
 			{
-				Result->Summand1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				Result->_Summand1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 				First = false;
 			}
 			else
 			{
-				Result->Summand2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				Result->_Summand2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
 	}
@@ -74,7 +128,26 @@ Inspection::TypeDefinition::Cast::Cast(void) :
 
 std::any Inspection::TypeDefinition::Cast::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a Cast expression."};
+	assert(_Expression != nullptr);
+	switch(_DataType)
+	{
+	case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
+		{
+			return CastTo<float>(_Expression->GetAny(ExecutionContext));
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
+		{
+			return CastTo<std::uint8_t>(_Expression->GetAny(ExecutionContext));
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
+		{
+			return CastTo<std::uint64_t>(_Expression->GetAny(ExecutionContext));
+		}
+	default:
+		{
+			assert(false);
+		}
+	}
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Cast::GetDataType(void) const
@@ -118,12 +191,21 @@ Inspection::TypeDefinition::DataReference::DataReference(void) :
 
 std::any Inspection::TypeDefinition::DataReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a DataReference expression."};
+	auto Value = ExecutionContext.GetValueFromDataReference(*this);
+	
+	assert(Value != nullptr);
+	
+	return Value->GetData();
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::DataReference::GetDataType(void) const
 {
 	throw Inspection::NotImplementedException{"Called GetDataType() on a DataReference expression."};
+}
+
+const std::vector<Inspection::TypeDefinition::DataReference::Part> & Inspection::TypeDefinition::DataReference::GetParts(void) const
+{
+	return _Parts;
 }
 
 Inspection::TypeDefinition::DataReference::Root Inspection::TypeDefinition::DataReference::GetRoot(void) const
@@ -158,7 +240,7 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 			{
 				assert(ChildElement->GetChilds().size() == 1);
 				
-				auto & DataReferencePart = Result->Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Field);
+				auto & DataReferencePart = Result->_Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Field);
 				auto SubText = dynamic_cast<const XML::Text *>(ChildElement->GetChild(0));
 				
 				assert(SubText != nullptr);
@@ -168,7 +250,7 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 			{
 				assert(ChildElement->GetChilds().size() == 1);
 				
-				auto & DataReferencePart = Result->Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Tag);
+				auto & DataReferencePart = Result->_Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Tag);
 				auto TagText = dynamic_cast<const XML::Text *>(ChildElement->GetChild(0));
 				
 				assert(TagText != nullptr);
@@ -201,7 +283,22 @@ Inspection::TypeDefinition::Divide::Divide(void) :
 
 std::any Inspection::TypeDefinition::Divide::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a Divide expression."};
+	auto DividendAny = _Dividend->GetAny(ExecutionContext);
+	auto DivisorAny = _Divisor->GetAny(ExecutionContext);
+	
+	if(DividendAny.type() == DivisorAny.type())
+	{
+		if(DividendAny.type() == typeid(float))
+		{
+			return std::any_cast<float>(DividendAny) / std::any_cast<float>(DivisorAny);
+		}
+		else
+		{
+			assert(false);
+		}
+	}
+	
+	return nullptr;
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Divide::GetDataType(void) const
@@ -222,12 +319,12 @@ std::unique_ptr<Inspection::TypeDefinition::Divide> Inspection::TypeDefinition::
 			
 			if(First == true)
 			{
-				Result->Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				Result->_Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
 				First = false;
 			}
 			else
 			{
-				Result->Divisor = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				Result->_Divisor = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
 	}
@@ -312,7 +409,41 @@ Inspection::TypeDefinition::Equals::Equals(void) :
 
 std::any Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on an Equals expression."};
+	auto Any1 = _Expression1->GetAny(ExecutionContext);
+	auto Any2 = _Expression2->GetAny(ExecutionContext);
+
+	if((Any1.has_value() == true) && (Any2.has_value() == true))
+	{
+		if(Any1.type() == Any2.type())
+		{
+			if(Any1.type() == typeid(std::uint8_t))
+			{
+				return std::any_cast<const std::uint8_t &>(Any1) == std::any_cast<const std::uint8_t &>(Any2);
+			}
+			else if(Any1.type() == typeid(std::uint16_t))
+			{
+				return std::any_cast<const std::uint16_t &>(Any1) == std::any_cast<const std::uint16_t &>(Any2);
+			}
+			else if(Any1.type() == typeid(std::uint32_t))
+			{
+				return std::any_cast<const std::uint32_t &>(Any1) == std::any_cast<const std::uint32_t &>(Any2);
+			}
+			else if(Any1.type() == typeid(Inspection::GUID))
+			{
+				return std::any_cast<const Inspection::GUID &>(Any1) == std::any_cast<const Inspection::GUID &>(Any2);
+			}
+			else if(Any1.type() == typeid(std::string))
+			{
+				return std::any_cast<const std::string &>(Any1) == std::any_cast<const std::string &>(Any2);
+			}
+			else
+			{
+				throw NotImplementedException("Comparing two values of an unkown type.");
+			}
+		}
+	}
+
+	return false;
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Equals::GetDataType(void) const
@@ -333,12 +464,12 @@ std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::
 			
 			if(First == true)
 			{
-				Result->Expression1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				Result->_Expression1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 				First = false;
 			}
 			else
 			{
-				Result->Expression2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				Result->_Expression2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
 	}
@@ -565,7 +696,15 @@ Inspection::TypeDefinition::Length::Length(void) :
 
 std::any Inspection::TypeDefinition::Length::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a Length expression."};
+	auto BytesAny = _Bytes->GetAny(ExecutionContext);
+	
+	assert(BytesAny.type() == typeid(std::uint64_t));
+	
+	auto BitsAny = _Bits->GetAny(ExecutionContext);
+	
+	assert(BitsAny.type() == typeid(std::uint64_t));
+	
+	return Inspection::Length{std::any_cast<std::uint64_t>(BytesAny), std::any_cast<std::uint64_t>(BitsAny)};
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Length::GetDataType(void) const
@@ -586,11 +725,11 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 			assert(ChildElement != nullptr);
 			if(ChildElement->GetName() == "bytes")
 			{
-				Result->Bytes = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+				Result->_Bytes = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
 			}
 			else if(ChildElement->GetName() == "bits")
 			{
-				Result->Bits = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+				Result->_Bits = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
 			}
 			else
 			{
@@ -609,7 +748,7 @@ Inspection::TypeDefinition::LengthReference::LengthReference(void) :
 
 std::any Inspection::TypeDefinition::LengthReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a LengthReference expression."};
+	return ExecutionContext.CalculateLengthFromReference(*this);
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::LengthReference::GetDataType(void) const
@@ -660,7 +799,7 @@ Inspection::TypeDefinition::ParameterReference::ParameterReference(void) :
 
 std::any Inspection::TypeDefinition::ParameterReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a ParameterReference expression."};
+	return ExecutionContext.GetAnyReferenceFromParameterReference(*this);
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::ParameterReference::GetDataType(void) const
@@ -689,7 +828,7 @@ Inspection::TypeDefinition::Parameters::Parameters(void) :
 
 std::any Inspection::TypeDefinition::Parameters::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a Parameters expression."};
+	return GetParameters(ExecutionContext);
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Parameters::GetDataType(void) const
@@ -697,9 +836,16 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Parameters::Get
 	return Inspection::TypeDefinition::DataType::Parameters;
 }
 
-const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> & Inspection::TypeDefinition::Parameters::GetParameters(void) const
+std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Parameters::GetParameters(Inspection::ExecutionContext & ExecutionContext) const
 {
-	return _Parameters;
+	auto Result = std::unordered_map<std::string, std::any>{};
+	
+	for(auto & Parameter : _Parameters)
+	{
+		Result.emplace(Parameter->GetName(), Parameter->GetAny(ExecutionContext));
+	}
+	
+	return Result;
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Parameters> Inspection::TypeDefinition::Parameters::Load(const XML::Element * Element)
@@ -721,13 +867,25 @@ std::unique_ptr<Inspection::TypeDefinition::Parameters> Inspection::TypeDefiniti
 	return Result;
 }
 
+std::any Inspection::TypeDefinition::Parameters::Parameter::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	assert(_Expression != nullptr);
+	
+	return _Expression->GetAny(ExecutionContext);
+}
+
+const std::string & Inspection::TypeDefinition::Parameters::Parameter::GetName(void) const
+{
+	return _Name;
+}
+
 std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Inspection::TypeDefinition::Parameters::Parameter::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>{new Inspection::TypeDefinition::Parameters::Parameter{}};
 	
 	assert(Element->HasAttribute("name") == true);
-	Result->Name = Element->GetAttribute("name");
-	Result->Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
+	Result->_Name = Element->GetAttribute("name");
+	Result->_Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
 	
 	return Result;
 }
@@ -739,7 +897,27 @@ Inspection::TypeDefinition::Subtract::Subtract(void) :
 
 std::any Inspection::TypeDefinition::Subtract::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a Subtract expression."};
+	assert(_Minuend != nullptr);
+	
+	auto MinuendAny = _Minuend->GetAny(ExecutionContext);
+	
+	assert(_Subtrahend != nullptr);
+	
+	auto SubtrahendAny = _Subtrahend->GetAny(ExecutionContext);
+	
+	if(MinuendAny.type() == SubtrahendAny.type())
+	{
+		if(MinuendAny.type() == typeid(Inspection::Length))
+		{
+			return std::any_cast<const Inspection::Length &>(MinuendAny) - std::any_cast<const Inspection::Length &>(SubtrahendAny);
+		}
+		else
+		{
+			assert(false);
+		}
+	}
+	
+	return nullptr;
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Subtract::GetDataType(void) const
@@ -761,12 +939,12 @@ std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition
 			assert(ChildElement != nullptr);
 			if(First == true)
 			{
-				Result->Minuend = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				Result->_Minuend = Inspection::TypeDefinition::Expression::Load(ChildElement);
 				First = false;
 			}
 			else
 			{
-				Result->Subtrahend = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				Result->_Subtrahend = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
 	}
@@ -774,15 +952,32 @@ std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition
 	return Result;
 }
 
+std::any Inspection::TypeDefinition::Tag::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	assert(_Expression != nullptr);
+	
+	return _Expression->GetAny(ExecutionContext);
+}
+
+const std::string & Inspection::TypeDefinition::Tag::GetName(void) const
+{
+	return _Name;
+}
+
+bool Inspection::TypeDefinition::Tag::HasExpression(void) const
+{
+	return _Expression != nullptr;
+}
+
 std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Tag::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Tag>{new Inspection::TypeDefinition::Tag{}};
 	
 	assert(Element->HasAttribute("name") == true);
-	Result->Name = Element->GetAttribute("name");
+	Result->_Name = Element->GetAttribute("name");
 	if(XML::HasChildElements(Element) == true)
 	{
-		Result->Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
+		Result->_Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
 	}
 	
 	return Result;
@@ -795,12 +990,17 @@ Inspection::TypeDefinition::TypeReference::TypeReference(void) :
 
 std::any Inspection::TypeDefinition::TypeReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a TypeReference expression."};
+	return Inspection::g_TypeRepository.GetType(_Parts);
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::TypeReference::GetDataType(void) const
 {
 	return Inspection::TypeDefinition::DataType::Type;
+}
+
+const Inspection::TypeDefinition::Type * Inspection::TypeDefinition::TypeReference::GetType(void) const
+{
+	return Inspection::g_TypeRepository.GetType(_Parts);
 }
 
 std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefinition::TypeReference::Load(const XML::Element * TypeReferenceElement)
@@ -820,7 +1020,7 @@ std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefin
 			auto TypeReferencePartText = dynamic_cast<const XML::Text *>(TypeReferenceChildElement->GetChild(0));
 			
 			assert(TypeReferencePartText != nullptr);
-			Result->Parts.push_back(TypeReferencePartText->GetText());
+			Result->_Parts.push_back(TypeReferencePartText->GetText());
 		}
 	}
 	

@@ -23,6 +23,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -46,6 +47,7 @@ namespace Inspection
 		class Divide;
 		class Equals;
 		class Subtract;
+		class Type;
 		class Value;
 		
 		enum class DataType
@@ -111,15 +113,15 @@ namespace Inspection
 			virtual ~Add(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-		public:
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand1;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Summand2;
 		private:
 			Add(void);
 			Add(const Inspection::TypeDefinition::Add & Add) = delete;
 			Add(Inspection::TypeDefinition::Add && Add) = delete;
 			Inspection::TypeDefinition::Add & operator=(const Inspection::TypeDefinition::Add & Add) = delete;
 			Inspection::TypeDefinition::Add & operator=(Inspection::TypeDefinition::Add && Add) = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Summand1;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Summand2;
 		};
 		
 		class Cast : public Inspection::TypeDefinition::Expression
@@ -174,10 +176,9 @@ namespace Inspection
 			virtual ~DataReference(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
+			const std::vector<Inspection::TypeDefinition::DataReference::Part> & GetParts(void) const;
 		public:
 			Inspection::TypeDefinition::DataReference::Root GetRoot(void) const;
-		public:
-			std::vector<Inspection::TypeDefinition::DataReference::Part> Parts;
 		private:
 			DataReference(void);
 			DataReference(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
@@ -185,6 +186,7 @@ namespace Inspection
 			Inspection::TypeDefinition::DataReference & operator=(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
 			Inspection::TypeDefinition::DataReference & operator=(Inspection::TypeDefinition::DataReference && DataReference) = delete;
 		private:
+			std::vector<Inspection::TypeDefinition::DataReference::Part> _Parts;
 			Inspection::TypeDefinition::DataReference::Root _Root;
 		};
 		
@@ -196,15 +198,15 @@ namespace Inspection
 			virtual ~Divide(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-		public:
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Dividend;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Divisor;
 		private:
 			Divide(void);
 			Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
 			Divide(Inspection::TypeDefinition::Divide && Divide) = delete;
 			Inspection::TypeDefinition::Divide & operator=(const Inspection::TypeDefinition::Divide & Divide) = delete;
 			Inspection::TypeDefinition::Divide & operator=(Inspection::TypeDefinition::Divide && Divide) = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Dividend;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Divisor;
 		};
 		
 		class Equals : public Inspection::TypeDefinition::Expression
@@ -215,15 +217,15 @@ namespace Inspection
 			virtual ~Equals(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-		public:
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression1;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression2;
 		private:
 			Equals(void);
 			Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
 			Equals(Inspection::TypeDefinition::Equals && Equals) = delete;
 			Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
 			Inspection::TypeDefinition::Equals & operator=(Inspection::TypeDefinition::Equals && Equals) = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Expression1;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Expression2;
 		};
 		
 		class FieldReference : public Inspection::TypeDefinition::Expression
@@ -262,15 +264,15 @@ namespace Inspection
 			virtual ~Length(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-		public:
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Bytes;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Bits;
 		private:
 			Length(void);
 			Length(const Inspection::TypeDefinition::Length & Length) = delete;
 			Length(Inspection::TypeDefinition::Length && Length) = delete;
 			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
 			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Bytes;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Bits;
 		};
 		
 		class LengthReference : public Inspection::TypeDefinition::Expression
@@ -333,20 +335,23 @@ namespace Inspection
 			public:
 				static std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Load(const XML::Element * Element);
 			public:
-				std::string Name;
-				std::unique_ptr<Inspection::TypeDefinition::Expression> Expression;
+				std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const;
+				const std::string & GetName(void) const;
 			private:
 				Parameter(void) = default;
 				Parameter(const Inspection::TypeDefinition::Parameters::Parameter & Parameter) = delete;
 				Parameter(Inspection::TypeDefinition::Parameters::Parameter && Parameter) = delete;
 				Inspection::TypeDefinition::Parameters::Parameter & operator=(const Inspection::TypeDefinition::Parameters::Parameter & Parameter) = delete;
 				Inspection::TypeDefinition::Parameters::Parameter & operator=(Inspection::TypeDefinition::Parameters::Parameter && Parameter) = delete;
+			private:
+				std::string _Name;
+				std::unique_ptr<Inspection::TypeDefinition::Expression> _Expression;
 			};
 		public:
 			virtual ~Parameters(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-			const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> & GetParameters(void) const;
+			std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext) const;
 		private:
 			Parameters(void);
 			Parameters(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
@@ -365,15 +370,15 @@ namespace Inspection
 			virtual ~Subtract(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-		public:
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Minuend;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Subtrahend;
 		private:
 			Subtract(void);
 			Subtract(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
 			Subtract(Inspection::TypeDefinition::Subtract && Subtract) = delete;
 			Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
 			Inspection::TypeDefinition::Subtract & operator=(Inspection::TypeDefinition::Subtract && Subtract) = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Minuend;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Subtrahend;
 		};
 		
 		class TypeReference : public Inspection::TypeDefinition::Expression
@@ -384,14 +389,15 @@ namespace Inspection
 			virtual ~TypeReference(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-		public:
-			std::vector<std::string> Parts;
+			const Inspection::TypeDefinition::Type * GetType(void) const;
 		private:
 			TypeReference(void);
 			TypeReference(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
 			TypeReference(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
 			Inspection::TypeDefinition::TypeReference & operator=(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
 			Inspection::TypeDefinition::TypeReference & operator=(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
+		private:
+			std::vector<std::string> _Parts;
 		};
 		
 		class Value : public Inspection::TypeDefinition::Expression
@@ -420,14 +426,18 @@ namespace Inspection
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Tag> Load(const XML::Element * Element);
 		public:
-			std::string Name;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const;
+			const std::string & GetName(void) const;
+			bool HasExpression(void) const;
 		private:
 			Tag(void) = default;
 			Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
 			Tag(Inspection::TypeDefinition::Tag && Tag) = delete;
 			Inspection::TypeDefinition::Tag & operator=(const Inspection::TypeDefinition::Tag & Tag) = delete;
 			Inspection::TypeDefinition::Tag & operator=(Inspection::TypeDefinition::Tag && Tag) = delete;
+		private:
+			std::string _Name;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Expression;
 		};
 		
 		class Enumeration

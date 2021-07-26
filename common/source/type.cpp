@@ -3,7 +3,6 @@
 
 #include "execution_context.h"
 #include "getters.h"
-#include "not_implemented_exception.h"
 #include "result.h"
 #include "type.h"
 #include "type_definition.h"
@@ -26,67 +25,51 @@ namespace Inspection
 	
 	namespace Algorithms
 	{
-		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Summand1, const Inspection::TypeDefinition::Expression & Summand2);
-		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Dividend, const Inspection::TypeDefinition::Expression & Divisor);
-		std::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast);
-		std::any GetAnyFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression);
-		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Minuend, const Inspection::TypeDefinition::Expression & Subtrahend);
-		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters);
-		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters & Parameters);
-		
-		template<typename Type>
-		Type Cast(const std::any & Any)
-		{
-			if(Any.type() == typeid(float))
-			{
-				return static_cast<Type>(std::any_cast<float>(Any));
-			}
-			else if(Any.type() == typeid(std::uint8_t))
-			{
-				return static_cast<Type>(std::any_cast<std::uint8_t>(Any));
-			}
-			else if(Any.type() == typeid(std::uint16_t))
-			{
-				return static_cast<Type>(std::any_cast<std::uint16_t>(Any));
-			}
-			else if(Any.type() == typeid(std::uint32_t))
-			{
-				return static_cast<Type>(std::any_cast<std::uint32_t>(Any));
-			}
-			else if(Any.type() == typeid(std::uint64_t))
-			{
-				return static_cast<Type>(std::any_cast<std::uint64_t>(Any));
-			}
-			else
-			{
-				std::cout << Any.type().name() << std::endl;
-				assert(false);
-			}
-		}
-		
-		template<typename Type>
-		Type GetDataFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
-		{
-			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Cast.GetExpression()));
-		}
 		
 		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
 		{
 			for(auto & Tag : Tags)
 			{
-				if(Tag->Expression)
+				if(Tag->HasExpression() == true)
 				{
-					assert(Tag->Expression->GetExpressionType() == Inspection::TypeDefinition::ExpressionType::Value);
-					
-					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Tag->Expression.get());
-					
-					assert(Value != nullptr);
-					Target->AddTag(Tag->Name, Value->GetAny(ExecutionContext));
+					Target->AddTag(Tag->GetName(), Tag->GetAny(ExecutionContext));
 				}
 				else
 				{
-					Target->AddTag(Tag->Name);
+					Target->AddTag(Tag->GetName());
 				}
+			}
+		}
+		
+		bool CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target)
+		{
+			auto Result = true;
+			
+			for(auto & VerificationExpression : Verifications)
+			{
+				auto VerificationAny = VerificationExpression->GetAny(ExecutionContext);
+				
+				assert(VerificationAny.type() == typeid(bool));
+				
+				Result = std::any_cast<bool>(VerificationAny);
+				if(Result == false)
+				{
+					Target->AddTag("error", "The value failed to verify."s);
+				}
+			}
+			
+			return Result;
+		}
+		
+		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
+		{
+			if(Parameters != nullptr)
+			{
+				return Parameters->GetParameters(ExecutionContext);
+			}
+			else
+			{
+				return std::unordered_map<std::string, std::any>{};
 			}
 		}
 		
@@ -115,260 +98,6 @@ namespace Inspection
 					Target->AddTag("error", "Could find neither an enumarion element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
 					Result = false;
 				}
-			}
-			
-			return Result;
-		}
-		
-		std::any GetAnyFromExpression(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression)
-		{
-			switch(Expression.GetExpressionType())
-			{
-			case Inspection::TypeDefinition::ExpressionType::Add:
-				{
-					auto Add = dynamic_cast<const Inspection::TypeDefinition::Add *>(&Expression);
-					
-					assert(Add != nullptr);
-					
-					return Inspection::Algorithms::Add(ExecutionContext, *(Add->Summand1), *(Add->Summand2));
-				}
-			case Inspection::TypeDefinition::ExpressionType::Cast:
-				{
-					auto Cast = dynamic_cast<const Inspection::TypeDefinition::Cast *>(&Expression);
-					
-					assert(Cast != nullptr);
-					
-					return Inspection::Algorithms::GetAnyFromCast(ExecutionContext, *Cast);
-				}
-			case Inspection::TypeDefinition::ExpressionType::DataReference:
-				{
-					auto DataReference = dynamic_cast<const Inspection::TypeDefinition::DataReference *>(&Expression);
-					
-					assert(DataReference != nullptr);
-					
-					auto Value = ExecutionContext.GetValueFromDataReference(*DataReference);
-					
-					assert(Value != nullptr);
-					
-					return Value->GetData();
-				}
-			case Inspection::TypeDefinition::ExpressionType::Divide:
-				{
-					auto Divide = dynamic_cast<const Inspection::TypeDefinition::Divide *>(&Expression);
-					
-					assert(Divide != nullptr);
-					
-					return Inspection::Algorithms::Divide(ExecutionContext, *(Divide->Dividend), *(Divide->Divisor));
-				}
-			case Inspection::TypeDefinition::ExpressionType::Length:
-				{
-					auto Length = dynamic_cast<const Inspection::TypeDefinition::Length *>(&Expression);
-					
-					assert(Length != nullptr);
-					
-					auto BytesAny = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Length->Bytes));
-					
-					assert(BytesAny.type() == typeid(std::uint64_t));
-					
-					auto BitsAny = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Length->Bits));
-					
-					assert(BitsAny.type() == typeid(std::uint64_t));
-					
-					return Inspection::Length{std::any_cast<std::uint64_t>(BytesAny), std::any_cast<std::uint64_t>(BitsAny)};
-				}
-			case Inspection::TypeDefinition::ExpressionType::LengthReference:
-				{
-					auto LengthReference = dynamic_cast<const Inspection::TypeDefinition::LengthReference *>(&Expression);
-					
-					assert(LengthReference != nullptr);
-					
-					return ExecutionContext.CalculateLengthFromReference(*LengthReference);
-				}
-			case Inspection::TypeDefinition::ExpressionType::ParameterReference:
-				{
-					auto ParameterReference = dynamic_cast<const Inspection::TypeDefinition::ParameterReference *>(&Expression);
-					
-					assert(ParameterReference != nullptr);
-					
-					return ExecutionContext.GetAnyReferenceFromParameterReference(*ParameterReference);
-				}
-			case Inspection::TypeDefinition::ExpressionType::Parameters:
-				{
-					auto Parameters = dynamic_cast<const Inspection::TypeDefinition::Parameters *>(&Expression);
-					
-					assert(Parameters != nullptr);
-					
-					return Inspection::Algorithms::GetParameters(ExecutionContext, *Parameters);
-				}
-			case Inspection::TypeDefinition::ExpressionType::Subtract:
-				{
-					auto Subtract = dynamic_cast<const Inspection::TypeDefinition::Subtract *>(&Expression);
-					
-					assert(Subtract != nullptr);
-					
-					return Inspection::Algorithms::Subtract(ExecutionContext, *(Subtract->Minuend), *(Subtract->Subtrahend));
-				}
-			case Inspection::TypeDefinition::ExpressionType::TypeReference:
-				{
-					auto TypeReference = dynamic_cast<const Inspection::TypeDefinition::TypeReference *>(&Expression);
-					
-					assert(TypeReference != nullptr);
-					
-					return Inspection::g_TypeRepository.GetType(TypeReference->Parts);
-				}
-			case Inspection::TypeDefinition::ExpressionType::Value:
-				{
-					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(&Expression);
-					
-					assert(Value != nullptr);
-					
-					return Value->GetAny(ExecutionContext);
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
-		
-		std::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
-		{
-			switch(Cast.GetDataType())
-			{
-			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
-				{
-					return Inspection::Algorithms::GetDataFromCast<float>(ExecutionContext, Cast);
-				}
-			case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
-				{
-					return Inspection::Algorithms::GetDataFromCast<std::uint8_t>(ExecutionContext, Cast);
-				}
-			case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
-				{
-					return Inspection::Algorithms::GetDataFromCast<std::uint64_t>(ExecutionContext, Cast);
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
-		
-		std::any Add(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Summand1, const Inspection::TypeDefinition::Expression & Summand2)
-		{
-			auto AnySummand1 = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Summand1);
-			auto AnySummand2 = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Summand2);
-			
-			if((AnySummand1.type() == typeid(std::uint8_t)) && (AnySummand2.type() == typeid(std::uint8_t)))
-			{
-				return static_cast<std::uint8_t>(std::any_cast<std::uint8_t>(AnySummand1) + std::any_cast<std::uint8_t>(AnySummand2));
-			}
-			else
-			{
-				assert(false);
-			}
-			
-			return nullptr;
-		}
-		
-		template<typename Type>
-		bool Equals(const std::any & One, const std::any & Two)
-		{
-			return std::any_cast<const Type &>(One) == std::any_cast<const Type &>(Two);
-		}
-		
-		bool Equals(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Expression1, const Inspection::TypeDefinition::Expression & Expression2)
-		{
-			auto Any1 = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Expression1);
-			auto Any2 = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Expression2);
-			
-			if((Any1.has_value() == true) && (Any2.has_value() == true))
-			{
-				if(Any1.type() == Any2.type())
-				{
-					if(Any1.type() == typeid(std::uint8_t))
-					{
-						return Inspection::Algorithms::Equals<std::uint8_t>(Any1, Any2);
-					}
-					else if(Any1.type() == typeid(std::uint16_t))
-					{
-						return Inspection::Algorithms::Equals<std::uint16_t>(Any1, Any2);
-					}
-					else if(Any1.type() == typeid(std::uint32_t))
-					{
-						return Inspection::Algorithms::Equals<std::uint32_t>(Any1, Any2);
-					}
-					else if(Any1.type() == typeid(Inspection::GUID))
-					{
-						return Inspection::Algorithms::Equals<Inspection::GUID>(Any1, Any2);
-					}
-					else if(Any1.type() == typeid(std::string))
-					{
-						return Inspection::Algorithms::Equals<std::string>(Any1, Any2);
-					}
-					else
-					{
-						assert(false);
-					}
-				}
-			}
-			
-			return false;
-		}
-		
-		std::any Divide(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Dividend, const Inspection::TypeDefinition::Expression & Divisor)
-		{
-			auto AnyDivident = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Dividend);
-			auto AnyDivisor = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Divisor);
-			
-			if((AnyDivident.type() == typeid(float)) && (AnyDivisor.type() == typeid(float)))
-			{
-				return std::any_cast<float>(AnyDivident) / std::any_cast<float>(AnyDivisor);
-			}
-			else
-			{
-				assert(false);
-			}
-			
-			return nullptr;
-		}
-		
-		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Minuend, const Inspection::TypeDefinition::Expression & Subtrahend)
-		{
-			auto AnyMinuend = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Minuend);
-			auto AnySubtrahend = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Subtrahend);
-			
-			if((AnyMinuend.type() == typeid(Inspection::Length)) && (AnySubtrahend.type() == typeid(Inspection::Length)))
-			{
-				return std::any_cast<const Inspection::Length &>(AnyMinuend) - std::any_cast<const Inspection::Length &>(AnySubtrahend);
-			}
-			else
-			{
-				assert(false);
-			}
-			
-			return nullptr;
-		}
-		
-		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
-		{
-			if(Parameters != nullptr)
-			{
-				return Inspection::Algorithms::GetParameters(ExecutionContext, *Parameters);
-			}
-			else
-			{
-				return std::unordered_map<std::string, std::any>{};
-			}
-		}
-		
-		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters & Parameters)
-		{
-			auto Result = std::unordered_map<std::string, std::any>{};
-			
-			for(auto & Parameter : Parameters.GetParameters())
-			{
-				Result.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Parameter->Expression)));
 			}
 			
 			return Result;
@@ -415,7 +144,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			
 			if(_Part->Length != nullptr)
 			{
-				PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(_Part->Length))));
+				PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(_Part->Length->GetAny(ExecutionContext)));
 			}
 			else
 			{
@@ -525,7 +254,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 		
 		if(AlternativePart.Length != nullptr)
 		{
-			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(AlternativePart.Length))));
+			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(AlternativePart.Length->GetAny(ExecutionContext)));
 		}
 		else
 		{
@@ -636,7 +365,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			assert(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
+			auto ElementType = Array.Array->ElementType->GetType();
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -707,7 +436,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
 			assert(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
+			auto ElementType = Array.Array->ElementType->GetType();
 			auto NumberOfAppendedElements = static_cast<std::uint64_t>(0);
 			
 			for(auto ElementPropertiesIndex = static_cast<std::uint64_t>(0); (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
@@ -734,8 +463,8 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			assert(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
-			auto NumberOfElementsAny = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Array.Array->IterateNumberOfElements));
+			auto ElementType = Array.Array->ElementType->GetType();
+			auto NumberOfElementsAny = Array.Array->IterateNumberOfElements->GetAny(ExecutionContext);
 			
 			assert(NumberOfElementsAny.type() == typeid(std::uint64_t));
 			
@@ -787,7 +516,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			assert(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Inspection::g_TypeRepository.GetType(Array.Array->ElementType->Parts);
+			auto ElementType = Array.Array->ElementType->GetType();
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -816,6 +545,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 				{
 					Continue = true;
 					
+					break;
 					break;
 				}
 			}
@@ -853,7 +583,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	ExecutionContext.Push(Field, *Result, Reader, Parameters);
 	if(Field.TypeReference)
 	{
-		auto FieldResult = Inspection::g_TypeRepository.GetType(Field.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
+		auto FieldType = Field.TypeReference->GetType();
+		
+		assert(FieldType != nullptr);
+		
+		auto FieldResult = FieldType->Get(Reader, ExecutionContext.GetAllParameters());
 		
 		Continue = FieldResult->GetSuccess();
 		Result->SetValue(FieldResult->ExtractValue());
@@ -867,7 +601,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		
 		if(FieldPart.Length != nullptr)
 		{
-			FieldPartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(FieldPart.Length))));
+			FieldPartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(FieldPart.Length->GetAny(ExecutionContext)));
 		}
 		else
 		{
@@ -936,17 +670,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	// tags
 	if(Continue == true)
 	{
-		for(auto & Tag : Field.Tags)
-		{
-			if(Tag->Expression)
-			{
-				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Tag->Expression)));
-			}
-			else
-			{
-				Result->GetValue()->AddTag(Tag->Name);
-			}
-		}
+		Inspection::Algorithms::ApplyTags(ExecutionContext, Field.Tags, Result->GetValue());
 	}
 	// interpretation
 	if(Continue == true)
@@ -967,29 +691,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	// verification
 	if(Continue == true)
 	{
-		for(auto & Expression : Field.Verifications)
-		{
-			switch(Expression->GetExpressionType())
-			{
-			case Inspection::TypeDefinition::ExpressionType::Equals:
-				{
-					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
-					
-					assert(Equals != nullptr);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Expression1), *(Equals->Expression2));
-					if(Continue == false)
-					{
-						Result->GetValue()->AddTag("error", "The value failed to verify."s);
-					}
-					
-					break;
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
+		Continue = Inspection::Algorithms::CheckVerifications(ExecutionContext, Field.Verifications, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -1008,7 +710,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	ExecutionContext.Push(Fields, *Result, Reader, Parameters);
 	assert(Fields.TypeReference != nullptr);
 	
-	auto FieldsResult = Inspection::g_TypeRepository.GetType(Fields.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
+	auto FieldsType = Fields.TypeReference->GetType();
+	
+	assert(FieldsType != nullptr);
+	
+	auto FieldsResult = FieldsType->Get(Reader, ExecutionContext.GetAllParameters());
 	
 	Continue = FieldsResult->GetSuccess();
 	Result->SetValue(FieldsResult->ExtractValue());
@@ -1031,29 +737,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	// verification
 	if(Continue == true)
 	{
-		for(auto & Expression : Fields.Verifications)
-		{
-			switch(Expression->GetExpressionType())
-			{
-			case Inspection::TypeDefinition::ExpressionType::Equals:
-				{
-					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
-					
-					assert(Equals != nullptr);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Expression1), *(Equals->Expression2));
-					if(Continue == false)
-					{
-						Result->GetValue()->AddTag("error", "The value failed to verify."s);
-					}
-					
-					break;
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
+		Continue = Inspection::Algorithms::CheckVerifications(ExecutionContext, Fields.Verifications, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -1072,24 +756,18 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	ExecutionContext.Push(Forward, *Result, Reader, Parameters);
 	assert(Forward.TypeReference != nullptr);
 	
-	auto ForwardResult = Inspection::g_TypeRepository.GetType(Forward.TypeReference->Parts)->Get(Reader, ExecutionContext.GetAllParameters());
+	auto ForwardType = Forward.TypeReference->GetType();
+	
+	assert(ForwardType != nullptr);
+	
+	auto ForwardResult = ForwardType->Get(Reader, ExecutionContext.GetAllParameters());
 	
 	Continue = ForwardResult->GetSuccess();
 	Result->SetValue(ForwardResult->ExtractValue());
 	// tags
 	if(Continue == true)
 	{
-		for(auto & Tag : Forward.Tags)
-		{
-			if(Tag->Expression)
-			{
-				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Tag->Expression)));
-			}
-			else
-			{
-				Result->GetValue()->AddTag(Tag->Name);
-			}
-		}
+		Inspection::Algorithms::ApplyTags(ExecutionContext, Forward.Tags, Result->GetValue());
 	}
 	// interpretation
 	if(Continue == true)
@@ -1110,29 +788,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	// verification
 	if(Continue == true)
 	{
-		for(auto & Expression : Forward.Verifications)
-		{
-			switch(Expression->GetExpressionType())
-			{
-			case Inspection::TypeDefinition::ExpressionType::Equals:
-				{
-					auto Equals = dynamic_cast<Inspection::TypeDefinition::Equals *>(Expression.get());
-					
-					assert(Equals != nullptr);
-					Continue = Inspection::Algorithms::Equals(ExecutionContext, *(Equals->Expression1), *(Equals->Expression2));
-					if(Continue == false)
-					{
-						Result->GetValue()->AddTag("error", "The value failed to verify."s);
-					}
-					
-					break;
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
+		Continue = Inspection::Algorithms::CheckVerifications(ExecutionContext, Forward.Verifications, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -1157,7 +813,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 		
 		if(SequencePart.Length != nullptr)
 		{
-			SequencePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(SequencePart.Length))));
+			SequencePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(SequencePart.Length->GetAny(ExecutionContext)));
 		}
 		else
 		{
@@ -1227,17 +883,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	// tags
 	if(Continue == true)
 	{
-		for(auto & Tag : Sequence.Tags)
-		{
-			if(Tag->Expression)
-			{
-				Result->GetValue()->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Tag->Expression)));
-			}
-			else
-			{
-				Result->GetValue()->AddTag(Tag->Name);
-			}
-		}
+		Inspection::Algorithms::ApplyTags(ExecutionContext, Sequence.Tags, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization

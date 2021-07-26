@@ -353,7 +353,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::
 	
 	auto First = true;
 	
-	for(auto & Part : DataReference.Parts)
+	for(auto & Part : DataReference.GetParts())
 	{
 		if(First == false)
 		{
