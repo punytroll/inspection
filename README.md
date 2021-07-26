@@ -24,7 +24,7 @@ This project started out as an attempt to analyze ID3 tags in audio files. In th
 
 ### generalinspector
 
-First and foremost is the [_generalinspector_](generalinspector). This program is meant to parse any file and does a best effort to recognize its content. Of course, this is limited by the number of known formats. For example, an MP3 file may be structured in any number of different ways (using the type names from the [type library](common/types) and the pipe symbol to denote sequential parts):
+First and foremost is the [_generalinspector_](inspectors/general). This program is meant to parse any file and does a best effort to recognize its content. Of course, this is limited by the number of known formats. For example, an MP3 file may be structured in any number of different ways (using the type names from the [type library](common/types) and the pipe symbol to denote sequential parts):
 
 - MPEG.1.Stream
 - MPEG.1.Stream | ID3.v1.Tag
@@ -36,19 +36,19 @@ First and foremost is the [_generalinspector_](generalinspector). This program i
 - ID3.v2_Tag | MPEG.1.Stream | APE.Tag | ID3.v1.Tag
 - ...
 
-At the moment the generalinspector has a [predefined and hardcoded](generalinspector/generalinspector.cpp) list of possible parts in a file. It is the intention of further development to ease this restriction and become more generic.
+At the moment the generalinspector has a [predefined and hardcoded](inspectors/general/generalinspector.cpp) list of possible parts in a file. It is the intention of further development to ease this restriction and become more generic.
 
 ### id3inspector
 
-The [_id3inspector_](id3inspector) can be used to display only the ID3 parts of a file and skip all other audio data. For this to work ID3v2 must be at the beginning of the file and ID3v1 must be at the end, as per specification. ID3 tags of a certain version can be requested (```--id3v1-only``` and ```--id3v2-only```).
+The [_id3inspector_](inspectors/id3) can be used to display only the ID3 parts of a file and skip all other audio data. For this to work ID3v2 must be at the beginning of the file and ID3v1 must be at the end, as per specification. ID3 tags of a certain version can be requested (```--id3v1-only``` and ```--id3v2-only```).
 
 ### flacinspector
 
-The [_flacinspector_](flacinspector) displays the FLAC stream's meta data blocks, including the vorbis comment. All audio data is skipped by default, except when requested (```--with-frames``` - prepare for a **LONG** wait).
+The [_flacinspector_](inspectors/flac) displays the FLAC stream's meta data blocks, including the vorbis comment. All audio data is skipped by default, except when requested (```--with-frames``` - prepare for a **LONG** wait).
 
 ### mpeginspector
 
-The [_mpeginspector_](mpeginspector) displays the header information of **all** MPEG frames in an MPEG stream. By default, this program is very strict and doesn't allow any extra-frame data (i.e. tags of any kind). It can be instructed to seek for all MPEG frames though (```--seek```).
+The [_mpeginspector_](inspectors/mpeg) displays the header information of **all** MPEG frames in an MPEG stream. By default, this program is very strict and doesn't allow any extra-frame data (i.e. tags of any kind). It can be instructed to seek for all MPEG frames though (```--seek```).
 
 ### apeinspector
 
