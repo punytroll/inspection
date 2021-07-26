@@ -377,14 +377,6 @@ namespace Inspection
 		{
 			switch(Cast.DataType)
 			{
-			case Inspection::TypeDefinition::DataType::Length:
-				{
-					auto Any = Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Cast.Expression));
-					
-					assert(Any.type() == typeid(Inspection::Length));
-					
-					return Any;
-				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
 					return Inspection::Algorithms::GetDataFromCast<float>(ExecutionContext, Cast);

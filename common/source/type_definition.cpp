@@ -354,10 +354,12 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		if(XML::HasOneChildElement(Element) == true)
 		{
-			Result = Inspection::TypeDefinition::Cast::Load(Element);
+			// <length>-Element contains an expression (i.e. <subtract>)
+			Result = Inspection::TypeDefinition::Expression::Load(XML::GetFirstChildElement(Element));
 		}
 		else
 		{
+			// <length>-Element IS a length with <bytes> and <bits>
 			Result = Inspection::TypeDefinition::Length::Load(Element);
 		}
 	}
