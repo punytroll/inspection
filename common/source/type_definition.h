@@ -394,8 +394,6 @@ namespace Inspection
 			Inspection::TypeDefinition::TypeReference & operator=(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
 		};
 		
-		class Length;
-		
 		class Value : public Inspection::TypeDefinition::Expression
 		{
 		public:
@@ -404,8 +402,6 @@ namespace Inspection
 			virtual ~Value(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-		public:
-			std::variant<bool, Inspection::GUID, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		protected:
 			Value(void);
 			Value(Inspection::TypeDefinition::DataType DataType);
@@ -415,6 +411,7 @@ namespace Inspection
 			Inspection::TypeDefinition::Value & operator=(const Inspection::TypeDefinition::Value & Value) = delete;
 			Inspection::TypeDefinition::Value & operator=(Inspection::TypeDefinition::Value && Value) = delete;
 		private:
+			std::variant<bool, Inspection::GUID, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> _Data;
 			Inspection::TypeDefinition::DataType _DataType;
 		};
 		

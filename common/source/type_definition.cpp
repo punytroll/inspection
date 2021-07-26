@@ -840,7 +840,65 @@ Inspection::TypeDefinition::Value::Value(Inspection::TypeDefinition::DataType Da
 
 std::any Inspection::TypeDefinition::Value::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	throw Inspection::NotImplementedException{"Called GetAny() on a Value expression."};
+	switch(_DataType)
+	{
+	case Inspection::TypeDefinition::DataType::Boolean:
+		{
+			assert(std::holds_alternative<bool>(_Data) == true);
+			
+			return std::get<bool>(_Data);
+		}
+	case Inspection::TypeDefinition::DataType::GUID:
+		{
+			assert(std::holds_alternative<Inspection::GUID>(_Data) == true);
+			
+			return std::get<Inspection::GUID>(_Data);
+		}
+	case Inspection::TypeDefinition::DataType::Nothing:
+		{
+			return nullptr;
+		}
+	case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
+		{
+			assert(std::holds_alternative<float>(_Data) == true);
+			
+			return std::get<float>(_Data);
+		}
+	case Inspection::TypeDefinition::DataType::String:
+		{
+			assert(std::holds_alternative<std::string>(_Data) == true);
+			
+			return std::get<std::string>(_Data);
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
+		{
+			assert(std::holds_alternative<std::uint8_t>(_Data) == true);
+			
+			return std::get<std::uint8_t>(_Data);
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
+		{
+			assert(std::holds_alternative<std::uint16_t>(_Data) == true);
+			
+			return std::get<std::uint16_t>(_Data);
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
+		{
+			assert(std::holds_alternative<std::uint32_t>(_Data) == true);
+			
+			return std::get<std::uint32_t>(_Data);
+		}
+	case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
+		{
+			assert(std::holds_alternative<std::uint64_t>(_Data) == true);
+			
+			return std::get<std::uint64_t>(_Data);
+		}
+	default:
+		{
+			assert(false);
+		}
+	}
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Value::GetDataType(void) const
@@ -866,7 +924,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<bool>(TextNode->GetText());
+		Result->_Data = from_string_cast<bool>(TextNode->GetText());
 	}
 	else if(Element->GetName() == "guid")
 	{
@@ -876,7 +934,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Result->Data.emplace<Inspection::GUID>(TextNode->GetText());
+		Result->_Data.emplace<Inspection::GUID>(TextNode->GetText());
 	}
 	else if(Element->GetName() == "single-precision-real")
 	{
@@ -886,7 +944,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<float>(TextNode->GetText());
+		Result->_Data = from_string_cast<float>(TextNode->GetText());
 	}
 	else if(Element->GetName() == "string")
 	{
@@ -896,7 +954,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Result->Data = std::string{TextNode->GetText()};
+		Result->_Data = std::string{TextNode->GetText()};
 	}
 	else if(Element->GetName() == "unsigned-integer-8bit")
 	{
@@ -906,7 +964,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<std::uint8_t>(TextNode->GetText());
+		Result->_Data = from_string_cast<std::uint8_t>(TextNode->GetText());
 	}
 	else if(Element->GetName() == "unsigned-integer-16bit")
 	{
@@ -916,7 +974,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<std::uint16_t>(TextNode->GetText());
+		Result->_Data = from_string_cast<std::uint16_t>(TextNode->GetText());
 	}
 	else if(Element->GetName() == "unsigned-integer-32bit")
 	{
@@ -926,7 +984,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<std::uint32_t>(TextNode->GetText());
+		Result->_Data = from_string_cast<std::uint32_t>(TextNode->GetText());
 	}
 	else if(Element->GetName() == "unsigned-integer-64bit")
 	{
@@ -936,7 +994,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
 		
 		assert(TextNode != nullptr);
-		Result->Data = from_string_cast<std::uint64_t>(TextNode->GetText());
+		Result->_Data = from_string_cast<std::uint64_t>(TextNode->GetText());
 	}
 	else
 	{

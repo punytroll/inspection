@@ -85,69 +85,6 @@ namespace Inspection
 			return ExecutionContext.GetAnyReferenceFromParameterReference(ParameterReference);
 		}
 		
-		std::any GetAnyFromValue(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Value & Value)
-		{
-			switch(Value.GetDataType())
-			{
-			case Inspection::TypeDefinition::DataType::Boolean:
-				{
-					assert(std::holds_alternative<bool>(Value.Data) == true);
-					
-					return std::get<bool>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::GUID:
-				{
-					assert(std::holds_alternative<Inspection::GUID>(Value.Data) == true);
-					
-					return std::get<Inspection::GUID>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::Nothing:
-				{
-					return nullptr;
-				}
-			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
-				{
-					assert(std::holds_alternative<float>(Value.Data) == true);
-					
-					return std::get<float>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::String:
-				{
-					assert(std::holds_alternative<std::string>(Value.Data) == true);
-					
-					return std::get<std::string>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
-				{
-					assert(std::holds_alternative<std::uint8_t>(Value.Data) == true);
-					
-					return std::get<std::uint8_t>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
-				{
-					assert(std::holds_alternative<std::uint16_t>(Value.Data) == true);
-					
-					return std::get<std::uint16_t>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
-				{
-					assert(std::holds_alternative<std::uint32_t>(Value.Data) == true);
-					
-					return std::get<std::uint32_t>(Value.Data);
-				}
-			case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
-				{
-					assert(std::holds_alternative<std::uint64_t>(Value.Data) == true);
-					
-					return std::get<std::uint64_t>(Value.Data);
-				}
-			default:
-				{
-					assert(false);
-				}
-			}
-		}
-		
 		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
 		{
 			for(auto & Tag : Tags)
@@ -159,7 +96,7 @@ namespace Inspection
 					auto Value = dynamic_cast<const Inspection::TypeDefinition::Value *>(Tag->Expression.get());
 					
 					assert(Value != nullptr);
-					Target->AddTag(Tag->Name, Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value));
+					Target->AddTag(Tag->Name, Value->GetAny(ExecutionContext));
 				}
 				else
 				{
@@ -296,7 +233,7 @@ namespace Inspection
 					
 					assert(Value != nullptr);
 					
-					return Inspection::Algorithms::GetAnyFromValue(ExecutionContext, *Value);
+					return Value->GetAny(ExecutionContext);
 				}
 			default:
 				{
