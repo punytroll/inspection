@@ -179,12 +179,6 @@ namespace Inspection
 					
 					return std::get<Inspection::GUID>(Value.Data);
 				}
-			case Inspection::TypeDefinition::DataType::Length:
-				{
-					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data) == true);
-					
-					return Inspection::Length{Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bytes)), Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(std::get<std::unique_ptr<Inspection::TypeDefinition::Length>>(Value.Data)->Bits))};
-				}
 			case Inspection::TypeDefinition::DataType::Nothing:
 				{
 					return nullptr;
@@ -323,6 +317,14 @@ namespace Inspection
 					assert(Divide != nullptr);
 					
 					return Inspection::Algorithms::Divide(ExecutionContext, *(Divide->Dividend), *(Divide->Divisor));
+				}
+			case Inspection::TypeDefinition::ExpressionType::Length:
+				{
+					auto Length = dynamic_cast<const Inspection::TypeDefinition::Length *>(&Expression);
+					
+					assert(Length != nullptr);
+					
+					return Inspection::Length{Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(Length->Bytes)), Inspection::Algorithms::GetDataFromExpression<std::uint64_t>(ExecutionContext, *(Length->Bits))};
 				}
 			case Inspection::TypeDefinition::ExpressionType::LengthReference:
 				{

@@ -350,6 +350,17 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		Result = Inspection::TypeDefinition::FieldReference::Load(Element);
 	}
+	else if(Element->GetName() == "length")
+	{
+		if(XML::HasOneChildElement(Element) == true)
+		{
+			Result = Inspection::TypeDefinition::Cast::Load(Element);
+		}
+		else
+		{
+			Result = Inspection::TypeDefinition::Length::Load(Element);
+		}
+	}
 	else if(Element->GetName() == "length-reference")
 	{
 		Result = Inspection::TypeDefinition::LengthReference::Load(Element);
@@ -365,10 +376,6 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	else if(Element->GetName() == "type-reference")
 	{
 		Result = Inspection::TypeDefinition::TypeReference::Load(Element);
-	}
-	else if((Element->GetName() == "length") && (XML::HasOneChildElement(Element) == true))
-	{
-		Result = Inspection::TypeDefinition::Cast::Load(Element);
 	}
 	else if((Element->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(Element) == true))
 	{
@@ -506,6 +513,16 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::Length::Length(void) :
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::Length}
+{
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Length::GetDataType(void) const
+{
+	return Inspection::TypeDefinition::DataType::Length;
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::Length::Load(const XML::Element * Element)
@@ -772,11 +789,6 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		
 		assert(TextNode != nullptr);
 		Result->Data.emplace<Inspection::GUID>(TextNode->GetText());
-	}
-	else if(Element->GetName() == "length")
-	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::Length;
-		Result->Data = Inspection::TypeDefinition::Length::Load(Element);
 	}
 	else if(Element->GetName() == "parameters")
 	{

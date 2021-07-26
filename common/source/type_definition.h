@@ -71,6 +71,7 @@ namespace Inspection
 			Divide,
 			Equals,
 			FieldReference,
+			Length,
 			LengthReference,
 			ParameterReference,
 			Subtract,
@@ -258,6 +259,24 @@ namespace Inspection
 			Inspection::TypeDefinition::FieldReference::Root _Root;
 		};
 		
+		class Length : public Inspection::TypeDefinition::Expression
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Length> Load(const XML::Element * Element);
+		public:
+			virtual ~Length(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
+		public:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> Bytes;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> Bits;
+		private:
+			Length(void);
+			Length(const Inspection::TypeDefinition::Length & Length) = delete;
+			Length(Inspection::TypeDefinition::Length && Length) = delete;
+			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
+			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
+		};
+		
 		class LengthReference : public Inspection::TypeDefinition::Expression
 		{
 		public:
@@ -351,7 +370,7 @@ namespace Inspection
 			virtual ~Value(void) = default;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
-			std::variant<bool, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Length>, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+			std::variant<bool, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		protected:
 			Value(void);
 			Value(Inspection::TypeDefinition::DataType DataType);
@@ -362,21 +381,6 @@ namespace Inspection
 			Inspection::TypeDefinition::Value & operator=(Inspection::TypeDefinition::Value && Value) = delete;
 		private:
 			Inspection::TypeDefinition::DataType _DataType;
-		};
-		
-		class Length
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::Length> Load(const XML::Element * Element);
-		public:
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Bytes;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Bits;
-		private:
-			Length(void) = default;
-			Length(const Inspection::TypeDefinition::Length & Length) = delete;
-			Length(Inspection::TypeDefinition::Length && Length) = delete;
-			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
-			Inspection::TypeDefinition::Length & operator=(Inspection::TypeDefinition::Length && Length) = delete;
 		};
 		
 		class Parameter
