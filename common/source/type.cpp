@@ -68,7 +68,7 @@ namespace Inspection
 		template<typename Type>
 		Type GetDataFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
 		{
-			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Cast.Expression)));
+			return Inspection::Algorithms::Cast<Type>(Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, Cast.GetExpression()));
 		}
 		
 		template<typename Type>
@@ -378,7 +378,7 @@ namespace Inspection
 		
 		std::any GetAnyFromCast(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Cast & Cast)
 		{
-			switch(Cast.DataType)
+			switch(Cast.GetDataType())
 			{
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{

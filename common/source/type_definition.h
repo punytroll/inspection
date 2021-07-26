@@ -56,6 +56,7 @@ namespace Inspection
 			Parameters,
 			SinglePrecisionReal,
 			String,
+			Type,
 			UnsignedInteger8Bit,
 			UnsignedInteger16Bit,
 			UnsignedInteger32Bit,
@@ -124,15 +125,16 @@ namespace Inspection
 		public:
 			virtual ~Cast(void) = default;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-		public:
-			Inspection::TypeDefinition::DataType DataType;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression;
+			const Inspection::TypeDefinition::Expression & GetExpression(void) const;
 		private:
 			Cast(void);
 			Cast(const Inspection::TypeDefinition::Cast & Cast) = delete;
 			Cast(Inspection::TypeDefinition::Cast && Cast) = delete;
 			Inspection::TypeDefinition::Cast & operator=(const Inspection::TypeDefinition::Cast & Cast) = delete;
 			Inspection::TypeDefinition::Cast & operator=(Inspection::TypeDefinition::Cast && Cast) = delete;
+		private:
+			Inspection::TypeDefinition::DataType _DataType;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Expression;
 		};
 		
 		class DataReference : public Inspection::TypeDefinition::Expression

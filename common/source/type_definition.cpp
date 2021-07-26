@@ -63,13 +63,20 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 
 Inspection::TypeDefinition::Cast::Cast(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Cast},
-	DataType{Inspection::TypeDefinition::DataType::Unknown}
+	_DataType{Inspection::TypeDefinition::DataType::Unknown}
 {
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Cast::GetDataType(void) const
 {
-	throw Inspection::NotImplementedException{"Called GetDataType() on a Cast expression."};
+	return _DataType;
+}
+
+const Inspection::TypeDefinition::Expression & Inspection::TypeDefinition::Cast::GetExpression(void) const
+{
+	assert(_Expression != nullptr);
+	
+	return *_Expression;
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Cast::Load(const XML::Element * Element)
@@ -82,14 +89,14 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 		{
 			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
 			
-			Result->DataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetName());
-			Result->Expression = Inspection::TypeDefinition::Expression::Load(ChildElement);
+			Result->_DataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetName());
+			Result->_Expression = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			
 			break;
 		}
 	}
-	assert(Result->DataType != Inspection::TypeDefinition::DataType::Unknown);
-	assert(Result->Expression != nullptr);
+	assert(Result->_DataType != Inspection::TypeDefinition::DataType::Unknown);
+	assert(Result->_Expression != nullptr);
 	
 	return Result;
 }
@@ -285,7 +292,7 @@ Inspection::TypeDefinition::Equals::Equals(void) :
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Equals::GetDataType(void) const
 {
-	throw Inspection::NotImplementedException{"Called GetDataType() on an Equals expression."};
+	return TypeDefinition::DataType::Boolean;
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::Equals::Load(const XML::Element * Element)
@@ -567,7 +574,7 @@ Inspection::TypeDefinition::LengthReference::LengthReference(void) :
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::LengthReference::GetDataType(void) const
 {
-	throw Inspection::NotImplementedException{"Called GetDataType() on a LengthReference expression."};
+	return Inspection::TypeDefinition::DataType::Length;
 }
 
 Inspection::TypeDefinition::LengthReference::Root Inspection::TypeDefinition::LengthReference::GetRoot(void) const
@@ -733,7 +740,7 @@ Inspection::TypeDefinition::TypeReference::TypeReference(void) :
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::TypeReference::GetDataType(void) const
 {
-	throw Inspection::NotImplementedException{"Called GetDataType() on a TypeReference expression."};
+	return Inspection::TypeDefinition::DataType::Type;
 }
 
 std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefinition::TypeReference::Load(const XML::Element * TypeReferenceElement)
@@ -900,6 +907,10 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	else if(String == "string")
 	{
 		return Inspection::TypeDefinition::DataType::String;
+	}
+	else if(String == "type")
+	{
+		return Inspection::TypeDefinition::DataType::Type;
 	}
 	else if((String == "unsigned integer 8bit") || (String == "unsigned-integer-8bit"))
 	{

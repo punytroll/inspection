@@ -448,6 +448,10 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "string";
 		}
+	case Inspection::TypeDefinition::DataType::Type:
+		{
+			return OStream << "type";
+		}
 	case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
 		{
 			return OStream << "usigned-integer-8bit";
@@ -464,11 +468,8 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "usigned-integer-64bit";
 		}
-	default:
-		{
-			assert(false);
-		}
 	}
+	assert(false);
 }
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::ExpressionType & ExpressionType)
@@ -511,6 +512,10 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "ParameterReference";
 		}
+	case Inspection::TypeDefinition::ExpressionType::Parameters:
+		{
+			return OStream << "Parameters";
+		}
 	case Inspection::TypeDefinition::ExpressionType::Subtract:
 		{
 			return OStream << "Subtract";
@@ -523,9 +528,6 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "Value";
 		}
-	default:
-		{
-			assert(false);
-		}
 	}
+	assert(false);
 }
