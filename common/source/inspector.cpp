@@ -2,6 +2,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#include "assertion.h"
 #include "buffer.h"
 #include "colors.h"
 #include "exception_printing.h"
@@ -273,13 +274,13 @@ void Inspection::Inspector::_QueryWriter(Inspection::Value * Value, const std::s
 		}
 		else if(QueryPartSpecifications[0] == "type")
 		{
-			assert(QueryPartSpecifications.size() == 1);
+			ASSERTION(QueryPartSpecifications.size() == 1);
 			std::cout << Inspection::GetTypeName(Value->GetData().type());
 		}
 		else
 		{
 			std::cerr << "Unkown query part specification \"" << QueryPartSpecifications[0] << "\"." << std::endl;
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "assertion.h"
 #include "colors.h"
 #include "date_time.h"
 #include "guid.h"
@@ -383,7 +384,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		}
 	default:
 		{
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 }
@@ -407,7 +408,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		}
 	default:
 		{
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 }
@@ -469,7 +470,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 			return OStream << "usigned-integer-64bit";
 		}
 	}
-	assert(false);
+	ASSERTION(false);
 }
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::ExpressionType & ExpressionType)
@@ -529,5 +530,5 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 			return OStream << "Value";
 		}
 	}
-	assert(false);
+	ASSERTION(false);
 }

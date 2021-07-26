@@ -1,9 +1,9 @@
-#include <cassert>
 #include <numeric>
 #include <sstream>
 #include <time.h>
 #include <vector>
 
+#include "assertion.h"
 #include "explode.h"
 #include "helper.h"
 #include "string_cast.h"
@@ -894,7 +894,7 @@ std::string Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCode
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 	
 	return Result.str();

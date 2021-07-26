@@ -5,13 +5,13 @@
 #include <sstream>
 #include <vector>
 
+#include "assertion.h"
 #include "buffer.h"
 #include "getters.h"
 #include "guid.h"
 #include "helper.h"
 #include "id3_de_unsynchronization_eager_filter.h"
 #include "id3_helper.h"
-#include "not_implemented_exception.h"
 #include "reader.h"
 #include "string_cast.h"
 #include "type.h"
@@ -33,7 +33,7 @@ Inspection::Value * AppendLengthTag(Inspection::Value * Value, const Inspection:
 
 Inspection::Value * AppendReadErrorTag(Inspection::Value * Value, const Inspection::ReadResult & ReadResult)
 {
-	assert(ReadResult.Success == false);
+	ASSERTION(ReadResult.Success == false);
 	
 	auto Result = Value->AddTag("error", "Could not read enough data."s);
 	
@@ -192,7 +192,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
 		}
 		else
 		{
-			throw Inspection::NotImplementedException("Cannot interpret item values with value type " + to_string_cast(ItemValueType) + ".");
+			NOT_IMPLEMENTED("Cannot interpret item values with value type " + to_string_cast(ItemValueType) + ".");
 		}
 	}
 	// finalization
@@ -2729,7 +2729,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Frame_Header(Inspection
 		}
 		else
 		{
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 	// reading
@@ -2856,15 +2856,15 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Frame_Header(Inspection
 		
 		if(SampleRate == 0xc0)
 		{
-			throw NotImplementedException("get 8bit sample rate in Hz");
+			NOT_IMPLEMENTED("get 8bit sample rate in Hz");
 		}
 		else if(SampleRate == 0xd0)
 		{
-			throw NotImplementedException("get 16bit sample rate in Hz");
+			NOT_IMPLEMENTED("get 16bit sample rate in Hz");
 		}
 		else if(SampleRate == 0xe0)
 		{
-			throw NotImplementedException("get 8bit sample rate in tens of Hz");
+			NOT_IMPLEMENTED("get 8bit sample rate in tens of Hz");
 		}
 	}
 	// reading
@@ -3233,7 +3233,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Header(Inspect
 		
 		if(WastedBitsPerSampleFlag == true)
 		{
-			throw Inspection::NotImplementedException("Wasted bits are not implemented yet!");
+			NOT_IMPLEMENTED("Wasted bits are not implemented yet!");
 		}
 	}
 	// finalization
@@ -3397,7 +3397,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice_
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice2(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-	throw Inspection::NotImplementedException("Get_FLAC_Subframe_Residual_Rice2");
+	NOT_IMPLEMENTED("Get_FLAC_Subframe_Residual_Rice2");
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
@@ -3478,7 +3478,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 			}
 		case 5:
 			{
-				throw Inspection::NotImplementedException("SUBFRAME_VERBATIM");
+				NOT_IMPLEMENTED("SUBFRAME_VERBATIM");
 			}
 		case 6:
 			{
@@ -3488,7 +3488,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 			}
 		default:
 			{
-				assert(false);
+				ASSERTION(false);
 			}
 		}
 	}
@@ -4683,7 +4683,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Tag_Body(Inspection:
 	{
 		if(std::any_cast<bool>(Parameters.at("ExtendedHeader")) == true)
 		{
-			throw Inspection::NotImplementedException("ID3 2.3 extended header");
+			NOT_IMPLEMENTED("ID3 2.3 extended header");
 		}
 	}
 	// reading
@@ -5596,7 +5596,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
 				auto FilterReader = Inspection::Reader{ID3DeUnsynchronizationEagerFilter};
 				
 				PartResult = Inspection::Get_ID3_2_3_Tag_Body(FilterReader, {{"ExtendedHeader", Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("ExtendedHeader")->GetData()}});
-				assert(FilterReader.HasRemaining() == false);
+				ASSERTION(FilterReader.HasRemaining() == false);
 				PartReader.AdvancePosition(ClaimedSize);
 			}
 			else
@@ -8842,7 +8842,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_Mode(Insp
 			else
 			{
 				// LayerDescription is a 2-bit value. Value 0 is reserved, 1, 2 and 3 are handled above. Otherwise the program is corrupt.
-				assert(false);
+				ASSERTION(false);
 			}
 		}
 		else if(Mode == 0x02)
@@ -8856,7 +8856,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_Mode(Insp
 		else
 		{
 			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 	// finalization
@@ -8910,7 +8910,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_ModeExten
 				else
 				{
 					// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
-					assert(false);
+					ASSERTION(false);
 				}
 			}
 			else if(LayerDescription == 0x01)
@@ -8938,13 +8938,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_ModeExten
 				else
 				{
 					// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
-					assert(false);
+					ASSERTION(false);
 				}
 			}
 			else
 			{
 				// LayerDescription is a 2-bit value. Value 0 is reserved, 1, 2 and 3 are handled above. Otherwise the program is corrupt.
-				assert(false);
+				ASSERTION(false);
 			}
 		}
 		else
@@ -9138,7 +9138,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Page(Inspection::Reader 
 				
 				Continue = PartResult->GetSuccess();
 				Result->GetValue()->AppendField("Packet", PartResult->ExtractValue());
-				assert(PacketLength == PartReader.GetConsumedLength());
+				ASSERTION(PacketLength == PartReader.GetConsumedLength());
 				// No matter what data gets read before - successfully or unsuccessfully - we heed the values from the segment table!
 				Reader.AdvancePosition(PartReader.GetConsumedLength());
 				PacketLength = Inspection::Length{0, 0};
@@ -9404,7 +9404,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_HeaderPacket(Insp
 		}
 		else
 		{
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 	// finalization
@@ -9912,7 +9912,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_BigEndian(Insp
 		}
 	default:
 		{
-			throw NotImplementedException("Reading " + to_string_cast(Bits) + " bits as a signed integer is not yet implemented in the generic function.");
+			NOT_IMPLEMENTED("Reading " + to_string_cast(Bits) + " bits as a signed integer is not yet implemented in the generic function.");
 		}
 	}
 	// finalization
@@ -10486,7 +10486,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_BigEndian(In
 		}
 	default:
 		{
-			throw NotImplementedException("Reading " + to_string_cast(Bits) + " bits as an unsigned integer is not yet implemented in the generic function.");
+			NOT_IMPLEMENTED("Reading " + to_string_cast(Bits) + " bits as an unsigned integer is not yet implemented in the generic function.");
 		}
 	}
 	// finalization

@@ -17,10 +17,10 @@
 **/
 
 #include <any>
-#include <cassert>
 #include <list>
 #include <unordered_map>
 
+#include "assertion.h"
 #include "execution_context.h"
 #include "length.h"
 #include "result.h"
@@ -57,9 +57,9 @@ Inspection::Result & Inspection::ExecutionContext::GetTopLevelResult(void) const
 
 Inspection::Length Inspection::ExecutionContext::CalculateLengthFromReference(const Inspection::TypeDefinition::LengthReference & LengthReference)
 {
-	assert(LengthReference.GetRoot() == Inspection::TypeDefinition::LengthReference::Root::Type);
-	assert(LengthReference.GetName() == Inspection::TypeDefinition::LengthReference::Name::Consumed);
-	assert(_ExecutionStack.size() >= 2);
+	ASSERTION(LengthReference.GetRoot() == Inspection::TypeDefinition::LengthReference::Root::Type);
+	ASSERTION(LengthReference.GetName() == Inspection::TypeDefinition::LengthReference::Name::Consumed);
+	ASSERTION(_ExecutionStack.size() >= 2);
 	
 	// Although the first element in the stack is the "type", its length is the last to be modified (right at the end).
 	// We expect at least the second element to be present at use its length. (might be a sequence)
@@ -70,7 +70,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 {
 	auto Result = static_cast<Inspection::Value *>(nullptr);
 	
-	assert(_ExecutionStack.size() > 0);
+	ASSERTION(_ExecutionStack.size() > 0);
 	switch(DataReference.GetRoot())
 	{
 	case Inspection::TypeDefinition::DataReference::Root::Current:
@@ -111,13 +111,13 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 							{
 							case Inspection::TypeDefinition::Part::Type::Alternative:
 								{
-									assert(false);
+									ASSERTION(false);
 									
 									break;
 								}
 							case Inspection::TypeDefinition::Part::Type::Array:
 								{
-									assert(false);
+									ASSERTION(false);
 									
 									break;
 								}
@@ -165,13 +165,13 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 							case Inspection::TypeDefinition::Part::Type::Type:
 								{
 									// skipped intentionally
-									assert(false);
+									ASSERTION(false);
 									
 									break;
 								}
 							default:
 								{
-									assert(false);
+									ASSERTION(false);
 								}
 							}
 						}
@@ -193,7 +193,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 		}
 	default:
 		{
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 	
@@ -209,21 +209,21 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 	{
 	case Inspection::TypeDefinition::FieldReference::Root::Current:
 		{
-			assert(_ExecutionStack.size() > 0);
+			ASSERTION(_ExecutionStack.size() > 0);
 			ExecutionStackIterator = std::prev(std::end(_ExecutionStack));
 			
 			break;
 		}
 	case Inspection::TypeDefinition::FieldReference::Root::Type:
 		{
-			assert(_ExecutionStack.size() > 0);
+			ASSERTION(_ExecutionStack.size() > 0);
 			ExecutionStackIterator = std::begin(_ExecutionStack);
 			
 			break;
 		}
 	default:
 		{
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 	Result = ExecutionStackIterator->_Result.GetValue();
@@ -247,13 +247,13 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 			{
 			case Inspection::TypeDefinition::Part::Type::Alternative:
 				{
-					assert(false);
+					ASSERTION(false);
 					
 					break;
 				}
 			case Inspection::TypeDefinition::Part::Type::Array:
 				{
-					assert(false);
+					ASSERTION(false);
 					
 					break;
 				}
@@ -280,7 +280,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 				}
 			case Inspection::TypeDefinition::Part::Type::Forward:
 				{
-					assert(false);
+					ASSERTION(false);
 					
 					break;
 				}
@@ -302,7 +302,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 				}
 			default:
 				{
-					assert(false);
+					ASSERTION(false);
 				}
 			}
 		}

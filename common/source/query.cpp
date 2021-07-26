@@ -1,8 +1,8 @@
-#include <cassert>
 #include <sstream>
 #include <string>
 #include <vector>
 
+#include "assertion.h"
 #include "output_operators.h"
 #include "query.h"
 
@@ -64,7 +64,7 @@ std::vector<std::string> Inspection::SplitString(const std::string & String, cha
 			}
 			else
 			{
-				assert(BracketLevel >= 0);
+				ASSERTION(BracketLevel >= 0);
 				BracketLevel -= 1;
 			}
 		}
@@ -119,7 +119,7 @@ bool Inspection::EvaluateTestQuery(Inspection::Value * Value, const std::string 
 		}
 		else if(QueryPartSpecifications[0] == "has-data")
 		{
-			assert(QueryPartSpecifications.size() == 1);
+			ASSERTION(QueryPartSpecifications.size() == 1);
 			Result = Value->GetData().has_value();
 		}
 		else if(QueryPartSpecifications[0] == "is-data")
@@ -131,7 +131,7 @@ bool Inspection::EvaluateTestQuery(Inspection::Value * Value, const std::string 
 		}
 		else
 		{
-			assert(false);
+			ASSERTION(false);
 		}
 	}
 	

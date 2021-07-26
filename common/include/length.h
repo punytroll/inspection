@@ -1,11 +1,11 @@
 #ifndef INSPECTION_COMMON_LENGTH_H
 #define INSPECTION_COMMON_LENGTH_H
 
-#include <cassert>
 #include <cstdint>
 #include <sstream>
 #include <string>
 
+#include "assertion.h"
 #include "string_cast.h"
 
 namespace Inspection
@@ -61,7 +61,7 @@ namespace Inspection
 		
 		Length operator-(const Length & Length) const
 		{
-			assert(*this >= Length);
+			ASSERTION(*this >= Length);
 			
 			std::uint8_t Bits;
 			std::uint64_t Bytes{_Bytes - Length._Bytes};
@@ -81,7 +81,7 @@ namespace Inspection
 		
 		Length & operator-=(const Length & Length)
 		{
-			assert(*this >= Length);
+			ASSERTION(*this >= Length);
 			if(_Bits >= Length._Bits)
 			{
 				_Bits -= Length._Bits;

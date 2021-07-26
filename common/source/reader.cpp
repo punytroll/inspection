@@ -1,3 +1,4 @@
+#include "assertion.h"
 #include "buffer.h"
 #include "id3_de_unsynchronization_eager_filter.h"
 #include "read_result.h"
@@ -20,11 +21,11 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader)
 {
 	if(Reader._BufferCore != nullptr)
 	{
-		assert(Reader._BufferCore->_ReadPositionInBuffer <= Reader._BufferCore->_EndPositionInBuffer);
+		ASSERTION(Reader._BufferCore->_ReadPositionInBuffer <= Reader._BufferCore->_EndPositionInBuffer);
 		_BufferCore = std::make_unique<Inspection::Reader::BufferCore>(Reader._BufferCore->_Buffer, Reader._BufferCore->_ReadPositionInBuffer, Reader._BufferCore->_EndPositionInBuffer, Reader._BufferCore->_BitstreamType);
-		assert(_BufferCore->_StartPositionInBuffer <= _BufferCore->_Buffer.GetLength());
-		assert(_BufferCore->_EndPositionInBuffer <= _BufferCore->_Buffer.GetLength());
-		assert(_BufferCore->_EndPositionInBuffer <= Reader._BufferCore->_EndPositionInBuffer);
+		ASSERTION(_BufferCore->_StartPositionInBuffer <= _BufferCore->_Buffer.GetLength());
+		ASSERTION(_BufferCore->_EndPositionInBuffer <= _BufferCore->_Buffer.GetLength());
+		ASSERTION(_BufferCore->_EndPositionInBuffer <= Reader._BufferCore->_EndPositionInBuffer);
 	}
 	else if(Reader._ID3DeUnsynchronizationEagerFilterCore != nullptr)
 	{
@@ -35,7 +36,7 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -43,11 +44,11 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 {
 	if(Reader._BufferCore != nullptr)
 	{
-		assert(Reader._BufferCore->_ReadPositionInBuffer + Length <= Reader._BufferCore->_EndPositionInBuffer);
+		ASSERTION(Reader._BufferCore->_ReadPositionInBuffer + Length <= Reader._BufferCore->_EndPositionInBuffer);
 		_BufferCore = std::make_unique<Inspection::Reader::BufferCore>(Reader._BufferCore->_Buffer, Reader._BufferCore->_ReadPositionInBuffer, Reader._BufferCore->_ReadPositionInBuffer + Length, Reader._BufferCore->_BitstreamType);
-		assert(_BufferCore->_EndPositionInBuffer <= Reader._BufferCore->_EndPositionInBuffer);
-		assert(_BufferCore->_StartPositionInBuffer <= _BufferCore->_Buffer.GetLength());
-		assert(_BufferCore->_EndPositionInBuffer <= _BufferCore->_Buffer.GetLength());
+		ASSERTION(_BufferCore->_EndPositionInBuffer <= Reader._BufferCore->_EndPositionInBuffer);
+		ASSERTION(_BufferCore->_StartPositionInBuffer <= _BufferCore->_Buffer.GetLength());
+		ASSERTION(_BufferCore->_EndPositionInBuffer <= _BufferCore->_Buffer.GetLength());
 	}
 	else if(Reader._ID3DeUnsynchronizationEagerFilterCore != nullptr)
 	{
@@ -55,11 +56,11 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 		_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput = Reader._ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput;
 		_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput = Reader._ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput + Length;
 		_ID3DeUnsynchronizationEagerFilterCore->_ProducedLengthInOutput = Inspection::Length{0, 0};
-		assert(_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput <= _ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter.GetOutputLength());
+		ASSERTION(_ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput <= _ID3DeUnsynchronizationEagerFilterCore->_ID3DeUnsynchronizationEagerFilter.GetOutputLength());
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -67,15 +68,15 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 {
 	if(Reader._BufferCore != nullptr)
 	{
-		assert(Reader._BufferCore->_ReadPositionInBuffer + Length <= Reader._BufferCore->_EndPositionInBuffer);
+		ASSERTION(Reader._BufferCore->_ReadPositionInBuffer + Length <= Reader._BufferCore->_EndPositionInBuffer);
 		_BufferCore = std::make_unique<Inspection::Reader::BufferCore>(Reader._BufferCore->_Buffer, StartPositionInInput, StartPositionInInput + Length, Reader._BufferCore->_BitstreamType);
-		assert(_BufferCore->_EndPositionInBuffer <= Reader._BufferCore->_EndPositionInBuffer);
-		assert(_BufferCore->_StartPositionInBuffer <= _BufferCore->_Buffer.GetLength());
-		assert(_BufferCore->_EndPositionInBuffer <= _BufferCore->_Buffer.GetLength());
+		ASSERTION(_BufferCore->_EndPositionInBuffer <= Reader._BufferCore->_EndPositionInBuffer);
+		ASSERTION(_BufferCore->_StartPositionInBuffer <= _BufferCore->_Buffer.GetLength());
+		ASSERTION(_BufferCore->_EndPositionInBuffer <= _BufferCore->_Buffer.GetLength());
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -83,18 +84,18 @@ void Inspection::Reader::AdvancePosition(const Inspection::Length & Offset)
 {
 	if(_BufferCore != nullptr)
 	{
-		assert(_BufferCore->_ReadPositionInBuffer + Offset <= _BufferCore->_EndPositionInBuffer);
+		ASSERTION(_BufferCore->_ReadPositionInBuffer + Offset <= _BufferCore->_EndPositionInBuffer);
 		_BufferCore->_ReadPositionInBuffer += Offset;
 	}
 	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
 	{
-		assert(_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput + Offset <= _ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput);
+		ASSERTION(_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput + Offset <= _ID3DeUnsynchronizationEagerFilterCore->_EndPositionInFilterOutput);
 		_ID3DeUnsynchronizationEagerFilterCore->_ReadPositionInFilterOutput += Offset;
 		_ID3DeUnsynchronizationEagerFilterCore->_ProducedLengthInOutput += Offset;
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -106,7 +107,7 @@ const Inspection::Buffer & Inspection::Reader::GetBuffer(void) const
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -118,7 +119,7 @@ const Inspection::Length & Inspection::Reader::GetReadPositionInInput(void) cons
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -134,7 +135,7 @@ Inspection::Length Inspection::Reader::GetConsumedLength(void) const
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -150,7 +151,7 @@ Inspection::Length Inspection::Reader::CalculateRemainingOutputLength(void) cons
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -162,7 +163,7 @@ Inspection::Length Inspection::Reader::CalculateRemainingInputLength(void) const
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -174,7 +175,7 @@ bool Inspection::Reader::Has(const Inspection::Length & Length) const
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -190,7 +191,7 @@ bool Inspection::Reader::HasRemaining(void) const
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -206,7 +207,7 @@ bool Inspection::Reader::IsAtEnd(void) const
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -214,12 +215,12 @@ void Inspection::Reader::SetBitstreamType(Inspection::Reader::BitstreamType Bits
 {
 	if(_BufferCore != nullptr)
 	{
-		assert(_BufferCore->_ReadPositionInBuffer.GetBits() == 0);
+		ASSERTION(_BufferCore->_ReadPositionInBuffer.GetBits() == 0);
 		_BufferCore->_BitstreamType = BitstreamType;
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -231,7 +232,7 @@ bool Inspection::Reader::Read0Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -247,7 +248,7 @@ bool Inspection::Reader::Read1Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -259,7 +260,7 @@ bool Inspection::Reader::Read2Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -271,7 +272,7 @@ bool Inspection::Reader::Read3Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -287,7 +288,7 @@ bool Inspection::Reader::Read4Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -299,7 +300,7 @@ bool Inspection::Reader::Read5Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -311,7 +312,7 @@ bool Inspection::Reader::Read6Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -323,7 +324,7 @@ bool Inspection::Reader::Read7Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 
@@ -339,7 +340,7 @@ bool Inspection::Reader::Read8Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		assert(false);
+		ASSERTION(false);
 	}
 }
 

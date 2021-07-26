@@ -1,5 +1,6 @@
 #include <cstdint>
 
+#include "assertion.h"
 #include "buffer.h"
 #include "id3_de_unsynchronization_eager_filter.h"
 #include "length.h"
@@ -7,10 +8,10 @@
 
 Inspection::ID3DeUnsynchronizationEagerFilter::ID3DeUnsynchronizationEagerFilter(const Inspection::Buffer & Buffer, const Inspection::Length & StartPositionInBuffer, const Inspection::Length & LengthInBuffer)
 {
-	assert(StartPositionInBuffer.GetBits() == 0);
-	assert(LengthInBuffer.GetBits() == 0);
-	assert(StartPositionInBuffer <= Buffer.GetLength());
-	assert(StartPositionInBuffer + LengthInBuffer <= Buffer.GetLength());
+	ASSERTION(StartPositionInBuffer.GetBits() == 0);
+	ASSERTION(LengthInBuffer.GetBits() == 0);
+	ASSERTION(StartPositionInBuffer <= Buffer.GetLength());
+	ASSERTION(StartPositionInBuffer + LengthInBuffer <= Buffer.GetLength());
 	_Output.reserve(LengthInBuffer.GetBytes());
 	
 	auto Begin = Buffer.GetData() + StartPositionInBuffer.GetBytes();
