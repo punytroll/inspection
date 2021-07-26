@@ -31,7 +31,6 @@ namespace Inspection
 		class FieldReference;
 		class Interpretation;
 		class Length;
-		class Parameter;
 		class Parameters;
 		class Part;
 		class Subtract;

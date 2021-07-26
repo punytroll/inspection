@@ -371,6 +371,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		Result = Inspection::TypeDefinition::ParameterReference::Load(Element);
 	}
+	else if(Element->GetName() == "parameters")
+	{
+		Result = Inspection::TypeDefinition::Parameters::Load(Element);
+	}
 	else if(Element->GetName() == "subtract")
 	{
 		Result = Inspection::TypeDefinition::Subtract::Load(Element);
@@ -602,17 +606,6 @@ std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDef
 	return Result;
 }
 
-std::unique_ptr<Inspection::TypeDefinition::Parameter> Inspection::TypeDefinition::Parameter::Load(const XML::Element * Element)
-{
-	auto Result = std::unique_ptr<Inspection::TypeDefinition::Parameter>{new Inspection::TypeDefinition::Parameter{}};
-	
-	assert(Element->HasAttribute("name") == true);
-	Result->Name = Element->GetAttribute("name");
-	Result->Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
-	
-	return Result;
-}
-
 Inspection::TypeDefinition::ParameterReference::ParameterReference(void) :
 	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::ParameterReference}
 {
@@ -637,6 +630,21 @@ std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Inspection::Type
 	return Result;
 }
 
+Inspection::TypeDefinition::Parameters::Parameters(void) :
+	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::Parameters}
+{
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Parameters::GetDataType(void) const
+{
+	return Inspection::TypeDefinition::DataType::Parameters;
+}
+
+const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> & Inspection::TypeDefinition::Parameters::GetParameters(void) const
+{
+	return _Parameters;
+}
+
 std::unique_ptr<Inspection::TypeDefinition::Parameters> Inspection::TypeDefinition::Parameters::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Parameters>{new Inspection::TypeDefinition::Parameters{}};
@@ -649,16 +657,22 @@ std::unique_ptr<Inspection::TypeDefinition::Parameters> Inspection::TypeDefiniti
 			
 			assert(ChildElement != nullptr);
 			assert(ChildElement->GetName() == "parameter");
-			Result->_Parameters.push_back(Inspection::TypeDefinition::Parameter::Load(ChildElement));
+			Result->_Parameters.push_back(Inspection::TypeDefinition::Parameters::Parameter::Load(ChildElement));
 		}
 	}
 	
 	return Result;
 }
 
-const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> & Inspection::TypeDefinition::Parameters::GetParameters(void) const
+std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Inspection::TypeDefinition::Parameters::Parameter::Load(const XML::Element * Element)
 {
-	return _Parameters;
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>{new Inspection::TypeDefinition::Parameters::Parameter{}};
+	
+	assert(Element->HasAttribute("name") == true);
+	Result->Name = Element->GetAttribute("name");
+	Result->Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
+	
+	return Result;
 }
 
 Inspection::TypeDefinition::Subtract::Subtract(void) :
@@ -791,11 +805,6 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 		
 		assert(TextNode != nullptr);
 		Result->Data.emplace<Inspection::GUID>(TextNode->GetText());
-	}
-	else if(Element->GetName() == "parameters")
-	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::Parameters;
-		Result->Data = Inspection::TypeDefinition::Parameters::Load(Element);
 	}
 	else if(Element->GetName() == "single-precision-real")
 	{

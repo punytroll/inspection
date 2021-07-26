@@ -43,7 +43,6 @@ namespace Inspection
 		class Cast;
 		class Divide;
 		class Equals;
-		class Parameter;
 		class Subtract;
 		class Value;
 		
@@ -74,25 +73,10 @@ namespace Inspection
 			Length,
 			LengthReference,
 			ParameterReference,
+			Parameters,
 			Subtract,
 			TypeReference,
 			Value
-		};
-		
-		class Parameters
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::Parameters> Load(const XML::Element * Element);
-		public:
-			const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> & GetParameters(void) const;
-		private:
-			std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameter>> _Parameters;
-		private:
-			Parameters(void) = default;
-			Parameters(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
-			Parameters(Inspection::TypeDefinition::Parameters && Parameters) = delete;
-			Inspection::TypeDefinition::Parameters & operator=(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
-			Inspection::TypeDefinition::Parameters & operator=(Inspection::TypeDefinition::Parameters && Parameters) = delete;
 		};
 		
 		class Expression
@@ -325,6 +309,39 @@ namespace Inspection
 			Inspection::TypeDefinition::ParameterReference & operator=(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
 		};
 		
+		class Parameters : public Inspection::TypeDefinition::Expression
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Parameters> Load(const XML::Element * Element);
+		public:
+			class Parameter
+			{
+			public:
+				static std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Load(const XML::Element * Element);
+			public:
+				std::string Name;
+				std::unique_ptr<Inspection::TypeDefinition::Expression> Expression;
+			private:
+				Parameter(void) = default;
+				Parameter(const Inspection::TypeDefinition::Parameters::Parameter & Parameter) = delete;
+				Parameter(Inspection::TypeDefinition::Parameters::Parameter && Parameter) = delete;
+				Inspection::TypeDefinition::Parameters::Parameter & operator=(const Inspection::TypeDefinition::Parameters::Parameter & Parameter) = delete;
+				Inspection::TypeDefinition::Parameters::Parameter & operator=(Inspection::TypeDefinition::Parameters::Parameter && Parameter) = delete;
+			};
+		public:
+			virtual ~Parameters(void) = default;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
+			const std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> & GetParameters(void) const;
+		private:
+			Parameters(void);
+			Parameters(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
+			Parameters(Inspection::TypeDefinition::Parameters && Parameters) = delete;
+			Inspection::TypeDefinition::Parameters & operator=(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
+			Inspection::TypeDefinition::Parameters & operator=(Inspection::TypeDefinition::Parameters && Parameters) = delete;
+		private:
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter>> _Parameters;
+		};
+		
 		class Subtract : public Inspection::TypeDefinition::Expression
 		{
 		public:
@@ -370,7 +387,7 @@ namespace Inspection
 			virtual ~Value(void) = default;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		public:
-			std::variant<bool, Inspection::GUID, std::unique_ptr<Inspection::TypeDefinition::Parameters>, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
+			std::variant<bool, Inspection::GUID, float, std::string, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> Data;
 		protected:
 			Value(void);
 			Value(Inspection::TypeDefinition::DataType DataType);
@@ -381,21 +398,6 @@ namespace Inspection
 			Inspection::TypeDefinition::Value & operator=(Inspection::TypeDefinition::Value && Value) = delete;
 		private:
 			Inspection::TypeDefinition::DataType _DataType;
-		};
-		
-		class Parameter
-		{
-		public:
-			static std::unique_ptr<Inspection::TypeDefinition::Parameter> Load(const XML::Element * Element);
-		public:
-			std::string Name;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Expression;
-		private:
-			Parameter(void) = default;
-			Parameter(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
-			Parameter(Inspection::TypeDefinition::Parameter && Parameter) = delete;
-			Inspection::TypeDefinition::Parameter & operator=(const Inspection::TypeDefinition::Parameter & Parameter) = delete;
-			Inspection::TypeDefinition::Parameter & operator=(Inspection::TypeDefinition::Parameter && Parameter) = delete;
 		};
 		
 		class Tag

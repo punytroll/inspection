@@ -33,6 +33,7 @@ namespace Inspection
 		const std::any & GetAnyReferenceFromDataReference(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::DataReference & DataReference);
 		std::any Subtract(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Expression & Minuend, const Inspection::TypeDefinition::Expression & Subtrahend);
 		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters);
+		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters & Parameters);
 		
 		template<typename Type>
 		Type Cast(const std::any & Any)
@@ -182,12 +183,6 @@ namespace Inspection
 			case Inspection::TypeDefinition::DataType::Nothing:
 				{
 					return nullptr;
-				}
-			case Inspection::TypeDefinition::DataType::Parameters:
-				{
-					assert(std::holds_alternative<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value.Data) == true);
-					
-					return Inspection::Algorithms::GetParameters(ExecutionContext, std::get<std::unique_ptr<Inspection::TypeDefinition::Parameters>>(Value.Data).get());
 				}
 			case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 				{
@@ -342,6 +337,14 @@ namespace Inspection
 					
 					return Inspection::Algorithms::GetAnyReferenceFromParameterReference(ExecutionContext, *ParameterReference);
 				}
+			case Inspection::TypeDefinition::ExpressionType::Parameters:
+				{
+					auto Parameters = dynamic_cast<const Inspection::TypeDefinition::Parameters *>(&Expression);
+					
+					assert(Parameters != nullptr);
+					
+					return Inspection::Algorithms::GetParameters(ExecutionContext, *Parameters);
+				}
 			case Inspection::TypeDefinition::ExpressionType::Subtract:
 				{
 					auto Subtract = dynamic_cast<const Inspection::TypeDefinition::Subtract *>(&Expression);
@@ -494,14 +497,23 @@ namespace Inspection
 		
 		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
 		{
-			auto Result = std::unordered_map<std::string, std::any>{};
-			
 			if(Parameters != nullptr)
 			{
-				for(auto & Parameter : Parameters->GetParameters())
-				{
-					Result.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Parameter->Expression)));
-				}
+				return Inspection::Algorithms::GetParameters(ExecutionContext, *Parameters);
+			}
+			else
+			{
+				return std::unordered_map<std::string, std::any>{};
+			}
+		}
+		
+		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters & Parameters)
+		{
+			auto Result = std::unordered_map<std::string, std::any>{};
+			
+			for(auto & Parameter : Parameters.GetParameters())
+			{
+				Result.emplace(Parameter->Name, Inspection::Algorithms::GetAnyFromExpression(ExecutionContext, *(Parameter->Expression)));
 			}
 			
 			return Result;
