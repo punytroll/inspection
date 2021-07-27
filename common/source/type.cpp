@@ -13,51 +13,6 @@
 
 using namespace std::string_literals;
 
-namespace Inspection
-{
-	class EvaluationResult
-	{
-	public:
-		std::optional<bool> AbortEvaluation;
-		std::optional<bool> DataIsValid;
-		std::optional<bool> EngineError;
-		std::optional<bool> StructureIsValid;
-	};
-	
-	namespace Algorithms
-	{
-		template<typename DataType>
-		bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target)
-		{
-			bool Result = false;
-			auto BaseValueString = to_string_cast(std::any_cast<const DataType &>(Target->GetData()));
-			auto ElementIterator = std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; });
-			
-			if(ElementIterator != Enumeration.Elements.end())
-			{
-				ApplyTags(ExecutionContext, ElementIterator->Tags, Target);
-				Result = ElementIterator->Valid;
-			}
-			else
-			{
-				if(Enumeration.FallbackElement)
-				{
-					ApplyTags(ExecutionContext, Enumeration.FallbackElement->Tags, Target);
-					Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
-					Result = Enumeration.FallbackElement->Valid;
-				}
-				else
-				{
-					Target->AddTag("error", "Could find neither an enumarion element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
-					Result = false;
-				}
-			}
-			
-			return Result;
-		}
-	}
-}
-
 Inspection::TypeDefinition::Type::Type(const std::vector<std::string> & PathParts, Inspection::TypeRepository * TypeRepository) :
 	_Part{nullptr},
 	_PathParts{PathParts},
@@ -628,17 +583,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	// interpretation
 	if(Continue == true)
 	{
-		if(Field.Interpretation)
+		if(Field.Interpretation != nullptr)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, *(Field.Interpretation), Result->GetValue());
-			
-			if(EvaluationResult.AbortEvaluation)
-			{
-				if(EvaluationResult.AbortEvaluation.value() == true)
-				{
-					Continue = false;
-				}
-			}
+			Continue = Field.Interpretation->Apply(ExecutionContext, Result->GetValue());
 		}
 	}
 	// verification
@@ -674,17 +621,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	// interpretation
 	if(Continue == true)
 	{
-		if(Fields.Interpretation)
+		if(Fields.Interpretation != nullptr)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, *(Fields.Interpretation), Result->GetValue());
-			
-			if(EvaluationResult.AbortEvaluation)
-			{
-				if(EvaluationResult.AbortEvaluation.value() == true)
-				{
-					Continue = false;
-				}
-			}
+			Continue = Fields.Interpretation->Apply(ExecutionContext, Result->GetValue());
 		}
 	}
 	// verification
@@ -725,17 +664,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	// interpretation
 	if(Continue == true)
 	{
-		if(Forward.Interpretation)
+		if(Forward.Interpretation != nullptr)
 		{
-			auto EvaluationResult = _ApplyInterpretation(ExecutionContext, *(Forward.Interpretation), Result->GetValue());
-			
-			if(EvaluationResult.AbortEvaluation)
-			{
-				if(EvaluationResult.AbortEvaluation.value() == true)
-				{
-					Continue = false;
-				}
-			}
+			Continue = Forward.Interpretation->Apply(ExecutionContext, Result->GetValue());
 		}
 	}
 	// verification
@@ -841,59 +772,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
-	
-	return Result;
-}
-
-Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target) const
-{
-	auto Result = Inspection::EvaluationResult{};
-	
-	if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::String)
-	{
-		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration<std::string>(ExecutionContext, Enumeration, Target);
-	}
-	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger8Bit)
-	{
-		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration<std::uint8_t>(ExecutionContext, Enumeration, Target);
-	}
-	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger16Bit)
-	{
-		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration<std::uint16_t>(ExecutionContext, Enumeration, Target);
-	}
-	else if(Enumeration.BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger32Bit)
-	{
-		Result.DataIsValid = Inspection::Algorithms::ApplyEnumeration<std::uint32_t>(ExecutionContext, Enumeration, Target);
-	}
-	else
-	{
-		Target->AddTag("error", "Could not handle the enumeration base type.");
-		Result.AbortEvaluation = true;
-	}
-	
-	return Result;
-}
-	
-Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, Inspection::Value * Target) const
-{
-	auto Result = Inspection::EvaluationResult{};
-	auto ApplyEnumeration = dynamic_cast<const Inspection::TypeDefinition::ApplyEnumeration *>(&Interpretation);
-	
-	if(ApplyEnumeration != nullptr)
-	{
-		ASSERTION(ApplyEnumeration->Enumeration != nullptr);
-		
-		auto EvaluationResult = _ApplyEnumeration(ExecutionContext, *(ApplyEnumeration->Enumeration), Target);
-		
-		if(EvaluationResult.AbortEvaluation)
-		{
-			Result.AbortEvaluation = EvaluationResult.AbortEvaluation.value();
-		}
-	}
-	else
-	{
-		ASSERTION(false);
-	}
 	
 	return Result;
 }

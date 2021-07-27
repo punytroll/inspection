@@ -471,6 +471,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::Interpretation> Load(const XML::Element * Element);
 		public:
 			virtual ~Interpretation(void) = default;
+			virtual bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const = 0;
 		protected:
 			Interpretation(void) = default;
 		private:
@@ -486,6 +487,7 @@ namespace Inspection
 			static std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Load(const XML::Element * Element);
 		public:
 			virtual ~ApplyEnumeration(void) = default;
+			bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const override;
 		public:
 			std::unique_ptr<Inspection::TypeDefinition::Enumeration> Enumeration;
 		private:

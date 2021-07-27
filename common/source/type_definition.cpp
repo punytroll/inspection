@@ -58,6 +58,36 @@ Type CastTo(const std::any & Any)
 	}
 }
 
+template<typename DataType>
+bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target)
+{
+	bool Result = false;
+	auto BaseValueString = to_string_cast(std::any_cast<const DataType &>(Target->GetData()));
+	auto ElementIterator = std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; });
+	
+	if(ElementIterator != Enumeration.Elements.end())
+	{
+		ApplyTags(ExecutionContext, ElementIterator->Tags, Target);
+		Result = ElementIterator->Valid;
+	}
+	else
+	{
+		if(Enumeration.FallbackElement.has_value() == true)
+		{
+			ApplyTags(ExecutionContext, Enumeration.FallbackElement->Tags, Target);
+			Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
+			Result = Enumeration.FallbackElement->Valid;
+		}
+		else
+		{
+			Target->AddTag("error", "Could find neither an enumeration element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
+			Result = false;
+		}
+	}
+	
+	return Result;
+}
+
 Inspection::TypeDefinition::Add::Add(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Add}
 {
@@ -115,6 +145,36 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 				Result->_Summand2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			}
 		}
+	}
+	
+	return Result;
+}
+
+bool Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
+{
+	ASSERTION(Enumeration != nullptr);
+	
+	auto Result = true;
+	
+	if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::String)
+	{
+		::ApplyEnumeration<std::string>(ExecutionContext, *Enumeration, Target);
+	}
+	else if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger8Bit)
+	{
+		::ApplyEnumeration<std::uint8_t>(ExecutionContext, *Enumeration, Target);
+	}
+	else if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger16Bit)
+	{
+		::ApplyEnumeration<std::uint16_t>(ExecutionContext, *Enumeration, Target);
+	}
+	else if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::UnsignedInteger32Bit)
+	{
+		::ApplyEnumeration<std::uint32_t>(ExecutionContext, *Enumeration, Target);
+	}
+	else
+	{
+		ASSERTION(false);
 	}
 	
 	return Result;
