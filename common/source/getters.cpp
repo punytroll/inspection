@@ -10190,7 +10190,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_RiceEnco
 	if(Continue == true)
 	{
 		auto MostSignificantBits = std::any_cast<std::uint32_t>(Result->GetValue()->GetField("MostSignificantBits")->GetData());
-		std::uint32_t LeastSignificantBits;
+		auto LeastSignificantBits = static_cast<std::uint32_t>(0);
 		
 		if(Result->GetValue()->GetField("LeastSignificantBits")->GetData().type() == typeid(std::uint8_t))
 		{
@@ -10199,6 +10199,10 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_RiceEnco
 		else if(Result->GetValue()->GetField("LeastSignificantBits")->GetData().type() == typeid(std::uint16_t))
 		{
 			LeastSignificantBits = std::any_cast<std::uint16_t>(Result->GetValue()->GetField("LeastSignificantBits")->GetData());
+		}
+		else
+		{
+			ASSERTION(false);
 		}
 		
 		auto Rice = std::any_cast<std::uint8_t>(Parameters.at("Rice"));
