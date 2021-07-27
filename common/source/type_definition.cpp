@@ -27,6 +27,8 @@
 #include "xml_helper.h"
 #include "xml_puny_dom.h"
 
+using namespace std::string_literals;
+
 template<typename Type>
 Type CastTo(const std::any & Any)
 {
@@ -1210,6 +1212,41 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	return Result;
 }
 
+void Inspection::TypeDefinition::ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
+{
+	for(auto & Tag : Tags)
+	{
+		if(Tag->HasExpression() == true)
+		{
+			Target->AddTag(Tag->GetName(), Tag->GetAny(ExecutionContext));
+		}
+		else
+		{
+			Target->AddTag(Tag->GetName());
+		}
+	}
+}
+
+bool Inspection::TypeDefinition::CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target)
+{
+	auto Result = true;
+	
+	for(auto & VerificationExpression : Verifications)
+	{
+		auto VerificationAny = VerificationExpression->GetAny(ExecutionContext);
+		
+		ASSERTION(VerificationAny.type() == typeid(bool));
+		
+		Result = std::any_cast<bool>(VerificationAny);
+		if(Result == false)
+		{
+			Target->AddTag("error", "The value failed to verify."s);
+		}
+	}
+	
+	return Result;
+}
+
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFromString(const std::string & String)
 {
 	if(String == "boolean")
@@ -1259,5 +1296,17 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	else
 	{
 		ASSERTION(false);
+	}
+}
+
+std::unordered_map<std::string, std::any> Inspection::TypeDefinition::GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
+{
+	if(Parameters != nullptr)
+	{
+		return Parameters->GetParameters(ExecutionContext);
+	}
+	else
+	{
+		return std::unordered_map<std::string, std::any>{};
 	}
 }

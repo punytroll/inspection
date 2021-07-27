@@ -549,7 +549,10 @@ namespace Inspection
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> Verifications;
 		};
 		
+		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target);
+		bool CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target);
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);
+		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters);
 	}
 }
 

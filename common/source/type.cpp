@@ -26,54 +26,6 @@ namespace Inspection
 	
 	namespace Algorithms
 	{
-		
-		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
-		{
-			for(auto & Tag : Tags)
-			{
-				if(Tag->HasExpression() == true)
-				{
-					Target->AddTag(Tag->GetName(), Tag->GetAny(ExecutionContext));
-				}
-				else
-				{
-					Target->AddTag(Tag->GetName());
-				}
-			}
-		}
-		
-		bool CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target)
-		{
-			auto Result = true;
-			
-			for(auto & VerificationExpression : Verifications)
-			{
-				auto VerificationAny = VerificationExpression->GetAny(ExecutionContext);
-				
-				ASSERTION(VerificationAny.type() == typeid(bool));
-				
-				Result = std::any_cast<bool>(VerificationAny);
-				if(Result == false)
-				{
-					Target->AddTag("error", "The value failed to verify."s);
-				}
-			}
-			
-			return Result;
-		}
-		
-		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
-		{
-			if(Parameters != nullptr)
-			{
-				return Parameters->GetParameters(ExecutionContext);
-			}
-			else
-			{
-				return std::unordered_map<std::string, std::any>{};
-			}
-		}
-		
 		template<typename DataType>
 		bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target)
 		{
@@ -153,7 +105,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			}
 			if(PartReader != nullptr)
 			{
-				auto PartParameters = Inspection::Algorithms::GetParameters(ExecutionContext, _Part->Parameters.get());
+				auto PartParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, _Part->Parameters.get());
 				
 				switch(_Part->Type)
 				{
@@ -263,7 +215,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 		}
 		if(AlternativePartReader != nullptr)
 		{
-			auto AlternativePartParameters = Inspection::Algorithms::GetParameters(ExecutionContext, AlternativePart.Parameters.get());
+			auto AlternativePartParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, AlternativePart.Parameters.get());
 			
 			switch(AlternativePart.Type)
 			{
@@ -362,7 +314,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 	{
 	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
 		{
-			auto ElementParameters = Inspection::Algorithms::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
+			auto ElementParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
@@ -420,7 +372,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
 		{
-			auto ElementParameters = Inspection::Algorithms::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
+			auto ElementParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
 			
 			ASSERTION(Array.Array->IterateForEachField != nullptr);
 			
@@ -460,7 +412,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
 		{
-			auto ElementParameters = Inspection::Algorithms::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
+			auto ElementParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
@@ -513,7 +465,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
 		{
-			auto ElementParameters = Inspection::Algorithms::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
+			auto ElementParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
@@ -610,7 +562,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		}
 		if(FieldPartReader != nullptr)
 		{
-			auto FieldPartParameters = Inspection::Algorithms::GetParameters(ExecutionContext, FieldPart.Parameters.get());
+			auto FieldPartParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, FieldPart.Parameters.get());
 			
 			switch(FieldPart.Type)
 			{
@@ -671,7 +623,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	// tags
 	if(Continue == true)
 	{
-		Inspection::Algorithms::ApplyTags(ExecutionContext, Field.Tags, Result->GetValue());
+		Inspection::TypeDefinition::ApplyTags(ExecutionContext, Field.Tags, Result->GetValue());
 	}
 	// interpretation
 	if(Continue == true)
@@ -692,7 +644,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	// verification
 	if(Continue == true)
 	{
-		Continue = Inspection::Algorithms::CheckVerifications(ExecutionContext, Field.Verifications, Result->GetValue());
+		Continue = Inspection::TypeDefinition::CheckVerifications(ExecutionContext, Field.Verifications, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -738,7 +690,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	// verification
 	if(Continue == true)
 	{
-		Continue = Inspection::Algorithms::CheckVerifications(ExecutionContext, Fields.Verifications, Result->GetValue());
+		Continue = Inspection::TypeDefinition::CheckVerifications(ExecutionContext, Fields.Verifications, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -768,7 +720,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	// tags
 	if(Continue == true)
 	{
-		Inspection::Algorithms::ApplyTags(ExecutionContext, Forward.Tags, Result->GetValue());
+		Inspection::TypeDefinition::ApplyTags(ExecutionContext, Forward.Tags, Result->GetValue());
 	}
 	// interpretation
 	if(Continue == true)
@@ -789,7 +741,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	// verification
 	if(Continue == true)
 	{
-		Continue = Inspection::Algorithms::CheckVerifications(ExecutionContext, Forward.Verifications, Result->GetValue());
+		Continue = Inspection::TypeDefinition::CheckVerifications(ExecutionContext, Forward.Verifications, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -822,7 +774,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 		}
 		if(SequencePartReader != nullptr)
 		{
-			auto SequencePartParameters = Inspection::Algorithms::GetParameters(ExecutionContext, SequencePart.Parameters.get());
+			auto SequencePartParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, SequencePart.Parameters.get());
 			
 			switch(SequencePart.Type)
 			{
@@ -884,7 +836,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 	// tags
 	if(Continue == true)
 	{
-		Inspection::Algorithms::ApplyTags(ExecutionContext, Sequence.Tags, Result->GetValue());
+		Inspection::TypeDefinition::ApplyTags(ExecutionContext, Sequence.Tags, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
