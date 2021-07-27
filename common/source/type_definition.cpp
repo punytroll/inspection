@@ -118,6 +118,30 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 	return Result;
 }
 
+std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Inspection::TypeDefinition::ApplyEnumeration::Load(const XML::Element * Element)
+{
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration>{new Inspection::TypeDefinition::ApplyEnumeration{}};
+	
+	for(auto ChildNode : Element->GetChilds())
+	{
+		if(ChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
+			
+			if(ChildElement->GetName() == "enumeration")
+			{
+				Result->Enumeration = Inspection::TypeDefinition::Enumeration::Load(ChildElement);
+			}
+			else
+			{
+				ASSERTION(false);
+			}
+		}
+	}
+	
+	return Result;
+}
+
 Inspection::TypeDefinition::Cast::Cast(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Cast},
 	_DataType{Inspection::TypeDefinition::DataType::Unknown}
@@ -647,7 +671,7 @@ std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefi
 
 std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefinition::Interpretation::Load(const XML::Element * Element)
 {
-	auto Result = std::unique_ptr<Inspection::TypeDefinition::Interpretation>{new Inspection::TypeDefinition::Interpretation{}};
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Interpretation>{};
 	
 	ASSERTION(Element->GetName() == "interpretation");
 	for(auto InterpretationChildNode : Element->GetChilds())
@@ -658,24 +682,7 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
 			
 			if(InterpretationChildElement->GetName() == "apply-enumeration")
 			{
-				Result->Type = Inspection::TypeDefinition::Interpretation::Type::ApplyEnumeration;
-				Result->ApplyEnumeration.emplace();
-				for(auto InterpretationApplyEnumerationChildNode : InterpretationChildElement->GetChilds())
-				{
-					if(InterpretationApplyEnumerationChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						auto InterpretationApplyEnumerationChildElement = dynamic_cast<const XML::Element *>(InterpretationApplyEnumerationChildNode);
-						
-						if(InterpretationApplyEnumerationChildElement->GetName() == "enumeration")
-						{
-							Result->ApplyEnumeration->Enumeration = Inspection::TypeDefinition::Enumeration::Load(InterpretationApplyEnumerationChildElement);
-						}
-						else
-						{
-							ASSERTION(false);
-						}
-					}
-				}
+				Result = Inspection::TypeDefinition::ApplyEnumeration::Load(InterpretationChildElement);
 			}
 			else
 			{

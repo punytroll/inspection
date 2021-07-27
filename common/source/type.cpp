@@ -925,26 +925,22 @@ Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyEnumeration
 Inspection::EvaluationResult Inspection::TypeDefinition::Type::_ApplyInterpretation(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Interpretation & Interpretation, Inspection::Value * Target) const
 {
 	auto Result = Inspection::EvaluationResult{};
+	auto ApplyEnumeration = dynamic_cast<const Inspection::TypeDefinition::ApplyEnumeration *>(&Interpretation);
 	
-	switch(Interpretation.Type)
+	if(ApplyEnumeration != nullptr)
 	{
-	case Inspection::TypeDefinition::Interpretation::Type::ApplyEnumeration:
+		ASSERTION(ApplyEnumeration->Enumeration != nullptr);
+		
+		auto EvaluationResult = _ApplyEnumeration(ExecutionContext, *(ApplyEnumeration->Enumeration), Target);
+		
+		if(EvaluationResult.AbortEvaluation)
 		{
-			ASSERTION(Interpretation.ApplyEnumeration.has_value() == true);
-			
-			auto EvaluationResult = _ApplyEnumeration(ExecutionContext, *(Interpretation.ApplyEnumeration->Enumeration), Target);
-			
-			if(EvaluationResult.AbortEvaluation)
-			{
-				Result.AbortEvaluation = EvaluationResult.AbortEvaluation.value();
-			}
-			
-			break;
+			Result.AbortEvaluation = EvaluationResult.AbortEvaluation.value();
 		}
-	default:
-		{
-			ASSERTION(false);
-		}
+	}
+	else
+	{
+		ASSERTION(false);
 	}
 	
 	return Result;

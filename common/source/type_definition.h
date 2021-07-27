@@ -97,6 +97,7 @@ namespace Inspection
 		protected:
 			Expression(Inspection::TypeDefinition::ExpressionType ExpressionType);
 		private:
+			Expression(void) = delete;
 			Expression(const Inspection::TypeDefinition::Expression & Expression) = delete;
 			Expression(Inspection::TypeDefinition::Expression && Expression) = delete;
 			Inspection::TypeDefinition::Expression & operator=(const Inspection::TypeDefinition::Expression & Expression) = delete;
@@ -464,30 +465,35 @@ namespace Inspection
 			Inspection::TypeDefinition::Enumeration & operator=(Inspection::TypeDefinition::Enumeration && Enumeration) = delete;
 		};
 		
-		class ApplyEnumeration
-		{
-		public:
-			std::unique_ptr<Inspection::TypeDefinition::Enumeration> Enumeration;
-		};
-		
 		class Interpretation
 		{
 		public:
 			static std::unique_ptr<Inspection::TypeDefinition::Interpretation> Load(const XML::Element * Element);
 		public:
-			enum class Type
-			{
-				ApplyEnumeration
-			};
-		public:
-			std::optional<Inspection::TypeDefinition::ApplyEnumeration> ApplyEnumeration;
-			Inspection::TypeDefinition::Interpretation::Type Type;
-		private:
+			virtual ~Interpretation(void) = default;
+		protected:
 			Interpretation(void) = default;
+		private:
 			Interpretation(const Inspection::TypeDefinition::Interpretation & Interpretation) = delete;
 			Interpretation(Inspection::TypeDefinition::Interpretation && Interpretation) = delete;
 			Inspection::TypeDefinition::Interpretation & operator=(const Inspection::TypeDefinition::Interpretation & Interpretation) = delete;
 			Inspection::TypeDefinition::Interpretation & operator=(Inspection::TypeDefinition::Interpretation && Interpretation) = delete;
+		};
+		
+		class ApplyEnumeration : public Inspection::TypeDefinition::Interpretation
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Load(const XML::Element * Element);
+		public:
+			virtual ~ApplyEnumeration(void) = default;
+		public:
+			std::unique_ptr<Inspection::TypeDefinition::Enumeration> Enumeration;
+		private:
+			ApplyEnumeration(void) = default;
+			ApplyEnumeration(const Inspection::TypeDefinition::ApplyEnumeration & ApplyEnumeration) = delete;
+			ApplyEnumeration(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
+			Inspection::TypeDefinition::ApplyEnumeration & operator=(const Inspection::TypeDefinition::ApplyEnumeration & ApplyEnumeration) = delete;
+			Inspection::TypeDefinition::ApplyEnumeration & operator=(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
 		};
 		
 		class Array
