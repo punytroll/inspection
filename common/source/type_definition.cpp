@@ -1351,22 +1351,29 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	return Result;
 }
 
-bool Inspection::TypeDefinition::CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target)
+bool Inspection::TypeDefinition::Verification::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
 {
-	auto Result = true;
+	ASSERTION(_Expression != nullptr);
 	
-	for(auto & VerificationExpression : Verifications)
+	auto VerificationAny = _Expression->GetAny(ExecutionContext);
+	
+	ASSERTION(VerificationAny.type() == typeid(bool));
+	
+	auto Result = std::any_cast<bool>(VerificationAny);
+	
+	if(Result == false)
 	{
-		auto VerificationAny = VerificationExpression->GetAny(ExecutionContext);
-		
-		ASSERTION(VerificationAny.type() == typeid(bool));
-		
-		Result = std::any_cast<bool>(VerificationAny);
-		if(Result == false)
-		{
-			Target->AddTag("error", "The value failed to verify."s);
-		}
+		Target->AddTag("error", "The value failed to verify."s);
 	}
+	
+	return Result;
+}
+
+std::unique_ptr<Inspection::TypeDefinition::Verification> Inspection::TypeDefinition::Verification::Load(const XML::Element * Element)
+{
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Verification>{new Inspection::TypeDefinition::Verification{}};
+	
+	Result->_Expression = Inspection::TypeDefinition::Expression::Load(Element);
 	
 	return Result;
 }

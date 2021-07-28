@@ -515,6 +515,23 @@ namespace Inspection
 			Inspection::TypeDefinition::ApplyEnumeration & operator=(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
 		};
 		
+		class Verification : public Inspection::TypeDefinition::Interpretation
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Verification> Load(const XML::Element * Element);
+		public:
+			virtual ~Verification(void) = default;
+			bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const override;
+		private:
+			Verification(void) = default;
+			Verification(const Inspection::TypeDefinition::Verification & Verification) = delete;
+			Verification(Inspection::TypeDefinition::Verification && Verification) = delete;
+			Inspection::TypeDefinition::Verification & operator=(const Inspection::TypeDefinition::Verification & Verification) = delete;
+			Inspection::TypeDefinition::Verification & operator=(Inspection::TypeDefinition::Verification && Verification) = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> _Expression;
+		};
+		
 		class Array
 		{
 		public:
@@ -569,10 +586,8 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
 			Inspection::TypeDefinition::Part::Type Type;
-			std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> Verifications;
 		};
 		
-		bool CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target);
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);
 	}
 }

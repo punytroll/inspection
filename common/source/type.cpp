@@ -580,11 +580,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	{
 		Continue = Field.ApplyInterpretations(ExecutionContext, Result->GetValue());
 	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = Inspection::TypeDefinition::CheckVerifications(ExecutionContext, Field.Verifications, Result->GetValue());
-	}
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
@@ -615,11 +610,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	{
 		Continue = Fields.ApplyInterpretations(ExecutionContext, Result->GetValue());
 	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = Inspection::TypeDefinition::CheckVerifications(ExecutionContext, Fields.Verifications, Result->GetValue());
-	}
 	ExecutionContext.Pop();
 	// finalization
 	Result->SetSuccess(Continue);
@@ -649,11 +639,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	if(Continue == true)
 	{
 		Continue = Forward.ApplyInterpretations(ExecutionContext, Result->GetValue());
-	}
-	// verification
-	if(Continue == true)
-	{
-		Continue = Inspection::TypeDefinition::CheckVerifications(ExecutionContext, Forward.Verifications, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -833,7 +818,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 				{
 					if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
 					{
-						Part.Verifications.push_back(Inspection::TypeDefinition::Expression::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
+						Part.Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
 					}
 				}
 			}
