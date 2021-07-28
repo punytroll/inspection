@@ -57,7 +57,7 @@ namespace Inspection
 			void _LoadPart(Inspection::TypeDefinition::Part & Part, const XML::Element * PartElement);
 			void _LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement);
 			std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)> _HardcodedGetter;
-			Inspection::TypeDefinition::Part * _Part;
+			std::unique_ptr<Inspection::TypeDefinition::Part> _Part;
 			std::vector<std::string> _PathParts;
 			Inspection::TypeRepository * _TypeRepository;
 		};

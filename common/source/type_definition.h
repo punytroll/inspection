@@ -566,13 +566,9 @@ namespace Inspection
 				Sequence,
 				Type
 			};
-			
-			Part(void)
-			{
-			}
-			
-			Part(Inspection::TypeDefinition::Part && Part) = default;
-			
+			Part(void) = default;
+			~Part(void) = default;
+			Part(Inspection::TypeDefinition::Part && Part) = delete;
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
 		public:
 			bool ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const;
@@ -584,7 +580,7 @@ namespace Inspection
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> Interpretations;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Length;
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
-			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> Parts;
 			Inspection::TypeDefinition::Part::Type Type;
 		};
 		
