@@ -575,11 +575,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 			Reader.AdvancePosition(FieldPartReader->GetConsumedLength());
 		}
 	}
-	// tags
-	if(Continue == true)
-	{
-		Inspection::TypeDefinition::ApplyTags(ExecutionContext, Field.Tags, Result->GetValue());
-	}
 	// interpretation
 	if(Continue == true)
 	{
@@ -650,11 +645,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	
 	Continue = ForwardResult->GetSuccess();
 	Result->SetValue(ForwardResult->ExtractValue());
-	// tags
-	if(Continue == true)
-	{
-		Inspection::TypeDefinition::ApplyTags(ExecutionContext, Forward.Tags, Result->GetValue());
-	}
 	// interpretation
 	if(Continue == true)
 	{
@@ -755,10 +745,10 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 			Reader.AdvancePosition(SequencePartReader->GetConsumedLength());
 		}
 	}
-	// tags
+	// interpretation
 	if(Continue == true)
 	{
-		Inspection::TypeDefinition::ApplyTags(ExecutionContext, Sequence.Tags, Result->GetValue());
+		Continue = Sequence.ApplyInterpretations(ExecutionContext, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -850,7 +840,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			else if(PartChildElement->GetName() == "tag")
 			{
 				ASSERTION((Part.Type == Inspection::TypeDefinition::Part::Type::Field) || (Part.Type == Inspection::TypeDefinition::Part::Type::Forward) || (Part.Type == Inspection::TypeDefinition::Part::Type::Sequence));
-				Part.Tags.push_back(Inspection::TypeDefinition::Tag::Load(PartChildElement));
+				Part.Interpretations.push_back(Inspection::TypeDefinition::AddTag::Load(PartChildElement));
 			}
 			else if((PartChildElement->GetName() == "alternative") || (PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward") || (PartChildElement->GetName() == "array"))
 			{

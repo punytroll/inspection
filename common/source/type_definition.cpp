@@ -29,6 +29,27 @@
 
 using namespace std::string_literals;
 
+static void ApplyTag(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Tag & Tag, Inspection::Value * Target)
+{
+	if(Tag.HasExpression() == true)
+	{
+		Target->AddTag(Tag.GetName(), Tag.GetAny(ExecutionContext));
+	}
+	else
+	{
+		Target->AddTag(Tag.GetName());
+	}
+}
+
+static void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
+{
+	for(auto & Tag : Tags)
+	{
+		ASSERTION(Tag != nullptr);
+		::ApplyTag(ExecutionContext, *Tag, Target);
+	}
+}
+
 template<typename DataType>
 static bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target)
 {
@@ -158,6 +179,25 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 			}
 		}
 	}
+	
+	return Result;
+}
+
+bool Inspection::TypeDefinition::AddTag::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
+{
+	ASSERTION(_Tag != nullptr);
+	::ApplyTag(ExecutionContext, *_Tag, Target);
+	
+	return true;
+}
+
+std::unique_ptr<Inspection::TypeDefinition::AddTag> Inspection::TypeDefinition::AddTag::Load(const XML::Element * Element)
+{
+	ASSERTION(Element->GetName() == "tag");
+	
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::AddTag>{new Inspection::TypeDefinition::AddTag{}};
+	
+	Result->_Tag = Inspection::TypeDefinition::Tag::Load(Element);
 	
 	return Result;
 }
@@ -1309,21 +1349,6 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	ASSERTION(Result->_DataType != Inspection::TypeDefinition::DataType::Unknown);
 	
 	return Result;
-}
-
-void Inspection::TypeDefinition::ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
-{
-	for(auto & Tag : Tags)
-	{
-		if(Tag->HasExpression() == true)
-		{
-			Target->AddTag(Tag->GetName(), Tag->GetAny(ExecutionContext));
-		}
-		else
-		{
-			Target->AddTag(Tag->GetName());
-		}
-	}
 }
 
 bool Inspection::TypeDefinition::CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target)

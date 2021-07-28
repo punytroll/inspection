@@ -481,6 +481,23 @@ namespace Inspection
 			Inspection::TypeDefinition::Interpretation & operator=(Inspection::TypeDefinition::Interpretation && Interpretation) = delete;
 		};
 		
+		class AddTag : public Inspection::TypeDefinition::Interpretation
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::AddTag> Load(const XML::Element * Element);
+		public:
+			virtual ~AddTag(void) = default;
+			bool Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const override;
+		private:
+			AddTag(void) = default;
+			AddTag(const Inspection::TypeDefinition::AddTag & AddTag) = delete;
+			AddTag(Inspection::TypeDefinition::AddTag && AddTag) = delete;
+			Inspection::TypeDefinition::AddTag & operator=(const Inspection::TypeDefinition::AddTag & AddTag) = delete;
+			Inspection::TypeDefinition::AddTag & operator=(Inspection::TypeDefinition::AddTag && AddTag) = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::Tag> _Tag;
+		};
+		
 		class ApplyEnumeration : public Inspection::TypeDefinition::Interpretation
 		{
 		public:
@@ -551,12 +568,10 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Length;
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
-			std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> Tags;
 			Inspection::TypeDefinition::Part::Type Type;
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> Verifications;
 		};
 		
-		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target);
 		bool CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target);
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);
 	}
