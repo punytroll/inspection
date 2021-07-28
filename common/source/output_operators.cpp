@@ -417,10 +417,6 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 {
 	switch(DataType)
 	{
-	case Inspection::TypeDefinition::DataType::Unknown:
-		{
-			return OStream << "<unknown>";
-		}
 	case Inspection::TypeDefinition::DataType::Boolean:
 		{
 			return OStream << "boolean";

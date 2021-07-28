@@ -52,7 +52,6 @@ namespace Inspection
 		
 		enum class DataType
 		{
-			Unknown,
 			Boolean,
 			GUID,
 			Nothing,
@@ -135,7 +134,7 @@ namespace Inspection
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 			const Inspection::TypeDefinition::Expression & GetExpression(void) const;
 		private:
-			Cast(void);
+			Cast(Inspection::TypeDefinition::DataType DataType);
 			Cast(const Inspection::TypeDefinition::Cast & Cast) = delete;
 			Cast(Inspection::TypeDefinition::Cast && Cast) = delete;
 			Inspection::TypeDefinition::Cast & operator=(const Inspection::TypeDefinition::Cast & Cast) = delete;
@@ -410,7 +409,6 @@ namespace Inspection
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		protected:
-			Value(void);
 			Value(Inspection::TypeDefinition::DataType DataType);
 		private:
 			Value(const Inspection::TypeDefinition::Value & Value) = delete;

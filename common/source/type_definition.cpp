@@ -261,9 +261,9 @@ std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::Get
 	return ::GetParameters(ExecutionContext, ElementParameters.get());
 }
 
-Inspection::TypeDefinition::Cast::Cast(void) :
+Inspection::TypeDefinition::Cast::Cast(Inspection::TypeDefinition::DataType DataType) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Cast},
-	_DataType{Inspection::TypeDefinition::DataType::Unknown}
+	_DataType{DataType}
 {
 }
 
@@ -305,7 +305,7 @@ const Inspection::TypeDefinition::Expression & Inspection::TypeDefinition::Cast:
 
 std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Cast::Load(const XML::Element * Element)
 {
-	auto Result = std::unique_ptr<Inspection::TypeDefinition::Cast>{new Inspection::TypeDefinition::Cast{}};
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Cast>{};
 	
 	for(auto ChildNode : Element->GetChilds())
 	{
@@ -313,13 +313,13 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 		{
 			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
 			
-			Result->_DataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetName());
+			Result = std::unique_ptr<Inspection::TypeDefinition::Cast>{new Inspection::TypeDefinition::Cast{Inspection::TypeDefinition::GetDataTypeFromString(Element->GetName())}};
 			Result->_Expression = Inspection::TypeDefinition::Expression::Load(ChildElement);
 			
 			break;
 		}
 	}
-	ASSERTION(Result->_DataType != Inspection::TypeDefinition::DataType::Unknown);
+	ASSERTION(Result != nullptr);
 	ASSERTION(Result->_Expression != nullptr);
 	
 	return Result;
@@ -1173,11 +1173,6 @@ std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefin
 	return Result;
 }
 
-Inspection::TypeDefinition::Value::Value(void) :
-	Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::Unknown}
-{
-}
-
 Inspection::TypeDefinition::Value::Value(Inspection::TypeDefinition::DataType DataType) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Value},
 	_DataType{DataType}
@@ -1254,17 +1249,17 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Value::GetDataT
 
 std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::Value::Load(const XML::Element * Element)
 {
-	auto Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{}};
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Value>{};
 	
 	ASSERTION(Element != nullptr);
 	if(Element->GetName() == "nothing")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::Nothing;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::Nothing}};
 		ASSERTION(Element->GetChilds().size() == 0);
 	}
 	else if(Element->GetName() == "boolean")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::Boolean;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::Boolean}};
 		ASSERTION((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
@@ -1274,7 +1269,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	}
 	else if(Element->GetName() == "guid")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::GUID;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::GUID}};
 		ASSERTION((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
@@ -1284,7 +1279,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	}
 	else if(Element->GetName() == "single-precision-real")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::SinglePrecisionReal;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::SinglePrecisionReal}};
 		ASSERTION((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
@@ -1294,7 +1289,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	}
 	else if(Element->GetName() == "string")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::String;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::String}};
 		ASSERTION((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
@@ -1304,7 +1299,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	}
 	else if(Element->GetName() == "unsigned-integer-8bit")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger8Bit;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::UnsignedInteger8Bit}};
 		ASSERTION((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
@@ -1314,7 +1309,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	}
 	else if(Element->GetName() == "unsigned-integer-16bit")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger16Bit;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::UnsignedInteger16Bit}};
 		ASSERTION((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
@@ -1324,7 +1319,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	}
 	else if(Element->GetName() == "unsigned-integer-32bit")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger32Bit;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::UnsignedInteger32Bit}};
 		ASSERTION((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
@@ -1334,7 +1329,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	}
 	else if(Element->GetName() == "unsigned-integer-64bit")
 	{
-		Result->_DataType = Inspection::TypeDefinition::DataType::UnsignedInteger64Bit;
+		Result = std::unique_ptr<Inspection::TypeDefinition::Value>{new Inspection::TypeDefinition::Value{Inspection::TypeDefinition::DataType::UnsignedInteger64Bit}};
 		ASSERTION((Element->GetChilds().size() == 1) && (Element->GetChild(0)->GetNodeType() == XML::NodeType::Text));
 		
 		auto TextNode = dynamic_cast<const XML::Text *>(Element->GetChild(0));
@@ -1346,7 +1341,6 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	{
 		ASSERTION(false);
 	}
-	ASSERTION(Result->_DataType != Inspection::TypeDefinition::DataType::Unknown);
 	
 	return Result;
 }
