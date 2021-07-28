@@ -29,8 +29,38 @@
 
 using namespace std::string_literals;
 
+template<typename DataType>
+static bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target)
+{
+	bool Result = false;
+	auto BaseValueString = to_string_cast(std::any_cast<const DataType &>(Target->GetData()));
+	auto ElementIterator = std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; });
+	
+	if(ElementIterator != Enumeration.Elements.end())
+	{
+		ApplyTags(ExecutionContext, ElementIterator->Tags, Target);
+		Result = ElementIterator->Valid;
+	}
+	else
+	{
+		if(Enumeration.FallbackElement.has_value() == true)
+		{
+			ApplyTags(ExecutionContext, Enumeration.FallbackElement->Tags, Target);
+			Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
+			Result = Enumeration.FallbackElement->Valid;
+		}
+		else
+		{
+			Target->AddTag("error", "Could find neither an enumeration element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
+			Result = false;
+		}
+	}
+	
+	return Result;
+}
+
 template<typename Type>
-Type CastTo(const std::any & Any)
+static Type CastTo(const std::any & Any)
 {
 	if(Any.type() == typeid(float))
 	{
@@ -58,34 +88,16 @@ Type CastTo(const std::any & Any)
 	}
 }
 
-template<typename DataType>
-bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target)
+static std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
 {
-	bool Result = false;
-	auto BaseValueString = to_string_cast(std::any_cast<const DataType &>(Target->GetData()));
-	auto ElementIterator = std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; });
-	
-	if(ElementIterator != Enumeration.Elements.end())
+	if(Parameters != nullptr)
 	{
-		ApplyTags(ExecutionContext, ElementIterator->Tags, Target);
-		Result = ElementIterator->Valid;
+		return Parameters->GetParameters(ExecutionContext);
 	}
 	else
 	{
-		if(Enumeration.FallbackElement.has_value() == true)
-		{
-			ApplyTags(ExecutionContext, Enumeration.FallbackElement->Tags, Target);
-			Target->AddTag("error", "Could find no enumeration element for the base value \"" + BaseValueString + "\".");
-			Result = Enumeration.FallbackElement->Valid;
-		}
-		else
-		{
-			Target->AddTag("error", "Could find neither an enumeration element nor an enumeration fallback element for the base value \"" + BaseValueString + "\".");
-			Result = false;
-		}
+		return std::unordered_map<std::string, std::any>{};
 	}
-	
-	return Result;
 }
 
 Inspection::TypeDefinition::Add::Add(void) :
@@ -204,6 +216,11 @@ std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Inspection::TypeDe
 	return Result;
 }
 
+std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const
+{
+	return ::GetParameters(ExecutionContext, ElementParameters.get());
+}
+
 Inspection::TypeDefinition::Cast::Cast(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Cast},
 	_DataType{Inspection::TypeDefinition::DataType::Unknown}
@@ -217,15 +234,15 @@ std::any Inspection::TypeDefinition::Cast::GetAny(Inspection::ExecutionContext &
 	{
 	case Inspection::TypeDefinition::DataType::SinglePrecisionReal:
 		{
-			return CastTo<float>(_Expression->GetAny(ExecutionContext));
+			return ::CastTo<float>(_Expression->GetAny(ExecutionContext));
 		}
 	case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
 		{
-			return CastTo<std::uint8_t>(_Expression->GetAny(ExecutionContext));
+			return ::CastTo<std::uint8_t>(_Expression->GetAny(ExecutionContext));
 		}
 	case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
 		{
-			return CastTo<std::uint64_t>(_Expression->GetAny(ExecutionContext));
+			return ::CastTo<std::uint64_t>(_Expression->GetAny(ExecutionContext));
 		}
 	default:
 		{
@@ -957,6 +974,11 @@ std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Inspection::T
 	return Result;
 }
 
+std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Part::GetParameters(Inspection::ExecutionContext & ExecutionContext) const
+{
+	return ::GetParameters(ExecutionContext, Parameters.get());
+}
+
 Inspection::TypeDefinition::Subtract::Subtract(void) :
 	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Subtract}
 {
@@ -1356,17 +1378,5 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	else
 	{
 		ASSERTION(false);
-	}
-}
-
-std::unordered_map<std::string, std::any> Inspection::TypeDefinition::GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
-{
-	if(Parameters != nullptr)
-	{
-		return Parameters->GetParameters(ExecutionContext);
-	}
-	else
-	{
-		return std::unordered_map<std::string, std::any>{};
 	}
 }

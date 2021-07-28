@@ -508,7 +508,9 @@ namespace Inspection
 				NumberOfElements,
 				UntilFailureOrLength
 			};
-			
+		public:
+			std::unordered_map<std::string, std::any> GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const;
+		public:
 			Inspection::TypeDefinition::Array::IterateType IterateType;
 			std::unique_ptr<Inspection::TypeDefinition::FieldReference> IterateForEachField;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> IterateNumberOfElements;
@@ -538,13 +540,15 @@ namespace Inspection
 			Part(Inspection::TypeDefinition::Part && Part) = default;
 			
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
-			
+		public:
+			std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext) const;
+		public:
 			std::optional<Inspection::TypeDefinition::Array> Array;
-			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::optional<std::string> FieldName;
 			std::unique_ptr<Inspection::TypeDefinition::TypeReference> TypeReference;
 			std::unique_ptr<Inspection::TypeDefinition::Interpretation> Interpretation;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Length;
+			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> Tags;
 			Inspection::TypeDefinition::Part::Type Type;
@@ -554,7 +558,6 @@ namespace Inspection
 		void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target);
 		bool CheckVerifications(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Expression>> & Verifications, Inspection::Value * Target);
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);
-		std::unordered_map<std::string, std::any> GetParameters(ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters);
 	}
 }
 

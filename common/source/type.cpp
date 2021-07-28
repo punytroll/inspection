@@ -60,7 +60,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			}
 			if(PartReader != nullptr)
 			{
-				auto PartParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, _Part->Parameters.get());
+				auto PartParameters = _Part->GetParameters(ExecutionContext);
 				
 				switch(_Part->Type)
 				{
@@ -170,7 +170,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 		}
 		if(AlternativePartReader != nullptr)
 		{
-			auto AlternativePartParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, AlternativePart.Parameters.get());
+			auto AlternativePartParameters = AlternativePart.GetParameters(ExecutionContext);
 			
 			switch(AlternativePart.Type)
 			{
@@ -269,7 +269,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 	{
 	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
 		{
-			auto ElementParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
+			auto ElementParameters = Array.Array->GetElementParameters(ExecutionContext);
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
@@ -327,7 +327,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
 		{
-			auto ElementParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
+			auto ElementParameters = Array.Array->GetElementParameters(ExecutionContext);
 			
 			ASSERTION(Array.Array->IterateForEachField != nullptr);
 			
@@ -367,7 +367,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
 		{
-			auto ElementParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
+			auto ElementParameters = Array.Array->GetElementParameters(ExecutionContext);
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
@@ -420,7 +420,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 		}
 	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
 		{
-			auto ElementParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, Array.Array->ElementParameters.get());
+			auto ElementParameters = Array.Array->GetElementParameters(ExecutionContext);
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
@@ -517,7 +517,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 		}
 		if(FieldPartReader != nullptr)
 		{
-			auto FieldPartParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, FieldPart.Parameters.get());
+			auto FieldPartParameters = FieldPart.GetParameters(ExecutionContext);
 			
 			switch(FieldPart.Type)
 			{
@@ -705,7 +705,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 		}
 		if(SequencePartReader != nullptr)
 		{
-			auto SequencePartParameters = Inspection::TypeDefinition::GetParameters(ExecutionContext, SequencePart.Parameters.get());
+			auto SequencePartParameters = SequencePart.GetParameters(ExecutionContext);
 			
 			switch(SequencePart.Type)
 			{
