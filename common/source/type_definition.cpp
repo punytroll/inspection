@@ -974,6 +974,23 @@ std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Inspection::T
 	return Result;
 }
 
+bool Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
+{
+	auto Result = true;
+	
+	for(const auto & Interpretation : Interpretations)
+	{
+		ASSERTION(Interpretation != nullptr);
+		Result &= Interpretation->Apply(ExecutionContext, Target);
+		if(Result == false)
+		{
+			break;
+		}
+	}
+	
+	return Result;
+}
+
 std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Part::GetParameters(Inspection::ExecutionContext & ExecutionContext) const
 {
 	return ::GetParameters(ExecutionContext, Parameters.get());

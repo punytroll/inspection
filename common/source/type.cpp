@@ -583,10 +583,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	// interpretation
 	if(Continue == true)
 	{
-		if(Field.Interpretation != nullptr)
-		{
-			Continue = Field.Interpretation->Apply(ExecutionContext, Result->GetValue());
-		}
+		Continue = Field.ApplyInterpretations(ExecutionContext, Result->GetValue());
 	}
 	// verification
 	if(Continue == true)
@@ -621,10 +618,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	// interpretation
 	if(Continue == true)
 	{
-		if(Fields.Interpretation != nullptr)
-		{
-			Continue = Fields.Interpretation->Apply(ExecutionContext, Result->GetValue());
-		}
+		Continue = Fields.ApplyInterpretations(ExecutionContext, Result->GetValue());
 	}
 	// verification
 	if(Continue == true)
@@ -664,10 +658,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	// interpretation
 	if(Continue == true)
 	{
-		if(Forward.Interpretation != nullptr)
-		{
-			Continue = Forward.Interpretation->Apply(ExecutionContext, Result->GetValue());
-		}
+		Continue = Forward.ApplyInterpretations(ExecutionContext, Result->GetValue());
 	}
 	// verification
 	if(Continue == true)
@@ -835,7 +826,7 @@ void Inspection::TypeDefinition::Type::_LoadPart(Inspection::TypeDefinition::Par
 			}
 			else if(PartChildElement->GetName() == "interpretation")
 			{
-				Part.Interpretation = Inspection::TypeDefinition::Interpretation::Load(PartChildElement);
+				Part.Interpretations.push_back(Inspection::TypeDefinition::Interpretation::Load(PartChildElement));
 			}
 			else if(PartChildElement->GetName() == "length")
 			{

@@ -541,12 +541,13 @@ namespace Inspection
 			
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
 		public:
+			bool ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const;
 			std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext) const;
 		public:
 			std::optional<Inspection::TypeDefinition::Array> Array;
 			std::optional<std::string> FieldName;
 			std::unique_ptr<Inspection::TypeDefinition::TypeReference> TypeReference;
-			std::unique_ptr<Inspection::TypeDefinition::Interpretation> Interpretation;
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> Interpretations;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> Length;
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::optional<std::vector<Inspection::TypeDefinition::Part>> Parts;
