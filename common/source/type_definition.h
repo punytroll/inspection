@@ -554,7 +554,7 @@ namespace Inspection
 		class Part
 		{
 		public:
-			static std::unique_ptr<Inspection::TypeDefinition::Part> Load(const XML::Element * Element);
+			static auto Load(const XML::Element * Element) -> std::unique_ptr<Inspection::TypeDefinition::Part>;
 		public:
 			enum class Type
 			{
@@ -580,6 +580,9 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> Parts;
 			Inspection::TypeDefinition::Part::Type Type;
+		protected:
+			auto _LoadProperties(const XML::Element * Element) -> void;
+			virtual auto _LoadProperty(const XML::Element * Element) -> void;
 		private:
 			Part(const Inspection::TypeDefinition::Part & Part) = delete;
 			Part(Inspection::TypeDefinition::Part && Part) = delete;

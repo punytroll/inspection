@@ -1075,125 +1075,135 @@ std::unique_ptr<Inspection::TypeDefinition::Part> Inspection::TypeDefinition::Pa
 	{
 		ASSERTION(false);
 	}
-	for(auto PartChildNode : Element->GetChilds())
+	Result->_LoadProperties(Element);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Part::_LoadProperties(const XML::Element * Element) -> void
+{
+	for(auto ChildNode : Element->GetChilds())
 	{
-		if(PartChildNode->GetNodeType() == XML::NodeType::Element)
+		if(ChildNode->GetNodeType() == XML::NodeType::Element)
 		{
-			auto PartChildElement = dynamic_cast<const XML::Element *>(PartChildNode);
+			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
 			
-			ASSERTION(PartChildElement != nullptr);
-			if(PartChildElement->GetName() == "type-reference")
+			ASSERTION(ChildElement != nullptr);
+			_LoadProperty(ChildElement);
+		}
+	}
+}
+
+auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Element) -> void
+{
+	ASSERTION(Element != nullptr);
+	if(Element->GetName() == "type-reference")
+	{
+		ASSERTION((Type == Inspection::TypeDefinition::Part::Type::Field) || (Type == Inspection::TypeDefinition::Part::Type::Fields) || (Type == Inspection::TypeDefinition::Part::Type::Forward));
+		TypeReference = Inspection::TypeDefinition::TypeReference::Load(Element);
+	}
+	else if(Element->GetName() == "interpretation")
+	{
+		Interpretations.push_back(Inspection::TypeDefinition::Interpretation::Load(Element));
+	}
+	else if(Element->GetName() == "length")
+	{
+		Length = Inspection::TypeDefinition::Expression::Load(Element);
+	}
+	else if(Element->GetName() == "parameters")
+	{
+		ASSERTION((Type == Inspection::TypeDefinition::Part::Type::Field) || (Type == Inspection::TypeDefinition::Part::Type::Fields) || (Type == Inspection::TypeDefinition::Part::Type::Forward));
+		Parameters = Inspection::TypeDefinition::Parameters::Load(Element);
+	}
+	else if(Element->GetName() == "verification")
+	{
+		for(auto GetterPartVerificationChildNode : Element->GetChilds())
+		{
+			if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
 			{
-				ASSERTION((Result->Type == Inspection::TypeDefinition::Part::Type::Field) || (Result->Type == Inspection::TypeDefinition::Part::Type::Fields) || (Result->Type == Inspection::TypeDefinition::Part::Type::Forward));
-				Result->TypeReference = Inspection::TypeDefinition::TypeReference::Load(PartChildElement);
-			}
-			else if(PartChildElement->GetName() == "interpretation")
-			{
-				Result->Interpretations.push_back(Inspection::TypeDefinition::Interpretation::Load(PartChildElement));
-			}
-			else if(PartChildElement->GetName() == "length")
-			{
-				Result->Length = Inspection::TypeDefinition::Expression::Load(PartChildElement);
-			}
-			else if(PartChildElement->GetName() == "parameters")
-			{
-				ASSERTION((Result->Type == Inspection::TypeDefinition::Part::Type::Field) || (Result->Type == Inspection::TypeDefinition::Part::Type::Fields) || (Result->Type == Inspection::TypeDefinition::Part::Type::Forward));
-				Result->Parameters = Inspection::TypeDefinition::Parameters::Load(PartChildElement);
-			}
-			else if(PartChildElement->GetName() == "verification")
-			{
-				for(auto GetterPartVerificationChildNode : PartChildElement->GetChilds())
-				{
-					if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
-					{
-						Result->Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
-					}
-				}
-			}
-			else if(PartChildElement->GetName() == "tag")
-			{
-				ASSERTION((Result->Type == Inspection::TypeDefinition::Part::Type::Field) || (Result->Type == Inspection::TypeDefinition::Part::Type::Forward) || (Result->Type == Inspection::TypeDefinition::Part::Type::Sequence));
-				Result->Interpretations.push_back(Inspection::TypeDefinition::AddTag::Load(PartChildElement));
-			}
-			else if((PartChildElement->GetName() == "alternative") || (PartChildElement->GetName() == "sequence") || (PartChildElement->GetName() == "field") || (PartChildElement->GetName() == "fields") || (PartChildElement->GetName() == "forward") || (PartChildElement->GetName() == "array"))
-			{
-				ASSERTION((Result->Type == Inspection::TypeDefinition::Part::Type::Sequence) || (Result->Type == Inspection::TypeDefinition::Part::Type::Field) || (Result->Type == Inspection::TypeDefinition::Part::Type::Alternative));
-				Result->Parts.emplace_back(Inspection::TypeDefinition::Part::Load(PartChildElement));
-			}
-			else if(PartChildElement->GetName() == "iterate")
-			{
-				ASSERTION(Result->Type == Inspection::TypeDefinition::Part::Type::Array);
-				ASSERTION(Result->Array.has_value() == true);
-				ASSERTION(PartChildElement->HasAttribute("type") == true);
-				if(PartChildElement->GetAttribute("type") == "at-least-one-until-failure-or-length")
-				{
-					Result->Array->IterateType = Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength;
-					ASSERTION(XML::HasChildNodes(PartChildElement) == false);
-				}
-				else if(PartChildElement->GetAttribute("type") == "for-each-field")
-				{
-					Result->Array->IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
-					
-					auto FieldReferenceElement = static_cast<const XML::Element *>(nullptr);
-					
-					for(auto PartIterateChildNode : PartChildElement->GetChilds())
-					{
-						if(PartIterateChildNode->GetNodeType() == XML::NodeType::Element)
-						{
-							ASSERTION(FieldReferenceElement == nullptr);
-							FieldReferenceElement = dynamic_cast<const XML::Element *>(PartIterateChildNode);
-						}
-					}
-					ASSERTION(FieldReferenceElement != nullptr);
-					Result->Array->IterateForEachField = Inspection::TypeDefinition::FieldReference::Load(FieldReferenceElement);
-				}
-				else if(PartChildElement->GetAttribute("type") == "number-of-elements")
-				{
-					Result->Array->IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
-					Result->Array->IterateNumberOfElements = Inspection::TypeDefinition::Expression::LoadFromWithin(PartChildElement);
-				}
-				else if(PartChildElement->GetAttribute("type") == "until-failure-or-length")
-				{
-					Result->Array->IterateType = Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength;
-					ASSERTION(XML::HasChildNodes(PartChildElement) == false);
-				}
-				else
-				{
-					ASSERTION(false);
-				}
-			}
-			else if(PartChildElement->GetName() == "element-name")
-			{
-				ASSERTION(Result->Type == Inspection::TypeDefinition::Part::Type::Array);
-				ASSERTION(Result->Array.has_value() == true);
-				ASSERTION(PartChildElement->GetChilds().size() == 1);
-				
-				auto ElementNameText = dynamic_cast<const XML::Text *>(PartChildElement->GetChild(0));
-				
-				ASSERTION(ElementNameText != nullptr);
-				Result->Array->ElementName = ElementNameText->GetText();
-			}
-			else if(PartChildElement->GetName() == "element-type")
-			{
-				ASSERTION(Result->Type == Inspection::TypeDefinition::Part::Type::Array);
-				ASSERTION(Result->Array.has_value() == true);
-				Result->Array->ElementType = Inspection::TypeDefinition::TypeReference::Load(PartChildElement);
-			}
-			else if(PartChildElement->GetName() == "element-parameters")
-			{
-				ASSERTION(Result->Type == Inspection::TypeDefinition::Part::Type::Array);
-				ASSERTION(Result->Array.has_value() == true);
-				Result->Array->ElementParameters = Inspection::TypeDefinition::Parameters::Load(PartChildElement);
-			}
-			else
-			{
-				std::cout << PartChildElement->GetName() << std::endl;
-				ASSERTION(false);
+				Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
 			}
 		}
 	}
-	
-	return Result;
+	else if(Element->GetName() == "tag")
+	{
+		ASSERTION((Type == Inspection::TypeDefinition::Part::Type::Field) || (Type == Inspection::TypeDefinition::Part::Type::Forward) || (Type == Inspection::TypeDefinition::Part::Type::Sequence));
+		Interpretations.push_back(Inspection::TypeDefinition::AddTag::Load(Element));
+	}
+	else if((Element->GetName() == "alternative") || (Element->GetName() == "sequence") || (Element->GetName() == "field") || (Element->GetName() == "fields") || (Element->GetName() == "forward") || (Element->GetName() == "array"))
+	{
+		ASSERTION((Type == Inspection::TypeDefinition::Part::Type::Sequence) || (Type == Inspection::TypeDefinition::Part::Type::Field) || (Type == Inspection::TypeDefinition::Part::Type::Alternative));
+		Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));
+	}
+	else if(Element->GetName() == "iterate")
+	{
+		ASSERTION(Type == Inspection::TypeDefinition::Part::Type::Array);
+		ASSERTION(Array.has_value() == true);
+		ASSERTION(Element->HasAttribute("type") == true);
+		if(Element->GetAttribute("type") == "at-least-one-until-failure-or-length")
+		{
+			Array->IterateType = Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength;
+			ASSERTION(XML::HasChildNodes(Element) == false);
+		}
+		else if(Element->GetAttribute("type") == "for-each-field")
+		{
+			Array->IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
+			
+			auto FieldReferenceElement = static_cast<const XML::Element *>(nullptr);
+			
+			for(auto PartIterateChildNode : Element->GetChilds())
+			{
+				if(PartIterateChildNode->GetNodeType() == XML::NodeType::Element)
+				{
+					ASSERTION(FieldReferenceElement == nullptr);
+					FieldReferenceElement = dynamic_cast<const XML::Element *>(PartIterateChildNode);
+				}
+			}
+			ASSERTION(FieldReferenceElement != nullptr);
+			Array->IterateForEachField = Inspection::TypeDefinition::FieldReference::Load(FieldReferenceElement);
+		}
+		else if(Element->GetAttribute("type") == "number-of-elements")
+		{
+			Array->IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
+			Array->IterateNumberOfElements = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
+		}
+		else if(Element->GetAttribute("type") == "until-failure-or-length")
+		{
+			Array->IterateType = Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength;
+			ASSERTION(XML::HasChildNodes(Element) == false);
+		}
+		else
+		{
+			ASSERTION(false);
+		}
+	}
+	else if(Element->GetName() == "element-name")
+	{
+		ASSERTION(Type == Inspection::TypeDefinition::Part::Type::Array);
+		ASSERTION(Array.has_value() == true);
+		ASSERTION(Element->GetChilds().size() == 1);
+		
+		auto ElementNameText = dynamic_cast<const XML::Text *>(Element->GetChild(0));
+		
+		ASSERTION(ElementNameText != nullptr);
+		Array->ElementName = ElementNameText->GetText();
+	}
+	else if(Element->GetName() == "element-type")
+	{
+		ASSERTION(Type == Inspection::TypeDefinition::Part::Type::Array);
+		ASSERTION(Array.has_value() == true);
+		Array->ElementType = Inspection::TypeDefinition::TypeReference::Load(Element);
+	}
+	else if(Element->GetName() == "element-parameters")
+	{
+		ASSERTION(Type == Inspection::TypeDefinition::Part::Type::Array);
+		ASSERTION(Array.has_value() == true);
+		Array->ElementParameters = Inspection::TypeDefinition::Parameters::Load(Element);
+	}
+	else
+	{
+		ASSERTION(false);
+	}
 }
 
 Inspection::TypeDefinition::Subtract::Subtract(void) :
