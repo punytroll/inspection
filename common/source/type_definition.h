@@ -554,6 +554,8 @@ namespace Inspection
 		class Part
 		{
 		public:
+			static std::unique_ptr<Inspection::TypeDefinition::Part> Load(const XML::Element * Element);
+		public:
 			enum class Type
 			{
 				Alternative,
@@ -564,11 +566,9 @@ namespace Inspection
 				Sequence,
 				Type
 			};
-			Part(void) = default;
-			~Part(void) = default;
-			Part(Inspection::TypeDefinition::Part && Part) = delete;
-			Part(const Inspection::TypeDefinition::Part & Part) = delete;
 		public:
+			Part(void) = default;
+			virtual ~Part(void) = default;
 			bool ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const;
 			std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext) const;
 		public:
@@ -580,6 +580,11 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
 			std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> Parts;
 			Inspection::TypeDefinition::Part::Type Type;
+		private:
+			Part(const Inspection::TypeDefinition::Part & Part) = delete;
+			Part(Inspection::TypeDefinition::Part && Part) = delete;
+			Inspection::TypeDefinition::Part & operator=(const Inspection::TypeDefinition::Part & Part) = delete;
+			Inspection::TypeDefinition::Part & operator=(Inspection::TypeDefinition::Part && Part) = delete;
 		};
 		
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);
