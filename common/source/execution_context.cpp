@@ -108,21 +108,21 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 						{
 							++ExecutionStackIterator;
 							Result = ExecutionStackIterator->_Result.GetValue();
-							switch(ExecutionStackIterator->_Part.Type)
+							switch(ExecutionStackIterator->_Part.GetPartType())
 							{
-							case Inspection::TypeDefinition::Part::Type::Alternative:
+							case Inspection::TypeDefinition::PartType::Alternative:
 								{
 									ASSERTION(false);
 									
 									break;
 								}
-							case Inspection::TypeDefinition::Part::Type::Array:
+							case Inspection::TypeDefinition::PartType::Array:
 								{
 									ASSERTION(false);
 									
 									break;
 								}
-							case Inspection::TypeDefinition::Part::Type::Field:
+							case Inspection::TypeDefinition::PartType::Field:
 								{
 									if(Result->HasField(PartIterator->DetailName) == true)
 									{
@@ -132,7 +132,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 									
 									break;
 								}
-							case Inspection::TypeDefinition::Part::Type::Fields:
+							case Inspection::TypeDefinition::PartType::Fields:
 								{
 									// fields are flattened onto the parent, behaving just like a sequence
 									if(Result->HasField(PartIterator->DetailName) == true)
@@ -143,7 +143,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 									
 									break;
 								}
-							case Inspection::TypeDefinition::Part::Type::Forward:
+							case Inspection::TypeDefinition::PartType::Forward:
 								{
 									if(Result->HasField(PartIterator->DetailName) == true)
 									{
@@ -153,7 +153,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 									
 									break;
 								}
-							case Inspection::TypeDefinition::Part::Type::Sequence:
+							case Inspection::TypeDefinition::PartType::Sequence:
 								{
 									if(Result->HasField(PartIterator->DetailName) == true)
 									{
@@ -163,7 +163,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 									
 									break;
 								}
-							case Inspection::TypeDefinition::Part::Type::Type:
+							case Inspection::TypeDefinition::PartType::Type:
 								{
 									// skipped intentionally
 									ASSERTION(false);
@@ -244,21 +244,21 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 		{
 			++ExecutionStackIterator;
 			Result = ExecutionStackIterator->_Result.GetValue();
-			switch(ExecutionStackIterator->_Part.Type)
+			switch(ExecutionStackIterator->_Part.GetPartType())
 			{
-			case Inspection::TypeDefinition::Part::Type::Alternative:
+			case Inspection::TypeDefinition::PartType::Alternative:
 				{
 					ASSERTION(false);
 					
 					break;
 				}
-			case Inspection::TypeDefinition::Part::Type::Array:
+			case Inspection::TypeDefinition::PartType::Array:
 				{
 					ASSERTION(false);
 					
 					break;
 				}
-			case Inspection::TypeDefinition::Part::Type::Field:
+			case Inspection::TypeDefinition::PartType::Field:
 				{
 					if(Result->HasField(*PartIterator) == true)
 					{
@@ -268,7 +268,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 					
 					break;
 				}
-			case Inspection::TypeDefinition::Part::Type::Fields:
+			case Inspection::TypeDefinition::PartType::Fields:
 				{
 					// fields are flattened onto the parent, behaving just like a sequence
 					if(Result->HasField(*PartIterator) == true)
@@ -279,13 +279,13 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 					
 					break;
 				}
-			case Inspection::TypeDefinition::Part::Type::Forward:
+			case Inspection::TypeDefinition::PartType::Forward:
 				{
 					ASSERTION(false);
 					
 					break;
 				}
-			case Inspection::TypeDefinition::Part::Type::Sequence:
+			case Inspection::TypeDefinition::PartType::Sequence:
 				{
 					if(Result->HasField(*PartIterator) == true)
 					{
@@ -295,7 +295,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 					
 					break;
 				}
-			case Inspection::TypeDefinition::Part::Type::Type:
+			case Inspection::TypeDefinition::PartType::Type:
 				{
 					// skipped intentionally
 					
