@@ -1136,7 +1136,7 @@ Inspection::TypeDefinition::TypeReference::TypeReference(void) :
 
 std::any Inspection::TypeDefinition::TypeReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	return Inspection::g_TypeRepository.GetType(_Parts);
+	return ExecutionContext.GetTypeRepository().GetType(_Parts);
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::TypeReference::GetDataType(void) const
@@ -1144,9 +1144,9 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::TypeReference::
 	return Inspection::TypeDefinition::DataType::Type;
 }
 
-const Inspection::TypeDefinition::Type * Inspection::TypeDefinition::TypeReference::GetType(void) const
+const Inspection::TypeDefinition::Type * Inspection::TypeDefinition::TypeReference::GetType(Inspection::ExecutionContext & ExecutionContext) const
 {
-	return Inspection::g_TypeRepository.GetType(_Parts);
+	return ExecutionContext.GetTypeRepository().GetType(_Parts);
 }
 
 std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefinition::TypeReference::Load(const XML::Element * TypeReferenceElement)

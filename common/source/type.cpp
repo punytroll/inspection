@@ -13,7 +13,7 @@
 
 using namespace std::string_literals;
 
-Inspection::TypeDefinition::Type::Type(const std::vector<std::string> & PathParts, Inspection::TypeRepository * TypeRepository) :
+Inspection::TypeDefinition::Type::Type(const std::vector<std::string> & PathParts, Inspection::TypeRepository & TypeRepository) :
 	_PathParts{PathParts},
 	_TypeRepository{TypeRepository}
 {
@@ -40,7 +40,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 		}
 		else if(_Part != nullptr)
 		{
-			auto ExecutionContext = Inspection::ExecutionContext{*this};
+			auto ExecutionContext = Inspection::ExecutionContext{*this, _TypeRepository};
 			auto TypePart = Inspection::TypeDefinition::Part{};
 			
 			TypePart.Type = Inspection::TypeDefinition::Part::Type::Type;
@@ -270,7 +270,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Array.Array->ElementType->GetType();
+			auto ElementType = Array.Array->ElementType->GetType(ExecutionContext);
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -341,7 +341,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Array.Array->ElementType->GetType();
+			auto ElementType = Array.Array->ElementType->GetType(ExecutionContext);
 			auto NumberOfAppendedElements = static_cast<std::uint64_t>(0);
 			
 			for(auto ElementPropertiesIndex = static_cast<std::uint64_t>(0); (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
@@ -368,7 +368,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Array.Array->ElementType->GetType();
+			auto ElementType = Array.Array->ElementType->GetType(ExecutionContext);
 			auto NumberOfElementsAny = Array.Array->IterateNumberOfElements->GetAny(ExecutionContext);
 			
 			ASSERTION(NumberOfElementsAny.type() == typeid(std::uint64_t));
@@ -421,7 +421,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetArray(
 			
 			ASSERTION(Array.Array->ElementType != nullptr);
 			
-			auto ElementType = Array.Array->ElementType->GetType();
+			auto ElementType = Array.Array->ElementType->GetType(ExecutionContext);
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -488,7 +488,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	ExecutionContext.Push(Field, *Result, Reader, Parameters);
 	if(Field.TypeReference)
 	{
-		auto FieldType = Field.TypeReference->GetType();
+		auto FieldType = Field.TypeReference->GetType(ExecutionContext);
 		
 		ASSERTION(FieldType != nullptr);
 		
@@ -594,7 +594,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields
 	ExecutionContext.Push(Fields, *Result, Reader, Parameters);
 	ASSERTION(Fields.TypeReference != nullptr);
 	
-	auto FieldsType = Fields.TypeReference->GetType();
+	auto FieldsType = Fields.TypeReference->GetType(ExecutionContext);
 	
 	ASSERTION(FieldsType != nullptr);
 	
@@ -624,7 +624,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	ExecutionContext.Push(Forward, *Result, Reader, Parameters);
 	ASSERTION(Forward.TypeReference != nullptr);
 	
-	auto ForwardType = Forward.TypeReference->GetType();
+	auto ForwardType = Forward.TypeReference->GetType(ExecutionContext);
 	
 	ASSERTION(ForwardType != nullptr);
 	

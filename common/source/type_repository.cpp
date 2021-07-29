@@ -77,7 +77,7 @@ Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(co
 			
 			if((std::filesystem::exists(TypePath) == true) && (std::filesystem::is_regular_file(TypePath) == true))
 			{
-				Result = new Inspection::TypeDefinition::Type{PathParts, this};
+				Result = new Inspection::TypeDefinition::Type{PathParts, *this};
 				try
 				{
 					auto InputFileStream = std::ifstream{TypePath};

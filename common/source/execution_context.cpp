@@ -35,12 +35,13 @@ Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition:
 {
 }
 
-Inspection::ExecutionContext::ExecutionContext(const Inspection::TypeDefinition::Type & Type) :
-	_Type{Type}
+Inspection::ExecutionContext::ExecutionContext(Inspection::TypeDefinition::Type const & Type, Inspection::TypeRepository & TypeRepository) :
+	_Type{Type},
+	_TypeRepository{TypeRepository}
 {
 }
 
-void Inspection::ExecutionContext::Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+void Inspection::ExecutionContext::Push(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters)
 {
 	_ExecutionStack.emplace_back(Part, Result, Reader, Parameters);
 }
@@ -375,4 +376,9 @@ Inspection::Value * Inspection::ExecutionContext::_GetValueFromDataReferenceFrom
 	}
 	
 	return Result;
+}
+
+auto Inspection::ExecutionContext::GetTypeRepository(void) -> Inspection::TypeRepository &
+{
+	return _TypeRepository;
 }

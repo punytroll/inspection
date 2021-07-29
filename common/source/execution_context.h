@@ -30,6 +30,7 @@ namespace Inspection
 	class Length;
 	class Reader;
 	class Result;
+	class TypeRepository;
 	class Value;
 	
 	namespace TypeDefinition
@@ -51,7 +52,7 @@ namespace Inspection
 			Inspection::Result & _Result;
 		};
 	public:
-		ExecutionContext(const Inspection::TypeDefinition::Type & Type);
+		ExecutionContext(const Inspection::TypeDefinition::Type & Type, Inspection::TypeRepository & TypeRepository);
 		void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
 		void Pop(void);
 		Inspection::Result & GetTopLevelResult(void) const;
@@ -61,10 +62,12 @@ namespace Inspection
 		const std::any & GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference);
 		std::unordered_map<std::string, std::any> GetAllParameters(void);
 		std::uint32_t GetExecutionStackSize(void) const;
+		Inspection::TypeRepository & GetTypeRepository(void);
 	private:
 		Inspection::Value * _GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, Inspection::Value * Current);
 		std::list<Inspection::ExecutionContext::Element> _ExecutionStack;
 		const Inspection::TypeDefinition::Type & _Type;
+		Inspection::TypeRepository & _TypeRepository;
 	};
 }
 

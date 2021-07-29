@@ -42,7 +42,7 @@ namespace Inspection
 		class Type
 		{
 		public:
-			Type(const std::vector<std::string> & PathParts, TypeRepository * TypeRepository);
+			Type(const std::vector<std::string> & PathParts, TypeRepository & TypeRepository);
 			~Type(void);
 			std::unique_ptr<Inspection::Result> Get(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
 			const std::vector<std::string> GetPathParts(void) const;
@@ -59,7 +59,7 @@ namespace Inspection
 			std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)> _HardcodedGetter;
 			std::unique_ptr<Inspection::TypeDefinition::Part> _Part;
 			std::vector<std::string> _PathParts;
-			Inspection::TypeRepository * _TypeRepository;
+			Inspection::TypeRepository & _TypeRepository;
 		};
 	}
 }

@@ -389,7 +389,7 @@ namespace Inspection
 			virtual ~TypeReference(void) = default;
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
-			const Inspection::TypeDefinition::Type * GetType(void) const;
+			const Inspection::TypeDefinition::Type * GetType(Inspection::ExecutionContext & ExecutionContext) const;
 		private:
 			TypeReference(void);
 			TypeReference(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
