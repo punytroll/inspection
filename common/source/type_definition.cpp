@@ -202,6 +202,16 @@ std::unique_ptr<Inspection::TypeDefinition::AddTag> Inspection::TypeDefinition::
 	return Result;
 }
 
+Inspection::TypeDefinition::Alternative::Alternative(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Alternative}
+{
+}
+
+auto Inspection::TypeDefinition::Alternative::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Alternative>{new Inspection::TypeDefinition::Alternative{}};
+}
+
 bool Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
 {
 	ASSERTION(Enumeration != nullptr);
@@ -1135,7 +1145,7 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
 	
 	if(Element->GetName() == "alternative")
 	{
-		Result = std::unique_ptr<Inspection::TypeDefinition::Part>{new Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Alternative}};
+		Result = Inspection::TypeDefinition::Alternative::Load(Element);
 	}
 	else if(Element->GetName() == "array")
 	{
@@ -1143,7 +1153,7 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
 	}
 	else if(Element->GetName() == "sequence")
 	{
-		Result = std::unique_ptr<Inspection::TypeDefinition::Part>{new Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Sequence}};
+		Result = Inspection::TypeDefinition::Sequence::Load(Element);
 	}
 	else if(Element->GetName() == "field")
 	{
@@ -1227,6 +1237,16 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
 	{
 		ASSERTION(false);
 	}
+}
+
+Inspection::TypeDefinition::Sequence::Sequence(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Sequence}
+{
+}
+
+auto Inspection::TypeDefinition::Sequence::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Sequence>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Sequence>{new Inspection::TypeDefinition::Sequence{}};
 }
 
 Inspection::TypeDefinition::Subtract::Subtract(void) :

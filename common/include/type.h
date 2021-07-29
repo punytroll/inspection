@@ -24,6 +24,7 @@ namespace Inspection
 	namespace TypeDefinition
 	{
 		class Add;
+		class Alternative;
 		class Array;
 		class Cast;
 		class Divide;
@@ -34,6 +35,7 @@ namespace Inspection
 		class Length;
 		class Parameters;
 		class Part;
+		class Sequence;
 		class Subtract;
 		class Statement;
 		class Tag;
@@ -49,12 +51,12 @@ namespace Inspection
 			const std::vector<std::string> GetPathParts(void) const;
 			void Load(std::istream & InputStream);
 		private:
-			std::unique_ptr<Inspection::Result> _GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
+			std::unique_ptr<Inspection::Result> _GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Alternative & Alternative, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
 			std::unique_ptr<Inspection::Result> _GetArray(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Array & Array, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
 			std::unique_ptr<Inspection::Result> _GetField(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Field, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
 			std::unique_ptr<Inspection::Result> _GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
 			std::unique_ptr<Inspection::Result> _GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
-			std::unique_ptr<Inspection::Result> _GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
+			std::unique_ptr<Inspection::Result> _GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Sequence & Sequence, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
 			void _LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement);
 			std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)> _HardcodedGetter;
 			std::unique_ptr<Inspection::TypeDefinition::Part> _Part;

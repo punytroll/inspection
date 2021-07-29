@@ -570,6 +570,20 @@ namespace Inspection
 			Inspection::TypeDefinition::PartType _PartType;
 		};
 		
+		class Alternative : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>;
+		public:
+			~Alternative(void) override = default;
+		private:
+			Alternative(void);
+			Alternative(Inspection::TypeDefinition::Alternative const & Alternative) = delete;
+			Alternative(Inspection::TypeDefinition::Alternative && Alternative) = delete;
+			auto operator=(Inspection::TypeDefinition::Alternative const & Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
+			auto operator=(Inspection::TypeDefinition::Alternative && Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
+		};
+		
 		class Array : public Inspection::TypeDefinition::Part
 		{
 		public:
@@ -598,8 +612,22 @@ namespace Inspection
 			Array(void);
 			Array(Inspection::TypeDefinition::Array const & Array) = delete;
 			Array(Inspection::TypeDefinition::Array && Array) = delete;
-			Inspection::TypeDefinition::Array & operator=(Inspection::TypeDefinition::Array const & Array) = delete;
-			Inspection::TypeDefinition::Array & operator=(Inspection::TypeDefinition::Array && Array) = delete;
+			auto operator=(Inspection::TypeDefinition::Array const & Array) -> Inspection::TypeDefinition::Array & = delete;
+			auto operator=(Inspection::TypeDefinition::Array && Array) -> Inspection::TypeDefinition::Array & = delete;
+		};
+		
+		class Sequence : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Sequence>;
+		public:
+			~Sequence(void) override = default;
+		private:
+			Sequence(void);
+			Sequence(Inspection::TypeDefinition::Sequence const & Sequence) = delete;
+			Sequence(Inspection::TypeDefinition::Sequence && Sequence) = delete;
+			auto operator=(Inspection::TypeDefinition::Sequence const & Sequence) -> Inspection::TypeDefinition::Sequence & = delete;
+			auto operator=(Inspection::TypeDefinition::Sequence && Sequence) -> Inspection::TypeDefinition::Sequence & = delete;
 		};
 		
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);

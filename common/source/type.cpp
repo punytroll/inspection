@@ -63,7 +63,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 				{
 				case Inspection::TypeDefinition::PartType::Alternative:
 					{
-						auto SequenceResult = _GetAlternative(ExecutionContext, *_Part, *PartReader, PartParameters);
+						auto Alternative = dynamic_cast<Inspection::TypeDefinition::Alternative const *>(_Part.get());
+						
+						ASSERTION(Alternative != nullptr);
+						
+						auto SequenceResult = _GetAlternative(ExecutionContext, *Alternative, *PartReader, PartParameters);
 						
 						Continue = SequenceResult->GetSuccess();
 						Result->SetValue(SequenceResult->ExtractValue());
@@ -72,7 +76,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::PartType::Array:
 					{
-						auto Array = dynamic_cast<const Inspection::TypeDefinition::Array *>(_Part.get());
+						auto Array = dynamic_cast<Inspection::TypeDefinition::Array const *>(_Part.get());
 						
 						ASSERTION(Array != nullptr);
 						
@@ -85,7 +89,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::PartType::Sequence:
 					{
-						auto SequenceResult = _GetSequence(ExecutionContext, *_Part, *PartReader, PartParameters);
+						auto Sequence = dynamic_cast<Inspection::TypeDefinition::Sequence const *>(_Part.get());
+						
+						ASSERTION(Sequence != nullptr);
+						
+						auto SequenceResult = _GetSequence(ExecutionContext, *Sequence, *PartReader, PartParameters);
 						
 						Continue = SequenceResult->GetSuccess();
 						Result->SetValue(SequenceResult->ExtractValue());
@@ -147,7 +155,7 @@ const std::vector<std::string> Inspection::TypeDefinition::Type::GetPathParts(vo
 	return _PathParts;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Alternative, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAlternative(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Alternative & Alternative, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
 	ASSERTION(Alternative.GetPartType() == Inspection::TypeDefinition::PartType::Alternative);
 	
@@ -230,7 +238,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 				}
 			case Inspection::TypeDefinition::PartType::Sequence:
 				{
-					auto SequenceResult = _GetSequence(ExecutionContext, *AlternativePart, *AlternativePartReader, AlternativePartParameters);
+					auto Sequence = dynamic_cast<Inspection::TypeDefinition::Sequence const *>(AlternativePart.get());
+					
+					ASSERTION(Sequence != nullptr);
+					
+					auto SequenceResult = _GetSequence(ExecutionContext, *Sequence, *AlternativePartReader, AlternativePartParameters);
 					
 					FoundAlternative = SequenceResult->GetSuccess();
 					if(FoundAlternative == true)
@@ -525,7 +537,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 			{
 			case Inspection::TypeDefinition::PartType::Alternative:
 				{
-					auto AlternativeResult = _GetAlternative(ExecutionContext, *FieldPart, *FieldPartReader, FieldPartParameters);
+					auto Alternative = dynamic_cast<Inspection::TypeDefinition::Alternative const *>(FieldPart.get());
+					
+					ASSERTION(Alternative != nullptr);
+					
+					auto AlternativeResult = _GetAlternative(ExecutionContext, *Alternative, *FieldPartReader, FieldPartParameters);
 					
 					Continue = AlternativeResult->GetSuccess();
 					Result->SetValue(AlternativeResult->ExtractValue());
@@ -562,7 +578,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 				}
 			case Inspection::TypeDefinition::PartType::Sequence:
 				{
-					auto SequenceResult = _GetSequence(ExecutionContext, *FieldPart, *FieldPartReader, FieldPartParameters);
+					auto Sequence = dynamic_cast<Inspection::TypeDefinition::Sequence const *>(FieldPart.get());
+					
+					ASSERTION(Sequence != nullptr);
+					
+					auto SequenceResult = _GetSequence(ExecutionContext, *Sequence, *FieldPartReader, FieldPartParameters);
 					
 					Continue = SequenceResult->GetSuccess();
 					Result->SetValue(SequenceResult->ExtractValue());
@@ -649,7 +669,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForwar
 	return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Sequence, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
+std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequence(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Sequence & Sequence, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
 {
 	ASSERTION(Sequence.GetPartType() == Inspection::TypeDefinition::PartType::Sequence);
 	
@@ -678,7 +698,11 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 			{
 			case Inspection::TypeDefinition::PartType::Alternative:
 				{
-					auto AlternativeResult = _GetAlternative(ExecutionContext, *SequencePart, *SequencePartReader, SequencePartParameters);
+					auto Alternative = dynamic_cast<Inspection::TypeDefinition::Alternative const *>(SequencePart.get());
+					
+					ASSERTION(Alternative != nullptr);
+					
+					auto AlternativeResult = _GetAlternative(ExecutionContext, *Alternative, *SequencePartReader, SequencePartParameters);
 					
 					Continue = AlternativeResult->GetSuccess();
 					Result->GetValue()->AppendFields(AlternativeResult->GetValue()->ExtractFields());
