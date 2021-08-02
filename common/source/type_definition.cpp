@@ -207,6 +207,11 @@ Inspection::TypeDefinition::Alternative::Alternative(void) :
 {
 }
 
+auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	NOT_IMPLEMENTED("Called Get() on an Alternative part.");
+}
+
 auto Inspection::TypeDefinition::Alternative::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>
 {
 	return std::unique_ptr<Inspection::TypeDefinition::Alternative>{new Inspection::TypeDefinition::Alternative{}};
@@ -269,6 +274,11 @@ std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Inspection::TypeDe
 Inspection::TypeDefinition::Array::Array(void) :
 	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Array}
 {
+}
+
+auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	NOT_IMPLEMENTED("Called Get() on an Array part.");
 }
 
 auto Inspection::TypeDefinition::Array::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Array>
@@ -827,6 +837,11 @@ Inspection::TypeDefinition::Field::Field(void) :
 {
 }
 
+auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	NOT_IMPLEMENTED("Called Get() on a Field part.");
+}
+
 auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Field>{new Inspection::TypeDefinition::Field{}};
@@ -899,6 +914,11 @@ Inspection::TypeDefinition::Fields::Fields(void) :
 {
 }
 
+auto Inspection::TypeDefinition::Fields::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	NOT_IMPLEMENTED("Called Get() on a Fields part.");
+}
+
 auto Inspection::TypeDefinition::Fields::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>
 {
 	return std::unique_ptr<Inspection::TypeDefinition::Fields>{new Inspection::TypeDefinition::Fields{}};
@@ -907,6 +927,11 @@ auto Inspection::TypeDefinition::Fields::Load(XML::Element const * Element) -> s
 Inspection::TypeDefinition::Forward::Forward(void) :
 	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Forward}
 {
+}
+
+auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	NOT_IMPLEMENTED("Called Get() on a Forward part.");
 }
 
 auto Inspection::TypeDefinition::Forward::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Forward>
@@ -1277,6 +1302,11 @@ Inspection::TypeDefinition::Sequence::Sequence(void) :
 {
 }
 
+auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	NOT_IMPLEMENTED("Called Get() on a Sequence part.");
+}
+
 auto Inspection::TypeDefinition::Sequence::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Sequence>
 {
 	return std::unique_ptr<Inspection::TypeDefinition::Sequence>{new Inspection::TypeDefinition::Sequence{}};
@@ -1383,6 +1413,11 @@ Inspection::TypeDefinition::TypePart::TypePart(void) :
 auto Inspection::TypeDefinition::TypePart::Create() -> std::unique_ptr<Inspection::TypeDefinition::TypePart>
 {
 	return std::unique_ptr<Inspection::TypeDefinition::TypePart>{new Inspection::TypeDefinition::TypePart{}};
+}
+
+auto Inspection::TypeDefinition::TypePart::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	NOT_IMPLEMENTED("Called Get() on a Type part.");
 }
 
 Inspection::TypeDefinition::TypeReference::TypeReference(void) :

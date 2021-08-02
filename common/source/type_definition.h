@@ -551,6 +551,7 @@ namespace Inspection
 			Part(Inspection::TypeDefinition::PartType Type);
 			virtual ~Part(void) = default;
 			auto ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool;
+			virtual auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
 			auto GetParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
 			auto GetPartType(void) const -> Inspection::TypeDefinition::PartType;
 		public:
@@ -578,6 +579,7 @@ namespace Inspection
 			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>;
 		public:
 			~Alternative(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
 		private:
 			Alternative(void);
 			Alternative(Inspection::TypeDefinition::Alternative const & Alternative) = delete;
@@ -600,6 +602,7 @@ namespace Inspection
 			};
 		public:
 			~Array(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
 			auto GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
 		public:
 			Inspection::TypeDefinition::Array::IterateType IterateType;
@@ -624,6 +627,7 @@ namespace Inspection
 			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>;
 		public:
 			~Field(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
 		private:
 			Field(void);
 			Field(Inspection::TypeDefinition::Field const & Field) = delete;
@@ -638,6 +642,7 @@ namespace Inspection
 			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>;
 		public:
 			~Fields(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
 		private:
 			Fields(void);
 			Fields(Inspection::TypeDefinition::Fields const & Fields) = delete;
@@ -652,6 +657,7 @@ namespace Inspection
 			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Forward>;
 		public:
 			~Forward(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
 		private:
 			Forward(void);
 			Forward(Inspection::TypeDefinition::Forward const & Forward) = delete;
@@ -666,6 +672,7 @@ namespace Inspection
 			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Sequence>;
 		public:
 			~Sequence(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
 		private:
 			Sequence(void);
 			Sequence(Inspection::TypeDefinition::Sequence const & Sequence) = delete;
@@ -680,6 +687,7 @@ namespace Inspection
 			static auto Create() -> std::unique_ptr<Inspection::TypeDefinition::TypePart>;
 		public:
 			~TypePart(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
 		private:
 			TypePart(void);
 			TypePart(Inspection::TypeDefinition::TypePart const & TypePart) = delete;
