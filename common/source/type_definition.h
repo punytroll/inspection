@@ -44,13 +44,7 @@ namespace Inspection
 	
 	namespace TypeDefinition
 	{
-		class Add;
-		class Cast;
-		class Divide;
-		class Equals;
-		class Subtract;
 		class Type;
-		class Value;
 		
 		enum class DataType
 		{
@@ -610,7 +604,6 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Expression> IterateNumberOfElements;
 			std::optional<std::string> ElementName;
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> ElementParameters;
-			std::unique_ptr<Inspection::TypeDefinition::TypeReference> ElementType;
 		protected:
 			auto _LoadProperty(XML::Element const * Element) -> void override;
 		private:
@@ -619,6 +612,8 @@ namespace Inspection
 			Array(Inspection::TypeDefinition::Array && Array) = delete;
 			auto operator=(Inspection::TypeDefinition::Array const & Array) -> Inspection::TypeDefinition::Array & = delete;
 			auto operator=(Inspection::TypeDefinition::Array && Array) -> Inspection::TypeDefinition::Array & = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::TypeReference> m_ElementType;
 		};
 		
 		class Field : public Inspection::TypeDefinition::Part
