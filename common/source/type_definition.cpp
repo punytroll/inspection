@@ -476,7 +476,14 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
 				
 				Continue = ElementResult->GetSuccess();
-				Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+				if(ElementName.has_value() == true)
+				{
+					Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+				}
+				else
+				{
+					Result->GetValue()->AppendField(ElementResult->ExtractValue());
+				}
 				Reader.AdvancePosition(ElementReader.GetConsumedLength());
 				++NumberOfAppendedElements;
 			}
