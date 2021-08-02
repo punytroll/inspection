@@ -41,9 +41,9 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 		else if(_Part != nullptr)
 		{
 			auto ExecutionContext = Inspection::ExecutionContext{*this, _TypeRepository};
-			auto TypePart = Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Type};
+			auto TypePart = Inspection::TypeDefinition::TypePart::Create();
 			
-			ExecutionContext.Push(TypePart, *Result, Reader, Parameters);
+			ExecutionContext.Push(*TypePart, *Result, Reader, Parameters);
 			
 			auto PartReader = std::unique_ptr<Inspection::Reader>{};
 			

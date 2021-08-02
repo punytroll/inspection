@@ -37,6 +37,8 @@ namespace XML
 namespace Inspection
 {
 	class ExecutionContext;
+	class Reader;
+	class Result;
 	class Type;
 	class Value;
 	
@@ -670,6 +672,20 @@ namespace Inspection
 			Sequence(Inspection::TypeDefinition::Sequence && Sequence) = delete;
 			auto operator=(Inspection::TypeDefinition::Sequence const & Sequence) -> Inspection::TypeDefinition::Sequence & = delete;
 			auto operator=(Inspection::TypeDefinition::Sequence && Sequence) -> Inspection::TypeDefinition::Sequence & = delete;
+		};
+		
+		class TypePart : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Create() -> std::unique_ptr<Inspection::TypeDefinition::TypePart>;
+		public:
+			~TypePart(void) override = default;
+		private:
+			TypePart(void);
+			TypePart(Inspection::TypeDefinition::TypePart const & TypePart) = delete;
+			TypePart(Inspection::TypeDefinition::TypePart && TypePart) = delete;
+			auto operator=(Inspection::TypeDefinition::TypePart const & TypePart) -> Inspection::TypeDefinition::TypePart & = delete;
+			auto operator=(Inspection::TypeDefinition::TypePart && TypePart) -> Inspection::TypeDefinition::TypePart & = delete;
 		};
 		
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);

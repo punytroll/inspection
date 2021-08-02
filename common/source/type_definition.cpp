@@ -1375,6 +1375,16 @@ std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Tag
 	return Result;
 }
 
+Inspection::TypeDefinition::TypePart::TypePart(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Type}
+{
+}
+
+auto Inspection::TypeDefinition::TypePart::Create() -> std::unique_ptr<Inspection::TypeDefinition::TypePart>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::TypePart>{new Inspection::TypeDefinition::TypePart{}};
+}
+
 Inspection::TypeDefinition::TypeReference::TypeReference(void) :
 	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::TypeReference}
 {
