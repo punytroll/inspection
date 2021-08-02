@@ -111,7 +111,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::PartType::Fields:
 					{
-						auto FieldsResult = _GetFields(ExecutionContext, *_Part, *PartReader, PartParameters);
+						auto FieldsResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
 						
 						Continue = FieldsResult->GetSuccess();
 						Result->GetValue()->AppendFields(FieldsResult->GetValue()->ExtractFields());
@@ -120,7 +120,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					}
 				case Inspection::TypeDefinition::PartType::Forward:
 					{
-						auto ForwardResult = _GetForward(ExecutionContext, *_Part, *PartReader, PartParameters);
+						auto ForwardResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
 						
 						Continue = ForwardResult->GetSuccess();
 						Result->SetValue(ForwardResult->ExtractValue());
@@ -214,7 +214,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 				}
 			case Inspection::TypeDefinition::PartType::Fields:
 				{
-					auto FieldsResult = _GetFields(ExecutionContext, *AlternativePart, *AlternativePartReader, AlternativePartParameters);
+					auto FieldsResult = AlternativePart->Get(ExecutionContext, *AlternativePartReader, AlternativePartParameters);
 					
 					FoundAlternative = FieldsResult->GetSuccess();
 					if(FoundAlternative == true)
@@ -226,7 +226,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetAltern
 				}
 			case Inspection::TypeDefinition::PartType::Forward:
 				{
-					auto ForwardResult = _GetForward(ExecutionContext, *AlternativePart, *AlternativePartReader, AlternativePartParameters);
+					auto ForwardResult = AlternativePart->Get(ExecutionContext, *AlternativePartReader, AlternativePartParameters);
 					
 					FoundAlternative = ForwardResult->GetSuccess();
 					if(FoundAlternative == true)
@@ -560,7 +560,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 				}
 			case Inspection::TypeDefinition::PartType::Fields:
 				{
-					auto FieldsResult = _GetFields(ExecutionContext, *FieldPart, *FieldPartReader, FieldPartParameters);
+					auto FieldsResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
 					
 					Continue = FieldsResult->GetSuccess();
 					Result->SetValue(FieldsResult->ExtractValue());
@@ -569,7 +569,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 				}
 			case Inspection::TypeDefinition::PartType::Forward:
 				{
-					auto ForwardResult = _GetForward(ExecutionContext, *FieldPart, *FieldPartReader, FieldPartParameters);
+					auto ForwardResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
 					
 					Continue = ForwardResult->GetSuccess();
 					Result->SetValue(ForwardResult->ExtractValue());
@@ -601,66 +601,6 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetField(
 	if(Continue == true)
 	{
 		Continue = Field.ApplyInterpretations(ExecutionContext, Result->GetValue());
-	}
-	ExecutionContext.Pop();
-	// finalization
-	Result->SetSuccess(Continue);
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetFields(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Fields, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
-{
-	ASSERTION(Fields.GetPartType() == Inspection::TypeDefinition::PartType::Fields);
-	
-	auto Result = std::make_unique<Inspection::Result>();
-	auto Continue = true;
-	
-	ExecutionContext.Push(Fields, *Result, Reader, Parameters);
-	ASSERTION(Fields.TypeReference != nullptr);
-	
-	auto FieldsType = Fields.TypeReference->GetType(ExecutionContext);
-	
-	ASSERTION(FieldsType != nullptr);
-	
-	auto FieldsResult = FieldsType->Get(Reader, ExecutionContext.GetAllParameters());
-	
-	Continue = FieldsResult->GetSuccess();
-	Result->SetValue(FieldsResult->ExtractValue());
-	// interpretation
-	if(Continue == true)
-	{
-		Continue = Fields.ApplyInterpretations(ExecutionContext, Result->GetValue());
-	}
-	ExecutionContext.Pop();
-	// finalization
-	Result->SetSuccess(Continue);
-	
-	return Result;
-}
-
-std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetForward(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Part & Forward, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const
-{
-	ASSERTION(Forward.GetPartType() == Inspection::TypeDefinition::PartType::Forward);
-	
-	auto Result = std::make_unique<Inspection::Result>();
-	auto Continue = true;
-	
-	ExecutionContext.Push(Forward, *Result, Reader, Parameters);
-	ASSERTION(Forward.TypeReference != nullptr);
-	
-	auto ForwardType = Forward.TypeReference->GetType(ExecutionContext);
-	
-	ASSERTION(ForwardType != nullptr);
-	
-	auto ForwardResult = ForwardType->Get(Reader, ExecutionContext.GetAllParameters());
-	
-	Continue = ForwardResult->GetSuccess();
-	Result->SetValue(ForwardResult->ExtractValue());
-	// interpretation
-	if(Continue == true)
-	{
-		Continue = Forward.ApplyInterpretations(ExecutionContext, Result->GetValue());
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -735,7 +675,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 				}
 			case Inspection::TypeDefinition::PartType::Fields:
 				{
-					auto FieldsResult = _GetFields(ExecutionContext, *SequencePart, *SequencePartReader, SequencePartParameters);
+					auto FieldsResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
 					
 					Continue = FieldsResult->GetSuccess();
 					Result->GetValue()->AppendFields(FieldsResult->GetValue()->ExtractFields());
@@ -744,7 +684,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::_GetSequen
 				}
 			case Inspection::TypeDefinition::PartType::Forward:
 				{
-					auto ForwardResult = _GetForward(ExecutionContext, *SequencePart, *SequencePartReader, SequencePartParameters);
+					auto ForwardResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
 					
 					Continue = ForwardResult->GetSuccess();
 					Result->SetValue(ForwardResult->ExtractValue());

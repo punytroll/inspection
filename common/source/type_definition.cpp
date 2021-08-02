@@ -19,6 +19,7 @@
 #include "assertion.h"
 #include "execution_context.h"
 #include "length.h"
+#include "result.h"
 #include "string_cast.h"
 #include "type.h"
 #include "type_definition.h"
@@ -916,7 +917,30 @@ Inspection::TypeDefinition::Fields::Fields(void) :
 
 auto Inspection::TypeDefinition::Fields::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
-	NOT_IMPLEMENTED("Called Get() on a Fields part.");
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+	ASSERTION(TypeReference != nullptr);
+	
+	auto FieldsType = TypeReference->GetType(ExecutionContext);
+	
+	ASSERTION(FieldsType != nullptr);
+	
+	auto FieldsResult = FieldsType->Get(Reader, ExecutionContext.GetAllParameters());
+	
+	Continue = FieldsResult->GetSuccess();
+	Result->SetValue(FieldsResult->ExtractValue());
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
 }
 
 auto Inspection::TypeDefinition::Fields::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>
@@ -931,7 +955,30 @@ Inspection::TypeDefinition::Forward::Forward(void) :
 
 auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
-	NOT_IMPLEMENTED("Called Get() on a Forward part.");
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+	ASSERTION(TypeReference != nullptr);
+	
+	auto ForwardType = TypeReference->GetType(ExecutionContext);
+	
+	ASSERTION(ForwardType != nullptr);
+	
+	auto ForwardResult = ForwardType->Get(Reader, ExecutionContext.GetAllParameters());
+	
+	Continue = ForwardResult->GetSuccess();
+	Result->SetValue(ForwardResult->ExtractValue());
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
 }
 
 auto Inspection::TypeDefinition::Forward::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Forward>
