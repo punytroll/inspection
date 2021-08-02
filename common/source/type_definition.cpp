@@ -1774,53 +1774,40 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
 		if(SequencePartReader != nullptr)
 		{
 			auto SequencePartParameters = SequencePart->GetParameters(ExecutionContext);
+			auto PartResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
 			
+			Continue = PartResult->GetSuccess();
 			switch(SequencePart->GetPartType())
 			{
 			case Inspection::TypeDefinition::PartType::Alternative:
 				{
-					auto AlternativeResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
-					
-					Continue = AlternativeResult->GetSuccess();
-					Result->GetValue()->AppendFields(AlternativeResult->GetValue()->ExtractFields());
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Array:
 				{
-					auto ArrayResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
-					
-					Continue = ArrayResult->GetSuccess();
 					ASSERTION(SequencePart->FieldName.has_value() == true);
-					Result->GetValue()->AppendField(SequencePart->FieldName.value(), ArrayResult->ExtractValue());
+					Result->GetValue()->AppendField(SequencePart->FieldName.value(), PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Field:
 				{
-					auto FieldResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
-					
-					Continue = FieldResult->GetSuccess();
 					ASSERTION(SequencePart->FieldName.has_value() == true);
-					Result->GetValue()->AppendField(SequencePart->FieldName.value(), FieldResult->ExtractValue());
+					Result->GetValue()->AppendField(SequencePart->FieldName.value(), PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Fields:
 				{
-					auto FieldsResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
-					
-					Continue = FieldsResult->GetSuccess();
-					Result->GetValue()->AppendFields(FieldsResult->GetValue()->ExtractFields());
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Forward:
 				{
-					auto ForwardResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
-					
-					Continue = ForwardResult->GetSuccess();
-					Result->SetValue(ForwardResult->ExtractValue());
+					Result->SetValue(PartResult->ExtractValue());
 					
 					break;
 				}
