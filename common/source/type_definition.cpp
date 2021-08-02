@@ -822,6 +822,21 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	return Inspection::TypeDefinition::Expression::Load(ExpressionElement);
 }
 
+Inspection::TypeDefinition::Field::Field(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Field}
+{
+}
+
+auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>
+{
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Field>{new Inspection::TypeDefinition::Field{}};
+	
+	ASSERTION(Element->HasAttribute("name") == true);
+	Result->FieldName = Element->GetAttribute("name");
+	
+	return Result;
+}
+
 Inspection::TypeDefinition::FieldReference::FieldReference(void) :
 	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::FieldReference}
 {
@@ -877,6 +892,26 @@ std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefi
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::Fields::Fields(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Fields}
+{
+}
+
+auto Inspection::TypeDefinition::Fields::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Fields>{new Inspection::TypeDefinition::Fields{}};
+}
+
+Inspection::TypeDefinition::Forward::Forward(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Forward}
+{
+}
+
+auto Inspection::TypeDefinition::Forward::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Forward>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Forward>{new Inspection::TypeDefinition::Forward{}};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefinition::Interpretation::Load(const XML::Element * Element)
@@ -1157,17 +1192,15 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
 	}
 	else if(Element->GetName() == "field")
 	{
-		Result = std::unique_ptr<Inspection::TypeDefinition::Part>{new Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Field}};
-		ASSERTION(Element->HasAttribute("name") == true);
-		Result->FieldName = Element->GetAttribute("name");
+		Result = Inspection::TypeDefinition::Field::Load(Element);
 	}
 	else if(Element->GetName() == "fields")
 	{
-		Result = std::unique_ptr<Inspection::TypeDefinition::Part>{new Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Fields}};
+		Result = Inspection::TypeDefinition::Fields::Load(Element);
 	}
 	else if(Element->GetName() == "forward")
 	{
-		Result = std::unique_ptr<Inspection::TypeDefinition::Part>{new Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Forward}};
+		Result = Inspection::TypeDefinition::Forward::Load(Element);
 	}
 	else
 	{

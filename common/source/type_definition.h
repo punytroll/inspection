@@ -616,6 +616,48 @@ namespace Inspection
 			auto operator=(Inspection::TypeDefinition::Array && Array) -> Inspection::TypeDefinition::Array & = delete;
 		};
 		
+		class Field : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>;
+		public:
+			~Field(void) override = default;
+		private:
+			Field(void);
+			Field(Inspection::TypeDefinition::Field const & Field) = delete;
+			Field(Inspection::TypeDefinition::Field && Field) = delete;
+			auto operator=(Inspection::TypeDefinition::Field const & Field) -> Inspection::TypeDefinition::Field & = delete;
+			auto operator=(Inspection::TypeDefinition::Field && Field) -> Inspection::TypeDefinition::Field & = delete;
+		};
+		
+		class Fields : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>;
+		public:
+			~Fields(void) override = default;
+		private:
+			Fields(void);
+			Fields(Inspection::TypeDefinition::Fields const & Fields) = delete;
+			Fields(Inspection::TypeDefinition::Fields && Fields) = delete;
+			auto operator=(Inspection::TypeDefinition::Fields const & Fields) -> Inspection::TypeDefinition::Fields & = delete;
+			auto operator=(Inspection::TypeDefinition::Fields && Fields) -> Inspection::TypeDefinition::Fields & = delete;
+		};
+		
+		class Forward : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Forward>;
+		public:
+			~Forward(void) override = default;
+		private:
+			Forward(void);
+			Forward(Inspection::TypeDefinition::Forward const & Forward) = delete;
+			Forward(Inspection::TypeDefinition::Forward && Forward) = delete;
+			auto operator=(Inspection::TypeDefinition::Forward const & Forward) -> Inspection::TypeDefinition::Forward & = delete;
+			auto operator=(Inspection::TypeDefinition::Forward && Forward) -> Inspection::TypeDefinition::Forward & = delete;
+		};
+		
 		class Sequence : public Inspection::TypeDefinition::Part
 		{
 		public:
