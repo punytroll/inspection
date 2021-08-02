@@ -1197,52 +1197,32 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
 		if(FieldPartReader != nullptr)
 		{
 			auto FieldPartParameters = FieldPart->GetParameters(ExecutionContext);
+			auto PartResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
 			
+			Continue = PartResult->GetSuccess();
 			switch(FieldPart->GetPartType())
 			{
 			case Inspection::TypeDefinition::PartType::Alternative:
 				{
-					auto AlternativeResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
-					
-					Continue = AlternativeResult->GetSuccess();
-					Result->SetValue(AlternativeResult->ExtractValue());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Field:
-				{
-					auto FieldResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
-					
-					Continue = FieldResult->GetSuccess();
-					ASSERTION(FieldPart->FieldName.has_value() == true);
-					Result->GetValue()->AppendField(FieldPart->FieldName.value(), FieldResult->ExtractValue());
+					Result->SetValue(PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Fields:
 				{
-					auto FieldsResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
-					
-					Continue = FieldsResult->GetSuccess();
-					Result->SetValue(FieldsResult->ExtractValue());
+					Result->SetValue(PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Forward:
 				{
-					auto ForwardResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
-					
-					Continue = ForwardResult->GetSuccess();
-					Result->SetValue(ForwardResult->ExtractValue());
+					Result->SetValue(PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Sequence:
 				{
-					auto SequenceResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
-					
-					Continue = SequenceResult->GetSuccess();
-					Result->SetValue(SequenceResult->ExtractValue());
+					Result->SetValue(PartResult->ExtractValue());
 					
 					break;
 				}
