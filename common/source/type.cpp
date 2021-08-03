@@ -55,75 +55,59 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			{
 				PartReader = std::make_unique<Inspection::Reader>(Reader);
 			}
-			if(PartReader != nullptr)
+			
+			auto PartParameters = _Part->GetParameters(ExecutionContext);
+			auto PartResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
+			
+			Continue = PartResult->GetSuccess();
+			switch(_Part->GetPartType())
 			{
-				auto PartParameters = _Part->GetParameters(ExecutionContext);
-				
-				switch(_Part->GetPartType())
+			case Inspection::TypeDefinition::PartType::Alternative:
 				{
-				case Inspection::TypeDefinition::PartType::Alternative:
-					{
-						auto SequenceResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
-						
-						Continue = SequenceResult->GetSuccess();
-						Result->SetValue(SequenceResult->ExtractValue());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Array:
-					{
-						auto ArrayResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
-						
-						Continue = ArrayResult->GetSuccess();
-						Result->GetValue()->AppendField(_Part->FieldName.value(), ArrayResult->ExtractValue());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Sequence:
-					{
-						auto SequenceResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
-						
-						Continue = SequenceResult->GetSuccess();
-						Result->SetValue(SequenceResult->ExtractValue());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Field:
-					{
-						auto FieldResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
-						
-						Continue = FieldResult->GetSuccess();
-						Result->GetValue()->AppendField(_Part->FieldName.value(), FieldResult->ExtractValue());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Fields:
-					{
-						auto FieldsResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
-						
-						Continue = FieldsResult->GetSuccess();
-						Result->GetValue()->AppendFields(FieldsResult->GetValue()->ExtractFields());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Forward:
-					{
-						auto ForwardResult = _Part->Get(ExecutionContext, *PartReader, PartParameters);
-						
-						Continue = ForwardResult->GetSuccess();
-						Result->SetValue(ForwardResult->ExtractValue());
-						
-						break;
-					}
-				default:
-					{
-						ASSERTION(false);
-						
-						break;
-					}
+					Result->SetValue(PartResult->ExtractValue());
+					
+					break;
 				}
-				Reader.AdvancePosition(PartReader->GetConsumedLength());
+			case Inspection::TypeDefinition::PartType::Array:
+				{
+					ASSERTION(_Part->FieldName.has_value() == true);
+					Result->GetValue()->AppendField(_Part->FieldName.value(), PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Field:
+				{
+					ASSERTION(_Part->FieldName.has_value() == true);
+					Result->GetValue()->AppendField(_Part->FieldName.value(), PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Fields:
+				{
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Forward:
+				{
+					Result->SetValue(PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Sequence:
+				{
+					Result->SetValue(PartResult->ExtractValue());
+					
+					break;
+				}
+			default:
+				{
+					ASSERTION(false);
+					
+					break;
+				}
 			}
+			Reader.AdvancePosition(PartReader->GetConsumedLength());
 			ExecutionContext.Pop();
 			ASSERTION(ExecutionContext.GetExecutionStackSize() == 0);
 		}
