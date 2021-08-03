@@ -36,7 +36,7 @@ First and foremost is the [_generalinspector_](inspectors/general). This program
 - ID3.v2_Tag | MPEG.1.Stream | APE.Tag | ID3.v1.Tag
 - ...
 
-At the moment the generalinspector has a [predefined and hardcoded](inspectors/general/generalinspector.cpp) list of possible parts in a file. It is the intention of further development to ease this restriction and become more generic.
+At the moment the generalinspector has a [predefined and hardcoded](inspectors/general/generalinspector.cpp#L26) list of possible parts in a file. It is the intention of further development to ease this restriction and become more generic.
 
 ### id3inspector
 
