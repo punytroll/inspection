@@ -122,11 +122,6 @@ static std::unordered_map<std::string, std::any> GetParameters(Inspection::Execu
 	}
 }
 
-Inspection::TypeDefinition::Add::Add(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Add}
-{
-}
-
 std::any Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
 	ASSERTION(_Summand1 != nullptr);
@@ -664,7 +659,6 @@ std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::Get
 }
 
 Inspection::TypeDefinition::Cast::Cast(Inspection::TypeDefinition::DataType DataType) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Cast},
 	_DataType{DataType}
 {
 }
@@ -725,11 +719,6 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 	ASSERTION(Result->_Expression != nullptr);
 	
 	return Result;
-}
-
-Inspection::TypeDefinition::DataReference::DataReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::DataReference}
-{
 }
 
 std::any Inspection::TypeDefinition::DataReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
@@ -817,11 +806,6 @@ Inspection::TypeDefinition::DataReference::Part::Part(Inspection::TypeDefinition
 Inspection::TypeDefinition::DataReference::Part::Type Inspection::TypeDefinition::DataReference::Part::GetType(void) const
 {
 	return _Type;
-}
-
-Inspection::TypeDefinition::Divide::Divide(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Divide}
-{
 }
 
 std::any Inspection::TypeDefinition::Divide::GetAny(Inspection::ExecutionContext & ExecutionContext) const
@@ -945,11 +929,6 @@ std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinit
 	return Result;
 }
 
-Inspection::TypeDefinition::Equals::Equals(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Equals}
-{
-}
-
 std::any Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
 	auto Any1 = _Expression1->GetAny(ExecutionContext);
@@ -1018,16 +997,6 @@ std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::
 	}
 	
 	return Result;
-}
-
-Inspection::TypeDefinition::Expression::Expression(Inspection::TypeDefinition::ExpressionType ExpressionType) :
-	_ExpressionType{ExpressionType}
-{
-}
-
-Inspection::TypeDefinition::ExpressionType Inspection::TypeDefinition::Expression::GetExpressionType(void) const
-{
-	return _ExpressionType;
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::Load(const XML::Element * Element)
@@ -1202,11 +1171,6 @@ auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> st
 	return Result;
 }
 
-Inspection::TypeDefinition::FieldReference::FieldReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::FieldReference}
-{
-}
-
 std::any Inspection::TypeDefinition::FieldReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
 	NOT_IMPLEMENTED("Called GetAny() on a FieldReference expression.");
@@ -1360,11 +1324,6 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
 	return Result;
 }
 
-Inspection::TypeDefinition::Length::Length(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::Length}
-{
-}
-
 std::any Inspection::TypeDefinition::Length::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
 	auto BytesAny = _Bytes->GetAny(ExecutionContext);
@@ -1410,11 +1369,6 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 	}
 	
 	return Result;
-}
-
-Inspection::TypeDefinition::LengthReference::LengthReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::LengthReference}
-{
 }
 
 std::any Inspection::TypeDefinition::LengthReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
@@ -1463,11 +1417,6 @@ std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDef
 	return Result;
 }
 
-Inspection::TypeDefinition::ParameterReference::ParameterReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::ParameterReference}
-{
-}
-
 std::any Inspection::TypeDefinition::ParameterReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
 	return ExecutionContext.GetAnyReferenceFromParameterReference(*this);
@@ -1490,11 +1439,6 @@ std::unique_ptr<Inspection::TypeDefinition::ParameterReference> Inspection::Type
 	Result->Name = TextNode->GetText();
 	
 	return Result;
-}
-
-Inspection::TypeDefinition::Parameters::Parameters(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::Parameters}
-{
 }
 
 std::any Inspection::TypeDefinition::Parameters::GetAny(Inspection::ExecutionContext & ExecutionContext) const
@@ -1786,11 +1730,6 @@ auto Inspection::TypeDefinition::Sequence::Load(XML::Element const * Element) ->
 	return std::unique_ptr<Inspection::TypeDefinition::Sequence>{new Inspection::TypeDefinition::Sequence{}};
 }
 
-Inspection::TypeDefinition::Subtract::Subtract(void) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Subtract}
-{
-}
-
 std::any Inspection::TypeDefinition::Subtract::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
 	ASSERTION(_Minuend != nullptr);
@@ -1894,11 +1833,6 @@ auto Inspection::TypeDefinition::TypePart::Get(Inspection::ExecutionContext & Ex
 	NOT_IMPLEMENTED("Called Get() on a Type part.");
 }
 
-Inspection::TypeDefinition::TypeReference::TypeReference(void) :
-	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::TypeReference}
-{
-}
-
 std::any Inspection::TypeDefinition::TypeReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
 	return ExecutionContext.GetTypeRepository().GetType(_Parts);
@@ -1939,7 +1873,6 @@ std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefin
 }
 
 Inspection::TypeDefinition::Value::Value(Inspection::TypeDefinition::DataType DataType) :
-	Inspection::TypeDefinition::Expression::Expression{Inspection::TypeDefinition::ExpressionType::Value},
 	_DataType{DataType}
 {
 }

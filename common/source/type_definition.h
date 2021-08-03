@@ -62,23 +62,6 @@ namespace Inspection
 			UnsignedInteger64Bit
 		};
 		
-		enum class ExpressionType
-		{
-			Add,
-			Cast,
-			DataReference,
-			Divide,
-			Equals,
-			FieldReference,
-			Length,
-			LengthReference,
-			ParameterReference,
-			Parameters,
-			Subtract,
-			TypeReference,
-			Value
-		};
-		
 		enum class PartType
 		{
 			Alternative,
@@ -99,17 +82,13 @@ namespace Inspection
 			virtual ~Expression(void) = default;
 			virtual std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const = 0;
 			virtual Inspection::TypeDefinition::DataType GetDataType(void) const = 0;
-			Inspection::TypeDefinition::ExpressionType GetExpressionType(void) const;
 		protected:
-			Expression(Inspection::TypeDefinition::ExpressionType ExpressionType);
+			Expression(void) = default;
 		private:
-			Expression(void) = delete;
 			Expression(const Inspection::TypeDefinition::Expression & Expression) = delete;
 			Expression(Inspection::TypeDefinition::Expression && Expression) = delete;
 			Inspection::TypeDefinition::Expression & operator=(const Inspection::TypeDefinition::Expression & Expression) = delete;
 			Inspection::TypeDefinition::Expression & operator=(Inspection::TypeDefinition::Expression && Expression) = delete;
-		private:
-			Inspection::TypeDefinition::ExpressionType _ExpressionType;
 		};
 		
 		class Add : public Inspection::TypeDefinition::Expression
@@ -121,7 +100,7 @@ namespace Inspection
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		private:
-			Add(void);
+			Add(void) = default;
 			Add(const Inspection::TypeDefinition::Add & Add) = delete;
 			Add(Inspection::TypeDefinition::Add && Add) = delete;
 			Inspection::TypeDefinition::Add & operator=(const Inspection::TypeDefinition::Add & Add) = delete;
@@ -187,7 +166,7 @@ namespace Inspection
 		public:
 			Inspection::TypeDefinition::DataReference::Root GetRoot(void) const;
 		private:
-			DataReference(void);
+			DataReference(void) = default;
 			DataReference(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
 			DataReference(Inspection::TypeDefinition::DataReference && DataReference) = delete;
 			Inspection::TypeDefinition::DataReference & operator=(const Inspection::TypeDefinition::DataReference & DataReference) = delete;
@@ -206,7 +185,7 @@ namespace Inspection
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		private:
-			Divide(void);
+			Divide(void) = default;
 			Divide(const Inspection::TypeDefinition::Divide & Divide) = delete;
 			Divide(Inspection::TypeDefinition::Divide && Divide) = delete;
 			Inspection::TypeDefinition::Divide & operator=(const Inspection::TypeDefinition::Divide & Divide) = delete;
@@ -225,7 +204,7 @@ namespace Inspection
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		private:
-			Equals(void);
+			Equals(void) = default;
 			Equals(const Inspection::TypeDefinition::Equals & Equals) = delete;
 			Equals(Inspection::TypeDefinition::Equals && Equals) = delete;
 			Inspection::TypeDefinition::Equals & operator=(const Inspection::TypeDefinition::Equals & Equals) = delete;
@@ -254,7 +233,7 @@ namespace Inspection
 		public:
 			std::vector<std::string> Parts;
 		private:
-			FieldReference(void);
+			FieldReference(void) = default;
 			FieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
 			FieldReference(Inspection::TypeDefinition::FieldReference && FieldReference) = delete;
 			Inspection::TypeDefinition::FieldReference & operator=(const Inspection::TypeDefinition::FieldReference & FieldReference) = delete;
@@ -272,7 +251,7 @@ namespace Inspection
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		private:
-			Length(void);
+			Length(void) = default;
 			Length(const Inspection::TypeDefinition::Length & Length) = delete;
 			Length(Inspection::TypeDefinition::Length && Length) = delete;
 			Inspection::TypeDefinition::Length & operator=(const Inspection::TypeDefinition::Length & Length) = delete;
@@ -304,7 +283,7 @@ namespace Inspection
 			Inspection::TypeDefinition::LengthReference::Name GetName(void) const;
 			Inspection::TypeDefinition::LengthReference::Root GetRoot(void) const;
 		private:
-			LengthReference(void);
+			LengthReference(void) = default;
 			LengthReference(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
 			LengthReference(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
 			Inspection::TypeDefinition::LengthReference & operator=(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
@@ -325,7 +304,7 @@ namespace Inspection
 		public:
 			std::string Name;
 		private:
-			ParameterReference(void);
+			ParameterReference(void) = default;
 			ParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
 			ParameterReference(Inspection::TypeDefinition::ParameterReference && ParameterReference) = delete;
 			Inspection::TypeDefinition::ParameterReference & operator=(const Inspection::TypeDefinition::ParameterReference & ParameterReference) = delete;
@@ -360,7 +339,7 @@ namespace Inspection
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 			std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext) const;
 		private:
-			Parameters(void);
+			Parameters(void) = default;
 			Parameters(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
 			Parameters(Inspection::TypeDefinition::Parameters && Parameters) = delete;
 			Inspection::TypeDefinition::Parameters & operator=(const Inspection::TypeDefinition::Parameters & Parameters) = delete;
@@ -378,7 +357,7 @@ namespace Inspection
 			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 		private:
-			Subtract(void);
+			Subtract(void) = default;
 			Subtract(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
 			Subtract(Inspection::TypeDefinition::Subtract && Subtract) = delete;
 			Inspection::TypeDefinition::Subtract & operator=(const Inspection::TypeDefinition::Subtract & Subtract) = delete;
@@ -398,7 +377,7 @@ namespace Inspection
 			Inspection::TypeDefinition::DataType GetDataType(void) const override;
 			const Inspection::TypeDefinition::Type * GetType(Inspection::ExecutionContext & ExecutionContext) const;
 		private:
-			TypeReference(void);
+			TypeReference(void) = default;
 			TypeReference(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;
 			TypeReference(Inspection::TypeDefinition::TypeReference && TypeReference) = delete;
 			Inspection::TypeDefinition::TypeReference & operator=(const Inspection::TypeDefinition::TypeReference & TypeReference) = delete;

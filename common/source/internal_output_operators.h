@@ -12,7 +12,6 @@ namespace Inspection
 	std::ostream & operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference::Part & Part);
 	std::ostream & operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Part::Type & Type);
 	std::ostream & operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataType & DataType);
-	std::ostream & operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::ExpressionType & ExpressionType);
 }
 
 #endif
