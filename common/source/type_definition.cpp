@@ -214,74 +214,72 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
 	auto FoundAlternative = false;
 	
 	ExecutionContext.Push(*this, *Result, Reader, Parameters);
-	for(auto AlternativePartIterator = std::begin(Parts); ((FoundAlternative == false) && (AlternativePartIterator != std::end(Parts))); ++AlternativePartIterator)
+	for(auto PartIterator = std::begin(Parts); ((FoundAlternative == false) && (PartIterator != std::end(Parts))); ++PartIterator)
 	{
-		auto & AlternativePart = *AlternativePartIterator;
-		auto AlternativePartReader = std::unique_ptr<Inspection::Reader>{};
+		const auto & Part = *PartIterator;
+		auto PartReader = std::unique_ptr<Inspection::Reader>{};
 		
-		if(AlternativePart->Length != nullptr)
+		if(Part->Length != nullptr)
 		{
-			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(AlternativePart->Length->GetAny(ExecutionContext)));
+			PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
 		}
 		else
 		{
-			AlternativePartReader = std::make_unique<Inspection::Reader>(Reader);
+			PartReader = std::make_unique<Inspection::Reader>(Reader);
 		}
-		if(AlternativePartReader != nullptr)
+		
+		auto PartParameters = Part->GetParameters(ExecutionContext);
+		auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+		
+		FoundAlternative = PartResult->GetSuccess();
+		if(FoundAlternative == true)
 		{
-			auto AlternativePartParameters = AlternativePart->GetParameters(ExecutionContext);
-			auto PartResult = AlternativePart->Get(ExecutionContext, *AlternativePartReader, AlternativePartParameters);
-			
-			FoundAlternative = PartResult->GetSuccess();
-			if(FoundAlternative == true)
+			switch(Part->GetPartType())
 			{
-				switch(AlternativePart->GetPartType())
+			case Inspection::TypeDefinition::PartType::Alternative:
 				{
-				case Inspection::TypeDefinition::PartType::Alternative:
-					{
-						Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Array:
-					{
-						ASSERTION(AlternativePart->FieldName.has_value() == true);
-						Result->GetValue()->AppendField(AlternativePart->FieldName.value(), PartResult->ExtractValue());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Field:
-					{
-						ASSERTION(AlternativePart->FieldName.has_value() == true);
-						Result->GetValue()->AppendField(AlternativePart->FieldName.value(), PartResult->ExtractValue());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Fields:
-					{
-						Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Forward:
-					{
-						Result->SetValue(PartResult->ExtractValue());
-						
-						break;
-					}
-				case Inspection::TypeDefinition::PartType::Sequence:
-					{
-						Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-						
-						break;
-					}
-				default:
-					{
-						ASSERTION(false);
-					}
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					
+					break;
 				}
-				Reader.AdvancePosition(AlternativePartReader->GetConsumedLength());
+			case Inspection::TypeDefinition::PartType::Array:
+				{
+					ASSERTION(Part->FieldName.has_value() == true);
+					Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Field:
+				{
+					ASSERTION(Part->FieldName.has_value() == true);
+					Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Fields:
+				{
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Forward:
+				{
+					Result->SetValue(PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Sequence:
+				{
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					
+					break;
+				}
+			default:
+				{
+					ASSERTION(false);
+				}
 			}
+			Reader.AdvancePosition(PartReader->GetConsumedLength());
 		}
 	}
 	ExecutionContext.Pop();
@@ -1148,7 +1146,9 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
 	ExecutionContext.Push(*this, *Result, Reader, Parameters);
 	if(TypeReference)
 	{
-		auto FieldType = TypeReference->GetType(ExecutionContext);
+		ASSERTION(TypeReference != nullptr);
+		
+		const auto * FieldType = TypeReference->GetType(ExecutionContext);
 		
 		ASSERTION(FieldType != nullptr);
 		
@@ -1161,56 +1161,24 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
 	{
 		ASSERTION(Parts.size() == 1);
 		
-		auto & FieldPart = Parts.front();
-		auto FieldPartReader = std::unique_ptr<Inspection::Reader>{};
+		const auto & Part = Parts.front();
+		auto PartReader = std::unique_ptr<Inspection::Reader>{};
 		
-		if(FieldPart->Length != nullptr)
+		if(Part->Length != nullptr)
 		{
-			FieldPartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(FieldPart->Length->GetAny(ExecutionContext)));
+			PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
 		}
 		else
 		{
-			FieldPartReader = std::make_unique<Inspection::Reader>(Reader);
+			PartReader = std::make_unique<Inspection::Reader>(Reader);
 		}
-		if(FieldPartReader != nullptr)
-		{
-			auto FieldPartParameters = FieldPart->GetParameters(ExecutionContext);
-			auto PartResult = FieldPart->Get(ExecutionContext, *FieldPartReader, FieldPartParameters);
-			
-			Continue = PartResult->GetSuccess();
-			switch(FieldPart->GetPartType())
-			{
-			case Inspection::TypeDefinition::PartType::Alternative:
-				{
-					Result->SetValue(PartResult->ExtractValue());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Fields:
-				{
-					Result->SetValue(PartResult->ExtractValue());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Forward:
-				{
-					Result->SetValue(PartResult->ExtractValue());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Sequence:
-				{
-					Result->SetValue(PartResult->ExtractValue());
-					
-					break;
-				}
-			default:
-				{
-					ASSERTION(false);
-				}
-			}
-			Reader.AdvancePosition(FieldPartReader->GetConsumedLength());
-		}
+		
+		auto PartParameters = Part->GetParameters(ExecutionContext);
+		auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+		
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->ExtractValue());
+		Reader.AdvancePosition(PartReader->GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
@@ -1736,72 +1704,70 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
 	auto Continue = true;
 	
 	ExecutionContext.Push(*this, *Result, Reader, Parameters);
-	for(auto SequencePartIterator = std::begin(Parts); ((Continue == true) && (SequencePartIterator != std::end(Parts))); ++SequencePartIterator)
+	for(auto PartIterator = std::begin(Parts); ((Continue == true) && (PartIterator != std::end(Parts))); ++PartIterator)
 	{
-		auto & SequencePart = *SequencePartIterator;
-		auto SequencePartReader = std::unique_ptr<Inspection::Reader>{};
+		const auto & Part = *PartIterator;
+		auto PartReader = std::unique_ptr<Inspection::Reader>{};
 		
-		if(SequencePart->Length != nullptr)
+		if(Part->Length != nullptr)
 		{
-			SequencePartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(SequencePart->Length->GetAny(ExecutionContext)));
+			PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
 		}
 		else
 		{
-			SequencePartReader = std::make_unique<Inspection::Reader>(Reader);
+			PartReader = std::make_unique<Inspection::Reader>(Reader);
 		}
-		if(SequencePartReader != nullptr)
+		
+		auto PartParameters = Part->GetParameters(ExecutionContext);
+		auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+		
+		Continue = PartResult->GetSuccess();
+		switch(Part->GetPartType())
 		{
-			auto SequencePartParameters = SequencePart->GetParameters(ExecutionContext);
-			auto PartResult = SequencePart->Get(ExecutionContext, *SequencePartReader, SequencePartParameters);
-			
-			Continue = PartResult->GetSuccess();
-			switch(SequencePart->GetPartType())
+		case Inspection::TypeDefinition::PartType::Alternative:
 			{
-			case Inspection::TypeDefinition::PartType::Alternative:
-				{
-					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Array:
-				{
-					ASSERTION(SequencePart->FieldName.has_value() == true);
-					Result->GetValue()->AppendField(SequencePart->FieldName.value(), PartResult->ExtractValue());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Field:
-				{
-					ASSERTION(SequencePart->FieldName.has_value() == true);
-					Result->GetValue()->AppendField(SequencePart->FieldName.value(), PartResult->ExtractValue());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Fields:
-				{
-					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Forward:
-				{
-					Result->SetValue(PartResult->ExtractValue());
-					
-					break;
-				}
-			case Inspection::TypeDefinition::PartType::Sequence:
-				{
-					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
-					
-					break;
-				}
-			default:
-				{
-					ASSERTION(false);
-				}
+				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				
+				break;
 			}
-			Reader.AdvancePosition(SequencePartReader->GetConsumedLength());
+		case Inspection::TypeDefinition::PartType::Array:
+			{
+				ASSERTION(Part->FieldName.has_value() == true);
+				Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Field:
+			{
+				ASSERTION(Part->FieldName.has_value() == true);
+				Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Fields:
+			{
+				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Forward:
+			{
+				Result->SetValue(PartResult->ExtractValue());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Sequence:
+			{
+				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				
+				break;
+			}
+		default:
+			{
+				ASSERTION(false);
+			}
 		}
+		Reader.AdvancePosition(PartReader->GetConsumedLength());
 	}
 	// interpretation
 	if(Continue == true)
