@@ -233,7 +233,7 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
 			{
 			case Inspection::TypeDefinition::PartType::Alternative:
 				{
-					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					Result->GetValue()->Extend(PartResult->ExtractValue());
 					
 					break;
 				}
@@ -253,19 +253,19 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
 				}
 			case Inspection::TypeDefinition::PartType::Fields:
 				{
-					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					Result->GetValue()->Extend(PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Forward:
 				{
-					Result->SetValue(PartResult->ExtractValue());
+					Result->GetValue()->Extend(PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Sequence:
 				{
-					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					Result->GetValue()->Extend(PartResult->ExtractValue());
 					
 					break;
 				}
@@ -1124,7 +1124,7 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
 		auto FieldResult = FieldType->Get(Reader, ExecutionContext.GetAllParameters());
 		
 		Continue = FieldResult->GetSuccess();
-		Result->SetValue(FieldResult->ExtractValue());
+		Result->GetValue()->Extend(FieldResult->ExtractValue());
 	}
 	else
 	{
@@ -1146,7 +1146,7 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
 		auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
 		
 		Continue = PartResult->GetSuccess();
-		Result->SetValue(PartResult->ExtractValue());
+		Result->GetValue()->Extend(PartResult->ExtractValue());
 		Reader.AdvancePosition(PartReader->GetConsumedLength());
 	}
 	// interpretation
@@ -1243,7 +1243,7 @@ auto Inspection::TypeDefinition::Fields::Get(Inspection::ExecutionContext & Exec
 	auto FieldsResult = FieldsType->Get(Reader, ExecutionContext.GetAllParameters());
 	
 	Continue = FieldsResult->GetSuccess();
-	Result->SetValue(FieldsResult->ExtractValue());
+	Result->GetValue()->Extend(FieldsResult->ExtractValue());
 	// interpretation
 	if(Continue == true)
 	{
@@ -1281,7 +1281,7 @@ auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & Exe
 	auto ForwardResult = ForwardType->Get(Reader, ExecutionContext.GetAllParameters());
 	
 	Continue = ForwardResult->GetSuccess();
-	Result->SetValue(ForwardResult->ExtractValue());
+	Result->GetValue()->Extend(ForwardResult->ExtractValue());
 	// interpretation
 	if(Continue == true)
 	{
@@ -1670,7 +1670,7 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
 		{
 		case Inspection::TypeDefinition::PartType::Alternative:
 			{
-				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				Result->GetValue()->Extend(PartResult->ExtractValue());
 				
 				break;
 			}
@@ -1690,19 +1690,19 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
 			}
 		case Inspection::TypeDefinition::PartType::Fields:
 			{
-				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				Result->GetValue()->Extend(PartResult->ExtractValue());
 				
 				break;
 			}
 		case Inspection::TypeDefinition::PartType::Forward:
 			{
-				Result->SetValue(PartResult->ExtractValue());
+				Result->GetValue()->Extend(PartResult->ExtractValue());
 				
 				break;
 			}
 		case Inspection::TypeDefinition::PartType::Sequence:
 			{
-				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				Result->GetValue()->Extend(PartResult->ExtractValue());
 				
 				break;
 			}

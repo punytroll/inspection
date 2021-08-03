@@ -7,6 +7,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include "assertion.h"
+
 namespace Inspection
 {
 	class Value
@@ -51,11 +53,30 @@ namespace Inspection
 			return Result;
 		}
 		
-		void AppendFields(std::list<std::unique_ptr<Inspection::Value>> && Fields)
+		/**
+		 * Extends this Value by moving the fields and tags from the other Value to here.
+		 * If the name on the other value is set, the name on this value MUST be empty!
+		 * If the data on the other value is set, the data on this value must be empty!
+		 **/
+		auto Extend(std::unique_ptr<Inspection::Value> Value) -> void
 		{
-			for(auto & Field : Fields)
+			if(Value->_Data.has_value() == true)
+			{
+				ASSERTION(_Data.has_value() == false);
+				_Data = std::move(Value->_Data);
+			}
+			if(Value->_Name.empty() == false)
+			{
+				ASSERTION(_Name.empty() == true);
+				_Name = std::move(Value->_Name);
+			}
+			for(auto & Field : Value->_Fields)
 			{
 				_Fields.push_back(std::move(Field));
+			}
+			for(auto & Tag : Value->_Tags)
+			{
+				_Tags.push_back(std::move(Tag));
 			}
 		}
 		
@@ -87,14 +108,6 @@ namespace Inspection
 			return Tag;
 		}
 		
-		void AddTags(std::list<std::unique_ptr<Inspection::Value>> && Tags)
-		{
-			for(auto & Tag : Tags)
-			{
-				_Tags.push_back(std::move(Tag));
-			}
-		}
-		
 		const std::any & GetData(void) const
 		{
 			return _Data;
@@ -108,11 +121,6 @@ namespace Inspection
 		const std::string & GetName(void) const
 		{
 			return _Name;
-		}
-		
-		std::list<std::unique_ptr<Inspection::Value>> ExtractTags(void)
-		{
-			return std::move(_Tags);
 		}
 		
 		const std::list<std::unique_ptr<Inspection::Value>> & GetTags(void) const
@@ -142,11 +150,6 @@ namespace Inspection
 				}
 			}
 			throw std::invalid_argument("Could not find a field named \"" + Name + "\".");
-		}
-		
-		std::list<std::unique_ptr<Inspection::Value>> ExtractFields(void)
-		{
-			return std::move(_Fields);
 		}
 		
 		const std::list<std::unique_ptr<Inspection::Value>> & GetFields(void) const

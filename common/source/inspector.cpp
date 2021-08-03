@@ -115,8 +115,7 @@ bool Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 			
 			auto InnerResult = _Getter(Buffer);
 			
-			FileResult->GetValue()->AppendFields(InnerResult->GetValue()->ExtractFields());
-			FileResult->GetValue()->AddTags(InnerResult->GetValue()->ExtractTags());
+			FileResult->GetValue()->Extend(InnerResult->ExtractValue());
 			FileResult->SetSuccess(InnerResult->GetSuccess());
 			_Writer(FileResult);
 			munmap(Address, FileSize);

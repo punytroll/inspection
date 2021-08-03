@@ -42,11 +42,6 @@ namespace Inspection
 		{
 			_Success = Success;
 		}
-		
-		void SetValue(std::unique_ptr<Inspection::Value> Value)
-		{
-			_Value = std::move(Value);
-		}
 	private:
 		bool _Success;
 		std::unique_ptr<Inspection::Value> _Value;

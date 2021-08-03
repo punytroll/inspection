@@ -36,7 +36,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			auto HardcodedResult = _HardcodedGetter(Reader, Parameters);
 			
 			Continue = HardcodedResult->GetSuccess();
-			Result->SetValue(HardcodedResult->ExtractValue());
+			Result->GetValue()->Extend(HardcodedResult->ExtractValue());
 		}
 		else if(_Part != nullptr)
 		{
@@ -64,7 +64,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 			{
 			case Inspection::TypeDefinition::PartType::Alternative:
 				{
-					Result->SetValue(PartResult->ExtractValue());
+					Result->GetValue()->Extend(PartResult->ExtractValue());
 					
 					break;
 				}
@@ -84,19 +84,19 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 				}
 			case Inspection::TypeDefinition::PartType::Fields:
 				{
-					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					Result->GetValue()->Extend(PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Forward:
 				{
-					Result->SetValue(PartResult->ExtractValue());
+					Result->GetValue()->Extend(PartResult->ExtractValue());
 					
 					break;
 				}
 			case Inspection::TypeDefinition::PartType::Sequence:
 				{
-					Result->SetValue(PartResult->ExtractValue());
+					Result->GetValue()->Extend(PartResult->ExtractValue());
 					
 					break;
 				}
