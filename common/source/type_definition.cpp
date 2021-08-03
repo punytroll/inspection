@@ -19,6 +19,7 @@
 #include "assertion.h"
 #include "execution_context.h"
 #include "length.h"
+#include "result.h"
 #include "string_cast.h"
 #include "type.h"
 #include "type_definition.h"
@@ -202,6 +203,97 @@ std::unique_ptr<Inspection::TypeDefinition::AddTag> Inspection::TypeDefinition::
 	return Result;
 }
 
+Inspection::TypeDefinition::Alternative::Alternative(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Alternative}
+{
+}
+
+auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto FoundAlternative = false;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+	for(auto PartIterator = std::begin(Parts); ((FoundAlternative == false) && (PartIterator != std::end(Parts))); ++PartIterator)
+	{
+		const auto & Part = *PartIterator;
+		auto PartReader = std::unique_ptr<Inspection::Reader>{};
+		
+		if(Part->Length != nullptr)
+		{
+			PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
+		}
+		else
+		{
+			PartReader = std::make_unique<Inspection::Reader>(Reader);
+		}
+		
+		auto PartParameters = Part->GetParameters(ExecutionContext);
+		auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+		
+		FoundAlternative = PartResult->GetSuccess();
+		if(FoundAlternative == true)
+		{
+			switch(Part->GetPartType())
+			{
+			case Inspection::TypeDefinition::PartType::Alternative:
+				{
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Array:
+				{
+					ASSERTION(Part->FieldName.has_value() == true);
+					Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Field:
+				{
+					ASSERTION(Part->FieldName.has_value() == true);
+					Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Fields:
+				{
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Forward:
+				{
+					Result->SetValue(PartResult->ExtractValue());
+					
+					break;
+				}
+			case Inspection::TypeDefinition::PartType::Sequence:
+				{
+					Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+					
+					break;
+				}
+			default:
+				{
+					ASSERTION(false);
+				}
+			}
+			Reader.AdvancePosition(PartReader->GetConsumedLength());
+		}
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(FoundAlternative);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Alternative::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Alternative>{new Inspection::TypeDefinition::Alternative{}};
+}
+
 bool Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
 {
 	ASSERTION(Enumeration != nullptr);
@@ -254,6 +346,316 @@ std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Inspection::TypeDe
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::Array::Array(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Array}
+{
+}
+
+auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+	Result->GetValue()->AddTag("array");
+	switch(IterateType)
+	{
+	case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
+		{
+			auto ElementParameters = GetElementParameters(ExecutionContext);
+			
+			ASSERTION(m_ElementType != nullptr);
+			
+			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
+			
+			while((Continue == true) && (Reader.HasRemaining() == true))
+			{
+				auto ElementReader = Inspection::Reader{Reader};
+				
+				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+				
+				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+				
+				Continue = ElementResult->GetSuccess();
+				if(Continue == true)
+				{
+					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+					if(ElementName.has_value() == true)
+					{
+						Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendField(ElementResult->ExtractValue());
+					}
+					Reader.AdvancePosition(ElementReader.GetConsumedLength());
+				}
+				else
+				{
+					break;
+				}
+			}
+			if(Reader.IsAtEnd() == true)
+			{
+				Result->GetValue()->AddTag("ended by length"s);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by failure"s);
+			}
+			if(ElementIndexInArray > 0)
+			{
+				Result->GetValue()->AddTag("at least one element"s);
+				Continue = true;
+			}
+			else
+			{
+				Result->GetValue()->AddTag("error", "At least one element was expected."s);
+				Continue = false;
+			}
+			Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+			
+			break;
+		}
+	case Inspection::TypeDefinition::Array::IterateType::ForEachField:
+		{
+			auto ElementParameters = GetElementParameters(ExecutionContext);
+			
+			ASSERTION(IterateForEachField != nullptr);
+			
+			auto IterateField = ExecutionContext.GetFieldFromFieldReference(*IterateForEachField);
+			
+			ASSERTION(IterateField != nullptr);
+			
+			auto ElementProperties = std::vector<std::pair<Inspection::Length, Inspection::Length>>{};
+			
+			for(auto & Field : IterateField->GetFields())
+			{
+				ElementProperties.emplace_back(std::any_cast<const Inspection::Length &>(Field->GetTag("position")->GetData()), std::any_cast<const Inspection::Length &>(Field->GetTag("length")->GetData()));
+			}
+			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
+			ASSERTION(m_ElementType != nullptr);
+			
+			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto NumberOfAppendedElements = static_cast<std::uint64_t>(0);
+			
+			for(auto ElementPropertiesIndex = static_cast<std::uint64_t>(0); (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
+			{
+				auto & Properties = ElementProperties[ElementPropertiesIndex];
+				
+				ASSERTION(Reader.GetReadPositionInInput() == Properties.first);
+				
+				auto ElementReader = Inspection::Reader{Reader, Properties.second};
+				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+				
+				Continue = ElementResult->GetSuccess();
+				if(ElementName.has_value() == true)
+				{
+					Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+				}
+				else
+				{
+					Result->GetValue()->AppendField(ElementResult->ExtractValue());
+				}
+				Reader.AdvancePosition(ElementReader.GetConsumedLength());
+				++NumberOfAppendedElements;
+			}
+			Result->GetValue()->AddTag("number of elements", NumberOfAppendedElements);
+			
+			break;
+		}
+	case Inspection::TypeDefinition::Array::IterateType::NumberOfElements:
+		{
+			auto ElementParameters = GetElementParameters(ExecutionContext);
+			
+			ASSERTION(m_ElementType != nullptr);
+			
+			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto NumberOfElementsAny = IterateNumberOfElements->GetAny(ExecutionContext);
+			
+			ASSERTION(NumberOfElementsAny.type() == typeid(std::uint64_t));
+			
+			auto NumberOfElements = std::any_cast<std::uint64_t>(NumberOfElementsAny);
+			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
+			
+			while(true)
+			{
+				if(ElementIndexInArray < NumberOfElements)
+				{
+					auto ElementReader = Inspection::Reader{Reader};
+					
+					ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+					
+					auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+					
+					Continue = ElementResult->GetSuccess();
+					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+					if(ElementName.has_value() == true)
+					{
+						Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendField(ElementResult->ExtractValue());
+					}
+					Reader.AdvancePosition(ElementReader.GetConsumedLength());
+					if(Continue == false)
+					{
+						Result->GetValue()->AddTag("ended by failure"s);
+						
+						break;
+					}
+				}
+				else
+				{
+					Result->GetValue()->AddTag("ended by number of elements"s);
+					
+					break;
+				}
+			}
+			Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+			
+			break;
+		}
+	case Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength:
+		{
+			auto ElementParameters = GetElementParameters(ExecutionContext);
+			
+			ASSERTION(m_ElementType != nullptr);
+			
+			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
+			
+			while((Continue == true) && (Reader.HasRemaining() == true))
+			{
+				auto ElementReader = Inspection::Reader{Reader};
+				
+				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+				
+				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+				
+				Continue = ElementResult->GetSuccess();
+				if(Continue == true)
+				{
+					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+					if(ElementName.has_value() == true)
+					{
+						Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendField(ElementResult->ExtractValue());
+					}
+					Reader.AdvancePosition(ElementReader.GetConsumedLength());
+				}
+				else
+				{
+					Continue = true;
+					
+					break;
+				}
+			}
+			if(Reader.IsAtEnd() == true)
+			{
+				Result->GetValue()->AddTag("ended by length"s);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by failure"s);
+			}
+			Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+			
+			break;
+		}
+	default:
+		{
+			ASSERTION(false);
+		}
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Array::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Array>
+{
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Array>{new Inspection::TypeDefinition::Array{}};
+	
+	ASSERTION(Element->HasAttribute("name") == true);
+	Result->FieldName = Element->GetAttribute("name");
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Element) -> void
+{
+	if(Element->GetName() == "iterate")
+	{
+		ASSERTION(GetPartType() == Inspection::TypeDefinition::PartType::Array);
+		ASSERTION(Element->HasAttribute("type") == true);
+		if(Element->GetAttribute("type") == "at-least-one-until-failure-or-length")
+		{
+			IterateType = Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength;
+			ASSERTION(XML::HasChildNodes(Element) == false);
+		}
+		else if(Element->GetAttribute("type") == "for-each-field")
+		{
+			IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
+			
+			auto FieldReferenceElement = static_cast<const XML::Element *>(nullptr);
+			
+			for(auto PartIterateChildNode : Element->GetChilds())
+			{
+				if(PartIterateChildNode->GetNodeType() == XML::NodeType::Element)
+				{
+					ASSERTION(FieldReferenceElement == nullptr);
+					FieldReferenceElement = dynamic_cast<const XML::Element *>(PartIterateChildNode);
+				}
+			}
+			ASSERTION(FieldReferenceElement != nullptr);
+			IterateForEachField = Inspection::TypeDefinition::FieldReference::Load(FieldReferenceElement);
+		}
+		else if(Element->GetAttribute("type") == "number-of-elements")
+		{
+			IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
+			IterateNumberOfElements = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
+		}
+		else if(Element->GetAttribute("type") == "until-failure-or-length")
+		{
+			IterateType = Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength;
+			ASSERTION(XML::HasChildNodes(Element) == false);
+		}
+		else
+		{
+			ASSERTION(false);
+		}
+	}
+	else if(Element->GetName() == "element-name")
+	{
+		ASSERTION(Element->GetChilds().size() == 1);
+		
+		auto ElementNameText = dynamic_cast<const XML::Text *>(Element->GetChild(0));
+		
+		ASSERTION(ElementNameText != nullptr);
+		ElementName = ElementNameText->GetText();
+	}
+	else if(Element->GetName() == "element-type")
+	{
+		m_ElementType = Inspection::TypeDefinition::TypeReference::Load(Element);
+	}
+	else if(Element->GetName() == "element-parameters")
+	{
+		ElementParameters = Inspection::TypeDefinition::Parameters::Load(Element);
+	}
+	else
+	{
+		Inspection::TypeDefinition::Part::_LoadProperty(Element);
+	}
 }
 
 std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const
@@ -731,6 +1133,75 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	return Inspection::TypeDefinition::Expression::Load(ExpressionElement);
 }
 
+Inspection::TypeDefinition::Field::Field(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Field}
+{
+}
+
+auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+	if(TypeReference)
+	{
+		ASSERTION(TypeReference != nullptr);
+		
+		const auto * FieldType = TypeReference->GetType(ExecutionContext);
+		
+		ASSERTION(FieldType != nullptr);
+		
+		auto FieldResult = FieldType->Get(Reader, ExecutionContext.GetAllParameters());
+		
+		Continue = FieldResult->GetSuccess();
+		Result->SetValue(FieldResult->ExtractValue());
+	}
+	else
+	{
+		ASSERTION(Parts.size() == 1);
+		
+		const auto & Part = Parts.front();
+		auto PartReader = std::unique_ptr<Inspection::Reader>{};
+		
+		if(Part->Length != nullptr)
+		{
+			PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
+		}
+		else
+		{
+			PartReader = std::make_unique<Inspection::Reader>(Reader);
+		}
+		
+		auto PartParameters = Part->GetParameters(ExecutionContext);
+		auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+		
+		Continue = PartResult->GetSuccess();
+		Result->SetValue(PartResult->ExtractValue());
+		Reader.AdvancePosition(PartReader->GetConsumedLength());
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Field::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>
+{
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Field>{new Inspection::TypeDefinition::Field{}};
+	
+	ASSERTION(Element->HasAttribute("name") == true);
+	Result->FieldName = Element->GetAttribute("name");
+	
+	return Result;
+}
+
 Inspection::TypeDefinition::FieldReference::FieldReference(void) :
 	Inspection::TypeDefinition::Expression{Inspection::TypeDefinition::ExpressionType::FieldReference}
 {
@@ -786,6 +1257,82 @@ std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefi
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::Fields::Fields(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Fields}
+{
+}
+
+auto Inspection::TypeDefinition::Fields::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+	ASSERTION(TypeReference != nullptr);
+	
+	auto FieldsType = TypeReference->GetType(ExecutionContext);
+	
+	ASSERTION(FieldsType != nullptr);
+	
+	auto FieldsResult = FieldsType->Get(Reader, ExecutionContext.GetAllParameters());
+	
+	Continue = FieldsResult->GetSuccess();
+	Result->SetValue(FieldsResult->ExtractValue());
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Fields::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Fields>{new Inspection::TypeDefinition::Fields{}};
+}
+
+Inspection::TypeDefinition::Forward::Forward(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Forward}
+{
+}
+
+auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+	ASSERTION(TypeReference != nullptr);
+	
+	auto ForwardType = TypeReference->GetType(ExecutionContext);
+	
+	ASSERTION(ForwardType != nullptr);
+	
+	auto ForwardResult = ForwardType->Get(Reader, ExecutionContext.GetAllParameters());
+	
+	Continue = ForwardResult->GetSuccess();
+	Result->SetValue(ForwardResult->ExtractValue());
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Forward::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Forward>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Forward>{new Inspection::TypeDefinition::Forward{}};
 }
 
 std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefinition::Interpretation::Load(const XML::Element * Element)
@@ -1014,7 +1561,12 @@ std::unique_ptr<Inspection::TypeDefinition::Parameters::Parameter> Inspection::T
 	return Result;
 }
 
-bool Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
+Inspection::TypeDefinition::Part::Part(Inspection::TypeDefinition::PartType PartType) :
+	_PartType{PartType}
+{
+}
+
+auto Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
 {
 	auto Result = true;
 	
@@ -1031,9 +1583,207 @@ bool Inspection::TypeDefinition::Part::ApplyInterpretations(Inspection::Executio
 	return Result;
 }
 
-std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Part::GetParameters(Inspection::ExecutionContext & ExecutionContext) const
+auto Inspection::TypeDefinition::Part::GetParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>
 {
 	return ::GetParameters(ExecutionContext, Parameters.get());
+}
+
+auto Inspection::TypeDefinition::Part::GetPartType(void) const -> Inspection::TypeDefinition::PartType
+{
+	return _PartType;
+}
+
+auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std::unique_ptr<Inspection::TypeDefinition::Part>
+{
+	ASSERTION(Element != nullptr);
+	
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Part>{};
+	
+	if(Element->GetName() == "alternative")
+	{
+		Result = Inspection::TypeDefinition::Alternative::Load(Element);
+	}
+	else if(Element->GetName() == "array")
+	{
+		Result = Inspection::TypeDefinition::Array::Load(Element);
+	}
+	else if(Element->GetName() == "sequence")
+	{
+		Result = Inspection::TypeDefinition::Sequence::Load(Element);
+	}
+	else if(Element->GetName() == "field")
+	{
+		Result = Inspection::TypeDefinition::Field::Load(Element);
+	}
+	else if(Element->GetName() == "fields")
+	{
+		Result = Inspection::TypeDefinition::Fields::Load(Element);
+	}
+	else if(Element->GetName() == "forward")
+	{
+		Result = Inspection::TypeDefinition::Forward::Load(Element);
+	}
+	else
+	{
+		ASSERTION(false);
+	}
+	Result->_LoadProperties(Element);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Part::_LoadProperties(const XML::Element * Element) -> void
+{
+	for(auto ChildNode : Element->GetChilds())
+	{
+		if(ChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
+			
+			ASSERTION(ChildElement != nullptr);
+			_LoadProperty(ChildElement);
+		}
+	}
+}
+
+auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Element) -> void
+{
+	ASSERTION(Element != nullptr);
+	if(Element->GetName() == "type-reference")
+	{
+		ASSERTION((_PartType == Inspection::TypeDefinition::PartType::Field) || (_PartType == Inspection::TypeDefinition::PartType::Fields) || (_PartType == Inspection::TypeDefinition::PartType::Forward));
+		TypeReference = Inspection::TypeDefinition::TypeReference::Load(Element);
+	}
+	else if(Element->GetName() == "interpretation")
+	{
+		Interpretations.push_back(Inspection::TypeDefinition::Interpretation::Load(Element));
+	}
+	else if(Element->GetName() == "length")
+	{
+		Length = Inspection::TypeDefinition::Expression::Load(Element);
+	}
+	else if(Element->GetName() == "parameters")
+	{
+		ASSERTION((_PartType == Inspection::TypeDefinition::PartType::Field) || (_PartType == Inspection::TypeDefinition::PartType::Fields) || (_PartType == Inspection::TypeDefinition::PartType::Forward));
+		Parameters = Inspection::TypeDefinition::Parameters::Load(Element);
+	}
+	else if(Element->GetName() == "verification")
+	{
+		for(auto GetterPartVerificationChildNode : Element->GetChilds())
+		{
+			if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
+			{
+				Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
+			}
+		}
+	}
+	else if(Element->GetName() == "tag")
+	{
+		ASSERTION((_PartType == Inspection::TypeDefinition::PartType::Field) || (_PartType == Inspection::TypeDefinition::PartType::Forward) || (_PartType == Inspection::TypeDefinition::PartType::Sequence));
+		Interpretations.push_back(Inspection::TypeDefinition::AddTag::Load(Element));
+	}
+	else if((Element->GetName() == "alternative") || (Element->GetName() == "sequence") || (Element->GetName() == "field") || (Element->GetName() == "fields") || (Element->GetName() == "forward") || (Element->GetName() == "array"))
+	{
+		ASSERTION((_PartType == Inspection::TypeDefinition::PartType::Sequence) || (_PartType == Inspection::TypeDefinition::PartType::Field) || (_PartType == Inspection::TypeDefinition::PartType::Alternative));
+		Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));
+	}
+	else
+	{
+		ASSERTION(false);
+	}
+}
+
+Inspection::TypeDefinition::Sequence::Sequence(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Sequence}
+{
+}
+
+auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+	for(auto PartIterator = std::begin(Parts); ((Continue == true) && (PartIterator != std::end(Parts))); ++PartIterator)
+	{
+		const auto & Part = *PartIterator;
+		auto PartReader = std::unique_ptr<Inspection::Reader>{};
+		
+		if(Part->Length != nullptr)
+		{
+			PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
+		}
+		else
+		{
+			PartReader = std::make_unique<Inspection::Reader>(Reader);
+		}
+		
+		auto PartParameters = Part->GetParameters(ExecutionContext);
+		auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+		
+		Continue = PartResult->GetSuccess();
+		switch(Part->GetPartType())
+		{
+		case Inspection::TypeDefinition::PartType::Alternative:
+			{
+				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Array:
+			{
+				ASSERTION(Part->FieldName.has_value() == true);
+				Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Field:
+			{
+				ASSERTION(Part->FieldName.has_value() == true);
+				Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Fields:
+			{
+				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Forward:
+			{
+				Result->SetValue(PartResult->ExtractValue());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Sequence:
+			{
+				Result->GetValue()->AppendFields(PartResult->GetValue()->ExtractFields());
+				
+				break;
+			}
+		default:
+			{
+				ASSERTION(false);
+			}
+		}
+		Reader.AdvancePosition(PartReader->GetConsumedLength());
+	}
+	// interpretation
+	if(Continue == true)
+	{
+		Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+	}
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Sequence::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Sequence>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Sequence>{new Inspection::TypeDefinition::Sequence{}};
 }
 
 Inspection::TypeDefinition::Subtract::Subtract(void) :
@@ -1127,6 +1877,21 @@ std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Tag
 	}
 	
 	return Result;
+}
+
+Inspection::TypeDefinition::TypePart::TypePart(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Type}
+{
+}
+
+auto Inspection::TypeDefinition::TypePart::Create() -> std::unique_ptr<Inspection::TypeDefinition::TypePart>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::TypePart>{new Inspection::TypeDefinition::TypePart{}};
+}
+
+auto Inspection::TypeDefinition::TypePart::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	NOT_IMPLEMENTED("Called Get() on a Type part.");
 }
 
 Inspection::TypeDefinition::TypeReference::TypeReference(void) :

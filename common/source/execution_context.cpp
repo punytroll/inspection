@@ -108,72 +108,10 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 						{
 							++ExecutionStackIterator;
 							Result = ExecutionStackIterator->_Result.GetValue();
-							switch(ExecutionStackIterator->_Part.Type)
+							if(Result->HasField(PartIterator->DetailName) == true)
 							{
-							case Inspection::TypeDefinition::Part::Type::Alternative:
-								{
-									ASSERTION(false);
-									
-									break;
-								}
-							case Inspection::TypeDefinition::Part::Type::Array:
-								{
-									ASSERTION(false);
-									
-									break;
-								}
-							case Inspection::TypeDefinition::Part::Type::Field:
-								{
-									if(Result->HasField(PartIterator->DetailName) == true)
-									{
-										Result = Result->GetField(PartIterator->DetailName);
-										++PartIterator;
-									}
-									
-									break;
-								}
-							case Inspection::TypeDefinition::Part::Type::Fields:
-								{
-									// fields are flattened onto the parent, behaving just like a sequence
-									if(Result->HasField(PartIterator->DetailName) == true)
-									{
-										Result = Result->GetField(PartIterator->DetailName);
-										++PartIterator;
-									}
-									
-									break;
-								}
-							case Inspection::TypeDefinition::Part::Type::Forward:
-								{
-									if(Result->HasField(PartIterator->DetailName) == true)
-									{
-										Result = Result->GetField(PartIterator->DetailName);
-										++PartIterator;
-									}
-									
-									break;
-								}
-							case Inspection::TypeDefinition::Part::Type::Sequence:
-								{
-									if(Result->HasField(PartIterator->DetailName) == true)
-									{
-										Result = Result->GetField(PartIterator->DetailName);
-										++PartIterator;
-									}
-									
-									break;
-								}
-							case Inspection::TypeDefinition::Part::Type::Type:
-								{
-									// skipped intentionally
-									ASSERTION(false);
-									
-									break;
-								}
-							default:
-								{
-									ASSERTION(false);
-								}
+								Result = Result->GetField(PartIterator->DetailName);
+								++PartIterator;
 							}
 						}
 						
@@ -244,67 +182,10 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 		{
 			++ExecutionStackIterator;
 			Result = ExecutionStackIterator->_Result.GetValue();
-			switch(ExecutionStackIterator->_Part.Type)
+			if(Result->HasField(*PartIterator) == true)
 			{
-			case Inspection::TypeDefinition::Part::Type::Alternative:
-				{
-					ASSERTION(false);
-					
-					break;
-				}
-			case Inspection::TypeDefinition::Part::Type::Array:
-				{
-					ASSERTION(false);
-					
-					break;
-				}
-			case Inspection::TypeDefinition::Part::Type::Field:
-				{
-					if(Result->HasField(*PartIterator) == true)
-					{
-						Result = Result->GetField(*PartIterator);
-						++PartIterator;
-					}
-					
-					break;
-				}
-			case Inspection::TypeDefinition::Part::Type::Fields:
-				{
-					// fields are flattened onto the parent, behaving just like a sequence
-					if(Result->HasField(*PartIterator) == true)
-					{
-						Result = Result->GetField(*PartIterator);
-						++PartIterator;
-					}
-					
-					break;
-				}
-			case Inspection::TypeDefinition::Part::Type::Forward:
-				{
-					ASSERTION(false);
-					
-					break;
-				}
-			case Inspection::TypeDefinition::Part::Type::Sequence:
-				{
-					if(Result->HasField(*PartIterator) == true)
-					{
-						Result = Result->GetField(*PartIterator);
-						++PartIterator;
-					}
-					
-					break;
-				}
-			case Inspection::TypeDefinition::Part::Type::Type:
-				{
-					// skipped intentionally
-					
-					break;
-				}
-			default:
-				{
-					ASSERTION(false);
-				}
+				Result = Result->GetField(*PartIterator);
+				++PartIterator;
 			}
 		}
 	}

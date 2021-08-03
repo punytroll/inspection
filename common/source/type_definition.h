@@ -37,18 +37,14 @@ namespace XML
 namespace Inspection
 {
 	class ExecutionContext;
+	class Reader;
+	class Result;
 	class Type;
 	class Value;
 	
 	namespace TypeDefinition
 	{
-		class Add;
-		class Cast;
-		class Divide;
-		class Equals;
-		class Subtract;
 		class Type;
-		class Value;
 		
 		enum class DataType
 		{
@@ -81,6 +77,17 @@ namespace Inspection
 			Subtract,
 			TypeReference,
 			Value
+		};
+		
+		enum class PartType
+		{
+			Alternative,
+			Array,
+			Field,
+			Fields,
+			Forward,
+			Sequence,
+			Type
 		};
 		
 		class Expression
@@ -530,8 +537,55 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Expression> _Expression;
 		};
 		
-		class Array
+		class Part
 		{
+		public:
+			static auto Load(const XML::Element * Element) -> std::unique_ptr<Inspection::TypeDefinition::Part>;
+		public:
+			Part(Inspection::TypeDefinition::PartType Type);
+			virtual ~Part(void) = default;
+			auto ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool;
+			virtual auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> = 0;
+			auto GetParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
+			auto GetPartType(void) const -> Inspection::TypeDefinition::PartType;
+		public:
+			std::optional<std::string> FieldName;
+			std::unique_ptr<Inspection::TypeDefinition::TypeReference> TypeReference;
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> Interpretations;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> Length;
+			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
+			std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> Parts;
+		protected:
+			auto _LoadProperties(XML::Element const * Element) -> void;
+			virtual auto _LoadProperty(XML::Element const * Element) -> void;
+		private:
+			Part(Inspection::TypeDefinition::Part const & Part) = delete;
+			Part(Inspection::TypeDefinition::Part && Part) = delete;
+			Inspection::TypeDefinition::Part & operator=(Inspection::TypeDefinition::Part const & Part) = delete;
+			Inspection::TypeDefinition::Part & operator=(Inspection::TypeDefinition::Part && Part) = delete;
+		private:
+			Inspection::TypeDefinition::PartType _PartType;
+		};
+		
+		class Alternative : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>;
+		public:
+			~Alternative(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+		private:
+			Alternative(void);
+			Alternative(Inspection::TypeDefinition::Alternative const & Alternative) = delete;
+			Alternative(Inspection::TypeDefinition::Alternative && Alternative) = delete;
+			auto operator=(Inspection::TypeDefinition::Alternative const & Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
+			auto operator=(Inspection::TypeDefinition::Alternative && Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
+		};
+		
+		class Array : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Array>;
 		public:
 			enum class IterateType
 			{
@@ -541,45 +595,100 @@ namespace Inspection
 				UntilFailureOrLength
 			};
 		public:
-			std::unordered_map<std::string, std::any> GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const;
+			~Array(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+			auto GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
 		public:
 			Inspection::TypeDefinition::Array::IterateType IterateType;
 			std::unique_ptr<Inspection::TypeDefinition::FieldReference> IterateForEachField;
 			std::unique_ptr<Inspection::TypeDefinition::Expression> IterateNumberOfElements;
 			std::optional<std::string> ElementName;
 			std::unique_ptr<Inspection::TypeDefinition::Parameters> ElementParameters;
-			std::unique_ptr<Inspection::TypeDefinition::TypeReference> ElementType;
+		protected:
+			auto _LoadProperty(XML::Element const * Element) -> void override;
+		private:
+			Array(void);
+			Array(Inspection::TypeDefinition::Array const & Array) = delete;
+			Array(Inspection::TypeDefinition::Array && Array) = delete;
+			auto operator=(Inspection::TypeDefinition::Array const & Array) -> Inspection::TypeDefinition::Array & = delete;
+			auto operator=(Inspection::TypeDefinition::Array && Array) -> Inspection::TypeDefinition::Array & = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::TypeReference> m_ElementType;
 		};
 		
-		class Part
+		class Field : public Inspection::TypeDefinition::Part
 		{
 		public:
-			enum class Type
-			{
-				Alternative,
-				Array,
-				Field,
-				Fields,
-				Forward,
-				Sequence,
-				Type
-			};
-			Part(void) = default;
-			~Part(void) = default;
-			Part(Inspection::TypeDefinition::Part && Part) = delete;
-			Part(const Inspection::TypeDefinition::Part & Part) = delete;
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Field>;
 		public:
-			bool ApplyInterpretations(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const;
-			std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext) const;
+			~Field(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+		private:
+			Field(void);
+			Field(Inspection::TypeDefinition::Field const & Field) = delete;
+			Field(Inspection::TypeDefinition::Field && Field) = delete;
+			auto operator=(Inspection::TypeDefinition::Field const & Field) -> Inspection::TypeDefinition::Field & = delete;
+			auto operator=(Inspection::TypeDefinition::Field && Field) -> Inspection::TypeDefinition::Field & = delete;
+		};
+		
+		class Fields : public Inspection::TypeDefinition::Part
+		{
 		public:
-			std::optional<Inspection::TypeDefinition::Array> Array;
-			std::optional<std::string> FieldName;
-			std::unique_ptr<Inspection::TypeDefinition::TypeReference> TypeReference;
-			std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> Interpretations;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> Length;
-			std::unique_ptr<Inspection::TypeDefinition::Parameters> Parameters;
-			std::vector<std::unique_ptr<Inspection::TypeDefinition::Part>> Parts;
-			Inspection::TypeDefinition::Part::Type Type;
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Fields>;
+		public:
+			~Fields(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+		private:
+			Fields(void);
+			Fields(Inspection::TypeDefinition::Fields const & Fields) = delete;
+			Fields(Inspection::TypeDefinition::Fields && Fields) = delete;
+			auto operator=(Inspection::TypeDefinition::Fields const & Fields) -> Inspection::TypeDefinition::Fields & = delete;
+			auto operator=(Inspection::TypeDefinition::Fields && Fields) -> Inspection::TypeDefinition::Fields & = delete;
+		};
+		
+		class Forward : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Forward>;
+		public:
+			~Forward(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+		private:
+			Forward(void);
+			Forward(Inspection::TypeDefinition::Forward const & Forward) = delete;
+			Forward(Inspection::TypeDefinition::Forward && Forward) = delete;
+			auto operator=(Inspection::TypeDefinition::Forward const & Forward) -> Inspection::TypeDefinition::Forward & = delete;
+			auto operator=(Inspection::TypeDefinition::Forward && Forward) -> Inspection::TypeDefinition::Forward & = delete;
+		};
+		
+		class Sequence : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Sequence>;
+		public:
+			~Sequence(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+		private:
+			Sequence(void);
+			Sequence(Inspection::TypeDefinition::Sequence const & Sequence) = delete;
+			Sequence(Inspection::TypeDefinition::Sequence && Sequence) = delete;
+			auto operator=(Inspection::TypeDefinition::Sequence const & Sequence) -> Inspection::TypeDefinition::Sequence & = delete;
+			auto operator=(Inspection::TypeDefinition::Sequence && Sequence) -> Inspection::TypeDefinition::Sequence & = delete;
+		};
+		
+		class TypePart : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Create() -> std::unique_ptr<Inspection::TypeDefinition::TypePart>;
+		public:
+			~TypePart(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+		private:
+			TypePart(void);
+			TypePart(Inspection::TypeDefinition::TypePart const & TypePart) = delete;
+			TypePart(Inspection::TypeDefinition::TypePart && TypePart) = delete;
+			auto operator=(Inspection::TypeDefinition::TypePart const & TypePart) -> Inspection::TypeDefinition::TypePart & = delete;
+			auto operator=(Inspection::TypeDefinition::TypePart && TypePart) -> Inspection::TypeDefinition::TypePart & = delete;
 		};
 		
 		Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);
