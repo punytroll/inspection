@@ -4,6 +4,7 @@
 #include "assertion.h"
 #include "execution_context.h"
 #include "getters.h"
+#include "internal_output_operators.h"
 #include "result.h"
 #include "type.h"
 #include "type_definition.h"
@@ -100,11 +101,10 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					
 					break;
 				}
-			default:
+			case Inspection::TypeDefinition::PartType::Type:
 				{
-					ASSERTION(false);
-					
-					break;
+					// a type inside a type should be excluded earlier
+					IMPOSSIBLE_CODE_REACHED("_Part->GetPartType() == " + Inspection::to_string(_Part->GetPartType()));
 				}
 			}
 			Reader.AdvancePosition(PartReader->GetConsumedLength());
@@ -113,7 +113,7 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 		}
 		else
 		{
-			ASSERTION(false);
+			UNEXPECTED_CASE("_HardcodedGetter and _Part are both null");
 		}
 	}
 	// finalization
@@ -539,7 +539,7 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 				}
 				else
 				{
-					ASSERTION(false);
+					UNEXPECTED_CASE("HardcodedText->GetText() == " + HardcodedText->GetText());
 				}
 			}
 			else if((TypeChildElement->GetName() == "alternative") || (TypeChildElement->GetName() == "array") || (TypeChildElement->GetName() == "sequence") || (TypeChildElement->GetName() == "field") || (TypeChildElement->GetName() == "fields") || (TypeChildElement->GetName() == "forward"))
@@ -549,7 +549,7 @@ void Inspection::TypeDefinition::Type::_LoadType(Inspection::TypeDefinition::Typ
 			}
 			else
 			{
-				ASSERTION(false);
+				UNEXPECTED_CASE("TypeChildElement->GetName() == " + TypeChildElement->GetName());
 			}
 		}
 	}

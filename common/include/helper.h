@@ -117,7 +117,6 @@ namespace Inspection
 	std::string Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCodePoint(std::uint32_t CodePoint);
 	
 	// helpers for the engine
-	std::string GetTypeName(const std::type_info & TypeInformation);
 	std::string JoinWithSeparator(const std::vector<std::string> & Strings, const std::string & Separator);
 }
 

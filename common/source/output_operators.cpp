@@ -14,6 +14,8 @@
 #include "output_operators.h"
 #include "value.h"
 
+using namespace std::string_literals;
+
 std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Value, const std::string & Indentation)
 {
 	auto HeaderLine = (Value.GetName().empty() == false) || (Value.GetData().has_value() == true) || (Value.GetTags().empty() == false);
@@ -382,11 +384,8 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "Current";
 		}
-	default:
-		{
-			ASSERTION(false);
-		}
 	}
+	IMPOSSIBLE_CODE_REACHED("switch handling of Inspection::TypeDefinition::DataReference::Root incomplete");
 }
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference::Part & Part)
@@ -406,14 +405,11 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 		{
 			return OStream << "Tag";
 		}
-	default:
-		{
-			ASSERTION(false);
-		}
 	}
+	IMPOSSIBLE_CODE_REACHED("switch handling of Inspection::TypeDefinition::DataReference::Part::Type incomplete");
 }
 
-std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataType & DataType)
+auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinition::DataType const & DataType) -> std::ostream &
 {
 	switch(DataType)
 	{
@@ -466,5 +462,83 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const enum Inspect
 			return OStream << "usigned-integer-64bit";
 		}
 	}
-	ASSERTION(false);
+	IMPOSSIBLE_CODE_REACHED("switch handling of Inspection::TypeDefinition::DataType incomplete");
+}
+
+auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinition::PartType const & PartType) -> std::ostream &
+{
+	switch(PartType)
+	{
+	case Inspection::TypeDefinition::PartType::Alternative:
+		{
+			return OStream << "Alternative";
+		}
+	case Inspection::TypeDefinition::PartType::Array:
+		{
+			return OStream << "Array";
+		}
+	case Inspection::TypeDefinition::PartType::Field:
+		{
+			return OStream << "Field";
+		}
+	case Inspection::TypeDefinition::PartType::Fields:
+		{
+			return OStream << "Fields";
+		}
+	case Inspection::TypeDefinition::PartType::Forward:
+		{
+			return OStream << "Forward";
+		}
+	case Inspection::TypeDefinition::PartType::Sequence:
+		{
+			return OStream << "Sequence";
+		}
+	case Inspection::TypeDefinition::PartType::Type:
+		{
+			return OStream << "Type";
+		}
+	}
+	IMPOSSIBLE_CODE_REACHED("switch handling of Inspection::TypeDefinition::PartType incomplete");
+}
+
+auto Inspection::to_string(enum Inspection::TypeDefinition::DataType const & DataType) -> std::string
+{
+	auto Stream = std::ostringstream{};
+	
+	Stream << DataType;
+	
+	return Stream.str();
+}
+
+auto Inspection::to_string(enum Inspection::TypeDefinition::PartType const & PartType) -> std::string
+{
+	auto Stream = std::ostringstream{};
+	
+	Stream << PartType;
+	
+	return Stream.str();
+}
+
+auto Inspection::to_string(const std::type_info & TypeInformation) -> std::string
+{
+	if(TypeInformation == typeid(float))
+	{
+		return "single precision real";
+	}
+	else if(TypeInformation == typeid(nullptr))
+	{
+		return "nothing";
+	}
+	else if(TypeInformation == typeid(std::string))
+	{
+		return "string";
+	}
+	else if(TypeInformation == typeid(bool))
+	{
+		return "boolean";
+	}
+	else
+	{
+		UNEXPECTED_CASE("TypeInformation == "s + TypeInformation.name());
+	}
 }

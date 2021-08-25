@@ -7,11 +7,16 @@
 
 namespace Inspection
 {
-	std::ostream & operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference & DataReference);
-	std::ostream & operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Root & Root);
-	std::ostream & operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference::Part & Part);
-	std::ostream & operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataReference::Part::Type & Type);
-	std::ostream & operator<<(std::ostream & OStream, const enum Inspection::TypeDefinition::DataType & DataType);
+	auto operator<<(std::ostream & OStream, Inspection::TypeDefinition::DataReference const & DataReference) -> std::ostream &;
+	auto operator<<(std::ostream & OStream, enum Inspection::TypeDefinition::DataReference::Root const & Root) -> std::ostream &;
+	auto operator<<(std::ostream & OStream, Inspection::TypeDefinition::DataReference::Part const & Part) -> std::ostream &;
+	auto operator<<(std::ostream & OStream, enum Inspection::TypeDefinition::DataReference::Part::Type const & Type) -> std::ostream &;
+	auto operator<<(std::ostream & OStream, enum Inspection::TypeDefinition::DataType const & DataType) -> std::ostream &;
+	auto operator<<(std::ostream & OStream, enum Inspection::TypeDefinition::PartType const & PartType) -> std::ostream &;
+	
+	auto to_string(enum Inspection::TypeDefinition::DataType const & DataType) -> std::string;
+	auto to_string(enum Inspection::TypeDefinition::PartType const & PartType) -> std::string;
+	auto to_string(const std::type_info & TypeInformation) -> std::string;
 }
 
 #endif

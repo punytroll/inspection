@@ -6,8 +6,8 @@
 #include "buffer.h"
 #include "colors.h"
 #include "exception_printing.h"
-#include "helper.h"
 #include "inspector.h"
+#include "internal_output_operators.h"
 #include "output_operators.h"
 #include "query.h"
 #include "reader.h"
@@ -274,12 +274,11 @@ void Inspection::Inspector::_QueryWriter(Inspection::Value * Value, const std::s
 		else if(QueryPartSpecifications[0] == "type")
 		{
 			ASSERTION(QueryPartSpecifications.size() == 1);
-			std::cout << Inspection::GetTypeName(Value->GetData().type());
+			std::cout << Inspection::to_string(Value->GetData().type());
 		}
 		else
 		{
-			std::cerr << "Unkown query part specification \"" << QueryPartSpecifications[0] << "\"." << std::endl;
-			ASSERTION(false);
+			UNEXPECTED_CASE("QueryPartSpecifications[0] == \"" + QueryPartSpecifications[0] + '"');
 		}
 	}
 }

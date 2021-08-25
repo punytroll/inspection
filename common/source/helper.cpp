@@ -872,25 +872,25 @@ std::string Inspection::Get_ISO_IEC_10646_1_1993_UTF_8_Character_FromUnicodeCode
 	
 	if(CodePoint < 0x00000080)
 	{
-		Result << static_cast< char >(CodePoint & 0x0000007f);
+		Result << static_cast<char>(CodePoint & 0x0000007f);
 	}
 	else if(CodePoint < 0x00000800)
 	{
-		Result << static_cast< char >(0x00000c0 + ((CodePoint & 0x00000700) >> 6) + ((CodePoint & 0x000000c0) >> 6));
-		Result << static_cast< char >(0x0000080 + (CodePoint & 0x0000003f));
+		Result << static_cast<char>(0x00000c0 + ((CodePoint & 0x00000700) >> 6) + ((CodePoint & 0x000000c0) >> 6));
+		Result << static_cast<char>(0x0000080 + (CodePoint & 0x0000003f));
 	}
 	else if(CodePoint < 0x00010000)
 	{
-		Result << static_cast< char >(0x00000e0 + ((CodePoint & 0x0000f000) >> 12));
-		Result << static_cast< char >(0x0000080 + ((CodePoint & 0x00000f00) >> 6) + ((CodePoint & 0x000000c0) >> 6));
-		Result << static_cast< char >(0x0000080 + (CodePoint & 0x0000003f));
+		Result << static_cast<char>(0x00000e0 + ((CodePoint & 0x0000f000) >> 12));
+		Result << static_cast<char>(0x0000080 + ((CodePoint & 0x00000f00) >> 6) + ((CodePoint & 0x000000c0) >> 6));
+		Result << static_cast<char>(0x0000080 + (CodePoint & 0x0000003f));
 	}
 	else if(CodePoint < 0x00110000)
 	{
-		Result << static_cast< char >(0x00000f0 + ((CodePoint & 0x001c0000) >> 18));
-		Result << static_cast< char >(0x0000080 + ((CodePoint & 0x00030000) >> 12) + ((CodePoint & 0x0000f000) >> 12));
-		Result << static_cast< char >(0x0000080 + ((CodePoint & 0x00000f00) >> 6) + ((CodePoint & 0x000000c0) >> 6));
-		Result << static_cast< char >(0x0000080 + (CodePoint & 0x0000003f));
+		Result << static_cast<char>(0x00000f0 + ((CodePoint & 0x001c0000) >> 18));
+		Result << static_cast<char>(0x0000080 + ((CodePoint & 0x00030000) >> 12) + ((CodePoint & 0x0000f000) >> 12));
+		Result << static_cast<char>(0x0000080 + ((CodePoint & 0x00000f00) >> 6) + ((CodePoint & 0x000000c0) >> 6));
+		Result << static_cast<char>(0x0000080 + (CodePoint & 0x0000003f));
 	}
 	else
 	{
@@ -962,30 +962,6 @@ std::string Inspection::Get_LanguageName_From_ISO_639_2_1998_Code(const std::str
 	else
 	{
 		throw std::invalid_argument("The ISO 639-2:1998 (alpha-3) code '" + ISO_639_2_1998_Code + "' is unknown.");
-	}
-}
-
-std::string Inspection::GetTypeName(const std::type_info & TypeInformation)
-{
-	if(TypeInformation == typeid(float))
-	{
-		return "single precision real";
-	}
-	else if(TypeInformation == typeid(nullptr))
-	{
-		return "nothing";
-	}
-	else if(TypeInformation == typeid(std::string))
-	{
-		return "string";
-	}
-	else if(TypeInformation == typeid(bool))
-	{
-		return "boolean";
-	}
-	else
-	{
-		throw std::invalid_argument("Don't know how to handle type '"s + TypeInformation.name() + "'.");
 	}
 }
 

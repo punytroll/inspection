@@ -130,10 +130,6 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 			
 			break;
 		}
-	default:
-		{
-			ASSERTION(false);
-		}
 	}
 	
 	return Result;
@@ -159,10 +155,6 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
 			ExecutionStackIterator = std::begin(_ExecutionStack);
 			
 			break;
-		}
-	default:
-		{
-			ASSERTION(false);
 		}
 	}
 	Result = ExecutionStackIterator->_Result.GetValue();

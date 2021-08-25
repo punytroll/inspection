@@ -12,6 +12,7 @@
 #include "helper.h"
 #include "id3_de_unsynchronization_eager_filter.h"
 #include "id3_helper.h"
+#include "internal_output_operators.h"
 #include "reader.h"
 #include "string_cast.h"
 #include "type.h"
@@ -2729,7 +2730,8 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Frame_Header(Inspection
 		}
 		else
 		{
-			ASSERTION(false);
+			// all possible values for a 4-bit value have been handled
+			IMPOSSIBLE_CODE_REACHED("BlockSize == " + to_string_cast(BlockSize));
 		}
 	}
 	// reading
@@ -3408,7 +3410,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 	// reading
 	if(Continue == true)
 	{
-		Inspection::Reader PartReader{Reader, Inspection::Length{0, 6}};
+		auto PartReader = Inspection::Reader{Reader, Inspection::Length{0, 6}};
 		auto PartResult = Inspection::Get_UnsignedInteger_8Bit_AlternativeUnary_BoundedByLength(PartReader, {});
 		
 		Continue = PartResult->GetSuccess();
@@ -3422,7 +3424,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 		
 		switch(SubframeType)
 		{
-		case 0:
+		case 0x00:
 			{
 				Result->GetValue()->AddTag("interpretation", "SUBFRAME_LPC"s);
 				
@@ -3440,7 +3442,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 				
 				break;
 			}
-		case 2:
+		case 0x02:
 			{
 				Result->GetValue()->AddTag("interpretation", "SUBFRAME_FIXED"s);
 				
@@ -3466,9 +3468,9 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 				
 				break;
 			}
-		case 1:
-		case 3:
-		case 4:
+		case 0x01:
+		case 0x03:
+		case 0x04:
 			{
 				Result->GetValue()->AddTag("reserved"s);
 				Result->GetValue()->AddTag("error", "This subframe type MUST NOT be used."s);
@@ -3476,11 +3478,11 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 				
 				break;
 			}
-		case 5:
+		case 0x05:
 			{
 				NOT_IMPLEMENTED("SUBFRAME_VERBATIM");
 			}
-		case 6:
+		case 0x06:
 			{
 				Result->GetValue()->AddTag("interpretation", "SUBFRAME_CONSTANT"s);
 				
@@ -3488,7 +3490,8 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspectio
 			}
 		default:
 			{
-				ASSERTION(false);
+				// all possible vaues of a 6-bit unary have been handled
+				IMPOSSIBLE_CODE_REACHED("SubframeType == " + to_string_cast(SubframeType));
 			}
 		}
 	}
@@ -8822,41 +8825,53 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_Mode(Insp
 	// interpretation
 	if(Continue == true)
 	{
-		auto LayerDescription = std::any_cast<std::uint8_t>(Parameters.at("LayerDescription"));
 		auto Mode = std::any_cast<std::uint8_t>(Result->GetValue()->GetData());
 		
-		if(Mode == 0x00)
+		switch(Mode)
 		{
-			Result->GetValue()->AddTag("interpretation", "stereo"s);
-		}
-		else if(Mode == 0x01)
-		{
-			if((LayerDescription == 0x03) || (LayerDescription == 0x02))
+		case 0x00:
 			{
-				Result->GetValue()->AddTag("interpretation", "joint stereo (intensity_stereo)"s);
+				Result->GetValue()->AddTag("interpretation", "stereo"s);
+				
+				break;
 			}
-			else if(LayerDescription == 0x01)
+		case 0x01:
 			{
-				Result->GetValue()->AddTag("interpretation", "joint stereo (intensity_stereo and/or ms_stereo)"s);
+				auto LayerDescription = std::any_cast<std::uint8_t>(Parameters.at("LayerDescription"));
+				
+				if((LayerDescription == 0x03) || (LayerDescription == 0x02))
+				{
+					Result->GetValue()->AddTag("interpretation", "joint stereo (intensity_stereo)"s);
+				}
+				else if(LayerDescription == 0x01)
+				{
+					Result->GetValue()->AddTag("interpretation", "joint stereo (intensity_stereo and/or ms_stereo)"s);
+				}
+				else
+				{
+					// LayerDescription is a 2-bit value. Value 0 is reserved and an error will be produced when reading that value; 1, 2 and 3 are handled above.
+					IMPOSSIBLE_CODE_REACHED("LayerDescription == " + to_string_cast(LayerDescription));
+				}
+				
+				break;
 			}
-			else
+		case 0x02:
 			{
-				// LayerDescription is a 2-bit value. Value 0 is reserved, 1, 2 and 3 are handled above. Otherwise the program is corrupt.
-				ASSERTION(false);
+				Result->GetValue()->AddTag("interpretation", "dual_channel"s);
+				
+				break;
 			}
-		}
-		else if(Mode == 0x02)
-		{
-			Result->GetValue()->AddTag("interpretation", "dual_channel"s);
-		}
-		else if(Mode == 0x03)
-		{
-			Result->GetValue()->AddTag("interpretation", "single_channel"s);
-		}
-		else
-		{
-			// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
-			ASSERTION(false);
+		case 0x03:
+			{
+				Result->GetValue()->AddTag("interpretation", "single_channel"s);
+				
+				break;
+			}
+		default:
+			{
+				// all possile values of a 2-bit value have been handled
+				IMPOSSIBLE_CODE_REACHED("Mode == " + to_string_cast(Mode));
+			}
 		}
 	}
 	// finalization
@@ -8909,8 +8924,8 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_ModeExten
 				}
 				else
 				{
-					// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
-					ASSERTION(false);
+					// every 2-bit value is either 0, 1, 2 or 3
+					IMPOSSIBLE_CODE_REACHED("ModeExtension == " + to_string_cast(ModeExtension));
 				}
 			}
 			else if(LayerDescription == 0x01)
@@ -8937,14 +8952,14 @@ std::unique_ptr<Inspection::Result> Inspection::Get_MPEG_1_FrameHeader_ModeExten
 				}
 				else
 				{
-					// every 2-bit value is either 0, 1, 2 or 3 ... otherwise the program is corrupt.
-					ASSERTION(false);
+					// every 2-bit value is either 0, 1, 2 or 3
+					IMPOSSIBLE_CODE_REACHED("ModeExtension == " + to_string_cast(ModeExtension));
 				}
 			}
 			else
 			{
-				// LayerDescription is a 2-bit value. Value 0 is reserved, 1, 2 and 3 are handled above. Otherwise the program is corrupt.
-				ASSERTION(false);
+				// LayerDescription is a 2-bit value. Value 0 is reserved and an error will be produced when reading that value; 1, 2 and 3 are handled above.
+				IMPOSSIBLE_CODE_REACHED("LayerDescription == " + to_string_cast(LayerDescription));
 			}
 		}
 		else
@@ -9404,7 +9419,9 @@ std::unique_ptr<Inspection::Result> Inspection::Get_Ogg_Vorbis_HeaderPacket(Insp
 		}
 		else
 		{
-			ASSERTION(false);
+			Result->GetValue()->AddTag("error", "The packet type " + to_string_cast(PacketType) + " is not a valid packet type for a header packet.");
+			Result->GetValue()->AddTag("standard", "Vorbis I specification"s);
+			Continue = false;
 		}
 	}
 	// finalization
@@ -10202,7 +10219,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_RiceEnco
 		}
 		else
 		{
-			ASSERTION(false);
+			IMPOSSIBLE_CODE_REACHED("type of LeastSignificantBits is " + Inspection::to_string(Result->GetValue()->GetField("LeastSignificantBits")->GetData().type()));
 		}
 		
 		auto Rice = std::any_cast<std::uint8_t>(Parameters.at("Rice"));

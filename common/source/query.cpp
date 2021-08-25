@@ -131,7 +131,7 @@ bool Inspection::EvaluateTestQuery(Inspection::Value * Value, const std::string 
 		}
 		else
 		{
-			ASSERTION(false);
+			UNEXPECTED_CASE("QueryPartSpecifications[0] == \"" + QueryPartSpecifications[0] + '"');
 		}
 	}
 	

@@ -36,7 +36,7 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader)
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -60,7 +60,7 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -74,9 +74,13 @@ Inspection::Reader::Reader(const Inspection::Reader & Reader, const Inspection::
 		ASSERTION(_BufferCore->_StartPositionInBuffer <= _BufferCore->_Buffer.GetLength());
 		ASSERTION(_BufferCore->_EndPositionInBuffer <= _BufferCore->_Buffer.GetLength());
 	}
+	else if(Reader._ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("creating a new reader from a reader with an ID3DeUnsynchronizationEagerFilterCore, given a start position and a length");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -95,7 +99,7 @@ void Inspection::Reader::AdvancePosition(const Inspection::Length & Offset)
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -105,9 +109,13 @@ const Inspection::Buffer & Inspection::Reader::GetBuffer(void) const
 	{
 		return _BufferCore->_Buffer;
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("GetBuffer() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -117,9 +125,13 @@ const Inspection::Length & Inspection::Reader::GetReadPositionInInput(void) cons
 	{
 		return _BufferCore->_ReadPositionInBuffer;
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("GetReadPositionInInput() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -135,7 +147,7 @@ Inspection::Length Inspection::Reader::GetConsumedLength(void) const
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -151,7 +163,7 @@ Inspection::Length Inspection::Reader::CalculateRemainingOutputLength(void) cons
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -161,9 +173,13 @@ Inspection::Length Inspection::Reader::CalculateRemainingInputLength(void) const
 	{
 		return _BufferCore->_EndPositionInBuffer - _BufferCore->_ReadPositionInBuffer;
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("CalculateRemainingInputLength() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -173,9 +189,13 @@ bool Inspection::Reader::Has(const Inspection::Length & Length) const
 	{
 		return _BufferCore->_ReadPositionInBuffer + Length <= _BufferCore->_EndPositionInBuffer;
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("Has() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -191,7 +211,7 @@ bool Inspection::Reader::HasRemaining(void) const
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -207,7 +227,7 @@ bool Inspection::Reader::IsAtEnd(void) const
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -218,9 +238,13 @@ void Inspection::Reader::SetBitstreamType(Inspection::Reader::BitstreamType Bits
 		ASSERTION(_BufferCore->_ReadPositionInBuffer.GetBits() == 0);
 		_BufferCore->_BitstreamType = BitstreamType;
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("SetBitstreamType() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -230,9 +254,13 @@ bool Inspection::Reader::Read0Bits(Inspection::ReadResult & ReadResult)
 	{
 		return _BufferCore->Read0Bits(ReadResult);
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("Read0Bits() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -248,7 +276,7 @@ bool Inspection::Reader::Read1Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -258,9 +286,13 @@ bool Inspection::Reader::Read2Bits(Inspection::ReadResult & ReadResult)
 	{
 		return _BufferCore->Read2Bits(ReadResult);
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("Read2Bits() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -270,9 +302,13 @@ bool Inspection::Reader::Read3Bits(Inspection::ReadResult & ReadResult)
 	{
 		return _BufferCore->Read3Bits(ReadResult);
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("Read3Bits() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -288,7 +324,7 @@ bool Inspection::Reader::Read4Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -298,9 +334,13 @@ bool Inspection::Reader::Read5Bits(Inspection::ReadResult & ReadResult)
 	{
 		return _BufferCore->Read5Bits(ReadResult);
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("Read5Bits() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -310,9 +350,13 @@ bool Inspection::Reader::Read6Bits(Inspection::ReadResult & ReadResult)
 	{
 		return _BufferCore->Read6Bits(ReadResult);
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("Read6Bits() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -322,9 +366,13 @@ bool Inspection::Reader::Read7Bits(Inspection::ReadResult & ReadResult)
 	{
 		return _BufferCore->Read7Bits(ReadResult);
 	}
+	else if(_ID3DeUnsynchronizationEagerFilterCore != nullptr)
+	{
+		NOT_IMPLEMENTED("Read7Bits() from an ID3DeUnsynchronizationEagerFilterCore");
+	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 
@@ -340,7 +388,7 @@ bool Inspection::Reader::Read8Bits(Inspection::ReadResult & ReadResult)
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("BufferCore AND ID3DeUnsynchronizationEagerFilterCore are both null.");
 	}
 }
 

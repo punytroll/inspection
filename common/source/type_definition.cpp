@@ -18,6 +18,7 @@
 
 #include "assertion.h"
 #include "execution_context.h"
+#include "internal_output_operators.h"
 #include "length.h"
 #include "result.h"
 #include "string_cast.h"
@@ -106,7 +107,7 @@ static Type CastTo(const std::any & Any)
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Any.type() == " + Inspection::to_string(Any.type()));
 	}
 }
 
@@ -140,7 +141,7 @@ std::any Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & 
 		}
 		else
 		{
-			ASSERTION(false);
+			UNEXPECTED_CASE("Summand1Any.type() == " + Inspection::to_string(Summand1Any.type()));
 		}
 	}
 	
@@ -269,9 +270,9 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
 					
 					break;
 				}
-			default:
+			case Inspection::TypeDefinition::PartType::Type:
 				{
-					ASSERTION(false);
+					IMPOSSIBLE_CODE_REACHED("a Type should not be possible inside an Alternative");
 				}
 			}
 			Reader.AdvancePosition(PartReader->GetConsumedLength());
@@ -313,7 +314,7 @@ bool Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionCo
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Enumeration->BaseDataType == " + Inspection::to_string(Enumeration->BaseDataType));
 	}
 	
 	return Result;
@@ -335,7 +336,7 @@ std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Inspection::TypeDe
 			}
 			else
 			{
-				ASSERTION(false);
+				UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
 			}
 		}
 	}
@@ -565,10 +566,6 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 			
 			break;
 		}
-	default:
-		{
-			ASSERTION(false);
-		}
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -627,7 +624,7 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
 		}
 		else
 		{
-			ASSERTION(false);
+			UNEXPECTED_CASE("Element->GetAttribute(\"type\") == " + Element->GetAttribute("type"));
 		}
 	}
 	else if(Element->GetName() == "element-name")
@@ -682,7 +679,7 @@ std::any Inspection::TypeDefinition::Cast::GetAny(Inspection::ExecutionContext &
 		}
 	default:
 		{
-			ASSERTION(false);
+			UNEXPECTED_CASE("_DataType == " + Inspection::to_string(_DataType));
 		}
 	}
 }
@@ -760,7 +757,7 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Element->GetAttribute(\"root\") == " + Element->GetAttribute("root"));
 	}
 	for(auto ChildNode : Element->GetChilds())
 	{
@@ -790,7 +787,7 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
 			}
 			else
 			{
-				ASSERTION(false);
+				UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
 			}
 		}
 	}
@@ -821,7 +818,7 @@ std::any Inspection::TypeDefinition::Divide::GetAny(Inspection::ExecutionContext
 		}
 		else
 		{
-			ASSERTION(false);
+			UNEXPECTED_CASE("DividendAny.type() == " + Inspection::to_string(DividendAny.type()));
 		}
 	}
 	
@@ -892,7 +889,7 @@ std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinit
 						}
 						else
 						{
-							ASSERTION(false);
+							UNEXPECTED_CASE("EnumerationElementChildElement->GetName() == " + EnumerationElementChildElement->GetName());
 						}
 					}
 				}
@@ -914,14 +911,14 @@ std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinit
 						}
 						else
 						{
-							ASSERTION(false);
+							UNEXPECTED_CASE("EnumerationFallbackElementChildElement->GetName() == " + EnumerationFallbackElementChildElement->GetName());
 						}
 					}
 				}
 			}
 			else
 			{
-				ASSERTION(false);
+				UNEXPECTED_CASE("EnumerationChildElement->GetName() == " + EnumerationChildElement->GetName());
 			}
 		}
 	}
@@ -960,7 +957,7 @@ std::any Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext
 			}
 			else
 			{
-				NOT_IMPLEMENTED("Comparing two values of an unkown type.");
+				UNEXPECTED_CASE("Any1.type() == " + Inspection::to_string(Any1.type()));
 			}
 		}
 	}
@@ -1201,7 +1198,7 @@ std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefi
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Element->GetAttribute(\"root\") == " + Element->GetAttribute("root"));
 	}
 	for(auto ChildNode : Element->GetChilds())
 	{
@@ -1316,7 +1313,7 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
 			}
 			else
 			{
-				ASSERTION(false);
+				UNEXPECTED_CASE("InterpretationChildElement->GetName() == " + InterpretationChildElement->GetName());
 			}
 		}
 	}
@@ -1363,7 +1360,7 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
 			}
 			else
 			{
-				ASSERTION(false);
+				UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
 			}
 		}
 	}
@@ -1402,7 +1399,7 @@ std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDef
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Element->GetAttribute(\"root\") == " + Element->GetAttribute("root"));
 	}
 	ASSERTION(Element->HasAttribute("name") == true);
 	if(Element->GetAttribute("name") == "consumed")
@@ -1411,7 +1408,7 @@ std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDef
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Element->GetAttribute(\"name\") == " + Element->GetAttribute("name"));
 	}
 	
 	return Result;
@@ -1569,7 +1566,7 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Element->GetName() == " + Element->GetName());
 	}
 	Result->_LoadProperties(Element);
 	
@@ -1633,7 +1630,7 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Element->GetName() == " + Element->GetName());
 	}
 }
 
@@ -1706,9 +1703,9 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
 				
 				break;
 			}
-		default:
+		case Inspection::TypeDefinition::PartType::Type:
 			{
-				ASSERTION(false);
+				IMPOSSIBLE_CODE_REACHED("a Type should not be possible inside a Sequence");
 			}
 		}
 		Reader.AdvancePosition(PartReader->GetConsumedLength());
@@ -1748,7 +1745,7 @@ std::any Inspection::TypeDefinition::Subtract::GetAny(Inspection::ExecutionConte
 		}
 		else
 		{
-			ASSERTION(false);
+			UNEXPECTED_CASE("MinuendAny.type() == " + Inspection::to_string(MinuendAny.type()));
 		}
 	}
 	
@@ -1933,11 +1930,20 @@ std::any Inspection::TypeDefinition::Value::GetAny(Inspection::ExecutionContext 
 			
 			return std::get<std::uint64_t>(_Data);
 		}
-	default:
+	case Inspection::TypeDefinition::DataType::Length:
 		{
-			ASSERTION(false);
+			IMPOSSIBLE_CODE_REACHED("Length should always be an Expression, not a Value");
+		}
+	case Inspection::TypeDefinition::DataType::Parameters:
+		{
+			IMPOSSIBLE_CODE_REACHED("Parameters should always be an Expression, not a Value");
+		}
+	case Inspection::TypeDefinition::DataType::Type:
+		{
+			IMPOSSIBLE_CODE_REACHED("Type cannot be defined by Value (or Expression)");
 		}
 	}
+	IMPOSSIBLE_CODE_REACHED("switch handling of Inspection::TypeDefinition::DataType incomplete");
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Value::GetDataType(void) const
@@ -2037,7 +2043,7 @@ std::unique_ptr<Inspection::TypeDefinition::Value> Inspection::TypeDefinition::V
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("Element->GetName() == " + Element->GetName());
 	}
 	
 	return Result;
@@ -2118,6 +2124,6 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
 	}
 	else
 	{
-		ASSERTION(false);
+		UNEXPECTED_CASE("String == " + String);
 	}
 }
