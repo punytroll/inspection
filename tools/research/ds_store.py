@@ -2,8 +2,27 @@
 # intended to explore what it means to have a *flat* description of a file and what happens
 # when you follow it.
 
-# resources: https://0day.work/parsing-the-ds_store-file-format/
+# resources:
+# - https://0day.work/parsing-the-ds_store-file-format/
+# - https://formats.kaitai.io/ds_store/index.html
 
+import bitstruct
+import os
+import sys
+
+# preliminaries
+if len(sys.argv) <= 1:
+    print("Please give a .DS_Store file as a command line parameter.")
+    sys.exit(1)
+file_path = sys.argv[1]
+if os.path.exists(file_path) is False:
+    print(f"The file \"{file_path}\" does not exist.")
+    sys.exit(1)
+file = open(file_path, "rb")
+data = file.read()
+file.close()
+
+# Helper class "BytesAndBits" to store lengths and offsets in the data buffer.
 class BytesAndBits(object):
     def __init__(self, bytes, bits):
         self.bytes = bytes
@@ -26,8 +45,6 @@ class BytesAndBits(object):
     def __mul__(self, number):
         return BytesAndBits(self.bytes * number, self.bits * number)
 
-import bitstruct
-
 # reading of "basic" data types
 def get_buffer_unsigned_integer_8bit(data, offset, length):
     assert(length.bits == 0)
@@ -35,21 +52,6 @@ def get_buffer_unsigned_integer_8bit(data, offset, length):
 
 def get_unsigned_integer_32bit_big_endian(data, offset):
     return bitstruct.unpack_from("u32", data, offset.get_bits())[0]
-
-import os
-import sys
-
-# preliminaries
-if len(sys.argv) <= 1:
-    print("Please give a .DS_Store file as a command line parameter.")
-    sys.exit(1)
-file_path = sys.argv[1]
-if os.path.exists(file_path) is False:
-    print(f"The file \"{file_path}\" does not exist.")
-    sys.exit(1)
-file = open(file_path, "rb")
-data = file.read()
-file.close()
 
 # reading
 alignment_header_start = BytesAndBits(0, 0)
