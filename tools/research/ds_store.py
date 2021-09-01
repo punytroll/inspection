@@ -44,14 +44,24 @@ class BytesAndBits(object):
     
     def __mul__(self, number):
         return BytesAndBits(self.bytes * number, self.bits * number)
+    
+    def __str__(self):
+        return f"{self.bytes}.{self.bits}"
 
 # reading of "basic" data types
+def get_string_ascii_ended_by_length(data, offset, length):
+    assert(length.bits == 0)
+    return bitstruct.unpack_from(f"r{length.get_bits()}", data, offset.get_bits())[0].decode("ascii")
+
 def get_buffer_unsigned_integer_8bit(data, offset, length):
     assert(length.bits == 0)
-    return bitstruct.unpack_from(f"r{length.get_bits()}", data, offset.get_bits())[0]
+    return bitstruct.unpack_from("u8" * length.bytes, data, offset.get_bits())
 
 def get_unsigned_integer_32bit_big_endian(data, offset):
     return bitstruct.unpack_from("u32", data, offset.get_bits())[0]
+
+def get_unsigned_integer_8bit(data, offset):
+    return bitstruct.unpack_from("u8", data, offset.get_bits())[0]
 
 # reading
 alignment_header_start = BytesAndBits(0, 0)
@@ -70,3 +80,30 @@ root_block_offsets_offsets_start = root_block_offsets_start + BytesAndBits(8, 0)
 root_block_offsets_offsets = list()
 for offset_index in range(root_block_offsets_num_blocks):
     root_block_offsets_offsets.append(get_unsigned_integer_32bit_big_endian(data, root_block_offsets_offsets_start + BytesAndBits(4, 0) * offset_index))
+rest = (((root_block_offsets_num_blocks // 256) + 1) * 256) - root_block_offsets_num_blocks
+root_block_offsets_rest = get_buffer_unsigned_integer_8bit(data, root_block_offsets_offsets_start + BytesAndBits(4, 0) * root_block_offsets_num_blocks, BytesAndBits(4, 0) * rest)
+root_block_table_of_content_start = root_block_offsets_offsets_start + BytesAndBits(4, 0) * (root_block_offsets_num_blocks + rest)
+root_block_table_of_content_num_directories = get_unsigned_integer_32bit_big_endian(data, root_block_table_of_content_start)
+root_block_table_of_content_directories = dict()
+current_position = root_block_table_of_content_start + BytesAndBits(4, 0)
+for directory_index in range(root_block_table_of_content_num_directories):
+    directory_entry_len_name = get_unsigned_integer_8bit(data, current_position)
+    directory_entry_name = get_string_ascii_ended_by_length(data, current_position + BytesAndBits(1, 0), BytesAndBits(directory_entry_len_name, 0))
+    directory_entry_block_id = get_unsigned_integer_32bit_big_endian(data, current_position + BytesAndBits(1 + directory_entry_len_name, 0))
+    root_block_table_of_content_directories[directory_entry_name] = directory_entry_block_id
+    current_position += BytesAndBits(1 + directory_entry_len_name + 4, 0)
+root_block_free_list = list()
+for free_list_bucket_index in range(32):
+    free_list_bucket_counter = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position += BytesAndBits(4, 0)
+    free_list_bucket_offsets = list()
+    for free_list_bucket_offsets_index in range(free_list_bucket_counter):
+        free_list_bucket_offsets_offset = get_unsigned_integer_32bit_big_endian(data, current_position)
+        current_position += BytesAndBits(4, 0)
+        free_list_bucket_offsets.append(free_list_bucket_offsets_offset)
+    root_block_free_list.append(free_list_bucket_offsets)
+for directory_name, directory_block_id in root_block_table_of_content_directories.items():
+    raw_address = root_block_offsets_offsets[directory_block_id]
+    offset = BytesAndBits(raw_address & ~0x1f, 0) + alignment_header_end
+    size = BytesAndBits(1 << (raw_address & 0x1f), 0)
+    print(offset, size)
