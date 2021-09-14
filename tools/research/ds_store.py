@@ -10,6 +10,7 @@ import bitstruct
 import os
 import sys
 
+
 # preliminaries
 if len(sys.argv) <= 1:
     print("Please give a .DS_Store file as a command line parameter.")
@@ -22,19 +23,22 @@ file = open(file_path, "rb")
 data = file.read()
 file.close()
 
+
 # Helper class "BytesAndBits" to store lengths and offsets in the data buffer.
-class BytesAndBits(object):
+class BytesAndBits:
     def __init__(self, bytes, bits):
         self.bytes = bytes
         self.bits = bits
         self._normalize()
     
     def _normalize(self):
-        assert(self.bytes >= 0)
-        assert(self.bits >= 0)
+        while self.bits < 0:
+            self.bits += 8
+            self.bytes -= 1
         while self.bits >= 8:
             self.bits -= 8
             self.bytes += 1
+        assert self.bytes >= 0
     
     def get_bits(self):
         return self.bytes * 8 + self.bits
@@ -45,65 +49,268 @@ class BytesAndBits(object):
     def __mul__(self, number):
         return BytesAndBits(self.bytes * number, self.bits * number)
     
+    def __sub__(self, other):
+        return BytesAndBits(self.bytes - other.bytes, self.bits - other.bits)
+    
     def __str__(self):
         return f"{self.bytes}.{self.bits}"
+    
+    def __repr__(self):
+        return f"BytesAndBits({self.bytes}, {self.bits})"
+
+
+class Field:
+    def __init__(self, value, begin, length):
+        self.value = value
+        self.begin = begin
+        self.length = length
+        self.end = self.begin + self.length
+
+    def __repr__(self):
+        return f"Field(value={self.value}, begin={self.begin}, length={self.length}, end={self.end})"
+
 
 # reading of "basic" data types
-def get_string_ascii_ended_by_length(data, offset, length):
-    assert(length.bits == 0)
-    return bitstruct.unpack_from(f"r{length.get_bits()}", data, offset.get_bits())[0].decode("ascii")
+def get_buffer_unsigned_integer_8bit_ended_by_length(data, position, length):
+    assert length.bits == 0
+    return Field(bitstruct.unpack_from("u8" * length.bytes, data, position.get_bits()), position, length)
 
-def get_buffer_unsigned_integer_8bit(data, offset, length):
-    assert(length.bits == 0)
-    return bitstruct.unpack_from("u8" * length.bytes, data, offset.get_bits())
+def get_bool_8bit(data, position):
+    return Field(bitstruct.unpack_from("u8", data, position.get_bits())[0] == 0x01, position, BytesAndBits(1, 0))
+
+def get_string_ascii_ended_by_length(data, position, length):
+    assert length.bits == 0
+    return Field(bitstruct.unpack_from(f"r{length.get_bits()}", data, position.get_bits())[0].decode("ascii"), position, length)
+
+def get_string_utf16_big_endian(data, offset, length):
+    assert length.bits == 0
+    return (bitstruct.unpack_from(f"r{length.get_bits()}", data, offset.get_bits())[0].decode("utf_16_be"), length)
+
+def get_unsigned_integer_16bit_big_endian(data, offset):
+    return (bitstruct.unpack_from("u16", data, offset.get_bits())[0], BytesAndBits(2, 0))
 
 def get_unsigned_integer_32bit_big_endian(data, offset):
-    return bitstruct.unpack_from("u32", data, offset.get_bits())[0]
+    return Field(bitstruct.unpack_from("u32", data, offset.get_bits())[0], offset, BytesAndBits(4, 0))
 
-def get_unsigned_integer_8bit(data, offset):
-    return bitstruct.unpack_from("u8", data, offset.get_bits())[0]
+def get_unsigned_integer_64bit_big_endian(data, offset):
+    return (bitstruct.unpack_from("u64", data, offset.get_bits())[0], BytesAndBits(8, 0))
+
+def get_unsigned_integer_8bit(data, position):
+    return Field(bitstruct.unpack_from("u8", data, position.get_bits())[0], position, BytesAndBits(1, 0))
+
+
+# helper functions for interpreting data
+# have to be independent of file-"global" fields
+def get_offset_and_size_from_raw_address(raw_address, alignment_header_offset):
+    return (BytesAndBits(raw_address & ~0x1f, 0) + alignment_header.end, BytesAndBits(1 << (raw_address & 0x1f), 0))
+
+
+# objects that represent parts of the file's content
+class Type:
+    def __init__(self, type_name):
+        self._type_name = type_name
+
+    def __repr__(self):
+        def _get_fields_string(dictionary):
+            return ", ".join([f"{key}={value}" for key, value in dictionary.items() if key.startswith("_") is False])
+        return f"{self._type_name}({_get_fields_string(self.__dict__)})"
+
+class Blob(Type):
+    def __init__(self):
+        Type.__init__(self, "Blob")
+
+class Block(Type):
+    def __init__(self):
+        Type.__init__(self, "Block")
+
+class BuddyAllocatorHeader(Type):
+    def __init__(self):
+        Type.__init__(self, "BuddyAllocatorHeader")
+
+class MasterBlock(Type):
+    def __init__(self):
+        Type.__init__(self, "MasterBlock")
+
+class Record(Type):
+    def __init__(self):
+        Type.__init__(self, "Record")
+
+# getter functions for file objects
+# may access file-"global" fields
+def get_blob(data, position):
+    current_position = position
+    result = Blob()
+    result.length, length = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position += length
+    result.field = get_buffer_unsigned_integer_8bit_ended_by_length(data, current_position, BytesAndBits(result.length, 0))
+    current_position += result.field.length
+    return Field(result, position, current_position - position)
+
+def get_buddy_allocator_header(data, position):
+    result = BuddyAllocatorHeader()
+    result.magic = get_unsigned_integer_32bit_big_endian(data, position)
+    result.ofs_bookkeeping_info_block = get_unsigned_integer_32bit_big_endian(data, result.magic.end)
+    result.len_bookkeeping_info_block = get_unsigned_integer_32bit_big_endian(data, result.ofs_bookkeeping_info_block.end)
+    result.copy_ofs_bookkeeping_info_block = get_unsigned_integer_32bit_big_endian(data, result.len_bookkeeping_info_block.end)
+    result.unnamed4 = get_buffer_unsigned_integer_8bit_ended_by_length(data, result.copy_ofs_bookkeeping_info_block.end, BytesAndBits(16, 0))
+    return Field(result, position, result.unnamed4.end - position)
+
+def get_record(data, offset):
+    current_position = offset
+    result = Record()
+    result.file_name_length, length = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position += length
+    result.file_name = get_string_utf16_big_endian(data, current_position, BytesAndBits(result.file_name_length * 2, 0))
+    current_position += BytesAndBits(result.file_name_length * 2, 0)
+    result.structure_type, length = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
+    current_position += length
+    result.data_type, length = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
+    current_position += length
+    if result.data_type == "long":
+        result.value, length = get_unsigned_integer_32bit_big_endian(data, current_position)
+        current_position += length
+    elif result.data_type == "shor":
+        _, length = get_unsigned_integer_16bit_big_endian(data, current_position)
+        current_position += length
+        result.value, length = get_unsigned_integer_16bit_big_endian(data, current_position)
+        current_position += length
+    elif result.data_type == "bool":
+        result.value, length = get_bool_8bit(data, current_position)
+        current_position += length
+    elif result.data_type == "blob":
+        result.value = get_blob(data, current_position)
+        current_position += result.value.length
+    elif result.data_type == "type":
+        result.value, length = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
+        current_position += length
+    elif result.data_type == "ustr":
+        character_count, length = get_unsigned_integer_32bit_big_endian(data, current_position)
+        current_position += length
+        result.value, length = get_string_utf16_big_endian(data, current_position, BytesAndBits(2 * character_count, 0))
+        current_position += length
+    elif result.data_type == "comp":
+        result.value, length = get_unsigned_integer_64bit_big_endian(data, current_position)
+        current_position += length
+    elif result.data_type == "dutc":
+        result.value, length = get_unsigned_integer_64bit_big_endian(data, current_position)
+        current_position += length
+    else:
+        assert False, f"data type \"{result.data_type}\" not implemented."
+    #~ if result.structure_type == "dscl":
+        #~ assert result.data_type == "bool"
+        #~ result.value = get_bool_8bit(data, current_position)
+        #~ current_position += BytesAndBits(1, 0)
+    #~ elif result.structure_type == "fwi0":
+        #~ assert result.data_type == "blob"
+        #~ result.value, length = get_blob(data, current_position)
+        #~ assert result.value.length == 16
+        #~ print(result.value.data)
+        #~ current_position += length
+    #~ else:
+        #~ assert False, f"structure type \"{result.structure_type}\" not implemented."
+    return (result, current_position - offset)
+
+def get_block(data, block_id):
+    raw_address = root_block_offsets_offsets[block_id]
+    offset, size = get_offset_and_size_from_raw_address(raw_address, alignment_header.end)
+    current_offset = offset
+    result = Block()
+    result.mode, length = get_unsigned_integer_32bit_big_endian(data, current_offset)
+    current_offset += length
+    result.counter, length = get_unsigned_integer_32bit_big_endian(data, current_offset)
+    current_offset += length
+    result.records = list()
+    if result.mode == 0:
+        for record_index in range(result.counter):
+            record, length = get_record(data, current_offset)
+            result.records.append(record)
+            current_offset += length
+    return result, current_offset
+
+def get_root_block_offsets(data, position):
+    current_position = position
+    result = Type("Offsets")
+    result.num_blocks = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = result.num_blocks.end
+    result.unnamed1 = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = result.unnamed1.end
+    result.offsets = list()
+    for index in range(result.num_blocks.value):
+        raw_address = get_unsigned_integer_32bit_big_endian(data, current_position)
+        current_position = raw_address.end
+        result.offsets.append(raw_address)
+    rest = (((result.num_blocks.value // 256) + 1) * 256) - result.num_blocks.value
+    result.rest = get_buffer_unsigned_integer_8bit_ended_by_length(data, current_position, BytesAndBits(4, 0) * rest)
+    current_position = result.rest.end
+    return Field(result, position, current_position - position)
+
+def get_root_block_table_of_contents(data, position):
+    current_position = position
+    result = Type("TableOfContents")
+    result.num_directories = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = result.num_directories.end
+    result.directories = dict()
+    for index in range(result.num_directories.value):
+        directory_entry = Type("DirectoryEntry")
+        directory_entry.len_name = get_unsigned_integer_8bit(data, current_position)
+        current_position = directory_entry.len_name.end
+        directory_entry.name = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(directory_entry.len_name.value, 0))
+        current_position = directory_entry.name.end
+        directory_entry.block_id = get_unsigned_integer_32bit_big_endian(data, current_position)
+        current_position = directory_entry.block_id.end
+        result.directories[directory_entry.name.value] = directory_entry
+    return Field(result, position, current_position - position)
+
+def get_root_block_free_lists(data, position):
+    current_position = position
+    result = Type("FreeLists")
+    result.free_lists = list()
+    for index in range(32):
+        free_list = Type("FreeList")
+        free_list.counter = get_unsigned_integer_32bit_big_endian(data, current_position)
+        current_position = free_list.counter.end
+        free_list.offsets = list()
+        for offset_index in range(free_list.counter.value):
+            offset = get_unsigned_integer_32bit_big_endian(data, current_position)
+            current_position = offset.end
+            free_list.offsets.append(offset)
+        result.free_lists.append(free_list)
+    return Field(result, position, current_position - position)
+
+def get_root_block(data, position):
+    current_position = position
+    result = Type("RootBlock")
+    result.offsets = get_root_block_offsets(data, current_position)
+    current_position = result.offsets.end
+    result.table_of_contents = get_root_block_table_of_contents(data, current_position)
+    current_position = result.table_of_contents.end
+    result.free_lists = get_root_block_free_lists(data, current_position)
+    current_position = result.free_lists.end
+    return Field(result, position, current_position - position)
 
 # reading
-alignment_header_start = BytesAndBits(0, 0)
-alignment_header = get_unsigned_integer_32bit_big_endian(data, alignment_header_start)
-alignment_header_end = alignment_header_start + BytesAndBits(4, 0)
-buddy_allocator_header_magic = get_unsigned_integer_32bit_big_endian(data, BytesAndBits(4, 0))
-buddy_allocator_header_ofs_bookkeeping_info_block = get_unsigned_integer_32bit_big_endian(data, BytesAndBits(8, 0))
-buddy_allocator_header_len_bookkeeping_info_block = get_unsigned_integer_32bit_big_endian(data, BytesAndBits(12, 0))
-buddy_allocator_header_copy_ofs_bookkeeping_info_block = get_unsigned_integer_32bit_big_endian(data, BytesAndBits(16, 0))
-buddy_allocator_header_unnamed4 = get_buffer_unsigned_integer_8bit(data, BytesAndBits(20, 0), BytesAndBits(16, 0))
-root_block_offsets_start = alignment_header_end + BytesAndBits(buddy_allocator_header_ofs_bookkeeping_info_block, 0)
-root_block_offsets_end = root_block_offsets_start + BytesAndBits(buddy_allocator_header_len_bookkeeping_info_block, 0)
-root_block_offsets_num_blocks = get_unsigned_integer_32bit_big_endian(data, root_block_offsets_start)
-root_block_offsets_unnamed1 = get_unsigned_integer_32bit_big_endian(data, root_block_offsets_start + BytesAndBits(4, 0))
-root_block_offsets_offsets_start = root_block_offsets_start + BytesAndBits(8, 0)
-root_block_offsets_offsets = list()
-for offset_index in range(root_block_offsets_num_blocks):
-    root_block_offsets_offsets.append(get_unsigned_integer_32bit_big_endian(data, root_block_offsets_offsets_start + BytesAndBits(4, 0) * offset_index))
-rest = (((root_block_offsets_num_blocks // 256) + 1) * 256) - root_block_offsets_num_blocks
-root_block_offsets_rest = get_buffer_unsigned_integer_8bit(data, root_block_offsets_offsets_start + BytesAndBits(4, 0) * root_block_offsets_num_blocks, BytesAndBits(4, 0) * rest)
-root_block_table_of_content_start = root_block_offsets_offsets_start + BytesAndBits(4, 0) * (root_block_offsets_num_blocks + rest)
-root_block_table_of_content_num_directories = get_unsigned_integer_32bit_big_endian(data, root_block_table_of_content_start)
-root_block_table_of_content_directories = dict()
-current_position = root_block_table_of_content_start + BytesAndBits(4, 0)
-for directory_index in range(root_block_table_of_content_num_directories):
-    directory_entry_len_name = get_unsigned_integer_8bit(data, current_position)
-    directory_entry_name = get_string_ascii_ended_by_length(data, current_position + BytesAndBits(1, 0), BytesAndBits(directory_entry_len_name, 0))
-    directory_entry_block_id = get_unsigned_integer_32bit_big_endian(data, current_position + BytesAndBits(1 + directory_entry_len_name, 0))
-    root_block_table_of_content_directories[directory_entry_name] = directory_entry_block_id
-    current_position += BytesAndBits(1 + directory_entry_len_name + 4, 0)
-root_block_free_list = list()
-for free_list_bucket_index in range(32):
-    free_list_bucket_counter = get_unsigned_integer_32bit_big_endian(data, current_position)
-    current_position += BytesAndBits(4, 0)
-    free_list_bucket_offsets = list()
-    for free_list_bucket_offsets_index in range(free_list_bucket_counter):
-        free_list_bucket_offsets_offset = get_unsigned_integer_32bit_big_endian(data, current_position)
-        current_position += BytesAndBits(4, 0)
-        free_list_bucket_offsets.append(free_list_bucket_offsets_offset)
-    root_block_free_list.append(free_list_bucket_offsets)
-for directory_name, directory_block_id in root_block_table_of_content_directories.items():
-    raw_address = root_block_offsets_offsets[directory_block_id]
-    offset = BytesAndBits(raw_address & ~0x1f, 0) + alignment_header_end
-    size = BytesAndBits(1 << (raw_address & 0x1f), 0)
-    print(offset, size)
+alignment_header = get_unsigned_integer_32bit_big_endian(data, BytesAndBits(0, 0))
+print(alignment_header)
+buddy_allocator_header = get_buddy_allocator_header(data, alignment_header.end)
+print(buddy_allocator_header)
+root_block = get_root_block(data, alignment_header.end + BytesAndBits(buddy_allocator_header.value.ofs_bookkeeping_info_block.value, 0))
+print(root_block)
+# iterating the directories
+for directory_name, directory in root_block.value.table_of_contents.value.directories.items():
+    directory_master_block_raw_address = root_block.value.offsets.value.offsets[directory.block_id.value]
+    directory_master_block_offset, directory_master_block_size = get_offset_and_size_from_raw_address(directory_master_block_raw_address.value, alignment_header.end)
+    current_position = directory_master_block_offset
+    directory_master_block = MasterBlock()
+    directory_master_block.root_block_id = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = directory_master_block.root_block_id.end
+    directory_master_block.num_internal_nodes = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = directory_master_block.num_internal_nodes.end
+    directory_master_block.num_records = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = directory_master_block.num_records.end
+    directory_master_block.num_nodes = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = directory_master_block.num_nodes.end
+    directory_master_block.unnamed4 = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = directory_master_block.unnamed4.end
+    directory_master_block.root_block = get_block(data, directory_master_block.root_block_id)
+    current_position = directory_master_block.root_block.end
+    print(f"directory master block \"{directory_entry_name}\" [{directory_master_block_id}]: {directory_master_block}")
