@@ -82,12 +82,12 @@ def get_string_ascii_ended_by_length(data, position, length):
     assert length.bits == 0
     return Field(bitstruct.unpack_from(f"r{length.get_bits()}", data, position.get_bits())[0].decode("ascii"), position, length)
 
-def get_string_utf16_big_endian(data, offset, length):
+def get_string_utf16_big_endian(data, position, length):
     assert length.bits == 0
-    return (bitstruct.unpack_from(f"r{length.get_bits()}", data, offset.get_bits())[0].decode("utf_16_be"), length)
+    return Field(bitstruct.unpack_from(f"r{length.get_bits()}", data, position.get_bits())[0].decode("utf_16_be"), position, length)
 
-def get_unsigned_integer_16bit_big_endian(data, offset):
-    return (bitstruct.unpack_from("u16", data, offset.get_bits())[0], BytesAndBits(2, 0))
+def get_unsigned_integer_16bit_big_endian(data, position):
+    return Field(bitstruct.unpack_from("u16", data, position.get_bits())[0], position, BytesAndBits(2, 0))
 
 def get_unsigned_integer_32bit_big_endian(data, offset):
     return Field(bitstruct.unpack_from("u32", data, offset.get_bits())[0], offset, BytesAndBits(4, 0))
@@ -140,10 +140,10 @@ class Record(Type):
 def get_blob(data, position):
     current_position = position
     result = Blob()
-    result.length, length = get_unsigned_integer_32bit_big_endian(data, current_position)
-    current_position += length
-    result.field = get_buffer_unsigned_integer_8bit_ended_by_length(data, current_position, BytesAndBits(result.length, 0))
-    current_position += result.field.length
+    result.length = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = result.length.end
+    result.field = get_buffer_unsigned_integer_8bit_ended_by_length(data, current_position, BytesAndBits(result.length.value, 0))
+    current_position = result.field.end
     return Field(result, position, current_position - position)
 
 def get_buddy_allocator_header(data, position):
@@ -155,47 +155,39 @@ def get_buddy_allocator_header(data, position):
     result.unnamed4 = get_buffer_unsigned_integer_8bit_ended_by_length(data, result.copy_ofs_bookkeeping_info_block.end, BytesAndBits(16, 0))
     return Field(result, position, result.unnamed4.end - position)
 
-def get_record(data, offset):
-    current_position = offset
+def get_record(data, position):
+    current_position = position
     result = Record()
-    result.file_name_length, length = get_unsigned_integer_32bit_big_endian(data, current_position)
-    current_position += length
-    result.file_name = get_string_utf16_big_endian(data, current_position, BytesAndBits(result.file_name_length * 2, 0))
-    current_position += BytesAndBits(result.file_name_length * 2, 0)
-    result.structure_type, length = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
-    current_position += length
-    result.data_type, length = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
-    current_position += length
-    if result.data_type == "long":
-        result.value, length = get_unsigned_integer_32bit_big_endian(data, current_position)
-        current_position += length
-    elif result.data_type == "shor":
-        _, length = get_unsigned_integer_16bit_big_endian(data, current_position)
-        current_position += length
-        result.value, length = get_unsigned_integer_16bit_big_endian(data, current_position)
-        current_position += length
-    elif result.data_type == "bool":
-        result.value, length = get_bool_8bit(data, current_position)
-        current_position += length
-    elif result.data_type == "blob":
+    result.file_name_length = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = result.file_name_length.end
+    result.file_name = get_string_utf16_big_endian(data, current_position, BytesAndBits(result.file_name_length.value * 2, 0))
+    current_position = result.file_name.end
+    result.structure_type = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
+    current_position = result.structure_type.end
+    result.data_type = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
+    current_position = result.data_type.end
+    if result.data_type.value == "long":
+        result.value = get_unsigned_integer_32bit_big_endian(data, current_position)
+    elif result.data_type.value == "shor":
+        ignored = get_unsigned_integer_16bit_big_endian(data, current_position)
+        current_position = ignored.end
+        result.value = get_unsigned_integer_16bit_big_endian(data, current_position)
+    elif result.data_type.value == "bool":
+        result.value = get_bool_8bit(data, current_position)
+    elif result.data_type.value == "blob":
         result.value = get_blob(data, current_position)
-        current_position += result.value.length
-    elif result.data_type == "type":
-        result.value, length = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
-        current_position += length
-    elif result.data_type == "ustr":
-        character_count, length = get_unsigned_integer_32bit_big_endian(data, current_position)
-        current_position += length
-        result.value, length = get_string_utf16_big_endian(data, current_position, BytesAndBits(2 * character_count, 0))
-        current_position += length
-    elif result.data_type == "comp":
-        result.value, length = get_unsigned_integer_64bit_big_endian(data, current_position)
-        current_position += length
-    elif result.data_type == "dutc":
-        result.value, length = get_unsigned_integer_64bit_big_endian(data, current_position)
-        current_position += length
+    elif result.data_type.value == "type":
+        result.value = get_string_ascii_ended_by_length(data, current_position, BytesAndBits(4, 0))
+    elif result.data_type.value == "ustr":
+        character_count = get_unsigned_integer_32bit_big_endian(data, current_position)
+        current_position = character_count.end
+        result.value = get_string_utf16_big_endian(data, current_position, BytesAndBits(2 * character_count.value, 0))
+    elif result.data_type.value == "comp":
+        result.value = get_unsigned_integer_64bit_big_endian(data, current_position)
+    elif result.data_type.value == "dutc":
+        result.value = get_unsigned_integer_64bit_big_endian(data, current_position)
     else:
-        assert False, f"data type \"{result.data_type}\" not implemented."
+        assert False, f"data type \"{result.data_type.value}\" not implemented."
     #~ if result.structure_type == "dscl":
         #~ assert result.data_type == "bool"
         #~ result.value = get_bool_8bit(data, current_position)
@@ -208,24 +200,25 @@ def get_record(data, offset):
         #~ current_position += length
     #~ else:
         #~ assert False, f"structure type \"{result.structure_type}\" not implemented."
-    return (result, current_position - offset)
+    current_position = result.value.end
+    return Field(result, position, current_position - position)
 
 def get_block(data, block_id):
-    raw_address = root_block_offsets_offsets[block_id]
-    offset, size = get_offset_and_size_from_raw_address(raw_address, alignment_header.end)
-    current_offset = offset
+    raw_address = root_block.value.offsets.value.offsets[block_id]
+    offset, size = get_offset_and_size_from_raw_address(raw_address.value, alignment_header.end)
+    current_position = offset
     result = Block()
-    result.mode, length = get_unsigned_integer_32bit_big_endian(data, current_offset)
-    current_offset += length
-    result.counter, length = get_unsigned_integer_32bit_big_endian(data, current_offset)
-    current_offset += length
+    result.mode = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = result.mode.end
+    result.counter = get_unsigned_integer_32bit_big_endian(data, current_position)
+    current_position = result.counter.end
     result.records = list()
-    if result.mode == 0:
-        for record_index in range(result.counter):
-            record, length = get_record(data, current_offset)
+    if result.mode.value == 0:
+        for record_index in range(result.counter.value):
+            record = get_record(data, current_position)
             result.records.append(record)
-            current_offset += length
-    return result, current_offset
+            current_position = record.end
+    return Field(result, offset, current_position - offset)
 
 def get_root_block_offsets(data, position):
     current_position = position
@@ -311,6 +304,6 @@ for directory_name, directory in root_block.value.table_of_contents.value.direct
     current_position = directory_master_block.num_nodes.end
     directory_master_block.unnamed4 = get_unsigned_integer_32bit_big_endian(data, current_position)
     current_position = directory_master_block.unnamed4.end
-    directory_master_block.root_block = get_block(data, directory_master_block.root_block_id)
+    directory_master_block.root_block = get_block(data, directory_master_block.root_block_id.value)
     current_position = directory_master_block.root_block.end
-    print(f"directory master block \"{directory_entry_name}\" [{directory_master_block_id}]: {directory_master_block}")
+    print(f"directory master block \"{directory_name}\" [{directory.block_id.value}]: {directory_master_block}")
