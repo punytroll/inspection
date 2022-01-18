@@ -566,6 +566,7 @@ int main(int argc, char ** argv)
 	auto QueryPrefix = "--query="s;
 	auto NumberOfArguments = argc;
 	auto ArgumentIndex = 0;
+	auto Result = 0;
 	
 	while(++ArgumentIndex < NumberOfArguments)
 	{
@@ -604,20 +605,36 @@ int main(int argc, char ** argv)
 				Inspector.PushType(Inspection::SplitString(TypeParts, '/'));
 			}
 		}
+        else if(Argument == "--read-stdin")
+        {
+            if(Inspector.GetReadFromStandardInput() == false)
+            {
+                Inspector.SetReadFromStandardInput();
+            }
+            else
+            {
+                Result = 1;
+            }
+        }
 		else
 		{
 			Inspector.PushPath(Argument);
 		}
 	}
-	
-	auto Result = 0;
-	
-	if(Inspector.GetPathCount() == 0)
+	if((Result != 0) || ((Inspector.GetPathCount() == 0) && (Inspector.GetReadFromStandardInput() == false)))
 	{
-		std::cerr << "Usage: " << argv[0] << " <paths> ..." << std::endl;
-		Result = 1;
+		std::cerr << "Usage: " << argv[0] << " [<paths>|--] [options]\n";
+        std::cerr << "    --read-stdin        read from standard input\n";
+        std::cerr << "    --query=<query>     query for some specific data\n";
+        std::cerr << "    --top-level         prints only the top-level fields\n";
+        std::cerr << "    --types=<type>,...  forces interpretation as a sequence of specific types\n";
+        std::cerr << "    --verbose           more appended fields on some type getters\n";
+        if(Result == 0)
+        {
+            Result = 1;
+        }
 	}
-	else
+	if(Result == 0)
 	{
 		Result = ((Inspector.Process() == true) ? (0) : (1));
 	}
