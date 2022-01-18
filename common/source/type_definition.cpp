@@ -1039,6 +1039,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		Result = Inspection::TypeDefinition::LengthReference::Load(Element);
 	}
+    else if(Element->GetName() == "less-than")
+    {
+        Result = Inspection::TypeDefinition::LessThan::Load(Element);
+    }
 	else if(Element->GetName() == "parameter-reference")
 	{
 		Result = Inspection::TypeDefinition::ParameterReference::Load(Element);
@@ -1339,6 +1343,11 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Length::GetData
 	return Inspection::TypeDefinition::DataType::Length;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// LengthReference                                                                               //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::Length::Load(const XML::Element * Element)
 {
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::Length>{new Inspection::TypeDefinition::Length{}};
@@ -1413,6 +1422,78 @@ std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDef
 	
 	return Result;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// LessThan                                                                                      //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+std::any Inspection::TypeDefinition::LessThan::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	auto Any1 = m_Expression1->GetAny(ExecutionContext);
+	auto Any2 = m_Expression2->GetAny(ExecutionContext);
+
+	if((Any1.has_value() == true) && (Any2.has_value() == true))
+	{
+		if(Any1.type() == Any2.type())
+		{
+			if(Any1.type() == typeid(std::uint8_t))
+			{
+				return std::any_cast<const std::uint8_t &>(Any1) < std::any_cast<const std::uint8_t &>(Any2);
+			}
+			else if(Any1.type() == typeid(std::uint16_t))
+			{
+				return std::any_cast<const std::uint16_t &>(Any1) < std::any_cast<const std::uint16_t &>(Any2);
+			}
+			else if(Any1.type() == typeid(std::uint32_t))
+			{
+				return std::any_cast<const std::uint32_t &>(Any1) < std::any_cast<const std::uint32_t &>(Any2);
+			}
+			else
+			{
+				UNEXPECTED_CASE("Any1.type() == " + Inspection::to_string(Any1.type()));
+			}
+		}
+	}
+
+	return false;
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::LessThan::GetDataType(void) const
+{
+	return TypeDefinition::DataType::Boolean;
+}
+
+std::unique_ptr<Inspection::TypeDefinition::LessThan> Inspection::TypeDefinition::LessThan::Load(const XML::Element * Element)
+{
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::LessThan>{new Inspection::TypeDefinition::LessThan{}};
+	auto First = true;
+	
+	for(auto ChildNode : Element->GetChilds())
+	{
+		if(ChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
+			
+			if(First == true)
+			{
+				Result->m_Expression1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				First = false;
+			}
+			else
+			{
+				Result->m_Expression2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+			}
+		}
+	}
+	
+	return Result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// ParameterReference                                                                            //
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::any Inspection::TypeDefinition::ParameterReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
