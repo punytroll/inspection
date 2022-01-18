@@ -64,11 +64,32 @@ class Field:
         self.value = value
         self.begin = begin
         self.length = length
-        self.end = self.begin + self.length
+        self.name = None
+        if self.begin is None or self.length is None:
+            self.end = None
+        else:
+            self.end = self.begin + self.length
+        self.__fields = list()
+    
+    def add_field(self, name, field):
+        field.name = name
+        self.__fields.append(field)
 
     def __repr__(self):
-        return f"Field(value={self.value}, begin={self.begin}, length={self.length}, end={self.end})"
-
+        properties = list()
+        if self.name is not None:
+            properties.append(f"name={self.name}")
+        if self.value is not None:
+            properties.append(f"value={self.value}")
+        if self.begin is not None:
+            properties.append(f"begin={self.begin}")
+        if self.length is not None:
+            properties.append(f"length={self.length}")
+        if self.end is not None:
+            properties.append(f"end={self.end}")
+        if len(self.__fields) > 0:
+            properties.append(f"""fields=({", ".join(map(repr, self.__fields))})""")
+        return f"""Field({", ".join(properties)})"""
 
 # reading of "basic" data types
 def get_buffer_unsigned_integer_8bit_ended_by_length(data, position, length):
@@ -282,8 +303,11 @@ def get_root_block(data, position):
     return Field(result, position, current_position - position)
 
 # reading
+file = Field(None, None, None)
+file.name = "DSStoreFile"
 alignment_header = get_unsigned_integer_32bit_big_endian(data, BytesAndBits(0, 0))
-print(alignment_header)
+file.add_field("AlignmentHeader", alignment_header)
+print(file)
 buddy_allocator_header = get_buddy_allocator_header(data, alignment_header.end)
 print(buddy_allocator_header)
 root_block = get_root_block(data, alignment_header.end + BytesAndBits(buddy_allocator_header.value.ofs_bookkeeping_info_block.value, 0))
