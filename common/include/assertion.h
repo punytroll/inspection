@@ -39,7 +39,7 @@ inline auto __AssertionLog(char const * ExpressionString, char const * File, std
 	std::cerr << "Assertion failed:";
 	if(Message.empty() == false)
 	{
-		std::cerr << '"' << Message << '"';
+		std::cerr << " \"" << Message << '"';
 	}
 	std::cerr << "\n\tExpected: " << ExpressionString << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
 }
