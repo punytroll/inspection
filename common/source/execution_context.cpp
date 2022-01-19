@@ -107,6 +107,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
 						else
 						{
 							++ExecutionStackIterator;
+							ASSERTION_MESSAGE(ExecutionStackIterator != std::end(_ExecutionStack), "Could not find the field \"" + PartIterator->DetailName + "\" on the execution stack.");
 							Result = ExecutionStackIterator->_Result.GetValue();
 							if(Result->HasField(PartIterator->DetailName) == true)
 							{
