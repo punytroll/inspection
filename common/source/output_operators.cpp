@@ -521,21 +521,53 @@ auto Inspection::to_string(enum Inspection::TypeDefinition::PartType const & Par
 
 auto Inspection::to_string(const std::type_info & TypeInformation) -> std::string
 {
-	if(TypeInformation == typeid(float))
+	if(TypeInformation == typeid(bool))
 	{
-		return "single precision real";
+		return "boolean";
 	}
 	else if(TypeInformation == typeid(nullptr))
 	{
 		return "nothing";
 	}
+	else if(TypeInformation == typeid(std::int8_t))
+	{
+		return "signed integer 8bit";
+	}
+	else if(TypeInformation == typeid(std::int16_t))
+	{
+		return "signed integer 16bit";
+	}
+	else if(TypeInformation == typeid(std::int32_t))
+	{
+		return "signed integer 32bit";
+	}
+	else if(TypeInformation == typeid(std::int64_t))
+	{
+		return "signed integer 64bit";
+	}
+	else if(TypeInformation == typeid(float))
+	{
+		return "single precision real";
+	}
 	else if(TypeInformation == typeid(std::string))
 	{
 		return "string";
 	}
-	else if(TypeInformation == typeid(bool))
+	else if(TypeInformation == typeid(std::uint8_t))
 	{
-		return "boolean";
+		return "unsigned integer 8bit";
+	}
+	else if(TypeInformation == typeid(std::uint16_t))
+	{
+		return "unsigned integer 16bit";
+	}
+	else if(TypeInformation == typeid(std::uint32_t))
+	{
+		return "unsigned integer 32bit";
+	}
+	else if(TypeInformation == typeid(std::uint64_t))
+	{
+		return "unsigned integer 64bit";
 	}
 	else
 	{
