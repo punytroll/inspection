@@ -17,6 +17,12 @@
 #define IMPOSSIBLE_CODE_REACHED(Message) { __Log("Impossible code reached", __FILE__, __LINE__, __func__, Message); abort(); }
 
 /**
+ * Use this assertion macro to indicate erroneous input data.
+ * Even though, in production code, these errors should be handled with error reporting, possibly using exceptions, during development a short assertion might just be enough.
+ **/
+#define INVALID_INPUT_IF(Expression, Message) { if((Expression) == true) { __ExpressionLog("Invalid input", #Expression, __FILE__, __LINE__, __func__, Message); abort(); } }
+
+/**
  * Use this assertion macro, to indicate places where the implementation is not yet complete.
  * Especially useful for unimplemented functions.
  **/
@@ -33,7 +39,17 @@ inline auto __AssertionLog(char const * ExpressionString, char const * File, std
 	std::cerr << "Assertion failed:";
 	if(Message.empty() == false)
 	{
-		std::cerr << "\"" << Message << "\"";
+		std::cerr << '"' << Message << '"';
+	}
+	std::cerr << "\n\tExpected: " << ExpressionString << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
+}
+
+inline auto __ExpressionLog(char const * LogCase, char const * ExpressionString, char const * File, std::uint64_t Line, const char * Function, const std::string & Message = "") -> void
+{
+	std::cerr << LogCase << ": ";
+	if(Message.empty() == false)
+	{
+		std::cerr << '"' << Message << '"';
 	}
 	std::cerr << "\n\tExpected: " << ExpressionString << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
 }
@@ -52,6 +68,7 @@ inline auto __Log(char const * LogCase, char const * File, std::uint64_t Line, c
 #define ASSERTION(Expression) ;
 #define ASSERTION_MESSAGE(Expression, Message) ;
 #define IMPOSSIBLE_CODE_REACHED(Message) ;
+#define INVALID_INPUT_IF(Expression, Message) ;
 #define NOT_IMPLEMENTED(Message) ;
 #define UNEXPECTED_CASE(Message) ;
 #endif
