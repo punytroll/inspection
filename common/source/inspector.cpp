@@ -2,8 +2,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include <iterator>
-
 #include "assertion.h"
 #include "buffer.h"
 #include "colors.h"
@@ -17,7 +15,7 @@
 using namespace std::string_literals;
 
 Inspection::Inspector::Inspector() :
-    m_ReadFromStandardInput{false}
+	m_ReadFromStandardInput{false}
 {
 }
 
@@ -32,38 +30,35 @@ std::uint_fast32_t Inspection::Inspector::GetPathCount(void) const
 
 auto Inspection::Inspector::GetReadFromStandardInput() -> bool
 {
-    return m_ReadFromStandardInput;
+	return m_ReadFromStandardInput;
 }
 
 bool Inspection::Inspector::Process(void)
 {
 	auto Result = true;
 	
-    if(m_ReadFromStandardInput == true)
-    {
-        auto MemoryBuffer = std::vector<std::uint8_t>{};
-        
-        std::copy(std::istream_iterator<std::uint8_t>(std::cin), std::istream_iterator<std::uint8_t>{}, std::back_inserter(MemoryBuffer));
-        
-        auto Buffer = Inspection::Buffer{&(*MemoryBuffer.begin()), Inspection::Length{MemoryBuffer.size(), 0}};
-        
-        m_ProcessBuffer(Buffer, "StandardInput");
-    }
-    else
-    {
-        for(auto Path : _Paths)
-        {
-            try
-            {
-                Result &= _ProcessPath(std::filesystem::directory_entry(Path));
-            }
-            catch(const std::exception & Exception)
-            {
-                Inspection::PrintExceptions(Exception);
-                Result = false;
-            }
-        }
-    }
+	if(m_ReadFromStandardInput == true)
+	{
+		auto MemoryBuffer = m_ReadBufferFromStandardInput();
+		auto Buffer = Inspection::Buffer{&(*MemoryBuffer.cbegin()), Inspection::Length{MemoryBuffer.size(), 0}};
+		
+		m_ProcessBuffer(Buffer, "StandardInput");
+	}
+	else
+	{
+		for(auto Path : _Paths)
+		{
+			try
+			{
+				Result &= _ProcessPath(std::filesystem::directory_entry(Path));
+			}
+			catch(const std::exception & Exception)
+			{
+				Inspection::PrintExceptions(Exception);
+				Result = false;
+			}
+		}
+	}
 	
 	return Result;
 }
@@ -73,28 +68,48 @@ void Inspection::Inspector::PushPath(const std::filesystem::path & Path)
 	_Paths.push_back(Path);
 }
 
+auto Inspection::Inspector::m_ReadBufferFromStandardInput() -> std::vector<std::uint8_t>
+{
+	std::freopen(nullptr, "rb", stdin);
+	
+	auto BytesRead = std::vector<std::uint8_t>::size_type{0};
+	auto BufferSize = std::vector<std::uint8_t>::size_type{1024};
+	auto Buffer = std::vector<std::uint8_t>{};
+	
+	do
+	{
+		Buffer.resize(BufferSize);
+		std::cin.read(reinterpret_cast<char *>(&(*(Buffer.begin() + BytesRead))), BufferSize - BytesRead);
+		BytesRead += std::cin.gcount();
+		BufferSize *= 2;
+	} while(BytesRead == Buffer.size());
+	Buffer.resize(BytesRead);
+	
+	return Buffer;
+}
+
 auto Inspection::Inspector::SetReadFromStandardInput() -> void
 {
-    m_ReadFromStandardInput = true;
+	m_ReadFromStandardInput = true;
 }
 
 auto Inspection::Inspector::m_ProcessBuffer(const Inspection::Buffer & Buffer, std::string_view Name) -> bool
 {
-    auto FileResult = std::make_unique<Inspection::Result>();
-    
-    FileResult->GetValue()->SetName(Inspection::g_BrightGreen + std::string{Name} + Inspection::g_BrightWhite);
-    
-    auto LengthTag = FileResult->GetValue()->AddTag("length", Buffer.GetLength());
-    
-    LengthTag->AddTag("unit", "bytes and bits"s);
-    
-    auto InnerResult = _Getter(Buffer);
-    
-    FileResult->GetValue()->Extend(InnerResult->ExtractValue());
-    FileResult->SetSuccess(InnerResult->GetSuccess());
-    _Writer(FileResult);
-    
-    return FileResult->GetSuccess();
+	auto FileResult = std::make_unique<Inspection::Result>();
+	
+	FileResult->GetValue()->SetName(Inspection::g_BrightGreen + std::string{Name} + Inspection::g_BrightWhite);
+	
+	auto LengthTag = FileResult->GetValue()->AddTag("length", Buffer.GetLength());
+	
+	LengthTag->AddTag("unit", "bytes and bits"s);
+	
+	auto InnerResult = _Getter(Buffer);
+	
+	FileResult->GetValue()->Extend(InnerResult->ExtractValue());
+	FileResult->SetSuccess(InnerResult->GetSuccess());
+	_Writer(FileResult);
+	
+	return FileResult->GetSuccess();
 }
 
 bool Inspection::Inspector::_ProcessPath(const std::filesystem::directory_entry & DirectoryEntry)
@@ -154,9 +169,9 @@ bool Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 		else
 		{
 			auto Buffer = Inspection::Buffer{Address, Inspection::Length(FileSize, 0)};
-            
-            Result = m_ProcessBuffer(Buffer, Path.string());
-            munmap(Address, FileSize);
+			
+			Result = m_ProcessBuffer(Buffer, Path.string());
+			munmap(Address, FileSize);
 		}
 		close(FileDescriptor);
 	}
@@ -164,7 +179,7 @@ bool Inspection::Inspector::_ProcessFile(const std::filesystem::directory_entry 
 	return Result;
 }
 
-void Inspection::Inspector::_Writer(std::unique_ptr< Inspection::Result > & Result)
+void Inspection::Inspector::_Writer(std::unique_ptr<Inspection::Result> & Result)
 {
 	std::cout << *(Result->GetValue());
 	if(Result->GetSuccess() == false)
