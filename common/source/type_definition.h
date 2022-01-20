@@ -609,7 +609,8 @@ namespace Inspection
 				AtLeastOneUntilFailureOrLength,
 				ForEachField,
 				NumberOfElements,
-				UntilFailureOrLength
+				UntilFailureOrLength,
+				UntilLength
 			};
 		public:
 			~Array(void) override = default;

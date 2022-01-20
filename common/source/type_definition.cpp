@@ -595,6 +595,54 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 			
 			break;
 		}
+	case Inspection::TypeDefinition::Array::IterateType::UntilLength:
+		{
+			auto ElementParameters = GetElementParameters(ExecutionContext);
+			
+			ASSERTION(m_ElementType != nullptr);
+			
+			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
+			
+			while((Continue == true) && (Reader.HasRemaining() == true))
+			{
+				auto ElementReader = Inspection::Reader{Reader};
+				
+				ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
+				
+				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+				
+				Continue = ElementResult->GetSuccess();
+				if(Continue == true)
+				{
+					ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+					if(ElementName.has_value() == true)
+					{
+						Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+					}
+					else
+					{
+						Result->GetValue()->AppendField(ElementResult->ExtractValue());
+					}
+					Reader.AdvancePosition(ElementReader.GetConsumedLength());
+				}
+				else
+				{
+					break;
+				}
+			}
+			if(Reader.IsAtEnd() == true)
+			{
+				Result->GetValue()->AddTag("ended by length"s);
+			}
+			else
+			{
+				Result->GetValue()->AddTag("ended by failure"s);
+			}
+			Result->GetValue()->AddTag("number of elements", ElementIndexInArray);
+			
+			break;
+		}
 	}
 	ExecutionContext.Pop();
 	// finalization
@@ -649,6 +697,11 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
 		else if(Element->GetAttribute("type") == "until-failure-or-length")
 		{
 			IterateType = Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength;
+			ASSERTION(XML::HasChildNodes(Element) == false);
+		}
+		else if(Element->GetAttribute("type") == "until-length")
+		{
+			IterateType = Inspection::TypeDefinition::Array::IterateType::UntilLength;
 			ASSERTION(XML::HasChildNodes(Element) == false);
 		}
 		else
@@ -865,8 +918,12 @@ std::any Inspection::TypeDefinition::Divide::GetAny(Inspection::ExecutionContext
 	ASSERTION(DividendAny.type() == DivisorAny.type());
 	if(DividendAny.type() == typeid(float))
 	{
-		return std::any_cast<float>(DividendAny) / std::any_cast<float>(DivisorAny);
+		return static_cast<float>(std::any_cast<float>(DividendAny) / std::any_cast<float>(DivisorAny));
 	}
+    else if(DividendAny.type() == typeid(std::uint16_t))
+    {
+		return static_cast<std::uint16_t>(std::any_cast<std::uint16_t>(DividendAny) / std::any_cast<std::uint16_t>(DivisorAny));
+    }
 	else
 	{
 		UNEXPECTED_CASE("DividendAny.type() == " + Inspection::to_string(DividendAny.type()));
@@ -2116,6 +2173,10 @@ std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Tag
 	{
 		Result->m_Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
 	}
+	else
+	{
+		ASSERTION_MESSAGE(XML::HasChildNodes(Element) == false, "Tag values must be given as an expression (i.e. <string>Value</string>).");
+	}
 	
 	return Result;
 }
@@ -2173,7 +2234,7 @@ std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefin
 			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
 			
 			ASSERTION(ChildElement != nullptr);
-			ASSERTION(ChildElement->GetName() == "part");
+			ASSERTION_MESSAGE(ChildElement->GetName() == "part", "\"part\" was expected but \"" + ChildElement->GetName() + "\" was found.");
 			ASSERTION(ChildElement->GetChilds().size() == 1);
 			
 			auto PartText = dynamic_cast<const XML::Text *>(ChildElement->GetChild(0));
