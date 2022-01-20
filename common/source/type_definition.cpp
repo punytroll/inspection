@@ -283,6 +283,12 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
 					
 					break;
 				}
+			case Inspection::TypeDefinition::PartType::Select:
+				{
+					Result->GetValue()->Extend(PartResult->ExtractValue());
+					
+					break;
+				}
 			case Inspection::TypeDefinition::PartType::Sequence:
 				{
 					Result->GetValue()->Extend(PartResult->ExtractValue());
@@ -1057,31 +1063,34 @@ std::any Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext
 	
 	ASSERTION(Expression1Any.has_value() == true);
 	ASSERTION(Expression2Any.has_value() == true);
-	ASSERTION(Expression1Any.type() == Expression2Any.type());
-	if(Expression1Any.type() == typeid(std::uint8_t))
-	{
-		return std::any_cast<const std::uint8_t &>(Expression1Any) == std::any_cast<const std::uint8_t &>(Expression2Any);
-	}
-	else if(Expression1Any.type() == typeid(std::uint16_t))
-	{
-		return std::any_cast<const std::uint16_t &>(Expression1Any) == std::any_cast<const std::uint16_t &>(Expression2Any);
-	}
-	else if(Expression1Any.type() == typeid(std::uint32_t))
-	{
-		return std::any_cast<const std::uint32_t &>(Expression1Any) == std::any_cast<const std::uint32_t &>(Expression2Any);
-	}
-	else if(Expression1Any.type() == typeid(Inspection::GUID))
-	{
-		return std::any_cast<const Inspection::GUID &>(Expression1Any) == std::any_cast<const Inspection::GUID &>(Expression2Any);
-	}
-	else if(Expression1Any.type() == typeid(std::string))
-	{
-		return std::any_cast<const std::string &>(Expression1Any) == std::any_cast<const std::string &>(Expression2Any);
-	}
-	else
-	{
-		UNEXPECTED_CASE("Expression1Any.type() == " + Inspection::to_string(Expression1Any.type()));
-	}
+    // if we compare two values of different types, they are definitively not equal
+	if(Expression1Any.type() == Expression2Any.type())
+    {
+        if(Expression1Any.type() == typeid(std::uint8_t))
+        {
+            return std::any_cast<const std::uint8_t &>(Expression1Any) == std::any_cast<const std::uint8_t &>(Expression2Any);
+        }
+        else if(Expression1Any.type() == typeid(std::uint16_t))
+        {
+            return std::any_cast<const std::uint16_t &>(Expression1Any) == std::any_cast<const std::uint16_t &>(Expression2Any);
+        }
+        else if(Expression1Any.type() == typeid(std::uint32_t))
+        {
+            return std::any_cast<const std::uint32_t &>(Expression1Any) == std::any_cast<const std::uint32_t &>(Expression2Any);
+        }
+        else if(Expression1Any.type() == typeid(Inspection::GUID))
+        {
+            return std::any_cast<const Inspection::GUID &>(Expression1Any) == std::any_cast<const Inspection::GUID &>(Expression2Any);
+        }
+        else if(Expression1Any.type() == typeid(std::string))
+        {
+            return std::any_cast<const std::string &>(Expression1Any) == std::any_cast<const std::string &>(Expression2Any);
+        }
+        else
+        {
+            UNEXPECTED_CASE("Expression1Any.type() == " + Inspection::to_string(Expression1Any.type()));
+        }
+    }
 	
 	return false;
 }
@@ -1890,10 +1899,6 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
 	{
 		Result = Inspection::TypeDefinition::Array::Load(Element);
 	}
-	else if(Element->GetName() == "sequence")
-	{
-		Result = Inspection::TypeDefinition::Sequence::Load(Element);
-	}
 	else if(Element->GetName() == "field")
 	{
 		Result = Inspection::TypeDefinition::Field::Load(Element);
@@ -1905,6 +1910,14 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
 	else if(Element->GetName() == "forward")
 	{
 		Result = Inspection::TypeDefinition::Forward::Load(Element);
+	}
+	else if(Element->GetName() == "select")
+	{
+		Result = Inspection::TypeDefinition::Select::Load(Element);
+	}
+	else if(Element->GetName() == "sequence")
+	{
+		Result = Inspection::TypeDefinition::Sequence::Load(Element);
 	}
 	else
 	{
@@ -1965,7 +1978,7 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
 		ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward) || (m_PartType == Inspection::TypeDefinition::PartType::Sequence));
 		Interpretations.push_back(Inspection::TypeDefinition::AddTag::Load(Element));
 	}
-	else if((Element->GetName() == "alternative") || (Element->GetName() == "sequence") || (Element->GetName() == "field") || (Element->GetName() == "fields") || (Element->GetName() == "forward") || (Element->GetName() == "array"))
+	else if((Element->GetName() == "alternative") || (Element->GetName() == "array") || (Element->GetName() == "field") || (Element->GetName() == "fields") || (Element->GetName() == "forward") || (Element->GetName() == "select") || (Element->GetName() == "sequence"))
 	{
 		ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Sequence) || (m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Alternative));
 		Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));
@@ -1974,6 +1987,182 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
 	{
 		UNEXPECTED_CASE("Element->GetName() == " + Element->GetName());
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Select                                                                                        //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Inspection::TypeDefinition::Select::Select(void) :
+	Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Select}
+{
+}
+
+auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
+	auto Result = std::make_unique<Inspection::Result>();
+	auto Continue = true;
+	
+	ExecutionContext.Push(*this, *Result, Reader, Parameters);
+    for(auto CaseIterator = std::begin(m_Cases); CaseIterator != std::end(m_Cases); ++CaseIterator)
+    {
+        auto & Case = *CaseIterator;
+        auto WhenAny = Case->GetWhen().GetAny(ExecutionContext);
+        
+        ASSERTION(WhenAny.type() == typeid(bool));
+        if(std::any_cast<bool>(WhenAny) == true)
+        {
+            if(Case->HasPart() == true)
+            {
+                auto const & Part = Case->GetPart();
+                auto PartReader = std::unique_ptr<Inspection::Reader>{};
+                
+                if(Part.Length != nullptr)
+                {
+                    PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part.Length->GetAny(ExecutionContext)));
+                }
+                else
+                {
+                    PartReader = std::make_unique<Inspection::Reader>(Reader);
+                }
+                
+                auto PartParameters = Part.GetParameters(ExecutionContext);
+                auto PartResult = Part.Get(ExecutionContext, *PartReader, PartParameters);
+                
+                Continue = PartResult->GetSuccess();
+                switch(Part.GetPartType())
+                {
+                case Inspection::TypeDefinition::PartType::Alternative:
+                    {
+                        Result->GetValue()->Extend(PartResult->ExtractValue());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::PartType::Array:
+                    {
+                        ASSERTION(Part.FieldName.has_value() == true);
+                        Result->GetValue()->AppendField(Part.FieldName.value(), PartResult->ExtractValue());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::PartType::Field:
+                    {
+                        ASSERTION(Part.FieldName.has_value() == true);
+                        Result->GetValue()->AppendField(Part.FieldName.value(), PartResult->ExtractValue());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::PartType::Fields:
+                    {
+                        Result->GetValue()->Extend(PartResult->ExtractValue());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::PartType::Forward:
+                    {
+                        Result->GetValue()->Extend(PartResult->ExtractValue());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::PartType::Select:
+                    {
+                        Result->GetValue()->Extend(PartResult->ExtractValue());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::PartType::Sequence:
+                    {
+                        Result->GetValue()->Extend(PartResult->ExtractValue());
+                        
+                        break;
+                    }
+                case Inspection::TypeDefinition::PartType::Type:
+                    {
+                        IMPOSSIBLE_CODE_REACHED("a Type should not be possible inside a Sequence");
+                    }
+                }
+                Reader.AdvancePosition(PartReader->GetConsumedLength());
+            }
+            
+            break;
+        }
+    }
+	ExecutionContext.Pop();
+	// finalization
+	Result->SetSuccess(Continue);
+	
+	return Result;
+}
+
+auto Inspection::TypeDefinition::Select::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Select>
+{
+	return std::unique_ptr<Inspection::TypeDefinition::Select>{new Inspection::TypeDefinition::Select{}};
+}
+
+auto Inspection::TypeDefinition::Select::_LoadProperty(XML::Element const * Element) -> void
+{
+	if(Element->GetName() == "case")
+	{
+        m_Cases.push_back(Inspection::TypeDefinition::Select::Case::Load(Element));
+    }
+	else
+	{
+		UNEXPECTED_CASE("Element->GetName() == " + Element->GetName());
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Select::Case                                                                                  //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+auto Inspection::TypeDefinition::Select::Case::GetPart() const -> Inspection::TypeDefinition::Part const &
+{
+    ASSERTION(m_Part != nullptr);
+    
+    return *m_Part;
+}
+
+auto Inspection::TypeDefinition::Select::Case::GetWhen() const -> Inspection::TypeDefinition::Expression const &
+{
+    ASSERTION(m_When != nullptr);
+    
+    return *m_When;
+}
+
+auto Inspection::TypeDefinition::Select::Case::HasPart() const -> bool
+{
+    return m_Part != nullptr;
+}
+
+auto Inspection::TypeDefinition::Select::Case::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Select::Case>
+{
+	ASSERTION(Element != nullptr);
+	
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Select::Case>{new Inspection::TypeDefinition::Select::Case{}};
+	
+	for(auto ChildNode : Element->GetChilds())
+	{
+		if(ChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
+			
+            if(ChildElement->GetName() == "when")
+            {
+                ASSERTION(Result->m_When== nullptr);
+                Result->m_When = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+            }
+            else
+            {
+                ASSERTION(Result->m_Part == nullptr);
+                Result->m_Part = Inspection::TypeDefinition::Part::Load(ChildElement);
+            }
+		}
+	}
+	INVALID_INPUT_IF(Result->m_When == nullptr, "Case parts need a <when> specification.");
+	
+	return Result;
 }
 
 
@@ -1994,7 +2183,7 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
 	ExecutionContext.Push(*this, *Result, Reader, Parameters);
 	for(auto PartIterator = std::begin(Parts); ((Continue == true) && (PartIterator != std::end(Parts))); ++PartIterator)
 	{
-		const auto & Part = *PartIterator;
+		auto const & Part = *PartIterator;
 		auto PartReader = std::unique_ptr<Inspection::Reader>{};
 		
 		if(Part->Length != nullptr)
@@ -2039,6 +2228,12 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
 				break;
 			}
 		case Inspection::TypeDefinition::PartType::Forward:
+			{
+				Result->GetValue()->Extend(PartResult->ExtractValue());
+				
+				break;
+			}
+		case Inspection::TypeDefinition::PartType::Select:
 			{
 				Result->GetValue()->Extend(PartResult->ExtractValue());
 				

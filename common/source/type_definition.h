@@ -69,6 +69,7 @@ namespace Inspection
 			Field,
 			Fields,
 			Forward,
+            Select,
 			Sequence,
 			Type
 		};
@@ -677,6 +678,44 @@ namespace Inspection
 			Forward(Inspection::TypeDefinition::Forward && Forward) = delete;
 			auto operator=(Inspection::TypeDefinition::Forward const & Forward) -> Inspection::TypeDefinition::Forward & = delete;
 			auto operator=(Inspection::TypeDefinition::Forward && Forward) -> Inspection::TypeDefinition::Forward & = delete;
+		};
+		
+		class Select : public Inspection::TypeDefinition::Part
+		{
+		public:
+			static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Select>;
+		public:
+			~Select(void) override = default;
+			auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
+        private:
+            class Case
+            {
+            public:
+                static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Select::Case>;
+            public:
+                auto GetPart() const -> Inspection::TypeDefinition::Part const &;
+                auto GetWhen() const -> Inspection::TypeDefinition::Expression const &;
+                auto HasPart() const -> bool;
+            private:
+                Case(void) = default;
+                Case(Inspection::TypeDefinition::Select::Case const & Case) = delete;
+                Case(Inspection::TypeDefinition::Select::Case && Case) = delete;
+                auto operator=(Inspection::TypeDefinition::Select::Case const & Case) -> Inspection::TypeDefinition::Select::Case & = delete;
+                auto operator=(Inspection::TypeDefinition::Select::Case && Case) -> Inspection::TypeDefinition::Select::Case & = delete;
+            private:
+                std::unique_ptr<Inspection::TypeDefinition::Part> m_Part;
+                std::unique_ptr<Inspection::TypeDefinition::Expression> m_When;
+            };
+		protected:
+			auto _LoadProperty(XML::Element const * Element) -> void override;
+		private:
+			Select(void);
+			Select(Inspection::TypeDefinition::Select const & Select) = delete;
+			Select(Inspection::TypeDefinition::Select && Select) = delete;
+			auto operator=(Inspection::TypeDefinition::Select const & Select) -> Inspection::TypeDefinition::Select & = delete;
+			auto operator=(Inspection::TypeDefinition::Select && Select) -> Inspection::TypeDefinition::Select & = delete;
+        private:
+            std::vector<std::unique_ptr<Inspection::TypeDefinition::Select::Case>> m_Cases;
 		};
 		
 		class Sequence : public Inspection::TypeDefinition::Part

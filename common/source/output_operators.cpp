@@ -489,6 +489,10 @@ auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinit
 		{
 			return OStream << "Forward";
 		}
+    case Inspection::TypeDefinition::PartType::Select:
+        {
+            return OStream << "Select";
+        }
 	case Inspection::TypeDefinition::PartType::Sequence:
 		{
 			return OStream << "Sequence";

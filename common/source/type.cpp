@@ -95,6 +95,12 @@ std::unique_ptr<Inspection::Result> Inspection::TypeDefinition::Type::Get(Inspec
 					
 					break;
 				}
+			case Inspection::TypeDefinition::PartType::Select:
+				{
+					Result->GetValue()->Extend(PartResult->ExtractValue());
+					
+					break;
+				}
 			case Inspection::TypeDefinition::PartType::Sequence:
 				{
 					Result->GetValue()->Extend(PartResult->ExtractValue());

@@ -10,6 +10,11 @@
 			<interpretation>
 				<apply-enumeration>
 					<enumeration base-data-type="unsigned integer 8bit">
+						<element base-value="0" valid="false">
+							<tag name="interpretation">
+								<string>Invalid</string>
+							</tag>
+						</element>
 						<element base-value="20" valid="true">
 							<tag name="interpretation">
 								<string>ChangeCipherSpec</string>
@@ -45,24 +50,10 @@
 			</interpretation>
 		</field>
 		<field name="ProtocolVersion">
-			<sequence>
-				<field name="Major">
-					<type-reference>
-						<part>Number</part>
-						<part>Integer</part>
-						<part>Unsigned</part>
-						<part>8Bit</part>
-					</type-reference>
-				</field>
-				<field name="Minor">
-					<type-reference>
-						<part>Number</part>
-						<part>Integer</part>
-						<part>Unsigned</part>
-						<part>8Bit</part>
-					</type-reference>
-				</field>
-			</sequence>
+			<type-reference>
+				<part>SSL_TLS</part>
+				<part>Version</part>
+			</type-reference>
 		</field>
 		<field name="Length">
 			<type-reference>
@@ -78,5 +69,36 @@
 				</less-than>
 			</verification>
 		</field>
+		<select>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ContentType</field>
+							<tag>interpretation</tag>
+						</data-reference>
+						<string>Handshake</string>
+					</equals>
+				</when>
+				<field name="Fragment">
+					<type-reference>
+						<part>SSL_TLS</part>
+						<part>HandshakeFragment</part>
+					</type-reference>
+					<tag name="protocol">
+						<data-reference root="type">
+							<field>ContentType</field>
+							<tag>interpretation</tag>
+						</data-reference>
+					</tag>
+				</field>
+			</case>
+		</select>
+		<tag name="content">
+			<data-reference root="type">
+				<field>ContentType</field>
+				<tag>interpretation</tag>
+			</data-reference>
+		</tag>
 	</sequence>
 </type>
