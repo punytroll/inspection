@@ -1,0 +1,82 @@
+<type>
+	<sequence>
+		<field name="ContentType">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+			<interpretation>
+				<apply-enumeration>
+					<enumeration base-data-type="unsigned integer 8bit">
+						<element base-value="20" valid="true">
+							<tag name="interpretation">
+								<string>ChangeCipherSpec</string>
+							</tag>
+						</element>
+						<element base-value="21" valid="true">
+							<tag name="interpretation">
+								<string>Alert</string>
+							</tag>
+						</element>
+						<element base-value="22" valid="true">
+							<tag name="interpretation">
+								<string>Handshake</string>
+							</tag>
+						</element>
+						<element base-value="23" valid="true">
+							<tag name="interpretation">
+								<string>Application</string>
+							</tag>
+						</element>
+						<element base-value="24" valid="true">
+							<tag name="interpretation">
+								<string>Heartbeat</string>
+							</tag>
+						</element>
+						<fallback-element valid="false">
+							<tag name="interpretation">
+								<nothing/>
+							</tag>
+						</fallback-element>
+					</enumeration>
+				</apply-enumeration>
+			</interpretation>
+		</field>
+		<field name="ProtocolVersion">
+			<sequence>
+				<field name="Major">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+				</field>
+				<field name="Minor">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+				</field>
+			</sequence>
+		</field>
+		<field name="Length">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_BigEndian</part>
+			</type-reference>
+			<verification>
+				<less-than>
+					<data-reference root="current"/>
+					<unsigned-integer-16bit>16384</unsigned-integer-16bit>
+				</less-than>
+			</verification>
+		</field>
+	</sequence>
+</type>

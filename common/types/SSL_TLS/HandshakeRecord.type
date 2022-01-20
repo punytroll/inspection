@@ -1,0 +1,179 @@
+<type>
+	<sequence>
+		<field name="RecordHeader">
+			<type-reference>
+				<part>SSL_TLS</part>
+				<part>RecordHeader</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<data-reference root="current">
+						<field>ContentType</field>
+						<tag>interpretation</tag>
+					</data-reference>
+					<string>Handshake</string>
+				</equals>
+			</verification>
+		</field>
+		<field name="Type">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="Length">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>24Bit_BigEndian</part>
+			</type-reference>
+		</field>
+		<field name="ClientVersion">
+			<sequence>
+				<field name="Major">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+				</field>
+				<field name="Minor">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+				</field>
+			</sequence>
+		</field>
+		<field name="ClientRandom">
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>32</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+		<field name="SessionIDLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<field name="SessionID">
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>SessionIDLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+		<field name="CipherSuiteDataLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_BigEndian</part>
+			</type-reference>
+			<verification>
+				<equals>
+					<modulus>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>2</unsigned-integer-16bit>
+					</modulus>
+					<unsigned-integer-16bit>0</unsigned-integer-16bit>
+				</equals>
+			</verification>
+		</field>
+		<array name="CipherSuites">
+			<iterate type="number-of-elements">
+				<unsigned-integer-64bit>
+					<divide>
+						<data-reference root="type">
+							<field>CipherSuiteDataLength</field>
+						</data-reference>
+						<unsigned-integer-16bit>2</unsigned-integer-16bit>
+					</divide>
+				</unsigned-integer-64bit>
+			</iterate>
+			<element-type>
+				<part>SSL_TLS</part>
+				<part>CipherSuite</part>
+			</element-type>
+			<element-name>CipherSuite</element-name>
+		</array>
+		<field name="NumberOfCompressionMethods">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+		</field>
+		<array name="CompressionMethods">
+			<iterate type="number-of-elements">
+				<unsigned-integer-64bit>
+					<data-reference root="type">
+						<field>NumberOfCompressionMethods</field>
+					</data-reference>
+				</unsigned-integer-64bit>
+			</iterate>
+			<element-type>
+				<part>SSL_TLS</part>
+				<part>CompressionMethod</part>
+			</element-type>
+			<element-name>CompressionMethod</element-name>
+		</array>
+		<field name="ExtensionsDataLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_BigEndian</part>
+			</type-reference>
+		</field>
+		<array name="Extensions">
+			<iterate type="until-failure-or-length"/>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>ExtensionsDataLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+			<element-type>
+				<part>SSL_TLS</part>
+				<part>Extension</part>
+			</element-type>
+			<element-name>Extension</element-name>
+		</array>
+	</sequence>
+</type>

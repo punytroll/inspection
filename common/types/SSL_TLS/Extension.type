@@ -1,0 +1,432 @@
+<type>
+	<alternative>
+		<sequence>
+			<tag name="extension">
+				<string>ServerName</string>
+			</tag>
+			<field name="Type">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>0</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+			<field name="DataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<array name="Entries">
+				<iterate type="until-length"/>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>DataLength</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+				<element-name>Entry</element-name>
+				<element-type>
+					<part>SSL_TLS</part>
+					<part>ServerNameEntry</part>
+				</element-type>
+			</array>
+		</sequence>
+		<sequence>
+			<tag name="extension">
+				<string>StatusRequest</string>
+			</tag>
+			<field name="Type">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>5</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+			<field name="DataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<field name="CertificateStatusType">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>8Bit</part>
+				</type-reference>
+				<interpretation>
+					<apply-enumeration>
+						<enumeration base-data-type="unsigned integer 8bit">
+							<element base-value="1" valid="true">
+								<tag name="interpretation">
+									<string>OCSP</string>
+								</tag>
+							</element>
+							<fallback-element valid="true">
+								<tag name="interpretation">
+									<nothing/>
+								</tag>
+							</fallback-element>
+						</enumeration>
+					</apply-enumeration>
+				</interpretation>
+			</field>
+			<field name="ResponderIDDataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>0</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+			<field name="RequestExtensionsDataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>0</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+		</sequence>
+		<sequence>
+			<tag name="extension">
+				<string>SupportedGroups</string>
+			</tag>
+			<field name="Type">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>10</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+			<field name="DataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<field name="CurvesListDataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<array name="CurvesList">
+				<iterate type="until-length"/>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>CurvesListDataLength</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+				<element-name>Curve</element-name>
+				<element-type>
+					<part>SSL_TLS</part>
+					<part>Curve</part>
+				</element-type>
+			</array>
+		</sequence>
+		<sequence>
+			<tag name="extension">
+				<string>Elliptic Curve Point Formats</string>
+			</tag>
+			<field name="Type">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>11</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+			<field name="DataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<field name="PointFormatsListDataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>8Bit</part>
+				</type-reference>
+			</field>
+			<array name="PointFormats">
+				<iterate type="until-length"/>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>PointFormatsListDataLength</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+				<element-name>PointFormat</element-name>
+				<element-type>
+					<part>SSL_TLS</part>
+					<part>ECPointFormat</part>
+				</element-type>
+			</array>
+		</sequence>
+		<sequence>
+			<tag name="extension">
+				<string>Signature Algorithms</string>
+			</tag>
+			<field name="Type">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>13</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+			<field name="DataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<field name="AlgorithmsListDataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<array name="Algorithms">
+				<iterate type="until-length"/>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>AlgorithmsListDataLength</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+				<element-name>Algorithm</element-name>
+				<element-type>
+					<part>SSL_TLS</part>
+					<part>SignatureScheme</part>
+				</element-type>
+			</array>
+		</sequence>
+		<sequence>
+			<tag name="extension">
+				<string>Renegotiation Info</string>
+			</tag>
+			<field name="Type">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>65281</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+			<field name="DataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<field name="RenegotiationInfoDataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>8Bit</part>
+				</type-reference>
+			</field>
+			<field name="RenegotiationInfoData">
+				<type-reference>
+					<part>Buffer</part>
+					<part>UnsignedInteger_8Bit_EndedByLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>RenegotiationInfoDataLength</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+		</sequence>
+		<sequence>
+			<tag name="extension">
+				<string>Signed Certificate Timestamp</string>
+			</tag>
+			<field name="Type">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+				<verification>
+					<equals>
+						<data-reference root="current"/>
+						<unsigned-integer-16bit>18</unsigned-integer-16bit>
+					</equals>
+				</verification>
+			</field>
+			<field name="DataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<field name="Data">
+				<type-reference>
+					<part>Buffer</part>
+					<part>UnsignedInteger_8Bit_EndedByLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>DataLength</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+		</sequence>
+		<sequence>
+			<tag name="extension">
+				<nothing/>
+			</tag>
+			<field name="Type">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<field name="DataLength">
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Unsigned</part>
+					<part>16Bit_BigEndian</part>
+				</type-reference>
+			</field>
+			<field name="Data">
+				<type-reference>
+					<part>Buffer</part>
+					<part>UnsignedInteger_8Bit_EndedByLength</part>
+				</type-reference>
+				<length>
+					<bytes>
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>DataLength</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</bytes>
+					<bits>
+						<unsigned-integer-64bit>0</unsigned-integer-64bit>
+					</bits>
+				</length>
+			</field>
+		</sequence>
+	</alternative>
+</type>

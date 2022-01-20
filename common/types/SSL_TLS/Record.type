@@ -1,0 +1,10 @@
+<type>
+	<alternative>
+		<forward>
+			<type-reference>
+				<part>SSL_TLS</part>
+				<part>HandshakeRecord</part>
+			</type-reference>
+		</forward>
+	</alternative>
+</type>

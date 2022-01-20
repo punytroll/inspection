@@ -1,0 +1,51 @@
+<type>
+	<forward>
+		<type-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_BigEndian</part>
+		</type-reference>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 16bit">
+					<element base-value="23" valid="true">
+						<tag name="interpretation">
+							<string>secp256r1</string>
+						</tag>
+					</element>
+					<element base-value="24" valid="true">
+						<tag name="interpretation">
+							<string>secp384r1</string>
+						</tag>
+					</element>
+					<element base-value="25" valid="true">
+						<tag name="interpretation">
+							<string>secp256r1</string>
+						</tag>
+					</element>
+					<element base-value="29" valid="true">
+						<tag name="interpretation">
+							<string>x25519</string>
+						</tag>
+					</element>
+					<element base-value="256" valid="true">
+						<tag name="interpretation">
+							<string>ffdhe2048</string>
+						</tag>
+					</element>
+					<element base-value="257" valid="true">
+						<tag name="interpretation">
+							<string>ffdhe3072</string>
+						</tag>
+					</element>
+					<fallback-element valid="false">
+						<tag name="interpretation">
+							<nothing/>
+						</tag>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
+	</forward>
+</type>

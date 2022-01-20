@@ -1,0 +1,63 @@
+<type>
+	<sequence>
+		<field name="Length">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_BigEndian</part>
+			</type-reference>
+		</field>
+		<field name="Type">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>8Bit</part>
+			</type-reference>
+			<interpretation>
+				<apply-enumeration>
+					<enumeration base-data-type="unsigned integer 8bit">
+						<element base-value="0" valid="true">
+							<tag name="interpretation">
+								<string>Hostname</string>
+							</tag>
+						</element>
+						<fallback-element valid="false">
+							<tag name="interpretation">
+								<nothing/>
+							</tag>
+						</fallback-element>
+					</enumeration>
+				</apply-enumeration>
+			</interpretation>
+		</field>
+		<field name="NameLength">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>16Bit_BigEndian</part>
+			</type-reference>
+		</field>
+		<field name="Name">
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>Printable_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<unsigned-integer-64bit>
+						<data-reference root="type">
+							<field>NameLength</field>
+						</data-reference>
+					</unsigned-integer-64bit>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+	</sequence>
+</type>

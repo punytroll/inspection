@@ -1,0 +1,116 @@
+<type>
+	<forward>
+		<type-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>16Bit_BigEndian</part>
+		</type-reference>
+		<interpretation>
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 16bit">
+					<element base-value="10" valid="true">
+						<tag name="interpretation">
+							<string>TLS_RSA_WITH_3DES_EDE_CBC_SHA</string>
+						</tag>
+					</element>
+					<element base-value="47" valid="true">
+						<tag name="interpretation">
+							<string>TLS_RSA_WITH_AES_128_CBC_SHA</string>
+						</tag>
+					</element>
+					<element base-value="53" valid="true">
+						<tag name="interpretation">
+							<string>TLS_RSA_WITH_AES_256_CBC_SHA</string>
+						</tag>
+					</element>
+					<element base-value="156" valid="true">
+						<tag name="interpretation">
+							<string>TLS_RSA_WITH_AES_128_GCM_SHA256</string>
+						</tag>
+					</element>
+					<element base-value="157" valid="true">
+						<tag name="interpretation">
+							<string>TLS_RSA_WITH_AES_256_GCM_SHA384</string>
+						</tag>
+					</element>
+					<element base-value="4865" valid="true">
+						<tag name="interpretation">
+							<string>TLS_AES_128_GCM_SHA256</string>
+						</tag>
+					</element>
+					<element base-value="4866" valid="true">
+						<tag name="interpretation">
+							<string>TLS_AES_256_GCM_SHA384</string>
+						</tag>
+					</element>
+					<element base-value="4867" valid="true">
+						<tag name="interpretation">
+							<string>TLS_CHACHA20_POLY1305_SHA256</string>
+						</tag>
+					</element>
+					<element base-value="49161" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA</string>
+						</tag>
+					</element>
+					<element base-value="49162" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA</string>
+						</tag>
+					</element>
+					<element base-value="49170" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA</string>
+						</tag>
+					</element>
+					<element base-value="49171" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA</string>
+						</tag>
+					</element>
+					<element base-value="49172" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA</string>
+						</tag>
+					</element>
+					<element base-value="49195" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</string>
+						</tag>
+					</element>
+					<element base-value="49196" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</string>
+						</tag>
+					</element>
+					<element base-value="49199" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</string>
+						</tag>
+					</element>
+					<element base-value="49200" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</string>
+						</tag>
+					</element>
+					<element base-value="52392" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256</string>
+						</tag>
+					</element>
+					<element base-value="52393" valid="true">
+						<tag name="interpretation">
+							<string>TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256</string>
+						</tag>
+					</element>
+					<fallback-element valid="true">
+						<tag name="interpretation">
+							<nothing/>
+						</tag>
+					</fallback-element>
+				</enumeration>
+			</apply-enumeration>
+		</interpretation>
+	</forward>
+</type>
