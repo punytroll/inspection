@@ -1,0 +1,10 @@
+<type>
+	<array name="Stream">
+		<iterate type="until-failure-or-length"/>
+		<element-type>
+			<part>SSL_TLS</part>
+			<part>TLSPlaintext</part>
+		</element-type>
+		<element-name>TLSPlaintext</element-name>
+	</array>
+</type>

@@ -7,12 +7,6 @@
 				<part>Unsigned</part>
 				<part>8Bit</part>
 			</type-reference>
-			<verification>
-				<equals>
-					<data-reference root="current"/>
-					<unsigned-integer-8bit>3</unsigned-integer-8bit>
-				</equals>
-			</verification>
 		</field>
 		<field name="Minor">
 			<type-reference>
@@ -44,7 +38,7 @@
 								<string>TLS 1.3</string>
 							</tag>
 						</element>
-						<fallback-element valid="false">
+						<fallback-element valid="true">
 							<tag name="interpretation">
 								<nothing/>
 							</tag>

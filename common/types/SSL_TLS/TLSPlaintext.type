@@ -93,6 +93,29 @@
 					</tag>
 				</field>
 			</case>
+			<case>
+				<when>
+					<boolean>true</boolean>
+				</when>
+				<field name="FragmentData">
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>
+								<data-reference root="type">
+									<field>Length</field>
+								</data-reference>
+							</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+			</case>
 		</select>
 		<tag name="content">
 			<data-reference root="type">

@@ -52,7 +52,7 @@
 						</element>
 						<element base-value="16" valid="true">
 							<tag name="interpretation">
-								<string>application_lay_protocol_negotiation</string>
+								<string>application_layer_protocol_negotiation</string>
 							</tag>
 						</element>
 						<element base-value="18" valid="true">
@@ -73,6 +73,35 @@
 						<element base-value="21" valid="true">
 							<tag name="interpretation">
 								<string>padding</string>
+							</tag>
+						</element>
+						<element base-value="23" valid="true">
+							<tag name="interpretation">
+								<string>extended_master_secret</string>
+							</tag>
+							<tag name="rfc">
+								<string>7627</string>
+							</tag>
+						</element>
+						<element base-value="28" valid="true">
+							<tag name="interpretation">
+								<string>record_size_limit</string>
+							</tag>
+							<tag name="rfc">
+								<string>8449</string>
+							</tag>
+						</element>
+						<element base-value="34" valid="true">
+							<tag name="interpretation">
+								<string>delegated_credential</string>
+							</tag>
+						</element>
+						<element base-value="35" valid="true">
+							<tag name="interpretation">
+								<string>session_ticket</string>
+							</tag>
+							<tag name="rfc">
+								<string>5077</string>
 							</tag>
 						</element>
 						<element base-value="41" valid="true">
@@ -130,7 +159,7 @@
 								<string>renegotiation_info</string>
 							</tag>
 						</element>
-						<fallback-element valid="false">
+						<fallback-element valid="true">
 							<tag name="interpretation">
 								<nothing/>
 							</tag>
@@ -148,6 +177,47 @@
 			</type-reference>
 		</field>
 		<select>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>Type</field>
+							<tag>interpretation</tag>
+						</data-reference>
+						<string>delegated_credential</string>
+					</equals>
+				</when>
+				<sequence>
+					<field name="SupportedSignatureAlgorithmsDataLength">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>16Bit_BigEndian</part>
+						</type-reference>
+					</field>
+					<array name="SupportedSignatureAlgorithms">
+						<iterate type="until-length"/>
+						<length>
+							<bytes>
+								<unsigned-integer-64bit>
+									<data-reference root="type">
+										<field>SupportedSignatureAlgorithmsDataLength</field>
+									</data-reference>
+								</unsigned-integer-64bit>
+							</bytes>
+							<bits>
+								<unsigned-integer-64bit>0</unsigned-integer-64bit>
+							</bits>
+						</length>
+						<element-name>SupportedSignatureAlgorithm</element-name>
+						<element-type>
+							<part>SSL_TLS</part>
+							<part>SignatureScheme</part>
+						</element-type>
+					</array>
+				</sequence>
+			</case>
 			<case>
 				<when>
 					<equals>
@@ -188,6 +258,54 @@
 						</element-type>
 					</array>
 				</sequence>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>Type</field>
+							<tag>interpretation</tag>
+						</data-reference>
+						<string>extended_master_secret</string>
+					</equals>
+				</when>
+				<field name="ExtendedMasterSecret">
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>
+								<data-reference root="type">
+									<field>DataLength</field>
+								</data-reference>
+							</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>Type</field>
+							<tag>interpretation</tag>
+						</data-reference>
+						<string>record_size_limit</string>
+					</equals>
+				</when>
+				<field name="RecordSizeLimit">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_BigEndian</part>
+					</type-reference>
+				</field>
 			</case>
 			<case>
 				<when>
@@ -258,6 +376,35 @@
 						<part>ServerNameEntry</part>
 					</element-type>
 				</array>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>Type</field>
+							<tag>interpretation</tag>
+						</data-reference>
+						<string>session_ticket</string>
+					</equals>
+				</when>
+				<field name="SessionTicket">
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>
+								<data-reference root="type">
+									<field>DataLength</field>
+								</data-reference>
+							</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
 			</case>
 			<case>
 				<when>
