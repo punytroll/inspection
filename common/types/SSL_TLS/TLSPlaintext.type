@@ -95,6 +95,29 @@
 			</case>
 			<case>
 				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ContentType</field>
+							<tag>interpretation</tag>
+						</data-reference>
+						<string>Alert</string>
+					</equals>
+				</when>
+				<field name="Fragment">
+					<type-reference>
+						<part>SSL_TLS</part>
+						<part>AlertFragment</part>
+					</type-reference>
+					<tag name="protocol">
+						<data-reference root="type">
+							<field>ContentType</field>
+							<tag>interpretation</tag>
+						</data-reference>
+					</tag>
+				</field>
+			</case>
+			<case>
+				<when>
 					<boolean>true</boolean>
 				</when>
 				<field name="FragmentData">
