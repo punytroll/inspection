@@ -98,5 +98,8 @@
 				</bits>
 			</length>
 		</tag>
+		<tag name="type name">
+			<string>ICONDIRENTRY</string>
+		</tag>
 	</sequence>
 </type>

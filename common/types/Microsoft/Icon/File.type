@@ -1,0 +1,24 @@
+<type>
+	<sequence>
+		<field name="IconDirectory">
+			<type-reference>
+				<part>Microsoft</part>
+				<part>Icon</part>
+				<part>IconDirectory</part>
+			</type-reference>
+		</field>
+		<array name="ImageData">
+			<iterate type="for-each-field">
+				<field-reference root="type">
+					<field>IconDirectory</field>
+					<field>Entries</field>
+				</field-reference>
+			</iterate>
+			<element-name>Image</element-name>
+			<element-type>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</element-type>
+		</array>
+	</sequence>
+</type>
