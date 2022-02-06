@@ -16,8 +16,9 @@
 			</iterate>
 			<element-name>Image</element-name>
 			<element-type>
-				<part>Buffer</part>
-				<part>UnsignedInteger_8Bit_EndedByLength</part>
+				<part>Microsoft</part>
+				<part>Icon</part>
+				<part>ImageData</part>
 			</element-type>
 		</array>
 	</sequence>

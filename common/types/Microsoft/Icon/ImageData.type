@@ -1,0 +1,17 @@
+<type>
+	<alternative>
+		<fields>
+			<type-reference>
+				<part>Microsoft</part>
+				<part>BMP</part>
+				<part>BitmapFileRest</part>
+			</type-reference>
+		</fields>
+		<field name="Data">
+			<type-reference>
+				<part>Buffer</part>
+				<part>UnsignedInteger_8Bit_EndedByLength</part>
+			</type-reference>
+		</field>
+	</alternative>
+</type>

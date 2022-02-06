@@ -31,6 +31,29 @@
 
 using namespace std::string_literals;
 
+static auto AppendLengthTag(Inspection::Value * Value, Inspection::Length const & Length, std::string const & LengthName) -> Inspection::Value *
+{
+    auto Result = Value->AddTag(LengthName, Length);
+    
+    Result->AddTag("unit", "bytes and bits"s);
+    
+    return Result;
+}
+
+static auto AppendLengthField(Inspection::Value * Value, std::string const & FieldName, Inspection::Length const & Length) -> Inspection::Value *
+{
+    auto Result = Value->AppendField(FieldName);
+    
+    AppendLengthTag(Result, Length, "length");
+    
+    return Result;
+}
+
+static auto AppendOtherData(Inspection::Value * Value, Inspection::Length const & Length) -> Inspection::Value *
+{
+    return AppendLengthField(Value, "OtherData", Length);
+}
+
 static void ApplyTag(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Tag & Tag, Inspection::Value * Target)
 {
 	if(Tag.HasExpression() == true)
@@ -477,22 +500,38 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 			{
 				auto & Properties = ElementProperties[ElementPropertiesIndex];
 				
-				ASSERTION(Reader.GetReadPositionInInput() == Properties.first);
-				
-				auto ElementReader = Inspection::Reader{Reader, Properties.second};
-				auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
-				
-				Continue = ElementResult->GetSuccess();
-				if(ElementName.has_value() == true)
-				{
-					Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
-				}
-				else
-				{
-					Result->GetValue()->AppendField(ElementResult->ExtractValue());
-				}
-				Reader.AdvancePosition(ElementReader.GetConsumedLength());
-				++NumberOfAppendedElements;
+                ASSERTION(Reader.GetReadPositionInInput() == Properties.first);
+                
+                auto ElementReader = Inspection::Reader{Reader, Properties.second};
+                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                
+                Continue = ElementResult->GetSuccess();
+                if(Continue == true)
+                {
+                    if(ElementReader.HasRemaining() == true)
+                    {
+                        ElementResult->GetValue()->AddTag("error", "The element reader did not process as much data as requested by the iterator field!"s);
+                        ElementResult->GetValue()->AddTag("requested data length", Properties.second);
+                        ElementResult->GetValue()->AddTag("processed data length", ElementReader.GetConsumedLength());
+                    }
+                    if(ElementName.has_value() == true)
+                    {
+                        Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+                    }
+                    else
+                    {
+                        Result->GetValue()->AppendField(ElementResult->ExtractValue());
+                    }
+                    Reader.AdvancePosition(ElementReader.GetConsumedLength());
+                    ++NumberOfAppendedElements;
+                    if(ElementReader.HasRemaining() == true)
+                    {
+                        auto OtherDataLength = Properties.second - ElementReader.GetConsumedLength();
+                        
+                        AppendOtherData(Result->GetValue(), OtherDataLength);
+                        Reader.AdvancePosition(OtherDataLength);
+                    }
+                }
 			}
 			Result->GetValue()->AddTag("number of elements", NumberOfAppendedElements);
 			
