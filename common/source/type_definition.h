@@ -111,6 +111,25 @@ namespace Inspection
 			std::unique_ptr<Inspection::TypeDefinition::Expression> m_Summand2;
 		};
 		
+		class And : public Inspection::TypeDefinition::Expression
+		{
+		public:
+			static std::unique_ptr<Inspection::TypeDefinition::And> Load(const XML::Element * Element);
+		public:
+			virtual ~And(void) = default;
+			std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
+			Inspection::TypeDefinition::DataType GetDataType(void) const override;
+		private:
+			And(void) = default;
+			And(const Inspection::TypeDefinition::And & And) = delete;
+			And(Inspection::TypeDefinition::And && And) = delete;
+			Inspection::TypeDefinition::And & operator=(const Inspection::TypeDefinition::And & And) = delete;
+			Inspection::TypeDefinition::And & operator=(Inspection::TypeDefinition::And && And) = delete;
+		private:
+			std::unique_ptr<Inspection::TypeDefinition::Expression> m_Operand1;
+			std::unique_ptr<Inspection::TypeDefinition::Expression> m_Operand2;
+		};
+		
 		class Cast : public Inspection::TypeDefinition::Expression
 		{
 		public:
