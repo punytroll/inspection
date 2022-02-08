@@ -10,12 +10,12 @@
 
 namespace Inspection
 {
-	class Module;
 	class Result;
 	class Reader;
 	
 	namespace TypeDefinition
 	{
+        class Module;
 		class Type;
 	}
 	
@@ -24,12 +24,12 @@ namespace Inspection
 	public:
 		TypeRepository(void);
 		~TypeRepository(void);
-		std::unique_ptr<Inspection::Result> Get(const std::vector<std::string> & PathParts, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-		const Inspection::TypeDefinition::Type * GetType(const std::vector<std::string> & PathParts);
+		auto Get(std::vector<std::string> const & PathParts, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>;
+		auto GetType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type const *;
 	private:
-		Inspection::TypeDefinition::Type * _GetOrLoadType(const std::vector<std::string> & PathParts);
-		Module * _GetOrLoadModule(const std::vector<std::string> & PathParts);
-		Module * _RootModule;
+		auto m_GetOrLoadType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type *;
+		auto m_GetOrLoadModule(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Module *;
+		std::unique_ptr<Inspection::TypeDefinition::Module> m_RootModule;
 	};
 	
 	extern TypeRepository g_TypeRepository;

@@ -8,87 +8,85 @@
 #include "type.h"
 #include "type_repository.h"
 #include "type_library_path.h"
+#include "xml_puny_dom.h"
 
 namespace Inspection
 {
 	Inspection::TypeRepository g_TypeRepository;
-
-	class Module
-	{
-	public:
-		~Module(void)
-		{
-			for(auto ModulePair : _Modules)
-			{
-				delete ModulePair.second;
-				ModulePair.second = nullptr;
-			}
-			for(auto TypePair : _Types)
-			{
-				delete TypePair.second;
-				TypePair.second = nullptr;
-			}
-		}
-		
-		std::map<std::string, Inspection::TypeDefinition::Type *> _Types;
-		std::map<std::string, Module *> _Modules;
-		std::string _Path;
-	};
+    
+    namespace TypeDefinition
+    {
+        class Module
+        {
+        public:
+            Module(std::string const & Path) :
+                Path{Path}
+            {
+            }
+            
+            std::map<std::string, std::unique_ptr<Inspection::TypeDefinition::Type>> Types;
+            std::map<std::string, std::unique_ptr<Inspection::TypeDefinition::Module>> Modules;
+            std::string Path;
+        };
+    }
 }
 
 Inspection::TypeRepository::TypeRepository(void) :
-	_RootModule{new Module{}}
+	m_RootModule{std::make_unique<Inspection::TypeDefinition::Module>(g_TypeLibraryPath)}
 {
-	_RootModule->_Path = g_TypeLibraryPath;
 }
 
 Inspection::TypeRepository::~TypeRepository(void)
 {
-	delete _RootModule;
-	_RootModule = nullptr;
 }
 
-const Inspection::TypeDefinition::Type * Inspection::TypeRepository::GetType(const std::vector<std::string> & PathParts)
+auto Inspection::TypeRepository::Get(std::vector<std::string> const & PathParts, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
 {
-	return _GetOrLoadType(PathParts);
+	return m_GetOrLoadType(PathParts)->Get(Reader, Parameters);
 }
 
-std::unique_ptr<Inspection::Result> Inspection::TypeRepository::Get(const std::vector<std::string> & PathParts, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+auto Inspection::TypeRepository::GetType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type const *
 {
-	return _GetOrLoadType(PathParts)->Get(Reader, Parameters);
+	return m_GetOrLoadType(PathParts);
 }
 
-Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(const std::vector<std::string> & PathParts)
+auto Inspection::TypeRepository::m_GetOrLoadType(std::vector<std::string> const & PathParts) -> Inspection::TypeDefinition::Type *
 {
-	auto Module = _GetOrLoadModule(std::vector<std::string>{PathParts.begin(), PathParts.end() - 1});
+	auto Module = m_GetOrLoadModule(std::vector<std::string>{PathParts.begin(), PathParts.end() - 1});
 	auto Result = (Inspection::TypeDefinition::Type *)nullptr;
 	
 	if(Module != nullptr)
 	{
-		auto TypeIterator = Module->_Types.find(PathParts.back());
+		auto TypeIterator = Module->Types.find(PathParts.back());
 		
-		if(TypeIterator != Module->_Types.end())
+		if(TypeIterator != Module->Types.end())
 		{
-			Result = TypeIterator->second;
+			Result = TypeIterator->second.get();
 		}
 		else
 		{
-			auto TypePath = Module->_Path + '/' + PathParts.back() + ".type";
+			auto TypePath = Module->Path + '/' + PathParts.back() + ".type";
 			
 			if((std::filesystem::exists(TypePath) == true) && (std::filesystem::is_regular_file(TypePath) == true))
 			{
-				Result = new Inspection::TypeDefinition::Type{PathParts, *this};
+				auto Type = std::unique_ptr<Inspection::TypeDefinition::Type>{};
+                
 				try
 				{
 					auto InputFileStream = std::ifstream{TypePath};
-					
-					Result->Load(InputFileStream);
+                    auto Document = XML::Document{InputFileStream};
+                    auto DocumentElement = Document.GetDocumentElement();
+                    
+                    ASSERTION(DocumentElement != nullptr);
+                    ASSERTION(DocumentElement->GetName() == "type");
+                    Type = Inspection::TypeDefinition::Type::Load(DocumentElement, PathParts, *this);
+                    Result = Type.get();
+                    Module->Types.insert(std::make_pair(PathParts.back(), std::move(Type)));
 				}
 				catch(std::domain_error & Exception)
 				{
 					std::throw_with_nested(std::runtime_error("Type path: " + TypePath));
 				}
-				Module->_Types.insert(std::make_pair(PathParts.back(), Result));
 			}
 			else
 			{
@@ -104,28 +102,28 @@ Inspection::TypeDefinition::Type * Inspection::TypeRepository::_GetOrLoadType(co
 	return Result;
 }
 
-Inspection::Module * Inspection::TypeRepository::_GetOrLoadModule(const std::vector<std::string> & ModulePathParts)
+auto Inspection::TypeRepository::m_GetOrLoadModule(std::vector<std::string> const & ModulePathParts) -> Inspection::TypeDefinition::Module *
 {
-	auto Result = _RootModule;
+	auto Result = m_RootModule.get();
 	
 	for(auto ModulePathPart : ModulePathParts)
 	{
-		auto ModulePath = Result->_Path + '/' + ModulePathPart;
-		auto ModuleIterator = Result->_Modules.find(ModulePathPart);
+		auto ModulePath = Result->Path + '/' + ModulePathPart;
+		auto ModuleIterator = Result->Modules.find(ModulePathPart);
 		
-		if(ModuleIterator != Result->_Modules.end())
+		if(ModuleIterator != Result->Modules.end())
 		{
-			Result = ModuleIterator->second;
+			Result = ModuleIterator->second.get();
 		}
 		else
 		{
 			if((std::filesystem::exists(ModulePath) == true) && (std::filesystem::is_directory(ModulePath) == true))
 			{
-				auto NewModule = new Module{};
+                auto ParentModule = Result;
+				auto NewModule = std::make_unique<Inspection::TypeDefinition::Module>(ModulePath);
 				
-				NewModule->_Path = ModulePath;
-				Result->_Modules.insert(std::make_pair(ModulePathPart, NewModule));
-				Result = NewModule;
+				Result = NewModule.get();
+				ParentModule->Modules.insert(std::make_pair(ModulePathPart, std::move(NewModule)));
 			}
 			else
 			{
