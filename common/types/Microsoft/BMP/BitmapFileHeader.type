@@ -1,5 +1,8 @@
 <type>
 	<sequence>
+		<tag name="type name">
+			<string>BITMAPFILEHEADER</string>
+		</tag>
 		<field name="Type">
 			<type-reference>
 				<part>String</part>

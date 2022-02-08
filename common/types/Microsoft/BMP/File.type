@@ -1,9 +1,6 @@
 <type>
 	<sequence>
 		<field name="BitmapFileHeader">
-			<tag name="type name">
-				<string>BITMAPFILEHEADER</string>
-			</tag>
 			<type-reference>
 				<part>Microsoft</part>
 				<part>BMP</part>
