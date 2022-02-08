@@ -14,48 +14,28 @@ namespace XML
 
 namespace Inspection
 {
-	class EvaluationResult;
-	class ExecutionContext;
-	class TypeRepository;
-	class Reader;
-	class Result;
-	class Value;
-	
+    class Reader;
+    class Result;
+    class TypeRepository;
+    
 	namespace TypeDefinition
 	{
-		class Add;
-		class Alternative;
-		class Array;
-		class Cast;
-		class Divide;
-		class Enumeration;
-		class Equals;
-		class FieldReference;
-		class Interpretation;
-		class Length;
-		class Parameters;
-		class Part;
-		class Sequence;
-		class Subtract;
-		class Statement;
-		class Tag;
-		class TypeReference;
-		class Value;
-	
+        class Part;
+        
 		class Type
 		{
 		public:
-			Type(const std::vector<std::string> & PathParts, TypeRepository & TypeRepository);
-			~Type(void);
-			std::unique_ptr<Inspection::Result> Get(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) const;
-			const std::vector<std::string> GetPathParts(void) const;
-			void Load(std::istream & InputStream);
+			Type(std::vector<std::string> const & PathParts, TypeRepository & TypeRepository);
+			~Type();
+			auto Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>;
+			auto GetPathParts() const -> const std::vector<std::string>;
+			auto Load(std::istream & InputStream) -> void;
 		private:
-			void _LoadType(Inspection::TypeDefinition::Type & Type, const XML::Element * TypeElement);
-			std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)> _HardcodedGetter;
-			std::unique_ptr<Inspection::TypeDefinition::Part> _Part;
-			std::vector<std::string> _PathParts;
-			Inspection::TypeRepository & _TypeRepository;
+			auto m_LoadType(XML::Element const * TypeElement) -> void;
+			std::function<std::unique_ptr<Inspection::Result> (Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters)> m_HardcodedGetter;
+			std::unique_ptr<Inspection::TypeDefinition::Part> m_Part;
+			std::vector<std::string> m_PathParts;
+			Inspection::TypeRepository & m_TypeRepository;
 		};
 	}
 }
