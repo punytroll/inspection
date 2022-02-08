@@ -46,31 +46,21 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="Entries">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByNumberOfElements</part>
-			</type-reference>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>Microsoft</part>
-						<part>Icon</part>
-						<part>IconDirectoryEntry</part>
-					</type-reference>
-				</parameter>
-				<parameter name="NumberOfElements">
-					<unsigned-integer-64bit>
-						<data-reference root="type">
-							<field>Count</field>
-						</data-reference>
-					</unsigned-integer-64bit>
-				</parameter>
-				<parameter name="ElementName">
-					<string>Entry</string>
-				</parameter>
-			</parameters>
-		</field>
+		<array name="Entries">
+			<iterate type="number-of-elements">
+				<unsigned-integer-64bit>
+					<data-reference root="type">
+						<field>Count</field>
+					</data-reference>
+				</unsigned-integer-64bit>
+			</iterate>
+			<element-type>
+				<part>Microsoft</part>
+				<part>Icon</part>
+				<part>IconDirectoryEntry</part>
+			</element-type>
+			<element-name>Entry</element-name>
+		</array>
 		<tag name="type name">
 			<string>ICONDIR</string>
 		</tag>
