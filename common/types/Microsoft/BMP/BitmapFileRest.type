@@ -558,5 +558,43 @@
 			</case>
 			<!-- more cases for the color table -->
 		</select>
+		<select>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>DIBHeader</field>
+							<field>BitCount</field>
+						</data-reference>
+						<unsigned-integer-16bit>32</unsigned-integer-16bit>
+					</equals>
+				</when>
+				<array name="Rows">
+					<iterate type="number-of-elements">
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>DIBHeader</field>
+								<field>Height</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</iterate>
+					<element-type>
+						<part>Microsoft</part>
+						<part>BMP</part>
+						<part>PixelRow</part>
+					</element-type>
+					<element-parameters>
+						<parameter name="Width">
+							<unsigned-integer-64bit>
+								<data-reference root="type">
+									<field>DIBHeader</field>
+									<field>Width</field>
+								</data-reference>
+							</unsigned-integer-64bit>
+						</parameter>
+					</element-parameters>
+				</array>
+			</case>
+		</select>
 	</sequence>
 </type>

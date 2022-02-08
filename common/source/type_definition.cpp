@@ -112,6 +112,10 @@ static Type CastTo(const std::any & Any)
 	{
 		return static_cast<Type>(std::any_cast<float>(Any));
 	}
+	else if(Any.type() == typeid(std::int32_t))
+	{
+		return static_cast<Type>(std::any_cast<std::int32_t>(Any));
+	}
 	else if(Any.type() == typeid(std::uint8_t))
 	{
 		return static_cast<Type>(std::any_cast<std::uint8_t>(Any));
@@ -1294,6 +1298,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	{
 		Result = Inspection::TypeDefinition::Modulus::Load(Element);
 	}
+	else if(Element->GetName() == "multiply")
+	{
+		Result = Inspection::TypeDefinition::Multiply::Load(Element);
+	}
 	else if(Element->GetName() == "parameter-reference")
 	{
 		Result = Inspection::TypeDefinition::ParameterReference::Load(Element);
@@ -1851,6 +1859,70 @@ std::unique_ptr<Inspection::TypeDefinition::Modulus> Inspection::TypeDefinition:
 	}
 	INVALID_INPUT_IF(Result->m_Dividend == nullptr, "Missing operands for Modulus expression.");
 	INVALID_INPUT_IF(Result->m_Divisor == nullptr, "Missing second operand for Modulus expression.");
+	
+	return Result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Multiply                                                                                      //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+std::any Inspection::TypeDefinition::Multiply::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+{
+	ASSERTION(m_Multiplier != nullptr);
+	ASSERTION(m_Multiplicand != nullptr);
+	
+	auto MultiplierAny = m_Multiplier->GetAny(ExecutionContext);
+	auto MultiplicandAny = m_Multiplicand->GetAny(ExecutionContext);
+	
+	ASSERTION(MultiplierAny.has_value() == true);
+	ASSERTION(MultiplicandAny.has_value() == true);
+	ASSERTION(MultiplierAny.type() == MultiplicandAny.type());
+	if(MultiplierAny.type() == typeid(std::uint64_t))
+	{
+		return static_cast<std::uint64_t>(std::any_cast<std::uint64_t>(MultiplierAny) * std::any_cast<std::uint64_t>(MultiplicandAny));
+	}
+	else
+	{
+		UNEXPECTED_CASE("MultiplierAny.type() == " + Inspection::to_string(MultiplierAny.type()));
+	}
+	
+	return nullptr;
+}
+
+Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Multiply::GetDataType(void) const
+{
+	NOT_IMPLEMENTED("Called GetDataType() on a Multiply expression.");
+}
+
+std::unique_ptr<Inspection::TypeDefinition::Multiply> Inspection::TypeDefinition::Multiply::Load(const XML::Element * Element)
+{
+	ASSERTION(Element != nullptr);
+	
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::Multiply>{new Inspection::TypeDefinition::Multiply{}};
+	auto First = true;
+	
+	for(auto ChildNode : Element->GetChilds())
+	{
+		if(ChildNode->GetNodeType() == XML::NodeType::Element)
+		{
+			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
+			
+			if(First == true)
+			{
+				Result->m_Multiplier = Inspection::TypeDefinition::Expression::Load(ChildElement);
+				First = false;
+			}
+			else
+			{
+				INVALID_INPUT_IF(Result->m_Multiplicand != nullptr, "More than two operands for Multiply expression.");
+				Result->m_Multiplicand = Inspection::TypeDefinition::Expression::Load(ChildElement);
+			}
+		}
+	}
+	INVALID_INPUT_IF(Result->m_Multiplier == nullptr, "Missing operands for Multiply expression.");
+	INVALID_INPUT_IF(Result->m_Multiplicand == nullptr, "Missing second operand for Multiply expression.");
 	
 	return Result;
 }
