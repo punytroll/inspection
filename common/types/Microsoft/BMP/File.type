@@ -1,11 +1,55 @@
 <type>
 	<sequence>
 		<field name="BitmapFileHeader">
-			<type-reference>
-				<part>Microsoft</part>
-				<part>BMP</part>
-				<part>BitmapFileHeader</part>
-			</type-reference>
+			<sequence>
+				<tag name="type name">
+					<string>BITMAPFILEHEADER</string>
+				</tag>
+				<field name="Type">
+					<type-reference>
+						<part>String</part>
+						<part>ASCII</part>
+						<part>ByTemplate</part>
+					</type-reference>
+					<parameters>
+						<parameter name="Template">
+							<string>BM</string>
+						</parameter>
+					</parameters>
+				</field>
+				<field name="Size">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+				<field name="Reserved">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+				<field name="OffBits">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>32Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+			</sequence>
 		</field>
 		<fields>
 			<type-reference>

@@ -9,8 +9,10 @@
 		<array name="Frames">
 			<iterate type="at-least-one-until-failure-or-length"/>
 			<element-type>
-				<part>FLAC</part>
-				<part>Frame</part>
+				<type-reference>
+					<part>FLAC</part>
+					<part>Frame</part>
+				</type-reference>
 			</element-type>
 			<element-name>Frame</element-name>
 			<element-parameters>

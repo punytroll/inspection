@@ -212,8 +212,10 @@
 						</length>
 						<element-name>SupportedSignatureAlgorithm</element-name>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>SignatureScheme</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>SignatureScheme</part>
+							</type-reference>
 						</element-type>
 					</array>
 				</sequence>
@@ -253,8 +255,10 @@
 						</length>
 						<element-name>ECPointFormat</element-name>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>ECPointFormat</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>ECPointFormat</part>
+							</type-reference>
 						</element-type>
 					</array>
 				</sequence>
@@ -372,8 +376,10 @@
 					</length>
 					<element-name>Entry</element-name>
 					<element-type>
-						<part>SSL_TLS</part>
-						<part>ServerNameEntry</part>
+						<type-reference>
+							<part>SSL_TLS</part>
+							<part>ServerNameEntry</part>
+						</type-reference>
 					</element-type>
 				</array>
 			</case>
@@ -441,8 +447,10 @@
 						</length>
 						<element-name>Algorithm</element-name>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>SignatureScheme</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>SignatureScheme</part>
+							</type-reference>
 						</element-type>
 					</array>
 				</sequence>
@@ -558,8 +566,10 @@
 						</length>
 						<element-name>Curve</element-name>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>Curve</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>Curve</part>
+							</type-reference>
 						</element-type>
 					</array>
 				</sequence>
@@ -599,8 +609,10 @@
 						</length>
 						<element-name>SupportedVersion</element-name>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>Version</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>Version</part>
+							</type-reference>
 						</element-type>
 					</array>
 				</sequence>

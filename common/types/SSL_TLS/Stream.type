@@ -2,8 +2,10 @@
 	<array name="Stream">
 		<iterate type="until-failure-or-length"/>
 		<element-type>
-			<part>SSL_TLS</part>
-			<part>TLSPlaintext</part>
+			<type-reference>
+				<part>SSL_TLS</part>
+				<part>TLSPlaintext</part>
+			</type-reference>
 		</element-type>
 		<element-name>TLSPlaintext</element-name>
 	</array>

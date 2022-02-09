@@ -1,11 +1,174 @@
 <type>
 	<sequence>
 		<field name="IconDirectory">
-			<type-reference>
-				<part>Microsoft</part>
-				<part>Icon</part>
-				<part>IconDirectory</part>
-			</type-reference>
+			<sequence>
+				<field name="Reserved">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+					<verification>
+						<equals>
+							<data-reference root="current"/>
+							<unsigned-integer-16bit>0</unsigned-integer-16bit>
+						</equals>
+					</verification>
+				</field>
+				<field name="Type">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+					<interpretation>
+						<apply-enumeration>
+							<enumeration base-data-type="unsigned integer 16bit">
+								<element base-value="1" valid="true">
+									<tag name="interpretation">
+										<string>Icon image</string>
+									</tag>
+								</element>
+								<element base-value="2" valid="false">
+									<tag name="interpretation">
+										<string>Cursor image</string>
+									</tag>
+								</element>
+							</enumeration>
+						</apply-enumeration>
+					</interpretation>
+				</field>
+				<field name="Count">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>16Bit_LittleEndian</part>
+					</type-reference>
+				</field>
+				<array name="Entries">
+					<iterate type="number-of-elements">
+						<unsigned-integer-64bit>
+							<data-reference root="type">
+								<field>Count</field>
+							</data-reference>
+						</unsigned-integer-64bit>
+					</iterate>
+					<element-type>
+						<type>
+							<sequence>
+								<field name="Width">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>8Bit</part>
+									</type-reference>
+								</field>
+								<field name="Height">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>8Bit</part>
+									</type-reference>
+								</field>
+								<field name="ColorCount">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>8Bit</part>
+									</type-reference>
+								</field>
+								<field name="Reserved">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>8Bit</part>
+									</type-reference>
+									<verification>
+										<equals>
+											<data-reference root="current"/>
+											<unsigned-integer-8bit>0</unsigned-integer-8bit>
+										</equals>
+									</verification>
+								</field>
+								<field name="Planes">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>16Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="BitCount">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>16Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="BytesInRes">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>32Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="ImageOffset">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>32Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<tag name="position">
+									<length>
+										<bytes>
+											<unsigned-integer-64bit>
+												<data-reference root="type">
+													<field>ImageOffset</field>
+												</data-reference>
+											</unsigned-integer-64bit>
+										</bytes>
+										<bits>
+											<unsigned-integer-64bit>0</unsigned-integer-64bit>
+										</bits>
+									</length>
+								</tag>
+								<tag name="length">
+									<length>
+										<bytes>
+											<unsigned-integer-64bit>
+												<data-reference root="type">
+													<field>BytesInRes</field>
+												</data-reference>
+											</unsigned-integer-64bit>
+										</bytes>
+										<bits>
+											<unsigned-integer-64bit>0</unsigned-integer-64bit>
+										</bits>
+									</length>
+								</tag>
+								<tag name="type name">
+									<string>ICONDIRENTRY</string>
+								</tag>
+							</sequence>
+						</type>
+					</element-type>
+					<element-name>Entry</element-name>
+				</array>
+				<tag name="type name">
+					<string>ICONDIR</string>
+				</tag>
+			</sequence>
 		</field>
 		<array name="ImageData">
 			<iterate type="for-each-field">
@@ -16,9 +179,23 @@
 			</iterate>
 			<element-name>Image</element-name>
 			<element-type>
-				<part>Microsoft</part>
-				<part>Icon</part>
-				<part>ImageData</part>
+				<type>
+					<alternative>
+						<fields>
+							<type-reference>
+								<part>Microsoft</part>
+								<part>BMP</part>
+								<part>BitmapFileRest</part>
+							</type-reference>
+						</fields>
+						<field name="Data">
+							<type-reference>
+								<part>Buffer</part>
+								<part>UnsignedInteger_8Bit_EndedByLength</part>
+							</type-reference>
+						</field>
+					</alternative>
+				</type>
 			</element-type>
 		</array>
 	</sequence>

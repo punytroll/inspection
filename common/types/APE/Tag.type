@@ -16,8 +16,10 @@
 				</unsigned-integer-64bit>
 			</iterate>
 			<element-type>
-				<part>APE</part>
-				<part>Item</part>
+				<type-reference>
+					<part>APE</part>
+					<part>Item</part>
+				</type-reference>
 			</element-type>
 			<element-name>APETagsItem</element-name>
 		</array>

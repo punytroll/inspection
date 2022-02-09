@@ -489,8 +489,17 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 			auto ElementParameters = GetElementParameters(ExecutionContext);
 			
 			ASSERTION(m_ElementType != nullptr);
+            ASSERTION(m_ElementType->GetDataType() == Inspection::TypeDefinition::DataType::Type);
 			
-			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
+            
+            ASSERTION(ElementTypeAny.has_value() == true);
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            
+            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            
+            ASSERTION(ElementType != nullptr);
+            
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -560,8 +569,17 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 			}
 			std::sort(std::begin(ElementProperties), std::end(ElementProperties));
 			ASSERTION(m_ElementType != nullptr);
+            ASSERTION(m_ElementType->GetDataType() == Inspection::TypeDefinition::DataType::Type);
 			
-			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
+            
+            ASSERTION(ElementTypeAny.has_value() == true);
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            
+            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            
+            ASSERTION(ElementType != nullptr);
+            
 			auto NumberOfAppendedElements = static_cast<std::uint64_t>(0);
 			
 			for(auto ElementPropertiesIndex = static_cast<std::uint64_t>(0); (Continue == true) && (ElementPropertiesIndex < ElementProperties.size()); ++ElementPropertiesIndex)
@@ -610,8 +628,17 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 			auto ElementParameters = GetElementParameters(ExecutionContext);
 			
 			ASSERTION(m_ElementType != nullptr);
+            ASSERTION(m_ElementType->GetDataType() == Inspection::TypeDefinition::DataType::Type);
 			
-			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
+            
+            ASSERTION(ElementTypeAny.has_value() == true);
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            
+            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            
+            ASSERTION(ElementType != nullptr);
+            
 			auto NumberOfElementsAny = IterateNumberOfElements->GetAny(ExecutionContext);
 			
 			ASSERTION(NumberOfElementsAny.type() == typeid(std::uint64_t));
@@ -663,8 +690,17 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 			auto ElementParameters = GetElementParameters(ExecutionContext);
 			
 			ASSERTION(m_ElementType != nullptr);
+            ASSERTION(m_ElementType->GetDataType() == Inspection::TypeDefinition::DataType::Type);
 			
-			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
+            
+            ASSERTION(ElementTypeAny.has_value() == true);
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            
+            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            
+            ASSERTION(ElementType != nullptr);
+            
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -713,8 +749,17 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
 			auto ElementParameters = GetElementParameters(ExecutionContext);
 			
 			ASSERTION(m_ElementType != nullptr);
+            ASSERTION(m_ElementType->GetDataType() == Inspection::TypeDefinition::DataType::Type);
 			
-			auto ElementType = m_ElementType->GetType(ExecutionContext);
+			auto ElementTypeAny = m_ElementType->GetAny(ExecutionContext);
+            
+            ASSERTION(ElementTypeAny.has_value() == true);
+            ASSERTION(ElementTypeAny.type() == typeid(Inspection::TypeDefinition::Type const *));
+            
+            auto ElementType = std::any_cast<Inspection::TypeDefinition::Type const *>(ElementTypeAny);
+            
+            ASSERTION(ElementType != nullptr);
+            
 			auto ElementIndexInArray = static_cast<std::uint64_t>(0);
 			
 			while((Continue == true) && (Reader.HasRemaining() == true))
@@ -833,7 +878,7 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
 	}
 	else if(Element->GetName() == "element-type")
 	{
-		m_ElementType = Inspection::TypeDefinition::TypeReference::Load(Element);
+		m_ElementType = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
 	}
 	else if(Element->GetName() == "element-parameters")
 	{
@@ -1313,6 +1358,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 	else if(Element->GetName() == "subtract")
 	{
 		Result = Inspection::TypeDefinition::Subtract::Load(Element);
+	}
+	else if(Element->GetName() == "type")
+	{
+		Result = Inspection::TypeDefinition::TypeValue::Load(Element);
 	}
 	else if(Element->GetName() == "type-reference")
 	{
@@ -2617,6 +2666,34 @@ std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefin
 			Result->m_Parts.push_back(PartText->GetText());
 		}
 	}
+	
+	return Result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// TypeValue                                                                                     //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+auto Inspection::TypeDefinition::TypeValue::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
+{
+    m_Type->SetTypeRepository(ExecutionContext.GetTypeRepository());
+    
+	return const_cast<Inspection::TypeDefinition::Type const *>(m_Type.get());
+}
+
+auto Inspection::TypeDefinition::TypeValue::GetDataType() const -> Inspection::TypeDefinition::DataType
+{
+	return Inspection::TypeDefinition::DataType::Type;
+}
+
+auto Inspection::TypeDefinition::TypeValue::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::TypeValue>
+{
+	ASSERTION(Element != nullptr);
+	
+	auto Result = std::unique_ptr<Inspection::TypeDefinition::TypeValue>{new Inspection::TypeDefinition::TypeValue{}};
+	
+    Result->m_Type = Inspection::TypeDefinition::Type::Load(Element, {"<anonymous>"}, nullptr);
 	
 	return Result;
 }

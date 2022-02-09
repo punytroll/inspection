@@ -13,7 +13,7 @@
 
 using namespace std::string_literals;
 
-Inspection::TypeDefinition::Type::Type(std::vector<std::string> const & PathParts, Inspection::TypeRepository & TypeRepository) :
+Inspection::TypeDefinition::Type::Type(std::vector<std::string> const & PathParts, Inspection::TypeRepository * TypeRepository) :
 	m_PathParts{PathParts},
 	m_TypeRepository{TypeRepository}
 {
@@ -40,7 +40,9 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::uno
 		}
 		else if(m_Part != nullptr)
 		{
-			auto ExecutionContext = Inspection::ExecutionContext{*this, m_TypeRepository};
+            ASSERTION(m_TypeRepository != nullptr);
+            
+			auto ExecutionContext = Inspection::ExecutionContext{*this, *m_TypeRepository};
 			auto TypePart = Inspection::TypeDefinition::TypePart::Create();
 			
 			ExecutionContext.Push(*TypePart, *Result, Reader, Parameters);
@@ -132,7 +134,12 @@ auto Inspection::TypeDefinition::Type::GetPathParts(void) const -> std::vector<s
 	return m_PathParts;
 }
 
-auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::vector<std::string> const & PathParts, TypeRepository & TypeRepository) -> std::unique_ptr<Inspection::TypeDefinition::Type>
+auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::vector<std::string> const & PathParts) -> std::unique_ptr<Inspection::TypeDefinition::Type>
+{
+    return Inspection::TypeDefinition::Type::Load(Element, PathParts, nullptr);
+}
+
+auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::vector<std::string> const & PathParts, TypeRepository * TypeRepository) -> std::unique_ptr<Inspection::TypeDefinition::Type>
 {
     ASSERTION(Element != nullptr);
     
@@ -554,4 +561,9 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
 	}
     
     return Result;
+}
+
+auto Inspection::TypeDefinition::Type::SetTypeRepository(Inspection::TypeRepository & TypeRepository) -> void
+{
+    m_TypeRepository = &TypeRepository;
 }

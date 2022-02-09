@@ -172,8 +172,10 @@
 							</bits>
 						</length>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>CipherSuite</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>CipherSuite</part>
+							</type-reference>
 						</element-type>
 						<element-name>CipherSuite</element-name>
 					</array>
@@ -200,8 +202,10 @@
 							</bits>
 						</length>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>CompressionMethod</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>CompressionMethod</part>
+							</type-reference>
 						</element-type>
 						<element-name>CompressionMethod</element-name>
 					</array>
@@ -228,8 +232,10 @@
 							</bits>
 						</length>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>Extension</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>Extension</part>
+							</type-reference>
 						</element-type>
 						<element-name>Extension</element-name>
 					</array>
@@ -345,8 +351,10 @@
 							</bits>
 						</length>
 						<element-type>
-							<part>SSL_TLS</part>
-							<part>Extension</part>
+							<type-reference>
+								<part>SSL_TLS</part>
+								<part>Extension</part>
+							</type-reference>
 						</element-type>
 						<element-name>Extension</element-name>
 					</array>

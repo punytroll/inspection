@@ -79,7 +79,7 @@ auto Inspection::TypeRepository::m_GetOrLoadType(std::vector<std::string> const 
                     
                     ASSERTION(DocumentElement != nullptr);
                     ASSERTION(DocumentElement->GetName() == "type");
-                    Type = Inspection::TypeDefinition::Type::Load(DocumentElement, PathParts, *this);
+                    Type = Inspection::TypeDefinition::Type::Load(DocumentElement, PathParts, this);
                     Result = Type.get();
                     Module->Types.insert(std::make_pair(PathParts.back(), std::move(Type)));
 				}
