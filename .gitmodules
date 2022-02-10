@@ -1,3 +1,6 @@
 [submodule "libraries/xml_parser"]
 	path = libraries/xml_parser
 	url = https://github.com/punytroll/xml_parser.git
+[submodule "test/external/bmpsuite"]
+	path = test/external/bmpsuite
+	url = https://github.com/jsummers/bmpsuite.git
