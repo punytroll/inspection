@@ -204,7 +204,11 @@ std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Val
 template < >
 std::string to_string_cast<Inspection::Length>(const Inspection::Length & Value)
 {
-	return static_cast<std::ostringstream &>(std::ostringstream{} << Value).str();
+	auto OStream = std::ostringstream{};
+	
+	OStream << Value;
+	
+	return OStream.str();
 }
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & Any)
