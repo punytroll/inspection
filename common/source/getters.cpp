@@ -11308,12 +11308,12 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_
 		{
 			if((ReadResult1.Data & 0x80) == 0x00)
 			{
-				Result->GetValue()->AddTag("indicated length", Inspection::Length{1, 0});
+				AppendLengthTag(Result->GetValue(), Inspection::Length{1, 0}, "indicated data length");
 				Result->GetValue()->SetData(static_cast<std::uint32_t>(ReadResult1.Data));
 			}
 			else if((ReadResult1.Data & 0xe0) == 0xc0)
 			{
-				Result->GetValue()->AddTag("indicated length", Inspection::Length{2, 0});
+				AppendLengthTag(Result->GetValue(), Inspection::Length{2, 0}, "indicated data length");
 				
 				Inspection::ReadResult ReadResult2;
 				
@@ -11335,7 +11335,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_
 			}
 			else if((ReadResult1.Data & 0xf0) == 0xe0)
 			{
-				Result->GetValue()->AddTag("indicated length", Inspection::Length{3, 0});
+				AppendLengthTag(Result->GetValue(), Inspection::Length{3, 0}, "indicated data length");
 				
 				Inspection::ReadResult ReadResult2;
 				
@@ -11366,7 +11366,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_
 			}
 			else if((ReadResult1.Data & 0xf8) == 0xf0)
 			{
-				Result->GetValue()->AddTag("indicated length", Inspection::Length{4, 0});
+				AppendLengthTag(Result->GetValue(), Inspection::Length{4, 0}, "indicated data length");
 				
 				Inspection::ReadResult ReadResult2;
 				
@@ -11406,7 +11406,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_
 			}
 			else if((ReadResult1.Data & 0xfc) == 0xf8)
 			{
-				Result->GetValue()->AddTag("indicated length", Inspection::Length{5, 0});
+				AppendLengthTag(Result->GetValue(), Inspection::Length{5, 0}, "indicated data length");
 				
 				Inspection::ReadResult ReadResult2;
 				
@@ -11455,7 +11455,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_
 			}
 			else if((ReadResult1.Data & 0xfe) == 0xfc)
 			{
-				Result->GetValue()->AddTag("indicated length", Inspection::Length{6, 0});
+				AppendLengthTag(Result->GetValue(), Inspection::Length{6, 0}, "indicated data length");
 				
 				Inspection::ReadResult ReadResult2;
 				
