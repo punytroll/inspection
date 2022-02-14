@@ -3036,6 +3036,16 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe(Inspection::Re
 		Result->GetValue()->AppendField("Header", PartResult->ExtractValue());
 		Reader.AdvancePosition(PartReader.GetConsumedLength());
 	}
+	// interpretation
+	if(Continue == true)
+	{
+		auto WastedBitsPerSampleFlag = std::any_cast<bool>(Result->GetValue()->GetField("Header")->GetField("WastedBitsPerSampleFlag")->GetData());
+		
+		if(WastedBitsPerSampleFlag == true)
+		{
+			BitsPerSample -= std::any_cast<std::uint32_t>(Result->GetValue()->GetField("Header")->GetField("WastedBitsPerSample")->GetTag("value")->GetData());
+		}
+	}
 	// reading
 	if(Continue == true)
 	{
@@ -3235,7 +3245,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Header(Inspect
 		
 		if(WastedBitsPerSampleFlag == true)
 		{
-			NOT_IMPLEMENTED("Wasted bits are not implemented yet!");
+			auto PartReader = Inspection::Reader{Reader};
+			auto PartResult = Inspection::Get_UnsignedInteger_32Bit_AlternativeUnary(PartReader, {});
+			
+			Continue = PartResult->GetSuccess();
+			Result->GetValue()->AppendField("WastedBitsPerSample", PartResult->ExtractValue());
+			Result->GetValue()->GetField("WastedBitsPerSample")->AddTag("value", static_cast<std::uint32_t>(std::any_cast<std::uint32_t>(Result->GetValue()->GetField("WastedBitsPerSample")->GetData()) + 1));
+			Reader.AdvancePosition(PartReader.GetConsumedLength());
 		}
 	}
 	// finalization
