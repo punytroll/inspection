@@ -36,32 +36,32 @@
 
 inline auto __AssertionLog(char const * ExpressionString, char const * File, std::uint64_t Line, const char * Function, const std::string & Message = "") -> void
 {
-	std::cerr << "Assertion failed:";
-	if(Message.empty() == false)
-	{
-		std::cerr << " \"" << Message << '"';
-	}
-	std::cerr << "\n\tExpected: " << ExpressionString << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
+    std::cerr << "Assertion failed:";
+    if(Message.empty() == false)
+    {
+        std::cerr << " \"" << Message << '"';
+    }
+    std::cerr << "\n\tExpected: " << ExpressionString << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
 }
 
 inline auto __ExpressionLog(char const * LogCase, char const * ExpressionString, char const * File, std::uint64_t Line, const char * Function, const std::string & Message = "") -> void
 {
-	std::cerr << LogCase << ": ";
-	if(Message.empty() == false)
-	{
-		std::cerr << '"' << Message << '"';
-	}
-	std::cerr << "\n\tExpected: " << ExpressionString << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
+    std::cerr << LogCase << ": ";
+    if(Message.empty() == false)
+    {
+        std::cerr << '"' << Message << '"';
+    }
+    std::cerr << "\n\tExpected: " << ExpressionString << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
 }
 
 inline auto __Log(char const * LogCase, char const * File, std::uint64_t Line, char const * Function, std::string const & Message) -> void
 {
-	std::cerr << LogCase << ": ";
-	if(Message.empty() == false)
-	{
-		std::cerr << '"' << Message << '"';
-	}
-	std::cerr << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
+    std::cerr << LogCase << ": ";
+    if(Message.empty() == false)
+    {
+        std::cerr << '"' << Message << '"';
+    }
+    std::cerr << "\n\tIn source: " << File << ":" << Line << "\n\tIn function: " << Function << '\n';
 }
 
 #else

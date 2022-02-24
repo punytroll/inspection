@@ -3,13 +3,13 @@
 
 namespace std
 {
-	class exception;
+    class exception;
 }
 
 namespace Inspection
 {
-	void PrintException(const std::exception & Exception);
-	void PrintExceptions(const std::exception & Exception);
+    void PrintException(const std::exception & Exception);
+    void PrintExceptions(const std::exception & Exception);
 }
 
 #endif

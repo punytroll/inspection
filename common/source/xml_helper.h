@@ -23,58 +23,58 @@
 
 namespace XML
 {
-	inline const XML::Element * GetFirstChildElement(const XML::Element * Element)
-	{
-		for(auto ChildNode : Element->GetChilds())
-		{
-			if(ChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				return dynamic_cast<const XML::Element *>(ChildNode);
-			}
-		}
-		
-		return nullptr;
-	}
-	
-	inline bool HasOneChildElement(const XML::Element * Element)
-	{
-		auto Found{false};
-		
-		for(auto ChildNode : Element->GetChilds())
-		{
-			if(ChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				if(Found == false)
-				{
-					Found = true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-		
-		return Found;
-	}
-	
-	inline bool HasChildElements(const XML::Element * Element)
-	{
-		for(auto ChildNode : Element->GetChilds())
-		{
-			if(ChildNode->GetNodeType() == XML::NodeType::Element)
-			{
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	inline bool HasChildNodes(const XML::Element * Element)
-	{
-		return Element->GetChilds().size() > 0;
-	}
+    inline const XML::Element * GetFirstChildElement(const XML::Element * Element)
+    {
+        for(auto ChildNode : Element->GetChilds())
+        {
+            if(ChildNode->GetNodeType() == XML::NodeType::Element)
+            {
+                return dynamic_cast<const XML::Element *>(ChildNode);
+            }
+        }
+        
+        return nullptr;
+    }
+    
+    inline bool HasOneChildElement(const XML::Element * Element)
+    {
+        auto Found{false};
+        
+        for(auto ChildNode : Element->GetChilds())
+        {
+            if(ChildNode->GetNodeType() == XML::NodeType::Element)
+            {
+                if(Found == false)
+                {
+                    Found = true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return Found;
+    }
+    
+    inline bool HasChildElements(const XML::Element * Element)
+    {
+        for(auto ChildNode : Element->GetChilds())
+        {
+            if(ChildNode->GetNodeType() == XML::NodeType::Element)
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    inline bool HasChildNodes(const XML::Element * Element)
+    {
+        return Element->GetChilds().size() > 0;
+    }
 }
 
 #endif

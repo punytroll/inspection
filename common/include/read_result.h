@@ -3,14 +3,14 @@
 
 namespace Inspection
 {
-	struct ReadResult
-	{
-		std::uint8_t Data;
-		Inspection::Length InputLength;
-		Inspection::Length OutputLength;
-		Inspection::Length RequestedLength;
-		bool Success;
-	};
+    struct ReadResult
+    {
+        std::uint8_t Data;
+        Inspection::Length InputLength;
+        Inspection::Length OutputLength;
+        Inspection::Length RequestedLength;
+        bool Success;
+    };
 }
 
 #endif

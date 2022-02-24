@@ -10,42 +10,42 @@
 
 namespace Inspection
 {
-	class Result
-	{
-	public:
-		Result(void) :
-			_Success(false),
-			_Value(std::make_unique<Inspection::Value>())
-		{
-		}
-		
-		~Result(void)
-		{
-		}
-		
-		bool GetSuccess(void) const
-		{
-			return _Success;
-		}
-		
-		std::unique_ptr<Inspection::Value> ExtractValue(void)
-		{
-			return std::move(_Value);
-		}
-		
-		Inspection::Value * GetValue(void)
-		{
-			return _Value.get();
-		}
-		
-		void SetSuccess(bool Success)
-		{
-			_Success = Success;
-		}
-	private:
-		bool _Success;
-		std::unique_ptr<Inspection::Value> _Value;
-	};
+    class Result
+    {
+    public:
+        Result(void) :
+            _Success(false),
+            _Value(std::make_unique<Inspection::Value>())
+        {
+        }
+        
+        ~Result(void)
+        {
+        }
+        
+        bool GetSuccess(void) const
+        {
+            return _Success;
+        }
+        
+        std::unique_ptr<Inspection::Value> ExtractValue(void)
+        {
+            return std::move(_Value);
+        }
+        
+        Inspection::Value * GetValue(void)
+        {
+            return _Value.get();
+        }
+        
+        void SetSuccess(bool Success)
+        {
+            _Success = Success;
+        }
+    private:
+        bool _Success;
+        std::unique_ptr<Inspection::Value> _Value;
+    };
 }
 
 #endif
