@@ -222,24 +222,26 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
 
 std::any Inspection::TypeDefinition::And::GetAny(Inspection::ExecutionContext & ExecutionContext) const
 {
-	ASSERTION(m_Operand1 != nullptr);
-	ASSERTION(m_Operand2 != nullptr);
+    ASSERTION(m_Operands.size() > 0);
+    
+    auto Result = true;
+    
+    for(auto const & Operand : m_Operands)
+    {
+        ASSERTION(Operand != nullptr);
+        
+        auto OperandAny = Operand->GetAny(ExecutionContext);
+        
+        ASSERTION(OperandAny.has_value() == true);
+        ASSERTION(OperandAny.type() == typeid(bool));
+        Result = Result && std::any_cast<bool>(OperandAny);
+        if(Result == false)
+        {
+            break;
+        }
+    }
 	
-	auto Operand1Any = m_Operand1->GetAny(ExecutionContext);
-	auto Operand2Any = m_Operand2->GetAny(ExecutionContext);
-	
-	ASSERTION(Operand1Any.has_value() == true);
-	ASSERTION(Operand2Any.has_value() == true);
-	if((Operand1Any.type() == typeid(bool)) && (Operand2Any.type() == typeid(bool)))
-	{
-		return static_cast<bool>(std::any_cast<bool>(Operand1Any) && std::any_cast<bool>(Operand2Any));
-	}
-	else
-	{
-		UNEXPECTED_CASE("Operand1Any.type() == " + Inspection::to_string(Operand1Any.type()) + " and Operand2Any.type() == " + Inspection::to_string(Operand2Any.type()));
-	}
-	
-	return nullptr;
+	return Result;
 }
 
 Inspection::TypeDefinition::DataType Inspection::TypeDefinition::And::GetDataType(void) const
@@ -252,7 +254,6 @@ std::unique_ptr<Inspection::TypeDefinition::And> Inspection::TypeDefinition::And
 	ASSERTION(Element != nullptr);
 	
 	auto Result = std::unique_ptr<Inspection::TypeDefinition::And>{new Inspection::TypeDefinition::And{}};
-	auto First = true;
 	
 	for(auto ChildNode : Element->GetChilds())
 	{
@@ -260,21 +261,10 @@ std::unique_ptr<Inspection::TypeDefinition::And> Inspection::TypeDefinition::And
 		{
 			auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
 			
-			ASSERTION(ChildElement != nullptr);
-			if(First == true)
-			{
-				Result->m_Operand1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-				First = false;
-			}
-			else
-			{
-				INVALID_INPUT_IF(Result->m_Operand2 != nullptr, "More than two operands for And expression.");
-				Result->m_Operand2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-			}
+            Result->m_Operands.push_back(Inspection::TypeDefinition::Expression::Load(ChildElement));
 		}
 	}
-	INVALID_INPUT_IF(Result->m_Operand2 == nullptr, "Missing operands for And expression.");
-	INVALID_INPUT_IF(Result->m_Operand2 == nullptr, "Missing second operand for And expression.");
+	INVALID_INPUT_IF(Result->m_Operands.size() == 0, "Missing operands for And expression.");
 	
 	return Result;
 }

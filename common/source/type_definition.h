@@ -20,6 +20,7 @@
 #define COMMON_TYPE_DEFINITION_H
 
 #include <any>
+#include <list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -126,8 +127,7 @@ namespace Inspection
 			Inspection::TypeDefinition::And & operator=(const Inspection::TypeDefinition::And & And) = delete;
 			Inspection::TypeDefinition::And & operator=(Inspection::TypeDefinition::And && And) = delete;
 		private:
-			std::unique_ptr<Inspection::TypeDefinition::Expression> m_Operand1;
-			std::unique_ptr<Inspection::TypeDefinition::Expression> m_Operand2;
+            std::list<std::unique_ptr<Inspection::TypeDefinition::Expression>> m_Operands;
 		};
 		
 		class Cast : public Inspection::TypeDefinition::Expression
