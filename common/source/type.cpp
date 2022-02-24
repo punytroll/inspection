@@ -25,12 +25,25 @@ Inspection::TypeDefinition::Type::~Type()
 
 auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
 {
+    auto ExecutionContext = Inspection::ExecutionContext{*this, *m_TypeRepository};
+    auto Result = Get(ExecutionContext, Reader, Parameters);
+    
+    ASSERTION(ExecutionContext.GetExecutionStackSize() == 0);
+    
+    return Result;
+}
+
+auto Inspection::TypeDefinition::Type::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
+{
     auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
     
     // reading
     if(Continue == true)
     {
+        auto TypePart = Inspection::TypeDefinition::TypePart::Create();
+        
+        ExecutionContext.Push(*TypePart, *Result, Reader, Parameters);
         if(m_HardcodedGetter != nullptr)
         {
             auto HardcodedResult = m_HardcodedGetter(Reader, Parameters);
@@ -41,11 +54,6 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::uno
         else if(m_Part != nullptr)
         {
             ASSERTION(m_TypeRepository != nullptr);
-            
-            auto ExecutionContext = Inspection::ExecutionContext{*this, *m_TypeRepository};
-            auto TypePart = Inspection::TypeDefinition::TypePart::Create();
-            
-            ExecutionContext.Push(*TypePart, *Result, Reader, Parameters);
             
             auto PartReader = std::unique_ptr<Inspection::Reader>{};
             
@@ -115,13 +123,12 @@ auto Inspection::TypeDefinition::Type::Get(Inspection::Reader & Reader, std::uno
                 }
             }
             Reader.AdvancePosition(PartReader->GetConsumedLength());
-            ExecutionContext.Pop();
-            ASSERTION(ExecutionContext.GetExecutionStackSize() == 0);
         }
         else
         {
             UNEXPECTED_CASE("m_HardcodedGetter and m_Part are both null");
         }
+        ExecutionContext.Pop();
     }
     // finalization
     Result->SetSuccess(Continue);

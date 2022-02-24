@@ -14,6 +14,7 @@ namespace XML
 
 namespace Inspection
 {
+    class ExecutionContext;
     class Reader;
     class Result;
     class TypeRepository;
@@ -30,6 +31,7 @@ namespace Inspection
         public:
             ~Type();
             auto Get(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>;
+            auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>;
             auto GetPathParts() const -> std::vector<std::string> const &;
             auto SetTypeRepository(Inspection::TypeRepository & TypeRepository) -> void;
         private:

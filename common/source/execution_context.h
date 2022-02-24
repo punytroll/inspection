@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2019  Hagen Möbius
+ * inspection
+ * Copyright (C) 2019-2022  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,30 +45,29 @@ namespace Inspection
         class Element
         {
         public:
-            Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+            Element(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
             
-            const std::unordered_map<std::string, std::any> & _Parameters;
-            const Inspection::TypeDefinition::Part & _Part;
-            Inspection::Reader & _Reader;
-            Inspection::Result & _Result;
+            std::unordered_map<std::string, std::any> const & m_Parameters;
+            Inspection::TypeDefinition::Part const & m_Part;
+            Inspection::Reader & m_Reader;
+            Inspection::Result & m_Result;
         };
     public:
-        ExecutionContext(const Inspection::TypeDefinition::Type & Type, Inspection::TypeRepository & TypeRepository);
-        void Push(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-        void Pop(void);
-        Inspection::Result & GetTopLevelResult(void) const;
-        Inspection::Length CalculateLengthFromReference(const Inspection::TypeDefinition::LengthReference & LengthReference);
-        Inspection::Value * GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference);
-        Inspection::Value * GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference);
-        const std::any & GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference);
-        std::unordered_map<std::string, std::any> GetAllParameters(void);
-        std::uint32_t GetExecutionStackSize(void) const;
-        Inspection::TypeRepository & GetTypeRepository(void);
+        ExecutionContext(Inspection::TypeDefinition::Type const & Type, Inspection::TypeRepository & TypeRepository);
+        void Push(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters);
+        void Pop();
+        Inspection::Result & GetTopLevelResult() const;
+        Inspection::Value * GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference);
+        Inspection::Value * GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference);
+        const std::any & GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference);
+        std::unordered_map<std::string, std::any> GetAllParameters();
+        std::uint32_t GetExecutionStackSize() const;
+        Inspection::TypeRepository & GetTypeRepository();
     private:
-        Inspection::Value * _GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, Inspection::Value * Current);
-        std::list<Inspection::ExecutionContext::Element> _ExecutionStack;
-        const Inspection::TypeDefinition::Type & _Type;
-        Inspection::TypeRepository & _TypeRepository;
+        Inspection::Value * m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current);
+        std::list<Inspection::ExecutionContext::Element> m_ExecutionStack;
+        Inspection::TypeDefinition::Type const & m_Type;
+        Inspection::TypeRepository & m_TypeRepository;
     };
 }
 

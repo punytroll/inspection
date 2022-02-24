@@ -498,7 +498,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
@@ -579,7 +579,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 ASSERTION(Reader.GetReadPositionInInput() == Properties.first);
                 
                 auto ElementReader = Inspection::Reader{Reader, Properties.second};
-                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
@@ -644,7 +644,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     
                     ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                     
-                    auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                    auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
                     
                     Continue = ElementResult->GetSuccess();
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
@@ -699,7 +699,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
@@ -758,7 +758,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 ElementParameters["ElementIndexInArray"] = ElementIndexInArray;
                 
-                auto ElementResult = ElementType->Get(ElementReader, ElementParameters);
+                auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
                 if(Continue == true)
@@ -1321,10 +1321,6 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
             Result = Inspection::TypeDefinition::Length::Load(Element);
         }
     }
-    else if(Element->GetName() == "length-reference")
-    {
-        Result = Inspection::TypeDefinition::LengthReference::Load(Element);
-    }
     else if(Element->GetName() == "less-than")
     {
         Result = Inspection::TypeDefinition::LessThan::Load(Element);
@@ -1427,7 +1423,7 @@ auto Inspection::TypeDefinition::Field::Get(Inspection::ExecutionContext & Execu
         
         ASSERTION(FieldType != nullptr);
         
-        auto FieldResult = FieldType->Get(Reader, ExecutionContext.GetAllParameters());
+        auto FieldResult = FieldType->Get(ExecutionContext, Reader, ExecutionContext.GetAllParameters());
         
         Continue = FieldResult->GetSuccess();
         Result->GetValue()->Extend(FieldResult->ExtractValue());
@@ -1558,7 +1554,7 @@ auto Inspection::TypeDefinition::Fields::Get(Inspection::ExecutionContext & Exec
     
     ASSERTION(FieldsType != nullptr);
     
-    auto FieldsResult = FieldsType->Get(Reader, ExecutionContext.GetAllParameters());
+    auto FieldsResult = FieldsType->Get(ExecutionContext, Reader, ExecutionContext.GetAllParameters());
     
     Continue = FieldsResult->GetSuccess();
     Result->GetValue()->Extend(FieldsResult->ExtractValue());
@@ -1601,7 +1597,7 @@ auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & Exe
     
     ASSERTION(ForwardType != nullptr);
     
-    auto ForwardResult = ForwardType->Get(Reader, ExecutionContext.GetAllParameters());
+    auto ForwardResult = ForwardType->Get(ExecutionContext, Reader, ExecutionContext.GetAllParameters());
     
     Continue = ForwardResult->GetSuccess();
     Result->GetValue()->Extend(ForwardResult->ExtractValue());
@@ -1682,11 +1678,6 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Length::GetData
     return Inspection::TypeDefinition::DataType::Length;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// LengthReference                                                                               //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
 std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::Length::Load(const XML::Element * Element)
 {
     ASSERTION(Element != nullptr);
@@ -1713,54 +1704,6 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
                 UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
             }
         }
-    }
-    
-    return Result;
-}
-
-std::any Inspection::TypeDefinition::LengthReference::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    return ExecutionContext.CalculateLengthFromReference(*this);
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::LengthReference::GetDataType(void) const
-{
-    return Inspection::TypeDefinition::DataType::Length;
-}
-
-Inspection::TypeDefinition::LengthReference::Root Inspection::TypeDefinition::LengthReference::GetRoot(void) const
-{
-    return m_Root;
-}
-
-Inspection::TypeDefinition::LengthReference::Name Inspection::TypeDefinition::LengthReference::GetName(void) const
-{
-    return m_Name;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::LengthReference> Inspection::TypeDefinition::LengthReference::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::LengthReference>{new Inspection::TypeDefinition::LengthReference{}};
-    
-    ASSERTION(Element->HasAttribute("root") == true);
-    if(Element->GetAttribute("root") == "type")
-    {
-        Result->m_Root = Inspection::TypeDefinition::LengthReference::Root::Type;
-    }
-    else
-    {
-        UNEXPECTED_CASE("Element->GetAttribute(\"root\") == " + Element->GetAttribute("root"));
-    }
-    ASSERTION(Element->HasAttribute("name") == true);
-    if(Element->GetAttribute("name") == "consumed")
-    {
-        Result->m_Name = Inspection::TypeDefinition::LengthReference::Name::Consumed;
-    }
-    else
-    {
-        UNEXPECTED_CASE("Element->GetAttribute(\"name\") == " + Element->GetAttribute("name"));
     }
     
     return Result;
@@ -2506,6 +2449,10 @@ std::any Inspection::TypeDefinition::Subtract::GetAny(Inspection::ExecutionConte
     if(MinuendAny.type() == typeid(Inspection::Length))
     {
         return std::any_cast<const Inspection::Length &>(MinuendAny) - std::any_cast<const Inspection::Length &>(SubtrahendAny);
+    }
+    else if(MinuendAny.type() == typeid(std::uint64_t))
+    {
+        return std::any_cast<std::uint64_t>(MinuendAny) - std::any_cast<std::uint64_t>(SubtrahendAny);
     }
     else
     {

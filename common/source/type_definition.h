@@ -281,38 +281,6 @@ namespace Inspection
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_Bits;
         };
         
-        class LengthReference : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::LengthReference> Load(const XML::Element * Element);
-        public:
-            enum class Name
-            {
-                Consumed
-            };
-            
-            enum class Root
-            {
-                Type
-            };
-        public:
-            virtual ~LengthReference(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        public:
-            Inspection::TypeDefinition::LengthReference::Name GetName(void) const;
-            Inspection::TypeDefinition::LengthReference::Root GetRoot(void) const;
-        private:
-            LengthReference(void) = default;
-            LengthReference(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
-            LengthReference(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
-            Inspection::TypeDefinition::LengthReference & operator=(const Inspection::TypeDefinition::LengthReference & LengthReference) = delete;
-            Inspection::TypeDefinition::LengthReference & operator=(Inspection::TypeDefinition::LengthReference && LengthReference) = delete;
-        private:
-            Inspection::TypeDefinition::LengthReference::Name m_Name;
-            Inspection::TypeDefinition::LengthReference::Root m_Root;
-        };
-        
         class LessThan : public Inspection::TypeDefinition::Expression
         {
         public:

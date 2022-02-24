@@ -20,21 +20,17 @@
 				<part>SetOrUnset_EndedByLength</part>
 			</type-reference>
 			<length>
-				<subtract>
-					<length>
-						<bytes>
-							<unsigned-integer-64bit>
-								<data-reference root="type">
-									<field>Size</field>
-								</data-reference>
-							</unsigned-integer-64bit>
-						</bytes>
-						<bits>
-							<unsigned-integer-64bit>0</unsigned-integer-64bit>
-						</bits>
-					</length>
-					<length-reference root="type" name="consumed"/>
-				</subtract>
+				<bytes>
+					<subtract>
+						<data-reference root="type">
+							<field>Size</field>
+						</data-reference>
+						<unsigned-integer-64bit>24</unsigned-integer-64bit>
+					</subtract>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
 			</length>
 		</field>
 	</sequence>

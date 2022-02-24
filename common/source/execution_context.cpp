@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2019  Hagen Möbius
+ * inspection
+ * Copyright (C) 2019-2022  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,66 +28,55 @@
 #include "type.h"
 #include "value.h"
 
-Inspection::ExecutionContext::Element::Element(const Inspection::TypeDefinition::Part & Part, Inspection::Result & Result, Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters) :
-    _Parameters{Parameters},
-    _Part{Part},
-    _Reader{Reader},
-    _Result{Result}
+Inspection::ExecutionContext::Element::Element(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) :
+    m_Parameters{Parameters},
+    m_Part{Part},
+    m_Reader{Reader},
+    m_Result{Result}
 {
 }
 
 Inspection::ExecutionContext::ExecutionContext(Inspection::TypeDefinition::Type const & Type, Inspection::TypeRepository & TypeRepository) :
-    _Type{Type},
-    _TypeRepository{TypeRepository}
+    m_Type{Type},
+    m_TypeRepository{TypeRepository}
 {
 }
 
 void Inspection::ExecutionContext::Push(Inspection::TypeDefinition::Part const & Part, Inspection::Result & Result, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters)
 {
-    _ExecutionStack.emplace_back(Part, Result, Reader, Parameters);
+    m_ExecutionStack.emplace_back(Part, Result, Reader, Parameters);
 }
 
-void Inspection::ExecutionContext::Pop(void)
+void Inspection::ExecutionContext::Pop()
 {
-    _ExecutionStack.pop_back();
+    m_ExecutionStack.pop_back();
 }
 
-Inspection::Result & Inspection::ExecutionContext::GetTopLevelResult(void) const
+Inspection::Result & Inspection::ExecutionContext::GetTopLevelResult() const
 {
-    return _ExecutionStack.front()._Result;
+    return m_ExecutionStack.front().m_Result;
 }
 
-Inspection::Length Inspection::ExecutionContext::CalculateLengthFromReference(const Inspection::TypeDefinition::LengthReference & LengthReference)
-{
-    ASSERTION(LengthReference.GetRoot() == Inspection::TypeDefinition::LengthReference::Root::Type);
-    ASSERTION(LengthReference.GetName() == Inspection::TypeDefinition::LengthReference::Name::Consumed);
-    ASSERTION(_ExecutionStack.size() >= 2);
-    
-    // Although the first element in the stack is the "type", its length is the last to be modified (right at the end).
-    // We expect at least the second element to be present at use its length. (might be a sequence)
-    return std::next(std::begin(_ExecutionStack))->_Reader.GetConsumedLength();
-}
-
-Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(const Inspection::TypeDefinition::DataReference & DataReference)
+Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(Inspection::TypeDefinition::DataReference const & DataReference)
 {
     auto Result = static_cast<Inspection::Value *>(nullptr);
     
-    ASSERTION(_ExecutionStack.size() > 0);
+    ASSERTION(m_ExecutionStack.size() > 0);
     switch(DataReference.GetRoot())
     {
     case Inspection::TypeDefinition::DataReference::Root::Current:
         {
-            Result = _GetValueFromDataReferenceFromCurrent(DataReference.GetParts(), _ExecutionStack.back()._Result.GetValue());
+            Result = m_GetValueFromDataReferenceFromCurrent(DataReference.GetParts(), m_ExecutionStack.back().m_Result.GetValue());
             
             break;
         }
     case Inspection::TypeDefinition::DataReference::Root::Type:
         {
-            auto ExecutionStackIterator = std::begin(_ExecutionStack);
+            auto ExecutionStackIterator = std::begin(m_ExecutionStack);
             
-            Result = ExecutionStackIterator->_Result.GetValue();
+            Result = ExecutionStackIterator->m_Result.GetValue();
             
-            const auto & Parts = DataReference.GetParts();
+            auto const & Parts = DataReference.GetParts();
             auto PartIterator = std::begin(Parts);
             auto EndIterator = std::end(Parts);
             
@@ -107,8 +97,8 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
                         else
                         {
                             ++ExecutionStackIterator;
-                            ASSERTION_MESSAGE(ExecutionStackIterator != std::end(_ExecutionStack), "Could not find the field \"" + PartIterator->DetailName + "\" on the execution stack.");
-                            Result = ExecutionStackIterator->_Result.GetValue();
+                            ASSERTION_MESSAGE(ExecutionStackIterator != std::end(m_ExecutionStack), "Could not find the field \"" + PartIterator->DetailName + "\" on the execution stack.");
+                            Result = ExecutionStackIterator->m_Result.GetValue();
                             if(Result->HasField(PartIterator->DetailName) == true)
                             {
                                 Result = Result->GetField(PartIterator->DetailName);
@@ -136,7 +126,7 @@ Inspection::Value * Inspection::ExecutionContext::GetValueFromDataReference(cons
     return Result;
 }
 
-Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(const Inspection::TypeDefinition::FieldReference & FieldReference)
+Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(Inspection::TypeDefinition::FieldReference const & FieldReference)
 {
     auto Result = static_cast<Inspection::Value *>(nullptr);
     auto ExecutionStackIterator = std::list<Inspection::ExecutionContext::Element>::iterator{};
@@ -145,20 +135,20 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
     {
     case Inspection::TypeDefinition::FieldReference::Root::Current:
         {
-            ASSERTION(_ExecutionStack.size() > 0);
-            ExecutionStackIterator = std::prev(std::end(_ExecutionStack));
+            ASSERTION(m_ExecutionStack.size() > 0);
+            ExecutionStackIterator = std::prev(std::end(m_ExecutionStack));
             
             break;
         }
     case Inspection::TypeDefinition::FieldReference::Root::Type:
         {
-            ASSERTION(_ExecutionStack.size() > 0);
-            ExecutionStackIterator = std::begin(_ExecutionStack);
+            ASSERTION(m_ExecutionStack.size() > 0);
+            ExecutionStackIterator = std::begin(m_ExecutionStack);
             
             break;
         }
     }
-    Result = ExecutionStackIterator->_Result.GetValue();
+    Result = ExecutionStackIterator->m_Result.GetValue();
     
     auto PartIterator = std::begin(FieldReference.Parts);
     
@@ -174,7 +164,7 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
         else
         {
             ++ExecutionStackIterator;
-            Result = ExecutionStackIterator->_Result.GetValue();
+            Result = ExecutionStackIterator->m_Result.GetValue();
             if(Result->HasField(*PartIterator) == true)
             {
                 Result = Result->GetField(*PartIterator);
@@ -186,15 +176,15 @@ Inspection::Value * Inspection::ExecutionContext::GetFieldFromFieldReference(con
     return Result;
 }
 
-const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(const Inspection::TypeDefinition::ParameterReference & ParameterReference)
+const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterReference(Inspection::TypeDefinition::ParameterReference const & ParameterReference)
 {
-    auto ExecutionStackIterator = std::rbegin(_ExecutionStack);
+    auto ExecutionStackIterator = std::rbegin(m_ExecutionStack);
     
-    while(ExecutionStackIterator != std::rend(_ExecutionStack))
+    while(ExecutionStackIterator != std::rend(m_ExecutionStack))
     {
-        auto ParameterIterator{ExecutionStackIterator->_Parameters.find(ParameterReference.Name)};
+        auto ParameterIterator = ExecutionStackIterator->m_Parameters.find(ParameterReference.Name);
         
-        if(ParameterIterator != ExecutionStackIterator->_Parameters.end())
+        if(ParameterIterator != ExecutionStackIterator->m_Parameters.end())
         {
             return ParameterIterator->second;
         }
@@ -206,24 +196,24 @@ const std::any & Inspection::ExecutionContext::GetAnyReferenceFromParameterRefer
     throw std::runtime_error{"Could not find named parameter \"" + ParameterReference.Name + "\"."};
 }
 
-std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllParameters(void)
+std::unordered_map<std::string, std::any> Inspection::ExecutionContext::GetAllParameters()
 {
     auto Result = std::unordered_map<std::string, std::any>{};
     
-    for(auto ExecutionStackElement : _ExecutionStack)
+    for(auto ExecutionStackElement : m_ExecutionStack)
     {
-        Result.insert(std::begin(ExecutionStackElement._Parameters), std::end(ExecutionStackElement._Parameters));
+        Result.insert(std::begin(ExecutionStackElement.m_Parameters), std::end(ExecutionStackElement.m_Parameters));
     }
     
     return Result;
 }
 
-std::uint32_t Inspection::ExecutionContext::GetExecutionStackSize(void) const
+std::uint32_t Inspection::ExecutionContext::GetExecutionStackSize() const
 {
-    return _ExecutionStack.size();
+    return m_ExecutionStack.size();
 }
 
-Inspection::Value * Inspection::ExecutionContext::_GetValueFromDataReferenceFromCurrent(const std::vector<Inspection::TypeDefinition::DataReference::Part> & Parts, Inspection::Value * Current)
+Inspection::Value * Inspection::ExecutionContext::m_GetValueFromDataReferenceFromCurrent(std::vector<Inspection::TypeDefinition::DataReference::Part> const & Parts, Inspection::Value * Current)
 {
     auto Result = Current;
     auto EndIterator = std::end(Parts);
@@ -252,7 +242,7 @@ Inspection::Value * Inspection::ExecutionContext::_GetValueFromDataReferenceFrom
     return Result;
 }
 
-auto Inspection::ExecutionContext::GetTypeRepository(void) -> Inspection::TypeRepository &
+auto Inspection::ExecutionContext::GetTypeRepository() -> Inspection::TypeRepository &
 {
-    return _TypeRepository;
+    return m_TypeRepository;
 }
