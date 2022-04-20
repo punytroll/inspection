@@ -46,7 +46,7 @@
 					</element>
 					<element base-value="5" valid="true">
 						<tag name="value">
-							<unsigned-integer-8bit>24</unsigned-integer-8bit>
+							<unsigned-integer-8bit>20</unsigned-integer-8bit>
 						</tag>
 						<tag name="unit">
 							<string>bits</string>
@@ -54,7 +54,7 @@
 					</element>
 					<element base-value="6" valid="true">
 						<tag name="value">
-							<unsigned-integer-8bit>32</unsigned-integer-8bit>
+							<unsigned-integer-8bit>24</unsigned-integer-8bit>
 						</tag>
 						<tag name="unit">
 							<string>bits</string>
