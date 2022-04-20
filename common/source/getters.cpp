@@ -10518,6 +10518,17 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_BigEndian(In
             
             break;
         }
+    case 24:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_24Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
     default:
         {
             NOT_IMPLEMENTED("Reading " + to_string_cast(Bits) + " bits as an unsigned integer is not yet implemented in the generic function.");
