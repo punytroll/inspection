@@ -17,6 +17,8 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: recursive
+    - name: Setup Meson
+      uses: BSFishy/meson-build@v1.0.3
     - name: Build
       run: make
     - name: Test
