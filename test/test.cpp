@@ -293,6 +293,84 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Reader.Read7Bits()                                                            //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11};
+		auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{4, 0}};
+		
+		{
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 0}};
+			Inspection::ReadResult ReadResult;
+			
+			assert(Reader.Read7Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 7}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 7}));
+			assert(ReadResult.Data == 0x42);
+			
+			assert(Reader.Read7Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 7}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 7}));
+			assert(ReadResult.Data == 0x70);
+			
+			assert(Reader.Read7Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 7}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 7}));
+			assert(ReadResult.Data == 0x69);
+			
+			assert(Reader.Read7Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 7}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 7}));
+			assert(ReadResult.Data == 0x71);
+			
+			assert(Reader.Read7Bits(ReadResult) == false);
+			assert(ReadResult.Success == false);
+			assert((ReadResult.InputLength == Inspection::Length{0, 4}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 0}));
+		}
+		{
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Inspection::Length{4, 0}};
+			
+			Reader.SetBitstreamType(Inspection::Reader::BitstreamType::LeastSignificantBitFirst);
+			
+			Inspection::ReadResult ReadResult;
+			
+			assert(Reader.Read7Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 7}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 7}));
+			assert(ReadResult.Data == 0x05);
+			
+			assert(Reader.Read7Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 7}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 7}));
+			assert(ReadResult.Data == 0x07);
+			
+			assert(Reader.Read7Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 7}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 7}));
+			assert(ReadResult.Data == 0x3f);
+			
+			assert(Reader.Read7Bits(ReadResult) == true);
+			assert(ReadResult.Success == true);
+			assert((ReadResult.InputLength == Inspection::Length{0, 7}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 7}));
+			assert(ReadResult.Data == 0x0a);
+			
+			assert(Reader.Read7Bits(ReadResult) == false);
+			assert(ReadResult.Success == false);
+			assert((ReadResult.InputLength == Inspection::Length{0, 4}));
+			assert((ReadResult.OutputLength == Inspection::Length{0, 0}));
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_UnsignedInteger_0Bit                                                      //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
