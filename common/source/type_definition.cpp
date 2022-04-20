@@ -761,23 +761,16 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 auto ElementResult = ElementType->Get(ExecutionContext, ElementReader, ElementParameters);
                 
                 Continue = ElementResult->GetSuccess();
-                if(Continue == true)
+                ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
+                if(ElementName.has_value() == true)
                 {
-                    ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                    if(ElementName.has_value() == true)
-                    {
-                        Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
-                    }
-                    else
-                    {
-                        Result->GetValue()->AppendField(ElementResult->ExtractValue());
-                    }
-                    Reader.AdvancePosition(ElementReader.GetConsumedLength());
+                    Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
                 }
                 else
                 {
-                    break;
+                    Result->GetValue()->AppendField(ElementResult->ExtractValue());
                 }
+                Reader.AdvancePosition(ElementReader.GetConsumedLength());
             }
             if(Reader.IsAtEnd() == true)
             {
