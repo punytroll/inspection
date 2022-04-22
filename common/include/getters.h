@@ -174,6 +174,9 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_SignedInteger_5Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_SignedInteger_8Bit(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_SignedInteger_12Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    std::unique_ptr<Inspection::Result> Get_SignedInteger_15Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    std::unique_ptr<Inspection::Result> Get_SignedInteger_16Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    std::unique_ptr<Inspection::Result> Get_SignedInteger_17Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_SignedInteger_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_SignedInteger_32Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_SignedInteger_32Bit_RiceEncoded(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);

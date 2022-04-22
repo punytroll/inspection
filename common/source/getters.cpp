@@ -9932,6 +9932,39 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_BigEndian(Insp
             
             break;
         }
+    case 15:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_SignedInteger_15Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 16:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_SignedInteger_16Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 17:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_SignedInteger_17Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
     case 32:
         {
             auto PartReader = Inspection::Reader{Reader};
@@ -10061,6 +10094,129 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_12Bit_BigEndia
             if((Continue = Reader.Read8Bits(ReadResult2)) == true)
             {
                 Result->GetValue()->SetData(static_cast<std::int16_t>(static_cast<std::int16_t>(static_cast<std::int16_t>(ReadResult1.Data << 12) >> 4) | static_cast<std::int16_t>(ReadResult2.Data)));
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_15Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("signed"s);
+    Result->GetValue()->AddTag("15bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read7Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+        
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                Result->GetValue()->SetData(static_cast<std::int16_t>(static_cast<std::int16_t>(static_cast<std::int16_t>(ReadResult1.Data << 9) >> 1) | static_cast<std::int16_t>(ReadResult2.Data)));
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_16Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("signed"s);
+    Result->GetValue()->AddTag("16bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                Result->GetValue()->SetData(static_cast<std::int16_t>(static_cast<std::int16_t>(static_cast<std::int16_t>(ReadResult1.Data) << 8) | static_cast<std::int16_t>(ReadResult2.Data)));
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_17Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("signed"s);
+    Result->GetValue()->AddTag("17bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read1Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    Result->GetValue()->SetData(static_cast<std::int32_t>(static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult1.Data << 31) >> 15) | static_cast<std::int32_t>(static_cast<std::int32_t>(ReadResult2.Data) << 8) | static_cast<std::int32_t>(ReadResult3.Data)));
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
             }
             else
             {
