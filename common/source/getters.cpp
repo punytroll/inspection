@@ -3054,7 +3054,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe(Inspection::Re
         if(SubframeType == "SUBFRAME_CONSTANT")
         {
             auto PartReader = Inspection::Reader{Reader};
-            auto PartResult = Inspection::Get_UnsignedInteger_BigEndian(PartReader, {{"Bits", BitsPerSample}});
+            auto PartResult = Inspection::Get_SignedInteger_BigEndian(PartReader, {{"Bits", BitsPerSample}});
             
             Continue = PartResult->GetSuccess();
             Result->GetValue()->AppendField("Data", PartResult->ExtractValue());
@@ -3136,7 +3136,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Data_LPC(Inspe
     if(Continue == true)
     {
         auto PartReader = Inspection::Reader{Reader};
-        auto PartResult = Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Unsigned", "BigEndian"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Bits", BitsPerSample}}}, {"NumberOfElements", static_cast<std::uint64_t>(PredictorOrder)}});
+        auto PartResult = Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Signed", "BigEndian"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Bits", BitsPerSample}}}, {"NumberOfElements", static_cast<std::uint64_t>(PredictorOrder)}});
         
         Continue = PartResult->GetSuccess();
         Result->GetValue()->AppendField("WarmUpSamples", PartResult->ExtractValue());

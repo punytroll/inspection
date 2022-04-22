@@ -10,7 +10,7 @@
 					<type-reference>
 						<part>Number</part>
 						<part>Integer</part>
-						<part>Unsigned</part>
+						<part>Signed</part>
 						<part>BigEndian</part>
 					</type-reference>
 				</parameter>
