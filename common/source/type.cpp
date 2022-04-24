@@ -294,6 +294,10 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
                 {
                     Result->m_HardcodedGetter = Inspection::Get_FLAC_Subframe_Residual_Rice_Partition;
                 }
+                else if(HardcodedText->GetText() == "Get_FLAC_Subframe_Residual_Rice2_Partition")
+                {
+                    Result->m_HardcodedGetter = Inspection::Get_FLAC_Subframe_Residual_Rice2_Partition;
+                }
                 else if(HardcodedText->GetText() == "Get_GUID_LittleEndian")
                 {
                     Result->m_HardcodedGetter = Inspection::Get_GUID_LittleEndian;

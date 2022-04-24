@@ -3415,7 +3415,97 @@ std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice_
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice2(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
-    NOT_IMPLEMENTED("Get_FLAC_Subframe_Residual_Rice2");
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    // reading
+    if(Continue == true)
+    {
+        auto PartReader = Inspection::Reader{Reader};
+        auto PartResult = Inspection::Get_UnsignedInteger_4Bit(PartReader, {});
+        
+        Continue = PartResult->GetSuccess();
+        Result->GetValue()->AppendField("PartitionOrder", PartResult->ExtractValue());
+        Reader.AdvancePosition(PartReader.GetConsumedLength());
+    }
+    // interpretation
+    if(Continue == true)
+    {
+        auto NumberOfPartitions = static_cast<std::uint16_t>(1 << std::any_cast<std::uint8_t>(Result->GetValue()->GetField("PartitionOrder")->GetData()));
+        
+        Result->GetValue()->GetField("PartitionOrder")->AddTag("number of partitions", NumberOfPartitions);
+    }
+    // reading
+    if(Continue == true)
+    {
+        auto & PredictorOrder = Parameters.at("PredictorOrder");
+        auto FrameBlockSize = std::any_cast<std::uint16_t>(Parameters.at("FrameBlockSize"));
+        auto NumberOfPartitions = std::any_cast<std::uint16_t>(Result->GetValue()->GetField("PartitionOrder")->GetTag("number of partitions")->GetData());
+        auto PartReader = Inspection::Reader{Reader};
+        auto PartResult = Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"FLAC", "Subframe_Residual_Rice2_Partition"})}, {"NumberOfElements", static_cast<std::uint64_t>(NumberOfPartitions)}, {"ElementName", "Partition"s}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"NumberOfSamples", static_cast<std::uint32_t>(FrameBlockSize / NumberOfPartitions)}, {"PredictorOrder", PredictorOrder}}}});
+        
+        Continue = PartResult->GetSuccess();
+        Result->GetValue()->AppendField("Partitions", PartResult->ExtractValue());
+        Reader.AdvancePosition(PartReader.GetConsumedLength());
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Residual_Rice2_Partition(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    // reading
+    if(Continue == true)
+    {
+        auto PartReader = Inspection::Reader{Reader};
+        auto PartResult = Inspection::Get_UnsignedInteger_5Bit(PartReader, {});
+        
+        Continue = PartResult->GetSuccess();
+        Result->GetValue()->AppendField("RiceParameter", PartResult->ExtractValue());
+        Reader.AdvancePosition(PartReader.GetConsumedLength());
+    }
+    // reading
+    if(Continue == true)
+    {
+        auto Rice = std::any_cast<std::uint8_t>(Result->GetValue()->GetField("RiceParameter")->GetData());
+        auto ElementIndexInArray = std::any_cast<std::uint64_t>(Parameters.at("ElementIndexInArray"));
+        auto NumberOfSamples = std::any_cast<std::uint32_t>(Parameters.at("NumberOfSamples"));
+        auto PredictorOrder = std::any_cast<std::uint8_t>(Parameters.at("PredictorOrder"));
+        
+        if(ElementIndexInArray == 0)
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult = Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Signed", "32Bit_RiceEncoded"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Rice", Rice}}}, {"NumberOfElements", static_cast<std::uint64_t>(NumberOfSamples - PredictorOrder)}});
+            
+            Continue = PartResult->GetSuccess();
+            if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
+            {
+                Result->GetValue()->AppendField("Samples", PartResult->ExtractValue());
+            }
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+        }
+        else
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult = Inspection::Get_Array_EndedByNumberOfElements(PartReader, {{"ElementType", Inspection::g_TypeRepository.GetType(std::vector<std::string>{"Number", "Integer", "Signed", "32Bit_RiceEncoded"})}, {"ElementParameters", std::unordered_map<std::string, std::any>{{"Rice", Rice}}}, {"NumberOfElements", static_cast<std::uint64_t> (NumberOfSamples)}});
+            
+            Continue = PartResult->GetSuccess();
+            if(g_AppendFLACStream_Subframe_Residual_Rice_Partition_Samples == true)
+            {
+                Result->GetValue()->AppendField("Samples", PartResult->ExtractValue());
+            }
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
 }
 
 std::unique_ptr<Inspection::Result> Inspection::Get_FLAC_Subframe_Type(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
@@ -10551,9 +10641,13 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_32Bit_RiceEnco
         {
             LeastSignificantBits = std::any_cast<std::uint16_t>(Result->GetValue()->GetField("LeastSignificantBits")->GetData());
         }
+        else if(Result->GetValue()->GetField("LeastSignificantBits")->GetData().type() == typeid(std::uint32_t))
+        {
+            LeastSignificantBits = std::any_cast<std::uint32_t>(Result->GetValue()->GetField("LeastSignificantBits")->GetData());
+        }
         else
         {
-            IMPOSSIBLE_CODE_REACHED("type of LeastSignificantBits is " + Inspection::to_string(Result->GetValue()->GetField("LeastSignificantBits")->GetData().type()));
+            UNEXPECTED_CASE("type of LeastSignificantBits is " + Inspection::to_string(Result->GetValue()->GetField("LeastSignificantBits")->GetData().type()));
         }
         
         auto Rice = std::any_cast<std::uint8_t>(Parameters.at("Rice"));
@@ -10832,6 +10926,72 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_BigEndian(In
         {
             auto PartReader = Inspection::Reader{Reader};
             auto PartResult{Inspection::Get_UnsignedInteger_17Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 18:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_18Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 19:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_19Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 20:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_20Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 21:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_21Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 22:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_22Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
+    case 23:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_UnsignedInteger_23Bit_BigEndian(PartReader, {})};
             
             Continue = PartResult->GetSuccess();
             Result->GetValue()->Extend(PartResult->ExtractValue());
@@ -11541,6 +11701,100 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_17Bit_BigEnd
     return Result;
 }
 
+std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_18Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("unsigned"s);
+    Result->GetValue()->AddTag("18bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read2Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult1.Data) << 16) | (static_cast<std::uint32_t>(ReadResult2.Data) << 8) | ReadResult3.Data));
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_19Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("unsigned"s);
+    Result->GetValue()->AddTag("19bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read3Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(ReadResult1.Data) << 16) | (static_cast<std::uint32_t>(ReadResult2.Data) << 8) | ReadResult3.Data));
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_20Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();
@@ -11562,6 +11816,147 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_20Bit_BigEnd
             if((Continue = Reader.Read8Bits(ReadResult2)) == true)
             {
                 Inspection::ReadResult ReadResult3;
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data << 16) | (ReadResult2.Data << 8) | ReadResult3.Data));
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_21Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("unsigned"s);
+    Result->GetValue()->AddTag("21bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read5Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data << 16) | (ReadResult2.Data << 8) | ReadResult3.Data));
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_22Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("unsigned"s);
+    Result->GetValue()->AddTag("22bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read6Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    Result->GetValue()->SetData(static_cast<std::uint32_t>((ReadResult1.Data << 16) | (ReadResult2.Data << 8) | ReadResult3.Data));
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_23Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("unsigned"s);
+    Result->GetValue()->AddTag("23bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read7Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                auto ReadResult3 = Inspection::ReadResult{};
                 
                 if((Continue = Reader.Read8Bits(ReadResult3)) == true)
                 {

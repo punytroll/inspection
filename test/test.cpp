@@ -2015,6 +2015,171 @@ int main(void)
 			assert(Result4->GetSuccess() == false);
 		}
 	}
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Inspection::Get_UnsignedInteger_18Bit_BigEndian                                           //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+       std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0xab};
+       
+       {
+           auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{7, 0}};
+           auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+           auto Result1 = Inspection::Get_UnsignedInteger_18Bit_BigEndian(Reader, {});
+           
+           assert(Result1->GetSuccess() == true);
+           assert(std::any_cast<std::uint32_t>(Result1->GetValue()->GetData()) == 0x2170d);
+           
+           auto Result2 = Inspection::Get_UnsignedInteger_18Bit_BigEndian(Reader, {});
+           
+           assert(Result2->GetSuccess() == true);
+           assert(std::any_cast<std::uint32_t>(Result2->GetValue()->GetData()) == 0xf110);
+           
+           auto Result3 = Inspection::Get_UnsignedInteger_18Bit_BigEndian(Reader, {});
+           
+           assert(Result3->GetSuccess() == true);
+           assert(std::any_cast<std::uint32_t>(Result3->GetValue()->GetData()) == 0x3db6a);
+           
+           auto Result4 = Inspection::Get_UnsignedInteger_18Bit_BigEndian(Reader, {});
+           
+           assert(Result4->GetSuccess() == false);
+       }
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Inspection::Get_UnsignedInteger_19Bit_BigEndian                                           //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+        std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0xab, 0x7e};
+        
+        {
+            auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{8, 0}};
+            auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+            auto Result1 = Inspection::Get_UnsignedInteger_19Bit_BigEndian(Reader, {});
+            
+            assert(Result1->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result1->GetValue()->GetData()) == 0x42e1a);
+            
+            auto Result2 = Inspection::Get_UnsignedInteger_19Bit_BigEndian(Reader, {});
+            
+            assert(Result2->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result2->GetValue()->GetData()) == 0x3c443);
+            
+            auto Result3 = Inspection::Get_UnsignedInteger_19Bit_BigEndian(Reader, {});
+            
+            assert(Result3->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result3->GetValue()->GetData()) == 0x6db56);
+            
+            auto Result4 = Inspection::Get_UnsignedInteger_19Bit_BigEndian(Reader, {});
+            
+            assert(Result4->GetSuccess() == false);
+        }
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Inspection::Get_UnsignedInteger_21Bit_BigEndian                                           //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0x51, 0xea, 0xa9, 0x34, 0xb2};
+        
+        {
+            auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{11, 0}};
+            auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+            auto Result1 = Inspection::Get_UnsignedInteger_21Bit_BigEndian(Reader, {});
+            
+            assert(Result1->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result1->GetValue()->GetData()) == 1095785);
+            
+            auto Result2 = Inspection::Get_UnsignedInteger_21Bit_BigEndian(Reader, {});
+            
+            assert(Result2->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result2->GetValue()->GetData()) == 1852477);
+            
+            auto Result3 = Inspection::Get_UnsignedInteger_21Bit_BigEndian(Reader, {});
+            
+            assert(Result3->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result3->GetValue()->GetData()) == 1485045);
+            
+            auto Result4 = Inspection::Get_UnsignedInteger_21Bit_BigEndian(Reader, {});
+            
+            assert(Result4->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result4->GetValue()->GetData()) == 693067);
+            
+            auto Result5 = Inspection::Get_UnsignedInteger_21Bit_BigEndian(Reader, {});
+            
+            assert(Result5->GetSuccess() == false);
+        }
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Inspection::Get_UnsignedInteger_22Bit_BigEndian                                           //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0x51, 0xea, 0xa9, 0x34, 0xb2, 0x79};
+        
+        {
+            auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{12, 0}};
+            auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+            auto Result1 = Inspection::Get_UnsignedInteger_22Bit_BigEndian(Reader, {});
+            
+            assert(Result1->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result1->GetValue()->GetData()) == 2191571);
+            
+            auto Result2 = Inspection::Get_UnsignedInteger_22Bit_BigEndian(Reader, {});
+            
+            assert(Result2->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result2->GetValue()->GetData()) == 3215606);
+            
+            auto Result3 = Inspection::Get_UnsignedInteger_22Bit_BigEndian(Reader, {});
+            
+            assert(Result3->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result3->GetValue()->GetData()) == 3491754);
+            
+            auto Result4 = Inspection::Get_UnsignedInteger_22Bit_BigEndian(Reader, {});
+            
+            assert(Result4->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result4->GetValue()->GetData()) == 2700466);
+            
+            auto Result5 = Inspection::Get_UnsignedInteger_22Bit_BigEndian(Reader, {});
+            
+            assert(Result5->GetSuccess() == false);
+        }
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Inspection::Get_UnsignedInteger_23Bit_BigEndian                                           //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    {
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0x51, 0xea, 0xa9, 0x34, 0xb2, 0x79};
+        
+        {
+            auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{12, 0}};
+            auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+            auto Result1 = Inspection::Get_UnsignedInteger_23Bit_BigEndian(Reader, {});
+            
+            assert(Result1->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result1->GetValue()->GetData()) == 4383143);
+            
+            auto Result2 = Inspection::Get_UnsignedInteger_23Bit_BigEndian(Reader, {});
+            
+            assert(Result2->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result2->GetValue()->GetData()) == 4473819);
+            
+            auto Result3 = Inspection::Get_UnsignedInteger_23Bit_BigEndian(Reader, {});
+            
+            assert(Result3->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result3->GetValue()->GetData()) == 2768213);
+            
+            auto Result4 = Inspection::Get_UnsignedInteger_23Bit_BigEndian(Reader, {});
+            
+            assert(Result4->GetSuccess() == true);
+            assert(std::any_cast<std::uint32_t>(Result4->GetValue()->GetData()) == 1264423);
+            
+            auto Result5 = Inspection::Get_UnsignedInteger_23Bit_BigEndian(Reader, {});
+            
+            assert(Result5->GetSuccess() == false);
+        }
+    }
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_ID3_UnsignedInteger_7Bit_SynchSafe_8Bit                                   //
