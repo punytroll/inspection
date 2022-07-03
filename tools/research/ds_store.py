@@ -287,7 +287,7 @@ def get_root_block_table_of_contents(data, position):
         root_block_id = get_unsigned_integer_32bit_big_endian(data, name.end)
         directory_entry.add_field("RootBlockID", root_block_id)
         position = root_block_id.end
-        directories.add_field(name.value, directory_entry)
+        directories.add_field(None, directory_entry)
     result.add_field("Directories", directories)
     return result
 
@@ -355,7 +355,7 @@ for directory in root_block["TableOfContents"]["Directories"]:
         if node_block["Mode"].value != 0:
             child_node_block_ids = [node_block["Mode"].value] + [child_node_block_id.value for child_node_block_id in node_block["ChildNodeBlockIDs"]]
             node_block_ids += child_node_block_ids
-    directories.add_field(directory["Name"].value, directory_master_block)
+    directories.add_field(None, directory_master_block)
 file.add_field("Directories", directories)
 
 def iterate(field):
@@ -368,7 +368,7 @@ def out(field):
         print("Value", end = "")
     else:
         print("Container", end = "")
-    print("@\"" + "/".join(field.get_path()) + "\"  ->  Field(", end = "")
+    print(": \"" + "/".join(field.get_path()) + "\"  ->  ", end = "")
     properties = list()
     if field.value is not None:
         properties.append("value=" + str(field.value))
@@ -378,8 +378,7 @@ def out(field):
         properties.append("value_length=" + str(field.value_length))
     if field.value_end is not None:
         properties.append("value_end=" + str(field.value_end))
-    print(", ".join(properties), end = "")
-    print(")")
+    print(", ".join(properties))
 
 def is_value(field):
     return field.value is not None
