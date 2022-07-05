@@ -15,8 +15,8 @@ data_length = BytesAndBits(len(data), 0)
 class Field:
     def __init__(self, value = None, value_begin = None, value_length = None):
         self.value = value
-        self.value_begin = value_begin
-        self.value_length = value_length
+        self.__value_begin = value_begin
+        self.__value_length = value_length
         self.name = None
         self.__fields = list()
         self.__fields_begin = None
@@ -31,13 +31,6 @@ class Field:
         if len(self.__fields) > 0 and self.__fields_end is not None and (result is None or self.__fields_end > result):
             result = self.__fields_end
         return result
-    
-    @property
-    def value_end(self):
-        if self.value_begin is not None and self.value_length is not None:
-            return self.value_begin + self.value_length
-        else:
-            return None
     
     @property
     def fields_begin(self):
@@ -55,6 +48,21 @@ class Field:
             return None
     
     @property
+    def value_begin(self):
+        return self.__value_begin
+    
+    @property
+    def value_end(self):
+        if self.__value_begin is not None and self.__value_length is not None:
+            return self.__value_begin + self.__value_length
+        else:
+            return None
+    
+    @property
+    def value_length(self):
+        return self.__value_length
+    
+    @property
     def parent(self):
         return self.__parent
     
@@ -63,36 +71,14 @@ class Field:
         field.name = name
         self.__fields.append(field)
         field.__parent = self
-        if field.value_begin is not None and (self.__fields_begin is None or self.__fields_begin > field.value_begin):
-            self.__fields_begin = field.value_begin
+        if field.__value_begin is not None and (self.__fields_begin is None or self.__fields_begin > field.__value_begin):
+            self.__fields_begin = field.__value_begin
         if field.__fields_begin is not None and (self.__fields_begin is None or self.__fields_begin > field.__fields_begin):
             self.__fields_begin = field.__fields_begin
         if field.value_end is not None and (self.__fields_end is None or self.__fields_end < field.value_end):
             self.__fields_end = field.value_end
         if field.__fields_end is not None and (self.__fields_end is None or self.__fields_end < field.__fields_end):
             self.__fields_end = field.__fields_end
-    
-    def __repr__(self):
-        properties = list()
-        if self.name is not None:
-            properties.append(f"name={self.name}")
-        if self.value is not None:
-            properties.append(f"value={self.value}")
-        if self.value_begin is not None:
-            properties.append(f"value_begin={self.value_begin}")
-        if self.__fields_begin is not None:
-            properties.append(f"fields_begin={self.__fields_begin}")
-        if self.value_length is not None:
-            properties.append(f"value_length={self.value_length}")
-        if self.fields_length is not None:
-            properties.append(f"fields_length={self.fields_length}")
-        if self.value_end is not None:
-            properties.append(f"value_end={self.value_end}")
-        if self.__fields_end is not None:
-            properties.append(f"fields_end={self.__fields_end}")
-        if len(self.__fields) > 0:
-            properties.append(f"""fields=[{", ".join(map(repr, self.__fields))}]""")
-        return f"""Field({", ".join(properties)})"""
     
     def get_path(self):
         result = list()
@@ -353,8 +339,8 @@ for directory in root_block["TableOfContents"]["Directories"]:
         else:
             inner_nodes.add_field(None, node_block)
         if node_block["Mode"].value != 0:
-            child_node_block_ids = [node_block["Mode"].value] + [child_node_block_id.value for child_node_block_id in node_block["ChildNodeBlockIDs"]]
-            node_block_ids += child_node_block_ids
+            node_block_ids += [child_node_block_id.value for child_node_block_id in node_block["ChildNodeBlockIDs"]]
+            node_block_ids += [node_block["Mode"].value]
     directories.add_field(None, directory_master_block)
 file.add_field("Directories", directories)
 
