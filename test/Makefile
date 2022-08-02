@@ -1,4 +1,6 @@
-include ../Makefile.include
+root = ..
+
+include $(root)/Makefile.include
 
 default: all
 
@@ -15,15 +17,15 @@ clean:
 	$(RM) .test_statistics.csv
 
 common:
-	$(MAKE) -C ../common
+	$(MAKE) -C $(root)/common
 
 external:
 	$(MAKE) -C external
 
-test: test.o ../common/libcommon.a ../libraries/xml_parser/build/libxml_parser.a
+test: test.o $(root)/common/libcommon.a $(root)/build/subprojects/xml_parser/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-test.o: test.cpp ../common/include/*.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -I../common/include
+test.o: test.cpp $(root)/common/include/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@ -I$(root)/common/include
 
 .PHONY: all common default external

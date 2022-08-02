@@ -1,4 +1,6 @@
-include ../Makefile.include
+root = ..
+
+include $(root)/Makefile.include
 
 ALWAYS_EXECUTE := $(shell $(PYTHON) update_type_library_path.py "$(CURDIR)/types" "source/type_library_path.h")
 
@@ -47,11 +49,11 @@ clean-recursive: clean-here
 
 $(DEPENDENCY_DIRECTORY)/%.dep: %
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude -I../libraries/xml_parser/include -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
+	$(CXX) $(CXXFLAGS) -Iinclude -I$(root)/subprojects/xml_parser/include -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
 
 $(OBJECT_DIRECTORY)/%.o: %.cpp
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude -I../libraries/xml_parser/include -c $< -o $@
+	$(CXX) $(CXXFLAGS) -Iinclude -I$(root)/subprojects/xml_parser/include -c $< -o $@
 
 libcommon.a: $(OBJECT_FILES)
 	ar rcs $@ $(OBJECT_FILES)

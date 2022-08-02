@@ -13,7 +13,7 @@ clean:
 common:
 	$(MAKE) -C $(root)/common
 
-$(root)/riffinspector: riffinspector.o $(root)/common/libcommon.a $(root)/libraries/xml_parser/build/libxml_parser.a
+$(root)/riffinspector: riffinspector.o $(root)/common/libcommon.a $(root)/build/subprojects/xml_parser/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 riffinspector.o: riffinspector.cpp $(root)/common/include/*.h

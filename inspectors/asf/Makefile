@@ -13,7 +13,7 @@ clean:
 common:
 	$(MAKE) -C $(root)/common
 
-$(root)/asfinspector: asfinspector.o $(root)/common/libcommon.a $(root)/libraries/xml_parser/build/libxml_parser.a
+$(root)/asfinspector: asfinspector.o $(root)/common/libcommon.a $(root)/build/subprojects/xml_parser/libxml_parser.a
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 asfinspector.o: asfinspector.cpp $(root)/common/include/*.h
