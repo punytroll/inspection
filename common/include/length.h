@@ -6,7 +6,6 @@
 #include <string>
 
 #include "assertion.h"
-#include "string_cast.h"
 
 namespace Inspection
 {

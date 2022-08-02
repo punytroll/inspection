@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019  Hagen Möbius
+ * Copyright (C) 2019-2022  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,12 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
+#include <string_cast/string_cast.h>
+
 #include "assertion.h"
 #include "execution_context.h"
 #include "internal_output_operators.h"
 #include "length.h"
 #include "result.h"
-#include "string_cast.h"
 #include "type.h"
 #include "type_definition.h"
 #include "type_repository.h"

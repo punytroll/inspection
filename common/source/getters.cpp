@@ -5,6 +5,8 @@
 #include <sstream>
 #include <vector>
 
+#include <string_cast/string_cast.h>
+
 #include "assertion.h"
 #include "buffer.h"
 #include "getters.h"
@@ -14,7 +16,6 @@
 #include "id3_helper.h"
 #include "internal_output_operators.h"
 #include "reader.h"
-#include "string_cast.h"
 #include "type.h"
 #include "type_repository.h"
 #include "unknown_value_exception.h"

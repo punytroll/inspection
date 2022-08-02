@@ -3,10 +3,11 @@
 #include <time.h>
 #include <vector>
 
+#include <string_cast/string_cast.h>
+
 #include "assertion.h"
 #include "explode.h"
 #include "helper.h"
-#include "string_cast.h"
 #include "unknown_value_exception.h"
 
 using namespace std::string_literals;

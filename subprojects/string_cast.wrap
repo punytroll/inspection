@@ -1,0 +1,4 @@
+[wrap-git]
+url = https://github.com/punytroll/string_cast.git
+revision = main
+depth = 1

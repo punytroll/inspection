@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include <string_cast/string_cast.h>
+
 #include "buffer.h"
 #include "getters.h"
 #include "helper.h"

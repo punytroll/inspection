@@ -49,11 +49,11 @@ clean-recursive: clean-here
 
 $(DEPENDENCY_DIRECTORY)/%.dep: %
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude -I$(root)/subprojects/xml_parser/include -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
+	$(CXX) $(CXXFLAGS) -Iinclude -I$(root)/subprojects/xml_parser/include -I$(root)/subprojects/string_cast/include -MM -MP $< | sed 's/^\(.*\.o\):/$(subst /,\/,$(OBJECT_DIRECTORY))\/$(subst /,\/,$(subst ./,,$(dir $<)))\1 $(subst /,\/,$@):/g' > $@
 
 $(OBJECT_DIRECTORY)/%.o: %.cpp
 	@test -d $(@D) || mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Iinclude -I$(root)/subprojects/xml_parser/include -c $< -o $@
+	$(CXX) $(CXXFLAGS) -Iinclude -I$(root)/subprojects/xml_parser/include -I$(root)/subprojects/string_cast/include -c $< -o $@
 
 libcommon.a: $(OBJECT_FILES)
 	ar rcs $@ $(OBJECT_FILES)
