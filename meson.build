@@ -2,3 +2,4 @@ project('inspection', 'cpp', version: '0.1', meson_version: '>=0.63.0', default_
 
 subproject('string_cast')
 subproject('xml_parser')
+subproject('xml_puny_dom')

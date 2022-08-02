@@ -1,0 +1,4 @@
+[wrap-git]
+url = https://github.com/punytroll/xml_puny_dom.git
+revision = main
+depth = 1
