@@ -2,6 +2,8 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#include <string_cast/string_cast.h>
+
 #include "assertion.h"
 #include "buffer.h"
 #include "colors.h"

@@ -1,5 +1,7 @@
 #include <any>
 
+#include <xml_puny_dom/xml_puny_dom.h>
+
 #include "assertion.h"
 #include "execution_context.h"
 #include "getters.h"
@@ -9,7 +11,6 @@
 #include "type_definition.h"
 #include "type_repository.h"
 #include "xml_helper.h"
-#include "xml_puny_dom.h"
 
 using namespace std::string_literals;
 

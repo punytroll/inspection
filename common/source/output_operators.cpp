@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <string_cast/string_cast.h>
+
 #include "assertion.h"
 #include "colors.h"
 #include "date_time.h"

@@ -3,12 +3,13 @@
 #include <fstream>
 #include <string>
 
+#include <xml_puny_dom/xml_puny_dom.h>
+
 #include "helper.h"
 #include "result.h"
 #include "type.h"
 #include "type_repository.h"
 #include "type_library_path.h"
-#include "xml_puny_dom.h"
 
 namespace Inspection
 {

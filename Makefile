@@ -17,5 +17,6 @@ clean:
 	$(MAKE) $@ -C common
 	$(MAKE) $@ -C inspectors
 	$(MAKE) $@ -C test
+	$(RM) build
 
 .PHONY: all check clean default

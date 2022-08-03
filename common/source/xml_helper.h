@@ -19,7 +19,7 @@
 #ifndef COMMON_XML_HELPER_H
 #define COMMON_XML_HELPER_H
 
-#include "xml_puny_dom.h"
+#include <xml_puny_dom/xml_puny_dom.h>
 
 namespace XML
 {

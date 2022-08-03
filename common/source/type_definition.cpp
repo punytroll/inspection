@@ -18,6 +18,8 @@
 
 #include <string_cast/string_cast.h>
 
+#include <xml_puny_dom/xml_puny_dom.h>
+
 #include "assertion.h"
 #include "execution_context.h"
 #include "internal_output_operators.h"
@@ -28,7 +30,6 @@
 #include "type_repository.h"
 #include "value.h"
 #include "xml_helper.h"
-#include "xml_puny_dom.h"
 
 using namespace std::string_literals;
 
