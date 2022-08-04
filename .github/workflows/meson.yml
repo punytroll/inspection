@@ -15,29 +15,13 @@ jobs:
     steps:
     - name: Check out repository with submodules
       uses: actions/checkout@v2
-      with:
-        submodules: recursive
-    - name: Meson Build
-      uses: BSFishy/meson-build@v1.0.3
-      with:
-          action: compile
-          directory: build
-          options: --verbose
-          meson-version: 0.63.0
-          ninja-version: 1.10.2.3
-    - name: Meson Build
-      uses: BSFishy/meson-build@v1.0.3
-      with:
-          action: test
-          directory: build
-          options: --verbose
-          meson-version: 0.63.0
-          ninja-version: 1.10.2.3
-    - name: Meson Build
-      uses: BSFishy/meson-build@v1.0.3
-      with:
-          action: compile check
-          directory: build
-          options: --verbose
-          meson-version: 0.63.0
-          ninja-version: 1.10.2.3
+    - name: Installing meson
+      run: pip install meson
+    - name: Setup project
+      run: meson setup build
+    - name: Compile project
+      run: meson compile -C build
+    - name: Unit tests
+      run: meson test -C build
+    - name: Integration tests
+      run: meson compile -C build check
