@@ -1,0 +1,43 @@
+name: Build & Test
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository with submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Meson Build
+      uses: BSFishy/meson-build@v1.0.3
+      with:
+          action: compile
+          directory: build
+          options: --verbose
+          meson-version: 0.63.0
+          ninja-version: 1.10.2.3
+    - name: Meson Build
+      uses: BSFishy/meson-build@v1.0.3
+      with:
+          action: test
+          directory: build
+          options: --verbose
+          meson-version: 0.63.0
+          ninja-version: 1.10.2.3
+    - name: Meson Build
+      uses: BSFishy/meson-build@v1.0.3
+      with:
+          action: compile check
+          directory: build
+          options: --verbose
+          meson-version: 0.63.0
+          ninja-version: 1.10.2.3
