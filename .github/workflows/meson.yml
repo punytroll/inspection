@@ -3,10 +3,10 @@ name: Build & Test
 on:
   push:
     branches:
-    - meson-action
+    - master
   pull_request:
     branches:
-    - main
+    - master
   workflow_dispatch:
 
 jobs:
