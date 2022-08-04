@@ -83,7 +83,10 @@ This is not required however, as the build will pull in the submodules automatic
 TL;DR
 
 ```bash
-make
+meson setup build
+meson compile -C build
+meson test -C build
+meson compile check -C build
 ```
 
 For more information, please consult the file [documentation/BUILDING.md](documentation/BUILDING.md).

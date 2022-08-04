@@ -1,3 +1,0 @@
-[submodule "test/external/bmpsuite"]
-	path = test/external/bmpsuite
-	url = https://github.com/jsummers/bmpsuite.git
