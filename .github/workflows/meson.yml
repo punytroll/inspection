@@ -1,0 +1,29 @@
+name: Build & Test
+
+on:
+  push:
+    branches:
+    - meson-action
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository with submodules
+      uses: actions/checkout@v2
+    - name: Install ninja
+      run: pip install ninja
+    - name: Install meson
+      run: pip install meson
+    - name: Setup project build directory
+      run: meson setup build
+    - name: Compile project
+      run: meson compile -C build
+    - name: Unit tests
+      run: meson test -C build
+    - name: Integration tests
+      run: meson compile -C build check
