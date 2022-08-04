@@ -15,9 +15,11 @@ jobs:
     steps:
     - name: Check out repository with submodules
       uses: actions/checkout@v2
-    - name: Installing meson
+    - name: Install ninja
+      run: pip install ninja
+    - name: Install meson
       run: pip install meson
-    - name: Setup project
+    - name: Setup project build directory
       run: meson setup build
     - name: Compile project
       run: meson compile -C build
