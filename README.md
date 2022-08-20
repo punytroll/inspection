@@ -70,13 +70,11 @@ The [_mpeginspector_](inspectors/mpeg) displays the header information of **all*
 
 ## Getting the code
 
-At the moment, this project uses submodules, that you can pull in at cloning time with:
+Simply do:
 
 ```bash
-git clone https://github.com/punytroll/inspection.git --recurse-submodules
+git clone https://github.com/punytroll/inspection.git
 ```
-
-This is not required however, as the build will pull in the submodules automatically if they aren't available yet.
 
 ## Building
 
