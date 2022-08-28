@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2022  Hagen Möbius
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+**/
+
 #include <any>
 
 #include <xml_puny_dom/xml_puny_dom.h>
@@ -153,7 +171,7 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Type>{new Inspection::TypeDefinition::Type{PathParts, TypeRepository}};
     
-    for(auto ChildNode : Element->GetChilds())
+    for(auto ChildNode : Element->GetChildNodes())
     {
         if(ChildNode->GetNodeType() == XML::NodeType::Element)
         {
@@ -162,9 +180,9 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             ASSERTION(ChildElement != nullptr);
             if(ChildElement->GetName() == "hardcoded")
             {
-                ASSERTION(ChildElement->GetChilds().size() == 1);
+                ASSERTION(ChildElement->GetChildNodes().size() == 1);
                 
-                auto HardcodedText = dynamic_cast<XML::Text const *>(ChildElement->GetChild(0));
+                auto HardcodedText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
                 
                 ASSERTION(HardcodedText != nullptr);
                 if(HardcodedText->GetText() == "Get_APE_Flags")

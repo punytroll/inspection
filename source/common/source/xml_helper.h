@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019  Hagen Möbius
+ * Copyright (C) 2019-2022  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,31 +16,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-#ifndef COMMON_XML_HELPER_H
-#define COMMON_XML_HELPER_H
+#ifndef INSPECTION__SOURCE_COMMON_SOURCE_XML_HELPER_H
+#define INSPECTION__SOURCE_COMMON_SOURCE_XML_HELPER_H
 
 #include <xml_puny_dom/xml_puny_dom.h>
 
 namespace XML
 {
-    inline const XML::Element * GetFirstChildElement(const XML::Element * Element)
+    /**
+     * @brief Retrieves the first child element, ignoring other child nodes.
+     * @note This function is NOT implemented in terms of GetChildElements() but GetChildNodes(),
+     *       so as to avoid building the temporary child element vector.
+     **/
+    inline auto GetFirstChildElement(XML::Element const * Element) -> XML::Element const *
     {
-        for(auto ChildNode : Element->GetChilds())
+        for(auto ChildNode : Element->GetChildNodes())
         {
             if(ChildNode->GetNodeType() == XML::NodeType::Element)
             {
-                return dynamic_cast<const XML::Element *>(ChildNode);
+                return dynamic_cast<XML::Element const *>(ChildNode);
             }
         }
         
         return nullptr;
     }
     
-    inline bool HasOneChildElement(const XML::Element * Element)
+    /**
+     * @brief Checks, whether the given XML element has exactly one child element, ignoring other
+     *        child nodes.
+     * @note This function is NOT implemented in terms of GetChildElements() but GetChildNodes(),
+     *       so as to avoid building the temporary child element vector.
+     **/
+    inline auto HasOneChildElement(XML::Element const * Element) -> bool
     {
-        auto Found{false};
+        auto Found = false;
         
-        for(auto ChildNode : Element->GetChilds())
+        for(auto ChildNode : Element->GetChildNodes())
         {
             if(ChildNode->GetNodeType() == XML::NodeType::Element)
             {
@@ -58,9 +69,15 @@ namespace XML
         return Found;
     }
     
-    inline bool HasChildElements(const XML::Element * Element)
+    /**
+     * @brief Checks, whether the given XML element contains any child elements, ignoring other
+     *        child nodes.
+     * @note This function is NOT implemented in terms of GetChildElements() but GetChildNodes(),
+     *       so as to avoid building the temporary child element vector.
+     **/
+    inline auto HasChildElements(XML::Element const * Element) -> bool
     {
-        for(auto ChildNode : Element->GetChilds())
+        for(auto ChildNode : Element->GetChildNodes())
         {
             if(ChildNode->GetNodeType() == XML::NodeType::Element)
             {
@@ -71,9 +88,12 @@ namespace XML
         return false;
     }
     
-    inline bool HasChildNodes(const XML::Element * Element)
+    /**
+     * @brief Checks, whether the given XML element contains any child nodes.
+     **/
+    inline auto HasChildNodes(XML::Element const * Element) -> bool
     {
-        return Element->GetChilds().size() > 0;
+        return Element->GetChildNodes().empty() == false;
     }
 }
 
