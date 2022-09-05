@@ -11,13 +11,21 @@ project(
 )
 
 subproject('string_cast')
-string_cast_dependency = dependency('string_cast')
+string_cast_dependency = dependency(
+  'string_cast',
+  version: '>=2.0.2'
+)
+
 subproject('xml_parser')
-xml_parser_dependency = dependency('xml_parser')
+xml_parser_dependency = dependency(
+  'xml_parser',
+  version: '>=2.0.2'
+)
+
 subproject('xml_puny_dom')
 xml_puny_dom_dependency = dependency(
   'xml_puny_dom',
-  version: '>=2.0.0'
+  version: '>=2.2.1'
 )
 
 python_program = import('python').find_installation('python3')
