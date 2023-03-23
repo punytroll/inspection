@@ -1236,6 +1236,85 @@ int main(void)
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Inspection::Get_SignedInteger_10Bit_BigEndian                                             //
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	{
+		std::uint8_t RawBuffer[] = {0x85, 0xc3, 0x4f, 0x11, 0x0f, 0x6d, 0x51, 0xea, 0xa9};
+		
+		{
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 2}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Result = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{0, 4}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Result = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 0}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Result = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result->GetSuccess() == false);
+		}
+		{
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{1, 2}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Result = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result->GetValue()->GetData()) == -489);
+		}
+		{
+			auto Buffer = Inspection::Buffer{RawBuffer, Inspection::Length{9, 0}};
+			auto Reader = Inspection::Reader{Buffer, Inspection::Length{0, 0}, Buffer.GetLength()};
+			auto Result1 = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result1->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result1->GetValue()->GetData()) == -489);
+			
+			auto Result2 = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result2->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result2->GetValue()->GetData()) == 52);
+			
+			auto Result3 = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result3->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result3->GetValue()->GetData()) == -60);
+			
+			auto Result4 = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result4->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result4->GetValue()->GetData()) == 271);
+			
+			auto Result5 = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result5->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result5->GetValue()->GetData()) == 437);
+			
+			auto Result6 = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result6->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result6->GetValue()->GetData()) == 286);
+			
+			auto Result7 = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result7->GetSuccess() == true);
+			assert(std::any_cast<std::int16_t>(Result7->GetValue()->GetData()) == -342);
+			
+			auto Result8 = Inspection::Get_SignedInteger_10Bit_BigEndian(Reader, {});
+			
+			assert(Result8->GetSuccess() == false);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Inspection::Get_SignedInteger_12Bit_BigEndian                                             //
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	{
