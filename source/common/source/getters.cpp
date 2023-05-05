@@ -10045,6 +10045,17 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_BigEndian(Insp
             
             break;
         }
+    case 13:
+        {
+            auto PartReader = Inspection::Reader{Reader};
+            auto PartResult{Inspection::Get_SignedInteger_13Bit_BigEndian(PartReader, {})};
+            
+            Continue = PartResult->GetSuccess();
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            Reader.AdvancePosition(PartReader.GetConsumedLength());
+            
+            break;
+        }
     case 15:
         {
             auto PartReader = Inspection::Reader{Reader};
@@ -10296,6 +10307,44 @@ std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_12Bit_BigEndia
             if((Continue = Reader.Read8Bits(ReadResult2)) == true)
             {
                 Result->GetValue()->SetData(static_cast<std::int16_t>(static_cast<std::int16_t>(static_cast<std::int16_t>(ReadResult1.Data << 12) >> 4) | static_cast<std::int16_t>(ReadResult2.Data)));
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
+std::unique_ptr<Inspection::Result> Inspection::Get_SignedInteger_13Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("signed"s);
+    Result->GetValue()->AddTag("13bit"s);
+    Result->GetValue()->AddTag("big endian"s);
+    // reading
+    if(Continue == true)
+    {
+        auto ReadResult1 = Inspection::ReadResult{};
+        
+        if((Continue = Reader.Read5Bits(ReadResult1)) == true)
+        {
+            auto ReadResult2 = Inspection::ReadResult{};
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                Result->GetValue()->SetData(static_cast<std::int16_t>(static_cast<std::int16_t>(static_cast<std::int16_t>(ReadResult1.Data << 11) >> 3) | static_cast<std::int16_t>(ReadResult2.Data)));
             }
             else
             {
