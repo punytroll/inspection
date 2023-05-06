@@ -45,6 +45,8 @@ void AppendUnkownContinuation(Inspection::Value * Value, Inspection::Reader & Re
 //     - ASFFile                                                                                 //
 //     - AppleSingle                                                                             //
 //     - OggStream                                                                               //
+//     - WavPackBlocks                                                                           //
+//     - WavPackBlocks APEv2Tag                                                                  //
 //     - RIFFFile                                                                                //
 //                                                                                               //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,7 +489,7 @@ namespace Inspection
 										else
 										{
 											auto PartReader = Inspection::Reader{MSBFReader};
-											auto PartType = Inspection::g_TypeRepository.GetType({"RIFF", "Chunk"});
+											auto PartType = Inspection::g_TypeRepository.GetType({"WavPack", "Blocks"});
 											auto PartResult = PartType->Get(PartReader, {});
 											
 											if(PartResult->GetSuccess() == true)
@@ -500,12 +502,52 @@ namespace Inspection
 												}
 												else
 												{
-													AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                    auto PartReader = Inspection::Reader{MSBFReader};
+                                                    auto PartType = Inspection::g_TypeRepository.GetType({"APE", "Tag"});
+                                                    auto PartResult = PartType->Get(PartReader, {});
+                                                    
+                                                    if(PartResult->GetSuccess() == true)
+                                                    {
+                                                        Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
+                                                        MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+                                                        if(MSBFReader.IsAtEnd() == true)
+                                                        {
+                                                            Result->SetSuccess(true);
+                                                        }
+                                                        else
+                                                        {
+                                                            AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                    }
 												}
 											}
 											else
 											{
-												AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                auto PartReader = Inspection::Reader{MSBFReader};
+                                                auto PartType = Inspection::g_TypeRepository.GetType({"RIFF", "Chunk"});
+                                                auto PartResult = PartType->Get(PartReader, {});
+                                                
+                                                if(PartResult->GetSuccess() == true)
+                                                {
+                                                    Result->GetValue()->AppendField(Inspection::JoinWithSeparator(PartType->GetPathParts(), "."), PartResult->ExtractValue());
+                                                    MSBFReader.AdvancePosition(PartReader.GetConsumedLength());
+                                                    if(MSBFReader.IsAtEnd() == true)
+                                                    {
+                                                        Result->SetSuccess(true);
+                                                    }
+                                                    else
+                                                    {
+                                                        AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    AppendUnkownContinuation(Result->GetValue(), MSBFReader);
+                                                }
 											}
 										}
 									}

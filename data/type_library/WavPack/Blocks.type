@@ -1,0 +1,12 @@
+<type>
+	<array name="Blocks">
+		<iterate type="at-least-one-until-failure-or-length"/>
+		<element-type>
+			<type-reference>
+				<part>WavPack</part>
+				<part>Block</part>
+			</type-reference>
+		</element-type>
+		<element-name>Block</element-name>
+	</array>
+</type>
