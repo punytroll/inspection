@@ -1,5 +1,59 @@
 <tests>
 	<test>
+		<description>The WavPack.Blocks content is recognized correctly.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/has-field:WavPack.Blocks</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Blocks is an array.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/has-tag:array</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Blocks is ended by failure.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/has-tag:ended by failure</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Blocks has at least one element.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/has-tag:at least one element</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Blocks has two elements.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/tag:number of elements/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<description>The APE.Tag content is recognized correctly.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/has-field:APE.Tag</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
 		<description>The POPM frame has a specific identifier.</description>
 		<execute>
 			<program>generalinspector</program>

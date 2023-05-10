@@ -1586,20 +1586,51 @@ auto Inspection::TypeDefinition::Forward::Get(Inspection::ExecutionContext & Exe
     auto Continue = true;
     
     ExecutionContext.Push(*this, *Result, Reader, Parameters);
-    ASSERTION(TypeReference != nullptr);
-    
-    auto ForwardType = TypeReference->GetType(ExecutionContext);
-    
-    ASSERTION(ForwardType != nullptr);
-    
-    auto ForwardResult = ForwardType->Get(ExecutionContext, Reader, ExecutionContext.GetAllParameters());
-    
-    Continue = ForwardResult->GetSuccess();
-    Result->GetValue()->Extend(ForwardResult->ExtractValue());
-    // interpretation
-    if(Continue == true)
+    if(TypeReference != nullptr)
     {
-        Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+        auto ForwardType = TypeReference->GetType(ExecutionContext);
+        
+        ASSERTION(ForwardType != nullptr);
+        
+        auto ForwardResult = ForwardType->Get(ExecutionContext, Reader, ExecutionContext.GetAllParameters());
+        
+        Continue = ForwardResult->GetSuccess();
+        Result->GetValue()->Extend(ForwardResult->ExtractValue());
+        // interpretation
+        if(Continue == true)
+        {
+            Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+        }
+    }
+    else
+    {
+        // if there is no type reference, we expect one array in the parts
+        ASSERTION(Parts.size() == 1);
+        ASSERTION(Parts[0]->GetPartType() == Inspection::TypeDefinition::PartType::Array);
+        
+        auto & Part = Parts[0];
+        auto PartReader = std::unique_ptr<Inspection::Reader>{};
+        
+        if(Part->Length != nullptr)
+        {
+            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
+        }
+        else
+        {
+            PartReader = std::make_unique<Inspection::Reader>(Reader);
+        }
+        
+        auto PartParameters = Part->GetParameters(ExecutionContext);
+        auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
+        
+        Continue = PartResult->GetSuccess();
+        Result->GetValue()->Extend(PartResult->ExtractValue());
+        Reader.AdvancePosition(PartReader->GetConsumedLength());
+        // interpretation
+        if(Continue == true)
+        {
+            Continue = ApplyInterpretations(ExecutionContext, Result->GetValue());
+        }
     }
     ExecutionContext.Pop();
     // finalization
@@ -2134,7 +2165,12 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward) || (m_PartType == Inspection::TypeDefinition::PartType::Sequence));
         Interpretations.push_back(Inspection::TypeDefinition::AddTag::Load(Element));
     }
-    else if((Element->GetName() == "alternative") || (Element->GetName() == "array") || (Element->GetName() == "field") || (Element->GetName() == "fields") || (Element->GetName() == "forward") || (Element->GetName() == "select") || (Element->GetName() == "sequence"))
+    else if(Element->GetName() == "array")
+    {
+        ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Sequence) || (m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Alternative) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
+        Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));
+    }
+    else if((Element->GetName() == "alternative") || (Element->GetName() == "field") || (Element->GetName() == "fields") || (Element->GetName() == "forward") || (Element->GetName() == "select") || (Element->GetName() == "sequence"))
     {
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Sequence) || (m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Alternative));
         Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));
