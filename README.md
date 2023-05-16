@@ -8,7 +8,7 @@ The tools are currently designed to present clear output on the command line. Ne
 
 ## File formats
 
-This project started out as an attempt to analyze ID3 tags in audio files. In that vein, more audio formats have been added partially.
+This project started out as an attempt to analyze ID3 tags in audio files. In that vein, more audio and other media formats have been added partially.
 
 - ID3 tags (ID3v1, ID3v1.1, ID3v2.2, ID3v2.3, ID3v2.4)
 - FLAC (full support, right down to the bits of the residual, including vorbis comments)
@@ -19,10 +19,11 @@ This project started out as an attempt to analyze ID3 tags in audio files. In th
 - Vorbis comments and file structure
 - WavPack
 - AppleSingle
+- BMP, ICO
 
 ## inspectors
 
-**Note**: Inspectors don't consider the file extension when inspecting a file - instead, they always investigate the file content!
+**Note**: Inspectors don't consider the file extension when inspecting a file - instead, they always investigate the file's content!
 
 ### generalinspector
 
@@ -39,6 +40,16 @@ First and foremost is the [_generalinspector_](source/inspectors/general). This 
 - ...
 
 At the moment the generalinspector has a [predefined and hardcoded](source/inspectors/general/generalinspector.cpp#L26) list of possible parts in a file. It is the intention of further development to ease this restriction and become more generic.
+
+The _generalinspector_ has two powerful options to help investigate a file:
+
+#### `--types=<type>;...`
+
+With this option, you can force the _generalinspector_ to interpret the file as a specific sequence of types as taken from the type library.
+
+#### `--query=<query>`
+
+With this option, you select a certain part of the output and only display that. This allows you to drill down to the level of individual data pieces and tags, query for the existance of fields or tags and  select fields based on their properties.
 
 ### id3inspector
 
