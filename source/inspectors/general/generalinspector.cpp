@@ -641,7 +641,7 @@ int main(int argc, char ** argv)
         else if(Argument.compare(0, TypesPrefix.size(), TypesPrefix) == 0)
         {
             auto Types = Argument.substr(TypesPrefix.size());
-            auto TypesParts = Inspection::SplitString(Types, ';');
+            auto TypesParts = Inspection::SplitString(Types, ',');
             
             for(auto & TypeParts : TypesParts)
             {
