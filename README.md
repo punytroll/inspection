@@ -17,10 +17,12 @@ This project started out as an attempt to analyze ID3 tags in audio files. In th
 - RIFF
 - ASF
 - Vorbis comments and file structure
+- WavPack
+- AppleSingle
 
 ## inspectors
 
-**Note**: No inspector works on the file extension but always the file content!
+**Note**: Inspectors don't consider the file extension when inspecting a file - instead, they always investigate the file content!
 
 ### generalinspector
 
@@ -40,31 +42,31 @@ At the moment the generalinspector has a [predefined and hardcoded](inspectors/g
 
 ### id3inspector
 
-The [_id3inspector_](inspectors/id3) can be used to display only the ID3 parts of a file and skip all other audio data. For this to work ID3v2 must be at the beginning of the file and ID3v1 must be at the end, as per specification. ID3 tags of a certain version can be requested (```--id3v1-only``` and ```--id3v2-only```).
+The [_id3inspector_](source/inspectors/id3) can be used to display only the ID3 parts of a file and skip all other audio data. For this to work ID3v2 must be at the beginning of the file and ID3v1 must be at the end, as per specification. ID3 tags of a certain version can be requested (```--id3v1-only``` and ```--id3v2-only```).
 
 ### flacinspector
 
-The [_flacinspector_](inspectors/flac) displays the FLAC stream's meta data blocks, including the vorbis comment. All audio data is skipped by default, except when requested (```--with-frames``` - prepare for a **LONG** wait).
+The [_flacinspector_](source/inspectors/flac) displays the FLAC stream's meta data blocks, including the vorbis comment. All audio data is skipped by default, except when requested (```--with-frames``` - prepare for a **LONG** wait).
 
 ### mpeginspector
 
-The [_mpeginspector_](inspectors/mpeg) displays the header information of **all** MPEG frames in an MPEG stream. By default, this program is very strict and doesn't allow any extra-frame data (i.e. tags of any kind). It can be instructed to seek for all MPEG frames though (```--seek```).
+The [_mpeginspector_](source/inspectors/mpeg) displays the header information of **all** MPEG frames in an MPEG stream. By default, this program is very strict and doesn't allow any extra-frame data (i.e. tags of any kind). It can be instructed to seek for all MPEG frames though (```--seek```).
 
 ### apeinspector
 
-...
+The [_apeinspector_](source/inspectors/ape) searches for all APE tags in a file and displays them. All other content is skipped with a comment.
 
 ### asfinspector
 
-...
+The [_asfinspector_](source/inspectors/asf) tries to interpret the input file as one ASF file and displays all meta data. The file might be a .wmv or a .wma. The actual video or audio data is not yet inspected.
 
 ### riffinspector
 
-...
+The [_riffinspector_](source/inspectors/riff) tries to interpret the input file as one RIFF chunk with all content and displays all meta data. Predominantly, a RIFF file might have an extension .avi or .wav. The actual video or audio data is not yet inspected.
 
 ### vorbisinspector
 
-...
+The [_vorbisinspector_](source/inspectors/vorbis) tries to interpret the input file as one Ogg Stream and displays the file's structure, as well as any Vorbis comments contained therein. It does not interpret audio data.
 
 # Technical
 
