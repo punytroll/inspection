@@ -43,7 +43,7 @@ At the moment the generalinspector has a [predefined and hardcoded](source/inspe
 
 The _generalinspector_ has two powerful options to help investigate a file:
 
-#### `--types=<type>;...`
+#### `--types=<type>,...`
 
 With this option, you can force the _generalinspector_ to interpret the file as a specific sequence of types as taken from the type library.
 
