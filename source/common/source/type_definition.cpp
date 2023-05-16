@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
+#include <bitset>
+
 #include <string_cast/string_cast.h>
 
 #include <xml_puny_dom/xml_puny_dom.h>
@@ -882,6 +884,94 @@ std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::Get
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// Bits                                                                                          //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+static auto ApplyBits(auto const & Bitset, std::vector<std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>> const & Bits, Inspection::Value * Target) -> bool
+{
+    for(auto & Bit : Bits)
+    {
+        auto BitValue = Target->AppendField(Bit->GetName(), Bitset[Bit->GetIndex()]);
+        
+        BitValue->AddTag("bit");
+        BitValue->AddTag("identifier", Bit->GetIdentifier());
+        BitValue->AddTag("index", Bit->GetIndex());
+    }
+    
+    return true;
+}
+
+auto Inspection::TypeDefinition::Bits::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
+{
+    auto Result = true;
+    auto const & Data = Target->GetData();
+    
+    if(Data.type() == typeid(std::bitset<8>))
+    {
+        Result = ApplyBits(std::any_cast<std::bitset<8> const &>(Data), m_Bits, Target);
+    }
+    
+    return Result;
+}
+
+auto Inspection::TypeDefinition::Bits::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Bits>
+{
+    auto Result = std::unique_ptr<Inspection::TypeDefinition::Bits>{new Inspection::TypeDefinition::Bits{}};
+    
+    for(auto ChildElement : Element->GetChildElements())
+    {
+        ASSERTION(ChildElement != nullptr);
+        if(ChildElement->GetName() == "bit")
+        {
+            Result->m_Bits.push_back(Inspection::TypeDefinition::Bits::Bit::Load(ChildElement));
+        }
+        else
+        {
+            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
+        }
+    }
+    
+    return Result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Bits::Bit                                                                                     //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+auto Inspection::TypeDefinition::Bits::Bit::GetIdentifier(void) const -> std::string const &
+{
+    return m_Identifier;
+}
+
+auto Inspection::TypeDefinition::Bits::Bit::GetIndex(void) const -> std::uint64_t
+{
+    return m_Index;
+}
+
+auto Inspection::TypeDefinition::Bits::Bit::GetName(void) const -> std::string const &
+{
+    return m_Name;
+}
+
+auto Inspection::TypeDefinition::Bits::Bit::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>
+{
+    ASSERTION(Element != nullptr);
+    
+    auto Result = std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>{new Inspection::TypeDefinition::Bits::Bit{}};
+    
+    ASSERTION(Element->HasAttribute("identifier") == true);
+    Result->m_Identifier = Element->GetAttribute("identifier");
+    ASSERTION(Element->HasAttribute("index") == true);
+    Result->m_Index = from_string_cast<std::uint64_t>(Element->GetAttribute("index"));
+    ASSERTION(Element->HasAttribute("name") == true);
+    Result->m_Name = Element->GetAttribute("name");
+    
+    return Result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Cast                                                                                          //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1665,6 +1755,10 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
             if(InterpretationChildElement->GetName() == "apply-enumeration")
             {
                 Result = Inspection::TypeDefinition::ApplyEnumeration::Load(InterpretationChildElement);
+            }
+            else if(InterpretationChildElement->GetName() == "bits")
+            {
+                Result = Inspection::TypeDefinition::Bits::Load(InterpretationChildElement);
             }
             else
             {

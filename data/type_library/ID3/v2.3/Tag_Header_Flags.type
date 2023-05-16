@@ -1,0 +1,15 @@
+<type>
+	<forward>
+		<type-reference>
+			<part>BitSet</part>
+			<part>8Bit_LeastSignificantBitFirst</part>
+		</type-reference>
+		<interpretation>
+			<bits>
+				<bit name="Unsynchronization" identifier="a" index="7"/>
+				<bit name="ExtendedHeader" identifier="b" index="6"/>
+				<bit name="ExperimentalIndicator" identifier="c" index="5"/>
+			</bits>
+		</interpretation>
+	</forward>
+</type>

@@ -1244,7 +1244,16 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/tag:bit index/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/has-tag:bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on flag field.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/tag:index/data</argument>
 		</execute>
 		<expected-output>7</expected-output>
 	</test>
@@ -1253,7 +1262,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/tag:bit name/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/tag:identifier/data</argument>
 		</execute>
 		<expected-output>a</expected-output>
 	</test>
@@ -1271,7 +1280,16 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExtendedHeader/tag:bit index/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExtendedHeader/has-tag:bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>Testing the right tags on flag field.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExtendedHeader/tag:index/data</argument>
 		</execute>
 		<expected-output>6</expected-output>
 	</test>
@@ -1280,7 +1298,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExtendedHeader/tag:bit name/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExtendedHeader/tag:identifier/data</argument>
 		</execute>
 		<expected-output>b</expected-output>
 	</test>
@@ -1294,11 +1312,20 @@
 		<expected-output>false</expected-output>
 	</test>
 	<test>
+		<description>The flag ExperimentalIndicator is a bit.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/has-tag:bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
 		<description>Testing the right tags on flag field.</description>
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/tag:bit index/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/tag:index/data</argument>
 		</execute>
 		<expected-output>5</expected-output>
 	</test>
@@ -1307,7 +1334,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/tag:bit name/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/tag:identifier/data</argument>
 		</execute>
 		<expected-output>c</expected-output>
 	</test>

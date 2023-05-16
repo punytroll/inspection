@@ -4828,52 +4828,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Tag_Body(Inspection:
     return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_Tag_Header_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    auto Continue = true;
-    
-    // reading
-    if(Continue == true)
-    {
-        auto PartReader = Inspection::Reader{Reader};
-        auto PartResult = Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst(PartReader, {});
-        
-        Continue = PartResult->GetSuccess();
-        Result->GetValue()->Extend(PartResult->ExtractValue());
-        Reader.AdvancePosition(PartReader.GetConsumedLength());
-    }
-    // interpretation
-    if(Continue == true)
-    {
-        auto & Flags = std::any_cast<const std::bitset<8> &>(Result->GetValue()->GetData());
-        auto Flag = Result->GetValue()->AppendField("Unsynchronization", Flags[7]);
-        
-        Flag->AddTag("bit index", 7);
-        Flag->AddTag("bit name", "a"s);
-        Flag = Result->GetValue()->AppendField("ExtendedHeader", Flags[6]);
-        Flag->AddTag("bit index", 6);
-        Flag->AddTag("bit name", "b"s);
-        Flag = Result->GetValue()->AppendField("ExperimentalIndicator", Flags[5]);
-        Flag->AddTag("bit index", 5);
-        Flag->AddTag("bit name", "c"s);
-        Flag = Result->GetValue()->AppendField("Reserved", false);
-        Flag->AddTag("bit index", 4);
-        Flag->AddTag("bit index", 3);
-        Flag->AddTag("bit index", 2);
-        Flag->AddTag("bit index", 1);
-        Flag->AddTag("bit index", 0);
-        for(auto FlagIndex = 0; FlagIndex <= 4; ++FlagIndex)
-        {
-            Continue &= !Flags[FlagIndex];
-        }
-    }
-    // finalization
-    Result->SetSuccess(Continue);
-    
-    return Result;
-}
-
 std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_3_TextStringAccordingToEncoding_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();
@@ -5807,7 +5761,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag_Header(Inspection:
         else if(MajorVersion == 0x03)
         {
             auto PartReader = Inspection::Reader{Reader};
-            auto PartResult = Inspection::Get_ID3_2_3_Tag_Header_Flags(PartReader, {});
+            auto PartResult = Inspection::g_TypeRepository.GetType({"ID3", "v2.3", "Tag_Header_Flags"})->Get(PartReader, {});
             
             Continue = PartResult->GetSuccess();
             Result->GetValue()->AppendField("Flags", PartResult->ExtractValue());
