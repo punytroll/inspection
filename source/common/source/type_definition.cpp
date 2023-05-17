@@ -888,33 +888,20 @@ std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::Get
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Bits                                                                                          //
+// BitInterpretation                                                                             //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-static auto ApplyBits(Inspection::ExecutionContext & ExecutionContext, auto const & Bitset, std::vector<std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>> const & Bits, Inspection::Value * Target) -> bool
+static auto ApplyBitInterpretation(Inspection::ExecutionContext & ExecutionContext, auto const & Bitset, Inspection::TypeDefinition::BitInterpretation const & BitInterpretation, Inspection::Value * Target) -> bool
 {
     auto Continue = true;
+    auto BitInterpretationValue = Target->AppendField(BitInterpretation.GetName(), Bitset[BitInterpretation.GetIndex()]);
     
-    for(auto & Bit : Bits)
+    BitInterpretationValue->AddTag("bit");
+    BitInterpretationValue->AddTag("index", BitInterpretation.GetIndex());
+    for(auto const & Interpretation : BitInterpretation.GetInterpretations())
     {
-        ASSERTION(Bit != nullptr);
-        
-        auto BitValue = Target->AppendField(Bit->GetName(), Bitset[Bit->GetIndex()]);
-        
-        BitValue->AddTag("bit");
-        BitValue->AddTag("index", Bit->GetIndex());
-        if(Continue == true)
-        {
-            for(auto const & Interpretation : Bit->GetInterpretations())
-            {
-                ASSERTION(Interpretation != nullptr);
-                Continue = Interpretation->Apply(ExecutionContext, BitValue);
-                if(Continue == false)
-                {
-                    break;
-                }
-            }
-        }
+        ASSERTION(Interpretation != nullptr);
+        Continue = Interpretation->Apply(ExecutionContext, BitInterpretationValue);
         if(Continue == false)
         {
             break;
@@ -924,64 +911,39 @@ static auto ApplyBits(Inspection::ExecutionContext & ExecutionContext, auto cons
     return Continue;
 }
 
-auto Inspection::TypeDefinition::Bits::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
+auto Inspection::TypeDefinition::BitInterpretation::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
 {
     auto Result = true;
     auto const & Data = Target->GetData();
     
     if(Data.type() == typeid(std::bitset<8>))
     {
-        Result = ApplyBits(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), m_Bits, Target);
+        Result = ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), *this, Target);
     }
     
     return Result;
 }
 
-auto Inspection::TypeDefinition::Bits::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Bits>
-{
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Bits>{new Inspection::TypeDefinition::Bits{}};
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        if(ChildElement->GetName() == "bit")
-        {
-            Result->m_Bits.push_back(Inspection::TypeDefinition::Bits::Bit::Load(ChildElement));
-        }
-        else
-        {
-            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-        }
-    }
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Bits::Bit                                                                                     //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-auto Inspection::TypeDefinition::Bits::Bit::GetIndex(void) const -> std::uint64_t
+auto Inspection::TypeDefinition::BitInterpretation::GetIndex(void) const -> std::uint64_t
 {
     return m_Index;
 }
 
-auto Inspection::TypeDefinition::Bits::Bit::GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &
+auto Inspection::TypeDefinition::BitInterpretation::GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &
 {
     return m_Interpretations;
 }
 
-auto Inspection::TypeDefinition::Bits::Bit::GetName(void) const -> std::string const &
+auto Inspection::TypeDefinition::BitInterpretation::GetName(void) const -> std::string const &
 {
     return m_Name;
 }
 
-auto Inspection::TypeDefinition::Bits::Bit::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>
+auto Inspection::TypeDefinition::BitInterpretation::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::BitInterpretation>
 {
     ASSERTION(Element != nullptr);
     
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>{new Inspection::TypeDefinition::Bits::Bit{}};
+    auto Result = std::unique_ptr<Inspection::TypeDefinition::BitInterpretation>{new Inspection::TypeDefinition::BitInterpretation{}};
     
     ASSERTION(Element->HasAttribute("index") == true);
     Result->m_Index = from_string_cast<std::uint64_t>(Element->GetAttribute("index"));
@@ -1793,10 +1755,6 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
             {
                 Result = Inspection::TypeDefinition::ApplyEnumeration::Load(InterpretationChildElement);
             }
-            else if(InterpretationChildElement->GetName() == "bits")
-            {
-                Result = Inspection::TypeDefinition::Bits::Load(InterpretationChildElement);
-            }
             else
             {
                 UNEXPECTED_CASE("InterpretationChildElement->GetName() == " + InterpretationChildElement->GetName());
@@ -2305,6 +2263,11 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
     {
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Sequence) || (m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Alternative));
         Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));
+    }
+    else if(Element->GetName() == "bit")
+    {
+        ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
+        Interpretations.push_back(Inspection::TypeDefinition::BitInterpretation::Load(Element));
     }
     else
     {

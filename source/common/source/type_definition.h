@@ -562,41 +562,25 @@ namespace Inspection
             Inspection::TypeDefinition::ApplyEnumeration & operator=(Inspection::TypeDefinition::ApplyEnumeration && ApplyEnumeration) = delete;
         };
         
-        class Bits : public Inspection::TypeDefinition::Interpretation
+        class BitInterpretation : public Inspection::TypeDefinition::Interpretation
         {
         public:
-            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Bits>;
+            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::BitInterpretation>;
         public:
-            class Bit
-            {
-            public:
-                static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>;
-            public:
-                auto GetIndex(void) const -> std::uint64_t;
-                auto GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &;
-                auto GetName(void) const -> std::string const &;
-            private:
-                Bit(void) = default;
-                Bit(Inspection::TypeDefinition::Bits::Bit const & Bit) = delete;
-                Bit(Inspection::TypeDefinition::Bits::Bit && Bit) = delete;
-                auto operator=(Inspection::TypeDefinition::Bits::Bit const & Bit) -> Inspection::TypeDefinition::Bits::Bit & = delete;
-                auto operator=(Inspection::TypeDefinition::Bits::Bit && Bit) -> Inspection::TypeDefinition::Bits::Bit & = delete;
-            private:
-                std::uint64_t m_Index;
-                std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> m_Interpretations;
-                std::string m_Name;
-            };
-        public:
-            virtual ~Bits(void) = default;
             auto Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool override;
+            auto GetIndex(void) const -> std::uint64_t;
+            auto GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &;
+            auto GetName(void) const -> std::string const &;
         private:
-            Bits(void) = default;
-            Bits(Inspection::TypeDefinition::Bits const & Bits) = delete;
-            Bits(Inspection::TypeDefinition::Bits && Bits) = delete;
-            auto operator=(Inspection::TypeDefinition::Bits const & Bits) -> Inspection::TypeDefinition::Bits & = delete;
-            auto operator=(Inspection::TypeDefinition::Bits && Bits) -> Inspection::TypeDefinition::Bits & = delete;
+            BitInterpretation(void) = default;
+            BitInterpretation(Inspection::TypeDefinition::BitInterpretation const & BitInterpretation) = delete;
+            BitInterpretation(Inspection::TypeDefinition::BitInterpretation && BitInterpretation) = delete;
+            auto operator=(Inspection::TypeDefinition::BitInterpretation const & BitInterpretation) -> Inspection::TypeDefinition::BitInterpretation & = delete;
+            auto operator=(Inspection::TypeDefinition::BitInterpretation && BitInterpretation) -> Inspection::TypeDefinition::BitInterpretation & = delete;
         private:
-            std::vector<std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>> m_Bits;
+            std::uint64_t m_Index;
+            std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> m_Interpretations;
+            std::string m_Name;
         };
         
         class Verification : public Inspection::TypeDefinition::Interpretation
