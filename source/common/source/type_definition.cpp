@@ -427,6 +427,10 @@ bool Inspection::TypeDefinition::ApplyEnumeration::Apply(Inspection::ExecutionCo
     {
         ::ApplyEnumeration<std::uint32_t>(ExecutionContext, *Enumeration, Target);
     }
+    else if(Enumeration->BaseDataType == Inspection::TypeDefinition::DataType::Boolean)
+    {
+        ::ApplyEnumeration<bool>(ExecutionContext, *Enumeration, Target);
+    }
     else
     {
         UNEXPECTED_CASE("Enumeration->BaseDataType == " + Inspection::to_string(Enumeration->BaseDataType));
@@ -887,18 +891,37 @@ std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::Get
 // Bits                                                                                          //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-static auto ApplyBits(auto const & Bitset, std::vector<std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>> const & Bits, Inspection::Value * Target) -> bool
+static auto ApplyBits(Inspection::ExecutionContext & ExecutionContext, auto const & Bitset, std::vector<std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>> const & Bits, Inspection::Value * Target) -> bool
 {
+    auto Continue = true;
+    
     for(auto & Bit : Bits)
     {
+        ASSERTION(Bit != nullptr);
+        
         auto BitValue = Target->AppendField(Bit->GetName(), Bitset[Bit->GetIndex()]);
         
         BitValue->AddTag("bit");
-        BitValue->AddTag("identifier", Bit->GetIdentifier());
         BitValue->AddTag("index", Bit->GetIndex());
+        if(Continue == true)
+        {
+            for(auto const & Interpretation : Bit->GetInterpretations())
+            {
+                ASSERTION(Interpretation != nullptr);
+                Continue = Interpretation->Apply(ExecutionContext, BitValue);
+                if(Continue == false)
+                {
+                    break;
+                }
+            }
+        }
+        if(Continue == false)
+        {
+            break;
+        }
     }
     
-    return true;
+    return Continue;
 }
 
 auto Inspection::TypeDefinition::Bits::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
@@ -908,7 +931,7 @@ auto Inspection::TypeDefinition::Bits::Apply(Inspection::ExecutionContext & Exec
     
     if(Data.type() == typeid(std::bitset<8>))
     {
-        Result = ApplyBits(std::any_cast<std::bitset<8> const &>(Data), m_Bits, Target);
+        Result = ApplyBits(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), m_Bits, Target);
     }
     
     return Result;
@@ -939,14 +962,14 @@ auto Inspection::TypeDefinition::Bits::Load(XML::Element const * Element) -> std
 // Bits::Bit                                                                                     //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-auto Inspection::TypeDefinition::Bits::Bit::GetIdentifier(void) const -> std::string const &
-{
-    return m_Identifier;
-}
-
 auto Inspection::TypeDefinition::Bits::Bit::GetIndex(void) const -> std::uint64_t
 {
     return m_Index;
+}
+
+auto Inspection::TypeDefinition::Bits::Bit::GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &
+{
+    return m_Interpretations;
 }
 
 auto Inspection::TypeDefinition::Bits::Bit::GetName(void) const -> std::string const &
@@ -960,12 +983,26 @@ auto Inspection::TypeDefinition::Bits::Bit::Load(XML::Element const * Element) -
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>{new Inspection::TypeDefinition::Bits::Bit{}};
     
-    ASSERTION(Element->HasAttribute("identifier") == true);
-    Result->m_Identifier = Element->GetAttribute("identifier");
     ASSERTION(Element->HasAttribute("index") == true);
     Result->m_Index = from_string_cast<std::uint64_t>(Element->GetAttribute("index"));
     ASSERTION(Element->HasAttribute("name") == true);
     Result->m_Name = Element->GetAttribute("name");
+    for(auto ChildElement : Element->GetChildElements())
+    {
+        ASSERTION(ChildElement != nullptr);
+        if(ChildElement->GetName() == "apply-enumeration")
+        {
+            Result->m_Interpretations.push_back(Inspection::TypeDefinition::ApplyEnumeration::Load(ChildElement));
+        }
+        else if(ChildElement->GetName() == "tag")
+        {
+            Result->m_Interpretations.push_back(Inspection::TypeDefinition::AddTag::Load(ChildElement));
+        }
+        else
+        {
+            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
+        }
+    }
     
     return Result;
 }

@@ -572,8 +572,8 @@ namespace Inspection
             public:
                 static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Bits::Bit>;
             public:
-                auto GetIdentifier(void) const -> std::string const &;
                 auto GetIndex(void) const -> std::uint64_t;
+                auto GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &;
                 auto GetName(void) const -> std::string const &;
             private:
                 Bit(void) = default;
@@ -582,8 +582,8 @@ namespace Inspection
                 auto operator=(Inspection::TypeDefinition::Bits::Bit const & Bit) -> Inspection::TypeDefinition::Bits::Bit & = delete;
                 auto operator=(Inspection::TypeDefinition::Bits::Bit && Bit) -> Inspection::TypeDefinition::Bits::Bit & = delete;
             private:
-                std::string m_Identifier;
                 std::uint64_t m_Index;
+                std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> m_Interpretations;
                 std::string m_Name;
             };
         public:
