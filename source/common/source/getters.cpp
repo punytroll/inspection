@@ -5654,7 +5654,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ID3_2_Tag(Inspection::Reader
         else if(MajorVersion == 0x03)
         {
             Result->GetValue()->AddTag("version", "v2.3"s);
-            if(std::any_cast<bool>(Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("Unsynchronization")->GetData()) == true)
+            if(std::any_cast<bool>(Result->GetValue()->GetField("TagHeader")->GetField("Flags")->GetField("Unsynchronisation")->GetData()) == true)
             {
                 auto ID3DeUnsynchronizationEagerFilter = Inspection::ID3DeUnsynchronizationEagerFilter{PartReader.GetBuffer(), PartReader.GetReadPositionInInput(), ClaimedSize};
                 auto FilterReader = Inspection::Reader{ID3DeUnsynchronizationEagerFilter};
