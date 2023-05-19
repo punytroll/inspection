@@ -1231,11 +1231,11 @@
 		<expected-output>true</expected-output>
 	</test>
 	<test>
-		<description>The flag Unsynchronization needs to be set. This is an interpretation of the flags field.</description>
+		<description>The flag Unsynchronisation needs to be set. This is an interpretation of the flags field.</description>
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronisation/data</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1244,7 +1244,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/has-tag:bit</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronisation/has-tag:bit</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -1253,7 +1253,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/tag:index/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronisation/tag:index/data</argument>
 		</execute>
 		<expected-output>7</expected-output>
 	</test>
@@ -1262,7 +1262,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronization/tag:identifier/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronisation/tag:identifier/data</argument>
 		</execute>
 		<expected-output>a</expected-output>
 	</test>
