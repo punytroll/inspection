@@ -194,23 +194,17 @@ std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Add>{new Inspection::TypeDefinition::Add{}};
     auto First = true;
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        if(First == true)
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            ASSERTION(ChildElement != nullptr);
-            if(First == true)
-            {
-                Result->m_Summand1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-                First = false;
-            }
-            else
-            {
-                INVALID_INPUT_IF(Result->m_Summand2 != nullptr, "More than two operands for Add expression.");
-                Result->m_Summand2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            }
+            Result->m_Summand1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+            First = false;
+        }
+        else
+        {
+            INVALID_INPUT_IF(Result->m_Summand2 != nullptr, "More than two operands for Add expression.");
+            Result->m_Summand2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
         }
     }
     INVALID_INPUT_IF(Result->m_Summand1 == nullptr, "Missing operands for Add expression.");
@@ -259,14 +253,10 @@ std::unique_ptr<Inspection::TypeDefinition::And> Inspection::TypeDefinition::And
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::And>{new Inspection::TypeDefinition::And{}};
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
-        {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            Result->m_Operands.push_back(Inspection::TypeDefinition::Expression::Load(ChildElement));
-        }
+        ASSERTION(ChildElement != nullptr);
+        Result->m_Operands.push_back(Inspection::TypeDefinition::Expression::Load(ChildElement));
     }
     INVALID_INPUT_IF(Result->m_Operands.size() == 0, "Missing operands for And expression.");
     
@@ -443,20 +433,16 @@ std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration> Inspection::TypeDe
 {
     auto Result = std::unique_ptr<Inspection::TypeDefinition::ApplyEnumeration>{new Inspection::TypeDefinition::ApplyEnumeration{}};
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(ChildElement->GetName() == "enumeration")
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            if(ChildElement->GetName() == "enumeration")
-            {
-                Result->Enumeration = Inspection::TypeDefinition::Enumeration::Load(ChildElement);
-            }
-            else
-            {
-                UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-            }
+            Result->Enumeration = Inspection::TypeDefinition::Enumeration::Load(ChildElement);
+        }
+        else
+        {
+            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
         }
     }
     
@@ -825,18 +811,12 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
         {
             IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
             
-            auto FieldReferenceElement = static_cast<const XML::Element *>(nullptr);
+            auto ChildElementsRange = Element->GetChildElements();
+            auto ChildElements = std::vector<XML::Element const *>{ChildElementsRange.begin(), ChildElementsRange.end()};
             
-            for(auto PartIterateChildNode : Element->GetChildNodes())
-            {
-                if(PartIterateChildNode->GetNodeType() == XML::NodeType::Element)
-                {
-                    ASSERTION(FieldReferenceElement == nullptr);
-                    FieldReferenceElement = dynamic_cast<const XML::Element *>(PartIterateChildNode);
-                }
-            }
-            ASSERTION(FieldReferenceElement != nullptr);
-            IterateForEachField = Inspection::TypeDefinition::FieldReference::Load(FieldReferenceElement);
+            INVALID_INPUT_IF(ChildElements.size() == 0, "Missing field reference in for-each-field.");
+            INVALID_INPUT_IF(ChildElements.size() > 1, "Too many field references in for-each-field.");
+            IterateForEachField = Inspection::TypeDefinition::FieldReference::Load(ChildElements.front());
         }
         else if(Element->GetAttribute("type") == "number-of-elements")
         {
@@ -1019,21 +999,15 @@ std::unique_ptr<Inspection::TypeDefinition::Cast> Inspection::TypeDefinition::Ca
 {
     ASSERTION(Element != nullptr);
     
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Cast>{};
+    auto ChildElementsRange = Element->GetChildElements();
+    auto ChildElements = std::vector<XML::Element const *>{ChildElementsRange.begin(), ChildElementsRange.end()};
     
-    for(auto ChildNode : Element->GetChildNodes())
-    {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
-        {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            Result = std::unique_ptr<Inspection::TypeDefinition::Cast>{new Inspection::TypeDefinition::Cast{Inspection::TypeDefinition::GetDataTypeFromString(Element->GetName())}};
-            Result->m_Expression = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            
-            break;
-        }
-    }
-    INVALID_INPUT_IF((Result == nullptr) || (Result->m_Expression == nullptr), "Missing operand for Cast expression.");
+    INVALID_INPUT_IF(ChildElements.size() == 0, "Missing operand for Cast expression.");
+    INVALID_INPUT_IF(ChildElements.size() > 1, "Too many operands for Cast expression.");
+    
+    auto Result = std::unique_ptr<Inspection::TypeDefinition::Cast>{new Inspection::TypeDefinition::Cast{Inspection::TypeDefinition::GetDataTypeFromString(Element->GetName())}};
+    
+    Result->m_Expression = Inspection::TypeDefinition::Expression::Load(ChildElements.front());
     
     return Result;
 }
@@ -1086,36 +1060,32 @@ std::unique_ptr<Inspection::TypeDefinition::DataReference> Inspection::TypeDefin
     {
         UNEXPECTED_CASE("Element->GetAttribute(\"root\") == " + Element->GetAttribute("root"));
     }
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(ChildElement->GetName() == "field")
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
+            ASSERTION(ChildElement->GetChildNodes().size() == 1);
             
-            if(ChildElement->GetName() == "field")
-            {
-                ASSERTION(ChildElement->GetChildNodes().size() == 1);
-                
-                auto & DataReferencePart = Result->m_Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Field);
-                auto SubText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
-                
-                ASSERTION(SubText != nullptr);
-                DataReferencePart.DetailName = SubText->GetText();
-            }
-            else if(ChildElement->GetName() == "tag")
-            {
-                ASSERTION(ChildElement->GetChildNodes().size() == 1);
-                
-                auto & DataReferencePart = Result->m_Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Tag);
-                auto TagText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
-                
-                ASSERTION(TagText != nullptr);
-                DataReferencePart.DetailName = TagText->GetText();
-            }
-            else
-            {
-                UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-            }
+            auto & DataReferencePart = Result->m_Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Field);
+            auto SubText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
+            
+            ASSERTION(SubText != nullptr);
+            DataReferencePart.DetailName = SubText->GetText();
+        }
+        else if(ChildElement->GetName() == "tag")
+        {
+            ASSERTION(ChildElement->GetChildNodes().size() == 1);
+            
+            auto & DataReferencePart = Result->m_Parts.emplace_back(Inspection::TypeDefinition::DataReference::Part::Type::Tag);
+            auto TagText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
+            
+            ASSERTION(TagText != nullptr);
+            DataReferencePart.DetailName = TagText->GetText();
+        }
+        else
+        {
+            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
         }
     }
     
@@ -1176,22 +1146,18 @@ std::unique_ptr<Inspection::TypeDefinition::Divide> Inspection::TypeDefinition::
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Divide>{new Inspection::TypeDefinition::Divide{}};
     auto First = true;
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(First == true)
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            if(First == true)
-            {
-                Result->m_Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
-                First = false;
-            }
-            else
-            {
-                INVALID_INPUT_IF(Result->m_Divisor != nullptr, "More than two operands for Divide expression.");
-                Result->m_Divisor = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            }
+            Result->m_Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
+            First = false;
+        }
+        else
+        {
+            INVALID_INPUT_IF(Result->m_Divisor != nullptr, "More than two operands for Divide expression.");
+            Result->m_Divisor = Inspection::TypeDefinition::Expression::Load(ChildElement);
         }
     }
     INVALID_INPUT_IF(Result->m_Dividend == nullptr, "Missing operands for Divide expression.");
@@ -1212,63 +1178,51 @@ std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinit
     ASSERTION(Element != nullptr);
     ASSERTION(Element->GetName() == "enumeration");
     Result->BaseDataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetAttribute("base-data-type"));
-    for(auto EnumerationChildNode : Element->GetChildNodes())
+    for(auto EnumerationChildElement : Element->GetChildElements())
     {
-        if(EnumerationChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(EnumerationChildElement != nullptr);
+        if(EnumerationChildElement->GetName() == "element")
         {
-            auto EnumerationChildElement = dynamic_cast<const XML::Element *>(EnumerationChildNode);
+            auto & Element = Result->Elements.emplace_back();
             
-            if(EnumerationChildElement->GetName() == "element")
+            ASSERTION(EnumerationChildElement->HasAttribute("base-value") == true);
+            Element.BaseValue = EnumerationChildElement->GetAttribute("base-value");
+            ASSERTION(EnumerationChildElement->HasAttribute("valid") == true);
+            Element.Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
+            for(auto EnumerationElementChildElement : EnumerationChildElement->GetChildElements())
             {
-                auto & Element = Result->Elements.emplace_back();
-                
-                ASSERTION(EnumerationChildElement->HasAttribute("base-value") == true);
-                Element.BaseValue = EnumerationChildElement->GetAttribute("base-value");
-                ASSERTION(EnumerationChildElement->HasAttribute("valid") == true);
-                Element.Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
-                for(auto EnumerationElementChildNode : EnumerationChildElement->GetChildNodes())
+                ASSERTION(EnumerationElementChildElement != nullptr);
+                if(EnumerationElementChildElement->GetName() == "tag")
                 {
-                    if(EnumerationElementChildNode->GetNodeType() == XML::NodeType::Element)
-                    {
-                        auto EnumerationElementChildElement = dynamic_cast<const XML::Element *>(EnumerationElementChildNode);
-                        
-                        if(EnumerationElementChildElement->GetName() == "tag")
-                        {
-                            Element.Tags.push_back(Inspection::TypeDefinition::Tag::Load(EnumerationElementChildElement));
-                        }
-                        else
-                        {
-                            UNEXPECTED_CASE("EnumerationElementChildElement->GetName() == " + EnumerationElementChildElement->GetName());
-                        }
-                    }
+                    Element.Tags.push_back(Inspection::TypeDefinition::Tag::Load(EnumerationElementChildElement));
+                }
+                else
+                {
+                    UNEXPECTED_CASE("EnumerationElementChildElement->GetName() == " + EnumerationElementChildElement->GetName());
                 }
             }
-            else if(EnumerationChildElement->GetName() == "fallback-element")
+        }
+        else if(EnumerationChildElement->GetName() == "fallback-element")
+        {
+            ASSERTION(Result->FallbackElement.has_value() == false);
+            Result->FallbackElement.emplace();
+            Result->FallbackElement->Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
+            for(auto EnumerationFallbackElementChildElement : EnumerationChildElement->GetChildElements())
             {
-                ASSERTION(Result->FallbackElement.has_value() == false);
-                Result->FallbackElement.emplace();
-                Result->FallbackElement->Valid = from_string_cast<bool>(EnumerationChildElement->GetAttribute("valid"));
-                for(auto EnumerationFallbackElementChildNode : EnumerationChildElement->GetChildNodes())
+                ASSERTION(EnumerationFallbackElementChildElement != nullptr);
+                if(EnumerationFallbackElementChildElement->GetName() == "tag")
                 {
-                    if(EnumerationFallbackElementChildNode->GetNodeType() == XML::NodeType::Element)
-                    {
-                        auto EnumerationFallbackElementChildElement = dynamic_cast<const XML::Element *>(EnumerationFallbackElementChildNode);
-                        
-                        if(EnumerationFallbackElementChildElement->GetName() == "tag")
-                        {
-                            Result->FallbackElement->Tags.push_back(Inspection::TypeDefinition::Tag::Load(EnumerationFallbackElementChildElement));
-                        }
-                        else
-                        {
-                            UNEXPECTED_CASE("EnumerationFallbackElementChildElement->GetName() == " + EnumerationFallbackElementChildElement->GetName());
-                        }
-                    }
+                    Result->FallbackElement->Tags.push_back(Inspection::TypeDefinition::Tag::Load(EnumerationFallbackElementChildElement));
+                }
+                else
+                {
+                    UNEXPECTED_CASE("EnumerationFallbackElementChildElement->GetName() == " + EnumerationFallbackElementChildElement->GetName());
                 }
             }
-            else
-            {
-                UNEXPECTED_CASE("EnumerationChildElement->GetName() == " + EnumerationChildElement->GetName());
-            }
+        }
+        else
+        {
+            UNEXPECTED_CASE("EnumerationChildElement->GetName() == " + EnumerationChildElement->GetName());
         }
     }
     
@@ -1333,22 +1287,18 @@ std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Equals>{new Inspection::TypeDefinition::Equals{}};
     auto First = true;
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(First == true)
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            if(First == true)
-            {
-                Result->m_Expression1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-                First = false;
-            }
-            else
-            {
-                INVALID_INPUT_IF(Result->m_Expression2 != nullptr, "More than two operands for Equals expression.");
-                Result->m_Expression2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            }
+            Result->m_Expression1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+            First = false;
+        }
+        else
+        {
+            INVALID_INPUT_IF(Result->m_Expression2 != nullptr, "More than two operands for Equals expression.");
+            Result->m_Expression2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
         }
     }
     INVALID_INPUT_IF(Result->m_Expression1 == nullptr, "Missing operands for Equals expression.");
@@ -1461,26 +1411,13 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
 {
     ASSERTION(Element != nullptr);
     
-    auto ExpressionElement = static_cast<const XML::Element *>(nullptr);
+    auto ChildElementsRange = Element->GetChildElements();
+    auto ChildElements = std::vector<XML::Element const *>{ChildElementsRange.begin(), ChildElementsRange.end()};
     
-    if(Element->GetChildNodes().size() > 0)
-    {
-        for(auto ChildNode : Element->GetChildNodes())
-        {
-            if(ChildNode->GetNodeType() == XML::NodeType::Element)
-            {
-                ExpressionElement = dynamic_cast<const XML::Element *>(ChildNode);
-                
-                break;
-            }
-        }
-        if(ExpressionElement == nullptr)
-        {
-            ASSERTION(false);
-        }
-    }
+    INVALID_INPUT_IF(ChildElements.size() == 0, "Missing expression.");
+    INVALID_INPUT_IF(ChildElements.size() > 1, "Too many expressions.");
     
-    return Inspection::TypeDefinition::Expression::Load(ExpressionElement);
+    return Inspection::TypeDefinition::Expression::Load(ChildElements.front());
 }
 
 
@@ -1596,21 +1533,16 @@ std::unique_ptr<Inspection::TypeDefinition::FieldReference> Inspection::TypeDefi
     {
         UNEXPECTED_CASE("Element->GetAttribute(\"root\") == " + Element->GetAttribute("root"));
     }
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
-        {
-            auto ChildElement = dynamic_cast<XML::Element const *>(ChildNode);
-            
-            ASSERTION(ChildElement != nullptr);
-            ASSERTION(ChildElement->GetName() == "field");
-            ASSERTION(ChildElement->GetChildNodes().size() == 1);
-            
-            auto FieldReferenceFieldText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
-            
-            ASSERTION(FieldReferenceFieldText != nullptr);
-            Result->Parts.push_back(FieldReferenceFieldText->GetText());
-        }
+        ASSERTION(ChildElement != nullptr);
+        ASSERTION(ChildElement->GetName() == "field");
+        ASSERTION(ChildElement->GetChildNodes().size() == 1);
+        
+        auto FieldReferenceFieldText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
+        
+        ASSERTION(FieldReferenceFieldText != nullptr);
+        Result->Parts.push_back(FieldReferenceFieldText->GetText());
     }
     
     return Result;
@@ -1745,20 +1677,16 @@ std::unique_ptr<Inspection::TypeDefinition::Interpretation> Inspection::TypeDefi
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Interpretation>{};
     
     ASSERTION(Element->GetName() == "interpretation");
-    for(auto InterpretationChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(InterpretationChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(ChildElement->GetName() == "apply-enumeration")
         {
-            auto InterpretationChildElement = dynamic_cast<const XML::Element *>(InterpretationChildNode);
-            
-            if(InterpretationChildElement->GetName() == "apply-enumeration")
-            {
-                Result = Inspection::TypeDefinition::ApplyEnumeration::Load(InterpretationChildElement);
-            }
-            else
-            {
-                UNEXPECTED_CASE("InterpretationChildElement->GetName() == " + InterpretationChildElement->GetName());
-            }
+            Result = Inspection::TypeDefinition::ApplyEnumeration::Load(ChildElement);
+        }
+        else
+        {
+            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
         }
     }
     
@@ -1799,25 +1727,22 @@ std::unique_ptr<Inspection::TypeDefinition::Length> Inspection::TypeDefinition::
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Length>{new Inspection::TypeDefinition::Length{}};
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(ChildElement->GetName() == "bytes")
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            ASSERTION(ChildElement != nullptr);
-            if(ChildElement->GetName() == "bytes")
-            {
-                Result->m_Bytes = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
-            }
-            else if(ChildElement->GetName() == "bits")
-            {
-                Result->m_Bits = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
-            }
-            else
-            {
-                UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-            }
+            INVALID_INPUT_IF(Result->m_Bytes != nullptr, "More than one bytes expression.");
+            Result->m_Bytes = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+        }
+        else if(ChildElement->GetName() == "bits")
+        {
+            INVALID_INPUT_IF(Result->m_Bits != nullptr, "More than one bits expression.");
+            Result->m_Bits = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+        }
+        else
+        {
+            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
         }
     }
     
@@ -1872,22 +1797,18 @@ std::unique_ptr<Inspection::TypeDefinition::LessThan> Inspection::TypeDefinition
     auto Result = std::unique_ptr<Inspection::TypeDefinition::LessThan>{new Inspection::TypeDefinition::LessThan{}};
     auto First = true;
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(First == true)
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            if(First == true)
-            {
-                Result->m_Expression1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-                First = false;
-            }
-            else
-            {
-                INVALID_INPUT_IF(Result->m_Expression2 != nullptr, "More than two operands for LessThan expression.");
-                Result->m_Expression2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            }
+            Result->m_Expression1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
+            First = false;
+        }
+        else
+        {
+            INVALID_INPUT_IF(Result->m_Expression2 != nullptr, "More than two operands for LessThan expression.");
+            Result->m_Expression2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
         }
     }
     INVALID_INPUT_IF(Result->m_Expression1 == nullptr, "Missing operands for LessThan expression.");
@@ -1936,22 +1857,18 @@ std::unique_ptr<Inspection::TypeDefinition::Modulus> Inspection::TypeDefinition:
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Modulus>{new Inspection::TypeDefinition::Modulus{}};
     auto First = true;
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(First == true)
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            if(First == true)
-            {
-                Result->m_Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
-                First = false;
-            }
-            else
-            {
-                INVALID_INPUT_IF(Result->m_Divisor != nullptr, "More than two operands for Modulus expression.");
-                Result->m_Divisor = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            }
+            Result->m_Dividend = Inspection::TypeDefinition::Expression::Load(ChildElement);
+            First = false;
+        }
+        else
+        {
+            INVALID_INPUT_IF(Result->m_Divisor != nullptr, "More than two operands for Modulus expression.");
+            Result->m_Divisor = Inspection::TypeDefinition::Expression::Load(ChildElement);
         }
     }
     INVALID_INPUT_IF(Result->m_Dividend == nullptr, "Missing operands for Modulus expression.");
@@ -2000,22 +1917,18 @@ std::unique_ptr<Inspection::TypeDefinition::Multiply> Inspection::TypeDefinition
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Multiply>{new Inspection::TypeDefinition::Multiply{}};
     auto First = true;
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(First == true)
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            if(First == true)
-            {
-                Result->m_Multiplier = Inspection::TypeDefinition::Expression::Load(ChildElement);
-                First = false;
-            }
-            else
-            {
-                INVALID_INPUT_IF(Result->m_Multiplicand != nullptr, "More than two operands for Multiply expression.");
-                Result->m_Multiplicand = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            }
+            Result->m_Multiplier = Inspection::TypeDefinition::Expression::Load(ChildElement);
+            First = false;
+        }
+        else
+        {
+            INVALID_INPUT_IF(Result->m_Multiplicand != nullptr, "More than two operands for Multiply expression.");
+            Result->m_Multiplicand = Inspection::TypeDefinition::Expression::Load(ChildElement);
         }
     }
     INVALID_INPUT_IF(Result->m_Multiplier == nullptr, "Missing operands for Multiply expression.");
@@ -2084,16 +1997,11 @@ std::unique_ptr<Inspection::TypeDefinition::Parameters> Inspection::TypeDefiniti
 {
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Parameters>{new Inspection::TypeDefinition::Parameters{}};
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
-        {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            ASSERTION(ChildElement != nullptr);
-            ASSERTION(ChildElement->GetName() == "parameter");
-            Result->m_Parameters.push_back(Inspection::TypeDefinition::Parameters::Parameter::Load(ChildElement));
-        }
+        ASSERTION(ChildElement != nullptr);
+        ASSERTION(ChildElement->GetName() == "parameter");
+        Result->m_Parameters.push_back(Inspection::TypeDefinition::Parameters::Parameter::Load(ChildElement));
     }
     
     return Result;
@@ -2206,15 +2114,10 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
 
 auto Inspection::TypeDefinition::Part::_LoadProperties(const XML::Element * Element) -> void
 {
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
-        {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            ASSERTION(ChildElement != nullptr);
-            _LoadProperty(ChildElement);
-        }
+        ASSERTION(ChildElement != nullptr);
+        _LoadProperty(ChildElement);
     }
 }
 
@@ -2241,12 +2144,10 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
     }
     else if(Element->GetName() == "verification")
     {
-        for(auto GetterPartVerificationChildNode : Element->GetChildNodes())
+        for(auto ChildElement : Element->GetChildElements())
         {
-            if(GetterPartVerificationChildNode->GetNodeType() == XML::NodeType::Element)
-            {
-                Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(dynamic_cast<const XML::Element *>(GetterPartVerificationChildNode)));
-            }
+            ASSERTION(ChildElement != nullptr);
+            Interpretations.push_back(Inspection::TypeDefinition::Verification::Load(dynamic_cast<const XML::Element *>(ChildElement)));
         }
     }
     else if(Element->GetName() == "tag")
@@ -2428,22 +2329,18 @@ auto Inspection::TypeDefinition::Select::Case::Load(XML::Element const * Element
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Select::Case>{new Inspection::TypeDefinition::Select::Case{}};
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(ChildElement->GetName() == "when")
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            if(ChildElement->GetName() == "when")
-            {
-                ASSERTION(Result->m_When== nullptr);
-                Result->m_When = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
-            }
-            else
-            {
-                ASSERTION(Result->m_Part == nullptr);
-                Result->m_Part = Inspection::TypeDefinition::Part::Load(ChildElement);
-            }
+            ASSERTION(Result->m_When== nullptr);
+            Result->m_When = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+        }
+        else
+        {
+            ASSERTION(Result->m_Part == nullptr);
+            Result->m_Part = Inspection::TypeDefinition::Part::Load(ChildElement);
         }
     }
     INVALID_INPUT_IF(Result->m_When == nullptr, "Case parts need a <when> specification.");
@@ -2599,23 +2496,18 @@ std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Subtract>{new Inspection::TypeDefinition::Subtract{}};
     auto First = true;
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
+        ASSERTION(ChildElement != nullptr);
+        if(First == true)
         {
-            auto ChildElement = dynamic_cast<const XML::Element *>(ChildNode);
-            
-            ASSERTION(ChildElement != nullptr);
-            if(First == true)
-            {
-                Result->m_Minuend = Inspection::TypeDefinition::Expression::Load(ChildElement);
-                First = false;
-            }
-            else
-            {
-                INVALID_INPUT_IF(Result->m_Subtrahend != nullptr, "More than two operands for Subtract expression.");
-                Result->m_Subtrahend = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            }
+            Result->m_Minuend = Inspection::TypeDefinition::Expression::Load(ChildElement);
+            First = false;
+        }
+        else
+        {
+            INVALID_INPUT_IF(Result->m_Subtrahend != nullptr, "More than two operands for Subtract expression.");
+            Result->m_Subtrahend = Inspection::TypeDefinition::Expression::Load(ChildElement);
         }
     }
     INVALID_INPUT_IF(Result->m_Minuend == nullptr, "Missing operands for Subtract expression.");
@@ -2712,21 +2604,16 @@ std::unique_ptr<Inspection::TypeDefinition::TypeReference> Inspection::TypeDefin
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::TypeReference>{new Inspection::TypeDefinition::TypeReference{}};
     
-    for(auto ChildNode : Element->GetChildNodes())
+    for(auto ChildElement : Element->GetChildElements())
     {
-        if(ChildNode->GetNodeType() == XML::NodeType::Element)
-        {
-            auto ChildElement = dynamic_cast<XML::Element const *>(ChildNode);
-            
-            ASSERTION(ChildElement != nullptr);
-            ASSERTION_MESSAGE(ChildElement->GetName() == "part", "\"part\" was expected but \"" + ChildElement->GetName() + "\" was found.");
-            ASSERTION(ChildElement->GetChildNodes().size() == 1);
-            
-            auto PartText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
-            
-            ASSERTION(PartText != nullptr);
-            Result->m_Parts.push_back(PartText->GetText());
-        }
+        ASSERTION(ChildElement != nullptr);
+        ASSERTION_MESSAGE(ChildElement->GetName() == "part", "\"part\" was expected but \"" + ChildElement->GetName() + "\" was found.");
+        ASSERTION(ChildElement->GetChildNodes().size() == 1);
+        
+        auto PartText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
+        
+        ASSERTION(PartText != nullptr);
+        Result->m_Parts.push_back(PartText->GetText());
     }
     
     return Result;
