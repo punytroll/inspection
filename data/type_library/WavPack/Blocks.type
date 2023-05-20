@@ -3,10 +3,120 @@
 		<array name="Blocks">
 			<iterate type="at-least-one-until-failure-or-length"/>
 			<element-type>
-				<type-reference>
-					<part>WavPack</part>
-					<part>Block</part>
-				</type-reference>
+				<type>
+					<sequence>
+						<field name="Header">
+							<sequence>
+								<field name="Identifier">
+									<type-reference>
+										<part>String</part>
+										<part>ASCII</part>
+										<part>ByTemplate</part>
+									</type-reference>
+									<parameters>
+										<parameter name="Template">
+											<string>wvpk</string>
+										</parameter>
+									</parameters>
+								</field>
+								<field name="Size">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>32Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="Version">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>16Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="BlockIndexUpper8Bits">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>8Bit</part>
+									</type-reference>
+								</field>
+								<field name="TotalSamplesUpper8Bits">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>8Bit</part>
+									</type-reference>
+								</field>
+								<field name="TotalSamples">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>32Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="BlockIndex">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>32Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="BlockSamples">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>32Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="Flags">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>32Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+								<field name="CRC">
+									<type-reference>
+										<part>Number</part>
+										<part>Integer</part>
+										<part>Unsigned</part>
+										<part>32Bit_LittleEndian</part>
+									</type-reference>
+								</field>
+							</sequence>
+						</field>
+						<field name="SubBlockData">
+							<type-reference>
+								<part>Data</part>
+								<part>SetOrUnset_EndedByLength</part>
+							</type-reference>
+							<length>
+								<bytes>
+									<subtract>
+										<unsigned-integer-64bit>
+											<data-reference root="type">
+												<field>Header</field>
+												<field>Size</field>
+											</data-reference>
+										</unsigned-integer-64bit>
+										<unsigned-integer-64bit>24</unsigned-integer-64bit>
+									</subtract>
+								</bytes>
+								<bits>
+									<unsigned-integer-64bit>0</unsigned-integer-64bit>
+								</bits>
+							</length>
+						</field>
+					</sequence>
+				</type>
 			</element-type>
 			<element-name>Block</element-name>
 		</array>
