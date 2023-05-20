@@ -58,7 +58,7 @@ static auto AppendOtherData(Inspection::Value * Value, Inspection::Length const 
     return AppendLengthField(Value, "OtherData", Length);
 }
 
-static void ApplyTag(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Tag & Tag, Inspection::Value * Target)
+static auto ApplyTag(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Tag const & Tag, Inspection::Value * Target) -> void
 {
     if(Tag.HasExpression() == true)
     {
@@ -70,7 +70,7 @@ static void ApplyTag(Inspection::ExecutionContext & ExecutionContext, const Insp
     }
 }
 
-static void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> & Tags, Inspection::Value * Target)
+static auto ApplyTags(Inspection::ExecutionContext & ExecutionContext, std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> const & Tags, Inspection::Value * Target) -> void
 {
     for(auto & Tag : Tags)
     {
@@ -80,11 +80,14 @@ static void ApplyTags(Inspection::ExecutionContext & ExecutionContext, const std
 }
 
 template<typename DataType>
-static bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Enumeration & Enumeration, Inspection::Value * Target)
+static auto ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Enumeration const & Enumeration, Inspection::Value * Target) -> bool
 {
-    bool Result = false;
-    auto BaseValueString = to_string_cast(std::any_cast<const DataType &>(Target->GetData()));
-    auto ElementIterator = std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [BaseValueString](auto & Element){ return Element.BaseValue == BaseValueString; });
+    auto Result = false;
+    auto BaseValueString = to_string_cast(std::any_cast<DataType const &>(Target->GetData()));
+    auto ElementIterator = std::find_if(Enumeration.Elements.begin(), Enumeration.Elements.end(), [&BaseValueString](auto & Element)
+                                                                                                  {
+                                                                                                      return Element.BaseValue == BaseValueString;
+                                                                                                  });
     
     if(ElementIterator != Enumeration.Elements.end())
     {
@@ -110,7 +113,7 @@ static bool ApplyEnumeration(Inspection::ExecutionContext & ExecutionContext, co
 }
 
 template<typename Type>
-static Type CastTo(const std::any & Any)
+static auto CastTo(std::any const & Any) -> Type
 {
     if(Any.type() == typeid(float))
     {
@@ -142,7 +145,7 @@ static Type CastTo(const std::any & Any)
     }
 }
 
-static std::unordered_map<std::string, std::any> GetParameters(Inspection::ExecutionContext & ExecutionContext, const Inspection::TypeDefinition::Parameters * Parameters)
+static auto GetParameters(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Parameters const * Parameters) -> std::unordered_map<std::string, std::any>
 {
     if(Parameters != nullptr)
     {
