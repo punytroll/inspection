@@ -42,7 +42,7 @@
 				</enumeration>
 			</apply-enumeration>
 		</bit>
-		<bit name="ExperimentalIndicator" index="5">
+		<bit name="ExperimentalIndicator"index="5">
 			<tag name="identifier">
 				<string>c</string>
 			</tag>
@@ -56,6 +56,25 @@
 					<element base-value="false" valid="true">
 						<tag name="interpretation">
 							<string>The tag is NOT in an experimental stage.</string>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</bit>
+		<bit name="FooterPresent" index="4">
+			<tag name="identifier">
+				<string>d</string>
+			</tag>
+			<apply-enumeration>
+				<enumeration base-data-type="boolean">
+					<element base-value="true" valid="true">
+						<tag name="interpretation">
+							<string>A footer is present at the very end of the tag.</string>
+						</tag>
+					</element>
+					<element base-value="false" valid="true">
+						<tag name="interpretation">
+							<string>There is NO footer at the very end of the tag.</string>
 						</tag>
 					</element>
 				</enumeration>

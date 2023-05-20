@@ -5,9 +5,6 @@
 			<part>8Bit_LeastSignificantBitFirst</part>
 		</type-reference>
 		<bit name="Unsynchronisation" index="7">
-			<tag name="identifier">
-				<string>a</string>
-			</tag>
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">
@@ -23,39 +20,17 @@
 				</enumeration>
 			</apply-enumeration>
 		</bit>
-		<bit name="ExtendedHeader" index="6">
-			<tag name="identifier">
-				<string>b</string>
-			</tag>
+		<bit name="Compression" index="6">
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">
 						<tag name="interpretation">
-							<string>The header is followed by an extended header.</string>
+							<string>Compression is used.</string>
 						</tag>
 					</element>
 					<element base-value="false" valid="true">
 						<tag name="interpretation">
-							<string>The header is NOT followed by an extended header.,</string>
-						</tag>
-					</element>
-				</enumeration>
-			</apply-enumeration>
-		</bit>
-		<bit name="ExperimentalIndicator" index="5">
-			<tag name="identifier">
-				<string>c</string>
-			</tag>
-			<apply-enumeration>
-				<enumeration base-data-type="boolean">
-					<element base-value="true" valid="true">
-						<tag name="interpretation">
-							<string>The tag is in an experimental stage.</string>
-						</tag>
-					</element>
-					<element base-value="false" valid="true">
-						<tag name="interpretation">
-							<string>The tag is NOT in an experimental stage.</string>
+							<string>Compression is NOT used.</string>
 						</tag>
 					</element>
 				</enumeration>
