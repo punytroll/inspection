@@ -80,7 +80,7 @@
 										<part>BitSet</part>
 										<part>32Bit_LittleEndian_LeastSignificantBitFirstPerByte</part>
 									</type-reference>
-									<bit name="MonoOutput" index="2">
+									<bit name="MonoOutput" index="2" as-data-type="boolean">
 										<apply-enumeration>
 											<enumeration base-data-type="boolean">
 												<element base-value="true" valid="true">
@@ -96,7 +96,7 @@
 											</enumeration>
 										</apply-enumeration>
 									</bit>
-									<bit name="HybridMode" index="3">
+									<bit name="HybridMode" index="3" as-data-type="boolean">
 										<apply-enumeration>
 											<enumeration base-data-type="boolean">
 												<element base-value="true" valid="true">
@@ -112,7 +112,7 @@
 											</enumeration>
 										</apply-enumeration>
 									</bit>
-									<bit name="JointStereo" index="4">
+									<bit name="JointStereo" index="4" as-data-type="boolean">
 										<apply-enumeration>
 											<enumeration base-data-type="boolean">
 												<element base-value="true" valid="true">
@@ -128,7 +128,7 @@
 											</enumeration>
 										</apply-enumeration>
 									</bit>
-									<bit name="CrossChannelDecorrelation" index="5">
+									<bit name="CrossChannelDecorrelation" index="5" as-data-type="boolean">
 										<apply-enumeration>
 											<enumeration base-data-type="boolean">
 												<element base-value="true" valid="true">
@@ -144,7 +144,7 @@
 											</enumeration>
 										</apply-enumeration>
 									</bit>
-									<bit name="HybridNoiseShaping" index="6">
+									<bit name="HybridNoiseShaping" index="6" as-data-type="boolean">
 										<apply-enumeration>
 											<enumeration base-data-type="boolean">
 												<element base-value="true" valid="true">
@@ -160,7 +160,7 @@
 											</enumeration>
 										</apply-enumeration>
 									</bit>
-									<bit name="FloatingPointData" index="7">
+									<bit name="FloatingPointData" index="7" as-data-type="boolean">
 										<apply-enumeration>
 											<enumeration base-data-type="boolean">
 												<element base-value="true" valid="true">

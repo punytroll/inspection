@@ -568,6 +568,7 @@ namespace Inspection
             static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::BitInterpretation>;
         public:
             auto Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool override;
+            auto GetAsDataType() const -> Inspection::TypeDefinition::DataType;
             auto GetIndex(void) const -> std::uint64_t;
             auto GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &;
             auto GetName(void) const -> std::string const &;
@@ -578,6 +579,7 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::BitInterpretation const & BitInterpretation) -> Inspection::TypeDefinition::BitInterpretation & = delete;
             auto operator=(Inspection::TypeDefinition::BitInterpretation && BitInterpretation) -> Inspection::TypeDefinition::BitInterpretation & = delete;
         private:
+            Inspection::TypeDefinition::DataType m_AsDataType;
             std::uint64_t m_Index;
             std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> m_Interpretations;
             std::string m_Name;

@@ -4,7 +4,7 @@
 			<part>BitSet</part>
 			<part>8Bit_LeastSignificantBitFirst</part>
 		</type-reference>
-		<bit name="Unsynchronisation" index="7">
+		<bit name="Unsynchronisation" index="7" as-data-type="boolean">
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">
@@ -20,7 +20,7 @@
 				</enumeration>
 			</apply-enumeration>
 		</bit>
-		<bit name="Compression" index="6">
+		<bit name="Compression" index="6" as-data-type="boolean">
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">

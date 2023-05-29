@@ -877,10 +877,24 @@ std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::Get
 static auto ApplyBitInterpretation(Inspection::ExecutionContext & ExecutionContext, auto const & Bitset, Inspection::TypeDefinition::BitInterpretation const & BitInterpretation, Inspection::Value * Target) -> bool
 {
     auto Continue = true;
-    auto BitInterpretationValue = Target->AppendField(BitInterpretation.GetName(), Bitset[BitInterpretation.GetIndex()]);
+    auto BitInterpretationValue = Target->AppendField(BitInterpretation.GetName());
     
-    BitInterpretationValue->AddTag("bit");
-    BitInterpretationValue->AddTag("index", BitInterpretation.GetIndex());
+    switch(BitInterpretation.GetAsDataType())
+    {
+    case Inspection::TypeDefinition::DataType::Boolean:
+        {
+            BitInterpretationValue->AddTag("bit");
+            BitInterpretationValue->AddTag("boolean");
+            BitInterpretationValue->AddTag("index", BitInterpretation.GetIndex());
+            BitInterpretationValue->SetData(Bitset[BitInterpretation.GetIndex()]);
+            
+            break;
+        }
+    default:
+        {
+            UNEXPECTED_CASE("AsDataType == " + Inspection::to_string(BitInterpretation.GetAsDataType()));
+        }
+    }
     for(auto const & Interpretation : BitInterpretation.GetInterpretations())
     {
         ASSERTION(Interpretation != nullptr);
@@ -901,11 +915,11 @@ auto Inspection::TypeDefinition::BitInterpretation::Apply(Inspection::ExecutionC
     
     if(Data.type() == typeid(std::bitset<8>))
     {
-        Result = ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), *this, Target);
+        Result = ::ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), *this, Target);
     }
     else if(Data.type() == typeid(std::bitset<32>))
     {
-        Result = ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<32> const &>(Data), *this, Target);
+        Result = ::ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<32> const &>(Data), *this, Target);
     }
     else
     {
@@ -913,6 +927,11 @@ auto Inspection::TypeDefinition::BitInterpretation::Apply(Inspection::ExecutionC
     }
     
     return Result;
+}
+
+auto Inspection::TypeDefinition::BitInterpretation::GetAsDataType(void) const -> Inspection::TypeDefinition::DataType
+{
+    return m_AsDataType;
 }
 
 auto Inspection::TypeDefinition::BitInterpretation::GetIndex(void) const -> std::uint64_t
@@ -940,6 +959,8 @@ auto Inspection::TypeDefinition::BitInterpretation::Load(XML::Element const * El
     Result->m_Index = from_string_cast<std::uint64_t>(Element->GetAttribute("index"));
     ASSERTION(Element->HasAttribute("name") == true);
     Result->m_Name = Element->GetAttribute("name");
+    ASSERTION(Element->HasAttribute("as-data-type") == true);
+    Result->m_AsDataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetAttribute("as-data-type"));
     for(auto ChildElement : Element->GetChildElements())
     {
         ASSERTION(ChildElement != nullptr);

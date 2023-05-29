@@ -4,7 +4,7 @@
 			<part>BitSet</part>
 			<part>8Bit_LeastSignificantBitFirst</part>
 		</type-reference>
-		<bit name="Unsynchronisation" index="7">
+		<bit name="Unsynchronisation" index="7" as-data-type="boolean">
 			<tag name="identifier">
 				<string>a</string>
 			</tag>
@@ -23,7 +23,7 @@
 				</enumeration>
 			</apply-enumeration>
 		</bit>
-		<bit name="ExtendedHeader" index="6">
+		<bit name="ExtendedHeader" index="6" as-data-type="boolean">
 			<tag name="identifier">
 				<string>b</string>
 			</tag>
@@ -42,7 +42,7 @@
 				</enumeration>
 			</apply-enumeration>
 		</bit>
-		<bit name="ExperimentalIndicator"index="5">
+		<bit name="ExperimentalIndicator"index="5" as-data-type="boolean">
 			<tag name="identifier">
 				<string>c</string>
 			</tag>
@@ -61,7 +61,7 @@
 				</enumeration>
 			</apply-enumeration>
 		</bit>
-		<bit name="FooterPresent" index="4">
+		<bit name="FooterPresent" index="4" as-data-type="boolean">
 			<tag name="identifier">
 				<string>d</string>
 			</tag>
