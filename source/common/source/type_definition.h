@@ -793,7 +793,7 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::TypePart && TypePart) -> Inspection::TypeDefinition::TypePart & = delete;
         };
         
-        Inspection::TypeDefinition::DataType GetDataTypeFromString(const std::string & String);
+        auto GetDataTypeFromString(std::string const & String) -> Inspection::TypeDefinition::DataType;
     }
 }
 

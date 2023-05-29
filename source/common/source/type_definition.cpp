@@ -2878,7 +2878,7 @@ std::unique_ptr<Inspection::TypeDefinition::Verification> Inspection::TypeDefini
     return Result;
 }
 
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFromString(const std::string & String)
+auto Inspection::TypeDefinition::GetDataTypeFromString(std::string const & String) -> Inspection::TypeDefinition::DataType
 {
     if(String == "boolean")
     {
@@ -2926,6 +2926,6 @@ Inspection::TypeDefinition::DataType Inspection::TypeDefinition::GetDataTypeFrom
     }
     else
     {
-        UNEXPECTED_CASE("String == " + String);
+        UNEXPECTED_CASE("Data type string == \"" + String + '"');
     }
 }
