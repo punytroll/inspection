@@ -529,9 +529,13 @@ auto Inspection::to_string(enum Inspection::TypeDefinition::PartType const & Par
     return Stream.str();
 }
 
-auto Inspection::to_string(const std::type_info & TypeInformation) -> std::string
+auto Inspection::to_string(std::type_info const & TypeInformation) -> std::string
 {
-    if(TypeInformation == typeid(bool))
+    if(TypeInformation == typeid(std::bitset<32>))
+    {
+        return "std::bitset<32>";
+    }
+    else if(TypeInformation == typeid(bool))
     {
         return "boolean";
     }

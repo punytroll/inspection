@@ -903,6 +903,14 @@ auto Inspection::TypeDefinition::BitInterpretation::Apply(Inspection::ExecutionC
     {
         Result = ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), *this, Target);
     }
+    else if(Data.type() == typeid(std::bitset<32>))
+    {
+        Result = ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<32> const &>(Data), *this, Target);
+    }
+    else
+    {
+        UNEXPECTED_CASE("Data.type() == " + Inspection::to_string(Data.type()));
+    }
     
     return Result;
 }

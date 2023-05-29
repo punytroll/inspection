@@ -77,11 +77,105 @@
 								</field>
 								<field name="Flags">
 									<type-reference>
-										<part>Number</part>
-										<part>Integer</part>
-										<part>Unsigned</part>
-										<part>32Bit_LittleEndian</part>
+										<part>BitSet</part>
+										<part>32Bit_LittleEndian_LeastSignificantBitFirstPerByte</part>
 									</type-reference>
+									<bit name="MonoOutput" index="2">
+										<apply-enumeration>
+											<enumeration base-data-type="boolean">
+												<element base-value="true" valid="true">
+													<tag name="interpretation">
+														<string>mono output</string>
+													</tag>
+												</element>
+												<element base-value="false" valid="true">
+													<tag name="interpretation">
+														<string>stereo output</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="HybridMode" index="3">
+										<apply-enumeration>
+											<enumeration base-data-type="boolean">
+												<element base-value="true" valid="true">
+													<tag name="interpretation">
+														<string>hybrid mode</string>
+													</tag>
+												</element>
+												<element base-value="false" valid="true">
+													<tag name="interpretation">
+														<string>lossless mode</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="JointStereo" index="4">
+										<apply-enumeration>
+											<enumeration base-data-type="boolean">
+												<element base-value="true" valid="true">
+													<tag name="interpretation">
+														<string>joint stereo (mid/side)</string>
+													</tag>
+												</element>
+												<element base-value="false" valid="true">
+													<tag name="interpretation">
+														<string>true stereo</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="CrossChannelDecorrelation" index="5">
+										<apply-enumeration>
+											<enumeration base-data-type="boolean">
+												<element base-value="true" valid="true">
+													<tag name="interpretation">
+														<string>cross-channel decorrelation</string>
+													</tag>
+												</element>
+												<element base-value="false" valid="true">
+													<tag name="interpretation">
+														<string>independent channels</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="HybridNoiseShaping" index="6">
+										<apply-enumeration>
+											<enumeration base-data-type="boolean">
+												<element base-value="true" valid="true">
+													<tag name="interpretation">
+														<string>hybrid noise shaping</string>
+													</tag>
+												</element>
+												<element base-value="false" valid="true">
+													<tag name="interpretation">
+														<string>flat noise spectrum in hybrid</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="FloatingPointData" index="7">
+										<apply-enumeration>
+											<enumeration base-data-type="boolean">
+												<element base-value="true" valid="true">
+													<tag name="interpretation">
+														<string>floating point data</string>
+													</tag>
+												</element>
+												<element base-value="false" valid="true">
+													<tag name="interpretation">
+														<string>integer data</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
 								</field>
 								<field name="CRC">
 									<type-reference>

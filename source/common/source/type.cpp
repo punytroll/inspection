@@ -261,6 +261,10 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian_LeastSignificantBitFirstPerByte;
             }
+            else if(HardcodedText->GetText() == "Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte;
+            }
             else if(HardcodedText->GetText() == "Get_Boolean_1Bit")
             {
                 Result->m_HardcodedGetter = Inspection::Get_Boolean_1Bit;
