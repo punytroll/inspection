@@ -1253,7 +1253,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronisation/tag:index/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:Unsynchronisation/tag:begin index/data</argument>
 		</execute>
 		<expected-output>7</expected-output>
 	</test>
@@ -1289,7 +1289,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExtendedHeader/tag:index/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExtendedHeader/tag:begin index/data</argument>
 		</execute>
 		<expected-output>6</expected-output>
 	</test>
@@ -1325,7 +1325,7 @@
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/008_ID3_2.3_MCDI_unsynchronized</argument>
-			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/tag:index/data</argument>
+			<argument>--query=/field:ID3.v2_Tag/field:TagHeader/field:Flags/field:ExperimentalIndicator/tag:begin index/data</argument>
 		</execute>
 		<expected-output>5</expected-output>
 	</test>

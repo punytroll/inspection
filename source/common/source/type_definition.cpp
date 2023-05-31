@@ -35,7 +35,7 @@
 
 using namespace std::string_literals;
 
-static auto AppendLengthTag(Inspection::Value * Value, Inspection::Length const & Length, std::string const & LengthName) -> Inspection::Value *
+static auto AppendLengthTag(Inspection::Value * Value, Inspection::Length const & Length, std::string const & LengthName = "length") -> Inspection::Value *
 {
     auto Result = Value->AddTag(LengthName, Length);
     
@@ -44,11 +44,20 @@ static auto AppendLengthTag(Inspection::Value * Value, Inspection::Length const 
     return Result;
 }
 
+static auto AppendBitLengthTag(Inspection::Value * Value, Inspection::Length const & Length, std::string const & LengthName = "length") -> Inspection::Value *
+{
+    auto Result = Value->AddTag(LengthName, Length.GetTotalBits());
+    
+    Result->AddTag("unit", "bits"s);
+    
+    return Result;
+}
+
 static auto AppendLengthField(Inspection::Value * Value, std::string const & FieldName, Inspection::Length const & Length) -> Inspection::Value *
 {
     auto Result = Value->AppendField(FieldName);
     
-    AppendLengthTag(Result, Length, "length");
+    AppendLengthTag(Result, Length);
     
     return Result;
 }
@@ -874,42 +883,60 @@ std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::Get
 // BitInterpretation                                                                             //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-static auto ApplyBitInterpretation(Inspection::ExecutionContext & ExecutionContext, auto const & Bitset, Inspection::TypeDefinition::BitInterpretation const & BitInterpretation, Inspection::Value * Target) -> bool
+static auto ApplyBitsInterpretation(Inspection::ExecutionContext & ExecutionContext, auto const & Bitset, Inspection::TypeDefinition::BitsInterpretation const & BitsInterpretation, Inspection::Value * Target) -> bool
 {
     auto Continue = true;
-    auto BitInterpretationValue = Target->AppendField(BitInterpretation.GetName());
+    auto BitsInterpretationValue = Target->AppendField(BitsInterpretation.GetName());
     
-    switch(BitInterpretation.GetAsDataType())
+    if(BitsInterpretation.GetLength() == 1)
+    {
+        BitsInterpretationValue->AddTag("bit");
+    }
+    else
+    {
+        BitsInterpretationValue->AddTag("bits");
+    }
+    BitsInterpretationValue->AddTag("begin index", BitsInterpretation.GetBeginIndex());
+    AppendBitLengthTag(BitsInterpretationValue, Inspection::Length{0, BitsInterpretation.GetLength()});
+    switch(BitsInterpretation.GetAsDataType())
     {
     case Inspection::TypeDefinition::DataType::Boolean:
         {
-            BitInterpretationValue->AddTag("bit");
-            BitInterpretationValue->AddTag("boolean");
-            BitInterpretationValue->AddTag("index", BitInterpretation.GetIndex());
-            BitInterpretationValue->SetData(Bitset[BitInterpretation.GetIndex()]);
+            INVALID_INPUT_IF(BitsInterpretation.GetLength() != 1, "A boolean interpretation of bits requires the length to be one.");
+            BitsInterpretationValue->AddTag("boolean");
+            BitsInterpretationValue->SetData(Bitset[BitsInterpretation.GetBeginIndex()]);
             
             break;
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
         {
-            BitInterpretationValue->AddTag("bit");
-            BitInterpretationValue->AddTag("integer");
-            BitInterpretationValue->AddTag("unsigned");
-            BitInterpretationValue->AddTag("1bit");
-            BitInterpretationValue->AddTag("index", BitInterpretation.GetIndex());
-            BitInterpretationValue->SetData((Bitset[BitInterpretation.GetIndex()] == true) ? (static_cast<std::uint8_t>(1)) : (static_cast<std::uint8_t>(0)));
+            INVALID_INPUT_IF(BitsInterpretation.GetLength() == 0, "The length must not be zero.");
+            
+            auto Value = static_cast<std::uint8_t>(0);
+            
+            for(auto Index = 0u; Index < BitsInterpretation.GetLength(); ++Index)
+            {
+                if(Index > 0)
+                {
+                    Value <<= 1;
+                }
+                Value |= ((Bitset[BitsInterpretation.GetBeginIndex() + Index] == true) ? (static_cast<std::uint8_t>(1)) : (static_cast<std::uint8_t>(0)));
+            }
+            BitsInterpretationValue->AddTag("integer");
+            BitsInterpretationValue->AddTag("unsigned");
+            BitsInterpretationValue->SetData(Value);
             
             break;
         }
     default:
         {
-            UNEXPECTED_CASE("AsDataType == " + Inspection::to_string(BitInterpretation.GetAsDataType()));
+            UNEXPECTED_CASE("AsDataType == " + Inspection::to_string(BitsInterpretation.GetAsDataType()));
         }
     }
-    for(auto const & Interpretation : BitInterpretation.GetInterpretations())
+    for(auto const & Interpretation : BitsInterpretation.GetInterpretations())
     {
         ASSERTION(Interpretation != nullptr);
-        Continue = Interpretation->Apply(ExecutionContext, BitInterpretationValue);
+        Continue = Interpretation->Apply(ExecutionContext, BitsInterpretationValue);
         if(Continue == false)
         {
             break;
@@ -919,18 +946,18 @@ static auto ApplyBitInterpretation(Inspection::ExecutionContext & ExecutionConte
     return Continue;
 }
 
-auto Inspection::TypeDefinition::BitInterpretation::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
+auto Inspection::TypeDefinition::BitsInterpretation::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool
 {
     auto Result = true;
     auto const & Data = Target->GetData();
     
     if(Data.type() == typeid(std::bitset<8>))
     {
-        Result = ::ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), *this, Target);
+        Result = ::ApplyBitsInterpretation(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), *this, Target);
     }
     else if(Data.type() == typeid(std::bitset<32>))
     {
-        Result = ::ApplyBitInterpretation(ExecutionContext, std::any_cast<std::bitset<32> const &>(Data), *this, Target);
+        Result = ::ApplyBitsInterpretation(ExecutionContext, std::any_cast<std::bitset<32> const &>(Data), *this, Target);
     }
     else
     {
@@ -940,34 +967,53 @@ auto Inspection::TypeDefinition::BitInterpretation::Apply(Inspection::ExecutionC
     return Result;
 }
 
-auto Inspection::TypeDefinition::BitInterpretation::GetAsDataType(void) const -> Inspection::TypeDefinition::DataType
+auto Inspection::TypeDefinition::BitsInterpretation::GetAsDataType(void) const -> Inspection::TypeDefinition::DataType
 {
     return m_AsDataType;
 }
 
-auto Inspection::TypeDefinition::BitInterpretation::GetIndex(void) const -> std::uint64_t
+auto Inspection::TypeDefinition::BitsInterpretation::GetBeginIndex(void) const -> std::uint64_t
 {
-    return m_Index;
+    return m_BeginIndex;
 }
 
-auto Inspection::TypeDefinition::BitInterpretation::GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &
+auto Inspection::TypeDefinition::BitsInterpretation::GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &
 {
     return m_Interpretations;
 }
 
-auto Inspection::TypeDefinition::BitInterpretation::GetName(void) const -> std::string const &
+auto Inspection::TypeDefinition::BitsInterpretation::GetLength(void) const -> std::uint64_t
+{
+    return m_Length;
+}
+
+auto Inspection::TypeDefinition::BitsInterpretation::GetName(void) const -> std::string const &
 {
     return m_Name;
 }
 
-auto Inspection::TypeDefinition::BitInterpretation::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::BitInterpretation>
+auto Inspection::TypeDefinition::BitsInterpretation::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::BitsInterpretation>
 {
     ASSERTION(Element != nullptr);
     
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::BitInterpretation>{new Inspection::TypeDefinition::BitInterpretation{}};
+    auto Result = std::unique_ptr<Inspection::TypeDefinition::BitsInterpretation>{new Inspection::TypeDefinition::BitsInterpretation{}};
     
-    ASSERTION(Element->HasAttribute("index") == true);
-    Result->m_Index = from_string_cast<std::uint64_t>(Element->GetAttribute("index"));
+    if(Element->GetName() == "bit")
+    {
+        INVALID_INPUT_IF(Element->HasAttribute("begin-index") == true, "A bit interpretation must not have a begin-index attribute.");
+        INVALID_INPUT_IF(Element->HasAttribute("length") == true, "A bit interpretation must not have a length attribute.");
+        INVALID_INPUT_IF(Element->HasAttribute("index") == false, "A bit interpretation must have an index attribute.");
+        Result->m_BeginIndex = from_string_cast<std::uint64_t>(Element->GetAttribute("index"));
+        Result->m_Length = 1;
+    }
+    else if(Element->GetName() == "bits")
+    {
+        INVALID_INPUT_IF(Element->HasAttribute("index") == true, "A bits interpretation must not have an index attribute.");
+        INVALID_INPUT_IF(Element->HasAttribute("begin-index") == false, "A bits interpretation must have a begin-index attribute.");
+        INVALID_INPUT_IF(Element->HasAttribute("length") == false, "A bits interpretation must have a length attribute.");
+        Result->m_BeginIndex = from_string_cast<std::uint64_t>(Element->GetAttribute("begin-index"));
+        Result->m_Length = from_string_cast<std::uint64_t>(Element->GetAttribute("length"));
+    }
     ASSERTION(Element->HasAttribute("name") == true);
     Result->m_Name = Element->GetAttribute("name");
     ASSERTION(Element->HasAttribute("as-data-type") == true);
@@ -1220,6 +1266,7 @@ std::unique_ptr<Inspection::TypeDefinition::Enumeration> Inspection::TypeDefinit
     
     ASSERTION(Element != nullptr);
     ASSERTION(Element->GetName() == "enumeration");
+    INVALID_INPUT_IF(Element->HasAttribute("base-data-type") == false, "An enumeration needs to have a \"base-data-type\" attribute.");
     Result->BaseDataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetAttribute("base-data-type"));
     for(auto EnumerationChildElement : Element->GetChildElements())
     {
@@ -2208,10 +2255,10 @@ auto Inspection::TypeDefinition::Part::_LoadProperty(const XML::Element * Elemen
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Sequence) || (m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Alternative));
         Parts.emplace_back(Inspection::TypeDefinition::Part::Load(Element));
     }
-    else if(Element->GetName() == "bit")
+    else if((Element->GetName() == "bit") || (Element->GetName() == "bits"))
     {
         ASSERTION((m_PartType == Inspection::TypeDefinition::PartType::Field) || (m_PartType == Inspection::TypeDefinition::PartType::Forward));
-        Interpretations.push_back(Inspection::TypeDefinition::BitInterpretation::Load(Element));
+        Interpretations.push_back(Inspection::TypeDefinition::BitsInterpretation::Load(Element));
     }
     else
     {

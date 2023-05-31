@@ -80,6 +80,32 @@
 										<part>BitSet</part>
 										<part>32Bit_LittleEndian_LeastSignificantBitFirstPerByte</part>
 									</type-reference>
+									<bits name="BitsPerSample" begin-index="0" length="2" as-data-type="unsigned integer 8bit">
+										<apply-enumeration>
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
+													<tag name="interpretation">
+														<string>1 byte / sample (1-8 bits / sample)</string>
+													</tag>
+												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>2 bytes / sample (9-16 bits / sample)</string>
+													</tag>
+												</element>
+												<element base-value="2" valid="true">
+													<tag name="interpretation">
+														<string>3 bytes / sample (17-24 bits / sample)</string>
+													</tag>
+												</element>
+												<element base-value="3" valid="true">
+													<tag name="interpretation">
+														<string>4 bytes / sample (25-32 bits / sample)</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bits>
 									<bit name="Output" index="2" as-data-type="unsigned integer 8bit">
 										<apply-enumeration>
 											<enumeration base-data-type="unsigned integer 8bit">
@@ -219,6 +245,114 @@
 											<string>decoders should ignore if set</string>
 										</tag>
 									</bit>
+									<bits name="LeftShift" begin-index="13" length="5" as-data-type="unsigned integer 8bit">
+										<tag name="information">
+											<string>places of data left shift after decode</string>
+										</tag>
+									</bits>
+									<bits name="MaximumMagnitudeOfDecodedData" begin-index="18" length="5" as-data-type="unsigned integer 8bit">
+										<tag name="information">
+											<string>number of bits integers require minus 1</string>
+										</tag>
+										<tag name="interpretation">
+											<unsigned-integer-8bit>
+												<add>
+													<!-- "current" refers to the current part, which is the bitset, not the bit. -->
+													<data-reference root="current">
+														<field>MaximumMagnitudeOfDecodedData</field>
+													</data-reference>
+													<unsigned-integer-8bit>1</unsigned-integer-8bit>
+												</add>
+											</unsigned-integer-8bit>
+										</tag>
+									</bits>
+									<bits name="SamplingRate" begin-index="23" length="4" as-data-type="unsigned integer 8bit">
+										<apply-enumeration>
+											<!-- Values taken from common_utils.c in WavPack source. -->
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>6000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>8000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="2" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>9600</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="3" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>11025</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="4" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>12000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="5" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>16000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="6" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>22050</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="7" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>24000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="8" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>32000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="9" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>44100</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="10" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>48000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="11" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>64000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="12" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>88200</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="13" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>96000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="14" valid="true">
+													<tag name="interpretation">
+														<unsigned-integer-32bit>192000</unsigned-integer-32bit>
+													</tag>
+												</element>
+												<element base-value="15" valid="true">
+													<tag name="interpretation">
+														<string>unknown/custom</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bits>
 									<bit name="BlockContainsChecksum" index="28" as-data-type="boolean"/>
 									<bit name="UseIIRForNegativeHybridNoiseShaping" index="29" as-data-type="boolean"/>
 									<bit name="FalseStereo" index="30" as-data-type="boolean">
