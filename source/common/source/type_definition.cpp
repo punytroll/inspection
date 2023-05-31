@@ -890,6 +890,17 @@ static auto ApplyBitInterpretation(Inspection::ExecutionContext & ExecutionConte
             
             break;
         }
+    case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
+        {
+            BitInterpretationValue->AddTag("bit");
+            BitInterpretationValue->AddTag("integer");
+            BitInterpretationValue->AddTag("unsigned");
+            BitInterpretationValue->AddTag("1bit");
+            BitInterpretationValue->AddTag("index", BitInterpretation.GetIndex());
+            BitInterpretationValue->SetData((Bitset[BitInterpretation.GetIndex()] == true) ? (static_cast<std::uint8_t>(1)) : (static_cast<std::uint8_t>(0)));
+            
+            break;
+        }
     default:
         {
             UNEXPECTED_CASE("AsDataType == " + Inspection::to_string(BitInterpretation.GetAsDataType()));

@@ -80,44 +80,156 @@
 										<part>BitSet</part>
 										<part>32Bit_LittleEndian_LeastSignificantBitFirstPerByte</part>
 									</type-reference>
-									<bit name="MonoOutput" index="2" as-data-type="boolean">
+									<bit name="Output" index="2" as-data-type="unsigned integer 8bit">
 										<apply-enumeration>
-											<enumeration base-data-type="boolean">
-												<element base-value="true" valid="true">
-													<tag name="interpretation">
-														<string>mono output</string>
-													</tag>
-												</element>
-												<element base-value="false" valid="true">
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
 													<tag name="interpretation">
 														<string>stereo output</string>
 													</tag>
 												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>mono output</string>
+													</tag>
+												</element>
 											</enumeration>
 										</apply-enumeration>
 									</bit>
-									<bit name="HybridMode" index="3" as-data-type="boolean">
+									<bit name="Mode" index="3" as-data-type="unsigned integer 8bit">
 										<apply-enumeration>
-											<enumeration base-data-type="boolean">
-												<element base-value="true" valid="true">
-													<tag name="interpretation">
-														<string>hybrid mode</string>
-													</tag>
-												</element>
-												<element base-value="false" valid="true">
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
 													<tag name="interpretation">
 														<string>lossless mode</string>
 													</tag>
 												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>hybrid mode</string>
+													</tag>
+												</element>
 											</enumeration>
 										</apply-enumeration>
 									</bit>
-									<bit name="JointStereo" index="4" as-data-type="boolean">
+									<bit name="StereoType" index="4" as-data-type="unsigned integer 8bit">
+										<apply-enumeration>
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
+													<tag name="interpretation">
+														<string>true stereo</string>
+													</tag>
+												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>joint stereo (mid/side)</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="ChannelDependence" index="5" as-data-type="unsigned integer 8bit">
+										<apply-enumeration>
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
+													<tag name="interpretation">
+														<string>independent channels</string>
+													</tag>
+												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>cross-channel decorrelation</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="Noise" index="6" as-data-type="unsigned integer 8bit">
+										<apply-enumeration>
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
+													<tag name="interpretation">
+														<string>flat noise spectrum in hybrid</string>
+													</tag>
+												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>hybrid noise shaping</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="DataType" index="7" as-data-type="unsigned integer 8bit">
+										<apply-enumeration>
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
+													<tag name="interpretation">
+														<string>integer data</string>
+													</tag>
+												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>floating point data</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="IntegerSize" index="8" as-data-type="unsigned integer 8bit">
+										<apply-enumeration>
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
+													<tag name="interpretation">
+														<string>?</string>
+													</tag>
+												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>extended size integers (> 24 bit) or shifted integers</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="HybridModeParameters" index="9" as-data-type="unsigned integer 8bit">
+										<apply-enumeration>
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
+													<tag name="interpretation">
+														<string>hybrid mode parameters control noise level</string>
+													</tag>
+												</element>
+												<element base-value="1" valid="true">
+													<tag name="interpretation">
+														<string>hybrid mode parameters control bitrate</string>
+													</tag>
+												</element>
+											</enumeration>
+										</apply-enumeration>
+									</bit>
+									<bit name="HybridNoiseBalancedBetweenChannels" index="10" as-data-type="boolean"/>
+									<bit name="InitialBlockInSequence" index="11" as-data-type="boolean"/>
+									<bit name="FinalBlockInSequence" index="12" as-data-type="boolean"/>
+									<bit name="Reserved" index="27" as-data-type="unsigned integer 8bit">
+										<tag name="information">
+											<string>should not be set</string>
+										</tag>
+										<tag name="information">
+											<string>decoders should ignore if set</string>
+										</tag>
+									</bit>
+									<bit name="BlockContainsChecksum" index="28" as-data-type="boolean"/>
+									<bit name="UseIIRForNegativeHybridNoiseShaping" index="29" as-data-type="boolean"/>
+									<bit name="FalseStereo" index="30" as-data-type="boolean">
 										<apply-enumeration>
 											<enumeration base-data-type="boolean">
 												<element base-value="true" valid="true">
 													<tag name="interpretation">
-														<string>joint stereo (mid/side)</string>
+														<string>false stereo</string>
+													</tag>
+													<tag name="interpretation">
+														<string>data is mono but output is stereo</string>
 													</tag>
 												</element>
 												<element base-value="false" valid="true">
@@ -128,49 +240,17 @@
 											</enumeration>
 										</apply-enumeration>
 									</bit>
-									<bit name="CrossChannelDecorrelation" index="5" as-data-type="boolean">
+									<bit name="AudioType" index="31" as-data-type="unsigned integer 8bit">
 										<apply-enumeration>
-											<enumeration base-data-type="boolean">
-												<element base-value="true" valid="true">
+											<enumeration base-data-type="unsigned integer 8bit">
+												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>cross-channel decorrelation</string>
+														<string>PCM audio</string>
 													</tag>
 												</element>
-												<element base-value="false" valid="true">
+												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>independent channels</string>
-													</tag>
-												</element>
-											</enumeration>
-										</apply-enumeration>
-									</bit>
-									<bit name="HybridNoiseShaping" index="6" as-data-type="boolean">
-										<apply-enumeration>
-											<enumeration base-data-type="boolean">
-												<element base-value="true" valid="true">
-													<tag name="interpretation">
-														<string>hybrid noise shaping</string>
-													</tag>
-												</element>
-												<element base-value="false" valid="true">
-													<tag name="interpretation">
-														<string>flat noise spectrum in hybrid</string>
-													</tag>
-												</element>
-											</enumeration>
-										</apply-enumeration>
-									</bit>
-									<bit name="FloatingPointData" index="7" as-data-type="boolean">
-										<apply-enumeration>
-											<enumeration base-data-type="boolean">
-												<element base-value="true" valid="true">
-													<tag name="interpretation">
-														<string>floating point data</string>
-													</tag>
-												</element>
-												<element base-value="false" valid="true">
-													<tag name="interpretation">
-														<string>integer data</string>
+														<string>DSD audio</string>
 													</tag>
 												</element>
 											</enumeration>
