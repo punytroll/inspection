@@ -475,19 +475,19 @@ auto Inspection::operator<<(std::ostream & OStream, enum Inspection::TypeDefinit
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger8Bit:
         {
-            return OStream << "usigned-integer-8bit";
+            return OStream << "unsigned-integer-8bit";
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger16Bit:
         {
-            return OStream << "usigned-integer-16bit";
+            return OStream << "unsigned-integer-16bit";
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger32Bit:
         {
-            return OStream << "usigned-integer-32bit";
+            return OStream << "unsigned-integer-32bit";
         }
     case Inspection::TypeDefinition::DataType::UnsignedInteger64Bit:
         {
-            return OStream << "usigned-integer-64bit";
+            return OStream << "unsigned-integer-64bit";
         }
     }
     IMPOSSIBLE_CODE_REACHED("switch handling of Inspection::TypeDefinition::DataType incomplete");
