@@ -3,23 +3,23 @@
 
 namespace Inspection
 {
-    const std::string g_Black{"\x1b[30m"};
-    const std::string g_Red{"\x1b[31m"};
-    const std::string g_Green{"\x1b[32m"};
-    const std::string g_Yellow{"\x1b[33m"};
-    const std::string g_Blue{"\x1b[34m"};
-    const std::string g_Magenta{"\x1b[35m"};
-    const std::string g_Cyan{"\x1b[36m"};
-    const std::string g_White{"\x1b[37m"};
-    const std::string g_BrightBlack{"\x1b[90m"};
-    const std::string g_BrightRed{"\x1b[91m"};
-    const std::string g_BrightGreen{"\x1b[92m"};
-    const std::string g_BrightYellow{"\x1b[93m"};
-    const std::string g_BrightBlue{"\x1b[94m"};
-    const std::string g_BrightMagenta{"\x1b[95m"};
-    const std::string g_BrightCyan{"\x1b[96m"};
-    const std::string g_BrightWhite{"\x1b[97m"};
-    const std::string g_Reset{"\x1b[0m"};
+    auto const g_Black = std::string{"\x1b[30m"};
+    auto const g_Red = std::string{"\x1b[31m"};
+    auto const g_Green = std::string{"\x1b[32m"};
+    auto const g_Yellow = std::string{"\x1b[33m"};
+    auto const g_Blue = std::string{"\x1b[34m"};
+    auto const g_Magenta = std::string{"\x1b[35m"};
+    auto const g_Cyan = std::string{"\x1b[36m"};
+    auto const g_White = std::string{"\x1b[37m"};
+    auto const g_BrightBlack = std::string{"\x1b[90m"};
+    auto const g_BrightRed = std::string{"\x1b[91m"};
+    auto const g_BrightGreen = std::string{"\x1b[92m"};
+    auto const g_BrightYellow = std::string{"\x1b[93m"};
+    auto const g_BrightBlue = std::string{"\x1b[94m"};
+    auto const g_BrightMagenta = std::string{"\x1b[95m"};
+    auto const g_BrightCyan = std::string{"\x1b[96m"};
+    auto const g_BrightWhite = std::string{"\x1b[97m"};
+    auto const g_Reset = std::string{"\x1b[0m"};
 }
 
 #endif
