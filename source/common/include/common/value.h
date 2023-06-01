@@ -14,27 +14,27 @@ namespace Inspection
     class Value
     {
     public:
-        Value(void)
+        Value()
         {
         }
         
-        Inspection::Value * AppendField(std::unique_ptr<Inspection::Value> Field)
+        auto AppendField(std::unique_ptr<Inspection::Value> Field) -> Inspection::Value *
         {
             auto Result = Field.get();
             
-            _Fields.push_back(std::move(Field));
+            m_Fields.push_back(std::move(Field));
             
             return Result;
         }
         
-        Inspection::Value * AppendField(const std::string & Name, std::unique_ptr<Inspection::Value> Field)
+        auto AppendField(std::string_view Name, std::unique_ptr<Inspection::Value> Field) -> Inspection::Value *
         {
             Field->SetName(Name);
             
             return AppendField(std::move(Field));
         }
         
-        Inspection::Value * AppendField(const std::string & Name)
+        auto AppendField(std::string_view Name) -> Inspection::Value *
         {
             auto Field = std::make_unique<Inspection::Value>();
             
@@ -44,7 +44,7 @@ namespace Inspection
         }
         
         template<typename DataType>
-        Inspection::Value * AppendField(const std::string & Name, const DataType & Data)
+        auto AppendField(std::string_view Name, DataType const & Data) -> Inspection::Value *
         {
             auto Result = AppendField(Name);
             
@@ -60,36 +60,36 @@ namespace Inspection
          **/
         auto Extend(std::unique_ptr<Inspection::Value> Value) -> void
         {
-            if(Value->_Data.has_value() == true)
+            if(Value->m_Data.has_value() == true)
             {
-                ASSERTION(_Data.has_value() == false);
-                _Data = std::move(Value->_Data);
+                ASSERTION(m_Data.has_value() == false);
+                m_Data = std::move(Value->m_Data);
             }
-            if(Value->_Name.empty() == false)
+            if(Value->m_Name.empty() == false)
             {
-                ASSERTION(_Name.empty() == true);
-                _Name = std::move(Value->_Name);
+                ASSERTION(m_Name.empty() == true);
+                m_Name = std::move(Value->m_Name);
             }
-            for(auto & Field : Value->_Fields)
+            for(auto & Field : Value->m_Fields)
             {
-                _Fields.push_back(std::move(Field));
+                m_Fields.push_back(std::move(Field));
             }
-            for(auto & Tag : Value->_Tags)
+            for(auto & Tag : Value->m_Tags)
             {
-                _Tags.push_back(std::move(Tag));
+                m_Tags.push_back(std::move(Tag));
             }
         }
         
-        Inspection::Value * AddTag(std::unique_ptr<Inspection::Value> Tag)
+        auto AddTag(std::unique_ptr<Inspection::Value> Tag) -> Inspection::Value *
         {
             auto Result = Tag.get();
             
-            _Tags.push_back(std::move(Tag));
+            m_Tags.push_back(std::move(Tag));
             
             return Result;
         }
         
-        Inspection::Value * AddTag(const std::string & Name)
+        auto AddTag(std::string_view Name) -> Inspection::Value *
         {
             auto Tag = std::make_unique<Inspection::Value>();
             
@@ -99,7 +99,7 @@ namespace Inspection
         }
         
         template<typename DataType>
-        Inspection::Value * AddTag(const std::string & Name, const DataType & Data)
+        auto AddTag(std::string_view Name, DataType const & Data) -> Inspection::Value *
         {
             auto Tag = AddTag(Name);
             
@@ -108,84 +108,86 @@ namespace Inspection
             return Tag;
         }
         
-        const std::any & GetData(void) const
+        auto GetData() const -> std::any const &
         {
-            return _Data;
+            return m_Data;
         }
         
-        std::uint32_t GetFieldCount(void) const
+        auto GetFieldCount() const -> std::uint32_t
         {
-            return _Fields.size();
+            return m_Fields.size();
         }
         
-        const std::string & GetName(void) const
+        auto GetName() const -> std::string const &
         {
-            return _Name;
+            return m_Name;
         }
         
-        const std::list<std::unique_ptr<Inspection::Value>> & GetTags(void) const
+        auto GetTags() const -> std::list<std::unique_ptr<Inspection::Value>> const &
         {
-            return _Tags;
+            return m_Tags;
         }
         
-        Inspection::Value * GetTag(const std::string & Name)
+        auto GetTag(std::string_view Name) -> Inspection::Value *
         {
-            for(auto & Tag : _Tags)
+            for(auto & Tag : m_Tags)
             {
                 if(Tag->GetName() == Name)
                 {
                     return Tag.get();
                 }
             }
-            throw std::invalid_argument("Could not find a tag named \"" + Name + "\".");
+            
+            throw std::invalid_argument("Could not find a tag named \"" + std::string{Name} + "\".");
         }
         
-        Inspection::Value * GetField(const std::string & Name)
+        auto GetField(std::string_view Name) -> Inspection::Value *
         {
-            for(auto & Field : _Fields)
+            for(auto & Field : m_Fields)
             {
                 if(Field->GetName() == Name)
                 {
                     return Field.get();
                 }
             }
-            throw std::invalid_argument("Could not find a field named \"" + Name + "\".");
+            
+            throw std::invalid_argument("Could not find a field named \"" + std::string{Name} + "\".");
         }
         
-        const std::list<std::unique_ptr<Inspection::Value>> & GetFields(void) const
+        auto GetFields() const -> std::list<std::unique_ptr<Inspection::Value>> const &
         {
-            return _Fields;
+            return m_Fields;
         }
         
-        bool HasTag(const std::string & Name)
+        auto HasTag(std::string_view Name) const -> bool
         {
-            return std::find_if(std::begin(_Tags), std::end(_Tags), [&Name](auto & Tag) { return Tag->GetName() == Name; }) != std::end(_Tags);
+            return std::find_if(std::begin(m_Tags), std::end(m_Tags), [&Name](auto const & Tag) { return Tag->GetName() == Name; }) != std::end(m_Tags);
         }
         
-        bool HasField(const std::string & Name)
+        auto HasField(std::string_view Name) const -> bool
         {
-            return std::find_if(std::begin(_Fields), std::end(_Fields), [&Name](auto & Field) { return Field->GetName() == Name; }) != std::end(_Fields);
+            return std::find_if(std::begin(m_Fields), std::end(m_Fields), [&Name](auto const & Field) { return Field->GetName() == Name; }) != std::end(m_Fields);
         }
         
-        void SetData(const std::any & Data)
+        auto SetData(std::any const & Data) -> void
         {
-            _Data = Data;
+            m_Data = Data;
         }
         
-        void SetName(const std::string & Name)
+        auto SetName(std::string_view Name) -> void
         {
-            _Name = Name;
+            m_Name = Name;
         }
         
-        void ClearFields(void)
+        auto ClearFields() -> void
         {
-            _Fields.clear();
+            m_Fields.clear();
         }
     private:
-        std::any _Data;
-        std::string _Name;
-        std::list<std::unique_ptr<Inspection::Value>> _Tags;
-        std::list<std::unique_ptr<Inspection::Value>> _Fields;
+        std::any m_Data;
+        std::string m_Name;
+        std::list<std::unique_ptr<Inspection::Value>> m_Tags;
+        std::list<std::unique_ptr<Inspection::Value>> m_Fields;
     };
 }
 
