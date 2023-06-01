@@ -920,7 +920,7 @@ static auto ApplyBitsInterpretation(Inspection::ExecutionContext & ExecutionCont
                 {
                     Value <<= 1;
                 }
-                Value |= ((Bitset[BitsInterpretation.GetBeginIndex() + Index] == true) ? (static_cast<std::uint8_t>(1)) : (static_cast<std::uint8_t>(0)));
+                Value |= ((Bitset[BitsInterpretation.GetBeginIndex() + BitsInterpretation.GetLength() - Index - 1] == true) ? (static_cast<std::uint8_t>(1)) : (static_cast<std::uint8_t>(0)));
             }
             BitsInterpretationValue->AddTag("integer");
             BitsInterpretationValue->AddTag("unsigned");
