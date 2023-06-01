@@ -5250,26 +5250,38 @@
 		<expected-output>true</expected-output>
 	</test>
 	<test>
+		<description>The value for the ContentDescriptor "WM/EncodingTime" must be correct.</description>
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/asf/002_long.wma</argument>
-			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:ContentDescriptors/field:ContentDescriptor:[tag:element index in array/is-data:6]/field:Value/field:DateTime/data</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:ContentDescriptors/field:ContentDescriptor:[tag:element index in array/is-data:6]/field:Value/data</argument>
 		</execute>
-		<expected-output>2006/09/24 02:42:54</expected-output>
+		<expected-output>128035393740000000</expected-output>
 	</test>
 	<test>
+		<description>The value for the ContentDescriptor "WM/EncodingTime" has the correct type tag.</description>
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/asf/002_long.wma</argument>
-			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:ContentDescriptors/field:ContentDescriptor:[tag:element index in array/is-data:6]/field:Value/field:DateTime/has-tag:date and time</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:ContentDescriptors/field:ContentDescriptor:[tag:element index in array/is-data:6]/field:Value/has-tag:Microsoft filetime</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
 	<test>
+		<description>The value for the ContentDescriptor "WM/EncodingTime" is correctly interpreted.</description>
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/asf/002_long.wma</argument>
-			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:ContentDescriptors/field:ContentDescriptor:[tag:element index in array/is-data:6]/field:Value/field:DateTime/has-tag:from Microsoft filetime</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:ContentDescriptors/field:ContentDescriptor:[tag:element index in array/is-data:6]/field:Value/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>2006/09/24 02:42:54</expected-output>
+	</test>
+	<test>
+		<description>The interpretation value for the ContentDescriptor "WM/EncodingTime" has the correct type tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/asf/002_long.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:ContentDescriptors/field:ContentDescriptor:[tag:element index in array/is-data:6]/field:Value/tag:interpretation/has-tag:date and time</argument>
 		</execute>
 		<expected-output>true</expected-output>
 	</test>
@@ -8417,12 +8429,31 @@
 		<expected-output>130614850168640000</expected-output>
 	</test>
 	<test>
+		<description>The CreationDate field has the correct type tag.</description>
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/asf/001_short.wma</argument>
-			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:CreationDate/field:DateTime/data</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:CreationDate/has-tag:Microsoft filetime</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The CreationDate field gets interpreted correctly.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:CreationDate/tag:interpretation/data</argument>
 		</execute>
 		<expected-output>2014/11/26 14:16:56</expected-output>
+	</test>
+	<test>
+		<description>The CreationDate field gets interpreted correctly.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/asf/001_short.wma</argument>
+			<argument>--query=/field:ASF.File/field:HeaderObject/field:HeaderObjects/field:HeaderObject:[tag:element index in array/is-data:0]/field:CreationDate/tag:interpretation/has-tag:date and time</argument>
+		</execute>
+		<expected-output>true</expected-output>
 	</test>
 	<test>
 		<execute>

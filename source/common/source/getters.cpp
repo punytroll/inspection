@@ -800,7 +800,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
     return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ASF_CreationDate(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+auto Inspection::Get_ASF_CreationDate(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
 {
     auto Result = std::make_unique<Inspection::Result>();
     auto Continue = true;
@@ -809,20 +809,19 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_CreationDate(Inspection:
     if(Continue == true)
     {
         auto PartReader = Inspection::Reader{Reader};
-        auto PartResult{Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {})};
+        auto PartResult = Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {});
         
         Continue = PartResult->GetSuccess();
         Result->GetValue()->Extend(PartResult->ExtractValue());
+        Result->GetValue()->AddTag("Microsoft filetime"s);
         Reader.AdvancePosition(PartReader.GetConsumedLength());
     }
     // interpreting
     if(Continue == true)
     {
-        auto CreationDate{std::any_cast<std::uint64_t>(Result->GetValue()->GetData())};
+        auto DatetimeTagValue = Result->GetValue()->AddTag("interpretation", Inspection::Get_DateTime_FromMicrosoftFileTime(std::any_cast<std::uint64_t>(Result->GetValue()->GetData())));
         
-        Result->GetValue()->AppendField("DateTime", Inspection::Get_DateTime_FromMicrosoftFileTime(CreationDate));
-        Result->GetValue()->GetField("DateTime")->AddTag("date and time"s);
-        Result->GetValue()->GetField("DateTime")->AddTag("from Microsoft filetime"s);
+        DatetimeTagValue->AddTag("date and time"s);
     }
     // finalization
     Result->SetSuccess(Continue);
@@ -906,16 +905,15 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedContentDescripti
             // interpretation
             if(Continue == true)
             {
-                auto & Name{std::any_cast<const std::string &>(Parameters.at("Name"))};
+                auto const & Name = std::any_cast<std::string const &>(Parameters.at("Name"));
             
                 if(Name == "WM/EncodingTime")
                 {
-                    auto UnsignedInteger64Bit{std::any_cast<std::uint64_t>(Result->GetValue()->GetData())};
-                    auto DateTime{Inspection::Get_DateTime_FromMicrosoftFileTime(UnsignedInteger64Bit)};
+                    Result->GetValue()->AddTag("Microsoft filetime"s);
                     
-                    Result->GetValue()->AppendField("DateTime", DateTime);
-                    Result->GetValue()->GetField("DateTime")->AddTag("date and time"s);
-                    Result->GetValue()->GetField("DateTime")->AddTag("from Microsoft filetime"s);
+                    auto InterpretationTagValue = Result->GetValue()->AddTag("interpretation", Inspection::Get_DateTime_FromMicrosoftFileTime(std::any_cast<std::uint64_t>(Result->GetValue()->GetData())));
+                    
+                    InterpretationTagValue->AddTag("date and time"s);
                 }
             }
         }
