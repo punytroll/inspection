@@ -880,7 +880,7 @@ std::unordered_map<std::string, std::any> Inspection::TypeDefinition::Array::Get
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// BitInterpretation                                                                             //
+// BitsInterpretation                                                                            //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 static auto ApplyBitsInterpretation(Inspection::ExecutionContext & ExecutionContext, auto const & Bitset, Inspection::TypeDefinition::BitsInterpretation const & BitsInterpretation, Inspection::Value * Target) -> bool
