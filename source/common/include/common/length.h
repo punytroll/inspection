@@ -12,156 +12,157 @@ namespace Inspection
     class Length
     {
     public:
-        Length(void) :
-            Length{0, 0}
+        Length() :
+            Inspection::Length{0, 0}
         {
         }
         
-        Length(const Length & Length) :
-            _Bits{Length._Bits},
-            _Bytes{Length._Bytes}
+        Length(Inspection::Length const & Other) :
+            m_Bits{Other.m_Bits},
+            m_Bytes{Other.m_Bytes}
         {
         }
         
         Length(std::uint64_t Bytes, std::uint64_t Bits) :
-            _Bits{Bits},
-            _Bytes{Bytes}
+            m_Bits{Bits},
+            m_Bytes{Bytes}
         {
-            _Normalize();
+            m_Normalize();
         }
         
-        std::uint64_t GetBytes(void) const
+        auto GetBytes() const -> std::uint64_t
         {
-            return _Bytes;
+            return m_Bytes;
         }
         
-        std::uint64_t GetBits(void) const
+        auto GetBits() const -> std::uint64_t
         {
-            return _Bits;
+            return m_Bits;
         }
         
-        std::uint64_t GetTotalBits(void) const
+        auto GetTotalBits() const -> std::uint64_t
         {
-            return _Bytes * 8 + _Bits;
+            return m_Bytes * 8 + m_Bits;
         }
         
-        void Reset(void)
+        auto Reset() -> void
         {
-            _Bytes = 0;
-            _Bits = 0;
+            m_Bytes = 0;
+            m_Bits = 0;
         }
         
-        void Set(std::uint64_t Bytes, std::uint64_t Bits)
+        auto Set(std::uint64_t Bytes, std::uint64_t Bits) -> void
         {
-            _Bytes = Bytes;
-            _Bits = Bits;
-            _Normalize();
+            m_Bytes = Bytes;
+            m_Bits = Bits;
+            m_Normalize();
         }
         
-        Length operator-(const Length & Length) const
+        auto operator-(Inspection::Length const & Other) const -> Inspection::Length
         {
-            ASSERTION(*this >= Length);
+            ASSERTION(*this >= Other);
             
-            std::uint8_t Bits;
-            std::uint64_t Bytes{_Bytes - Length._Bytes};
+            auto Bits =  static_cast<std::uint8_t>(0);
+            auto Bytes = m_Bytes - Other.m_Bytes;
             
-            if(_Bits >= Length._Bits)
+            if(m_Bits >= Other.m_Bits)
             {
-                Bits = _Bits - Length._Bits;
+                Bits = m_Bits - Other.m_Bits;
             }
             else
             {
-                Bits = (_Bits + 8) - Length._Bits;
+                Bits = (m_Bits + 8) - Other.m_Bits;
                 Bytes -= 1;
             }
             
             return Inspection::Length{Bytes, Bits};
         }
         
-        Length & operator-=(const Length & Length)
+        auto operator-=(Inspection::Length const & Other) -> Inspection::Length &
         {
-            ASSERTION(*this >= Length);
-            if(_Bits >= Length._Bits)
+            ASSERTION(*this >= Other);
+            if(m_Bits >= Other.m_Bits)
             {
-                _Bits -= Length._Bits;
-                _Bytes -= Length._Bytes;
+                m_Bits -= Other.m_Bits;
+                m_Bytes -= Other.m_Bytes;
             }
             else
             {
-                _Bits += 8 - Length._Bits;
-                _Bytes -= Length._Bytes + 1;
+                m_Bits += 8 - Other.m_Bits;
+                m_Bytes -= Other.m_Bytes + 1;
             }
-            return *this;
-        }
-        
-        Length operator+(const Length & Length) const
-        {
-            return Inspection::Length{_Bytes + Length._Bytes, _Bits + Length._Bits};
-        }
-        
-        Length & operator+=(const Length & Length)
-        {
-            _Bytes += Length._Bytes;
-            _Bits += Length._Bits;
-            _Normalize();
             
             return *this;
         }
         
-        Length & operator=(const Length & Length)
+        auto operator+(Inspection::Length const & Other) const -> Inspection::Length
         {
-            if(&Length != this)
+            return Inspection::Length{m_Bytes + Other.m_Bytes, m_Bits + Other.m_Bits};
+        }
+        
+        auto operator+=(Inspection::Length const & Other) -> Inspection::Length &
+        {
+            m_Bytes += Other.m_Bytes;
+            m_Bits += Other.m_Bits;
+            m_Normalize();
+            
+            return *this;
+        }
+        
+        auto operator=(Inspection::Length const & Other) -> Inspection::Length &
+        {
+            if(&Other != this)
             {
-                _Bytes  = Length._Bytes;
-                _Bits = Length._Bits;
+                m_Bytes  = Other.m_Bytes;
+                m_Bits = Other.m_Bits;
             }
             
             return *this;
         }
         
-        bool operator<=(const Length & Length) const
+        auto operator<=(Inspection::Length const & Other) const -> bool
         {
-            return (_Bytes < Length._Bytes) || ((_Bytes == Length._Bytes) && (_Bits <= Length._Bits));
+            return (m_Bytes < Other.m_Bytes) || ((m_Bytes == Other.m_Bytes) && (m_Bits <= Other.m_Bits));
         }
         
-        bool operator<(const Length & Length) const
+        auto operator<(Inspection::Length const & Other) const -> bool
         {
-            return (_Bytes < Length._Bytes) || ((_Bytes == Length._Bytes) && (_Bits < Length._Bits));
+            return (m_Bytes < Other.m_Bytes) || ((m_Bytes == Other.m_Bytes) && (m_Bits < Other.m_Bits));
         }
         
-        bool operator>=(const Length & Length) const
+        auto operator>=(Inspection::Length const & Other) const -> bool
         {
-            return (_Bytes > Length._Bytes) || ((_Bytes == Length._Bytes) && (_Bits >= Length._Bits));
+            return (m_Bytes > Other.m_Bytes) || ((m_Bytes == Other.m_Bytes) && (m_Bits >= Other.m_Bits));
         }
         
-        bool operator>(const Length & Length) const
+        auto operator>(Inspection::Length const & Other) const -> bool
         {
-            return (_Bytes > Length._Bytes) || ((_Bytes == Length._Bytes) && (_Bits > Length._Bits));
+            return (m_Bytes > Other.m_Bytes) || ((m_Bytes == Other.m_Bytes) && (m_Bits > Other.m_Bits));
         }
         
-        bool operator==(const Length & Length) const
+        auto operator==(Inspection::Length const & Other) const -> bool
         {
-            return (_Bytes == Length._Bytes) && (_Bits == Length._Bits);
+            return (m_Bytes == Other.m_Bytes) && (m_Bits == Other.m_Bits);
         }
         
-        bool operator!=(const Length & Length) const
+        auto operator!=(Inspection::Length const & Other) const -> bool
         {
-            return (_Bytes != Length._Bytes) || (_Bits != Length._Bits);
+            return (m_Bytes != Other.m_Bytes) || (m_Bits != Other.m_Bits);
         }
     private:
-        void _Normalize(void)
+        auto m_Normalize() -> void
         {
-            auto BytesInBits{_Bits / 8};
+            auto BytesInBits = m_Bits / 8;
             
             if(BytesInBits > 0)
             {
-                _Bits = _Bits % 8;
-                _Bytes += BytesInBits;
+                m_Bits = m_Bits % 8;
+                m_Bytes += BytesInBits;
             }
         }
         
-        std::uint64_t _Bits;
-        std::uint64_t _Bytes;
+        std::uint64_t m_Bits;
+        std::uint64_t m_Bytes;
     };
 }
 
