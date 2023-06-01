@@ -42,7 +42,7 @@
 				</enumeration>
 			</apply-enumeration>
 		</bit>
-		<bit name="ExperimentalIndicator"index="5" as-data-type="boolean">
+		<bit name="ExperimentalIndicator" index="5" as-data-type="boolean">
 			<tag name="identifier">
 				<string>c</string>
 			</tag>
