@@ -567,9 +567,17 @@ namespace Inspection
         public:
             static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::BitsInterpretation>;
         public:
+            enum class DataVerification
+            {
+                Set,
+                SetOrUnset,
+                Unset
+            };
+        public:
             auto Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const -> bool override;
             auto GetAsDataType() const -> Inspection::TypeDefinition::DataType;
             auto GetBeginIndex(void) const -> std::uint64_t;
+            auto GetDataVerification() const -> Inspection::TypeDefinition::BitsInterpretation::DataVerification;
             auto GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &;
             auto GetLength(void) const -> std::uint64_t;
             auto GetName(void) const -> std::string const &;
@@ -582,8 +590,9 @@ namespace Inspection
         private:
             Inspection::TypeDefinition::DataType m_AsDataType;
             std::uint64_t m_BeginIndex;
-            std::uint64_t m_Length;
             std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> m_Interpretations;
+            std::uint64_t m_Length;
+            Inspection::TypeDefinition::BitsInterpretation::DataVerification m_DataVerification;
             std::string m_Name;
         };
         
@@ -798,6 +807,7 @@ namespace Inspection
         };
         
         auto GetDataTypeFromString(std::string const & String) -> Inspection::TypeDefinition::DataType;
+        auto GetDataVerificationFromString(std::string_view String) -> Inspection::TypeDefinition::BitsInterpretation::DataVerification;
     }
 }
 

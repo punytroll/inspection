@@ -887,24 +887,49 @@ static auto ApplyBitsInterpretation(Inspection::ExecutionContext & ExecutionCont
 {
     auto Continue = true;
     auto BitsInterpretationValue = Target->AppendField(BitsInterpretation.GetName());
+    auto DataVerification = BitsInterpretation.GetDataVerification();
     
-    if(BitsInterpretation.GetLength() == 1)
+    if(DataVerification == Inspection::TypeDefinition::BitsInterpretation::DataVerification::Set)
     {
-        BitsInterpretationValue->AddTag("bit");
+        BitsInterpretationValue->AddTag("set bit"s + ((BitsInterpretation.GetLength() > 1) ? ("s") : ("")));
+    }
+    else if(DataVerification == Inspection::TypeDefinition::BitsInterpretation::DataVerification::Unset)
+    {
+        BitsInterpretationValue->AddTag("unset bit"s + ((BitsInterpretation.GetLength() > 1) ? ("s") : ("")));
     }
     else
     {
-        BitsInterpretationValue->AddTag("bits");
+        BitsInterpretationValue->AddTag("bit"s + ((BitsInterpretation.GetLength() > 1) ? ("s") : ("")));
     }
     BitsInterpretationValue->AddTag("begin index", BitsInterpretation.GetBeginIndex());
     AppendBitLengthTag(BitsInterpretationValue, Inspection::Length{0, BitsInterpretation.GetLength()});
+    
+    
     switch(BitsInterpretation.GetAsDataType())
     {
     case Inspection::TypeDefinition::DataType::Boolean:
         {
             INVALID_INPUT_IF(BitsInterpretation.GetLength() != 1, "A boolean interpretation of bits requires the length to be one.");
             BitsInterpretationValue->AddTag("boolean");
-            BitsInterpretationValue->SetData(Bitset[BitsInterpretation.GetBeginIndex()]);
+            
+            auto BitIndex = BitsInterpretation.GetBeginIndex();
+            auto BitValue = Bitset[BitIndex];
+            
+            if(DataVerification == Inspection::TypeDefinition::BitsInterpretation::DataVerification::Set)
+            {
+                if(BitValue == false)
+                {
+                    BitsInterpretationValue->AddTag("error", "Bit '" + std::to_string(BitIndex) + "' must be set.");
+                }
+            }
+            else if(DataVerification == Inspection::TypeDefinition::BitsInterpretation::DataVerification::Unset)
+            {
+                if(BitValue == true)
+                {
+                    BitsInterpretationValue->AddTag("error", "Bit '" + std::to_string(BitIndex) + "' must be unset.");
+                }
+            }
+            BitsInterpretationValue->SetData(BitValue);
             
             break;
         }
@@ -920,11 +945,57 @@ static auto ApplyBitsInterpretation(Inspection::ExecutionContext & ExecutionCont
                 {
                     Value <<= 1;
                 }
-                Value |= ((Bitset[BitsInterpretation.GetBeginIndex() + BitsInterpretation.GetLength() - Index - 1] == true) ? (static_cast<std::uint8_t>(1)) : (static_cast<std::uint8_t>(0)));
+                
+                auto BitIndex = BitsInterpretation.GetBeginIndex() + BitsInterpretation.GetLength() - Index - 1;
+                auto BitValue = Bitset[BitIndex];
+                
+                if(DataVerification == Inspection::TypeDefinition::BitsInterpretation::DataVerification::Set)
+                {
+                    if(BitValue == false)
+                    {
+                        BitsInterpretationValue->AddTag("error", "Bit '" + std::to_string(BitIndex) + "' must be set.");
+                    }
+                }
+                else if(DataVerification == Inspection::TypeDefinition::BitsInterpretation::DataVerification::Unset)
+                {
+                    if(BitValue == true)
+                    {
+                        BitsInterpretationValue->AddTag("error", "Bit '" + std::to_string(BitIndex) + "' must be unset.");
+                    }
+                }
+                Value |= ((BitValue == true) ? (static_cast<std::uint8_t>(1)) : (static_cast<std::uint8_t>(0)));
             }
             BitsInterpretationValue->AddTag("integer");
             BitsInterpretationValue->AddTag("unsigned");
             BitsInterpretationValue->SetData(Value);
+            
+            break;
+        }
+    case Inspection::TypeDefinition::DataType::Nothing:
+        {
+            INVALID_INPUT_IF(BitsInterpretation.GetLength() == 0, "The length must not be zero.");
+            for(auto Index = 0u; Index < BitsInterpretation.GetLength(); ++Index)
+            {
+                auto BitIndex = BitsInterpretation.GetBeginIndex() + Index;
+                auto BitValue = Bitset[BitIndex];
+                
+                if(DataVerification == Inspection::TypeDefinition::BitsInterpretation::DataVerification::Set)
+                {
+                    if(BitValue == false)
+                    {
+                        BitsInterpretationValue->AddTag("error", "Bit '" + std::to_string(BitIndex) + "' must be set.");
+                    }
+                }
+                else if(DataVerification == Inspection::TypeDefinition::BitsInterpretation::DataVerification::Unset)
+                {
+                    if(BitValue == true)
+                    {
+                        BitsInterpretationValue->AddTag("error", "Bit '" + std::to_string(BitIndex) + "' must be unset.");
+                    }
+                }
+            }
+            BitsInterpretationValue->AddTag("integer");
+            BitsInterpretationValue->AddTag("unsigned");
             
             break;
         }
@@ -977,6 +1048,11 @@ auto Inspection::TypeDefinition::BitsInterpretation::GetBeginIndex(void) const -
     return m_BeginIndex;
 }
 
+auto Inspection::TypeDefinition::BitsInterpretation::GetDataVerification() const -> Inspection::TypeDefinition::BitsInterpretation::DataVerification
+{
+    return m_DataVerification;
+}
+
 auto Inspection::TypeDefinition::BitsInterpretation::GetInterpretations(void) const -> std::vector<std::unique_ptr<Inspection::TypeDefinition::Interpretation>> const &
 {
     return m_Interpretations;
@@ -1018,6 +1094,14 @@ auto Inspection::TypeDefinition::BitsInterpretation::Load(XML::Element const * E
     Result->m_Name = Element->GetAttribute("name");
     ASSERTION(Element->HasAttribute("as-data-type") == true);
     Result->m_AsDataType = Inspection::TypeDefinition::GetDataTypeFromString(Element->GetAttribute("as-data-type"));
+    if(Element->HasAttribute("data-verification") == true)
+    {
+        Result->m_DataVerification = Inspection::TypeDefinition::GetDataVerificationFromString(Element->GetAttribute("data-verification"));
+    }
+    else
+    {
+        Result->m_DataVerification = Inspection::TypeDefinition::BitsInterpretation::DataVerification::SetOrUnset;
+    }
     for(auto ChildElement : Element->GetChildElements())
     {
         ASSERTION(ChildElement != nullptr);
@@ -3006,5 +3090,25 @@ auto Inspection::TypeDefinition::GetDataTypeFromString(std::string const & Strin
     else
     {
         UNEXPECTED_CASE("Data type string == \"" + String + '"');
+    }
+}
+
+auto Inspection::TypeDefinition::GetDataVerificationFromString(std::string_view String) -> Inspection::TypeDefinition::BitsInterpretation::DataVerification
+{
+    if(String == "set")
+    {
+        return Inspection::TypeDefinition::BitsInterpretation::DataVerification::Set;
+    }
+    else if(String == "set or unset")
+    {
+        return Inspection::TypeDefinition::BitsInterpretation::DataVerification::SetOrUnset;
+    }
+    else if(String == "unset")
+    {
+        return Inspection::TypeDefinition::BitsInterpretation::DataVerification::Unset;
+    }
+    else
+    {
+        UNEXPECTED_CASE("Data verification string == \"" + std::string{String} + '"');
     }
 }

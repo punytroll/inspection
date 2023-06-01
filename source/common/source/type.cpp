@@ -181,11 +181,7 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             auto HardcodedText = dynamic_cast<XML::Text const *>(ChildElement->GetChildNode(0));
             
             ASSERTION(HardcodedText != nullptr);
-            if(HardcodedText->GetText() == "Get_APE_Flags")
-            {
-                Result->m_HardcodedGetter = Inspection::Get_APE_Flags;
-            }
-            else if(HardcodedText->GetText() == "Get_APE_Item")
+            if(HardcodedText->GetText() == "Get_APE_Item")
             {
                 Result->m_HardcodedGetter = Inspection::Get_APE_Item;
             }

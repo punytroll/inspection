@@ -1413,13 +1413,22 @@
 		<expected-output>1</expected-output>
 	</test>
 	<test>
-		<description>The interpretation of the item value type of the binary item must indicate binary data.</description>
+		<description>The begin index of the item value type of the binary item must be correct.</description>
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/066_APE_binary_item</argument>
-			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemFlags/field:ItemValueType/tag:bit indices/data</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemFlags/field:ItemValueType/tag:begin index/data</argument>
 		</execute>
-		<expected-output>1 to 2</expected-output>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>The length of the item value type of the binary item must be correct.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/066_APE_binary_item</argument>
+			<argument>--query=/field:APE.Tag/field:APETagsItems/field:APETagsItem:[tag:element index in array/is-data:5]/field:ItemFlags/field:ItemValueType/tag:length/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
 	</test>
 	<test>
 		<description>The ItemKey for the binary data.</description>

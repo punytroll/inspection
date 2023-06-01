@@ -1,3 +1,54 @@
 <type>
-	<hardcoded>Get_APE_Flags</hardcoded>
+	<forward>
+		<type-reference>
+			<part>BitSet</part>
+			<part>32Bit_LittleEndian_LeastSignificantBitFirstPerByte</part>
+		</type-reference>
+		<bit name="TagOrItemIsReadOnly" index="0" as-data-type="boolean"/>
+		<bits name="ItemValueType" begin-index="1" length="2" as-data-type="unsigned integer 8bit">
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation">
+							<string>Item contains text information coded in UTF-8</string>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<string>Item contains binary information</string>
+						</tag>
+					</element>
+					<element base-value="2" valid="true">
+						<tag name="interpretation">
+							<string>Item is a locator of external stored information</string>
+						</tag>
+					</element>
+					<element base-value="3" valid="true">
+						<tag name="interpretation">
+							<string>&lt;reserved&gt;</string>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</bits>
+		<bits name="Undefined" begin-index="3" length="26" as-data-type="nothing" data-verification="unset"/>
+		<bit name="Type" index="29" as-data-type="unsigned integer 8bit">
+			<apply-enumeration>
+				<enumeration base-data-type="unsigned integer 8bit">
+					<element base-value="0" valid="true">
+						<tag name="interpretation">
+							<string>This is the footer, not the header</string>
+						</tag>
+					</element>
+					<element base-value="1" valid="true">
+						<tag name="interpretation">
+							<string>This is the header, not the footer</string>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</bit>
+		<bit name="TagContainsAFooter" index="30" as-data-type="boolean"/>
+		<bit name="TagContainsAHeader" index="31" as-data-type="boolean"/>
+	</forward>
 </type>

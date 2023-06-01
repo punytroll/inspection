@@ -49,91 +49,6 @@ Inspection::Value * AppendReadErrorTag(Inspection::Value * Value, const Inspecti
 // Readers & Getters                                                                             //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<Inspection::Result> Inspection::Get_APE_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    auto Continue = true;
-    
-    // reading
-    if(Continue == true)
-    {
-        auto PartReader = Inspection::Reader{Reader};
-        auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
-        
-        Continue = PartResult->GetSuccess();
-        Result->GetValue()->Extend(PartResult->ExtractValue());
-        Reader.AdvancePosition(PartReader.GetConsumedLength());
-    }
-    // interpretation
-    if(Continue == true)
-    {
-        const std::bitset<32> & TagsFlags{std::any_cast< const std::bitset<32> & >(Result->GetValue()->GetData())};
-        auto FlagValue{Result->GetValue()->AppendField("TagOrItemIsReadOnly", TagsFlags[0])};
-        
-        FlagValue->AddTag("bit index", "0"s);
-        if((TagsFlags[1] == false) && (TagsFlags[2] == false))
-        {
-            FlagValue = Result->GetValue()->AppendField("ItemValueType", static_cast< std::uint8_t >(0));
-            FlagValue->AddTag("interpretation", "Item contains text information coded in UTF-8"s);
-        }
-        else if((TagsFlags[1] == true) && (TagsFlags[2] == false))
-        {
-            FlagValue = Result->GetValue()->AppendField("ItemValueType", static_cast< std::uint8_t >(1));
-            FlagValue->AddTag("interpretation", "Item contains binary information"s);
-        }
-        else if((TagsFlags[1] == false) && (TagsFlags[2] == true))
-        {
-            FlagValue = Result->GetValue()->AppendField("ItemValueType", static_cast< std::uint8_t >(2));
-            FlagValue->AddTag("interpretation", "Item is a locator of external stored information"s);
-        }
-        else if((TagsFlags[1] == true) && (TagsFlags[2] == true))
-        {
-            FlagValue = Result->GetValue()->AppendField("ItemValueType", static_cast< std::uint8_t >(3));
-            FlagValue->AddTag("interpretation", "<reserved>"s);
-        }
-        FlagValue->AddTag("bit indices", "1 to 2"s);
-        
-        auto AllFalse{true};
-        
-        for(auto BitIndex = 3; BitIndex < 29; ++BitIndex)
-        {
-            if(TagsFlags[BitIndex] == true)
-            {
-                AllFalse = false;
-                
-                break;
-            }
-        }
-        if(AllFalse == true)
-        {
-            FlagValue = Result->GetValue()->AppendField("Undefined", false);
-            FlagValue->AddTag("bit indices", "3 to 28"s);
-        }
-        else
-        {
-            Result->GetValue()->AddTag("error", "All bits 3 to 28 must be unset."s);
-        }
-        FlagValue = Result->GetValue()->AppendField("Type", TagsFlags[29]);
-        if(TagsFlags[29] == true)
-        {
-            FlagValue->AddTag("interpretation", "This is the header, not the footer"s);
-        }
-        else
-        {
-            FlagValue->AddTag("interpretation", "This is the footer, not the header"s);
-        }
-        FlagValue->AddTag("bit index", 29);
-        FlagValue = Result->GetValue()->AppendField("TagContainsAFooter", TagsFlags[30]);
-        FlagValue->AddTag("bit index", 30);
-        FlagValue = Result->GetValue()->AppendField("TagContainsAHeader", TagsFlags[31]);
-        FlagValue->AddTag("bit index", 31);
-    }
-    // finalization
-    Result->SetSuccess(Continue);
-    
-    return Result;
-}
-
 std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();
@@ -153,7 +68,7 @@ std::unique_ptr<Inspection::Result> Inspection::Get_APE_Item(Inspection::Reader 
     if(Continue == true)
     {
         auto PartReader = Inspection::Reader{Reader};
-        auto PartResult{Inspection::Get_APE_Flags(PartReader, {})};
+        auto PartResult = Inspection::g_TypeRepository.GetType({"APE", "Flags"})->Get(PartReader, {});
         
         Continue = PartResult->GetSuccess();
         Result->GetValue()->AppendField("ItemFlags", PartResult->ExtractValue());
