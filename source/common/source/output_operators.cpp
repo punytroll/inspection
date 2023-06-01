@@ -18,7 +18,7 @@
 
 using namespace std::string_literals;
 
-std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Value, const std::string & Indentation)
+static auto m_PrintValue(std::ostream & OStream, Inspection::Value const & Value, std::string const & Indentation) -> std::ostream &
 {
     auto HeaderLine = (Value.GetName().empty() == false) || (Value.GetData().has_value() == true) || (Value.GetTags().empty() == false);
     
@@ -59,7 +59,7 @@ std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Val
         auto First = true;
         
         OStream << Inspection::g_White <<" {" << Inspection::g_BrightBlack;
-        for(auto & Tag : Value.GetTags())
+        for(auto const & Tag : Value.GetTags())
         {
             if(First == false)
             {
@@ -107,7 +107,7 @@ std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Val
                 
                 auto FirstSubTag = true;
                 
-                for(auto & SubTag : Tag->GetTags())
+                for(auto const & SubTag : Tag->GetTags())
                 {
                     if(FirstSubTag == false)
                     {
@@ -140,7 +140,7 @@ std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Val
                         
                         auto FirstSubSubTag = true;
                         
-                        for(auto & SubSubTag : SubTag->GetTags())
+                        for(auto const & SubSubTag : SubTag->GetTags())
                         {
                             if(FirstSubSubTag == false)
                             {
@@ -165,11 +165,11 @@ std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Val
                             }
                             if(SubSubTag->GetFields().size() > 0)
                             {
-                                throw std::exception();
+                                throw std::exception{};
                             }
                             if(SubSubTag->GetTags().size() > 0)
                             {
-                                throw std::exception();
+                                throw std::exception{};
                             }
                             FirstSubSubTag = false;
                         }
@@ -193,9 +193,9 @@ std::ostream & _PrintValue(std::ostream & OStream, const Inspection::Value & Val
     }
     if(Value.GetFieldCount() > 0)
     {
-        for(auto & SubValue : Value.GetFields())
+        for(auto const & SubValue : Value.GetFields())
         {
-            _PrintValue(OStream, *SubValue, SubIndentation);
+            m_PrintValue(OStream, *SubValue, SubIndentation);
         }
     }
     OStream << Inspection::g_Reset;
@@ -213,7 +213,7 @@ std::string to_string_cast<Inspection::Length>(const Inspection::Length & Value)
     return OStream.str();
 }
 
-std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & Any)
+auto Inspection::operator<<(std::ostream & OStream, std::any const & Any) -> std::ostream &
 {
     if(Any.has_value() == false)
     {
@@ -230,7 +230,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & A
         }
         else if(Any.type() == typeid(std::string))
         {
-            OStream << std::any_cast<std::string>(Any);
+            OStream << std::any_cast<std::string const &>(Any);
         }
         else if(Any.type() == typeid(bool))
         {
@@ -274,31 +274,31 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & A
         }
         else if(Any.type() == typeid(std::bitset<4>))
         {
-            OStream << std::any_cast<const std::bitset<4> &>(Any);
+            OStream << std::any_cast<std::bitset<4> const &>(Any);
         }
         else if(Any.type() == typeid(std::bitset<8>))
         {
-            OStream << std::any_cast<const std::bitset<8> &>(Any);
+            OStream << std::any_cast<std::bitset<8> const &>(Any);
         }
         else if(Any.type() == typeid(std::bitset<16>))
         {
-            OStream << std::any_cast<const std::bitset<16> &>(Any);
+            OStream << std::any_cast<std::bitset<16> const &>(Any);
         }
         else if(Any.type() == typeid(std::bitset<32>))
         {
-            OStream << std::any_cast<const std::bitset<32> &>(Any);
+            OStream << std::any_cast<std::bitset<32> const &>(Any);
         }
         else if(Any.type() == typeid(Inspection::GUID))
         {
-            OStream << std::any_cast<const Inspection::GUID &>(Any);
+            OStream << std::any_cast<Inspection::GUID const &>(Any);
         }
         else if(Any.type() == typeid(Inspection::DateTime))
         {
-            OStream << std::any_cast<const Inspection::DateTime &>(Any);
+            OStream << std::any_cast<Inspection::DateTime const &>(Any);
         }
         else if(Any.type() == typeid(std::vector<std::uint8_t>))
         {
-            auto Value = std::any_cast<const std::vector<std::uint8_t> &>(Any);
+            auto Value = std::any_cast<std::vector<std::uint8_t> const &>(Any);
             auto First = true;
             
             OStream << std::hex << std::setfill('0');
@@ -318,7 +318,7 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & A
         }
         else if(Any.type() == typeid(Inspection::Length))
         {
-            OStream << std::any_cast<const Inspection::Length &>(Any);
+            OStream << std::any_cast<Inspection::Length const &>(Any);
         }
         else if(Any.type() == typeid(nullptr))
         {
@@ -336,24 +336,24 @@ std::ostream & Inspection::operator<<(std::ostream & OStream, const std::any & A
     return OStream;
 }
 
-std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::DateTime & DateTime)
+auto Inspection::operator<<(std::ostream & OStream, Inspection::DateTime const & DateTime) -> std::ostream &
 {
     return OStream << DateTime.Year << '/' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(DateTime.Month) << '/' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Day) << ' ' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Hour) << ':' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Minute) << ':' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Second);
 }
 
-std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::GUID & GUID)
+auto Inspection::operator<<(std::ostream & OStream, Inspection::GUID const & GUID) -> std::ostream &
 {
     return OStream << std::hex << std::setw(8) << std::right << std::setfill('0') << GUID.Data1 << '-' << std::setw(4) << std::right << std::setfill('0') << GUID.Data2 << '-' << std::setw(4) << std::right << std::setfill('0') << GUID.Data3 << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[0]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[1]) << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[2]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[3]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[4]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[5]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[6]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[7]);
 }
 
-std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::Length & Length)
+auto Inspection::operator<<(std::ostream & OStream, Inspection::Length const & Length) -> std::ostream &
 {
     return OStream << Length.GetBytes() << '.' << Length.GetBits();
 }
 
-std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::Value & Value)
+auto Inspection::operator<<(std::ostream & OStream, Inspection::Value const & Value) -> std::ostream &
 {
-    return _PrintValue(OStream, Value, "");
+    return m_PrintValue(OStream, Value, "");
 }
 
 std::ostream & Inspection::operator<<(std::ostream & OStream, const Inspection::TypeDefinition::DataReference & DataReference)
