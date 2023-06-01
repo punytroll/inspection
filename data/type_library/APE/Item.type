@@ -1,3 +1,87 @@
 <type>
-	<hardcoded>Get_APE_Item</hardcoded>
+	<sequence>
+		<field name="ItemValueSize">
+			<type-reference>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>32Bit_LittleEndian</part>
+			</type-reference>
+		</field>
+		<field name="ItemFlags">
+			<type-reference>
+				<part>APE</part>
+				<part>Flags</part>
+			</type-reference>
+		</field>
+		<field name="ItemKey">
+			<type-reference>
+				<part>String</part>
+				<part>ASCII</part>
+				<part>Printable_EndedByTermination</part>
+			</type-reference>
+		</field>
+		<select>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ItemFlags</field>
+							<field>ItemValueType</field>
+						</data-reference>
+						<unsigned-integer-8bit>0</unsigned-integer-8bit>
+					</equals>
+				</when>
+				<field name="ItemValue">
+					<type-reference>
+						<part>String</part>
+						<part>ISO_IEC_10646_1_1993</part>
+						<part>UTF-8</part>
+						<part>EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>
+								<data-reference root="type">
+									<field>ItemValueSize</field>
+								</data-reference>
+							</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>ItemFlags</field>
+							<field>ItemValueType</field>
+						</data-reference>
+						<unsigned-integer-8bit>1</unsigned-integer-8bit>
+					</equals>
+				</when>
+				<field name="ItemValue">
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+					<length>
+						<bytes>
+							<unsigned-integer-64bit>
+								<data-reference root="type">
+									<field>ItemValueSize</field>
+								</data-reference>
+							</unsigned-integer-64bit>
+						</bytes>
+						<bits>
+							<unsigned-integer-64bit>0</unsigned-integer-64bit>
+						</bits>
+					</length>
+				</field>
+			</case>
+		</select>
+	</sequence>
 </type>
