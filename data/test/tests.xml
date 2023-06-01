@@ -1,5 +1,338 @@
 <tests>
 	<test>
+		<description>The WavPack.Block header has the correct flags.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/data</argument>
+		</execute>
+		<expected-output>00000100101111000001100000110001</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Block header flags have a bits per sample field.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/has-field:BitsPerSample</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Block header flags have the correct bits per sample value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have a 'bits' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/has-tag:bits</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have a 'begin index' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/has-tag:begin index</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have the correct begin index.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/tag:begin index/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have a 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/has-tag:length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have a correct length.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/tag:length/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have a 'unit' tag in the 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/tag:length/has-tag:unit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have a correct unit tag in the 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bits</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have an 'integer' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have an 'unsigned' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have an 'interpretation' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/has-tag:interpretation</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The bits per sample field in the WavPack.Block header flags have the correct interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:BitsPerSample/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>2 bytes / sample (9-16 bits / sample)</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Block header flags have an output field.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/has-field:Output</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Block header flags have the correct output value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/data</argument>
+		</execute>
+		<expected-output>0</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have a 'bit' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/has-tag:bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have a 'begin index' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/has-tag:begin index</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have the correct begin index.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/tag:begin index/data</argument>
+		</execute>
+		<expected-output>2</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have a 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/has-tag:length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have a correct length.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/tag:length/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have a 'unit' tag in the 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/tag:length/has-tag:unit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have a correct unit tag in the 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bits</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have an 'integer' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/has-tag:integer</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have an 'unsigned' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/has-tag:unsigned</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have an 'interpretation' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/has-tag:interpretation</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The output field in the WavPack.Block header flags have the correct interpretation.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:Output/tag:interpretation/data</argument>
+		</execute>
+		<expected-output>stereo output</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Block header flags have an InitialBlockInSequence field.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/has-field:InitialBlockInSequence</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The WavPack.Block header flags have the correct InitialBlockInSequence value.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/data</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The InitialBlockInSequence field in the WavPack.Block header flags have a 'bit' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/has-tag:bit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The InitialBlockInSequence field in the WavPack.Block header flags have a 'begin index' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/has-tag:begin index</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The InitialBlockInSequence field in the WavPack.Block header flags have the correct begin index.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/tag:begin index/data</argument>
+		</execute>
+		<expected-output>11</expected-output>
+	</test>
+	<test>
+		<description>The InitialBlockInSequence field in the WavPack.Block header flags have a 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/has-tag:length</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The InitialBlockInSequence field in the WavPack.Block header flags have a correct length.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/tag:length/data</argument>
+		</execute>
+		<expected-output>1</expected-output>
+	</test>
+	<test>
+		<description>The InitialBlockInSequence field in the WavPack.Block header flags have a 'unit' tag in the 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/tag:length/has-tag:unit</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
+		<description>The InitialBlockInSequence field in the WavPack.Block header flags have a correct unit tag in the 'length' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/tag:length/tag:unit/data</argument>
+		</execute>
+		<expected-output>bits</expected-output>
+	</test>
+	<test>
+		<description>The InitialBlockInSequence field in the WavPack.Block header flags have an 'integer' tag.</description>
+		<execute>
+			<program>generalinspector</program>
+			<argument>../data/examples/086_WavPack_APEv2</argument>
+			<argument>--query=/field:WavPack.Blocks/field:Block:[tag:element index in array/is-data:0]/field:Header/field:Flags/field:InitialBlockInSequence/has-tag:boolean</argument>
+		</execute>
+		<expected-output>true</expected-output>
+	</test>
+	<test>
 		<description>The WavPack.Blocks content is recognized correctly.</description>
 		<execute>
 			<program>generalinspector</program>
