@@ -13,38 +13,38 @@ namespace Inspection
     class Result
     {
     public:
-        Result(void) :
-            _Success(false),
-            _Value(std::make_unique<Inspection::Value>())
+        Result() :
+            m_Success{false},
+            m_Value{std::make_unique<Inspection::Value>()}
         {
         }
         
-        ~Result(void)
+        ~Result()
         {
         }
         
-        bool GetSuccess(void) const
+        auto GetSuccess() const -> bool
         {
-            return _Success;
+            return m_Success;
         }
         
-        std::unique_ptr<Inspection::Value> ExtractValue(void)
+        auto ExtractValue() -> std::unique_ptr<Inspection::Value>
         {
-            return std::move(_Value);
+            return std::move(m_Value);
         }
         
-        Inspection::Value * GetValue(void)
+        auto GetValue() -> Inspection::Value *
         {
-            return _Value.get();
+            return m_Value.get();
         }
         
-        void SetSuccess(bool Success)
+        auto SetSuccess(bool Success) -> void
         {
-            _Success = Success;
+            m_Success = Success;
         }
     private:
-        bool _Success;
-        std::unique_ptr<Inspection::Value> _Value;
+        bool m_Success;
+        std::unique_ptr<Inspection::Value> m_Value;
     };
 }
 
