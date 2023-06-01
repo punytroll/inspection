@@ -44,3 +44,15 @@ run_target(
   depends: [all_inspectors],
   env: {'PATH': meson.project_build_root() / 'source' / 'inspectors'}
 )
+
+run_target(
+  'recheck',
+  command: [
+    python_program,
+    integration_tests_program,
+    '--only-relevant',
+    '--in',
+    integration_test_suite],
+  depends: [all_inspectors],
+  env: {'PATH': meson.project_build_root() / 'source' / 'inspectors'}
+)

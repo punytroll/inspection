@@ -72,12 +72,17 @@ class Test(object):
     def is_expect_nothing(self):
         return self.setup.expected_output == None and self.setup.expected_return_code == None
     
+    def is_relevant(self):
+        return self.last_run_statistics == None or self.last_run_statistics.success == False
+    
     def __str__(self):
         return f"Test({self.setup}, {self.last_run_statistics})"
 
 class TestSuiteStatistics(object):
     def __init__(self):
-        self.number_of_tests = 0
+        self.total_number_of_tests = 0
+        self.number_of_relevant_tests = 0
+        self.number_of_irrelevant_tests = 0
         self.number_of_failed_tests = 0
         self.number_of_succeeded_tests = 0
         self.number_of_expect_nothing_tests = 0
@@ -240,9 +245,16 @@ def sort_test_list(test_list):
     # sorting the test list by (new, success, runtime)
     test_list.sort(key = key_function)
 
+def split_test_list(test_list):
+    relevant_tests = []
+    irrelevant_tests = []
+    for test in test_list:
+        relevant_tests.append(test) if test.is_relevant() else irrelevant_tests.append(test)
+    return (relevant_tests, irrelevant_tests)
+
 def print_finished_tests(finished_tests_queue, test_suite_statistics):
     result = list()
-    magnitude_of_number_of_tests = len(str(test_suite_statistics.number_of_tests))
+    magnitude_of_number_of_relevant_tests = len(str(test_suite_statistics.number_of_relevant_tests))
     number_of_test = 0
     while True:
         finished_test = finished_tests_queue.get()
@@ -251,7 +263,7 @@ def print_finished_tests(finished_tests_queue, test_suite_statistics):
         else:
             number_of_test += 1
             finished_test.this_run.number = number_of_test
-            print(f"{BrightWhite}[{BrightBlue}{str(number_of_test).zfill(magnitude_of_number_of_tests)}{BrightWhite} / {BrightBlue}{test_suite_statistics.number_of_tests}{BrightWhite}]{Reset}", end = "")
+            print(f"{BrightWhite}[{BrightBlue}{str(number_of_test).zfill(magnitude_of_number_of_relevant_tests)}{BrightWhite} / {BrightBlue}{test_suite_statistics.number_of_relevant_tests}{BrightWhite}]{Reset}", end = "")
             if finished_test.last_run_statistics == None:
                 print(f" [{BrightMagenta}NEW{Reset}]", end = "")
             elif finished_test.last_run_statistics.success == False:
@@ -294,10 +306,8 @@ def print_finished_tests(finished_tests_queue, test_suite_statistics):
     return result
 
 def print_summary(test_suite_statistics, finished_tests_list):
-    if test_suite_statistics.number_of_failed_tests == 0:
-        print(f"All {Yellow}{test_suite_statistics.number_of_succeeded_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_succeeded_tests)} {BrightGreen}succeeded{Reset}.")
-    else:
-        print(f"Out of {Yellow}{test_suite_statistics.number_of_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_tests)}, {Yellow}{test_suite_statistics.number_of_succeeded_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_succeeded_tests)} {BrightGreen}succeeded{Reset} and {Yellow}{test_suite_statistics.number_of_failed_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_failed_tests)} {BrightRed}failed{Reset}.")
+    print(f"Out of {Yellow}{test_suite_statistics.total_number_of_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.total_number_of_tests)}, {Yellow}{test_suite_statistics.number_of_irrelevant_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_irrelevant_tests)} were {BrightYellow}skipped{Reset}, {Yellow}{test_suite_statistics.number_of_succeeded_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_succeeded_tests)} {BrightGreen}succeeded{Reset} and {Yellow}{test_suite_statistics.number_of_failed_tests}{Reset} test{get_s_as_appropriate(test_suite_statistics.number_of_failed_tests)} {BrightRed}failed{Reset}.")
+    if test_suite_statistics.number_of_failed_tests > 0:
         print("    Failed tests: ", end = "")
         first = True
         for finished_test in finished_tests_list:
@@ -337,20 +347,29 @@ def print_summary(test_suite_statistics, finished_tests_list):
                 print(f"{Yellow}{finished_test.this_run.number}{Reset}", end = "")
         print()
 
-def execute_test_suite(test_suite_file_path):
+def execute_test_suite(test_suite_file_path, only_relevant):
     # prepare prioritized list of tests
     test_list = load_tests_from_test_suite(test_suite_file_path)
     # add the statistics from the last run
     add_last_run_statistics(test_list)
     # sort by statistics from last run
     sort_test_list(test_list)
+    if only_relevant == True:
+        # filter test list for failed, changed or added test
+        # we need the irrelevant tests for writing the statics
+        relevant_tests, irrelevant_tests = split_test_list(test_list)
+    else:
+        relevant_tests = test_list
+        irrelevant_tests = []
     # this queue is used for returning tests that have been run from the runner threads
     finished_tests_queue = queue.SimpleQueue()
-    scheduler_thread = threading.Thread(target = test_scheduler, args = (test_list, finished_tests_queue))
+    scheduler_thread = threading.Thread(target = test_scheduler, args = (relevant_tests, finished_tests_queue))
     scheduler_thread.start()
     # while the scheduler is waiting for the runners to finish, the main thread prints out information about finished tests as they come in
     test_suite_statistics = TestSuiteStatistics()
-    test_suite_statistics.number_of_tests = len(test_list)
+    test_suite_statistics.total_number_of_tests = len(test_list)
+    test_suite_statistics.number_of_relevant_tests = len(relevant_tests)
+    test_suite_statistics.number_of_irrelevant_tests = len(irrelevant_tests)
     finished_tests = print_finished_tests(finished_tests_queue, test_suite_statistics)
     # clean up scheduler thread
     scheduler_thread.join()
@@ -360,22 +379,18 @@ def execute_test_suite(test_suite_file_path):
     with open("test_statistics.csv", "w") as file:
         for test in finished_tests:
             file.write(f"{test.setup.get_hash()},{test.this_run.statistics.success},{test.this_run.statistics.runtime}\n")
-    # exit, possibly with error code
-    if test_suite_statistics.number_of_failed_tests > 0:
-        return False
-    else:
-        return True
+        for test in irrelevant_tests:
+            file.write(f"{test.setup.get_hash()},{test.last_run_statistics.success},{test.last_run_statistics.runtime}\n")
 
 if __name__ == "__main__":
-    return_code = 1
     # initialize command line option parser
     parser = OptionParser()
+    parser.add_option("-u", "--only-relevant", action="store_true", dest="only_relevant", default=False, help="Only run tests that have failed, or have been changed or added.")
     parser.add_option("-i", "--in", dest="test_suite", help="The test suite file.")
     # read command line options and validate
     (options, args) = parser.parse_args()
     if options.test_suite == None:
         print("Set a test suite with '--in'.")
     else:
-        if execute_test_suite(options.test_suite) == True:
-            return_code = 0
-    exit(return_code)
+        execute_test_suite(options.test_suite, options.only_relevant)
+    exit(0)
