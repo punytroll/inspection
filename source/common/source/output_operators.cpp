@@ -341,6 +341,28 @@ auto Inspection::operator<<(std::ostream & OStream, Inspection::DateTime const &
     return OStream << DateTime.Year << '/' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(DateTime.Month) << '/' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Day) << ' ' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Hour) << ':' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Minute) << ':' << std::setw(2) << static_cast<std::uint32_t>(DateTime.Second);
 }
 
+static auto m_PrintException(std::ostream & OStream, std::exception const & Exception) -> void
+{
+    OStream << Inspection::g_Yellow << Exception.what() << Inspection::g_Reset << '\n';
+    try
+    {
+        std::rethrow_if_nested(Exception);
+    }
+    catch(std::exception const & NestedException)
+    {
+        OStream << Inspection::g_Red << "Nested exception" << Inspection::g_Reset << ":" << '\n';
+        m_PrintException(OStream, NestedException);
+    }
+}
+
+auto Inspection::operator<<(std::ostream & OStream, std::exception const & Exception) -> std::ostream &
+{
+    OStream << Inspection::g_Red << "Caught an exception while processing" << Inspection::g_Reset << ":" << '\n';
+    m_PrintException(OStream, Exception);
+    
+    return OStream;
+}
+
 auto Inspection::operator<<(std::ostream & OStream, Inspection::GUID const & GUID) -> std::ostream &
 {
     return OStream << std::hex << std::setw(8) << std::right << std::setfill('0') << GUID.Data1 << '-' << std::setw(4) << std::right << std::setfill('0') << GUID.Data2 << '-' << std::setw(4) << std::right << std::setfill('0') << GUID.Data3 << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[0]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[1]) << '-' << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[2]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[3]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[4]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[5]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[6]) << std::setw(2) << std::right << std::setfill('0') << static_cast<std::uint32_t>(GUID.Data4[7]);

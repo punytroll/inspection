@@ -13,7 +13,6 @@ type_library_path_h = custom_target(
 common_library = static_library(
   'common',
   sources: [
-    'source/exception_printing.cpp',
     'source/execution_context.cpp',
     'source/getters.cpp',
     'source/guid.cpp',

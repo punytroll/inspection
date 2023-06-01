@@ -7,7 +7,6 @@
 #include "assertion.h"
 #include "buffer.h"
 #include "colors.h"
-#include "exception_printing.h"
 #include "inspector.h"
 #include "internal_output_operators.h"
 #include "output_operators.h"
@@ -54,9 +53,9 @@ bool Inspection::Inspector::Process(void)
             {
                 Result &= _ProcessPath(std::filesystem::directory_entry(Path));
             }
-            catch(const std::exception & Exception)
+            catch(std::exception const & Exception)
             {
-                Inspection::PrintExceptions(Exception);
+                std::cerr << Exception << '\n';
                 Result = false;
             }
         }
