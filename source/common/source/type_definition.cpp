@@ -28,6 +28,7 @@
 #include "length.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition/tag.h"
 #include "type_definition.h"
 #include "type_repository.h"
 #include "value.h"
@@ -2676,48 +2677,6 @@ std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition
     }
     INVALID_INPUT_IF(Result->m_Minuend == nullptr, "Missing operands for Subtract expression.");
     INVALID_INPUT_IF(Result->m_Subtrahend == nullptr, "Missing second operand for Subtract expression.");
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Tag                                                                                           //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-auto Inspection::TypeDefinition::Tag::Get(Inspection::ExecutionContext & ExecutionContext) const -> std::unique_ptr<Inspection::Value>
-{
-    auto Result = std::make_unique<Inspection::Value>();
-    
-    Result->SetName(m_Name);
-    if(m_ValueExpression != nullptr)
-    {
-        Result->SetData(m_ValueExpression->GetAny(ExecutionContext));
-    }
-    
-    return Result;
-}
-
-auto Inspection::TypeDefinition::Tag::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Tag>
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Tag>{new Inspection::TypeDefinition::Tag{}};
-    
-    INVALID_INPUT_IF(Element->HasAttribute("name") == false, "A \"tag\" requires a \"name\" attribute.");
-    Result->m_Name = Element->GetAttribute("name");
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        ASSERTION(ChildElement != nullptr);
-        if(ChildElement->GetName() == "value")
-        {
-            Result->m_ValueExpression = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
-        }
-        else
-        {
-            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
-        }
-    }
     
     return Result;
 }

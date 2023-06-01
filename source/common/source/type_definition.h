@@ -469,24 +469,7 @@ namespace Inspection
             Inspection::TypeDefinition::DataType m_DataType;
         };
         
-        class Tag
-        {
-        public:
-            static auto Load(XML::Element const* Element) -> std::unique_ptr<Inspection::TypeDefinition::Tag>;
-        public:
-            auto Get(Inspection::ExecutionContext & ExecutionContext) const -> std::unique_ptr<Inspection::Value>;
-            auto GetName() const -> std::string const &;
-            auto HasValueExpression() const -> bool;
-        private:
-            Tag() = default;
-            Tag(Inspection::TypeDefinition::Tag const & Tag) = delete;
-            Tag(Inspection::TypeDefinition::Tag && Tag) = delete;
-            auto operator=(Inspection::TypeDefinition::Tag const & Tag) -> Inspection::TypeDefinition::Tag & = delete;
-            auto operator=(Inspection::TypeDefinition::Tag && Tag) -> Inspection::TypeDefinition::Tag & = delete;
-        private:
-            std::string m_Name;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_ValueExpression;
-        };
+        class Tag;
         
         class Enumeration
         {
