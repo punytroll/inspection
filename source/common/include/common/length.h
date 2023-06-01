@@ -120,35 +120,19 @@ namespace Inspection
             return *this;
         }
         
-        auto operator<=(Inspection::Length const & Other) const -> bool
+        auto operator<=>(Inspection::Length const & Other) const -> std::strong_ordering
         {
-            return (m_Bytes < Other.m_Bytes) || ((m_Bytes == Other.m_Bytes) && (m_Bits <= Other.m_Bits));
+            if(auto Compare = m_Bytes <=> Other.m_Bytes; Compare != std::strong_ordering::equal)
+            {
+                return Compare;
+            }
+            else
+            {
+                return m_Bits <=> Other.m_Bits;
+            }
         }
         
-        auto operator<(Inspection::Length const & Other) const -> bool
-        {
-            return (m_Bytes < Other.m_Bytes) || ((m_Bytes == Other.m_Bytes) && (m_Bits < Other.m_Bits));
-        }
-        
-        auto operator>=(Inspection::Length const & Other) const -> bool
-        {
-            return (m_Bytes > Other.m_Bytes) || ((m_Bytes == Other.m_Bytes) && (m_Bits >= Other.m_Bits));
-        }
-        
-        auto operator>(Inspection::Length const & Other) const -> bool
-        {
-            return (m_Bytes > Other.m_Bytes) || ((m_Bytes == Other.m_Bytes) && (m_Bits > Other.m_Bits));
-        }
-        
-        auto operator==(Inspection::Length const & Other) const -> bool
-        {
-            return (m_Bytes == Other.m_Bytes) && (m_Bits == Other.m_Bits);
-        }
-        
-        auto operator!=(Inspection::Length const & Other) const -> bool
-        {
-            return (m_Bytes != Other.m_Bytes) || (m_Bits != Other.m_Bits);
-        }
+        auto operator==(Inspection::Length const & Other) const -> bool = default;
     private:
         auto m_Normalize() -> void
         {
