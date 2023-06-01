@@ -8,29 +8,29 @@ namespace Inspection
     class Buffer
     {
     public:
-        Buffer(const std::uint8_t * Data, const Inspection::Length & Length) :
-            _Data{Data},
-            _Length{Length}
+        Buffer(std::uint8_t const * Data, Inspection::Length const & Length) :
+            m_Data{Data},
+            m_Length{Length}
         {
         }
         
-        ~Buffer(void)
+        ~Buffer()
         {
-            _Data = nullptr;
+            m_Data = nullptr;
         }
         
-        const std::uint8_t * GetData(void) const
+        auto GetData() const -> std::uint8_t const *
         {
-            return _Data;
+            return m_Data;
         }
         
-        const Inspection::Length & GetLength(void) const
+        auto GetLength() const -> Inspection::Length const &
         {
-            return _Length;
+            return m_Length;
         }
     private:
-        const std::uint8_t * _Data;
-        Inspection::Length _Length;
+        std::uint8_t const * m_Data;
+        Inspection::Length m_Length;
     };
 }
 
