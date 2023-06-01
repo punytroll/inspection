@@ -67,24 +67,13 @@ static auto AppendOtherData(Inspection::Value * Value, Inspection::Length const 
     return AppendLengthField(Value, "OtherData", Length);
 }
 
-static auto ApplyTag(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Tag const & Tag, Inspection::Value * Target) -> void
-{
-    if(Tag.HasValueExpression() == true)
-    {
-        Target->AddTag(Tag.GetName(), Tag.GetAny(ExecutionContext));
-    }
-    else
-    {
-        Target->AddTag(Tag.GetName());
-    }
-}
-
 static auto ApplyTags(Inspection::ExecutionContext & ExecutionContext, std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> const & Tags, Inspection::Value * Target) -> void
 {
+    ASSERTION(Target != nullptr);
     for(auto & Tag : Tags)
     {
         ASSERTION(Tag != nullptr);
-        ::ApplyTag(ExecutionContext, *Tag, Target);
+        Target->AddTag(Tag->Get(ExecutionContext));
     }
 }
 
@@ -282,8 +271,9 @@ std::unique_ptr<Inspection::TypeDefinition::And> Inspection::TypeDefinition::And
 
 bool Inspection::TypeDefinition::AddTag::Apply(Inspection::ExecutionContext & ExecutionContext, Inspection::Value * Target) const
 {
+    ASSERTION(Target != nullptr);
     ASSERTION(m_Tag != nullptr);
-    ::ApplyTag(ExecutionContext, *m_Tag, Target);
+    Target->AddTag(m_Tag->Get(ExecutionContext));
     
     return true;
 }
@@ -2695,21 +2685,17 @@ std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition
 // Tag                                                                                           //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-auto Inspection::TypeDefinition::Tag::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
+auto Inspection::TypeDefinition::Tag::Get(Inspection::ExecutionContext & ExecutionContext) const -> std::unique_ptr<Inspection::Value>
 {
-    ASSERTION(m_ValueExpression != nullptr);
+    auto Result = std::make_unique<Inspection::Value>();
     
-    return m_ValueExpression->GetAny(ExecutionContext);
-}
-
-auto Inspection::TypeDefinition::Tag::GetName() const -> std::string const &
-{
-    return m_Name;
-}
-
-auto Inspection::TypeDefinition::Tag::HasValueExpression() const -> bool
-{
-    return m_ValueExpression != nullptr;
+    Result->SetName(m_Name);
+    if(m_ValueExpression != nullptr)
+    {
+        Result->SetData(m_ValueExpression->GetAny(ExecutionContext));
+    }
+    
+    return Result;
 }
 
 auto Inspection::TypeDefinition::Tag::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Tag>

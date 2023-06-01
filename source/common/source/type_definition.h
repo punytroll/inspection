@@ -474,7 +474,7 @@ namespace Inspection
         public:
             static auto Load(XML::Element const* Element) -> std::unique_ptr<Inspection::TypeDefinition::Tag>;
         public:
-            auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any;
+            auto Get(Inspection::ExecutionContext & ExecutionContext) const -> std::unique_ptr<Inspection::Value>;
             auto GetName() const -> std::string const &;
             auto HasValueExpression() const -> bool;
         private:
