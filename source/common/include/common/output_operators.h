@@ -1,11 +1,11 @@
 #ifndef INSPECTION_COMMON_OUTPUT_OPERATORS_H
 #define INSPECTION_COMMON_OUTPUT_OPERATORS_H
 
-#include <any>
 #include <ostream>
 
 namespace std
 {
+    class any;
     class exception;
 }
 
