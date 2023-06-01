@@ -28,12 +28,16 @@
 							<enumeration base-data-type="unsigned integer 16bit">
 								<element base-value="1" valid="true">
 									<tag name="interpretation">
-										<string>Icon image</string>
+										<value>
+											<string>Icon image</string>
+										</value>
 									</tag>
 								</element>
 								<element base-value="2" valid="false">
 									<tag name="interpretation">
-										<string>Cursor image</string>
+										<value>
+											<string>Cursor image</string>
+										</value>
 									</tag>
 								</element>
 							</enumeration>
@@ -130,7 +134,8 @@
 									</type-reference>
 								</field>
 								<tag name="position">
-									<length>
+									<value>
+										<length>
 										<bytes>
 											<unsigned-integer-64bit>
 												<data-reference root="type">
@@ -142,9 +147,11 @@
 											<unsigned-integer-64bit>0</unsigned-integer-64bit>
 										</bits>
 									</length>
+									</value>
 								</tag>
 								<tag name="length">
-									<length>
+									<value>
+										<length>
 										<bytes>
 											<unsigned-integer-64bit>
 												<data-reference root="type">
@@ -156,9 +163,12 @@
 											<unsigned-integer-64bit>0</unsigned-integer-64bit>
 										</bits>
 									</length>
+									</value>
 								</tag>
 								<tag name="type name">
-									<string>ICONDIRENTRY</string>
+									<value>
+										<string>ICONDIRENTRY</string>
+									</value>
 								</tag>
 							</sequence>
 						</type>
@@ -166,7 +176,9 @@
 					<element-name>Entry</element-name>
 				</array>
 				<tag name="type name">
-					<string>ICONDIR</string>
+					<value>
+						<string>ICONDIR</string>
+					</value>
 				</tag>
 			</sequence>
 		</field>

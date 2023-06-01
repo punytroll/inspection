@@ -14,7 +14,9 @@
 				<part>LittleEndian_WithoutByteOrderMark_EndedByTerminationOrLength</part>
 			</type-reference>
 			<tag name="error">
-				<string>The content of an "MCDI" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian.</string>
+				<value>
+					<string>The content of an "MCDI" frame should be a binary compact disc table of contents, but is a unicode string encoded with UCS-2 in little endian.</string>
+				</value>
 			</tag>
 		</field>
 	</alternative>

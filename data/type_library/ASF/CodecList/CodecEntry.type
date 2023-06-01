@@ -75,7 +75,9 @@
 					</parameter>
 				</parameters>
 				<tag name="error">
-					<string>As per ASF specification, all Unicode strings MUST be ended with a NULL termination.</string>
+					<value>
+						<string>As per ASF specification, all Unicode strings MUST be ended with a NULL termination.</string>
+					</value>
 				</tag>
 			</field>
 		</alternative>

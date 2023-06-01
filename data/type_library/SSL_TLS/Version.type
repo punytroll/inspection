@@ -20,27 +20,37 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>TLS 1.0</string>
+								<value>
+									<string>TLS 1.0</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="interpretation">
-								<string>TLS 1.1</string>
+								<value>
+									<string>TLS 1.1</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="3" valid="true">
 							<tag name="interpretation">
-								<string>TLS 1.2</string>
+								<value>
+									<string>TLS 1.2</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="4" valid="true">
 							<tag name="interpretation">
-								<string>TLS 1.3</string>
+								<value>
+									<string>TLS 1.3</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="true">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>
@@ -48,10 +58,12 @@
 			</interpretation>
 		</field>
 		<tag name="name">
-			<data-reference root="current">
+			<value>
+				<data-reference root="current">
 				<field>Minor</field>
 				<tag>interpretation</tag>
 			</data-reference>
+			</value>
 		</tag>
 	</sequence>
 </type>

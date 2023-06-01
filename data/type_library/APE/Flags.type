@@ -10,22 +10,30 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>Item contains text information coded in UTF-8</string>
+							<value>
+								<string>Item contains text information coded in UTF-8</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="interpretation">
-							<string>Item contains binary information</string>
+							<value>
+								<string>Item contains binary information</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2" valid="true">
 						<tag name="interpretation">
-							<string>Item is a locator of external stored information</string>
+							<value>
+								<string>Item is a locator of external stored information</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="3" valid="true">
 						<tag name="interpretation">
-							<string>&lt;reserved&gt;</string>
+							<value>
+								<string>&lt;reserved&gt;</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>
@@ -37,12 +45,16 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>This is the footer, not the header</string>
+							<value>
+								<string>This is the footer, not the header</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="interpretation">
-							<string>This is the header, not the footer</string>
+							<value>
+								<string>This is the header, not the footer</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

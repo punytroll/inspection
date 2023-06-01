@@ -11,12 +11,16 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>positive gain (boost)</string>
+							<value>
+								<string>positive gain (boost)</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="interpretation">
-							<string>negative gain (attenuation)</string>
+							<value>
+								<string>negative gain (attenuation)</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

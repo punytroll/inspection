@@ -20,10 +20,14 @@
 				</from>
 				<to>
 					<tag name="interpretation">
-						<member-reference name="string"/>
+						<value>
+							<member-reference name="string"/>
+						</value>
 					</tag>
 					<tag name="standard">
-						<member-reference name="standard"/>
+						<value>
+							<member-reference name="standard"/>
+						</value>
 					</tag>
 				</to>
 				<fallback>

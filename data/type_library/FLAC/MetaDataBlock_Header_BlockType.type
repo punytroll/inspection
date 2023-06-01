@@ -11,47 +11,65 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>StreamInfo</string>
+							<value>
+								<string>StreamInfo</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="interpretation">
-							<string>Padding</string>
+							<value>
+								<string>Padding</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2" valid="true">
 						<tag name="interpretation">
-							<string>Application</string>
+							<value>
+								<string>Application</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="3" valid="true">
 						<tag name="interpretation">
-							<string>SeekTable</string>
+							<value>
+								<string>SeekTable</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="4" valid="true">
 						<tag name="interpretation">
-							<string>VorbisComment</string>
+							<value>
+								<string>VorbisComment</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="5" valid="true">
 						<tag name="interpretation">
-							<string>CueSheet</string>
+							<value>
+								<string>CueSheet</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="6" valid="true">
 						<tag name="interpretation">
-							<string>Picture</string>
+							<value>
+								<string>Picture</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="7" valid="false">
 						<tag name="interpretation">
-							<string>Invalid</string>
+							<value>
+								<string>Invalid</string>
+							</value>
 						</tag>
 					</element>
 					<fallback-element valid="false">
 						<tag name="interpretation">
-							<string>Reserved</string>
+							<value>
+								<string>Reserved</string>
+							</value>
 						</tag>
 					</fallback-element>
 				</enumeration>

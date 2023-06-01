@@ -4,7 +4,9 @@
 			<alternative>
 				<sequence>
 					<tag name="type name">
-						<string>BITMAPINFOHEADER</string>
+						<value>
+							<string>BITMAPINFOHEADER</string>
+						</value>
 					</tag>
 					<field name="Size">
 						<type-reference>
@@ -70,26 +72,38 @@
 								<enumeration base-data-type="unsigned integer 32bit">
 									<element base-value="0" valid="true">
 										<tag name="constant name">
-											<string>BI_RGB</string>
+											<value>
+												<string>BI_RGB</string>
+											</value>
 										</tag>
 										<tag name="interpretation">
-											<string>uncompressed RGB</string>
+											<value>
+												<string>uncompressed RGB</string>
+											</value>
 										</tag>
 									</element>
 									<element base-value="3" valid="true">
 										<tag name="constant name">
-											<string>BI_BITFIELDS</string>
+											<value>
+												<string>BI_BITFIELDS</string>
+											</value>
 										</tag>
 										<tag name="interpretation">
-											<string>uncompressed RGB with color masks</string>
+											<value>
+												<string>uncompressed RGB with color masks</string>
+											</value>
 										</tag>
 									</element>
 									<fallback-element valid="false">
 										<tag name="constant name">
-											<nothing/>
+											<value>
+												<nothing/>
+											</value>
 										</tag>
 										<tag name="interpretation">
-											<nothing/>
+											<value>
+												<nothing/>
+											</value>
 										</tag>
 									</fallback-element>
 								</enumeration>
@@ -139,7 +153,9 @@
 				</sequence>
 				<sequence>
 					<tag name="type name">
-						<string>BITMAPV5HEADER</string>
+						<value>
+							<string>BITMAPV5HEADER</string>
+						</value>
 					</tag>
 					<field name="Size">
 						<type-reference>
@@ -205,26 +221,38 @@
 								<enumeration base-data-type="unsigned integer 32bit">
 									<element base-value="0" valid="true">
 										<tag name="constant name">
-											<string>BI_RGB</string>
+											<value>
+												<string>BI_RGB</string>
+											</value>
 										</tag>
 										<tag name="interpretation">
-											<string>uncompressed RGB</string>
+											<value>
+												<string>uncompressed RGB</string>
+											</value>
 										</tag>
 									</element>
 									<element base-value="3" valid="true">
 										<tag name="constant name">
-											<string>BI_BITFIELDS</string>
+											<value>
+												<string>BI_BITFIELDS</string>
+											</value>
 										</tag>
 										<tag name="interpretation">
-											<string>uncompressed RGB with color masks</string>
+											<value>
+												<string>uncompressed RGB with color masks</string>
+											</value>
 										</tag>
 									</element>
 									<fallback-element valid="false">
 										<tag name="constant name">
-											<nothing/>
+											<value>
+												<nothing/>
+											</value>
 										</tag>
 										<tag name="interpretation">
-											<nothing/>
+											<value>
+												<nothing/>
+											</value>
 										</tag>
 									</fallback-element>
 								</enumeration>
@@ -313,13 +341,17 @@
 					</field>
 					<field name="Endpoints">
 						<tag name="type name">
-							<string>CIEXYZTRIPLE</string>
+							<value>
+								<string>CIEXYZTRIPLE</string>
+							</value>
 						</tag>
 						<sequence>
 							<field name="Red">
 								<sequence>
 									<tag name="type name">
-										<string>CIEXYZ</string>
+										<value>
+											<string>CIEXYZ</string>
+										</value>
 									</tag>
 									<field name="X">
 										<type-reference>
@@ -353,7 +385,9 @@
 							<field name="Green">
 								<sequence>
 									<tag name="type name">
-										<string>CIEXYZ</string>
+										<value>
+											<string>CIEXYZ</string>
+										</value>
 									</tag>
 									<field name="X">
 										<type-reference>
@@ -387,7 +421,9 @@
 							<field name="Blue">
 								<sequence>
 									<tag name="type name">
-										<string>CIEXYZ</string>
+										<value>
+											<string>CIEXYZ</string>
+										</value>
 									</tag>
 									<field name="X">
 										<type-reference>

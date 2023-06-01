@@ -9,12 +9,16 @@
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">
 						<tag name="interpretation">
-							<string>Unsynchronisation is used.</string>
+							<value>
+								<string>Unsynchronisation is used.</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="false" valid="true">
 						<tag name="interpretation">
-							<string>Unsynchronisation is NOT used.</string>
+							<value>
+								<string>Unsynchronisation is NOT used.</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>
@@ -25,12 +29,16 @@
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">
 						<tag name="interpretation">
-							<string>Compression is used.</string>
+							<value>
+								<string>Compression is used.</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="false" valid="true">
 						<tag name="interpretation">
-							<string>Compression is NOT used.</string>
+							<value>
+								<string>Compression is NOT used.</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

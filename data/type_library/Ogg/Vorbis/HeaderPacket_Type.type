@@ -11,22 +11,30 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="1" valid="true">
 						<tag name="interpretation">
-							<string>Vorbis Identification Header</string>
+							<value>
+								<string>Vorbis Identification Header</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="3" valid="true">
 						<tag name="interpretation">
-							<string>Vorbis Comment Header</string>
+							<value>
+								<string>Vorbis Comment Header</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="5" valid="true">
 						<tag name="interpretation">
-							<string>Vorbis Setup Header</string>
+							<value>
+								<string>Vorbis Setup Header</string>
+							</value>
 						</tag>
 					</element>
 					<fallback-element valid="false">
 						<tag name="interpretation">
-							<nothing/>
+							<value>
+								<nothing/>
+							</value>
 						</tag>
 					</fallback-element>
 				</enumeration>

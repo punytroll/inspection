@@ -11,12 +11,16 @@
 				<enumeration base-data-type="unsigned integer 16bit">
 					<element base-value="0" valid="true">
 						<tag name="value">
-							<boolean>false</boolean>
+							<value>
+								<boolean>false</boolean>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="value">
-							<boolean>true</boolean>
+							<value>
+								<boolean>true</boolean>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

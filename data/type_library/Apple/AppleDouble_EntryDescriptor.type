@@ -13,120 +13,178 @@
 						<element base-value="0" valid="false"/>
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>Data Fork</string>
+								<value>
+									<string>Data Fork</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>Data fork</string>
+								<value>
+									<string>Data fork</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="interpretation">
-								<string>Resource Fork</string>
+								<value>
+									<string>Resource Fork</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>Resource fork</string>
+								<value>
+									<string>Resource fork</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="3" valid="true">
 							<tag name="interpretation">
-								<string>Real Name</string>
+								<value>
+									<string>Real Name</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>File's name as created on home file system</string>
+								<value>
+									<string>File's name as created on home file system</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="4" valid="true">
 							<tag name="interpretation">
-								<string>Comment</string>
+								<value>
+									<string>Comment</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>Standard Macintosh comment</string>
+								<value>
+									<string>Standard Macintosh comment</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="5" valid="true">
 							<tag name="interpretation">
-								<string>Icon, B&amp;W</string>
+								<value>
+									<string>Icon, B&amp;W</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>Standard Macintosh black and white icon</string>
+								<value>
+									<string>Standard Macintosh black and white icon</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="6" valid="true">
 							<tag name="interpretation">
-								<string>Icon, Color</string>
+								<value>
+									<string>Icon, Color</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>Macintosh color icon</string>
+								<value>
+									<string>Macintosh color icon</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="7" valid="false"/>
 						<element base-value="8" valid="true">
 							<tag name="interpretation">
-								<string>File Dates Info</string>
+								<value>
+									<string>File Dates Info</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>File creation data, modification data, and so on</string>
+								<value>
+									<string>File creation data, modification data, and so on</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="9" valid="true">
 							<tag name="interpretation">
-								<string>Finder Info</string>
+								<value>
+									<string>Finder Info</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>Standard Macintosh Finder information</string>
+								<value>
+									<string>Standard Macintosh Finder information</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="10" valid="true">
 							<tag name="interpretation">
-								<string>Macintosh File Info</string>
+								<value>
+									<string>Macintosh File Info</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>Macintosh file information, attributes, and so on</string>
+								<value>
+									<string>Macintosh file information, attributes, and so on</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="11" valid="true">
 							<tag name="interpretation">
-								<string>ProDOS File Info</string>
+								<value>
+									<string>ProDOS File Info</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>ProDOS file information, attributes, and so on</string>
+								<value>
+									<string>ProDOS file information, attributes, and so on</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="12" valid="true">
 							<tag name="interpretation">
-								<string>MS-DOS File Info</string>
+								<value>
+									<string>MS-DOS File Info</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>MS-DOS file information, attributes, and so on</string>
+								<value>
+									<string>MS-DOS file information, attributes, and so on</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="13" valid="true">
 							<tag name="interpretation">
-								<string>Short Name</string>
+								<value>
+									<string>Short Name</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>AFP short name</string>
+								<value>
+									<string>AFP short name</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="14" valid="true">
 							<tag name="interpretation">
-								<string>AFP File Info</string>
+								<value>
+									<string>AFP File Info</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>AFP file information, attributes, and so on</string>
+								<value>
+									<string>AFP file information, attributes, and so on</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="15" valid="true">
 							<tag name="interpretation">
-								<string>Directory ID</string>
+								<value>
+									<string>Directory ID</string>
+								</value>
 							</tag>
 							<tag name="description">
-								<string>AFP directory ID</string>
+								<value>
+									<string>AFP directory ID</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="true">
 							<tag name="interpretation">
-							<nothing/>
+							<value>
+								<nothing/>
+							</value>
 							</tag>
 						</fallback-element>
 					</enumeration>
@@ -150,7 +208,8 @@
 			</type-reference>
 		</field>
 		<tag name="position">
-			<length>
+			<value>
+				<length>
 				<bytes>
 					<unsigned-integer-64bit>
 						<data-reference root="type">
@@ -162,9 +221,11 @@
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>
 				</bits>
 			</length>
+			</value>
 		</tag>
 		<tag name="length">
-			<length>
+			<value>
+				<length>
 				<bytes>
 					<unsigned-integer-64bit>
 						<data-reference root="type">
@@ -176,6 +237,7 @@
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>
 				</bits>
 			</length>
+			</value>
 		</tag>
 	</sequence>
 </type>

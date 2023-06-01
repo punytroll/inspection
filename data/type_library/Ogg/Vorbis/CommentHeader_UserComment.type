@@ -8,7 +8,9 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 			<tag name="unit">
-				<string>bytes</string>
+				<value>
+					<string>bytes</string>
+				</value>
 			</tag>
 		</field>
 		<field name="String">

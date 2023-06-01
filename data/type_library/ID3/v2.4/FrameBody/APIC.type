@@ -26,170 +26,254 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Other</string>
+								<value>
+									<string>Other</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>32x32 pixels 'file icon' (PNG only)</string>
+								<value>
+									<string>32x32 pixels 'file icon' (PNG only)</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Other file icon</string>
+								<value>
+									<string>Other file icon</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="3" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Cover (front)</string>
+								<value>
+									<string>Cover (front)</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="4" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Cover (back)</string>
+								<value>
+									<string>Cover (back)</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="5" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Leaflet page</string>
+								<value>
+									<string>Leaflet page</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="6" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Media (e.g. label side of CD)</string>
+								<value>
+									<string>Media (e.g. label side of CD)</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="7" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Lead artist/lead performer/soloist</string>
+								<value>
+									<string>Lead artist/lead performer/soloist</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="8" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Artist/performer</string>
+								<value>
+									<string>Artist/performer</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="9" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Conductor</string>
+								<value>
+									<string>Conductor</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="10" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Band/Orchestra</string>
+								<value>
+									<string>Band/Orchestra</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="11" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Composer</string>
+								<value>
+									<string>Composer</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="12" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Lyricist/text writer</string>
+								<value>
+									<string>Lyricist/text writer</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="13" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Recording Location</string>
+								<value>
+									<string>Recording Location</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="14" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>During recording</string>
+								<value>
+									<string>During recording</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="15" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>During performance</string>
+								<value>
+									<string>During performance</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="16" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Movie/video screen capture</string>
+								<value>
+									<string>Movie/video screen capture</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="17" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>A bright coloured fish</string>
+								<value>
+									<string>A bright coloured fish</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="18" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Illustration</string>
+								<value>
+									<string>Illustration</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="19" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Band/artist logotype</string>
+								<value>
+									<string>Band/artist logotype</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="20" valid="true">
 							<tag name="standard">
-								<string>ID3 2.4</string>
+								<value>
+									<string>ID3 2.4</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>Publisher/Studio logotype</string>
+								<value>
+									<string>Publisher/Studio logotype</string>
+								</value>
 							</tag>
 						</element>
 					</enumeration>

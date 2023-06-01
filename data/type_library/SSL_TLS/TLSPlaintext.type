@@ -12,37 +12,51 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="false">
 							<tag name="interpretation">
-								<string>Invalid</string>
+								<value>
+									<string>Invalid</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="20" valid="true">
 							<tag name="interpretation">
-								<string>ChangeCipherSpec</string>
+								<value>
+									<string>ChangeCipherSpec</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="21" valid="true">
 							<tag name="interpretation">
-								<string>Alert</string>
+								<value>
+									<string>Alert</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="22" valid="true">
 							<tag name="interpretation">
-								<string>Handshake</string>
+								<value>
+									<string>Handshake</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="23" valid="true">
 							<tag name="interpretation">
-								<string>Application</string>
+								<value>
+									<string>Application</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="24" valid="true">
 							<tag name="interpretation">
-								<string>Heartbeat</string>
+								<value>
+									<string>Heartbeat</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="false">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>
@@ -86,10 +100,12 @@
 						<part>HandshakeFragment</part>
 					</type-reference>
 					<tag name="protocol">
-						<data-reference root="type">
+						<value>
+							<data-reference root="type">
 							<field>ContentType</field>
 							<tag>interpretation</tag>
 						</data-reference>
+						</value>
 					</tag>
 				</field>
 			</case>
@@ -109,10 +125,12 @@
 						<part>AlertFragment</part>
 					</type-reference>
 					<tag name="protocol">
-						<data-reference root="type">
+						<value>
+							<data-reference root="type">
 							<field>ContentType</field>
 							<tag>interpretation</tag>
 						</data-reference>
+						</value>
 					</tag>
 				</field>
 			</case>
@@ -141,10 +159,12 @@
 			</case>
 		</select>
 		<tag name="content">
-			<data-reference root="type">
+			<value>
+				<data-reference root="type">
 				<field>ContentType</field>
 				<tag>interpretation</tag>
 			</data-reference>
+			</value>
 		</tag>
 	</sequence>
 </type>

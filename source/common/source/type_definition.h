@@ -472,20 +472,20 @@ namespace Inspection
         class Tag
         {
         public:
-            static std::unique_ptr<Inspection::TypeDefinition::Tag> Load(const XML::Element * Element);
+            static auto Load(XML::Element const* Element) -> std::unique_ptr<Inspection::TypeDefinition::Tag>;
         public:
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const;
-            const std::string & GetName(void) const;
-            bool HasExpression(void) const;
+            auto GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any;
+            auto GetName() const -> std::string const &;
+            auto HasValueExpression() const -> bool;
         private:
-            Tag(void) = default;
-            Tag(const Inspection::TypeDefinition::Tag & Tag) = delete;
+            Tag() = default;
+            Tag(Inspection::TypeDefinition::Tag const & Tag) = delete;
             Tag(Inspection::TypeDefinition::Tag && Tag) = delete;
-            Inspection::TypeDefinition::Tag & operator=(const Inspection::TypeDefinition::Tag & Tag) = delete;
-            Inspection::TypeDefinition::Tag & operator=(Inspection::TypeDefinition::Tag && Tag) = delete;
+            auto operator=(Inspection::TypeDefinition::Tag const & Tag) -> Inspection::TypeDefinition::Tag & = delete;
+            auto operator=(Inspection::TypeDefinition::Tag && Tag) -> Inspection::TypeDefinition::Tag & = delete;
         private:
             std::string m_Name;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Expression;
+            std::unique_ptr<Inspection::TypeDefinition::Expression> m_ValueExpression;
         };
         
         class Enumeration

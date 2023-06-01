@@ -11,60 +11,92 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="standard">
-							<string>ID3 2.4</string>
+							<value>
+								<string>ID3 2.4</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>ISO/IEC 8859-1:1998</string>
+							<value>
+								<string>ISO/IEC 8859-1:1998</string>
+							</value>
 						</tag>
 						<tag name="name">
-							<string>Latin alphabet No. 1</string>
+							<value>
+								<string>Latin alphabet No. 1</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="standard">
-							<string>ID3 2.4</string>
+							<value>
+								<string>ID3 2.4</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>ISO/IEC 10646-1:1993</string>
+							<value>
+								<string>ISO/IEC 10646-1:1993</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>RFC 2781</string>
+							<value>
+								<string>RFC 2781</string>
+							</value>
 						</tag>
 						<tag name="name">
-							<string>UTF-16</string>
+							<value>
+								<string>UTF-16</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2" valid="true">
 						<tag name="standard">
-							<string>ID3 2.4</string>
+							<value>
+								<string>ID3 2.4</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>ISO/IEC 10646-1:1993</string>
+							<value>
+								<string>ISO/IEC 10646-1:1993</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>RFC 2781</string>
+							<value>
+								<string>RFC 2781</string>
+							</value>
 						</tag>
 						<tag name="name">
-							<string>UTF-16BE</string>
+							<value>
+								<string>UTF-16BE</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="3" valid="true">
 						<tag name="standard">
-							<string>ID3 2.4</string>
+							<value>
+								<string>ID3 2.4</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>ISO/IEC 10646-1:1993</string>
+							<value>
+								<string>ISO/IEC 10646-1:1993</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>RFC 2279</string>
+							<value>
+								<string>RFC 2279</string>
+							</value>
 						</tag>
 						<tag name="name">
-							<string>UTF-8</string>
+							<value>
+								<string>UTF-8</string>
+							</value>
 						</tag>
 					</element>
 					<fallback-element valid="false">
 						<tag name="standard">
-							<string>ID3 2.4</string>
+							<value>
+								<string>ID3 2.4</string>
+							</value>
 						</tag>
 						<tag name="name"/>
 					</fallback-element>

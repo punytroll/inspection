@@ -69,7 +69,7 @@ static auto AppendOtherData(Inspection::Value * Value, Inspection::Length const 
 
 static auto ApplyTag(Inspection::ExecutionContext & ExecutionContext, Inspection::TypeDefinition::Tag const & Tag, Inspection::Value * Target) -> void
 {
-    if(Tag.HasExpression() == true)
+    if(Tag.HasValueExpression() == true)
     {
         Target->AddTag(Tag.GetName(), Tag.GetAny(ExecutionContext));
     }
@@ -2695,38 +2695,42 @@ std::unique_ptr<Inspection::TypeDefinition::Subtract> Inspection::TypeDefinition
 // Tag                                                                                           //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::any Inspection::TypeDefinition::Tag::GetAny(Inspection::ExecutionContext & ExecutionContext) const
+auto Inspection::TypeDefinition::Tag::GetAny(Inspection::ExecutionContext & ExecutionContext) const -> std::any
 {
-    ASSERTION(m_Expression != nullptr);
+    ASSERTION(m_ValueExpression != nullptr);
     
-    return m_Expression->GetAny(ExecutionContext);
+    return m_ValueExpression->GetAny(ExecutionContext);
 }
 
-const std::string & Inspection::TypeDefinition::Tag::GetName(void) const
+auto Inspection::TypeDefinition::Tag::GetName() const -> std::string const &
 {
     return m_Name;
 }
 
-bool Inspection::TypeDefinition::Tag::HasExpression(void) const
+auto Inspection::TypeDefinition::Tag::HasValueExpression() const -> bool
 {
-    return m_Expression != nullptr;
+    return m_ValueExpression != nullptr;
 }
 
-std::unique_ptr<Inspection::TypeDefinition::Tag> Inspection::TypeDefinition::Tag::Load(const XML::Element * Element)
+auto Inspection::TypeDefinition::Tag::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Tag>
 {
     ASSERTION(Element != nullptr);
     
     auto Result = std::unique_ptr<Inspection::TypeDefinition::Tag>{new Inspection::TypeDefinition::Tag{}};
     
-    ASSERTION(Element->HasAttribute("name") == true);
+    INVALID_INPUT_IF(Element->HasAttribute("name") == false, "A \"tag\" requires a \"name\" attribute.");
     Result->m_Name = Element->GetAttribute("name");
-    if(XML::HasChildElements(Element) == true)
+    for(auto ChildElement : Element->GetChildElements())
     {
-        Result->m_Expression = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
-    }
-    else
-    {
-        ASSERTION_MESSAGE(XML::HasChildNodes(Element) == false, "Tag values must be given as an expression (i.e. <string>Value</string>).");
+        ASSERTION(ChildElement != nullptr);
+        if(ChildElement->GetName() == "value")
+        {
+            Result->m_ValueExpression = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+        }
+        else
+        {
+            UNEXPECTED_CASE("ChildElement->GetName() == " + ChildElement->GetName());
+        }
     }
     
     return Result;

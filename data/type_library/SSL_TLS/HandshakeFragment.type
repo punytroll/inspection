@@ -12,62 +12,86 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>client_hello</string>
+								<value>
+									<string>client_hello</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="interpretation">
-								<string>server_hello</string>
+								<value>
+									<string>server_hello</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="4" valid="true">
 							<tag name="interpretation">
-								<string>new_session_ticket</string>
+								<value>
+									<string>new_session_ticket</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="5" valid="true">
 							<tag name="interpretation">
-								<string>end_of_early_data</string>
+								<value>
+									<string>end_of_early_data</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="8" valid="true">
 							<tag name="interpretation">
-								<string>encrypted_extensions</string>
+								<value>
+									<string>encrypted_extensions</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="11" valid="true">
 							<tag name="interpretation">
-								<string>certificate</string>
+								<value>
+									<string>certificate</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="13" valid="true">
 							<tag name="interpretation">
-								<string>certificate_request</string>
+								<value>
+									<string>certificate_request</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="15" valid="true">
 							<tag name="interpretation">
-								<string>certificate_verify</string>
+								<value>
+									<string>certificate_verify</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="20" valid="true">
 							<tag name="interpretation">
-								<string>finished</string>
+								<value>
+									<string>finished</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="24" valid="true">
 							<tag name="interpretation">
-								<string>key_update</string>
+								<value>
+									<string>key_update</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="254" valid="true">
 							<tag name="interpretation">
-								<string>message_hash</string>
+								<value>
+									<string>message_hash</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="false">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>

@@ -7,151 +7,225 @@
 			<part>16Bit_BigEndian</part>
 		</type-reference>
 		<tag name="standard">
-			<string>TLS 1.3</string>
+			<value>
+				<string>TLS 1.3</string>
+			</value>
 		</tag>
 		<tag name="rfc">
-			<string>8446</string>
+			<value>
+				<string>8446</string>
+			</value>
 		</tag>
 		<tag name="section">
-			<string>4.2.3</string>
+			<value>
+				<string>4.2.3</string>
+			</value>
 		</tag>
 		<interpretation>
 			<apply-enumeration>
 				<enumeration base-data-type="unsigned integer 16bit">
 					<element base-value="513" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pkcs1_sha1</string>
+							<value>
+								<string>rsa_pkcs1_sha1</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="515" valid="true">
 						<tag name="interpretation">
-							<string>ecdsa_sha1</string>
+							<value>
+								<string>ecdsa_sha1</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1025" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pkcs1_sha256</string>
+							<value>
+								<string>rsa_pkcs1_sha256</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1027" valid="true">
 						<tag name="interpretation">
-							<string>ecdsa_secp256r1_sha256</string>
+							<value>
+								<string>ecdsa_secp256r1_sha256</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1281" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pkcs1_sha384</string>
+							<value>
+								<string>rsa_pkcs1_sha384</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1283" valid="true">
 						<tag name="interpretation">
-							<string>ecdsa_secp384r1_sha384</string>
+							<value>
+								<string>ecdsa_secp384r1_sha384</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1537" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pkcs1_sha512</string>
+							<value>
+								<string>rsa_pkcs1_sha512</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1539" valid="true">
 						<tag name="interpretation">
-							<string>ecdsa_secp521r1_sha512</string>
+							<value>
+								<string>ecdsa_secp521r1_sha512</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2052" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pss_rsae_sha256</string>
+							<value>
+								<string>rsa_pss_rsae_sha256</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2053" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pss_rsae_sha384</string>
+							<value>
+								<string>rsa_pss_rsae_sha384</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2054" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pss_rsae_sha512</string>
+							<value>
+								<string>rsa_pss_rsae_sha512</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2055" valid="true">
 						<tag name="interpretation">
-							<string>ed25519</string>
+							<value>
+								<string>ed25519</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2056" valid="true">
 						<tag name="interpretation">
-							<string>ed448</string>
+							<value>
+								<string>ed448</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2057" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pss_pss_sha256</string>
+							<value>
+								<string>rsa_pss_pss_sha256</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2058" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pss_pss_sha384</string>
+							<value>
+								<string>rsa_pss_pss_sha384</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2059" valid="true">
 						<tag name="interpretation">
-							<string>rsa_pss_pss_sha512</string>
+							<value>
+								<string>rsa_pss_pss_sha512</string>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</element>
 					<fallback-element valid="true">
 						<tag name="interpretation">
-							<nothing/>
+							<value>
+								<nothing/>
+							</value>
 						</tag>
 						<tag name="reference">
-							<string>RFC 8446 / 4.2.3</string>
+							<value>
+								<string>RFC 8446 / 4.2.3</string>
+							</value>
 						</tag>
 					</fallback-element>
 				</enumeration>

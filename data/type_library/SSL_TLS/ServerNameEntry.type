@@ -20,12 +20,16 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="interpretation">
-								<string>Hostname</string>
+								<value>
+									<string>Hostname</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="false">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>

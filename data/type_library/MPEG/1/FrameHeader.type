@@ -26,18 +26,26 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>MPEG Version 1</string>
+								<value>
+									<string>MPEG Version 1</string>
+								</value>
 							</tag>
 							<tag name="standard">
-								<string>ISO/IEC 11172-3</string>
+								<value>
+									<string>ISO/IEC 11172-3</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="0" valid="false">
 							<tag name="error">
-								<string>This audio version ID is reserved and MUST NOT be used.</string>
+								<value>
+									<string>This audio version ID is reserved and MUST NOT be used.</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</element>
 					</enumeration>
@@ -56,25 +64,35 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="false">
 							<tag name="error">
-								<string>This layer description is reserved and MUST NOT be used.</string>
+								<value>
+									<string>This layer description is reserved and MUST NOT be used.</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>Layer III</string>
+								<value>
+									<string>Layer III</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="interpretation">
-								<string>Layer II</string>
+								<value>
+									<string>Layer II</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="3" valid="false">
 							<tag name="interpretation">
-								<string>Layer I</string>
+								<value>
+									<string>Layer I</string>
+								</value>
 							</tag>
 						</element>
 					</enumeration>
@@ -93,12 +111,16 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="redundancy">
-								<boolean>false</boolean>
+								<value>
+									<boolean>false</boolean>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="redundancy">
-								<boolean>true</boolean>
+								<value>
+									<boolean>true</boolean>
+								</value>
 							</tag>
 						</element>
 					</enumeration>
@@ -131,43 +153,65 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="value">
-								<unsigned-integer-32bit>44100</unsigned-integer-32bit>
+								<value>
+									<unsigned-integer-32bit>44100</unsigned-integer-32bit>
+								</value>
 							</tag>
 							<tag name="unit">
-								<string>kHz</string>
+								<value>
+									<string>kHz</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>44.1 kHz</string>
+								<value>
+									<string>44.1 kHz</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="value">
-								<unsigned-integer-32bit>48000</unsigned-integer-32bit>
+								<value>
+									<unsigned-integer-32bit>48000</unsigned-integer-32bit>
+								</value>
 							</tag>
 							<tag name="unit">
-								<string>kHz</string>
+								<value>
+									<string>kHz</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>48 kHz</string>
+								<value>
+									<string>48 kHz</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="value">
-								<unsigned-integer-32bit>32000</unsigned-integer-32bit>
+								<value>
+									<unsigned-integer-32bit>32000</unsigned-integer-32bit>
+								</value>
 							</tag>
 							<tag name="unit">
-								<string>kHz</string>
+								<value>
+									<string>kHz</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<string>32 kHz</string>
+								<value>
+									<string>32 kHz</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="3" valid="false">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 							<tag name="error">
-								<string>This sampling frequency is reserved and MUST NOT be used.</string>
+								<value>
+									<string>This sampling frequency is reserved and MUST NOT be used.</string>
+								</value>
 							</tag>
 						</element>
 					</enumeration>
@@ -186,12 +230,16 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="padding">
-								<boolean>false</boolean>
+								<value>
+									<boolean>false</boolean>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="padding">
-								<boolean>true</boolean>
+								<value>
+									<boolean>true</boolean>
+								</value>
 							</tag>
 						</element>
 					</enumeration>
@@ -251,12 +299,16 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="copyright">
-								<boolean>false</boolean>
+								<value>
+									<boolean>false</boolean>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="copyright">
-								<boolean>true</boolean>
+								<value>
+									<boolean>true</boolean>
+								</value>
 							</tag>
 						</element>
 					</enumeration>
@@ -275,12 +327,16 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="original">
-								<boolean>false</boolean>
+								<value>
+									<boolean>false</boolean>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="original">
-								<boolean>true</boolean>
+								<value>
+									<boolean>true</boolean>
+								</value>
 							</tag>
 						</element>
 					</enumeration>
@@ -299,25 +355,35 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="interpretation">
-								<string>no emphasis</string>
+								<value>
+									<string>no emphasis</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>50/15 microsec. emphasis</string>
+								<value>
+									<string>50/15 microsec. emphasis</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="false">
 							<tag name="error">
-								<string>This emphasis is reserved and MUST NOT be used.</string>
+								<value>
+									<string>This emphasis is reserved and MUST NOT be used.</string>
+								</value>
 							</tag>
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</element>
 						<element base-value="3" valid="true">
 							<tag name="interpretation">
-								<string>CCITT J.17</string>
+								<value>
+									<string>CCITT J.17</string>
+								</value>
 							</tag>
 						</element>
 					</enumeration>

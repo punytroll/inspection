@@ -22,13 +22,19 @@
 				</bits>
 			</length>
 			<tag name="standard">
-				<string>ISO 639-2:1998 (alpha-3)</string>
+				<value>
+					<string>ISO 639-2:1998 (alpha-3)</string>
+				</value>
 			</tag>
 			<tag name="interpretation">
-				<nothing/>
+				<value>
+					<nothing/>
+				</value>
 			</tag>
 			<tag name="error">
-				<string>The language code consists of three null bytes. Although common, this is not valid.</string>
+				<value>
+					<string>The language code consists of three null bytes. Although common, this is not valid.</string>
+				</value>
 			</tag>
 		</forward>
 	</alternative>

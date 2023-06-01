@@ -11,22 +11,30 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>unspecified</string>
+							<value>
+								<string>unspecified</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="interpretation">
-							<string>pre-set by artist/producer/mastering engineer</string>
+							<value>
+								<string>pre-set by artist/producer/mastering engineer</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2" valid="true">
 						<tag name="interpretation">
-							<string>set by user</string>
+							<value>
+								<string>set by user</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="3" valid="true">
 						<tag name="interpretation">
-							<string>determined automatically</string>
+							<value>
+								<string>determined automatically</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

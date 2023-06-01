@@ -85,22 +85,30 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>1 byte / sample (1-8 bits / sample)</string>
+														<value>
+															<string>1 byte / sample (1-8 bits / sample)</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>2 bytes / sample (9-16 bits / sample)</string>
+														<value>
+															<string>2 bytes / sample (9-16 bits / sample)</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="2" valid="true">
 													<tag name="interpretation">
-														<string>3 bytes / sample (17-24 bits / sample)</string>
+														<value>
+															<string>3 bytes / sample (17-24 bits / sample)</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="3" valid="true">
 													<tag name="interpretation">
-														<string>4 bytes / sample (25-32 bits / sample)</string>
+														<value>
+															<string>4 bytes / sample (25-32 bits / sample)</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -111,12 +119,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>stereo output</string>
+														<value>
+															<string>stereo output</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>mono output</string>
+														<value>
+															<string>mono output</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -127,12 +139,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>lossless mode</string>
+														<value>
+															<string>lossless mode</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>hybrid mode</string>
+														<value>
+															<string>hybrid mode</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -143,12 +159,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>true stereo</string>
+														<value>
+															<string>true stereo</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>joint stereo (mid/side)</string>
+														<value>
+															<string>joint stereo (mid/side)</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -159,12 +179,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>independent channels</string>
+														<value>
+															<string>independent channels</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>cross-channel decorrelation</string>
+														<value>
+															<string>cross-channel decorrelation</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -175,12 +199,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>flat noise spectrum in hybrid</string>
+														<value>
+															<string>flat noise spectrum in hybrid</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>hybrid noise shaping</string>
+														<value>
+															<string>hybrid noise shaping</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -191,12 +219,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>integer data</string>
+														<value>
+															<string>integer data</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>floating point data</string>
+														<value>
+															<string>floating point data</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -207,12 +239,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>?</string>
+														<value>
+															<string>?</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>extended size integers (> 24 bit) or shifted integers</string>
+														<value>
+															<string>extended size integers (&gt; 24 bit) or shifted integers</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -223,12 +259,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>hybrid mode parameters control noise level</string>
+														<value>
+															<string>hybrid mode parameters control noise level</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>hybrid mode parameters control bitrate</string>
+														<value>
+															<string>hybrid mode parameters control bitrate</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -239,23 +279,32 @@
 									<bit name="FinalBlockInSequence" index="12" as-data-type="boolean"/>
 									<bit name="Reserved" index="27" as-data-type="unsigned integer 8bit">
 										<tag name="information">
-											<string>should not be set</string>
+											<value>
+												<string>should not be set</string>
+											</value>
 										</tag>
 										<tag name="information">
-											<string>decoders should ignore if set</string>
+											<value>
+												<string>decoders should ignore if set</string>
+											</value>
 										</tag>
 									</bit>
 									<bits name="LeftShift" begin-index="13" length="5" as-data-type="unsigned integer 8bit">
 										<tag name="information">
-											<string>places of data left shift after decode</string>
+											<value>
+												<string>places of data left shift after decode</string>
+											</value>
 										</tag>
 									</bits>
 									<bits name="MaximumMagnitudeOfDecodedData" begin-index="18" length="5" as-data-type="unsigned integer 8bit">
 										<tag name="information">
-											<string>number of bits integers require minus 1</string>
+											<value>
+												<string>number of bits integers require minus 1</string>
+											</value>
 										</tag>
 										<tag name="interpretation">
-											<unsigned-integer-8bit>
+											<value>
+												<unsigned-integer-8bit>
 												<add>
 													<!-- "current" refers to the current part, which is the bitset, not the bit. -->
 													<data-reference root="current">
@@ -264,6 +313,7 @@
 													<unsigned-integer-8bit>1</unsigned-integer-8bit>
 												</add>
 											</unsigned-integer-8bit>
+											</value>
 										</tag>
 									</bits>
 									<bits name="SamplingRate" begin-index="23" length="4" as-data-type="unsigned integer 8bit">
@@ -272,82 +322,114 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>6000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>6000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>8000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>8000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="2" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>9600</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>9600</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="3" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>11025</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>11025</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="4" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>12000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>12000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="5" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>16000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>16000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="6" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>22050</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>22050</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="7" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>24000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>24000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="8" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>32000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>32000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="9" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>44100</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>44100</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="10" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>48000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>48000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="11" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>64000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>64000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="12" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>88200</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>88200</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="13" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>96000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>96000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="14" valid="true">
 													<tag name="interpretation">
-														<unsigned-integer-32bit>192000</unsigned-integer-32bit>
+														<value>
+															<unsigned-integer-32bit>192000</unsigned-integer-32bit>
+														</value>
 													</tag>
 												</element>
 												<element base-value="15" valid="true">
 													<tag name="interpretation">
-														<string>unknown/custom</string>
+														<value>
+															<string>unknown/custom</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -360,15 +442,21 @@
 											<enumeration base-data-type="boolean">
 												<element base-value="true" valid="true">
 													<tag name="interpretation">
-														<string>false stereo</string>
+														<value>
+															<string>false stereo</string>
+														</value>
 													</tag>
 													<tag name="interpretation">
-														<string>data is mono but output is stereo</string>
+														<value>
+															<string>data is mono but output is stereo</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="false" valid="true">
 													<tag name="interpretation">
-														<string>true stereo</string>
+														<value>
+															<string>true stereo</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>
@@ -379,12 +467,16 @@
 											<enumeration base-data-type="unsigned integer 8bit">
 												<element base-value="0" valid="true">
 													<tag name="interpretation">
-														<string>PCM audio</string>
+														<value>
+															<string>PCM audio</string>
+														</value>
 													</tag>
 												</element>
 												<element base-value="1" valid="true">
 													<tag name="interpretation">
-														<string>DSD audio</string>
+														<value>
+															<string>DSD audio</string>
+														</value>
 													</tag>
 												</element>
 											</enumeration>

@@ -20,10 +20,14 @@
 				</parameter>
 			</parameters>
 			<tag name="standard">
-				<string>ID3v2.4</string>
+				<value>
+					<string>ID3v2.4</string>
+				</value>
 			</tag>
 			<tag name="interpretation">
-				<string>unknown language</string>
+				<value>
+					<string>unknown language</string>
+				</value>
 			</tag>
 		</forward>
 		<forward>
@@ -42,13 +46,19 @@
 				</bits>
 			</length>
 			<tag name="standard">
-				<string>ISO 639-2:1998 (alpha-3)</string>
+				<value>
+					<string>ISO 639-2:1998 (alpha-3)</string>
+				</value>
 			</tag>
 			<tag name="interpretation">
-				<nothing/>
+				<value>
+					<nothing/>
+				</value>
 			</tag>
 			<tag name="error">
-				<string>The language code is an ASCII string but is not recognized as ISO 639-2:1998 (alpha-3).</string>
+				<value>
+					<string>The language code is an ASCII string but is not recognized as ISO 639-2:1998 (alpha-3).</string>
+				</value>
 			</tag>
 		</forward>
 		<forward>
@@ -66,13 +76,19 @@
 				</bits>
 			</length>
 			<tag name="standard">
-				<string>ISO 639-2:1998 (alpha-3)</string>
+				<value>
+					<string>ISO 639-2:1998 (alpha-3)</string>
+				</value>
 			</tag>
 			<tag name="interpretation">
-				<nothing/>
+				<value>
+					<nothing/>
+				</value>
 			</tag>
 			<tag name="error">
-				<string>The language code consists of three null bytes. Although common, this is not valid.</string>
+				<value>
+					<string>The language code consists of three null bytes. Although common, this is not valid.</string>
+				</value>
 			</tag>
 		</forward>
 		<forward>
@@ -90,13 +106,19 @@
 				</bits>
 			</length>
 			<tag name="standard">
-				<string>ISO 639-2:1998 (alpha-3)</string>
+				<value>
+					<string>ISO 639-2:1998 (alpha-3)</string>
+				</value>
 			</tag>
 			<tag name="interpretation">
-				<nothing/>
+				<value>
+					<nothing/>
+				</value>
 			</tag>
 			<tag name="error">
-				<string>Could not read a valid ASCII string to be interpreted as an ISO 639-2:1998 (alpha-3) language code.</string>
+				<value>
+					<string>Could not read a valid ASCII string to be interpreted as an ISO 639-2:1998 (alpha-3) language code.</string>
+				</value>
 			</tag>
 		</forward>
 	</alternative>

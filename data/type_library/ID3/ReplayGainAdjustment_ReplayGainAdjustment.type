@@ -7,12 +7,14 @@
 			<part>9Bit_BigEndian</part>
 		</type-reference>
 		<tag name="interpretation">
-			<divide>
+			<value>
+				<divide>
 				<single-precision-real>
 					<data-reference root="current"/>
 				</single-precision-real>
 				<single-precision-real>10.0</single-precision-real>
 			</divide>
+			</value>
 		</tag>
 	</forward>
 </type>

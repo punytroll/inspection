@@ -48,10 +48,12 @@
 				<part>3Bit</part>
 			</type-reference>
 			<tag name="value">
-				<add>
+				<value>
+					<add>
 					<data-reference root="current"/>
 					<unsigned-integer-8bit>1</unsigned-integer-8bit>
 				</add>
+				</value>
 			</tag>
 		</field>
 		<field name="BitsPerSample">
@@ -62,10 +64,12 @@
 				<part>5Bit</part>
 			</type-reference>
 			<tag name="value">
-				<add>
+				<value>
+					<add>
 					<data-reference root="current"/>
 					<unsigned-integer-8bit>1</unsigned-integer-8bit>
 				</add>
+				</value>
 			</tag>
 		</field>
 		<field name="TotalSamplesPerChannel">

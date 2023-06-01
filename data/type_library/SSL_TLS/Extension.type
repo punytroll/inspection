@@ -12,156 +12,220 @@
 					<enumeration base-data-type="unsigned integer 16bit">
 						<element base-value="0" valid="true">
 							<tag name="interpretation">
-								<string>server_name</string>
+								<value>
+									<string>server_name</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>max_fragment_length</string>
+								<value>
+									<string>max_fragment_length</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="5" valid="true">
 							<tag name="interpretation">
-								<string>status_request</string>
+								<value>
+									<string>status_request</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="10" valid="true">
 							<tag name="interpretation">
-								<string>supported_groups</string>
+								<value>
+									<string>supported_groups</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="11" valid="true">
 							<tag name="interpretation">
-								<string>ec_point_formats</string>
+								<value>
+									<string>ec_point_formats</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="13" valid="true">
 							<tag name="interpretation">
-								<string>signature_algorithms</string>
+								<value>
+									<string>signature_algorithms</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="14" valid="true">
 							<tag name="interpretation">
-								<string>use_srtp</string>
+								<value>
+									<string>use_srtp</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="15" valid="true">
 							<tag name="interpretation">
-								<string>heartbeat</string>
+								<value>
+									<string>heartbeat</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="16" valid="true">
 							<tag name="interpretation">
-								<string>application_layer_protocol_negotiation</string>
+								<value>
+									<string>application_layer_protocol_negotiation</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="18" valid="true">
 							<tag name="interpretation">
-								<string>signed_certificate_timestamp</string>
+								<value>
+									<string>signed_certificate_timestamp</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="19" valid="true">
 							<tag name="interpretation">
-								<string>client_certificate_type</string>
+								<value>
+									<string>client_certificate_type</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="20" valid="true">
 							<tag name="interpretation">
-								<string>server_certificate_type</string>
+								<value>
+									<string>server_certificate_type</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="21" valid="true">
 							<tag name="interpretation">
-								<string>padding</string>
+								<value>
+									<string>padding</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="23" valid="true">
 							<tag name="interpretation">
-								<string>extended_master_secret</string>
+								<value>
+									<string>extended_master_secret</string>
+								</value>
 							</tag>
 							<tag name="rfc">
-								<string>7627</string>
+								<value>
+									<string>7627</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="28" valid="true">
 							<tag name="interpretation">
-								<string>record_size_limit</string>
+								<value>
+									<string>record_size_limit</string>
+								</value>
 							</tag>
 							<tag name="rfc">
-								<string>8449</string>
+								<value>
+									<string>8449</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="34" valid="true">
 							<tag name="interpretation">
-								<string>delegated_credential</string>
+								<value>
+									<string>delegated_credential</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="35" valid="true">
 							<tag name="interpretation">
-								<string>session_ticket</string>
+								<value>
+									<string>session_ticket</string>
+								</value>
 							</tag>
 							<tag name="rfc">
-								<string>5077</string>
+								<value>
+									<string>5077</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="41" valid="true">
 							<tag name="interpretation">
-								<string>pre_shared_key</string>
+								<value>
+									<string>pre_shared_key</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="42" valid="true">
 							<tag name="interpretation">
-								<string>early_data</string>
+								<value>
+									<string>early_data</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="43" valid="true">
 							<tag name="interpretation">
-								<string>supported_versions</string>
+								<value>
+									<string>supported_versions</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="44" valid="true">
 							<tag name="interpretation">
-								<string>cookie</string>
+								<value>
+									<string>cookie</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="45" valid="true">
 							<tag name="interpretation">
-								<string>psk_key_exchange_modes</string>
+								<value>
+									<string>psk_key_exchange_modes</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="47" valid="true">
 							<tag name="interpretation">
-								<string>certificate_authorities</string>
+								<value>
+									<string>certificate_authorities</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="48" valid="true">
 							<tag name="interpretation">
-								<string>oid_filters</string>
+								<value>
+									<string>oid_filters</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="49" valid="true">
 							<tag name="interpretation">
-								<string>post_handshake_auth</string>
+								<value>
+									<string>post_handshake_auth</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="50" valid="true">
 							<tag name="interpretation">
-								<string>signature_algorithms_cert</string>
+								<value>
+									<string>signature_algorithms_cert</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="51" valid="true">
 							<tag name="interpretation">
-								<string>key_share</string>
+								<value>
+									<string>key_share</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="65281" valid="true">
 							<tag name="interpretation">
-								<string>renegotiation_info</string>
+								<value>
+									<string>renegotiation_info</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="true">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>
@@ -489,12 +553,16 @@
 								<enumeration base-data-type="unsigned integer 8bit">
 									<element base-value="1" valid="true">
 										<tag name="interpretation">
-											<string>OCSP</string>
+											<value>
+												<string>OCSP</string>
+											</value>
 										</tag>
 									</element>
 									<fallback-element valid="true">
 										<tag name="interpretation">
-											<nothing/>
+											<value>
+												<nothing/>
+											</value>
 										</tag>
 									</fallback-element>
 								</enumeration>

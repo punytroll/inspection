@@ -77,10 +77,14 @@
 					</forward>
 					<sequence>
 						<tag name="error">
-							<string>The "Year" field must be four bytes long and any unused bytes at the end must be filled with binary zeros.</string>
+							<value>
+								<string>The "Year" field must be four bytes long and any unused bytes at the end must be filled with binary zeros.</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>ID3v1</string>
+							<value>
+								<string>ID3v1</string>
+							</value>
 						</tag>
 						<field name="String">
 							<type-reference>
@@ -121,7 +125,9 @@
 				</type-reference>
 			</field>
 			<tag name="version">
-				<string>ID3v1</string>
+				<value>
+					<string>ID3v1</string>
+				</value>
 			</tag>
 		</sequence>
 		<sequence>
@@ -201,10 +207,14 @@
 					</forward>
 					<sequence>
 						<tag name="error">
-							<string>The "Year" field must be four bytes long and any unused bytes at the end must be filled with binary zeros.</string>
+							<value>
+								<string>The "Year" field must be four bytes long and any unused bytes at the end must be filled with binary zeros.</string>
+							</value>
 						</tag>
 						<tag name="standard">
-							<string>ID3v1</string>
+							<value>
+								<string>ID3v1</string>
+							</value>
 						</tag>
 						<field name="String">
 							<type-reference>
@@ -253,7 +263,9 @@
 				</type-reference>
 			</field>
 			<tag name="version">
-				<string>ID3v1.1</string>
+				<value>
+					<string>ID3v1.1</string>
+				</value>
 			</tag>
 		</sequence>
 	</alternative>

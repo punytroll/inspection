@@ -11,118 +11,174 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>get from STREAMINFO metadata block</string>
+							<value>
+								<string>get from STREAMINFO metadata block</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="value">
-							<single-precision-real>88.2</single-precision-real>
+							<value>
+								<single-precision-real>88.2</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2" valid="true">
 						<tag name="value">
-							<single-precision-real>176.4</single-precision-real>
+							<value>
+								<single-precision-real>176.4</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="3" valid="true">
 						<tag name="value">
-							<single-precision-real>192.0</single-precision-real>
+							<value>
+								<single-precision-real>192.0</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="4" valid="true">
 						<tag name="value">
-							<single-precision-real>8.0</single-precision-real>
+							<value>
+								<single-precision-real>8.0</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="5" valid="true">
 						<tag name="value">
-							<single-precision-real>16.0</single-precision-real>
+							<value>
+								<single-precision-real>16.0</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="6" valid="true">
 						<tag name="value">
-							<single-precision-real>22.05</single-precision-real>
+							<value>
+								<single-precision-real>22.05</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="7" valid="true">
 						<tag name="value">
-							<single-precision-real>24.0</single-precision-real>
+							<value>
+								<single-precision-real>24.0</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="8" valid="true">
 						<tag name="value">
-							<single-precision-real>32.0</single-precision-real>
+							<value>
+								<single-precision-real>32.0</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="9" valid="true">
 						<tag name="value">
-							<single-precision-real>44.1</single-precision-real>
+							<value>
+								<single-precision-real>44.1</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="10" valid="true">
 						<tag name="value">
-							<single-precision-real>48.0</single-precision-real>
+							<value>
+								<single-precision-real>48.0</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="11" valid="true">
 						<tag name="value">
-							<single-precision-real>96.0</single-precision-real>
+							<value>
+								<single-precision-real>96.0</single-precision-real>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>kHz</string>
+							<value>
+								<string>kHz</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="12" valid="true">
 						<tag name="interpretation">
-							<string>get 8 bit sample rate (in kHz) from end of header</string>
+							<value>
+								<string>get 8 bit sample rate (in kHz) from end of header</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="13" valid="true">
 						<tag name="interpretation">
-							<string>get 16 bit sample rate (in Hz) from end of header</string>
+							<value>
+								<string>get 16 bit sample rate (in Hz) from end of header</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="14" valid="true">
 						<tag name="interpretation">
-							<string>get 16 bit smaple rate (in tens of Hz) from end of header</string>
+							<value>
+								<string>get 16 bit smaple rate (in tens of Hz) from end of header</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="15" valid="false">
 						<tag name="interpretation">
-							<string>invalid, to prevent sync-fooling string of 1s</string>
+							<value>
+								<string>invalid, to prevent sync-fooling string of 1s</string>
+							</value>
 						</tag>
 						<tag name="error">
-							<string>The sample rate MUST NOT use the value 15.</string>
+							<value>
+								<string>The sample rate MUST NOT use the value 15.</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

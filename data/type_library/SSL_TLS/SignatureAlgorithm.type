@@ -12,42 +12,58 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="interpretation">
-								<string>None</string>
+								<value>
+									<string>None</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>MD5</string>
+								<value>
+									<string>MD5</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="interpretation">
-								<string>SHA1</string>
+								<value>
+									<string>SHA1</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="3" valid="true">
 							<tag name="interpretation">
-								<string>SHA224</string>
+								<value>
+									<string>SHA224</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="4" valid="true">
 							<tag name="interpretation">
-								<string>SHA256</string>
+								<value>
+									<string>SHA256</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="5" valid="true">
 							<tag name="interpretation">
-								<string>SHA384</string>
+								<value>
+									<string>SHA384</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="6" valid="true">
 							<tag name="interpretation">
-								<string>SHA512</string>
+								<value>
+									<string>SHA512</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="false">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>
@@ -66,30 +82,42 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="false">
 							<tag name="interpretation">
-								<string>Anonymous</string>
+								<value>
+									<string>Anonymous</string>
+								</value>
 							</tag>
 							<tag name="error">
-								<string>This signature algorithm is not allowed in the Signature Algorithms extension.</string>
+								<value>
+									<string>This signature algorithm is not allowed in the Signature Algorithms extension.</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>RSA</string>
+								<value>
+									<string>RSA</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="interpretation">
-								<string>DSA</string>
+								<value>
+									<string>DSA</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="3" valid="true">
 							<tag name="interpretation">
-								<string>ECDSA</string>
+								<value>
+									<string>ECDSA</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="false">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>

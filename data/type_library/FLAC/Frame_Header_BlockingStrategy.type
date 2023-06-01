@@ -11,12 +11,16 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>fixed-blocksize stream; frame header encodes the frame number</string>
+							<value>
+								<string>fixed-blocksize stream; frame header encodes the frame number</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="interpretation">
-							<string>variable-blocksize stream; frame header encodes the sample number</string>
+							<value>
+								<string>variable-blocksize stream; frame header encodes the sample number</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

@@ -6,18 +6,24 @@
 		</type-reference>
 		<bit name="Unsynchronisation" index="7" as-data-type="boolean">
 			<tag name="identifier">
-				<string>a</string>
+				<value>
+					<string>a</string>
+				</value>
 			</tag>
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">
 						<tag name="interpretation">
-							<string>Unsynchronisation is used.</string>
+							<value>
+								<string>Unsynchronisation is used.</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="false" valid="true">
 						<tag name="interpretation">
-							<string>Unsynchronisation is NOT used.</string>
+							<value>
+								<string>Unsynchronisation is NOT used.</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>
@@ -25,18 +31,24 @@
 		</bit>
 		<bit name="ExtendedHeader" index="6" as-data-type="boolean">
 			<tag name="identifier">
-				<string>b</string>
+				<value>
+					<string>b</string>
+				</value>
 			</tag>
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">
 						<tag name="interpretation">
-							<string>The header is followed by an extended header.</string>
+							<value>
+								<string>The header is followed by an extended header.</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="false" valid="true">
 						<tag name="interpretation">
-							<string>The header is NOT followed by an extended header.,</string>
+							<value>
+								<string>The header is NOT followed by an extended header.,</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>
@@ -44,18 +56,24 @@
 		</bit>
 		<bit name="ExperimentalIndicator" index="5" as-data-type="boolean">
 			<tag name="identifier">
-				<string>c</string>
+				<value>
+					<string>c</string>
+				</value>
 			</tag>
 			<apply-enumeration>
 				<enumeration base-data-type="boolean">
 					<element base-value="true" valid="true">
 						<tag name="interpretation">
-							<string>The tag is in an experimental stage.</string>
+							<value>
+								<string>The tag is in an experimental stage.</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="false" valid="true">
 						<tag name="interpretation">
-							<string>The tag is NOT in an experimental stage.</string>
+							<value>
+								<string>The tag is NOT in an experimental stage.</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

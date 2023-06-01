@@ -11,59 +11,85 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>get from STREAMINFO metadata block</string>
+							<value>
+								<string>get from STREAMINFO metadata block</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="1" valid="true">
 						<tag name="value">
-							<unsigned-integer-8bit>8</unsigned-integer-8bit>
+							<value>
+								<unsigned-integer-8bit>8</unsigned-integer-8bit>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>bits</string>
+							<value>
+								<string>bits</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="2" valid="true">
 						<tag name="value">
-							<unsigned-integer-8bit>12</unsigned-integer-8bit>
+							<value>
+								<unsigned-integer-8bit>12</unsigned-integer-8bit>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>bits</string>
+							<value>
+								<string>bits</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="3" valid="false">
 						<tag name="reserved"/>
 						<tag name="error">
-							<string>The sample size 3 MUST NOT be used.</string>
+							<value>
+								<string>The sample size 3 MUST NOT be used.</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="4" valid="true">
 						<tag name="value">
-							<unsigned-integer-8bit>16</unsigned-integer-8bit>
+							<value>
+								<unsigned-integer-8bit>16</unsigned-integer-8bit>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>bits</string>
+							<value>
+								<string>bits</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="5" valid="true">
 						<tag name="value">
-							<unsigned-integer-8bit>20</unsigned-integer-8bit>
+							<value>
+								<unsigned-integer-8bit>20</unsigned-integer-8bit>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>bits</string>
+							<value>
+								<string>bits</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="6" valid="true">
 						<tag name="value">
-							<unsigned-integer-8bit>24</unsigned-integer-8bit>
+							<value>
+								<unsigned-integer-8bit>24</unsigned-integer-8bit>
+							</value>
 						</tag>
 						<tag name="unit">
-							<string>bits</string>
+							<value>
+								<string>bits</string>
+							</value>
 						</tag>
 					</element>
 					<element base-value="7" valid="false">
 						<tag name="reserved"/>
 						<tag name="error">
-							<string>The sample size 7 MUST NOT be used.</string>
+							<value>
+								<string>The sample size 7 MUST NOT be used.</string>
+							</value>
 						</tag>
 					</element>
 				</enumeration>

@@ -3,7 +3,9 @@
 		<field name="BitmapFileHeader">
 			<sequence>
 				<tag name="type name">
-					<string>BITMAPFILEHEADER</string>
+					<value>
+						<string>BITMAPFILEHEADER</string>
+					</value>
 				</tag>
 				<field name="Type">
 					<type-reference>

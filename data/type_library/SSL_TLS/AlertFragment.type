@@ -12,17 +12,23 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="1" valid="true">
 							<tag name="interpretation">
-								<string>warning</string>
+								<value>
+									<string>warning</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="2" valid="true">
 							<tag name="interpretation">
-								<string>fatal</string>
+								<value>
+									<string>fatal</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="true">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>
@@ -41,142 +47,198 @@
 					<enumeration base-data-type="unsigned integer 8bit">
 						<element base-value="0" valid="true">
 							<tag name="interpretation">
-								<string>close_notify</string>
+								<value>
+									<string>close_notify</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="10" valid="true">
 							<tag name="interpretation">
-								<string>unexpected_message</string>
+								<value>
+									<string>unexpected_message</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="20" valid="true">
 							<tag name="interpretation">
-								<string>bad_record_mac</string>
+								<value>
+									<string>bad_record_mac</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="22" valid="true">
 							<tag name="interpretation">
-								<string>record_overflow</string>
+								<value>
+									<string>record_overflow</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="40" valid="true">
 							<tag name="interpretation">
-								<string>handshake_failure</string>
+								<value>
+									<string>handshake_failure</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="42" valid="true">
 							<tag name="interpretation">
-								<string>bad_certificate</string>
+								<value>
+									<string>bad_certificate</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="43" valid="true">
 							<tag name="interpretation">
-								<string>unsupported_certificate</string>
+								<value>
+									<string>unsupported_certificate</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="44" valid="true">
 							<tag name="interpretation">
-								<string>certificate_revoked</string>
+								<value>
+									<string>certificate_revoked</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="45" valid="true">
 							<tag name="interpretation">
-								<string>certificate_expired</string>
+								<value>
+									<string>certificate_expired</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="46" valid="true">
 							<tag name="interpretation">
-								<string>certificate_unknown</string>
+								<value>
+									<string>certificate_unknown</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="47" valid="true">
 							<tag name="interpretation">
-								<string>illigal_parameter</string>
+								<value>
+									<string>illigal_parameter</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="48" valid="true">
 							<tag name="interpretation">
-								<string>unknown_ca</string>
+								<value>
+									<string>unknown_ca</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="49" valid="true">
 							<tag name="interpretation">
-								<string>access_denied</string>
+								<value>
+									<string>access_denied</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="50" valid="true">
 							<tag name="interpretation">
-								<string>decode_error</string>
+								<value>
+									<string>decode_error</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="51" valid="true">
 							<tag name="interpretation">
-								<string>decrypt_error</string>
+								<value>
+									<string>decrypt_error</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="70" valid="true">
 							<tag name="interpretation">
-								<string>protocol_version</string>
+								<value>
+									<string>protocol_version</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="71" valid="true">
 							<tag name="interpretation">
-								<string>insufficient_security</string>
+								<value>
+									<string>insufficient_security</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="80" valid="true">
 							<tag name="interpretation">
-								<string>internal_error</string>
+								<value>
+									<string>internal_error</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="86" valid="true">
 							<tag name="interpretation">
-								<string>inappropriate_fallback</string>
+								<value>
+									<string>inappropriate_fallback</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="90" valid="true">
 							<tag name="interpretation">
-								<string>user_cancelled</string>
+								<value>
+									<string>user_cancelled</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="109" valid="true">
 							<tag name="interpretation">
-								<string>missing_extension</string>
+								<value>
+									<string>missing_extension</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="110" valid="true">
 							<tag name="interpretation">
-								<string>unsupported_extension</string>
+								<value>
+									<string>unsupported_extension</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="112" valid="true">
 							<tag name="interpretation">
-								<string>unrecognized_name</string>
+								<value>
+									<string>unrecognized_name</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="113" valid="true">
 							<tag name="interpretation">
-								<string>bad_certificate_status_response</string>
+								<value>
+									<string>bad_certificate_status_response</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="115" valid="true">
 							<tag name="interpretation">
-								<string>unknown_psk_identity</string>
+								<value>
+									<string>unknown_psk_identity</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="116" valid="true">
 							<tag name="interpretation">
-								<string>certificate_required</string>
+								<value>
+									<string>certificate_required</string>
+								</value>
 							</tag>
 						</element>
 						<element base-value="120" valid="true">
 							<tag name="interpretation">
-								<string>no_application_protocol</string>
+								<value>
+									<string>no_application_protocol</string>
+								</value>
 							</tag>
 						</element>
 						<fallback-element valid="true">
 							<tag name="interpretation">
-								<nothing/>
+								<value>
+									<nothing/>
+								</value>
 							</tag>
 						</fallback-element>
 					</enumeration>

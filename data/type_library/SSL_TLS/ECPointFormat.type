@@ -11,12 +11,16 @@
 				<enumeration base-data-type="unsigned integer 8bit">
 					<element base-value="0" valid="true">
 						<tag name="interpretation">
-							<string>Uncompressed</string>
+							<value>
+								<string>Uncompressed</string>
+							</value>
 						</tag>
 					</element>
 					<fallback-element valid="false">
 						<tag name="interpretation">
-							<nothing/>
+							<value>
+								<nothing/>
+							</value>
 						</tag>
 					</fallback-element>
 				</enumeration>
