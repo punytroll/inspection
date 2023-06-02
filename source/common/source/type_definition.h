@@ -641,41 +641,6 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::Alternative && Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
         };
         
-        class Array : public Inspection::TypeDefinition::Part
-        {
-        public:
-            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Array>;
-        public:
-            enum class IterateType
-            {
-                AtLeastOneUntilFailureOrLength,
-                ForEachField,
-                NumberOfElements,
-                UntilFailureOrLength,
-                UntilLength
-            };
-        public:
-            ~Array(void) override = default;
-            auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
-            auto GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
-        public:
-            Inspection::TypeDefinition::Array::IterateType IterateType;
-            std::unique_ptr<Inspection::TypeDefinition::FieldReference> IterateForEachField;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> IterateNumberOfElements;
-            std::optional<std::string> ElementName;
-            std::unique_ptr<Inspection::TypeDefinition::Parameters> ElementParameters;
-        protected:
-            auto _LoadProperty(XML::Element const * Element) -> void override;
-        private:
-            Array(void);
-            Array(Inspection::TypeDefinition::Array const & Array) = delete;
-            Array(Inspection::TypeDefinition::Array && Array) = delete;
-            auto operator=(Inspection::TypeDefinition::Array const & Array) -> Inspection::TypeDefinition::Array & = delete;
-            auto operator=(Inspection::TypeDefinition::Array && Array) -> Inspection::TypeDefinition::Array & = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_ElementType;
-        };
-        
         class Field : public Inspection::TypeDefinition::Part
         {
         public:
