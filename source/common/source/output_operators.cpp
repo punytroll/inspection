@@ -483,7 +483,11 @@ auto Inspection::to_string(enum Inspection::TypeDefinition::PartType const & Par
 
 auto Inspection::to_string(std::type_info const & TypeInformation) -> std::string
 {
-    if(TypeInformation == typeid(std::bitset<32>))
+    if(TypeInformation == typeid(std::bitset<16>))
+    {
+        return "std::bitset<16>";
+    }
+    else if(TypeInformation == typeid(std::bitset<32>))
     {
         return "std::bitset<32>";
     }

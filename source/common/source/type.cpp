@@ -225,10 +225,6 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Get_ASF_Object;
             }
-            else if(HardcodedText->GetText() == "Get_ASF_StreamBitrateProperties_BitrateRecord_Flags")
-            {
-                Result->m_HardcodedGetter = Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags;
-            }
             else if(HardcodedText->GetText() == "Get_ASF_StreamPropertiesObjectData")
             {
                 Result->m_HardcodedGetter = Inspection::Get_ASF_StreamPropertiesObjectData;
@@ -244,6 +240,10 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             else if(HardcodedText->GetText() == "Get_BitSet_16Bit_BigEndian_LeastSignificantBitFirstPerByte")
             {
                 Result->m_HardcodedGetter = Inspection::Get_BitSet_16Bit_BigEndian_LeastSignificantBitFirstPerByte;
+            }
+            else if(HardcodedText->GetText() == "Get_BitSet_16Bit_LittleEndian_LeastSignificantBitFirstPerByte")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_BitSet_16Bit_LittleEndian_LeastSignificantBitFirstPerByte;
             }
             else if(HardcodedText->GetText() == "Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte")
             {

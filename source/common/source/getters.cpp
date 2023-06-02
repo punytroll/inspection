@@ -1514,45 +1514,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_Object(Inspection::Reade
     return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    auto Continue = true;
-    
-    // reading
-    if(Continue == true)
-    {
-        auto PartReader = Inspection::Reader{Reader};
-        auto PartResult{Inspection::Get_BitSet_16Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
-        
-        Continue = PartResult->GetSuccess();
-        Result->GetValue()->Extend(PartResult->ExtractValue());
-        Reader.AdvancePosition(PartReader.GetConsumedLength());
-    }
-    //~ Buffer.SetPosition(Position);
-    //~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::LeastSignificantBitFirst);
-    //~ if(Continue == true)
-    //~ {
-        //~ Inspection::Reader FieldReader{Buffer, Inspection::Length{0, 7}}};
-        //~ auto FieldResult{Get_UnsignedInteger_7Bit(FieldReader)};
-        //~ auto FieldValue{Result->GetValue()->AppendField("[0-6] StreamNumber", FieldResult->GetValue())};
-        
-        //~ UpdateState(Continue, Buffer, FieldResult, FieldReader);
-    //~ }
-    //~ if(Continue == true)
-    //~ {
-        //~ auto ReservedResult{Get_Data_Unset_EndedByLength(Buffer, Inspection::Length(0ull, 9))};
-        
-        //~ Result->GetValue()->AppendField("[7-15] Reserved", ReservedResult->GetValue());
-        //~ Continue = ReservedResult->GetSuccess();
-    //~ }
-    //~ Buffer.SetBitstreamType(Inspection::Buffer::BitstreamType::MostSignificantBitFirst);
-    // finalization
-    Result->SetSuccess(Continue);
-    
-    return Result;
-}
-
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_StreamProperties_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();

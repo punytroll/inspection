@@ -1018,6 +1018,10 @@ auto Inspection::TypeDefinition::BitsInterpretation::Apply(Inspection::Execution
     {
         Result = ::ApplyBitsInterpretation(ExecutionContext, std::any_cast<std::bitset<8> const &>(Data), *this, Target);
     }
+    else if(Data.type() == typeid(std::bitset<16>))
+    {
+        Result = ::ApplyBitsInterpretation(ExecutionContext, std::any_cast<std::bitset<16> const &>(Data), *this, Target);
+    }
     else if(Data.type() == typeid(std::bitset<32>))
     {
         Result = ::ApplyBitsInterpretation(ExecutionContext, std::any_cast<std::bitset<32> const &>(Data), *this, Target);

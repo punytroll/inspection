@@ -36,7 +36,6 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_Metadata_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_Object(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-    std::unique_ptr<Inspection::Result> Get_ASF_StreamBitrateProperties_BitrateRecord_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_StreamProperties_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_StreamProperties_TypeSpecificData_AudioMedia(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_StreamPropertiesObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);

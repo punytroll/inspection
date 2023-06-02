@@ -1,3 +1,10 @@
 <type>
-	<hardcoded>Get_ASF_StreamBitrateProperties_BitrateRecord_Flags</hardcoded>
+	<forward>
+		<type-reference>
+			<part>BitSet</part>
+			<part>16Bit_LittleEndian_LeastSignificantBitFirstPerByte</part>
+		</type-reference>
+		<bits name="StreamNumber" begin-index="0" length="7" as-data-type="unsigned integer 8bit"/>
+		<bits name="Reserved" begin-index="7" length="9" as-data-type="nothing" data-verification="unset"/>
+	</forward>
 </type>
