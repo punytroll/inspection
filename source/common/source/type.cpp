@@ -185,10 +185,6 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_Apple_AppleDouble_File;
             }
-            else if(HardcodedText->GetText() == "Get_Array_EndedByLength")
-            {
-                Result->m_HardcodedGetter = Inspection::Get_Array_EndedByLength;
-            }
             else if(HardcodedText->GetText() == "Get_Array_EndedByNumberOfElements")
             {
                 Result->m_HardcodedGetter = Inspection::Get_Array_EndedByNumberOfElements;

@@ -50,29 +50,21 @@
 				<part>16Bit_BigEndian</part>
 			</type-reference>
 		</field>
-		<field name="EntryDescriptors">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByNumberOfElements</part>
-			</type-reference>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>Apple</part>
-						<part>AppleDouble_EntryDescriptor</part>
-					</type-reference>
-				</parameter>
-				<parameter name="ElementName">
-					<string>EntryDescriptor</string>
-				</parameter>
-				<parameter name="NumberOfElements">
-					<unsigned-integer-64bit>
-						<data-reference root="type">
-							<field>NumberOfEntries</field>
-						</data-reference>
-					</unsigned-integer-64bit>
-				</parameter>
-			</parameters>
-		</field>
+		<array name="EntryDescriptors">
+			<iterate type="number-of-elements">
+				<unsigned-integer-64bit>
+					<data-reference root="type">
+						<field>NumberOfEntries</field>
+					</data-reference>
+				</unsigned-integer-64bit>
+			</iterate>
+			<element-name>EntryDescriptor</element-name>
+			<element-type>
+				<type-reference>
+					<part>Apple</part>
+					<part>AppleDouble_EntryDescriptor</part>
+				</type-reference>
+			</element-type>
+		</array>
 	</sequence>
 </type>

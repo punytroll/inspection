@@ -8,30 +8,22 @@
 				<part>16Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="LanguageIDRecords">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByNumberOfElements</part>
-			</type-reference>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>ASF</part>
-						<part>LanguageList</part>
-						<part>LanguageIDRecord</part>
-					</type-reference>
-				</parameter>
-				<parameter name="ElementName">
-					<string>LanguageIDRecord</string>
-				</parameter>
-				<parameter name="NumberOfElements">
-					<unsigned-integer-64bit>
-						<data-reference root="type">
-							<field>LanguageIDRecordsCount</field>
-						</data-reference>
-					</unsigned-integer-64bit>
-				</parameter>
-			</parameters>
-		</field>
+		<array name="LanguageIDRecords">
+			<iterate type="number-of-elements">
+				<unsigned-integer-64bit>
+					<data-reference root="type">
+						<field>LanguageIDRecordsCount</field>
+					</data-reference>
+				</unsigned-integer-64bit>
+			</iterate>
+			<element-type>
+				<type-reference>
+					<part>ASF</part>
+					<part>LanguageList</part>
+					<part>LanguageIDRecord</part>
+				</type-reference>
+			</element-type>
+			<element-name>LanguageIDRecord</element-name>
+		</array>
 	</sequence>
 </type>

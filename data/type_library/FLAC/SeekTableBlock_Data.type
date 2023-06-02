@@ -1,19 +1,36 @@
 <type>
-	<field name="SeekPoints">
-		<type-reference>
-			<part>Array</part>
-			<part>EndedByLength</part>
-		</type-reference>
-		<parameters>
-			<parameter name="ElementType">
-				<type-reference>
-					<part>FLAC</part>
-					<part>SeekTableBlock_SeekPoint</part>
-				</type-reference>
-			</parameter>
-			<parameter name="ElementName">
-				<string>SeekPoint</string>
-			</parameter>
-		</parameters>
-	</field>
+	<array name="SeekPoints">
+		<iterate type="until-length"/>
+		<element-name>SeekPoint</element-name>
+		<element-type>
+			<type>
+				<sequence>
+					<field name="SampleNumberOfFirstSampleInTargetFrame">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>64Bit_BigEndian</part>
+						</type-reference>
+					</field>
+					<field name="ByteOffsetOfTargetFrame">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>64Bit_BigEndian</part>
+						</type-reference>
+					</field>
+					<field name="NumberOfSamplesInTargetFrame">
+						<type-reference>
+							<part>Number</part>
+							<part>Integer</part>
+							<part>Unsigned</part>
+							<part>16Bit_BigEndian</part>
+						</type-reference>
+					</field>
+				</sequence>
+			</type>
+		</element-type>
+	</array>
 </type>

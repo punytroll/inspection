@@ -20,30 +20,22 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="CodecEntries">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByNumberOfElements</part>
-			</type-reference>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>ASF</part>
-						<part>CodecList</part>
-						<part>CodecEntry</part>
-					</type-reference>
-				</parameter>
-				<parameter name="ElementName">
-					<string>CodecEntry</string>
-				</parameter>
-				<parameter name="NumberOfElements">
-					<unsigned-integer-64bit>
-						<data-reference root="type">
-							<field>CodecEntriesCount</field>
-						</data-reference>
-					</unsigned-integer-64bit>
-				</parameter>
-			</parameters>
-		</field>
+		<array name="CodecEntries">
+			<iterate type="number-of-elements">
+				<unsigned-integer-64bit>
+					<data-reference root="type">
+						<field>CodecEntriesCount</field>
+					</data-reference>
+				</unsigned-integer-64bit>
+			</iterate>
+			<element-type>
+				<type-reference>
+					<part>ASF</part>
+					<part>CodecList</part>
+					<part>CodecEntry</part>
+				</type-reference>
+			</element-type>
+			<element-name>CodecEntry</element-name>
+		</array>
 	</sequence>
 </type>

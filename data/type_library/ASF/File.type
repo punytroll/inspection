@@ -12,22 +12,15 @@
 				<part>DataObject</part>
 			</type-reference>
 		</field>
-		<field name="Objects">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByLength</part>
-			</type-reference>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>ASF</part>
-						<part>Object</part>
-					</type-reference>
-				</parameter>
-				<parameter name="ElementName">
-					<string>Object</string>
-				</parameter>
-			</parameters>
-		</field>
+		<array name="Objects">
+			<iterate type="until-length"/>
+			<element-type>
+				<type-reference>
+					<part>ASF</part>
+					<part>Object</part>
+				</type-reference>
+			</element-type>
+			<element-name>Object</element-name>
+		</array>
 	</sequence>
 </type>

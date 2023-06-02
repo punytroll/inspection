@@ -34,11 +34,8 @@
 				<part>32Bit_LittleEndian</part>
 			</type-reference>
 		</field>
-		<field name="AdditionalExtendedHeaders">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByLength</part>
-			</type-reference>
+		<array name="AdditionalExtendedHeaders">
+			<iterate type="until-length"/>
 			<length>
 				<bytes>
 					<unsigned-integer-64bit>
@@ -51,17 +48,13 @@
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>
 				</bits>
 			</length>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>ASF</part>
-						<part>Object</part>
-					</type-reference>
-				</parameter>
-				<parameter name="ElementName">
-					<string>AdditionalExtendedHeader</string>
-				</parameter>
-			</parameters>
-		</field>
+			<element-type>
+				<type-reference>
+					<part>ASF</part>
+					<part>Object</part>
+				</type-reference>
+			</element-type>
+			<element-name>AdditionalExtendedHeader</element-name>
+		</array>
 	</sequence>
 </type>

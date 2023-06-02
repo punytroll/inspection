@@ -15,52 +15,42 @@
 				</equals>
 			</verification>
 		</field>
-		<field name="Subframes">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByNumberOfElements</part>
-			</type-reference>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>FLAC</part>
-						<part>Subframe_CalculateBitsPerSample</part>
-					</type-reference>
+		<array name="Subframes">
+			<iterate type="number-of-elements">
+				<unsigned-integer-64bit>
+					<parameter-reference>NumberOfChannelsByStream</parameter-reference>
+				</unsigned-integer-64bit>
+			</iterate>
+			<element-type>
+				<type-reference>
+					<part>FLAC</part>
+					<part>Subframe_CalculateBitsPerSample</part>
+				</type-reference>
+			</element-type>
+			<element-name>Subframe</element-name>
+			<element-parameters>
+				<parameter name="BlockSize">
+					<data-reference root="type">
+						<field>Header</field>
+						<field>BlockSize</field>
+						<tag>value</tag>
+					</data-reference>
 				</parameter>
-				<parameter name="ElementName">
-					<string>Subframe</string>
+				<parameter name="BitsPerSample">
+					<data-reference root="type">
+						<field>Header</field>
+						<field>SampleSize</field>
+						<tag>value</tag>
+					</data-reference>
 				</parameter>
-				<parameter name="NumberOfElements">
-					<unsigned-integer-64bit>
-						<parameter-reference>NumberOfChannelsByStream</parameter-reference>
-					</unsigned-integer-64bit>
+				<parameter name="ChannelAssignment">
+					<data-reference root="type">
+						<field>Header</field>
+						<field>ChannelAssignment</field>
+					</data-reference>
 				</parameter>
-				<parameter name="ElementParameters">
-					<parameters>
-						<parameter name="BlockSize">
-							<data-reference root="type">
-								<field>Header</field>
-								<field>BlockSize</field>
-								<tag>value</tag>
-							</data-reference>
-						</parameter>
-						<parameter name="BitsPerSample">
-							<data-reference root="type">
-								<field>Header</field>
-								<field>SampleSize</field>
-								<tag>value</tag>
-							</data-reference>
-						</parameter>
-						<parameter name="ChannelAssignment">
-							<data-reference root="type">
-								<field>Header</field>
-								<field>ChannelAssignment</field>
-							</data-reference>
-						</parameter>
-					</parameters>
-				</parameter>
-			</parameters>
-		</field>
+			</element-parameters>
+		</array>
 		<field name="Padding">
 			<type-reference>
 				<part>Data</part>

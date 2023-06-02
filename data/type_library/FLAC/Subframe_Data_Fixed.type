@@ -1,33 +1,25 @@
 <type>
 	<sequence>
-		<field name="WarmUpSamples">
-			<type-reference>
-				<part>Array</part>
-				<part>EndedByNumberOfElements</part>
-			</type-reference>
-			<parameters>
-				<parameter name="ElementType">
-					<type-reference>
-						<part>Number</part>
-						<part>Integer</part>
-						<part>Signed</part>
-						<part>BigEndian</part>
-					</type-reference>
+		<array name="WarmUpSamples">
+			<iterate type="number-of-elements">
+				<unsigned-integer-64bit>
+					<parameter-reference>PredictorOrder</parameter-reference>
+				</unsigned-integer-64bit>
+			</iterate>
+			<element-type>
+				<type-reference>
+					<part>Number</part>
+					<part>Integer</part>
+					<part>Signed</part>
+					<part>BigEndian</part>
+				</type-reference>
+			</element-type>
+			<element-parameters>
+				<parameter name="Bits">
+					<parameter-reference>BitsPerSample</parameter-reference>
 				</parameter>
-				<parameter name="NumberOfElements">
-					<unsigned-integer-64bit>
-						<parameter-reference>PredictorOrder</parameter-reference>
-					</unsigned-integer-64bit>
-				</parameter>
-				<parameter name="ElementParameters">
-					<parameters>
-						<parameter name="Bits">
-							<parameter-reference>BitsPerSample</parameter-reference>
-						</parameter>
-					</parameters>
-				</parameter>
-			</parameters>
-		</field>
+			</element-parameters>
+		</array>
 		<field name="Residual">
 			<type-reference>
 				<part>FLAC</part>
