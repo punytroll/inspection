@@ -237,10 +237,6 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_ASF_GUID;
             }
-            else if(HardcodedText->GetText() == "Get_ASF_FileProperties_Flags")
-            {
-                Result->m_HardcodedGetter = Inspection::Get_ASF_FileProperties_Flags;
-            }
             else if(HardcodedText->GetText() == "Get_BitSet_8Bit_LeastSignificantBitFirst")
             {
                 Result->m_HardcodedGetter = Inspection::Get_BitSet_8Bit_LeastSignificantBitFirst;

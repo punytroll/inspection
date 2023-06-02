@@ -32,7 +32,6 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-    std::unique_ptr<Inspection::Result> Get_ASF_FileProperties_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_GUID(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_Metadata_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);

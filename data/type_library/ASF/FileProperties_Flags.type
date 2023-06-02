@@ -1,3 +1,49 @@
 <type>
-	<hardcoded>Get_ASF_FileProperties_Flags</hardcoded>
+	<forward>
+		<type-reference>
+			<part>BitSet</part>
+			<part>32Bit_LittleEndian_LeastSignificantBitFirstPerByte</part>
+		</type-reference>
+		<bit name="Broadcast" index="0" as-data-type="boolean">
+			<apply-enumeration>
+				<enumeration base-data-type="boolean">
+					<element base-value="true" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>The file is in the process of being created.</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="false" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>The file is complete as it is.</string>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</bit>
+		<bit name="Seekable" index="1" as-data-type="boolean">
+			<apply-enumeration>
+				<enumeration base-data-type="boolean">
+					<element base-value="true" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>The file is seekable.</string>
+							</value>
+						</tag>
+					</element>
+					<element base-value="false" valid="true">
+						<tag name="interpretation">
+							<value>
+								<string>The file is NOT seekable.</string>
+							</value>
+						</tag>
+					</element>
+				</enumeration>
+			</apply-enumeration>
+		</bit>
+		<bits name="Reserved" begin-index="2" length="30" as-data-type="nothing" data-verification="unset"/>
+	</forward>
 </type>

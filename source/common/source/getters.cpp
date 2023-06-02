@@ -1175,40 +1175,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASF_GUID(Inspection::Reader 
     return Result;
 }
 
-std::unique_ptr<Inspection::Result> Inspection::Get_ASF_FileProperties_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    auto Continue = true;
-    
-    // reading
-    if(Continue == true)
-    {
-        auto PartReader = Inspection::Reader{Reader};
-        auto PartResult{Inspection::Get_BitSet_32Bit_LittleEndian_LeastSignificantBitFirstPerByte(PartReader, {})};
-        
-        Continue = PartResult->GetSuccess();
-        Result->GetValue()->Extend(PartResult->ExtractValue());
-        Reader.AdvancePosition(PartReader.GetConsumedLength());
-    }
-    // interpretation
-    //~ if(Continue == true)
-    //~ {
-        //~ const std::bitset<32> & Flags{std::any_cast<const std::bitset<32> &>(Result->GetValue()->GetData())};
-        
-        //~ Result->GetValue()->AppendField("[0] Broadcast", Flags[0]);
-        //~ Result->GetValue()->AppendField("[1] Seekable", Flags[1]);
-        //~ Result->GetValue()->AppendField("[2-31] Reserved", false);
-        //~ for(auto Index = 2; Index < 32; ++Index)
-        //~ {
-            //~ Continue &= ~Flags[Index];
-        //~ }
-    //~ }
-    // finalization
-    Result->SetSuccess(Continue);
-    
-    return Result;
-}
-
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_MetadataLibrary_DescriptionRecord_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();
