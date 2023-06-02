@@ -32,6 +32,11 @@ auto Inspection::TypeDefinition::Tag::Get(Inspection::ExecutionContext & Executi
     {
         Result->SetData(m_ValueExpression->GetAny(ExecutionContext));
     }
+    for(auto const & Tag : m_Tags)
+    {
+        ASSERTION(Tag != nullptr);
+        Result->AddTag(Tag->Get(ExecutionContext));
+    }
     
     return Result;
 }
@@ -50,6 +55,10 @@ auto Inspection::TypeDefinition::Tag::Load(XML::Element const * Element) -> std:
         if(ChildElement->GetName() == "value")
         {
             Result->m_ValueExpression = Inspection::TypeDefinition::Expression::LoadFromWithin(ChildElement);
+        }
+        else if(ChildElement->GetName() == "tag")
+        {
+            Result->m_Tags.push_back(Inspection::TypeDefinition::Tag::Load(ChildElement));
         }
         else
         {

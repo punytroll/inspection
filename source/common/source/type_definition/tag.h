@@ -50,6 +50,7 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::Tag && Tag) -> Inspection::TypeDefinition::Tag & = delete;
         private:
             std::string m_Name;
+            std::vector<std::unique_ptr<Inspection::TypeDefinition::Tag>> m_Tags;
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_ValueExpression;
         };
     }
