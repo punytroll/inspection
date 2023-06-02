@@ -18,6 +18,61 @@
 
 using namespace std::string_literals;
 
+static auto m_PrintTags(std::ostream & OStream, std::list<std::unique_ptr<Inspection::Value>> const & Tags) -> void
+{
+    auto First = true;
+    
+    OStream << Inspection::g_White <<" {" << Inspection::g_BrightBlack;
+    for(auto const & Tag : Tags)
+    {
+        if(First == false)
+        {
+            OStream << Inspection::g_White << ", " << Inspection::g_BrightBlack;
+        }
+        else
+        {
+            First = false;
+        }
+        if(Tag->GetName().empty() == false)
+        {
+            if(Tag->GetName() == "error")
+            {
+                OStream << Inspection::g_BrightRed;
+            }
+            OStream << Tag->GetName();
+            if(Tag->GetName() == "error")
+            {
+                OStream << Inspection::g_BrightBlack;
+            }
+        }
+        if((Tag->GetName().empty() == false) && (Tag->GetData().has_value() == true))
+        {
+            OStream << Inspection::g_White << '=';
+        }
+        if(Tag->GetData().has_value() == true)
+        {
+            if(Tag->GetData().type() == typeid(nullptr))
+            {
+                OStream << Inspection::g_Green;
+            }
+            else
+            {
+                OStream << Inspection::g_Yellow;
+            }
+            Inspection::operator<<(OStream, Tag->GetData());
+        }
+        if(Tag->GetFields().size() > 0)
+        {
+            throw std::exception();
+        }
+        if(Tag->GetTags().size() > 0)
+        {
+            m_PrintTags(OStream, Tag->GetTags());
+        }
+    }
+    OStream << Inspection::g_White << '}';
+}
+
 static auto m_PrintValue(std::ostream & OStream, Inspection::Value const & Value, std::string const & Indentation) -> std::ostream &
 {
     auto HeaderLine = (Value.GetName().empty() == false) || (Value.GetData().has_value() == true) || (Value.GetTags().empty() == false);
@@ -56,132 +111,7 @@ static auto m_PrintValue(std::ostream & OStream, Inspection::Value const & Value
     }
     if(Value.GetTags().empty() == false)
     {
-        auto First = true;
-        
-        OStream << Inspection::g_White <<" {" << Inspection::g_BrightBlack;
-        for(auto const & Tag : Value.GetTags())
-        {
-            if(First == false)
-            {
-                OStream << Inspection::g_White << ", " << Inspection::g_BrightBlack;
-            }
-            if(Tag->GetName().empty() == false)
-            {
-                if(Tag->GetName() == "error")
-                {
-                    OStream << Inspection::g_BrightRed;
-                }
-                else if(Tag->GetData().has_value() == false)
-                {
-                    OStream << Inspection::g_BrightBlack;
-                }
-                else
-                {
-                    OStream << Inspection::g_Yellow;
-                }
-                OStream << Tag->GetName();
-            }
-            if((Tag->GetName().empty() == false) && (Tag->GetData().has_value() == true))
-            {
-                OStream << Inspection::g_White << '=';
-            }
-            if(Tag->GetData().has_value() == true)
-            {
-                if(Tag->GetData().type() == typeid(nullptr))
-                {
-                    OStream << Inspection::g_Green;
-                }
-                else
-                {
-                    OStream << Inspection::g_BrightBlack;
-                }
-                Inspection::operator<<(OStream, Tag->GetData());
-            }
-            if(Tag->GetFields().size() > 0)
-            {
-                throw std::exception();
-            }
-            if(Tag->GetTags().size() > 0)
-            {
-                OStream << Inspection::g_White << " {" << Inspection::g_BrightBlack;
-                
-                auto FirstSubTag = true;
-                
-                for(auto const & SubTag : Tag->GetTags())
-                {
-                    if(FirstSubTag == false)
-                    {
-                        OStream << ", ";
-                    }
-                    if(SubTag->GetName().empty() == false)
-                    {
-                        if(SubTag->GetName() == "error")
-                        {
-                            OStream << Inspection::g_BrightRed;
-                        }
-                        OStream << SubTag->GetName();
-                    }
-                    OStream << Inspection::g_BrightBlack;
-                    if((SubTag->GetName().empty() == false) && (SubTag->GetData().has_value() == true))
-                    {
-                        OStream << '=';
-                    }
-                    if(SubTag->GetData().has_value() == true)
-                    {
-                        Inspection::operator<<(OStream, SubTag->GetData());
-                    }
-                    if(SubTag->GetFields().size() > 0)
-                    {
-                        throw std::exception();
-                    }
-                    if(SubTag->GetTags().size() > 0)
-                    {
-                        OStream << Inspection::g_White << " {" << Inspection::g_BrightBlack;
-                        
-                        auto FirstSubSubTag = true;
-                        
-                        for(auto const & SubSubTag : SubTag->GetTags())
-                        {
-                            if(FirstSubSubTag == false)
-                            {
-                                OStream << ", ";
-                            }
-                            if(SubSubTag->GetName().empty() == false)
-                            {
-                                if(SubSubTag->GetName() == "error")
-                                {
-                                    OStream << Inspection::g_BrightRed;
-                                }
-                                OStream << SubSubTag->GetName();
-                            }
-                            OStream << Inspection::g_BrightBlack;
-                            if((SubSubTag->GetName().empty() == false) && (SubSubTag->GetData().has_value() == true))
-                            {
-                                OStream << '=';
-                            }
-                            if(SubSubTag->GetData().has_value() == true)
-                            {
-                                Inspection::operator<<(OStream, SubSubTag->GetData());
-                            }
-                            if(SubSubTag->GetFields().size() > 0)
-                            {
-                                throw std::exception{};
-                            }
-                            if(SubSubTag->GetTags().size() > 0)
-                            {
-                                throw std::exception{};
-                            }
-                            FirstSubSubTag = false;
-                        }
-                        OStream << Inspection::g_White << '}' << Inspection::g_BrightBlack;
-                    }
-                    FirstSubTag = false;
-                }
-                OStream << Inspection::g_White << '}' << Inspection::g_BrightBlack;
-            }
-            First = false;
-        }
-        OStream << Inspection::g_White << '}';
+        m_PrintTags(OStream, Value.GetTags());
     }
     
     auto SubIndentation = Indentation;
