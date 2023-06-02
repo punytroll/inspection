@@ -22,6 +22,7 @@ common_library = static_library(
     'source/output_operators.cpp',
     'source/query.cpp',
     'source/reader.cpp',
+    'source/type_definition/function_call.cpp',
     'source/type_definition/tag.cpp',
     'source/type_definition.cpp',
     'source/type_repository.cpp',

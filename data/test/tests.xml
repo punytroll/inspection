@@ -8447,7 +8447,7 @@
 		<expected-output>2014/11/26 14:16:56</expected-output>
 	</test>
 	<test>
-		<description>The CreationDate field gets interpreted correctly.</description>
+		<description>The CreationDate field has the correct type tag.</description>
 		<execute>
 			<program>generalinspector</program>
 			<argument>../data/examples/asf/001_short.wma</argument>

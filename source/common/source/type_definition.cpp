@@ -28,6 +28,7 @@
 #include "length.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition/function_call.h"
 #include "type_definition/tag.h"
 #include "type_definition.h"
 #include "type_repository.h"
@@ -1563,6 +1564,10 @@ std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefiniti
     else if((Element->GetName() == "single-precision-real") && (XML::HasOneChildElement(Element) == true))
     {
         Result = Inspection::TypeDefinition::Cast::Load(Element);
+    }
+    else if(Element->GetName() == "function-call")
+    {
+        Result = Inspection::TypeDefinition::FunctionCall::Load(Element);
     }
     else
     {

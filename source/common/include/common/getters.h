@@ -29,7 +29,6 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_ASCII_String_AlphaNumericOrSpace_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASCII_String_Printable_EndedByLength(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASCII_String_Printable_EndedByTermination(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
-    std::unique_ptr<Inspection::Result> Get_ASF_CreationDate(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_ExtendedStreamPropertiesObject_Flags(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_ASF_ExtendedStreamPropertiesObjectData(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);

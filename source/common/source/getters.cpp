@@ -800,35 +800,6 @@ std::unique_ptr<Inspection::Result> Inspection::Get_ASCII_String_Printable_Ended
     return Result;
 }
 
-auto Inspection::Get_ASF_CreationDate(Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) -> std::unique_ptr<Inspection::Result>
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    auto Continue = true;
-    
-    // reading
-    if(Continue == true)
-    {
-        auto PartReader = Inspection::Reader{Reader};
-        auto PartResult = Inspection::Get_UnsignedInteger_64Bit_LittleEndian(PartReader, {});
-        
-        Continue = PartResult->GetSuccess();
-        Result->GetValue()->Extend(PartResult->ExtractValue());
-        Result->GetValue()->AddTag("Microsoft filetime"s);
-        Reader.AdvancePosition(PartReader.GetConsumedLength());
-    }
-    // interpreting
-    if(Continue == true)
-    {
-        auto DatetimeTagValue = Result->GetValue()->AddTag("interpretation", Inspection::Get_DateTime_FromMicrosoftFileTime(std::any_cast<std::uint64_t>(Result->GetValue()->GetData())));
-        
-        DatetimeTagValue->AddTag("date and time"s);
-    }
-    // finalization
-    Result->SetSuccess(Continue);
-    
-    return Result;
-}
-
 std::unique_ptr<Inspection::Result> Inspection::Get_ASF_ExtendedContentDescription_ContentDescriptor_Data(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();

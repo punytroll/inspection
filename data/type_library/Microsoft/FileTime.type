@@ -1,0 +1,23 @@
+<type>
+	<forward>
+		<type-reference>
+			<part>Number</part>
+			<part>Integer</part>
+			<part>Unsigned</part>
+			<part>64Bit_LittleEndian</part>
+		</type-reference>
+		<tag name="Microsoft filetime"/>
+		<tag name="interpretation">
+			<value>
+				<function-call function-name="Get_DateTime_FromMicrosoftFileTime">
+					<call-parameters>
+						<parameter name="MicrosoftFileTime">
+							<data-reference root="current"/>
+						</parameter>
+					</call-parameters>
+				</function-call>
+			</value>
+			<tag name="date and time"/>
+		</tag>
+	</forward>
+</type>

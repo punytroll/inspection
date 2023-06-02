@@ -15,8 +15,8 @@
 		</field>
 		<field name="CreationDate">
 			<type-reference>
-				<part>ASF</part>
-				<part>CreationDate</part>
+				<part>Microsoft</part>
+				<part>FileTime</part>
 			</type-reference>
 		</field>
 		<field name="DataPacketsCount">

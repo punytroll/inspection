@@ -233,10 +233,6 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_ASF_StreamPropertiesObjectData;
             }
-            else if(HardcodedText->GetText() == "Get_ASF_CreationDate")
-            {
-                Result->m_HardcodedGetter = Inspection::Get_ASF_CreationDate;
-            }
             else if(HardcodedText->GetText() == "Get_ASF_GUID")
             {
                 Result->m_HardcodedGetter = Inspection::Get_ASF_GUID;
