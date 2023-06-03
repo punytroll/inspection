@@ -48,7 +48,7 @@ namespace Inspection
         private:
             FunctionCall() = default;
             FunctionCall(Inspection::TypeDefinition::FunctionCall const & FunctionCall) = delete;
-            FunctionCall(Inspection::TypeDefinition::FieldReference && FunctionCall) = delete;
+            FunctionCall(Inspection::TypeDefinition::FunctionCall && FunctionCall) = delete;
             auto operator=(Inspection::TypeDefinition::FunctionCall const & FunctionCall) -> Inspection::TypeDefinition::FunctionCall & = delete;
             auto operator=(Inspection::TypeDefinition::FunctionCall && FunctionCall) -> Inspection::TypeDefinition::FunctionCall & = delete;
         private:
