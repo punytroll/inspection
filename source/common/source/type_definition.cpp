@@ -29,6 +29,7 @@
 #include "result.h"
 #include "type.h"
 #include "type_definition/array.h"
+#include "type_definition/expression.h"
 #include "type_definition/function_call.h"
 #include "type_definition/helper.h"
 #include "type_definition/tag.h"
@@ -1028,123 +1029,6 @@ std::unique_ptr<Inspection::TypeDefinition::Equals> Inspection::TypeDefinition::
     INVALID_INPUT_IF(Result->m_Expression2 == nullptr, "Missing second operand for Equals expression.");
     
     return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Expression                                                                                    //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Expression>{};
-    
-    if(Element->GetName() == "add")
-    {
-        Result = Inspection::TypeDefinition::Add::Load(Element);
-    }
-    else if(Element->GetName() == "and")
-    {
-        Result = Inspection::TypeDefinition::And::Load(Element);
-    }
-    else if(Element->GetName() == "data-reference")
-    {
-        Result = Inspection::TypeDefinition::DataReference::Load(Element);
-    }
-    else if(Element->GetName() == "divide")
-    {
-        Result = Inspection::TypeDefinition::Divide::Load(Element);
-    }
-    else if(Element->GetName() == "equals")
-    {
-        Result = Inspection::TypeDefinition::Equals::Load(Element);
-    }
-    else if(Element->GetName() == "field-reference")
-    {
-        Result = Inspection::TypeDefinition::FieldReference::Load(Element);
-    }
-    else if(Element->GetName() == "length")
-    {
-        if(XML::HasOneChildElement(Element) == true)
-        {
-            // <length>-Element contains an expression (i.e. <subtract>)
-            Result = Inspection::TypeDefinition::Expression::Load(XML::GetFirstChildElement(Element));
-        }
-        else
-        {
-            // <length>-Element IS a length with <bytes> and <bits>
-            Result = Inspection::TypeDefinition::Length::Load(Element);
-        }
-    }
-    else if(Element->GetName() == "less-than")
-    {
-        Result = Inspection::TypeDefinition::LessThan::Load(Element);
-    }
-    else if(Element->GetName() == "modulus")
-    {
-        Result = Inspection::TypeDefinition::Modulus::Load(Element);
-    }
-    else if(Element->GetName() == "multiply")
-    {
-        Result = Inspection::TypeDefinition::Multiply::Load(Element);
-    }
-    else if(Element->GetName() == "parameter-reference")
-    {
-        Result = Inspection::TypeDefinition::ParameterReference::Load(Element);
-    }
-    else if(Element->GetName() == "parameters")
-    {
-        Result = Inspection::TypeDefinition::Parameters::Load(Element);
-    }
-    else if(Element->GetName() == "subtract")
-    {
-        Result = Inspection::TypeDefinition::Subtract::Load(Element);
-    }
-    else if(Element->GetName() == "type")
-    {
-        Result = Inspection::TypeDefinition::TypeValue::Load(Element);
-    }
-    else if(Element->GetName() == "type-reference")
-    {
-        Result = Inspection::TypeDefinition::TypeReference::Load(Element);
-    }
-    else if((Element->GetName() == "unsigned-integer-8bit") && (XML::HasOneChildElement(Element) == true))
-    {
-        Result = Inspection::TypeDefinition::Cast::Load(Element);
-    }
-    else if((Element->GetName() == "unsigned-integer-64bit") && (XML::HasOneChildElement(Element) == true))
-    {
-        Result = Inspection::TypeDefinition::Cast::Load(Element);
-    }
-    else if((Element->GetName() == "single-precision-real") && (XML::HasOneChildElement(Element) == true))
-    {
-        Result = Inspection::TypeDefinition::Cast::Load(Element);
-    }
-    else if(Element->GetName() == "function-call")
-    {
-        Result = Inspection::TypeDefinition::FunctionCall::Load(Element);
-    }
-    else
-    {
-        Result = Inspection::TypeDefinition::Value::Load(Element);
-    }
-    
-    return Result;
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Expression> Inspection::TypeDefinition::Expression::LoadFromWithin(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto ChildElementsRange = Element->GetChildElements();
-    auto ChildElements = std::vector<XML::Element const *>{ChildElementsRange.begin(), ChildElementsRange.end()};
-    
-    INVALID_INPUT_IF(ChildElements.size() == 0, "Missing expression.");
-    INVALID_INPUT_IF(ChildElements.size() > 1, "Too many expressions.");
-    
-    return Inspection::TypeDefinition::Expression::Load(ChildElements.front());
 }
 
 

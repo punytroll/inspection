@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "guid.h"
+#include "type_definition/expression.h"
 
 namespace XML
 {
@@ -73,24 +74,6 @@ namespace Inspection
             Select,
             Sequence,
             Type
-        };
-        
-        class Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Expression> Load(const XML::Element * Element);
-            static std::unique_ptr<Inspection::TypeDefinition::Expression> LoadFromWithin(const XML::Element * Element);
-        public:
-            virtual ~Expression(void) = default;
-            virtual std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const = 0;
-            virtual Inspection::TypeDefinition::DataType GetDataType(void) const = 0;
-        protected:
-            Expression(void) = default;
-        private:
-            Expression(const Inspection::TypeDefinition::Expression & Expression) = delete;
-            Expression(Inspection::TypeDefinition::Expression && Expression) = delete;
-            Inspection::TypeDefinition::Expression & operator=(const Inspection::TypeDefinition::Expression & Expression) = delete;
-            Inspection::TypeDefinition::Expression & operator=(Inspection::TypeDefinition::Expression && Expression) = delete;
         };
         
         class Add : public Inspection::TypeDefinition::Expression
