@@ -1735,14 +1735,18 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
     auto Continue = true;
     
     ExecutionContext.Push(*this, *Result, Reader, Parameters);
+    
+    auto FoundCase = false;
+    
     for(auto CaseIterator = std::begin(m_Cases); CaseIterator != std::end(m_Cases); ++CaseIterator)
     {
-        auto & Case = *CaseIterator;
+        auto const & Case = *CaseIterator;
         auto WhenAny = Case->GetWhen().GetAny(ExecutionContext);
         
         ASSERTION(WhenAny.type() == typeid(bool));
         if(std::any_cast<bool>(WhenAny) == true)
         {
+            FoundCase = true;
             if(Case->HasPart() == true)
             {
                 auto const & Part = Case->GetPart();
@@ -1768,9 +1772,10 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
             break;
         }
     }
+    INVALID_INPUT_IF(FoundCase == false, "At least one case must evaluate to true.")
     ExecutionContext.Pop();
     // finalization
-    Result->SetSuccess(Continue);
+    Result->SetSuccess(FoundCase && Continue);
     
     return Result;
 }
