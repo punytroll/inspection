@@ -1772,10 +1772,34 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
             break;
         }
     }
-    INVALID_INPUT_IF(FoundCase == false, "At least one case must evaluate to true.")
+    INVALID_INPUT_IF(FoundCase == false && m_Else == nullptr, "At least one \"case\" must evaluate to true or an \"else\" must be given.");
+    if((FoundCase == false) && (m_Else != nullptr))
+    {
+        if(m_Else->HasPart() == true)
+        {
+            auto const & Part = m_Else->GetPart();
+            auto PartReader = std::unique_ptr<Inspection::Reader>{};
+            
+            if(Part.Length != nullptr)
+            {
+                PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part.Length->GetAny(ExecutionContext)));
+            }
+            else
+            {
+                PartReader = std::make_unique<Inspection::Reader>(Reader);
+            }
+            
+            auto PartParameters = Part.GetParameters(ExecutionContext);
+            auto PartResult = Part.Get(ExecutionContext, *PartReader, PartParameters);
+            
+            Continue = PartResult->GetSuccess();
+            m_AddPartResult(Result.get(), Part, PartResult.get());
+            Reader.AdvancePosition(PartReader->GetConsumedLength());
+        }
+    }
     ExecutionContext.Pop();
     // finalization
-    Result->SetSuccess(FoundCase && Continue);
+    Result->SetSuccess(Continue);
     
     return Result;
 }
@@ -1790,6 +1814,11 @@ auto Inspection::TypeDefinition::Select::_LoadProperty(XML::Element const * Elem
     if(Element->GetName() == "case")
     {
         m_Cases.push_back(Inspection::TypeDefinition::Select::Case::Load(Element));
+    }
+    else if(Element->GetName() == "else")
+    {
+        INVALID_INPUT_IF(m_Else != nullptr, "Only one \"else\" element allowed on \"select\" parts.");
+        m_Else = Inspection::TypeDefinition::Select::Case::Load(Element);
     }
     else
     {
@@ -1841,7 +1870,7 @@ auto Inspection::TypeDefinition::Select::Case::Load(XML::Element const * Element
             Result->m_Part = Inspection::TypeDefinition::Part::Load(ChildElement);
         }
     }
-    INVALID_INPUT_IF(Result->m_When == nullptr, "Case parts need a <when> specification.");
+    INVALID_INPUT_IF(Element->GetName() == "case" && Result->m_When == nullptr, "Case parts need a <when> specification.");
     
     return Result;
 }

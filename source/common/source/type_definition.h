@@ -691,6 +691,7 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::Select && Select) -> Inspection::TypeDefinition::Select & = delete;
         private:
             std::vector<std::unique_ptr<Inspection::TypeDefinition::Select::Case>> m_Cases;
+            std::unique_ptr<Inspection::TypeDefinition::Select::Case> m_Else;
         };
         
         class Sequence : public Inspection::TypeDefinition::Part
