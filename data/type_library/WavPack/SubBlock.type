@@ -5,7 +5,454 @@
 				<part>BitSet</part>
 				<part>8Bit_LeastSignificantBitFirst</part>
 			</type-reference>
-			<bits name="MetadataIdentifier" begin-index="0" length="6" as-data-type="unsigned integer 8bit"/>
+			<bits name="MetadataIdentifier" begin-index="0" length="6" as-data-type="unsigned integer 8bit">
+				<apply-enumeration>
+					<enumeration base-data-type="unsigned integer 8bit">
+						<element base-value="0" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_DUMMY</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>could be used to pad WavPack blocks</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="2" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_DECORR_TERMS</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>decorrelation terms &amp; deltas</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="3" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_DECORR_WEIGHTS</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>initial decorrelation weights</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="4" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_DECORR_SAMPLES</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>decorrelation sample history</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="5" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_ENTROPY_VARS</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>initial entropy variables</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="6" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_HYBRID_PROFILE</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>entropy variables specific to hybrid mode</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="7" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_SHAPING_WEIGHTS</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>info needed for hybrid lossless (wvc) mode</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="8" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_FLOAT_INFO</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>specific info for floating point decode</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="9" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_INT32_INFO</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>specific info for decoding integers &gt; 24 bits, or data requiring shift after decode</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="10" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_WV_BITSTREAM</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>normal compressed audio bitstream (wv file)</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="11" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_WVC_BITSTREAM</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>correction file bitstream (wvc)</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="12" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_WVX_BITSTREAM</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>special extended bitstream for floating point data or integers &gt; 24 bit (can be in either wv or wvc file, depending ...)</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="13" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_CHANNEL_INFO</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>contains channel count and channel mask</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="14" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_DSD_BLOCK</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>contains compressed DSD audio (ver 5.0+)</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="33" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_RIFF_HEADER</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>RIFF header for .wav files (before audio)</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="34" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_RIFF_TRAILER</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>RIFF trailer for .wav files (after audio)</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="37" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_CONFIG_BLOCK</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>some encoding details for info purposes</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="38" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_MD5_CHECKSUM</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>16-byte MD5 sum of raw audio data</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="39" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_SAMPLE_RATE</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>non-standard sampling rate info</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="35" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_ALT_HEADER</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>header for non-wav files</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+							<tag name="version">
+								<value>
+									<string>5.0+</string>
+								</value>
+								<tag name="information">
+									<value>
+										<string>added to handle non-wav files and block checksums</string>
+									</value>
+								</tag>
+							</tag>
+						</element>
+						<element base-value="36" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_ALT_TRAILER</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>trailer for non-wav files</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+							<tag name="version">
+								<value>
+									<string>5.0+</string>
+								</value>
+								<tag name="information">
+									<value>
+										<string>added to handle non-wav files and block checksums</string>
+									</value>
+								</tag>
+							</tag>
+						</element>
+						<element base-value="40" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_ALT_EXTENSION</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>target filename extension</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+							<tag name="version">
+								<value>
+									<string>5.0+</string>
+								</value>
+								<tag name="information">
+									<value>
+										<string>added to handle non-wav files and block checksums</string>
+									</value>
+								</tag>
+							</tag>
+						</element>
+						<element base-value="41" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_ALT_MD5_CHECKSUM</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>16-byte MD5 sum of raw audio data with non-wav standard (e.g., big-endian)</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+							<tag name="version">
+								<value>
+									<string>5.0+</string>
+								</value>
+								<tag name="information">
+									<value>
+										<string>added to handle non-wav files and block checksums</string>
+									</value>
+								</tag>
+							</tag>
+						</element>
+						<element base-value="42" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_NEW_CONFIG_BLOCK</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>new file configuration stuff including file type, non-wav formats (e.g., big endian), and CAF channel layouts and reordering</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+							<tag name="version">
+								<value>
+									<string>5.0+</string>
+								</value>
+								<tag name="information">
+									<value>
+										<string>added to handle non-wav files and block checksums</string>
+									</value>
+								</tag>
+							</tag>
+						</element>
+						<element base-value="43" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_CHANNEL_IDENTITIES</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>identities of non-MS channels</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+							<tag name="version">
+								<value>
+									<string>5.0+</string>
+								</value>
+								<tag name="information">
+									<value>
+										<string>added to handle non-wav files and block checksums</string>
+									</value>
+								</tag>
+							</tag>
+						</element>
+						<element base-value="47" valid="true">
+							<tag name="constant">
+								<value>
+									<string>ID_BLOCK_CHECKSUM</string>
+								</value>
+							</tag>
+							<tag name="interpretation">
+								<value>
+									<string>2- or 4-byte checksum of entire block</string>
+								</value>
+							</tag>
+							<tag name="information">
+								<value>
+									<string>decoders should skip this subblock, if they don't understand it</string>
+								</value>
+							</tag>
+							<tag name="version">
+								<value>
+									<string>5.0+</string>
+								</value>
+								<tag name="information">
+									<value>
+										<string>added to handle non-wav files and block checksums</string>
+									</value>
+								</tag>
+							</tag>
+						</element>
+					</enumeration>
+				</apply-enumeration>
+			</bits>
 			<bit name="PaddedData" index="6" as-data-type="boolean">
 				<apply-enumeration>
 					<enumeration base-data-type="boolean">
