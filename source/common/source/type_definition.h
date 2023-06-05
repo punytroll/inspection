@@ -76,25 +76,6 @@ namespace Inspection
             Type
         };
         
-        class Add : public Inspection::TypeDefinition::Expression
-        {
-        public:
-            static std::unique_ptr<Inspection::TypeDefinition::Add> Load(const XML::Element * Element);
-        public:
-            virtual ~Add(void) = default;
-            std::any GetAny(Inspection::ExecutionContext & ExecutionContext) const override;
-            Inspection::TypeDefinition::DataType GetDataType(void) const override;
-        private:
-            Add(void) = default;
-            Add(const Inspection::TypeDefinition::Add & Add) = delete;
-            Add(Inspection::TypeDefinition::Add && Add) = delete;
-            Inspection::TypeDefinition::Add & operator=(const Inspection::TypeDefinition::Add & Add) = delete;
-            Inspection::TypeDefinition::Add & operator=(Inspection::TypeDefinition::Add && Add) = delete;
-        private:
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Summand1;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> m_Summand2;
-        };
-        
         class And : public Inspection::TypeDefinition::Expression
         {
         public:

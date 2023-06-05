@@ -21,6 +21,7 @@
 #include <assertion.h>
 #include <type.h>
 
+#include "add.h"
 #include "expression.h"
 #include "function_call.h"
 #include "../type_definition.h"

@@ -131,65 +131,6 @@ static auto GetParameters(Inspection::ExecutionContext & ExecutionContext, Inspe
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Add                                                                                           //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::any Inspection::TypeDefinition::Add::GetAny(Inspection::ExecutionContext & ExecutionContext) const
-{
-    ASSERTION(m_Summand1 != nullptr);
-    ASSERTION(m_Summand2 != nullptr);
-    
-    auto Summand1Any = m_Summand1->GetAny(ExecutionContext);
-    auto Summand2Any = m_Summand2->GetAny(ExecutionContext);
-    
-    ASSERTION(Summand1Any.has_value() == true);
-    ASSERTION(Summand2Any.has_value() == true);
-    ASSERTION(Summand1Any.type() == Summand2Any.type());
-    if(Summand1Any.type() == typeid(std::uint8_t))
-    {
-        return static_cast<std::uint8_t>(std::any_cast<std::uint8_t>(Summand1Any) + std::any_cast<std::uint8_t>(Summand2Any));
-    }
-    else
-    {
-        UNEXPECTED_CASE("Summand1Any.type() == " + Inspection::to_string(Summand1Any.type()));
-    }
-    
-    return nullptr;
-}
-
-Inspection::TypeDefinition::DataType Inspection::TypeDefinition::Add::GetDataType(void) const
-{
-    NOT_IMPLEMENTED("Called GetDataType() on an Add expression.");
-}
-
-std::unique_ptr<Inspection::TypeDefinition::Add> Inspection::TypeDefinition::Add::Load(const XML::Element * Element)
-{
-    ASSERTION(Element != nullptr);
-    
-    auto Result = std::unique_ptr<Inspection::TypeDefinition::Add>{new Inspection::TypeDefinition::Add{}};
-    auto First = true;
-    
-    for(auto ChildElement : Element->GetChildElements())
-    {
-        if(First == true)
-        {
-            Result->m_Summand1 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-            First = false;
-        }
-        else
-        {
-            INVALID_INPUT_IF(Result->m_Summand2 != nullptr, "More than two operands for Add expression.");
-            Result->m_Summand2 = Inspection::TypeDefinition::Expression::Load(ChildElement);
-        }
-    }
-    INVALID_INPUT_IF(Result->m_Summand1 == nullptr, "Missing operands for Add expression.");
-    INVALID_INPUT_IF(Result->m_Summand2 == nullptr, "Missing second operand for Add expression.");
-    
-    return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // And                                                                                           //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
