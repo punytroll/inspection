@@ -1910,7 +1910,7 @@ auto Inspection::TypeDefinition::Select::_LoadProperty(XML::Element const * Elem
     }
     else
     {
-        UNEXPECTED_CASE("Element->GetName() == " + Element->GetName());
+        Inspection::TypeDefinition::Part::_LoadProperty(Element);
     }
 }
 
