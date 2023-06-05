@@ -600,6 +600,7 @@ namespace Inspection
         protected:
             auto _LoadProperties(XML::Element const * Element) -> void;
             virtual auto _LoadProperty(XML::Element const * Element) -> void;
+            auto m_AddPartResult(Inspection::Result * Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void;
         private:
             Part(Inspection::TypeDefinition::Part const & Part) = delete;
             Part(Inspection::TypeDefinition::Part && Part) = delete;

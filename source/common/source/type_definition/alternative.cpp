@@ -54,57 +54,7 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
         FoundAlternative = PartResult->GetSuccess();
         if(FoundAlternative == true)
         {
-            switch(Part->GetPartType())
-            {
-            case Inspection::TypeDefinition::PartType::Alternative:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Array:
-                {
-                    ASSERTION(Part->FieldName.has_value() == true);
-                    Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Field:
-                {
-                    ASSERTION(Part->FieldName.has_value() == true);
-                    Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Fields:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Forward:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Select:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Sequence:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Type:
-                {
-                    IMPOSSIBLE_CODE_REACHED("a Type should not be possible inside an Alternative");
-                }
-            }
+            m_AddPartResult(Result.get(), *Part, PartResult.get());
             Reader.AdvancePosition(PartReader->GetConsumedLength());
             
             break;

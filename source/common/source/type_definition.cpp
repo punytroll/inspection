@@ -1626,6 +1626,35 @@ auto Inspection::TypeDefinition::Part::Load(const XML::Element * Element) -> std
     return Result;
 }
 
+auto Inspection::TypeDefinition::Part::m_AddPartResult(Inspection::Result * Result, Inspection::TypeDefinition::Part const & Part, Inspection::Result * PartResult) const -> void
+{
+    switch(Part.GetPartType())
+    {
+    case Inspection::TypeDefinition::PartType::Alternative:
+    case Inspection::TypeDefinition::PartType::Fields:
+    case Inspection::TypeDefinition::PartType::Forward:
+    case Inspection::TypeDefinition::PartType::Select:
+    case Inspection::TypeDefinition::PartType::Sequence:
+        {
+            Result->GetValue()->Extend(PartResult->ExtractValue());
+            
+            break;
+        }
+    case Inspection::TypeDefinition::PartType::Array:
+    case Inspection::TypeDefinition::PartType::Field:
+        {
+            ASSERTION(Part.FieldName.has_value() == true);
+            Result->GetValue()->AppendField(Part.FieldName.value(), PartResult->ExtractValue());
+            
+            break;
+        }
+    case Inspection::TypeDefinition::PartType::Type:
+        {
+            IMPOSSIBLE_CODE_REACHED("a \"type\" should not be possible inside of a part");
+        }
+    }
+}
+
 auto Inspection::TypeDefinition::Part::_LoadProperties(const XML::Element * Element) -> void
 {
     for(auto ChildElement : Element->GetChildElements())
@@ -1732,57 +1761,7 @@ auto Inspection::TypeDefinition::Select::Get(Inspection::ExecutionContext & Exec
                 auto PartResult = Part.Get(ExecutionContext, *PartReader, PartParameters);
                 
                 Continue = PartResult->GetSuccess();
-                switch(Part.GetPartType())
-                {
-                case Inspection::TypeDefinition::PartType::Alternative:
-                    {
-                        Result->GetValue()->Extend(PartResult->ExtractValue());
-                        
-                        break;
-                    }
-                case Inspection::TypeDefinition::PartType::Array:
-                    {
-                        ASSERTION(Part.FieldName.has_value() == true);
-                        Result->GetValue()->AppendField(Part.FieldName.value(), PartResult->ExtractValue());
-                        
-                        break;
-                    }
-                case Inspection::TypeDefinition::PartType::Field:
-                    {
-                        ASSERTION(Part.FieldName.has_value() == true);
-                        Result->GetValue()->AppendField(Part.FieldName.value(), PartResult->ExtractValue());
-                        
-                        break;
-                    }
-                case Inspection::TypeDefinition::PartType::Fields:
-                    {
-                        Result->GetValue()->Extend(PartResult->ExtractValue());
-                        
-                        break;
-                    }
-                case Inspection::TypeDefinition::PartType::Forward:
-                    {
-                        Result->GetValue()->Extend(PartResult->ExtractValue());
-                        
-                        break;
-                    }
-                case Inspection::TypeDefinition::PartType::Select:
-                    {
-                        Result->GetValue()->Extend(PartResult->ExtractValue());
-                        
-                        break;
-                    }
-                case Inspection::TypeDefinition::PartType::Sequence:
-                    {
-                        Result->GetValue()->Extend(PartResult->ExtractValue());
-                        
-                        break;
-                    }
-                case Inspection::TypeDefinition::PartType::Type:
-                    {
-                        IMPOSSIBLE_CODE_REACHED("a Type should not be possible inside a Sequence");
-                    }
-                }
+                m_AddPartResult(Result.get(), Part, PartResult.get());
                 Reader.AdvancePosition(PartReader->GetConsumedLength());
             }
             
@@ -1896,57 +1875,7 @@ auto Inspection::TypeDefinition::Sequence::Get(Inspection::ExecutionContext & Ex
         auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
         
         Continue = PartResult->GetSuccess();
-        switch(Part->GetPartType())
-        {
-        case Inspection::TypeDefinition::PartType::Alternative:
-            {
-                Result->GetValue()->Extend(PartResult->ExtractValue());
-                
-                break;
-            }
-        case Inspection::TypeDefinition::PartType::Array:
-            {
-                ASSERTION(Part->FieldName.has_value() == true);
-                Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
-                
-                break;
-            }
-        case Inspection::TypeDefinition::PartType::Field:
-            {
-                ASSERTION(Part->FieldName.has_value() == true);
-                Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
-                
-                break;
-            }
-        case Inspection::TypeDefinition::PartType::Fields:
-            {
-                Result->GetValue()->Extend(PartResult->ExtractValue());
-                
-                break;
-            }
-        case Inspection::TypeDefinition::PartType::Forward:
-            {
-                Result->GetValue()->Extend(PartResult->ExtractValue());
-                
-                break;
-            }
-        case Inspection::TypeDefinition::PartType::Select:
-            {
-                Result->GetValue()->Extend(PartResult->ExtractValue());
-                
-                break;
-            }
-        case Inspection::TypeDefinition::PartType::Sequence:
-            {
-                Result->GetValue()->Extend(PartResult->ExtractValue());
-                
-                break;
-            }
-        case Inspection::TypeDefinition::PartType::Type:
-            {
-                IMPOSSIBLE_CODE_REACHED("a Type should not be possible inside a Sequence");
-            }
-        }
+        m_AddPartResult(Result.get(), *Part, PartResult.get());
         Reader.AdvancePosition(PartReader->GetConsumedLength());
     }
     // interpretation
