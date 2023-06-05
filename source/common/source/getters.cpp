@@ -12164,6 +12164,53 @@ std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_24Bit_BigEnd
     return Result;
 }
 
+std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_24Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
+{
+    auto Result = std::make_unique<Inspection::Result>();
+    auto Continue = true;
+    
+    Result->GetValue()->AddTag("integer"s);
+    Result->GetValue()->AddTag("unsigned"s);
+    Result->GetValue()->AddTag("24bit"s);
+    Result->GetValue()->AddTag("little endian"s);
+    // reading
+    if(Continue == true)
+    {
+        Inspection::ReadResult ReadResult1;
+        
+        if((Continue = Reader.Read8Bits(ReadResult1)) == true)
+        {
+            Inspection::ReadResult ReadResult2;
+            
+            if((Continue = Reader.Read8Bits(ReadResult2)) == true)
+            {
+                Inspection::ReadResult ReadResult3;
+                
+                if((Continue = Reader.Read8Bits(ReadResult3)) == true)
+                {
+                    Result->GetValue()->SetData(static_cast<std::uint32_t>((static_cast<std::uint32_t>(static_cast<std::uint32_t>(ReadResult3.Data) << 16)) | (static_cast<std::uint32_t>(static_cast<std::uint32_t>(ReadResult2.Data) << 8)) | static_cast<std::uint32_t>(ReadResult1.Data)));
+                }
+                else
+                {
+                    AppendReadErrorTag(Result->GetValue(), ReadResult3);
+                }
+            }
+            else
+            {
+                AppendReadErrorTag(Result->GetValue(), ReadResult2);
+            }
+        }
+        else
+        {
+            AppendReadErrorTag(Result->GetValue(), ReadResult1);
+        }
+    }
+    // finalization
+    Result->SetSuccess(Continue);
+    
+    return Result;
+}
+
 std::unique_ptr<Inspection::Result> Inspection::Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters)
 {
     auto Result = std::make_unique<Inspection::Result>();

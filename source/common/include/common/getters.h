@@ -215,6 +215,7 @@ namespace Inspection
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_22Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_23Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_24Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
+    std::unique_ptr<Inspection::Result> Get_UnsignedInteger_24Bit_LittleEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_31Bit_UTF_8_Coded(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_32Bit_AlternativeUnary(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);
     std::unique_ptr<Inspection::Result> Get_UnsignedInteger_32Bit_BigEndian(Inspection::Reader & Reader, const std::unordered_map<std::string, std::any> & Parameters);

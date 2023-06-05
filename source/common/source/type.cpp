@@ -533,6 +533,10 @@ auto Inspection::TypeDefinition::Type::Load(XML::Element const * Element, std::v
             {
                 Result->m_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_BigEndian;
             }
+            else if(HardcodedText->GetText() == "Get_UnsignedInteger_24Bit_LittleEndian")
+            {
+                Result->m_HardcodedGetter = Inspection::Get_UnsignedInteger_24Bit_LittleEndian;
+            }
             else if(HardcodedText->GetText() == "Get_UnsignedInteger_32Bit_BigEndian")
             {
                 Result->m_HardcodedGetter = Inspection::Get_UnsignedInteger_32Bit_BigEndian;
