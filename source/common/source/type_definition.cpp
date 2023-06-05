@@ -1503,7 +1503,7 @@ std::any Inspection::TypeDefinition::Multiply::GetAny(Inspection::ExecutionConte
     
     ASSERTION(MultiplierAny.has_value() == true);
     ASSERTION(MultiplicandAny.has_value() == true);
-    ASSERTION(MultiplierAny.type() == MultiplicandAny.type());
+    INVALID_INPUT_IF(MultiplierAny.type() != MultiplicandAny.type(), "Multiplier and multiplicand have to have the same type: " + Inspection::to_string(MultiplierAny.type()) + " != " + Inspection::to_string(MultiplicandAny.type()));
     if(MultiplierAny.type() == typeid(std::uint64_t))
     {
         return static_cast<std::uint64_t>(std::any_cast<std::uint64_t>(MultiplierAny) * std::any_cast<std::uint64_t>(MultiplicandAny));
