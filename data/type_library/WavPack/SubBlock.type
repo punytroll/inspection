@@ -548,11 +548,7 @@
 				</field>
 			</case>
 		</select>
-		<field name="Data">
-			<type-reference>
-				<part>Buffer</part>
-				<part>UnsignedInteger_8Bit_EndedByLength</part>
-			</type-reference>
+		<select>
 			<length>
 				<bytes>
 					<multiply>
@@ -567,6 +563,31 @@
 					<unsigned-integer-64bit>0</unsigned-integer-64bit>
 				</bits>
 			</length>
-		</field>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>Identifier</field>
+							<field>LargeData</field>
+						</data-reference>
+						<boolean>false</boolean>
+					</equals>
+				</when>
+				<field name="Data">
+					<type-reference>
+						<part>Buffer</part>
+						<part>UnsignedInteger_8Bit_EndedByLength</part>
+					</type-reference>
+				</field>
+			</case>
+			<else>
+				<field name="Data">
+					<type-reference>
+						<part>Data</part>
+						<part>SetOrUnset_EndedByLength</part>
+					</type-reference>
+				</field>
+			</else>
+		</select>
 	</sequence>
 </type>
