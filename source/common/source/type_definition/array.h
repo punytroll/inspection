@@ -53,12 +53,6 @@ namespace Inspection
             ~Array() override = default;
             auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
             auto GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>;
-        public:
-            Inspection::TypeDefinition::Array::IterateType IterateType;
-            std::unique_ptr<Inspection::TypeDefinition::FieldReference> IterateForEachField;
-            std::unique_ptr<Inspection::TypeDefinition::Expression> IterateNumberOfElements;
-            std::optional<std::string> ElementName;
-            std::unique_ptr<Inspection::TypeDefinition::Parameters> ElementParameters;
         protected:
             auto _LoadProperty(XML::Element const * Element) -> void override;
         private:
@@ -68,7 +62,12 @@ namespace Inspection
             auto operator=(Inspection::TypeDefinition::Array const & Array) -> Inspection::TypeDefinition::Array & = delete;
             auto operator=(Inspection::TypeDefinition::Array && Array) -> Inspection::TypeDefinition::Array & = delete;
         private:
+            std::optional<std::string> m_ElementName;
+            std::unique_ptr<Inspection::TypeDefinition::Parameters> m_ElementParameters;
             std::unique_ptr<Inspection::TypeDefinition::Expression> m_ElementType;
+            std::unique_ptr<Inspection::TypeDefinition::FieldReference> m_IterateForEachField;
+            std::unique_ptr<Inspection::TypeDefinition::Expression> m_IterateNumberOfElements;
+            Inspection::TypeDefinition::Array::IterateType m_IterateType;
         };
     }
 }

@@ -42,7 +42,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
     
     ExecutionContext.Push(*this, *Result, Reader, Parameters);
     Result->GetValue()->AddTag("array");
-    switch(IterateType)
+    switch(m_IterateType)
     {
     case Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength:
         {
@@ -74,9 +74,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 if(Continue == true)
                 {
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                    if(ElementName.has_value() == true)
+                    if(m_ElementName.has_value() == true)
                     {
-                        Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+                        Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                     }
                     else
                     {
@@ -115,9 +115,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
         {
             auto ElementParameters = GetElementParameters(ExecutionContext);
             
-            ASSERTION(IterateForEachField != nullptr);
+            ASSERTION(m_IterateForEachField != nullptr);
             
-            auto IterateField = ExecutionContext.GetFieldFromFieldReference(*IterateForEachField);
+            auto IterateField = ExecutionContext.GetFieldFromFieldReference(*m_IterateForEachField);
             
             ASSERTION(IterateField != nullptr);
             
@@ -160,9 +160,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                         ElementResult->GetValue()->AddTag("requested data length", Properties.second);
                         ElementResult->GetValue()->AddTag("processed data length", ElementReader.GetConsumedLength());
                     }
-                    if(ElementName.has_value() == true)
+                    if(m_ElementName.has_value() == true)
                     {
-                        Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+                        Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                     }
                     else
                     {
@@ -199,7 +199,7 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
             
             ASSERTION(ElementType != nullptr);
             
-            auto NumberOfElementsAny = IterateNumberOfElements->GetAny(ExecutionContext);
+            auto NumberOfElementsAny = m_IterateNumberOfElements->GetAny(ExecutionContext);
             
             ASSERTION(NumberOfElementsAny.type() == typeid(std::uint64_t));
             
@@ -218,9 +218,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                     
                     Continue = ElementResult->GetSuccess();
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                    if(ElementName.has_value() == true)
+                    if(m_ElementName.has_value() == true)
                     {
-                        Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+                        Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                     }
                     else
                     {
@@ -275,9 +275,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 if(Continue == true)
                 {
                     ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                    if(ElementName.has_value() == true)
+                    if(m_ElementName.has_value() == true)
                     {
-                        Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+                        Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                     }
                     else
                     {
@@ -332,9 +332,9 @@ auto Inspection::TypeDefinition::Array::Get(Inspection::ExecutionContext & Execu
                 
                 Continue = ElementResult->GetSuccess();
                 ElementResult->GetValue()->AddTag("element index in array", ElementIndexInArray++);
-                if(ElementName.has_value() == true)
+                if(m_ElementName.has_value() == true)
                 {
-                    Result->GetValue()->AppendField(ElementName.value(), ElementResult->ExtractValue());
+                    Result->GetValue()->AppendField(m_ElementName.value(), ElementResult->ExtractValue());
                 }
                 else
                 {
@@ -380,33 +380,33 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
         ASSERTION(Element->HasAttribute("type") == true);
         if(Element->GetAttribute("type") == "at-least-one-until-failure-or-length")
         {
-            IterateType = Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength;
+            m_IterateType = Inspection::TypeDefinition::Array::IterateType::AtLeastOneUntilFailureOrLength;
             ASSERTION(XML::HasChildNodes(Element) == false);
         }
         else if(Element->GetAttribute("type") == "for-each-field")
         {
-            IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
+            m_IterateType = Inspection::TypeDefinition::Array::IterateType::ForEachField;
             
             auto ChildElementsRange = Element->GetChildElements();
             auto ChildElements = std::vector<XML::Element const *>{ChildElementsRange.begin(), ChildElementsRange.end()};
             
             INVALID_INPUT_IF(ChildElements.size() == 0, "Missing field reference in for-each-field.");
             INVALID_INPUT_IF(ChildElements.size() > 1, "Too many field references in for-each-field.");
-            IterateForEachField = Inspection::TypeDefinition::FieldReference::Load(ChildElements.front());
+            m_IterateForEachField = Inspection::TypeDefinition::FieldReference::Load(ChildElements.front());
         }
         else if(Element->GetAttribute("type") == "number-of-elements")
         {
-            IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
-            IterateNumberOfElements = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
+            m_IterateType = Inspection::TypeDefinition::Array::IterateType::NumberOfElements;
+            m_IterateNumberOfElements = Inspection::TypeDefinition::Expression::LoadFromWithin(Element);
         }
         else if(Element->GetAttribute("type") == "until-failure-or-length")
         {
-            IterateType = Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength;
+            m_IterateType = Inspection::TypeDefinition::Array::IterateType::UntilFailureOrLength;
             ASSERTION(XML::HasChildNodes(Element) == false);
         }
         else if(Element->GetAttribute("type") == "until-length")
         {
-            IterateType = Inspection::TypeDefinition::Array::IterateType::UntilLength;
+            m_IterateType = Inspection::TypeDefinition::Array::IterateType::UntilLength;
             ASSERTION(XML::HasChildNodes(Element) == false);
         }
         else
@@ -421,7 +421,7 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
         auto ElementNameText = dynamic_cast<XML::Text const *>(Element->GetChildNode(0));
         
         ASSERTION(ElementNameText != nullptr);
-        ElementName = ElementNameText->GetText();
+        m_ElementName = ElementNameText->GetText();
     }
     else if(Element->GetName() == "element-type")
     {
@@ -429,7 +429,7 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
     }
     else if(Element->GetName() == "element-parameters")
     {
-        ElementParameters = Inspection::TypeDefinition::Parameters::Load(Element);
+        m_ElementParameters = Inspection::TypeDefinition::Parameters::Load(Element);
     }
     else
     {
@@ -439,9 +439,9 @@ auto Inspection::TypeDefinition::Array::_LoadProperty(XML::Element const * Eleme
 
 auto Inspection::TypeDefinition::Array::GetElementParameters(Inspection::ExecutionContext & ExecutionContext) const -> std::unordered_map<std::string, std::any>
 {
-    if(ElementParameters != nullptr)
+    if(m_ElementParameters != nullptr)
     {
-        return ElementParameters->GetParameters(ExecutionContext);
+        return m_ElementParameters->GetParameters(ExecutionContext);
     }
     else
     {
