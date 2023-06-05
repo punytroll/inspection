@@ -8,9 +8,80 @@
 		</field>
 		<field name="BlockType">
 			<type-reference>
-				<part>FLAC</part>
-				<part>MetaDataBlock_Header_BlockType</part>
+				<part>Number</part>
+				<part>Integer</part>
+				<part>Unsigned</part>
+				<part>7Bit</part>
 			</type-reference>
+			<interpretation>
+				<apply-enumeration>
+					<enumeration base-data-type="unsigned integer 8bit">
+						<element base-value="0" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>StreamInfo</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="1" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>Padding</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="2" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>Application</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="3" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>SeekTable</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="4" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>VorbisComment</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="5" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>CueSheet</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="6" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>Picture</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="7" valid="false">
+							<tag name="interpretation">
+								<value>
+									<string>Invalid</string>
+								</value>
+							</tag>
+						</element>
+						<fallback-element valid="false">
+							<tag name="interpretation">
+								<value>
+									<string>Reserved</string>
+								</value>
+							</tag>
+						</fallback-element>
+					</enumeration>
+				</apply-enumeration>
+			</interpretation>
 		</field>
 		<field name="Length">
 			<type-reference>
