@@ -493,11 +493,15 @@
 								</field>
 							</sequence>
 						</field>
-						<field name="SubBlockData">
-							<type-reference>
-								<part>Data</part>
-								<part>SetOrUnset_EndedByLength</part>
-							</type-reference>
+						<array name="SubBlocks">
+							<iterate type="until-length"/>
+							<element-type>
+								<type-reference>
+									<part>WavPack</part>
+									<part>SubBlock</part>
+								</type-reference>
+							</element-type>
+							<element-name>SubBlock</element-name>
 							<length>
 								<bytes>
 									<subtract>
@@ -514,7 +518,7 @@
 									<unsigned-integer-64bit>0</unsigned-integer-64bit>
 								</bits>
 							</length>
-						</field>
+						</array>
 					</sequence>
 				</type>
 			</element-type>

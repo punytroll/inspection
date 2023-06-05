@@ -1,0 +1,125 @@
+<type>
+	<sequence>
+		<field name="Identifier">
+			<type-reference>
+				<part>BitSet</part>
+				<part>8Bit_LeastSignificantBitFirst</part>
+			</type-reference>
+			<bits name="MetadataIdentifier" begin-index="0" length="6" as-data-type="unsigned integer 8bit"/>
+			<bit name="PaddedData" index="6" as-data-type="boolean">
+				<apply-enumeration>
+					<enumeration base-data-type="boolean">
+						<element base-value="false" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>data is not padded</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="true" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>actual data byte length is 1 less</string>
+								</value>
+							</tag>
+						</element>
+					</enumeration>
+				</apply-enumeration>
+			</bit>
+			<bit name="LargeData" index="7" as-data-type="boolean">
+				<apply-enumeration>
+					<enumeration base-data-type="boolean">
+						<element base-value="false" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>this subblock is small (&lt;= 255 words)</string>
+								</value>
+							</tag>
+						</element>
+						<element base-value="true" valid="true">
+							<tag name="interpretation">
+								<value>
+									<string>this subblock is large (&gt; 255 words)</string>
+								</value>
+							</tag>
+						</element>
+					</enumeration>
+				</apply-enumeration>
+			</bit>
+		</field>
+		<select>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>Identifier</field>
+							<field>LargeData</field>
+						</data-reference>
+						<boolean>false</boolean>
+					</equals>
+				</when>
+				<field name="WordSize">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>8Bit</part>
+					</type-reference>
+					<tag name="value">
+						<value>
+							<unsigned-integer-64bit>
+								<data-reference root="current"/>
+							</unsigned-integer-64bit>
+						</value>
+					</tag>
+				</field>
+			</case>
+			<case>
+				<when>
+					<equals>
+						<data-reference root="type">
+							<field>Identifier</field>
+							<field>LargeData</field>
+						</data-reference>
+						<boolean>true</boolean>
+					</equals>
+				</when>
+				<field name="WordSize">
+					<type-reference>
+						<part>Number</part>
+						<part>Integer</part>
+						<part>Unsigned</part>
+						<part>24Bit_LittleEndian</part>
+					</type-reference>
+					<tag name="value">
+						<value>
+							<unsigned-integer-64bit>
+								<data-reference root="current"/>
+							</unsigned-integer-64bit>
+						</value>
+					</tag>
+				</field>
+			</case>
+		</select>
+		<field name="Data">
+			<type-reference>
+				<part>Data</part>
+				<part>SetOrUnset_EndedByLength</part>
+			</type-reference>
+			<length>
+				<bytes>
+					<multiply>
+						<data-reference root="type">
+							<field>WordSize</field>
+							<tag>value</tag>
+						</data-reference>
+						<unsigned-integer-64bit>2</unsigned-integer-64bit>
+					</multiply>
+				</bytes>
+				<bits>
+					<unsigned-integer-64bit>0</unsigned-integer-64bit>
+				</bits>
+			</length>
+		</field>
+	</sequence>
+</type>

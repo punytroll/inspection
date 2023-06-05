@@ -970,7 +970,11 @@ std::any Inspection::TypeDefinition::Equals::GetAny(Inspection::ExecutionContext
     // if we compare two values of different types, they are definitively not equal
     if(Expression1Any.type() == Expression2Any.type())
     {
-        if(Expression1Any.type() == typeid(std::uint8_t))
+        if(Expression1Any.type() == typeid(bool))
+        {
+            return std::any_cast<bool const &>(Expression1Any) == std::any_cast<bool const &>(Expression2Any);
+        }
+        else if(Expression1Any.type() == typeid(std::uint8_t))
         {
             return std::any_cast<const std::uint8_t &>(Expression1Any) == std::any_cast<const std::uint8_t &>(Expression2Any);
         }
