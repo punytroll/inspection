@@ -35,9 +35,8 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
     auto FoundAlternative = false;
     
     ExecutionContext.Push(*this, *Result, Reader, Parameters);
-    for(auto PartIterator = std::begin(Parts); ((FoundAlternative == false) && (PartIterator != std::end(Parts))); ++PartIterator)
+    for(auto const & Part  : Parts)
     {
-        auto const & Part = *PartIterator;
         auto PartReader = std::unique_ptr<Inspection::Reader>{};
         
         if(Part->Length != nullptr)
@@ -107,6 +106,8 @@ auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext &
                 }
             }
             Reader.AdvancePosition(PartReader->GetConsumedLength());
+            
+            break;
         }
     }
     ExecutionContext.Pop();
