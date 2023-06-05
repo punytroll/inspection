@@ -609,21 +609,6 @@ namespace Inspection
             Inspection::TypeDefinition::PartType m_PartType;
         };
         
-        class Alternative : public Inspection::TypeDefinition::Part
-        {
-        public:
-            static auto Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>;
-        public:
-            ~Alternative(void) override = default;
-            auto Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result> override;
-        private:
-            Alternative(void);
-            Alternative(Inspection::TypeDefinition::Alternative const & Alternative) = delete;
-            Alternative(Inspection::TypeDefinition::Alternative && Alternative) = delete;
-            auto operator=(Inspection::TypeDefinition::Alternative const & Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
-            auto operator=(Inspection::TypeDefinition::Alternative && Alternative) -> Inspection::TypeDefinition::Alternative & = delete;
-        };
-        
         class Field : public Inspection::TypeDefinition::Part
         {
         public:

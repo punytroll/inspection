@@ -28,6 +28,7 @@
 #include "length.h"
 #include "result.h"
 #include "type.h"
+#include "type_definition/alternative.h"
 #include "type_definition/array.h"
 #include "type_definition/expression.h"
 #include "type_definition/function_call.h"
@@ -261,108 +262,6 @@ std::unique_ptr<Inspection::TypeDefinition::AddTag> Inspection::TypeDefinition::
     Result->m_Tag = Inspection::TypeDefinition::Tag::Load(Element);
     
     return Result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Alternative                                                                                   //
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-Inspection::TypeDefinition::Alternative::Alternative(void) :
-    Inspection::TypeDefinition::Part{Inspection::TypeDefinition::PartType::Alternative}
-{
-}
-
-auto Inspection::TypeDefinition::Alternative::Get(Inspection::ExecutionContext & ExecutionContext, Inspection::Reader & Reader, std::unordered_map<std::string, std::any> const & Parameters) const -> std::unique_ptr<Inspection::Result>
-{
-    auto Result = std::make_unique<Inspection::Result>();
-    auto FoundAlternative = false;
-    
-    ExecutionContext.Push(*this, *Result, Reader, Parameters);
-    for(auto PartIterator = std::begin(Parts); ((FoundAlternative == false) && (PartIterator != std::end(Parts))); ++PartIterator)
-    {
-        const auto & Part = *PartIterator;
-        auto PartReader = std::unique_ptr<Inspection::Reader>{};
-        
-        if(Part->Length != nullptr)
-        {
-            PartReader = std::make_unique<Inspection::Reader>(Reader, std::any_cast<const Inspection::Length &>(Part->Length->GetAny(ExecutionContext)));
-        }
-        else
-        {
-            PartReader = std::make_unique<Inspection::Reader>(Reader);
-        }
-        
-        auto PartParameters = Part->GetParameters(ExecutionContext);
-        auto PartResult = Part->Get(ExecutionContext, *PartReader, PartParameters);
-        
-        FoundAlternative = PartResult->GetSuccess();
-        if(FoundAlternative == true)
-        {
-            switch(Part->GetPartType())
-            {
-            case Inspection::TypeDefinition::PartType::Alternative:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Array:
-                {
-                    ASSERTION(Part->FieldName.has_value() == true);
-                    Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Field:
-                {
-                    ASSERTION(Part->FieldName.has_value() == true);
-                    Result->GetValue()->AppendField(Part->FieldName.value(), PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Fields:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Forward:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Select:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Sequence:
-                {
-                    Result->GetValue()->Extend(PartResult->ExtractValue());
-                    
-                    break;
-                }
-            case Inspection::TypeDefinition::PartType::Type:
-                {
-                    IMPOSSIBLE_CODE_REACHED("a Type should not be possible inside an Alternative");
-                }
-            }
-            Reader.AdvancePosition(PartReader->GetConsumedLength());
-        }
-    }
-    ExecutionContext.Pop();
-    // finalization
-    Result->SetSuccess(FoundAlternative);
-    
-    return Result;
-}
-
-auto Inspection::TypeDefinition::Alternative::Load(XML::Element const * Element) -> std::unique_ptr<Inspection::TypeDefinition::Alternative>
-{
-    return std::unique_ptr<Inspection::TypeDefinition::Alternative>{new Inspection::TypeDefinition::Alternative{}};
 }
 
 
